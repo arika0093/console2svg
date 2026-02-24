@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace ConsoleToSvg.Terminal;
 
@@ -26,17 +27,19 @@ public readonly struct TextStyle
 
 public readonly struct ScreenCell
 {
-    public ScreenCell(char character, TextStyle style)
+    public ScreenCell(string text, TextStyle style, bool isWide = false, bool isWideContinuation = false)
     {
-        Character = character;
+        Text = text;
         Foreground = style.Foreground;
         Background = style.Background;
         Bold = style.Bold;
         Italic = style.Italic;
         Underline = style.Underline;
+        IsWide = isWide;
+        IsWideContinuation = isWideContinuation;
     }
 
-    public char Character { get; }
+    public string Text { get; }
 
     public string Foreground { get; }
 
@@ -47,6 +50,10 @@ public readonly struct ScreenCell
     public bool Italic { get; }
 
     public bool Underline { get; }
+
+    public bool IsWide { get; }
+
+    public bool IsWideContinuation { get; }
 }
 
 public sealed class ScreenBuffer
@@ -60,6 +67,7 @@ public sealed class ScreenBuffer
     private int _savedCol;
     private int _savedMainRow;
     private int _savedMainCol;
+    private readonly List<ScreenCell[]> _scrollbackRows = new();
 
     public ScreenBuffer(int width, int height, Theme theme)
     {
@@ -85,14 +93,38 @@ public sealed class ScreenBuffer
 
     public TextStyle DefaultStyle { get; }
 
+    public int ScrollbackCount => _scrollbackRows.Count;
+
+    public int TotalHeight => _scrollbackRows.Count + Height;
+
     public ScreenCell GetCell(int row, int col)
     {
         if (row < 0 || row >= Height || col < 0 || col >= Width)
         {
-            return new ScreenCell(' ', DefaultStyle);
+            return new ScreenCell(" ", DefaultStyle);
         }
 
         return _cells[row, col];
+    }
+
+    public ScreenCell GetScrollbackCell(int scrollbackRow, int col)
+    {
+        if (scrollbackRow < 0 || scrollbackRow >= _scrollbackRows.Count || col < 0 || col >= Width)
+        {
+            return new ScreenCell(" ", DefaultStyle);
+        }
+
+        return _scrollbackRows[scrollbackRow][col];
+    }
+
+    public ScreenCell GetCellFromTop(int row, int col)
+    {
+        if (row < _scrollbackRows.Count)
+        {
+            return GetScrollbackCell(row, col);
+        }
+
+        return GetCell(row - _scrollbackRows.Count, col);
     }
 
     public ScreenBuffer Clone()
@@ -140,7 +172,7 @@ public sealed class ScreenBuffer
             var spaces = Math.Max(1, nextStop - CursorCol);
             for (var i = 0; i < spaces; i++)
             {
-                PutChar(' ', style);
+                PutPrintable(" ", style);
             }
 
             return;
@@ -151,8 +183,39 @@ public sealed class ScreenBuffer
             return;
         }
 
-        _cells[CursorRow, CursorCol] = new ScreenCell(value, style);
+        PutPrintable(value.ToString(), style);
+    }
+
+    public void PutSurrogatePair(string cluster, TextStyle style)
+    {
+        PutPrintable(cluster, style);
+    }
+
+    private void PutPrintable(string text, TextStyle style)
+    {
+        var isWide = IsWideCharacter(text);
+
+        if (isWide && CursorCol + 1 >= Width)
+        {
+            _cells[CursorRow, CursorCol] = new ScreenCell(" ", DefaultStyle);
+            CursorCol = 0;
+            CursorRow++;
+            if (CursorRow >= Height)
+            {
+                ScrollUp(1);
+                CursorRow = Height - 1;
+            }
+        }
+
+        _cells[CursorRow, CursorCol] = new ScreenCell(text, style, isWide);
         CursorCol++;
+
+        if (isWide && CursorCol < Width)
+        {
+            _cells[CursorRow, CursorCol] = new ScreenCell(" ", style, false, true);
+            CursorCol++;
+        }
+
         if (CursorCol >= Width)
         {
             CursorCol = 0;
@@ -164,6 +227,55 @@ public sealed class ScreenBuffer
             }
         }
     }
+
+    private static bool IsWideCharacter(string text)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return false;
+        }
+
+        int codePoint;
+        if (text.Length >= 2 && char.IsHighSurrogate(text[0]) && char.IsLowSurrogate(text[1]))
+        {
+            codePoint = char.ConvertToUtf32(text[0], text[1]);
+        }
+        else if (text.Length == 1)
+        {
+            codePoint = text[0];
+        }
+        else
+        {
+            return false;
+        }
+
+        return IsEastAsianWide(codePoint);
+    }
+
+    private static bool IsEastAsianWide(int cp) =>
+        cp is (>= 0x1100 and <= 0x115F)
+            or (>= 0x2E80 and <= 0x2FFD)
+            or (>= 0x3000 and <= 0x303F)
+            or (>= 0x3040 and <= 0x33FF)
+            or (>= 0x3400 and <= 0x4DBF)
+            or (>= 0x4E00 and <= 0x9FFF)
+            or (>= 0xA000 and <= 0xA48C)
+            or (>= 0xA960 and <= 0xA97F)
+            or (>= 0xAC00 and <= 0xD7A3)
+            or (>= 0xF900 and <= 0xFAFF)
+            or (>= 0xFE10 and <= 0xFE1F)
+            or (>= 0xFE30 and <= 0xFE6F)
+            or (>= 0xFF01 and <= 0xFF60)
+            or (>= 0xFFE0 and <= 0xFFE6)
+            or (>= 0x1B000 and <= 0x1B0FF)
+            or (>= 0x1F004 and <= 0x1F004)
+            or (>= 0x1F0CF and <= 0x1F0CF)
+            or (>= 0x1F200 and <= 0x1F2FF)
+            or (>= 0x1F300 and <= 0x1F64F)
+            or (>= 0x1F680 and <= 0x1F6FF)
+            or (>= 0x1F900 and <= 0x1F9FF)
+            or (>= 0x20000 and <= 0x2FFFD)
+            or (>= 0x30000 and <= 0x3FFFD);
 
     public void MoveCursorTo(int row, int col)
     {
@@ -214,21 +326,21 @@ public sealed class ScreenBuffer
             case 1:
                 for (var col = 0; col <= CursorCol; col++)
                 {
-                    _cells[CursorRow, col] = new ScreenCell(' ', DefaultStyle);
+                    _cells[CursorRow, col] = new ScreenCell(" ", DefaultStyle);
                 }
 
                 return;
             case 2:
                 for (var col = 0; col < Width; col++)
                 {
-                    _cells[CursorRow, col] = new ScreenCell(' ', DefaultStyle);
+                    _cells[CursorRow, col] = new ScreenCell(" ", DefaultStyle);
                 }
 
                 return;
             default:
                 for (var col = CursorCol; col < Width; col++)
                 {
-                    _cells[CursorRow, col] = new ScreenCell(' ', DefaultStyle);
+                    _cells[CursorRow, col] = new ScreenCell(" ", DefaultStyle);
                 }
 
                 return;
@@ -242,11 +354,10 @@ public sealed class ScreenBuffer
             case 1:
                 for (var row = 0; row <= CursorRow; row++)
                 {
-                    var start = row == CursorRow ? 0 : 0;
                     var end = row == CursorRow ? CursorCol : Width - 1;
-                    for (var col = start; col <= end; col++)
+                    for (var col = 0; col <= end; col++)
                     {
-                        _cells[row, col] = new ScreenCell(' ', DefaultStyle);
+                        _cells[row, col] = new ScreenCell(" ", DefaultStyle);
                     }
                 }
 
@@ -256,7 +367,7 @@ public sealed class ScreenBuffer
                 {
                     for (var col = 0; col < Width; col++)
                     {
-                        _cells[row, col] = new ScreenCell(' ', DefaultStyle);
+                        _cells[row, col] = new ScreenCell(" ", DefaultStyle);
                     }
                 }
 
@@ -267,7 +378,7 @@ public sealed class ScreenBuffer
                     var start = row == CursorRow ? CursorCol : 0;
                     for (var col = start; col < Width; col++)
                     {
-                        _cells[row, col] = new ScreenCell(' ', DefaultStyle);
+                        _cells[row, col] = new ScreenCell(" ", DefaultStyle);
                     }
                 }
 
@@ -309,6 +420,14 @@ public sealed class ScreenBuffer
     {
         for (var i = 0; i < count; i++)
         {
+            var topRow = new ScreenCell[Width];
+            for (var col = 0; col < Width; col++)
+            {
+                topRow[col] = _cells[0, col];
+            }
+
+            _scrollbackRows.Add(topRow);
+
             for (var row = 1; row < Height; row++)
             {
                 for (var col = 0; col < Width; col++)
@@ -319,7 +438,7 @@ public sealed class ScreenBuffer
 
             for (var col = 0; col < Width; col++)
             {
-                _cells[Height - 1, col] = new ScreenCell(' ', DefaultStyle);
+                _cells[Height - 1, col] = new ScreenCell(" ", DefaultStyle);
             }
         }
     }
@@ -331,7 +450,7 @@ public sealed class ScreenBuffer
         {
             for (var col = 0; col < Width; col++)
             {
-                cells[row, col] = new ScreenCell(' ', DefaultStyle);
+                cells[row, col] = new ScreenCell(" ", DefaultStyle);
             }
         }
 

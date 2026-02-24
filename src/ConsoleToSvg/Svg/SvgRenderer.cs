@@ -18,10 +18,11 @@ public static class SvgRenderer
             emulator.Replay(session, targetFrame);
         }
 
-        var context = SvgDocumentBuilder.CreateContext(emulator.Buffer, options.Crop);
+        var includeScrollback = options.Frame == null;
+        var context = SvgDocumentBuilder.CreateContext(emulator.Buffer, options.Crop, includeScrollback);
         var sb = new StringBuilder(32 * 1024);
         SvgDocumentBuilder.BeginSvg(sb, context, theme, additionalCss: null);
-        SvgDocumentBuilder.AppendFrameGroup(sb, emulator.Buffer, context, theme, id: null, @class: null);
+        SvgDocumentBuilder.AppendFrameGroup(sb, emulator.Buffer, context, theme, id: null, @class: null, includeScrollback);
         SvgDocumentBuilder.EndSvg(sb);
         return sb.ToString();
     }
@@ -61,20 +62,22 @@ internal static class SvgDocumentBuilder
         public double ViewHeight { get; set; }
     }
 
-    public static Context CreateContext(ScreenBuffer buffer, CropOptions crop)
+    public static Context CreateContext(ScreenBuffer buffer, CropOptions crop, bool includeScrollback = false)
     {
+        var effectiveHeight = includeScrollback ? buffer.TotalHeight : buffer.Height;
+
         var rowTop = crop.Top.Unit == CropUnit.Characters ? (int)Math.Floor(crop.Top.Value) : 0;
         var rowBottom = crop.Bottom.Unit == CropUnit.Characters ? (int)Math.Floor(crop.Bottom.Value) : 0;
         var colLeft = crop.Left.Unit == CropUnit.Characters ? (int)Math.Floor(crop.Left.Value) : 0;
         var colRight = crop.Right.Unit == CropUnit.Characters ? (int)Math.Floor(crop.Right.Value) : 0;
 
-        rowTop = Clamp(rowTop, 0, buffer.Height - 1);
-        rowBottom = Clamp(rowBottom, 0, buffer.Height - rowTop - 1);
+        rowTop = Clamp(rowTop, 0, effectiveHeight - 1);
+        rowBottom = Clamp(rowBottom, 0, effectiveHeight - rowTop - 1);
         colLeft = Clamp(colLeft, 0, buffer.Width - 1);
         colRight = Clamp(colRight, 0, buffer.Width - colLeft - 1);
 
         var startRow = rowTop;
-        var endRowExclusive = buffer.Height - rowBottom;
+        var endRowExclusive = effectiveHeight - rowBottom;
         var startCol = colLeft;
         var endColExclusive = buffer.Width - colRight;
 
@@ -153,7 +156,8 @@ internal static class SvgDocumentBuilder
         Context context,
         Theme theme,
         string? id,
-        string? @class
+        string? @class,
+        bool includeScrollback = false
     )
     {
         sb.Append("<g");
@@ -189,9 +193,18 @@ internal static class SvgDocumentBuilder
         {
             for (var col = context.StartCol; col < context.EndColExclusive; col++)
             {
-                var cell = buffer.GetCell(row, col);
+                var cell = includeScrollback
+                    ? buffer.GetCellFromTop(row, col)
+                    : buffer.GetCell(row, col);
                 var x = (col - context.StartCol) * CellWidth;
                 var y = (row - context.StartRow) * CellHeight;
+
+                if (cell.IsWideContinuation)
+                {
+                    continue;
+                }
+
+                var cellRectWidth = cell.IsWide ? CellWidth * 2 : CellWidth;
 
                 if (!string.Equals(cell.Background, theme.Background, StringComparison.OrdinalIgnoreCase))
                 {
@@ -200,7 +213,7 @@ internal static class SvgDocumentBuilder
                     sb.Append("\" y=\"");
                     sb.Append(Format(y));
                     sb.Append("\" width=\"");
-                    sb.Append(Format(CellWidth));
+                    sb.Append(Format(cellRectWidth));
                     sb.Append("\" height=\"");
                     sb.Append(Format(CellHeight));
                     sb.Append("\" fill=\"");
@@ -208,7 +221,7 @@ internal static class SvgDocumentBuilder
                     sb.Append("\"/>\n");
                 }
 
-                if (cell.Character == ' ')
+                if (cell.Text == " ")
                 {
                     continue;
                 }
@@ -243,7 +256,7 @@ internal static class SvgDocumentBuilder
                 }
 
                 sb.Append('>');
-                sb.Append(EscapeText(cell.Character.ToString()));
+                sb.Append(EscapeText(cell.Text));
                 sb.Append("</text>\n");
             }
         }

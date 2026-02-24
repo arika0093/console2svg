@@ -1,9 +1,10 @@
 <Project>
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework Condition="'$(TargetFramework)' == '' and '$(TargetFrameworks)' == ''">netstandard2.0</TargetFramework>
     <IsPackable>true</IsPackable>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
     <PackageDescription></PackageDescription>
     <PackageProjectUrl>https://github.com/arika0093/ConsoleToSvg</PackageProjectUrl>
     <RepositoryUrl>https://github.com/arika0093/ConsoleToSvg</RepositoryUrl>

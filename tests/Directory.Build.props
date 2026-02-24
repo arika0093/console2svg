@@ -1,0 +1,27 @@
+<Project>
+  <PropertyGroup>
+    <TargetFrameworks Condition="'$(TFMS)' != ''">$(TFMS)</TargetFrameworks>
+    <TargetFrameworks Condition="'$(TFMS)' == ''">net10.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
+    <SuppressTfmSupportBuildErrors>true</SuppressTfmSupportBuildErrors>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>.generated</CompilerGeneratedFilesOutputPath>
+    <PublishAot>true</PublishAot>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+    <PackageReference Include="Shouldly" Version="4.*" />
+    <PackageReference Include="TUnit" Version="1.*" />
+    <PackageReference Include="Polyfill" Version="9.9.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="TUnit" />
+    <Using Include="Shouldly" />
+  </ItemGroup>
+</Project>

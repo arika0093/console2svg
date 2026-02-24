@@ -1,0 +1,42 @@
+name: Format Code with CSharpier
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - '**.csproj'
+  #     - '**.cs'
+  #     - '**./Directories.Build.props'
+  #     - '.github/workflows/format.yaml'
+        
+permissions:
+  contents: write
+
+jobs:
+  format-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+
+      - name: Install dotnet-format tool
+        run: dotnet tool install -g csharpier
+
+      - name: Add Path to env
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Run csharpier format
+        run: csharpier format .
+
+      - name: Commit & Push
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "[skip-ci] chore: format code with csharpier"
+          branch: ${{ github.ref_name }}

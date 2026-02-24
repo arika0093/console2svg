@@ -1,0 +1,43 @@
+name: .NET Build and Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches-ignore:
+      - release/*
+    paths:
+      - '**.csproj'
+      - '**.cs'
+      - '**./Directories.Build.props'
+      - '.github/workflows/test.yaml'
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_VERSION: '10.0.x'
+
+jobs:
+  # run standard tests
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore 
+
+      - name: Build
+        run: dotnet build --no-restore
+
+      - name: Run tests
+        run: dotnet test --no-build --verbosity normal
+

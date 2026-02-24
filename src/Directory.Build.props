@@ -1,0 +1,40 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <PackageDescription></PackageDescription>
+    <PackageProjectUrl>https://github.com/arika0093/ConsoleToSvg</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/arika0093/ConsoleToSvg</RepositoryUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Authors>arika0093</Authors>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference
+      Include="Nerdbank.GitVersioning"
+      Version="3.*"
+      Condition="!Exists('packages.config')"
+    >
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Polyfill" Version="9.9.0" Condition="!Exists('packages.config')">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference
+      Include="SonarAnalyzer.CSharp"
+      Version="10.*"
+      Condition="!Exists('packages.config')"
+    >
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>

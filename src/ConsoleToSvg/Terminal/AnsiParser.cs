@@ -33,9 +33,25 @@ public sealed class AnsiParser
                 continue;
             }
 
+            if (char.IsHighSurrogate(ch) && i + 1 < text.Length && char.IsLowSurrogate(text[i + 1]))
+            {
+                var cluster = text.Substring(i, 2);
+                i++;
+                _buffer.PutSurrogatePair(cluster, _style);
+                continue;
+            }
+
+            if (char.IsLowSurrogate(ch) || IsVariationSelector(ch))
+            {
+                continue;
+            }
+
             _buffer.PutChar(ch, _style);
         }
     }
+
+    private static bool IsVariationSelector(char ch) =>
+        ch is >= '\uFE00' and <= '\uFE0F';
 
     private int HandleEscape(string text, int index)
     {

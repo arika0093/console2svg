@@ -3,13 +3,10 @@
     <TargetFramework></TargetFramework>
     <TargetFrameworks>netcoreapp3.0;net8.0;net9.0;net10.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
-    <AssemblyName>ConsoleToSvg</AssemblyName>
-    <RootNamespace>ConsoleToSvg</RootNamespace>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>console2svg</ToolCommandName>
     <CheckEolTargetFramework>false</CheckEolTargetFramework>
     <RollForward>LatestMajor</RollForward>
-    <NoWarn>$(NoWarn);NETSDK1138</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

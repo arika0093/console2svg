@@ -15,7 +15,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageReference Include="Shouldly" Version="4.*" />
     <PackageReference Include="TUnit" Version="1.*" />
-    <PackageReference Include="Polyfill" Version="9.9.0">
+    <PackageReference Include="Polyfill" Version="9.11.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

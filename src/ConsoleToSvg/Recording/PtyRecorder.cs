@@ -180,7 +180,7 @@ public static class PtyRecorder
             }
         }
 
-        if (inputTask is not null)
+        if (inputTask is not null && !canceled)
         {
             await IgnoreTaskFailureAsync(inputTask).ConfigureAwait(false);
         }
@@ -262,7 +262,7 @@ public static class PtyRecorder
         }
 
         forwardingCancellation.Cancel();
-        if (inputTask is not null)
+        if (inputTask is not null && !canceled)
         {
             await IgnoreTaskFailureAsync(inputTask).ConfigureAwait(false);
         }

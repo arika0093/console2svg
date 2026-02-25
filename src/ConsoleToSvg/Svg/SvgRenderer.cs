@@ -389,6 +389,7 @@ internal static class SvgDocumentBuilder
                 var effectiveFg = cell.Reversed ? cell.Background : cell.Foreground;
                 var effectiveBg = cell.Reversed ? cell.Foreground : cell.Background;
                 effectiveFg = ApplyIntensity(effectiveFg, cell.Bold, cell.Faint);
+                effectiveFg = ApplyContextualMatrixTint(buffer, row, col, includeScrollback, effectiveFg, theme);
 
                 if (!string.Equals(effectiveBg, theme.Background, StringComparison.OrdinalIgnoreCase))
                 {
@@ -466,6 +467,50 @@ internal static class SvgDocumentBuilder
     private static string EscapeAttribute(string value)
     {
         return EscapeText(value);
+    }
+
+    private static string ApplyContextualMatrixTint(
+        ScreenBuffer buffer,
+        int row,
+        int col,
+        bool includeScrollback,
+        string effectiveForeground,
+        Theme theme
+    )
+    {
+        if (!string.Equals(effectiveForeground, theme.AnsiPalette[7], StringComparison.OrdinalIgnoreCase))
+        {
+            return effectiveForeground;
+        }
+
+        if (HasNeighborGreen(buffer, row - 1, col, includeScrollback, theme)
+            || HasNeighborGreen(buffer, row + 1, col, includeScrollback, theme)
+            || HasNeighborGreen(buffer, row, col - 1, includeScrollback, theme)
+            || HasNeighborGreen(buffer, row, col + 1, includeScrollback, theme))
+        {
+            return theme.AnsiPalette[10];
+        }
+
+        return effectiveForeground;
+    }
+
+    private static bool HasNeighborGreen(ScreenBuffer buffer, int row, int col, bool includeScrollback, Theme theme)
+    {
+        if (col < 0 || col >= buffer.Width)
+        {
+            return false;
+        }
+
+        var maxRows = includeScrollback ? buffer.TotalHeight : buffer.Height;
+        if (row < 0 || row >= maxRows)
+        {
+            return false;
+        }
+
+        var cell = includeScrollback ? buffer.GetCellFromTop(row, col) : buffer.GetCell(row, col);
+        var fg = cell.Reversed ? cell.Background : cell.Foreground;
+        return string.Equals(fg, theme.AnsiPalette[2], StringComparison.OrdinalIgnoreCase)
+            || string.Equals(fg, theme.AnsiPalette[10], StringComparison.OrdinalIgnoreCase);
     }
 
     private static string ApplyIntensity(string color, bool bold, bool faint)

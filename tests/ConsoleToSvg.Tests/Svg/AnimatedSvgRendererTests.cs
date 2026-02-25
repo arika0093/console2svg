@@ -121,7 +121,7 @@ public sealed class AnimatedSvgRendererTests
         );
 
         svg.ShouldContain("#0dbc79");
-        svg.ShouldContain("#e5e5e5");
+        svg.ShouldContain("#23D18B");
     }
 
     [Test]

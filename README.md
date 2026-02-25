@@ -23,6 +23,16 @@ console2svg | console2svg --window macos -w 100 -h 24 --padding 5
 
 You can also generate SVG with a window frame. and some options to customize the appearance.
 
+---
+
+![](./assets/cmd-animate.gif)
+
+```bash
+console2svg -m video --window macos -w 120 -h 16 -- ./my-install.sh
+```
+
+You can also capture the output of a command that runs for a while, and generate an animated SVG that replays the output.
+
 ## Install
 
 ```sh

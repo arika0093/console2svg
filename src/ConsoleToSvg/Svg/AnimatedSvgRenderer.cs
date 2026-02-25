@@ -30,7 +30,7 @@ public static class AnimatedSvgRenderer
         var css = BuildAnimationCss(frames, duration);
 
         var sb = new StringBuilder(128 * 1024);
-        SvgDocumentBuilder.BeginSvg(sb, context, theme, css);
+        SvgDocumentBuilder.BeginSvg(sb, context, theme, css, font: options.Font);
         for (var i = 0; i < frames.Count; i++)
         {
             SvgDocumentBuilder.AppendFrameGroup(

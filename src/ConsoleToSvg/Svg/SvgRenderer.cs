@@ -21,7 +21,7 @@ public static class SvgRenderer
         var includeScrollback = options.Frame == null;
         var context = SvgDocumentBuilder.CreateContext(emulator.Buffer, options.Crop, includeScrollback);
         var sb = new StringBuilder(32 * 1024);
-        SvgDocumentBuilder.BeginSvg(sb, context, theme, additionalCss: null);
+        SvgDocumentBuilder.BeginSvg(sb, context, theme, additionalCss: null, font: options.Font);
         SvgDocumentBuilder.AppendFrameGroup(sb, emulator.Buffer, context, theme, id: null, @class: null, includeScrollback);
         SvgDocumentBuilder.EndSvg(sb);
         return sb.ToString();
@@ -34,6 +34,7 @@ internal static class SvgDocumentBuilder
     private const double CellHeight = 18d;
     private const double FontSize = 14d;
     private const double BaselineOffset = 14d;
+    private const string DefaultFontFamily = "ui-monospace,\"Cascadia Mono\",\"Segoe UI Mono\",\"SFMono-Regular\",Menlo,monospace";
 
     internal sealed class Context
     {
@@ -172,7 +173,7 @@ internal static class SvgDocumentBuilder
         return effectiveHeight - 1;
     }
 
-    public static void BeginSvg(StringBuilder sb, Context context, Theme theme, string? additionalCss)
+    public static void BeginSvg(StringBuilder sb, Context context, Theme theme, string? additionalCss, string? font = null)
     {
         sb.Append("<svg xmlns=\"http://www.w3.org/2000/svg\" ");
         sb.Append("xmlns:xlink=\"http://www.w3.org/1999/xlink\" ");
@@ -182,8 +183,11 @@ internal static class SvgDocumentBuilder
         sb.Append(Format(context.ViewHeight));
         sb.Append("\" role=\"img\" aria-label=\"console2svg output\">\n");
 
+        var effectiveFont = string.IsNullOrWhiteSpace(font) ? DefaultFontFamily : EscapeAttribute(font);
         sb.Append("<style>");
-        sb.Append(".crt{font-family:Consolas,\\\"Cascadia Mono\\\",\\\"SFMono-Regular\\\",Menlo,monospace;");
+        sb.Append(".crt{font-family:");
+        sb.Append(effectiveFont);
+        sb.Append(';');
         sb.Append("font-size:");
         sb.Append(Format(FontSize));
         sb.Append("px;}");

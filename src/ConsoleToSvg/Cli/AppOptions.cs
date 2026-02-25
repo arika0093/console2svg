@@ -16,9 +16,9 @@ public sealed class AppOptions
 
     public OutputMode Mode { get; set; } = OutputMode.Image;
 
-    public int Width { get; set; } = 80;
+    public int? Width { get; set; } = null;
 
-    public int Height { get; set; } = 24;
+    public int? Height { get; set; } = null;
 
     public int? Frame { get; set; }
 
@@ -33,4 +33,6 @@ public sealed class AppOptions
     public string Theme { get; set; } = "dark";
 
     public string? SaveCastPath { get; set; }
+
+    public string? Font { get; set; }
 }

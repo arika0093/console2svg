@@ -12,23 +12,25 @@ public static class OptionParser
         Usage:
           my-command --color=always | console2svg [options]
           console2svg --command "git log --oneline" [options]
+          console2svg "git log --oneline" [options]
           console2svg --in session.cast [options]
 
         Options:
           -c, --command <value>      Execute command in PTY mode.
           --in <path>                Read existing asciicast file.
           -o, --out <path>           Output SVG path (default: output.svg).
-          --mode <image|video>       Output mode (default: image).
-          --width <int>              Terminal width in characters (default: 80).
-          --height <int>             Terminal height in rows (default: 24).
+          -m, --mode <image|video>   Output mode (default: image).
+          -w, --width <int>          Terminal width in characters (default: auto).
+          -h, --height <int>         Terminal height in rows (default: auto).
           --frame <int>              Frame index for image mode.
           --crop-top <value>         Crop top by px, ch, or text pattern (examples: 10px, 2ch, text:---).
           --crop-right <value>       Crop right by px or ch.
           --crop-bottom <value>      Crop bottom by px, ch, or text pattern (examples: 10px, 2ch, text:---).
           --crop-left <value>        Crop left by px or ch.
           --theme <dark|light>       Color theme (default: dark).
+          --font <family>            CSS font-family for SVG text (default: system monospace).
           --save-cast <path>         Save captured output as asciicast file.
-          -h, --help                 Show help.
+          --help                     Show help.
         """;
 
     public static bool TryParse(
@@ -45,17 +47,23 @@ public static class OptionParser
         for (var i = 0; i < args.Length; i++)
         {
             var token = args[i];
-            if (string.Equals(token, "-h", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(token, "--help", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(token, "--help", StringComparison.OrdinalIgnoreCase))
             {
                 showHelp = true;
                 return true;
             }
 
+            // Treat bare positional arguments as the command
             if (!token.StartsWith("-", StringComparison.Ordinal))
             {
-                error = $"Unexpected argument: {token}";
-                return false;
+                if (options.Command != null)
+                {
+                    error = "Multiple positional arguments are not allowed. Use --command to specify the command.";
+                    return false;
+                }
+
+                options.Command = token;
+                continue;
             }
 
             if (!TrySplitToken(token, out var name, out var inlineValue))
@@ -108,8 +116,7 @@ public static class OptionParser
 
     private static bool RequiresValue(string name)
     {
-        return !string.Equals(name, "-h", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--help", StringComparison.OrdinalIgnoreCase);
+        return !string.Equals(name, "--help", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool ApplyOption(AppOptions options, string name, string? value, out string? error)
@@ -128,6 +135,7 @@ public static class OptionParser
             case "--out":
                 options.OutputPath = value ?? options.OutputPath;
                 return true;
+            case "-m":
             case "--mode":
                 if (string.Equals(value, "image", StringComparison.OrdinalIgnoreCase))
                 {
@@ -143,6 +151,7 @@ public static class OptionParser
 
                 error = "--mode must be image or video.";
                 return false;
+            case "-w":
             case "--width":
                 if (!TryParseInt(value, "--width", out var width, out error))
                 {
@@ -151,6 +160,7 @@ public static class OptionParser
 
                 options.Width = width;
                 return true;
+            case "-h":
             case "--height":
                 if (!TryParseInt(value, "--height", out var height, out error))
                 {
@@ -181,6 +191,9 @@ public static class OptionParser
                 return true;
             case "--theme":
                 options.Theme = string.IsNullOrWhiteSpace(value) ? "dark" : value;
+                return true;
+            case "--font":
+                options.Font = value;
                 return true;
             case "--save-cast":
                 options.SaveCastPath = value;
@@ -220,13 +233,13 @@ public static class OptionParser
             return false;
         }
 
-        if (options.Width <= 0)
+        if (options.Width.HasValue && options.Width.Value <= 0)
         {
             error = "--width must be greater than 0.";
             return false;
         }
 
-        if (options.Height <= 0)
+        if (options.Height.HasValue && options.Height.Value <= 0)
         {
             error = "--height must be greater than 0.";
             return false;

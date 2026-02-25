@@ -10,6 +10,8 @@ public sealed class SvgRenderOptions
 
     public int? Frame { get; set; }
 
+    public string? Font { get; set; }
+
     public static SvgRenderOptions FromAppOptions(AppOptions appOptions)
     {
         return new SvgRenderOptions
@@ -22,6 +24,7 @@ public sealed class SvgRenderOptions
                 appOptions.CropLeft
             ),
             Frame = appOptions.Frame,
+            Font = appOptions.Font,
         };
     }
 }

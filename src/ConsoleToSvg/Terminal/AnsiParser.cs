@@ -41,8 +41,14 @@ public sealed class AnsiParser
                 continue;
             }
 
-            if (char.IsLowSurrogate(ch) || IsVariationSelector(ch))
+            if (char.IsLowSurrogate(ch))
             {
+                continue;
+            }
+
+            if (IsVariationSelector(ch))
+            {
+                _buffer.AppendToPreviousCell(ch.ToString());
                 continue;
             }
 

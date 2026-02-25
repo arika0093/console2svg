@@ -31,7 +31,7 @@ public static class AnimatedSvgRenderer
         var context = SvgDocumentBuilder.CreateContext(reducedFrames[0].Buffer, options.Crop, includeScrollback: false, options.Window, options.Padding);
         var duration = Math.Max(0.05d, reducedFrames[reducedFrames.Count - 1].Time);
 
-        var css = BuildAnimationCss(reducedFrames, duration);
+        var css = BuildAnimationCss(reducedFrames, duration, options.Loop);
 
         var sb = new StringBuilder(128 * 1024);
         SvgDocumentBuilder.BeginSvg(sb, context, theme, css, font: options.Font, windowStyle: options.Window);
@@ -87,7 +87,11 @@ public static class AnimatedSvgRenderer
         return reduced;
     }
 
-    private static string BuildAnimationCss(System.Collections.Generic.IReadOnlyList<TerminalFrame> frames, double duration)
+    private static string BuildAnimationCss(
+        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
+        double duration,
+        bool loop
+    )
     {
         var sb = new StringBuilder();
         sb.Append(".frame{opacity:0;}");
@@ -125,7 +129,9 @@ public static class AnimatedSvgRenderer
             sb.Append(i.ToString(CultureInfo.InvariantCulture));
             sb.Append(' ');
             sb.Append(Format(duration));
-            sb.Append("s linear forwards;}");
+            sb.Append("s linear ");
+            sb.Append(loop ? "infinite;" : "forwards;");
+            sb.Append('}');
         }
 
         return sb.ToString();

@@ -43,4 +43,6 @@ public sealed class AppOptions
     public string Window { get; set; } = "none";
 
     public double Padding { get; set; } = 2d;
+
+    public bool Loop { get; set; }
 }

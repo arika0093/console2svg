@@ -134,4 +134,13 @@ public sealed class OptionParserTests
         ok.ShouldBeFalse();
         error.ShouldBe("--window must be none, macos, or windows.");
     }
+
+    [Test]
+    public void LoopFlagParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "-m", "video", "--loop" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Mode.ShouldBe(OutputMode.Video);
+        options.Loop.ShouldBeTrue();
+    }
 }

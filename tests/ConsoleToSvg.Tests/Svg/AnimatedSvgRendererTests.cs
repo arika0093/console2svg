@@ -25,6 +25,7 @@ public sealed class AnimatedSvgRendererTests
         svg.ShouldContain("@keyframes k0");
         svg.ShouldContain("frame-0");
         svg.ShouldContain("animation:k0");
+        svg.ShouldContain("linear forwards;");
     }
 
     [Test]
@@ -84,6 +85,26 @@ public sealed class AnimatedSvgRendererTests
 
         var frameTagCount = CountOccurrences(svg, "id=\"frame-");
         frameTagCount.ShouldBeLessThan(20);
+    }
+
+    [Test]
+    public void RenderAnimatedSvgWithLoopUsesInfiniteAnimation()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "A");
+        session.AddEvent(0.2, "B");
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                Loop = true,
+            }
+        );
+
+        svg.ShouldContain("linear infinite;");
+        svg.ShouldNotContain("linear forwards;");
     }
 
     private static int CountOccurrences(string text, string token)

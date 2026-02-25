@@ -54,7 +54,13 @@ console2svg -- dotnet test.cs
 ### Animated SVG
 
 ```sh
-console2svg "dotnet build" -m video
+console2svg -m video -- dotnet build
+```
+
+Loop playback:
+
+```sh
+console2svg -m video --loop -- nyancat
 ```
 
 ### Static SVG with crop
@@ -88,6 +94,7 @@ console2svg --window macos --padding 8 -- dotnet --version
 - `--theme dark|light`
 - `--window none|macos|windows`
 - `--padding <px>` (default: 2)
+- `--loop` (video mode only, default: false)
 - `--font <css-font-family>`
 - `--save-cast <path>`
 - `--help`

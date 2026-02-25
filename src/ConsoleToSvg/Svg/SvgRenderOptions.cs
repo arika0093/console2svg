@@ -24,6 +24,8 @@ public sealed class SvgRenderOptions
 
     public double Padding { get; set; }
 
+    public bool Loop { get; set; }
+
     public static SvgRenderOptions FromAppOptions(AppOptions appOptions)
     {
         return new SvgRenderOptions
@@ -39,6 +41,7 @@ public sealed class SvgRenderOptions
             Font = appOptions.Font,
             Window = ParseWindowStyle(appOptions.Window),
             Padding = appOptions.Padding,
+            Loop = appOptions.Loop,
         };
     }
 

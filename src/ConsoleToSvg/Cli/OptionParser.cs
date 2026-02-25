@@ -31,6 +31,7 @@ public static class OptionParser
           --theme <dark|light>           Color theme (default: dark).
           --window <none|macos|windows>  Terminal window chrome style (default: none).
           --padding <px>                 Outer padding in pixels around terminal content (default: 2).
+                    --loop                         Loop animated SVG playback in video mode (default: false).
           --font <family>                CSS font-family for SVG text (default: system monospace).
           --save-cast <path>             Save captured output as asciicast file.
           --help                         Show help.
@@ -140,6 +141,7 @@ public static class OptionParser
     {
         return !string.Equals(name, "--help", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--version", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--loop", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "-v", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--verbose", StringComparison.OrdinalIgnoreCase);
     }
@@ -248,6 +250,9 @@ public static class OptionParser
                 }
 
                 options.Padding = padding;
+                return true;
+            case "--loop":
+                options.Loop = true;
                 return true;
             case "--font":
                 options.Font = value;

@@ -56,21 +56,22 @@ public static class PtyRecorder
         );
         var session = new RecordingSession(width, height);
         var stopwatch = Stopwatch.StartNew();
+        var canceled = false;
 
         var connection = await PtyProvider.SpawnAsync(options, cancellationToken).ConfigureAwait(false);
         logger.ZLogDebug($"PTY process spawned.");
-        var readTask = ReadOutputAsync(connection.ReaderStream, session, stopwatch, cancellationToken, logger);
+        var readTask = ReadOutputAsync(connection.ReaderStream, session, stopwatch, CancellationToken.None, logger);
 
         try
         {
             while (!connection.WaitForExit(50))
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    canceled = true;
+                    break;
+                }
             }
-        }
-        catch (OperationCanceledException)
-        {
-            throw;
         }
         catch
         {
@@ -78,9 +79,26 @@ public static class PtyRecorder
             // "Killing terminal failed with error 3" (ESRCH: no such process)
         }
 
+        if (canceled)
+        {
+            logger.ZLogDebug($"Cancellation requested. Finalizing partial PTY recording.");
+            try
+            {
+                connection.Dispose();
+            }
+            catch
+            {
+                // Ignore disposal errors during cancellation cleanup.
+            }
+        }
+
         try
         {
             await readTask.ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            // Read task cancellation is treated as graceful completion for partial output.
         }
         catch (IOException ex) when (IsExpectedPtyEof(ex))
         {
@@ -88,13 +106,16 @@ public static class PtyRecorder
             // when reading after the slave side is closed. Treat as EOF.
         }
 
-        try
+        if (!canceled)
         {
-            connection.Dispose();
-        }
-        catch
-        {
-            // Ignore disposal errors when the process has already exited
+            try
+            {
+                connection.Dispose();
+            }
+            catch
+            {
+                // Ignore disposal errors when the process has already exited
+            }
         }
 
         logger.ZLogDebug($"PTY recording completed. Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds}");
@@ -111,6 +132,7 @@ public static class PtyRecorder
     {
         var session = new RecordingSession(width, height);
         var stopwatch = Stopwatch.StartNew();
+        var canceled = false;
 
         var startInfo = BuildFallbackProcessStartInfo(command);
         logger.ZLogDebug(
@@ -142,13 +164,17 @@ public static class PtyRecorder
             }
         );
 
-        await ReadOutputAsync(process.StandardOutput.BaseStream, session, stopwatch, cancellationToken, logger).ConfigureAwait(false);
+        await ReadOutputAsync(process.StandardOutput.BaseStream, session, stopwatch, CancellationToken.None, logger).ConfigureAwait(false);
         while (!process.WaitForExit(50))
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            if (cancellationToken.IsCancellationRequested)
+            {
+                canceled = true;
+                break;
+            }
         }
 
-        logger.ZLogDebug($"Fallback recording completed. ExitCode={process.ExitCode} Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds}");
+        logger.ZLogDebug($"Fallback recording completed. ExitCode={process.ExitCode} Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds} Canceled={canceled}");
         return session;
     }
 

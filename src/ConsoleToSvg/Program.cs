@@ -60,12 +60,14 @@ internal static class Program
         try
         {
             var session = await LoadOrRecordAsync(options, loggerFactory, cancellationTokenSource.Token).ConfigureAwait(false);
+            var wasCanceled = cancellationTokenSource.IsCancellationRequested;
+            var outputToken = wasCanceled ? CancellationToken.None : cancellationTokenSource.Token;
             logger.ZLogDebug($"Recording loaded. Events={session.Events.Count} Width={session.Header.width} Height={session.Header.height}");
 
             if (!string.IsNullOrWhiteSpace(options.SaveCastPath))
             {
                 logger.ZLogDebug($"Saving asciicast to {options.SaveCastPath}");
-                await AsciicastWriter.WriteToFileAsync(options.SaveCastPath!, session, cancellationTokenSource.Token)
+                await AsciicastWriter.WriteToFileAsync(options.SaveCastPath!, session, outputToken)
                     .ConfigureAwait(false);
                 logger.ZLogDebug($"Saved asciicast to {options.SaveCastPath}");
             }
@@ -83,10 +85,16 @@ internal static class Program
                     options.OutputPath,
                     svg,
                     new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
-                    cancellationTokenSource.Token
+                    outputToken
                 )
                 .ConfigureAwait(false);
             logger.ZLogDebug($"Output file written: {options.OutputPath}");
+
+            if (wasCanceled)
+            {
+                await Console.Error.WriteLineAsync($"Generated (partial): {options.OutputPath}");
+                return 130;
+            }
 
             await Console.Error.WriteLineAsync($"Generated: {options.OutputPath}");
             return 0;

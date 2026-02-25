@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Pty.Net;
 using ZLogger;
 
 namespace ConsoleToSvg.Recording;
@@ -69,7 +68,7 @@ public static class PtyRecorder
     {
         var options = BuildOptions(command, width, height);
         logger.ZLogDebug(
-            $"Spawning PTY process. App={options.App} Args={string.Join(' ', options.CommandLine ?? [])} Cwd={options.Cwd} Cols={options.Cols} Rows={options.Rows}"
+            $"Spawning PTY process. App={options.App} Args={string.Join(' ', options.Args ?? [])} Cwd={options.Cwd} Cols={options.Cols} Rows={options.Rows}"
         );
         var session = new RecordingSession(width, height);
         var stopwatch = Stopwatch.StartNew();
@@ -78,7 +77,7 @@ public static class PtyRecorder
             cancellationToken
         );
 
-        var connection = await PtyProvider
+        var connection = await NativePty
             .SpawnAsync(options, cancellationToken)
             .ConfigureAwait(false);
         logger.ZLogDebug($"PTY process spawned.");
@@ -417,7 +416,7 @@ public static class PtyRecorder
         return normalized.Length <= 120 ? normalized : normalized.Substring(0, 120) + "...";
     }
 
-    private static PtyOptions BuildOptions(string command, int width, int height)
+    private static NativePtyOptions BuildOptions(string command, int width, int height)
     {
         var env = new Dictionary<string, string>();
         foreach (System.Collections.DictionaryEntry entry in Environment.GetEnvironmentVariables())
@@ -433,26 +432,26 @@ public static class PtyRecorder
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            return new PtyOptions
+            return new NativePtyOptions
             {
                 Name = "console2svg",
                 Cols = width,
                 Rows = height,
                 Cwd = Environment.CurrentDirectory,
                 App = "cmd.exe",
-                CommandLine = ["/d", "/c", command],
+                Args = ["/d", "/c", command],
                 Environment = env,
             };
         }
 
-        return new PtyOptions
+        return new NativePtyOptions
         {
             Name = "console2svg",
             Cols = width,
             Rows = height,
             Cwd = Environment.CurrentDirectory,
             App = "/bin/sh",
-            CommandLine = ["-lc", command],
+            Args = ["-lc", command],
             Environment = env,
         };
     }

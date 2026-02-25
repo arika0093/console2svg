@@ -7,6 +7,7 @@ public enum CropUnit
 {
     Pixels,
     Characters,
+    Text,
 }
 
 public readonly struct CropValue
@@ -15,11 +16,21 @@ public readonly struct CropValue
     {
         Value = value;
         Unit = unit;
+        TextPattern = null;
+    }
+
+    public CropValue(string textPattern)
+    {
+        Value = 0;
+        Unit = CropUnit.Text;
+        TextPattern = textPattern;
     }
 
     public double Value { get; }
 
     public CropUnit Unit { get; }
+
+    public string? TextPattern { get; }
 
     public static CropValue Parse(string? raw)
     {
@@ -29,6 +40,12 @@ public readonly struct CropValue
         }
 
         var value = raw.Trim();
+        if (value.StartsWith("text:", StringComparison.OrdinalIgnoreCase))
+        {
+            var pattern = value.Substring(5);
+            return new CropValue(pattern);
+        }
+
         if (value.EndsWith("ch", StringComparison.OrdinalIgnoreCase))
         {
             var numeric = value.Substring(0, value.Length - 2);

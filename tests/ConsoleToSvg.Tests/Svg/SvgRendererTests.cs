@@ -131,4 +131,75 @@ public sealed class SvgRendererTests
         svg.ShouldContain("#FF8000");
         svg.ShouldContain(">A<");
     }
+
+    [Test]
+    public void RenderStaticSvgWithReverseVideoSwapsFgAndBg()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        // SGR 7 = reverse video: fg becomes bg and bg becomes fg
+        session.AddEvent(0.01, "\u001b[7mA\u001b[0m");
+
+        var theme = ConsoleToSvg.Terminal.Theme.Resolve("dark");
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        // The text fill should use the theme background (swapped fg)
+        svg.ShouldContain($"fill=\"{theme.Background}\"");
+        // A background rect should be drawn with the theme foreground color (swapped bg)
+        svg.ShouldContain($"fill=\"{theme.Foreground}\"");
+        svg.ShouldContain(">A<");
+    }
+
+    [Test]
+    public void RenderStaticSvgWithTextCropBottom()
+    {
+        // 4-row terminal: row 0 = "line1", row 1 = "---", row 2 = "line3", row 3 = "line4"
+        var session = new RecordingSession(width: 8, height: 4);
+        session.AddEvent(0.01, "line1\r\n---\r\nline3\r\nline4");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                // Crop from the bottom up to the row containing "---" (inclusive)
+                Crop = ConsoleToSvg.Svg.CropOptions.Parse("0", "0", "text:---", "0"),
+            }
+        );
+
+        // Only 2 rows visible: "line1" (row 0) and "---" (row 1)
+        svg.ShouldContain("viewBox=\"0 0 72 36\"");
+        svg.ShouldContain(">l<");
+        svg.ShouldContain(">-<");
+        // "line3" and "line4" should NOT be in the output
+        svg.ShouldNotContain(">3<");
+        svg.ShouldNotContain(">4<");
+    }
+
+    [Test]
+    public void RenderStaticSvgWithTextCropTop()
+    {
+        // 4-row terminal: row 0 = "skip", row 1 = "---", row 2 = "keep", row 3 = "more"
+        var session = new RecordingSession(width: 8, height: 4);
+        session.AddEvent(0.01, "skip\r\n---\r\nkeep\r\nmore");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                // Crop from top down to the row containing "---" (that row becomes first visible)
+                Crop = ConsoleToSvg.Svg.CropOptions.Parse("text:---", "0", "0", "0"),
+            }
+        );
+
+        // 3 rows visible: "---" (row 1), "keep" (row 2), "more" (row 3)
+        svg.ShouldContain("viewBox=\"0 0 72 54\"");
+        svg.ShouldContain(">-<");
+        svg.ShouldContain(">k<");
+        // "skip" row should NOT be in the output
+        svg.ShouldNotContain(">s<");
+    }
 }

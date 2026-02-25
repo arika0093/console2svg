@@ -46,15 +46,37 @@ public static class PtyRecorder
         var session = new RecordingSession(width, height);
         var stopwatch = Stopwatch.StartNew();
 
-        using var connection = await PtyProvider.SpawnAsync(options, cancellationToken).ConfigureAwait(false);
+        var connection = await PtyProvider.SpawnAsync(options, cancellationToken).ConfigureAwait(false);
         var readTask = ReadOutputAsync(connection.ReaderStream, session, stopwatch, cancellationToken);
 
-        while (!connection.WaitForExit(50))
+        try
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            while (!connection.WaitForExit(50))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch
+        {
+            // PTY process may have already exited; ignore cleanup errors such as
+            // "Killing terminal failed with error 3" (ESRCH: no such process)
         }
 
         await readTask.ConfigureAwait(false);
+
+        try
+        {
+            connection.Dispose();
+        }
+        catch
+        {
+            // Ignore disposal errors when the process has already exited
+        }
+
         return session;
     }
 
@@ -151,6 +173,9 @@ public static class PtyRecorder
                 env[key] = value;
             }
         }
+
+        env["COLUMNS"] = width.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        env["LINES"] = height.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {

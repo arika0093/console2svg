@@ -83,10 +83,12 @@ internal static class Program
 
         if (!string.IsNullOrWhiteSpace(options.Command))
         {
+            var ptyWidth = options.Width ?? 80;
+            var ptyHeight = options.Height ?? 24;
             return await PtyRecorder.RecordAsync(
                     options.Command!,
-                    options.Width,
-                    options.Height,
+                    ptyWidth,
+                    ptyHeight,
                     cancellationToken
                 )
                 .ConfigureAwait(false);
@@ -99,13 +101,41 @@ internal static class Program
             );
         }
 
+        var pipeWidth = options.Width ?? TryGetConsoleWidth() ?? 80;
+        var pipeHeight = options.Height ?? TryGetConsoleHeight() ?? 24;
         return await PipeRecorder.RecordAsync(
                 Console.OpenStandardInput(),
-                options.Width,
-                options.Height,
+                pipeWidth,
+                pipeHeight,
                 cancellationToken
             )
             .ConfigureAwait(false);
+    }
+
+    private static int? TryGetConsoleWidth()
+    {
+        try
+        {
+            var w = Console.WindowWidth;
+            return w > 0 ? w : (int?)null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static int? TryGetConsoleHeight()
+    {
+        try
+        {
+            var h = Console.WindowHeight;
+            return h > 0 ? h : (int?)null;
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     private static void EnsureDirectory(string outputPath)

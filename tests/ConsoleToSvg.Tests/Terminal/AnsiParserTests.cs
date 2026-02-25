@@ -174,4 +174,62 @@ public sealed class AnsiParserTests
         // 256-color index 196 = cube index 180 (r=5,g=0,b=0) = #FF0000
         cell.Foreground.ShouldBe("#FF0000");
     }
+
+    [Test]
+    public void VariationSelectorAppendedToPreviousCell()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        // 🛡 (U+1F6E1) followed by variation selector U+FE0F (emoji presentation)
+        // The variation selector should be appended to the emoji cell, not skipped
+        emulator.Process("\U0001F6E1\uFE0F");
+
+        var cell = emulator.Buffer.GetCell(0, 0);
+        // Cell should contain both the emoji and the variation selector
+        cell.Text.ShouldBe("\U0001F6E1\uFE0F");
+        cell.IsWide.ShouldBeTrue();
+    }
+
+    [Test]
+    public void FullWidthLineDoesNotProduceExtraBlankRow()
+    {
+        var theme = Theme.Resolve("dark");
+        // 4-wide terminal; writing exactly 4 chars then \r\n should stay on row 0 then move to row 1
+        var emulator = new TerminalEmulator(4, 3, theme);
+
+        // Fill row 0 completely (4 chars), then CRLF
+        emulator.Process("ABCD\r\n");
+
+        // Row 0 should have A B C D
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("A");
+        emulator.Buffer.GetCell(0, 1).Text.ShouldBe("B");
+        emulator.Buffer.GetCell(0, 2).Text.ShouldBe("C");
+        emulator.Buffer.GetCell(0, 3).Text.ShouldBe("D");
+
+        // Row 1 should be empty (no extra blank row from immediate wrap)
+        emulator.Buffer.GetCell(1, 0).Text.ShouldBe(" ");
+
+        // Cursor should be at row 1, col 0
+        emulator.Buffer.CursorRow.ShouldBe(1);
+        emulator.Buffer.CursorCol.ShouldBe(0);
+    }
+
+    [Test]
+    public void FullWidthLineThenMoreTextGoesToNextRow()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(4, 3, theme);
+
+        // Fill row 0 completely then write more text without explicit CRLF
+        emulator.Process("ABCDXY");
+
+        // Row 0: A B C D
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("A");
+        emulator.Buffer.GetCell(0, 3).Text.ShouldBe("D");
+
+        // Row 1: X Y (deferred wrap placed them here)
+        emulator.Buffer.GetCell(1, 0).Text.ShouldBe("X");
+        emulator.Buffer.GetCell(1, 1).Text.ShouldBe("Y");
+    }
 }

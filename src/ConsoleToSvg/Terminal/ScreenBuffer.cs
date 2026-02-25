@@ -59,6 +59,7 @@ public sealed class ScreenBuffer
     private int _savedCol;
     private int _savedMainRow;
     private int _savedMainCol;
+    private bool _pendingWrap;
     private readonly List<ScreenCell[]> _scrollbackRows = new();
 
     public ScreenBuffer(int width, int height, Theme theme)
@@ -130,6 +131,7 @@ public sealed class ScreenBuffer
             _savedMainRow = _savedMainRow,
             _savedMainCol = _savedMainCol,
             _isAltScreen = _isAltScreen,
+            _pendingWrap = _pendingWrap,
             _mainCells = CloneCells(_mainCells),
             _altCells = CloneCells(_altCells),
         };
@@ -216,6 +218,19 @@ public sealed class ScreenBuffer
 
     private void PutPrintable(string text, TextStyle style)
     {
+        // Apply any pending wrap from the previous character filling the last column
+        if (_pendingWrap)
+        {
+            _pendingWrap = false;
+            CursorCol = 0;
+            CursorRow++;
+            if (CursorRow >= Height)
+            {
+                ScrollUp(1);
+                CursorRow = Height - 1;
+            }
+        }
+
         var isWide = IsWideCharacter(text);
 
         if (isWide && CursorCol + 1 >= Width)
@@ -241,13 +256,9 @@ public sealed class ScreenBuffer
 
         if (CursorCol >= Width)
         {
-            CursorCol = 0;
-            CursorRow++;
-            if (CursorRow >= Height)
-            {
-                ScrollUp(1);
-                CursorRow = Height - 1;
-            }
+            // Deferred wrap: keep cursor at last column, wrap on next printable char
+            _pendingWrap = true;
+            CursorCol = Width - 1;
         }
     }
 
@@ -302,6 +313,7 @@ public sealed class ScreenBuffer
 
     public void MoveCursorTo(int row, int col)
     {
+        _pendingWrap = false;
         CursorRow = Clamp(row, 0, Height - 1);
         CursorCol = Clamp(col, 0, Width - 1);
     }
@@ -324,11 +336,13 @@ public sealed class ScreenBuffer
 
     public void CarriageReturn()
     {
+        _pendingWrap = false;
         CursorCol = 0;
     }
 
     public void LineFeed()
     {
+        _pendingWrap = false;
         CursorRow++;
         if (CursorRow >= Height)
         {

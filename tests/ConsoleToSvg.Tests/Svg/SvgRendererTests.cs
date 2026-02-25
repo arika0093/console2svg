@@ -202,4 +202,67 @@ public sealed class SvgRendererTests
         // "skip" row should NOT be in the output
         svg.ShouldNotContain(">s<");
     }
+
+    [Test]
+    public void RenderStaticSvgUsesDefaultSystemMonospaceFont()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "A");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain("ui-monospace");
+    }
+
+    [Test]
+    public void RenderStaticSvgWithCustomFont()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "A");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", Font = "Consolas, monospace" }
+        );
+
+        svg.ShouldContain("Consolas, monospace");
+        svg.ShouldNotContain("ui-monospace");
+    }
+
+    [Test]
+    public void RenderStaticSvgFullWidthLineDoesNotProduceExtraBlankRow()
+    {
+        // 4-wide terminal; fill row 0 completely then CRLF — should produce 2 content rows, not 3
+        var session = new RecordingSession(width: 4, height: 3);
+        session.AddEvent(0.01, "ABCD\r\nEF");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        // The terminal viewport is 3 rows × 4 cols = height 54, width 36
+        svg.ShouldContain("viewBox=\"0 0 36 54\"");
+        svg.ShouldContain(">A<");
+        svg.ShouldContain(">E<");
+    }
+
+    [Test]
+    public void RenderStaticSvgWithEmojiVariationSelector()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        // 🛡️ = U+1F6E1 (shield) + U+FE0F (variation selector-16 = emoji presentation)
+        session.AddEvent(0.01, "\U0001F6E1\uFE0F");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        // The SVG should contain the full emoji with its variation selector
+        svg.ShouldContain("\U0001F6E1\uFE0F");
+    }
 }

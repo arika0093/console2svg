@@ -16,9 +16,9 @@ internal static class Program
         var parseResult = OptionParser.TryParse(args, out var options, out var error, out var showHelp);
         if (!parseResult)
         {
-            Console.Error.WriteLine(error);
-            Console.Error.WriteLine();
-            Console.Error.WriteLine(OptionParser.HelpText);
+            await Console.Error.WriteLineAsync(error);
+            await Console.Error.WriteLineAsync();
+            await Console.Error.WriteLineAsync(OptionParser.HelpText);
             return 1;
         }
 
@@ -59,17 +59,17 @@ internal static class Program
                 )
                 .ConfigureAwait(false);
 
-            Console.Error.WriteLine($"Generated: {options.OutputPath}");
+            await Console.Error.WriteLineAsync($"Generated: {options.OutputPath}");
             return 0;
         }
         catch (OperationCanceledException)
         {
-            Console.Error.WriteLine("Canceled.");
+            await Console.Error.WriteLineAsync("Canceled.");
             return 130;
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine(ex.Message);
+            await Console.Error.WriteLineAsync(ex.Message);
             return 1;
         }
     }

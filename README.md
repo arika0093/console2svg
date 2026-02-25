@@ -27,6 +27,8 @@ You can also generate SVG with a window frame. and some options to customize the
 
 ![](./assets/cmd-animate.svg)
 
+[Play animation](https://raw.githubusercontent.com/arika0093/console2svg/refs/heads/main/assets/cmd-animate.svg)
+
 ```bash
 console2svg -m video --window macos -w 120 -h 16 -- ./my-install.sh
 ```
@@ -36,6 +38,8 @@ In video mode, you can capture the animation of the command execution and save i
 ---
 
 ![](./assets/cmd-loop.svg)
+
+[Play loop animation](https://raw.githubusercontent.com/arika0093/console2svg/refs/heads/main/assets/cmd-loop.svg)
 
 ```bash
 console2svg -m video --window macos --loop -- copilot --banner

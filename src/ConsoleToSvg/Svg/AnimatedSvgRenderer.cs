@@ -105,39 +105,56 @@ public static class AnimatedSvgRenderer
     private static ulong BuildColorSignature(ScreenBuffer buffer)
     {
         const ulong fnvOffset = 1469598103934665603UL;
-        const ulong fnvPrime = 1099511628211UL;
 
         var signature = fnvOffset;
-        var colors = new System.Collections.Generic.HashSet<string>(StringComparer.Ordinal);
         for (var row = 0; row < buffer.Height; row++)
         {
             for (var col = 0; col < buffer.Width; col++)
             {
                 var cell = buffer.GetCell(row, col);
-                if (cell.IsWideContinuation || cell.Text == " ")
+                if (cell.IsWideContinuation)
                 {
                     continue;
                 }
 
                 var effectiveFg = cell.Reversed ? cell.Background : cell.Foreground;
-                colors.Add(effectiveFg);
+                var effectiveBg = cell.Reversed ? cell.Foreground : cell.Background;
+                signature = HashString(signature, effectiveFg);
+                signature = HashString(signature, effectiveBg);
+                signature = HashBool(signature, cell.Bold);
+                signature = HashBool(signature, cell.Faint);
             }
         }
 
-        var sorted = new System.Collections.Generic.List<string>(colors);
-        sorted.Sort(StringComparer.Ordinal);
-        foreach (var color in sorted)
-        {
-            for (var i = 0; i < color.Length; i++)
-            {
-                signature ^= color[i];
-                signature *= fnvPrime;
-            }
+        return signature;
+    }
 
-            signature ^= '|';
+    private static ulong HashString(ulong signature, string value)
+    {
+        const ulong fnvPrime = 1099511628211UL;
+        if (value is null)
+        {
+            signature ^= 0;
+            signature *= fnvPrime;
+            return signature;
+        }
+
+        for (var i = 0; i < value.Length; i++)
+        {
+            signature ^= value[i];
             signature *= fnvPrime;
         }
 
+        signature ^= 0xFF;
+        signature *= fnvPrime;
+        return signature;
+    }
+
+    private static ulong HashBool(ulong signature, bool value)
+    {
+        const ulong fnvPrime = 1099511628211UL;
+        signature ^= value ? (byte)1 : (byte)0;
+        signature *= fnvPrime;
         return signature;
     }
 

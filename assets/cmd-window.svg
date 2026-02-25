@@ -1,7 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1354 508" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1362 543" role="img" aria-label="console2svg output">
 <style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}</style>
-<rect width="1354" height="508" fill="#1e1e1e"/>
-<g transform="translate(2 2)">
+<rect x="0.5" y="0.5" rx="10" ry="10" width="1361" height="542" fill="#1f1f1f" stroke="#3a3a3a"/>
+<rect x="1" y="1" rx="9" ry="9" width="1360" height="27" fill="#2c2c2c"/>
+<circle cx="14" cy="14" r="5" fill="#ff5f57"/>
+<circle cx="30" cy="14" r="5" fill="#febc2e"/>
+<circle cx="46" cy="14" r="5" fill="#28c840"/>
+<rect x="6" y="33" width="1350" height="504" fill="#1e1e1e"/>
+<g transform="translate(6 33)">
 <rect width="1350" height="504" fill="#1e1e1e"/>
 <text class="crt" x="0" y="14" fill="#d4d4d4">c</text>
 <text class="crt" x="9" y="14" fill="#d4d4d4">o</text>

@@ -76,6 +76,7 @@ public static class PtyRecorder
         using var forwardingCancellation = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken
         );
+        using var rawInput = forwardToConsole ? ConsoleInputMode.TryEnableRaw(logger) : null;
 
         var connection = await NativePty
             .SpawnAsync(options, cancellationToken)
@@ -205,6 +206,7 @@ public static class PtyRecorder
         using var forwardingCancellation = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken
         );
+        using var rawInput = forwardToConsole ? ConsoleInputMode.TryEnableRaw(logger) : null;
 
         var startInfo = BuildFallbackProcessStartInfo(command);
         logger.ZLogDebug(
@@ -545,5 +547,106 @@ public static class PtyRecorder
             CreateNoWindow = true,
             WorkingDirectory = Environment.CurrentDirectory,
         };
+    }
+
+    private sealed class ConsoleInputMode : IDisposable
+    {
+        private const uint StdInputHandle = 0xFFFFFFF6;
+        private const uint EnableProcessedInput = 0x0001;
+        private const uint EnableLineInput = 0x0002;
+        private const uint EnableEchoInput = 0x0004;
+        private const uint EnableQuickEditMode = 0x0040;
+        private const uint EnableExtendedFlags = 0x0080;
+        private const uint EnableVirtualTerminalInput = 0x0200;
+
+        private readonly ILogger _logger;
+        private readonly IntPtr _handle;
+        private readonly uint _originalMode;
+        private readonly bool _changed;
+
+        private ConsoleInputMode(ILogger logger, IntPtr handle, uint originalMode)
+        {
+            _logger = logger;
+            _handle = handle;
+            _originalMode = originalMode;
+            _changed = true;
+        }
+
+        public static ConsoleInputMode? TryEnableRaw(ILogger logger)
+        {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return null;
+            }
+
+            if (Console.IsInputRedirected)
+            {
+                return null;
+            }
+
+            try
+            {
+                var handle = GetStdHandle(StdInputHandle);
+                if (handle == IntPtr.Zero || handle == new IntPtr(-1))
+                {
+                    return null;
+                }
+
+                if (!GetConsoleMode(handle, out var mode))
+                {
+                    return null;
+                }
+
+                var newMode = mode;
+                newMode |= EnableVirtualTerminalInput | EnableExtendedFlags;
+                newMode &= ~(EnableLineInput | EnableEchoInput | EnableProcessedInput);
+                newMode &= ~EnableQuickEditMode;
+
+                if (newMode == mode)
+                {
+                    return null;
+                }
+
+                if (!SetConsoleMode(handle, newMode))
+                {
+                    return null;
+                }
+
+                logger.ZLogDebug($"Enabled raw console input for PTY forwarding.");
+                return new ConsoleInputMode(logger, handle, mode);
+            }
+            catch (Exception ex)
+            {
+                logger.ZLogDebug(ex, $"Failed to enable raw console input.");
+                return null;
+            }
+        }
+
+        public void Dispose()
+        {
+            if (!_changed)
+            {
+                return;
+            }
+
+            try
+            {
+                SetConsoleMode(_handle, _originalMode);
+                _logger.ZLogDebug($"Restored console input mode.");
+            }
+            catch
+            {
+                // Ignore restore failures.
+            }
+        }
+
+        [DllImport("kernel32.dll")]
+        private static extern IntPtr GetStdHandle(uint nStdHandle);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
     }
 }

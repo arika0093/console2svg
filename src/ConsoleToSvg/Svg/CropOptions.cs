@@ -60,6 +60,11 @@ public readonly struct CropValue
             return new CropValue(Math.Max(0, parsed), CropUnit.Pixels);
         }
 
+        if (!double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out _))
+        {
+            return new CropValue(value);
+        }
+
         return new CropValue(Math.Max(0, ParseNumber(value)), CropUnit.Pixels);
     }
 

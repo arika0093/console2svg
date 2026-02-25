@@ -268,4 +268,25 @@ public sealed class AnsiParserTests
         emulator.Buffer.GetCell(1, 0).Text.ShouldBe("X");
         emulator.Buffer.GetCell(1, 1).Text.ShouldBe("Y");
     }
+
+    [Test]
+    public void SplitAnsiSequenceAcrossChunksDoesNotRenderLiteralCodes()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(12, 2, theme);
+
+        emulator.Process("\u001b[");
+        emulator.Process("31mA\u001b[");
+        emulator.Process("0mB");
+
+        var first = emulator.Buffer.GetCell(0, 0);
+        var second = emulator.Buffer.GetCell(0, 1);
+        var third = emulator.Buffer.GetCell(0, 2);
+
+        first.Text.ShouldBe("A");
+        first.Foreground.ShouldBe(theme.AnsiPalette[1]);
+        second.Text.ShouldBe("B");
+        second.Foreground.ShouldBe(theme.Foreground);
+        third.Text.ShouldBe(" ");
+    }
 }

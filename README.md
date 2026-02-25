@@ -28,6 +28,12 @@ my-command | console2svg
 console2svg "git log --oneline"
 ```
 
+Or pass the command after `--`:
+
+```sh
+console2svg -- dotnet test.cs
+```
+
 ### Animated SVG
 
 ```sh
@@ -49,7 +55,7 @@ console2svg "dotnet --info" --crop-top 1ch --crop-right 5px
 - `-o, --out <svg-path>`
 - `-w, --width <columns>` / `-h, --height <rows>` (default: auto-detected from terminal in pipe mode, 80×24 for PTY)
 - `--frame <index>`
-- `--crop-top|--crop-right|--crop-bottom|--crop-left <px|ch|text:pattern>`
+- `--crop-top|--crop-right|--crop-bottom|--crop-left <px|ch|pattern>`
 - `--theme dark|light`
 - `--font <css-font-family>`
 - `--save-cast <path>`

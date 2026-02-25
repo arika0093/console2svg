@@ -9,6 +9,7 @@ public sealed class AnsiParser
     private readonly ScreenBuffer _buffer;
     private readonly Theme _theme;
     private TextStyle _style;
+    private string _pendingEscapeSequence = string.Empty;
 
     public AnsiParser(ScreenBuffer buffer, Theme theme)
     {
@@ -24,12 +25,24 @@ public sealed class AnsiParser
             return;
         }
 
+        if (!string.IsNullOrEmpty(_pendingEscapeSequence))
+        {
+            text = _pendingEscapeSequence + text;
+            _pendingEscapeSequence = string.Empty;
+        }
+
         for (var i = 0; i < text.Length; i++)
         {
             var ch = text[i];
             if (ch == '\u001b')
             {
-                i = HandleEscape(text, i);
+                if (!TryHandleEscape(text, i, out var escapeEndIndex))
+                {
+                    _pendingEscapeSequence = text.Substring(i);
+                    break;
+                }
+
+                i = escapeEndIndex;
                 continue;
             }
 
@@ -76,56 +89,65 @@ public sealed class AnsiParser
     private static bool IsVariationSelector(char ch) =>
         ch is >= '\uFE00' and <= '\uFE0F';
 
-    private int HandleEscape(string text, int index)
+    private bool TryHandleEscape(string text, int index, out int endIndex)
     {
+        endIndex = index;
         if (index + 1 >= text.Length)
         {
-            return index;
+            return false;
         }
 
         var next = text[index + 1];
         switch (next)
         {
             case '[':
-                return HandleCsi(text, index + 2);
+                return TryHandleCsi(text, index + 2, out endIndex);
             case ']':
-                return SkipOsc(text, index + 2);
+                return TrySkipOsc(text, index + 2, out endIndex);
             case '7':
                 _buffer.SaveCursor();
-                return index + 1;
+                endIndex = index + 1;
+                return true;
             case '8':
                 _buffer.RestoreCursor();
-                return index + 1;
+                endIndex = index + 1;
+                return true;
             case 'c':
                 _buffer.ClearDisplay(2);
                 _buffer.MoveCursorTo(0, 0);
                 _style = _buffer.DefaultStyle;
-                return index + 1;
+                endIndex = index + 1;
+                return true;
             default:
-                return index + 1;
+                endIndex = index + 1;
+                return true;
         }
     }
 
-    private int SkipOsc(string text, int start)
+    private bool TrySkipOsc(string text, int start, out int endIndex)
     {
+        endIndex = text.Length - 1;
         for (var i = start; i < text.Length; i++)
         {
             if (text[i] == '\a')
             {
-                return i;
+                endIndex = i;
+                return true;
             }
 
             if (text[i] == '\u001b' && i + 1 < text.Length && text[i + 1] == '\\')
             {
-                return i + 1;
+                endIndex = i + 1;
+                return true;
             }
         }
 
-        return text.Length - 1;
+        return false;
     }
 
-    private int HandleCsi(string text, int start)
+    private bool TryHandleCsi(string text, int start, out int endIndex)
     {
+        endIndex = text.Length - 1;
         var privateMode = false;
         var paramStart = start;
         if (start < text.Length && text[start] == '?')
@@ -144,13 +166,14 @@ public sealed class AnsiParser
                 var parameterText = paramStart <= i ? text.Substring(paramStart, i - paramStart) : string.Empty;
                 var parameters = ParseParameters(parameterText);
                 ApplyCsi(privateMode, c, parameters);
-                return i;
+                endIndex = i;
+                return true;
             }
 
             i++;
         }
 
-        return text.Length - 1;
+        return false;
     }
 
     private void ApplyCsi(bool privateMode, char command, List<int> parameters)

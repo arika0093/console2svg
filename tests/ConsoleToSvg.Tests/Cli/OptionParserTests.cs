@@ -92,4 +92,21 @@ public sealed class OptionParserTests
         ok.ShouldBeFalse();
         error.ShouldNotBeNull();
     }
+
+    [Test]
+    public void DoubleDashCollectsRemainingTokensAsCommand()
+    {
+        var ok = OptionParser.TryParse(new[] { "-w", "80", "--", "dotnet", "test.cs" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Width.ShouldBe(80);
+        options.Command.ShouldBe("dotnet test.cs");
+    }
+
+    [Test]
+    public void DoubleDashWithoutCommandReturnsError()
+    {
+        var ok = OptionParser.TryParse(new[] { "--" }, out _, out var error, out _);
+        ok.ShouldBeFalse();
+        error.ShouldBe("Expected command after --.");
+    }
 }

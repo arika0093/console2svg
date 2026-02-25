@@ -12,6 +12,7 @@ public static class OptionParser
         Usage:
           my-command | console2svg [options]
           console2svg "my-command with-args" [options]
+          console2svg [options] -- my-command with args
 
         Options:
           -v, --verbose              Enable verbose logging.
@@ -22,9 +23,9 @@ public static class OptionParser
           -w, --width <int>          Terminal width in characters (default: auto).
           -h, --height <int>         Terminal height in rows (default: auto).
           --frame <int>              Frame index for image mode.
-          --crop-top <value>         Crop top by px, ch, or text pattern (examples: 10px, 2ch, text:---).
+          --crop-top <value>         Crop top by px, ch, or text pattern (examples: 10px, 2ch, ---).
           --crop-right <value>       Crop right by px or ch.
-          --crop-bottom <value>      Crop bottom by px, ch, or text pattern (examples: 10px, 2ch, text:---).
+          --crop-bottom <value>      Crop bottom by px, ch, or text pattern (examples: 10px, 2ch, ---).
           --crop-left <value>        Crop left by px or ch.
           --theme <dark|light>       Color theme (default: dark).
           --font <family>            CSS font-family for SVG text (default: system monospace).
@@ -46,6 +47,25 @@ public static class OptionParser
         for (var i = 0; i < args.Length; i++)
         {
             var token = args[i];
+
+            if (string.Equals(token, "--", StringComparison.Ordinal))
+            {
+                if (i + 1 >= args.Length)
+                {
+                    error = "Expected command after --.";
+                    return false;
+                }
+
+                if (options.Command != null)
+                {
+                    error = "Command is already specified. Use either --command/positional argument or -- delimiter, not both.";
+                    return false;
+                }
+
+                options.Command = string.Join(' ', args, i + 1, args.Length - (i + 1));
+                break;
+            }
+
             if (string.Equals(token, "--help", StringComparison.OrdinalIgnoreCase))
             {
                 showHelp = true;

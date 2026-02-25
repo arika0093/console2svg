@@ -204,6 +204,26 @@ public sealed class SvgRendererTests
     }
 
     [Test]
+    public void RenderStaticSvgWithBareTextCropTop()
+    {
+        var session = new RecordingSession(width: 12, height: 4);
+        session.AddEvent(0.01, "before\r\nsummary\r\nafter\r\nend");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                Crop = ConsoleToSvg.Svg.CropOptions.Parse("summary", "0", "0", "0"),
+            }
+        );
+
+        svg.ShouldContain(">s<");
+        svg.ShouldContain(">a<");
+        svg.ShouldNotContain(">b<");
+    }
+
+    [Test]
     public void RenderStaticSvgUsesDefaultSystemMonospaceFont()
     {
         var session = new RecordingSession(width: 8, height: 2);

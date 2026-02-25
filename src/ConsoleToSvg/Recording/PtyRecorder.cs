@@ -239,7 +239,7 @@ public static class PtyRecorder
                 Rows = height,
                 Cwd = Environment.CurrentDirectory,
                 App = "cmd.exe",
-                CommandLine = ["cmd.exe", "/d", "/c", command],
+                CommandLine = ["/d", "/c", command],
                 Environment = env,
             };
         }
@@ -251,7 +251,7 @@ public static class PtyRecorder
             Rows = height,
             Cwd = Environment.CurrentDirectory,
             App = "/bin/sh",
-            CommandLine = ["/bin/sh", "-lc", command],
+            CommandLine = ["-lc", command],
             Environment = env,
         };
     }

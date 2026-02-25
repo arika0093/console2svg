@@ -28,19 +28,32 @@ public static class PtyRecorder
         logger.ZLogDebug($"Start PTY recording. Command={command} Width={width} Height={height}");
         try
         {
-            return await RecordWithPtyAsync(command, width, height, cancellationToken, logger, forwardToConsole)
+            return await RecordWithPtyAsync(
+                    command,
+                    width,
+                    height,
+                    cancellationToken,
+                    logger,
+                    forwardToConsole
+                )
                 .ConfigureAwait(false);
         }
         catch (Exception ex)
-            when (
-                ex is DllNotFoundException
+            when (ex is DllNotFoundException
                 || ex is TypeInitializationException
                 || ex is EntryPointNotFoundException
                 || ex is BadImageFormatException
             )
         {
             logger.ZLogDebug(ex, $"PTY backend unavailable. Falling back to process execution.");
-            return await RecordWithProcessFallbackAsync(command, width, height, cancellationToken, logger, forwardToConsole)
+            return await RecordWithProcessFallbackAsync(
+                    command,
+                    width,
+                    height,
+                    cancellationToken,
+                    logger,
+                    forwardToConsole
+                )
                 .ConfigureAwait(false);
         }
     }
@@ -61,9 +74,13 @@ public static class PtyRecorder
         var session = new RecordingSession(width, height);
         var stopwatch = Stopwatch.StartNew();
         var canceled = false;
-        using var forwardingCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        using var forwardingCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken
+        );
 
-        var connection = await PtyProvider.SpawnAsync(options, cancellationToken).ConfigureAwait(false);
+        var connection = await PtyProvider
+            .SpawnAsync(options, cancellationToken)
+            .ConfigureAwait(false);
         logger.ZLogDebug($"PTY process spawned.");
         var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
         var inputForward = forwardToConsole ? TryOpenStandardInput(logger) : null;
@@ -76,7 +93,12 @@ public static class PtyRecorder
             outputForward
         );
         var inputTask = inputForward is not null
-            ? PumpInputAsync(inputForward, connection.WriterStream, forwardingCancellation.Token, logger)
+            ? PumpInputAsync(
+                inputForward,
+                connection.WriterStream,
+                forwardingCancellation.Token,
+                logger
+            )
             : null;
 
         try
@@ -142,7 +164,9 @@ public static class PtyRecorder
             await IgnoreTaskFailureAsync(inputTask).ConfigureAwait(false);
         }
 
-        logger.ZLogDebug($"PTY recording completed. Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds}");
+        logger.ZLogDebug(
+            $"PTY recording completed. Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds}"
+        );
         return session;
     }
 
@@ -158,42 +182,43 @@ public static class PtyRecorder
         var session = new RecordingSession(width, height);
         var stopwatch = Stopwatch.StartNew();
         var canceled = false;
-        using var forwardingCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        using var forwardingCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken
+        );
 
         var startInfo = BuildFallbackProcessStartInfo(command);
         logger.ZLogDebug(
             $"Using process fallback. FileName={startInfo.FileName} Arguments={startInfo.Arguments} Cwd={startInfo.WorkingDirectory}"
         );
-        using var process = new Process
-        {
-            StartInfo = startInfo,
-            EnableRaisingEvents = true,
-        };
+        using var process = new Process { StartInfo = startInfo, EnableRaisingEvents = true };
 
         process.Start();
         logger.ZLogDebug($"Fallback process started. Pid={process.Id}");
 
-        using var registration = cancellationToken.Register(
-            () =>
+        using var registration = cancellationToken.Register(() =>
+        {
+            try
             {
-                try
+                if (!process.HasExited)
                 {
-                    if (!process.HasExited)
-                    {
-                        process.Kill();
-                    }
-                }
-                catch
-                {
-                    // Ignore cancellation kill failures.
+                    process.Kill();
                 }
             }
-        );
+            catch
+            {
+                // Ignore cancellation kill failures.
+            }
+        });
 
         var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
         var inputForward = forwardToConsole ? TryOpenStandardInput(logger) : null;
         var inputTask = inputForward is not null
-            ? PumpInputAsync(inputForward, process.StandardInput.BaseStream, forwardingCancellation.Token, logger)
+            ? PumpInputAsync(
+                inputForward,
+                process.StandardInput.BaseStream,
+                forwardingCancellation.Token,
+                logger
+            )
             : null;
 
         await ReadOutputAsync(
@@ -220,7 +245,9 @@ public static class PtyRecorder
             await IgnoreTaskFailureAsync(inputTask).ConfigureAwait(false);
         }
 
-        logger.ZLogDebug($"Fallback recording completed. ExitCode={process.ExitCode} Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds} Canceled={canceled}");
+        logger.ZLogDebug(
+            $"Fallback recording completed. ExitCode={process.ExitCode} Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds} Canceled={canceled}"
+        );
         return session;
     }
 
@@ -250,7 +277,9 @@ public static class PtyRecorder
         while (true)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var count = await readerStream.ReadAsync(bytes, 0, bytes.Length, cancellationToken).ConfigureAwait(false);
+            var count = await readerStream
+                .ReadAsync(bytes, 0, bytes.Length, cancellationToken)
+                .ConfigureAwait(false);
             if (count <= 0)
             {
                 logger.ZLogDebug($"Read stream completed (EOF).");
@@ -261,7 +290,9 @@ public static class PtyRecorder
             {
                 try
                 {
-                    await forwardOutput.WriteAsync(bytes, 0, count, cancellationToken).ConfigureAwait(false);
+                    await forwardOutput
+                        .WriteAsync(bytes, 0, count, cancellationToken)
+                        .ConfigureAwait(false);
                     await forwardOutput.FlushAsync(cancellationToken).ConfigureAwait(false);
                 }
                 catch
@@ -289,7 +320,9 @@ public static class PtyRecorder
         {
             var trailing = new string(chars, 0, trailingCount);
             session.AddEvent(stopwatch.Elapsed.TotalSeconds, trailing);
-            logger.ZLogDebug($"Captured trailing decoded chars={trailingCount} preview={ToPreview(trailing)}");
+            logger.ZLogDebug(
+                $"Captured trailing decoded chars={trailingCount} preview={ToPreview(trailing)}"
+            );
         }
     }
 
@@ -305,13 +338,17 @@ public static class PtyRecorder
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var count = await sourceInput.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+                var count = await sourceInput
+                    .ReadAsync(buffer, 0, buffer.Length, cancellationToken)
+                    .ConfigureAwait(false);
                 if (count <= 0)
                 {
                     break;
                 }
 
-                await targetInput.WriteAsync(buffer, 0, count, cancellationToken).ConfigureAwait(false);
+                await targetInput
+                    .WriteAsync(buffer, 0, count, cancellationToken)
+                    .ConfigureAwait(false);
                 await targetInput.FlushAsync(cancellationToken).ConfigureAwait(false);
             }
         }
@@ -440,7 +477,8 @@ public static class PtyRecorder
         return new ProcessStartInfo
         {
             FileName = "/bin/sh",
-            Arguments = "-lc \"" + command.Replace("\"", "\\\"", StringComparison.Ordinal) + " 2>&1\"",
+            Arguments =
+                "-lc \"" + command.Replace("\"", "\\\"", StringComparison.Ordinal) + " 2>&1\"",
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardInput = true,

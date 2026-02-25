@@ -72,9 +72,12 @@ public sealed class AnsiParser
             }
 
             var category = CharUnicodeInfo.GetUnicodeCategory(ch);
-            if (category is UnicodeCategory.NonSpacingMark
-                or UnicodeCategory.SpacingCombiningMark
-                or UnicodeCategory.EnclosingMark)
+            if (
+                category
+                is UnicodeCategory.NonSpacingMark
+                    or UnicodeCategory.SpacingCombiningMark
+                    or UnicodeCategory.EnclosingMark
+            )
             {
                 _buffer.AppendToPreviousCell(ch.ToString());
                 continue;
@@ -87,8 +90,7 @@ public sealed class AnsiParser
     private static bool IsZeroWidthChar(char ch) =>
         ch is '\u00AD' or '\u200B' or '\u200C' or '\u200D' or '\uFEFF';
 
-    private static bool IsVariationSelector(char ch) =>
-        ch is >= '\uFE00' and <= '\uFE0F';
+    private static bool IsVariationSelector(char ch) => ch is >= '\uFE00' and <= '\uFE0F';
 
     private bool TryHandleEscape(string text, int index, out int endIndex)
     {
@@ -186,7 +188,8 @@ public sealed class AnsiParser
             var c = text[i];
             if (c >= '@' && c <= '~')
             {
-                var parameterText = paramStart <= i ? text.Substring(paramStart, i - paramStart) : string.Empty;
+                var parameterText =
+                    paramStart <= i ? text.Substring(paramStart, i - paramStart) : string.Empty;
                 var parameters = ParseParameters(parameterText);
                 ApplyCsi(privateMode, c, parameters);
                 endIndex = i;
@@ -242,25 +245,25 @@ public sealed class AnsiParser
                 return;
             case 'G':
             case '`':
-                {
-                    var col = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
-                    _buffer.MoveCursorTo(_buffer.CursorRow, col);
-                    return;
-                }
+            {
+                var col = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
+                _buffer.MoveCursorTo(_buffer.CursorRow, col);
+                return;
+            }
             case 'H':
             case 'f':
-                {
-                    var row = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
-                    var col = Math.Max(1, GetParameter(parameters, 1, 1)) - 1;
-                    _buffer.MoveCursorTo(row, col);
-                    return;
-                }
+            {
+                var row = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
+                var col = Math.Max(1, GetParameter(parameters, 1, 1)) - 1;
+                _buffer.MoveCursorTo(row, col);
+                return;
+            }
             case 'd':
-                {
-                    var row = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
-                    _buffer.MoveCursorTo(row, _buffer.CursorCol);
-                    return;
-                }
+            {
+                var row = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
+                _buffer.MoveCursorTo(row, _buffer.CursorCol);
+                return;
+            }
             case 'J':
                 _buffer.ClearDisplay(GetParameter(parameters, 0, 0));
                 return;
@@ -351,8 +354,14 @@ public sealed class AnsiParser
                         {
                             var color = FromAnsi256(parameters[i + 2]);
                             _style = isForeground
-                                ? _style with { Foreground = color }
-                                : _style with { Background = color };
+                                ? _style with
+                                {
+                                    Foreground = color,
+                                }
+                                : _style with
+                                {
+                                    Background = color,
+                                };
                             i += 2;
                         }
                         else if (mode == 2 && i + 4 < parameters.Count)
@@ -362,8 +371,14 @@ public sealed class AnsiParser
                             var b = Clamp(parameters[i + 4], 0, 255);
                             var color = $"#{r:X2}{g:X2}{b:X2}";
                             _style = isForeground
-                                ? _style with { Foreground = color }
-                                : _style with { Background = color };
+                                ? _style with
+                                {
+                                    Foreground = color,
+                                }
+                                : _style with
+                                {
+                                    Background = color,
+                                };
                             i += 4;
                         }
                     }
@@ -416,7 +431,14 @@ public sealed class AnsiParser
                 continue;
             }
 
-            if (int.TryParse(part, NumberStyles.Integer, CultureInfo.InvariantCulture, out var value))
+            if (
+                int.TryParse(
+                    part,
+                    NumberStyles.Integer,
+                    CultureInfo.InvariantCulture,
+                    out var value
+                )
+            )
             {
                 result.Add(value);
             }

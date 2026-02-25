@@ -19,10 +19,31 @@ public static class SvgRenderer
         }
 
         var includeScrollback = options.Frame == null;
-        var context = SvgDocumentBuilder.CreateContext(emulator.Buffer, options.Crop, includeScrollback, options.Window, options.Padding);
+        var context = SvgDocumentBuilder.CreateContext(
+            emulator.Buffer,
+            options.Crop,
+            includeScrollback,
+            options.Window,
+            options.Padding
+        );
         var sb = new StringBuilder(32 * 1024);
-        SvgDocumentBuilder.BeginSvg(sb, context, theme, additionalCss: null, font: options.Font, windowStyle: options.Window);
-        SvgDocumentBuilder.AppendFrameGroup(sb, emulator.Buffer, context, theme, id: null, @class: null, includeScrollback);
+        SvgDocumentBuilder.BeginSvg(
+            sb,
+            context,
+            theme,
+            additionalCss: null,
+            font: options.Font,
+            windowStyle: options.Window
+        );
+        SvgDocumentBuilder.AppendFrameGroup(
+            sb,
+            emulator.Buffer,
+            context,
+            theme,
+            id: null,
+            @class: null,
+            includeScrollback
+        );
         SvgDocumentBuilder.EndSvg(sb);
         return sb.ToString();
     }
@@ -34,7 +55,8 @@ internal static class SvgDocumentBuilder
     private const double CellHeight = 18d;
     private const double FontSize = 14d;
     private const double BaselineOffset = 14d;
-    private const string DefaultFontFamily = "ui-monospace,\"Cascadia Mono\",\"Segoe UI Mono\",\"SFMono-Regular\",Menlo,monospace";
+    private const string DefaultFontFamily =
+        "ui-monospace,\"Cascadia Mono\",\"Segoe UI Mono\",\"SFMono-Regular\",Menlo,monospace";
 
     internal sealed class Context
     {
@@ -84,17 +106,30 @@ internal static class SvgDocumentBuilder
         var rowTop = crop.Top.Unit switch
         {
             CropUnit.Characters => (int)Math.Floor(crop.Top.Value),
-            CropUnit.Text => FindFirstRowContaining(buffer, crop.Top.TextPattern, effectiveHeight, includeScrollback),
+            CropUnit.Text => FindFirstRowContaining(
+                buffer,
+                crop.Top.TextPattern,
+                effectiveHeight,
+                includeScrollback
+            ),
             _ => 0,
         };
         var rowBottom = crop.Bottom.Unit switch
         {
             CropUnit.Characters => (int)Math.Floor(crop.Bottom.Value),
-            CropUnit.Text => effectiveHeight - 1 - FindLastRowContaining(buffer, crop.Bottom.TextPattern, effectiveHeight, includeScrollback),
+            CropUnit.Text => effectiveHeight
+                - 1
+                - FindLastRowContaining(
+                    buffer,
+                    crop.Bottom.TextPattern,
+                    effectiveHeight,
+                    includeScrollback
+                ),
             _ => 0,
         };
         var colLeft = crop.Left.Unit == CropUnit.Characters ? (int)Math.Floor(crop.Left.Value) : 0;
-        var colRight = crop.Right.Unit == CropUnit.Characters ? (int)Math.Floor(crop.Right.Value) : 0;
+        var colRight =
+            crop.Right.Unit == CropUnit.Characters ? (int)Math.Floor(crop.Right.Value) : 0;
 
         rowTop = Clamp(rowTop, 0, effectiveHeight - 1);
         rowBottom = Clamp(rowBottom, 0, effectiveHeight - rowTop - 1);
@@ -148,8 +183,10 @@ internal static class SvgDocumentBuilder
 
         var contentOffsetX = chromeLeft + normalizedPadding;
         var contentOffsetY = chromeTop + normalizedPadding;
-        var canvasWidth = chromeLeft + chromeRight + normalizedPadding + viewWidth + normalizedPadding;
-        var canvasHeight = chromeTop + chromeBottom + normalizedPadding + viewHeight + normalizedPadding;
+        var canvasWidth =
+            chromeLeft + chromeRight + normalizedPadding + viewWidth + normalizedPadding;
+        var canvasHeight =
+            chromeTop + chromeBottom + normalizedPadding + viewHeight + normalizedPadding;
 
         return new Context
         {
@@ -172,19 +209,31 @@ internal static class SvgDocumentBuilder
         };
     }
 
-    private static bool RowContainsPattern(ScreenBuffer buffer, int row, string pattern, bool includeScrollback)
+    private static bool RowContainsPattern(
+        ScreenBuffer buffer,
+        int row,
+        string pattern,
+        bool includeScrollback
+    )
     {
         var cells = new string[buffer.Width];
         for (var col = 0; col < buffer.Width; col++)
         {
-            var cell = includeScrollback ? buffer.GetCellFromTop(row, col) : buffer.GetCell(row, col);
+            var cell = includeScrollback
+                ? buffer.GetCellFromTop(row, col)
+                : buffer.GetCell(row, col);
             cells[col] = cell.Text;
         }
 
         return string.Concat(cells).Contains(pattern, StringComparison.Ordinal);
     }
 
-    private static int FindFirstRowContaining(ScreenBuffer buffer, string? pattern, int effectiveHeight, bool includeScrollback)
+    private static int FindFirstRowContaining(
+        ScreenBuffer buffer,
+        string? pattern,
+        int effectiveHeight,
+        bool includeScrollback
+    )
     {
         if (string.IsNullOrEmpty(pattern))
         {
@@ -202,7 +251,12 @@ internal static class SvgDocumentBuilder
         return 0;
     }
 
-    private static int FindLastRowContaining(ScreenBuffer buffer, string? pattern, int effectiveHeight, bool includeScrollback)
+    private static int FindLastRowContaining(
+        ScreenBuffer buffer,
+        string? pattern,
+        int effectiveHeight,
+        bool includeScrollback
+    )
     {
         if (string.IsNullOrEmpty(pattern))
         {
@@ -237,7 +291,9 @@ internal static class SvgDocumentBuilder
         sb.Append(Format(context.CanvasHeight));
         sb.Append("\" role=\"img\" aria-label=\"console2svg output\">\n");
 
-        var effectiveFont = string.IsNullOrWhiteSpace(font) ? DefaultFontFamily : EscapeAttribute(font);
+        var effectiveFont = string.IsNullOrWhiteSpace(font)
+            ? DefaultFontFamily
+            : EscapeAttribute(font);
         sb.Append("<style>");
         sb.Append(".crt{font-family:");
         sb.Append(effectiveFont);
@@ -256,7 +312,12 @@ internal static class SvgDocumentBuilder
         AppendWindowChrome(sb, context, theme, windowStyle);
     }
 
-    private static void AppendWindowChrome(StringBuilder sb, Context context, Theme theme, WindowStyle windowStyle)
+    private static void AppendWindowChrome(
+        StringBuilder sb,
+        Context context,
+        Theme theme,
+        WindowStyle windowStyle
+    )
     {
         switch (windowStyle)
         {
@@ -389,9 +450,22 @@ internal static class SvgDocumentBuilder
                 var effectiveFg = cell.Reversed ? cell.Background : cell.Foreground;
                 var effectiveBg = cell.Reversed ? cell.Foreground : cell.Background;
                 effectiveFg = ApplyIntensity(effectiveFg, cell.Bold, cell.Faint);
-                effectiveFg = ApplyContextualMatrixTint(buffer, row, col, includeScrollback, effectiveFg, theme);
+                effectiveFg = ApplyContextualMatrixTint(
+                    buffer,
+                    row,
+                    col,
+                    includeScrollback,
+                    effectiveFg,
+                    theme
+                );
 
-                if (!string.Equals(effectiveBg, theme.Background, StringComparison.OrdinalIgnoreCase))
+                if (
+                    !string.Equals(
+                        effectiveBg,
+                        theme.Background,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
                 {
                     sb.Append("<rect x=\"");
                     sb.Append(Format(x));
@@ -478,15 +552,23 @@ internal static class SvgDocumentBuilder
         Theme theme
     )
     {
-        if (!string.Equals(effectiveForeground, theme.AnsiPalette[7], StringComparison.OrdinalIgnoreCase))
+        if (
+            !string.Equals(
+                effectiveForeground,
+                theme.AnsiPalette[7],
+                StringComparison.OrdinalIgnoreCase
+            )
+        )
         {
             return effectiveForeground;
         }
 
-        if (HasNeighborGreen(buffer, row - 1, col, includeScrollback, theme)
+        if (
+            HasNeighborGreen(buffer, row - 1, col, includeScrollback, theme)
             || HasNeighborGreen(buffer, row + 1, col, includeScrollback, theme)
             || HasNeighborGreen(buffer, row, col - 1, includeScrollback, theme)
-            || HasNeighborGreen(buffer, row, col + 1, includeScrollback, theme))
+            || HasNeighborGreen(buffer, row, col + 1, includeScrollback, theme)
+        )
         {
             return theme.AnsiPalette[10];
         }
@@ -494,7 +576,13 @@ internal static class SvgDocumentBuilder
         return effectiveForeground;
     }
 
-    private static bool HasNeighborGreen(ScreenBuffer buffer, int row, int col, bool includeScrollback, Theme theme)
+    private static bool HasNeighborGreen(
+        ScreenBuffer buffer,
+        int row,
+        int col,
+        bool includeScrollback,
+        Theme theme
+    )
     {
         if (col < 0 || col >= buffer.Width)
         {

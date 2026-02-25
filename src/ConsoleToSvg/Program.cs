@@ -15,7 +15,12 @@ internal static class Program
 {
     public static async Task<int> Main(string[] args)
     {
-        var parseResult = OptionParser.TryParse(args, out var options, out var error, out var showHelp);
+        var parseResult = OptionParser.TryParse(
+            args,
+            out var options,
+            out var error,
+            out var showHelp
+        );
         if (!parseResult)
         {
             await Console.Error.WriteLineAsync(error);
@@ -44,7 +49,9 @@ internal static class Program
 
         using var loggerFactory = CreateLoggerFactory(options.Verbose);
         var logger = loggerFactory.CreateLogger("ConsoleToSvg.Program");
-        logger.ZLogDebug($"Starting console2svg. Verbose={options.Verbose} Args={string.Join(' ', args)}");
+        logger.ZLogDebug(
+            $"Starting console2svg. Verbose={options.Verbose} Args={string.Join(' ', args)}"
+        );
         logger.ZLogDebug(
             $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} Window={options.Window} Padding={options.Padding} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""}"
         );
@@ -59,24 +66,33 @@ internal static class Program
 
         try
         {
-            var session = await LoadOrRecordAsync(options, loggerFactory, cancellationTokenSource.Token).ConfigureAwait(false);
+            var session = await LoadOrRecordAsync(
+                    options,
+                    loggerFactory,
+                    cancellationTokenSource.Token
+                )
+                .ConfigureAwait(false);
             var wasCanceled = cancellationTokenSource.IsCancellationRequested;
             var outputToken = wasCanceled ? CancellationToken.None : cancellationTokenSource.Token;
-            logger.ZLogDebug($"Recording loaded. Events={session.Events.Count} Width={session.Header.width} Height={session.Header.height}");
+            logger.ZLogDebug(
+                $"Recording loaded. Events={session.Events.Count} Width={session.Header.width} Height={session.Header.height}"
+            );
 
             if (!string.IsNullOrWhiteSpace(options.SaveCastPath))
             {
                 logger.ZLogDebug($"Saving asciicast to {options.SaveCastPath}");
-                await AsciicastWriter.WriteToFileAsync(options.SaveCastPath!, session, outputToken)
+                await AsciicastWriter
+                    .WriteToFileAsync(options.SaveCastPath!, session, outputToken)
                     .ConfigureAwait(false);
                 logger.ZLogDebug($"Saved asciicast to {options.SaveCastPath}");
             }
 
             var renderOptions = SvgRenderOptions.FromAppOptions(options);
             logger.ZLogDebug($"Rendering SVG. Mode={options.Mode}");
-            var svg = options.Mode == OutputMode.Video
-                ? AnimatedSvgRenderer.Render(session, renderOptions)
-                : SvgRenderer.Render(session, renderOptions);
+            var svg =
+                options.Mode == OutputMode.Video
+                    ? AnimatedSvgRenderer.Render(session, renderOptions)
+                    : SvgRenderer.Render(session, renderOptions);
             logger.ZLogDebug($"Rendering completed. SvgLength={svg.Length}");
 
             EnsureDirectory(options.OutputPath);
@@ -123,15 +139,20 @@ internal static class Program
         if (!string.IsNullOrWhiteSpace(options.InputCastPath))
         {
             logger.ZLogDebug($"Input source: asciicast file. Path={options.InputCastPath}");
-            return await AsciicastReader.ReadFromFileAsync(options.InputCastPath!, cancellationToken).ConfigureAwait(false);
+            return await AsciicastReader
+                .ReadFromFileAsync(options.InputCastPath!, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         if (!string.IsNullOrWhiteSpace(options.Command))
         {
             var ptyWidth = options.Width ?? 80;
             var ptyHeight = options.Height ?? 24;
-                logger.ZLogDebug($"Input source: PTY command. Command={options.Command} Width={ptyWidth} Height={ptyHeight}");
-            return await PtyRecorder.RecordAsync(
+            logger.ZLogDebug(
+                $"Input source: PTY command. Command={options.Command} Width={ptyWidth} Height={ptyHeight}"
+            );
+            return await PtyRecorder
+                .RecordAsync(
                     options.Command!,
                     ptyWidth,
                     ptyHeight,
@@ -151,7 +172,8 @@ internal static class Program
         var pipeWidth = options.Width ?? TryGetConsoleWidth() ?? 80;
         var pipeHeight = options.Height ?? TryGetConsoleHeight() ?? 24;
         logger.ZLogDebug($"Input source: stdin pipe. Width={pipeWidth} Height={pipeHeight}");
-        return await PipeRecorder.RecordAsync(
+        return await PipeRecorder
+            .RecordAsync(
                 Console.OpenStandardInput(),
                 pipeWidth,
                 pipeHeight,

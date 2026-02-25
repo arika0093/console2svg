@@ -52,11 +52,17 @@ public static class PipeRecorder
             );
         }
 
-        logger.ZLogDebug($"Pipe recording completed. Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds}");
+        logger.ZLogDebug(
+            $"Pipe recording completed. Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds}"
+        );
         return session;
     }
 
-    private static string NormalizeLineEndings(char[] buffer, int count, ref bool previousWasCarriageReturn)
+    private static string NormalizeLineEndings(
+        char[] buffer,
+        int count,
+        ref bool previousWasCarriageReturn
+    )
     {
         var sb = new StringBuilder(count + 16);
         for (var i = 0; i < count; i++)

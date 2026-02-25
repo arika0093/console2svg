@@ -14,7 +14,12 @@ public sealed class PipeRecorderTests
     {
         await using var input = new MemoryStream(Encoding.UTF8.GetBytes("A\nB"));
 
-        var session = await PipeRecorder.RecordAsync(input, width: 8, height: 2, CancellationToken.None);
+        var session = await PipeRecorder.RecordAsync(
+            input,
+            width: 8,
+            height: 2,
+            CancellationToken.None
+        );
 
         var theme = Theme.Resolve("dark");
         var emulator = new TerminalEmulator(8, 2, theme);

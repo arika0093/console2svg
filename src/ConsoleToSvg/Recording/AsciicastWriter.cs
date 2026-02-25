@@ -15,7 +15,11 @@ public static class AsciicastWriter
         WriteIndented = false,
     };
 
-    public static async Task WriteToFileAsync(string path, RecordingSession session, CancellationToken cancellationToken)
+    public static async Task WriteToFileAsync(
+        string path,
+        RecordingSession session,
+        CancellationToken cancellationToken
+    )
     {
         var directory = Path.GetDirectoryName(Path.GetFullPath(path));
         if (!string.IsNullOrWhiteSpace(directory))
@@ -27,7 +31,11 @@ public static class AsciicastWriter
         await WriteAsync(stream, session, cancellationToken).ConfigureAwait(false);
     }
 
-    public static async Task WriteAsync(Stream stream, RecordingSession session, CancellationToken cancellationToken)
+    public static async Task WriteAsync(
+        Stream stream,
+        RecordingSession session,
+        CancellationToken cancellationToken
+    )
     {
         await using var writer = new StreamWriter(
             stream,
@@ -42,12 +50,7 @@ public static class AsciicastWriter
         foreach (var outputEvent in session.Events)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var payload = new object[]
-            {
-                outputEvent.Time,
-                outputEvent.Type,
-                outputEvent.Data,
-            };
+            var payload = new object[] { outputEvent.Time, outputEvent.Type, outputEvent.Data };
             var line = JsonSerializer.Serialize(payload, JsonOptions);
             await writer.WriteLineAsync(line).ConfigureAwait(false);
         }

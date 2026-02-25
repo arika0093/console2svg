@@ -15,7 +15,12 @@ public readonly record struct TextStyle(
 
 public readonly struct ScreenCell
 {
-    public ScreenCell(string text, TextStyle style, bool isWide = false, bool isWideContinuation = false)
+    public ScreenCell(
+        string text,
+        TextStyle style,
+        bool isWide = false,
+        bool isWideContinuation = false
+    )
     {
         Text = text;
         Foreground = style.Foreground;
@@ -218,7 +223,12 @@ public sealed class ScreenBuffer
             return;
         }
 
-        _cells[row, col] = new ScreenCell(prev.Text + combining, prev.ToTextStyle(), prev.IsWide, prev.IsWideContinuation);
+        _cells[row, col] = new ScreenCell(
+            prev.Text + combining,
+            prev.ToTextStyle(),
+            prev.IsWide,
+            prev.IsWideContinuation
+        );
 
         if (combining == "\uFE0F" && !prev.IsWide && !prev.IsWideContinuation)
         {
@@ -240,8 +250,18 @@ public sealed class ScreenBuffer
         }
 
         var cell = _cells[row, col];
-        _cells[row, col] = new ScreenCell(cell.Text, cell.ToTextStyle(), isWide: true, isWideContinuation: false);
-        _cells[row, col + 1] = new ScreenCell(" ", cell.ToTextStyle(), isWide: false, isWideContinuation: true);
+        _cells[row, col] = new ScreenCell(
+            cell.Text,
+            cell.ToTextStyle(),
+            isWide: true,
+            isWideContinuation: false
+        );
+        _cells[row, col + 1] = new ScreenCell(
+            " ",
+            cell.ToTextStyle(),
+            isWide: false,
+            isWideContinuation: true
+        );
 
         if (CursorRow == row && CursorCol == col + 1)
         {
@@ -325,39 +345,40 @@ public sealed class ScreenBuffer
     }
 
     private static bool IsBmpEmojiWide(int cp) =>
-        cp is
-            0x2611 // ☑
-            or 0x2705 // ✅
-            or 0x274C // ❌
-            or 0x2753 // ❓
-            or 0x2754 // ❔
-            or 0x2755 // ❕
-            or 0x2757; // ❗
+        cp
+            is 0x2611 // ☑
+                or 0x2705 // ✅
+                or 0x274C // ❌
+                or 0x2753 // ❓
+                or 0x2754 // ❔
+                or 0x2755 // ❕
+                or 0x2757; // ❗
 
     private static bool IsEastAsianWide(int cp) =>
-        cp is (>= 0x1100 and <= 0x115F)
-            or (>= 0x2E80 and <= 0x2FFD)
-            or (>= 0x3000 and <= 0x303F)
-            or (>= 0x3040 and <= 0x33FF)
-            or (>= 0x3400 and <= 0x4DBF)
-            or (>= 0x4E00 and <= 0x9FFF)
-            or (>= 0xA000 and <= 0xA48C)
-            or (>= 0xA960 and <= 0xA97F)
-            or (>= 0xAC00 and <= 0xD7A3)
-            or (>= 0xF900 and <= 0xFAFF)
-            or (>= 0xFE10 and <= 0xFE1F)
-            or (>= 0xFE30 and <= 0xFE6F)
-            or (>= 0xFF01 and <= 0xFF60)
-            or (>= 0xFFE0 and <= 0xFFE6)
-            or (>= 0x1B000 and <= 0x1B0FF)
-            or (>= 0x1F004 and <= 0x1F004)
-            or (>= 0x1F0CF and <= 0x1F0CF)
-            or (>= 0x1F200 and <= 0x1F2FF)
-            or (>= 0x1F300 and <= 0x1F64F)
-            or (>= 0x1F680 and <= 0x1F6FF)
-            or (>= 0x1F900 and <= 0x1F9FF)
-            or (>= 0x20000 and <= 0x2FFFD)
-            or (>= 0x30000 and <= 0x3FFFD);
+        cp
+            is (>= 0x1100 and <= 0x115F)
+                or (>= 0x2E80 and <= 0x2FFD)
+                or (>= 0x3000 and <= 0x303F)
+                or (>= 0x3040 and <= 0x33FF)
+                or (>= 0x3400 and <= 0x4DBF)
+                or (>= 0x4E00 and <= 0x9FFF)
+                or (>= 0xA000 and <= 0xA48C)
+                or (>= 0xA960 and <= 0xA97F)
+                or (>= 0xAC00 and <= 0xD7A3)
+                or (>= 0xF900 and <= 0xFAFF)
+                or (>= 0xFE10 and <= 0xFE1F)
+                or (>= 0xFE30 and <= 0xFE6F)
+                or (>= 0xFF01 and <= 0xFF60)
+                or (>= 0xFFE0 and <= 0xFFE6)
+                or (>= 0x1B000 and <= 0x1B0FF)
+                or (>= 0x1F004 and <= 0x1F004)
+                or (>= 0x1F0CF and <= 0x1F0CF)
+                or (>= 0x1F200 and <= 0x1F2FF)
+                or (>= 0x1F300 and <= 0x1F64F)
+                or (>= 0x1F680 and <= 0x1F6FF)
+                or (>= 0x1F900 and <= 0x1F9FF)
+                or (>= 0x20000 and <= 0x2FFFD)
+                or (>= 0x30000 and <= 0x3FFFD);
 
     public void MoveCursorTo(int row, int col)
     {

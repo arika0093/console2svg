@@ -26,13 +26,26 @@ public static class AnimatedSvgRenderer
 
         var reducedFrames = ReduceFrames(frames, options.VideoFps);
 
-        var context = SvgDocumentBuilder.CreateContext(reducedFrames[0].Buffer, options.Crop, includeScrollback: false, options.Window, options.Padding);
+        var context = SvgDocumentBuilder.CreateContext(
+            reducedFrames[0].Buffer,
+            options.Crop,
+            includeScrollback: false,
+            options.Window,
+            options.Padding
+        );
         var duration = Math.Max(0.05d, reducedFrames[reducedFrames.Count - 1].Time);
 
         var css = BuildAnimationCss(reducedFrames, duration, options.Loop);
 
         var sb = new StringBuilder(128 * 1024);
-        SvgDocumentBuilder.BeginSvg(sb, context, theme, css, font: options.Font, windowStyle: options.Window);
+        SvgDocumentBuilder.BeginSvg(
+            sb,
+            context,
+            theme,
+            css,
+            font: options.Font,
+            windowStyle: options.Window
+        );
         for (var i = 0; i < reducedFrames.Count; i++)
         {
             SvgDocumentBuilder.AppendFrameGroup(
@@ -140,9 +153,10 @@ public static class AnimatedSvgRenderer
         for (var i = 0; i < frames.Count; i++)
         {
             var start = Percentage(frames[i].Time, duration);
-            var end = i == frames.Count - 1
-                ? 100d
-                : Math.Max(start, Percentage(frames[i + 1].Time, duration));
+            var end =
+                i == frames.Count - 1
+                    ? 100d
+                    : Math.Max(start, Percentage(frames[i + 1].Time, duration));
             var fadeInPoint = Math.Max(0d, start - 0.001d);
             var fadeOutPoint = Math.Min(100d, end + 0.001d);
 

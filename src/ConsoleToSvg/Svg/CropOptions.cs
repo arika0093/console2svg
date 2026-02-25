@@ -70,7 +70,9 @@ public readonly struct CropValue
 
     private static double ParseNumber(string value)
     {
-        if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
+        if (
+            double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)
+        )
         {
             return parsed;
         }
@@ -99,6 +101,11 @@ public sealed class CropOptions
 
     public static CropOptions Parse(string? top, string? right, string? bottom, string? left)
     {
-        return new CropOptions(CropValue.Parse(top), CropValue.Parse(right), CropValue.Parse(bottom), CropValue.Parse(left));
+        return new CropOptions(
+            CropValue.Parse(top),
+            CropValue.Parse(right),
+            CropValue.Parse(bottom),
+            CropValue.Parse(left)
+        );
     }
 }

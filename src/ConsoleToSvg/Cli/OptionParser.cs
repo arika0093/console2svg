@@ -7,36 +7,36 @@ public static class OptionParser
 {
     public static string HelpText =>
         """
-        console2svg - Convert terminal output to SVG
+            console2svg - Convert terminal output to SVG
 
-        Usage:
-          my-command | console2svg [options]
-          console2svg "my-command with-args" [options]
-          console2svg [options] -- my-command with args
+            Usage:
+              my-command | console2svg [options]
+              console2svg "my-command with-args" [options]
+              console2svg [options] -- my-command with args
 
-        Options:
-          -c, --command <value>          Execute command in PTY mode.
-          -o, --out <path>               Output SVG path (default: output.svg).
-          -m, --mode <image|video>       Output mode (default: image).
-          -w, --width <int>              Terminal width in characters (default: auto).
-          -h, --height <int>             Terminal height in rows (default: auto).
-          -v, --verbose                  Enable verbose logging.
-          --version                      Show version and exit.
-          --frame <int>                  Frame index for image mode.
-          --crop-top <value>             Crop top by px, ch, or text pattern (examples: 10px, 2ch, ---).
-          --crop-right <value>           Crop right by px or ch.
-          --crop-bottom <value>          Crop bottom by px, ch, or text pattern (examples: 10px, 2ch, ---).
-          --crop-left <value>            Crop left by px or ch.
-          --theme <dark|light>           Color theme (default: dark).
-          --window <none|macos|windows>  Terminal window chrome style (default: none).
-          --padding <px>                 Outer padding in pixels around terminal content (default: 2).
-          --loop                         Loop animated SVG playback in video mode (default: false).
-          --fps <value>                  Max FPS for animated SVG frame sampling (default: 12).
-          --font <family>                CSS font-family for SVG text (default: system monospace).
-          --in <path>                    Read existing asciicast file.
-          --save-cast <path>             Save captured output as asciicast file.
-          --help                         Show help.
-        """;
+            Options:
+              -c, --command <value>          Execute command in PTY mode.
+              -o, --out <path>               Output SVG path (default: output.svg).
+              -m, --mode <image|video>       Output mode (default: image).
+              -w, --width <int>              Terminal width in characters (default: auto).
+              -h, --height <int>             Terminal height in rows (default: auto).
+              -v, --verbose                  Enable verbose logging.
+              --version                      Show version and exit.
+              --frame <int>                  Frame index for image mode.
+              --crop-top <value>             Crop top by px, ch, or text pattern (examples: 10px, 2ch, ---).
+              --crop-right <value>           Crop right by px or ch.
+              --crop-bottom <value>          Crop bottom by px, ch, or text pattern (examples: 10px, 2ch, ---).
+              --crop-left <value>            Crop left by px or ch.
+              --theme <dark|light>           Color theme (default: dark).
+              --window <none|macos|windows>  Terminal window chrome style (default: none).
+              --padding <px>                 Outer padding in pixels around terminal content (default: 2).
+              --loop                         Loop animated SVG playback in video mode (default: false).
+              --fps <value>                  Max FPS for animated SVG frame sampling (default: 12).
+              --font <family>                CSS font-family for SVG text (default: system monospace).
+              --in <path>                    Read existing asciicast file.
+              --save-cast <path>             Save captured output as asciicast file.
+              --help                         Show help.
+            """;
 
     public static bool TryParse(
         string[] args,
@@ -63,7 +63,8 @@ public static class OptionParser
 
                 if (options.Command != null)
                 {
-                    error = "Command is already specified. Use either --command/positional argument or -- delimiter, not both.";
+                    error =
+                        "Command is already specified. Use either --command/positional argument or -- delimiter, not both.";
                     return false;
                 }
 
@@ -82,7 +83,8 @@ public static class OptionParser
             {
                 if (options.Command != null)
                 {
-                    error = "Multiple positional arguments are not allowed. Use --command to specify the command.";
+                    error =
+                        "Multiple positional arguments are not allowed. Use --command to specify the command.";
                     return false;
                 }
 
@@ -147,7 +149,12 @@ public static class OptionParser
             && !string.Equals(name, "--verbose", StringComparison.OrdinalIgnoreCase);
     }
 
-    private static bool ApplyOption(AppOptions options, string name, string? value, out string? error)
+    private static bool ApplyOption(
+        AppOptions options,
+        string name,
+        string? value,
+        out string? error
+    )
     {
         error = null;
         switch (name)
@@ -234,9 +241,11 @@ public static class OptionParser
                     return false;
                 }
 
-                if (!string.Equals(value, "none", StringComparison.OrdinalIgnoreCase)
+                if (
+                    !string.Equals(value, "none", StringComparison.OrdinalIgnoreCase)
                     && !string.Equals(value, "macos", StringComparison.OrdinalIgnoreCase)
-                    && !string.Equals(value, "windows", StringComparison.OrdinalIgnoreCase))
+                    && !string.Equals(value, "windows", StringComparison.OrdinalIgnoreCase)
+                )
                 {
                     error = "--window must be none, macos, or windows.";
                     return false;
@@ -275,7 +284,12 @@ public static class OptionParser
         }
     }
 
-    private static bool TryParseInt(string? value, string option, out int parsedValue, out string? error)
+    private static bool TryParseInt(
+        string? value,
+        string option,
+        out int parsedValue,
+        out string? error
+    )
     {
         error = null;
         parsedValue = 0;
@@ -285,7 +299,14 @@ public static class OptionParser
             return false;
         }
 
-        if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out parsedValue))
+        if (
+            !int.TryParse(
+                value,
+                NumberStyles.Integer,
+                CultureInfo.InvariantCulture,
+                out parsedValue
+            )
+        )
         {
             error = $"{option} must be integer.";
             return false;
@@ -294,7 +315,12 @@ public static class OptionParser
         return true;
     }
 
-    private static bool TryParseDouble(string? value, string option, out double parsedValue, out string? error)
+    private static bool TryParseDouble(
+        string? value,
+        string option,
+        out double parsedValue,
+        out string? error
+    )
     {
         error = null;
         parsedValue = 0;
@@ -304,7 +330,14 @@ public static class OptionParser
             return false;
         }
 
-        if (!double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out parsedValue))
+        if (
+            !double.TryParse(
+                value,
+                NumberStyles.Float,
+                CultureInfo.InvariantCulture,
+                out parsedValue
+            )
+        )
         {
             error = $"{option} must be a number.";
             return false;
@@ -341,19 +374,30 @@ public static class OptionParser
             return false;
         }
 
-        if (double.IsNaN(options.Padding) || double.IsInfinity(options.Padding) || options.Padding < 0)
+        if (
+            double.IsNaN(options.Padding)
+            || double.IsInfinity(options.Padding)
+            || options.Padding < 0
+        )
         {
             error = "--padding must be a non-negative finite number.";
             return false;
         }
 
-        if (double.IsNaN(options.VideoFps) || double.IsInfinity(options.VideoFps) || options.VideoFps <= 0)
+        if (
+            double.IsNaN(options.VideoFps)
+            || double.IsInfinity(options.VideoFps)
+            || options.VideoFps <= 0
+        )
         {
             error = "--fps must be greater than 0.";
             return false;
         }
 
-        if (!string.IsNullOrWhiteSpace(options.Command) && !string.IsNullOrWhiteSpace(options.InputCastPath))
+        if (
+            !string.IsNullOrWhiteSpace(options.Command)
+            && !string.IsNullOrWhiteSpace(options.InputCastPath)
+        )
         {
             error = "--command and --in cannot be used together.";
             return false;

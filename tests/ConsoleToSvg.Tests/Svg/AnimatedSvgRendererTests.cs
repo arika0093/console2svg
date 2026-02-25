@@ -96,11 +96,7 @@ public sealed class AnimatedSvgRendererTests
 
         var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
             session,
-            new ConsoleToSvg.Svg.SvgRenderOptions
-            {
-                Theme = "dark",
-                Loop = true,
-            }
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", Loop = true }
         );
 
         svg.ShouldContain("linear infinite;");

@@ -9,15 +9,27 @@ namespace ConsoleToSvg.Recording;
 
 public static class AsciicastReader
 {
-    public static async Task<RecordingSession> ReadFromFileAsync(string path, CancellationToken cancellationToken)
+    public static async Task<RecordingSession> ReadFromFileAsync(
+        string path,
+        CancellationToken cancellationToken
+    )
     {
         await using var stream = File.OpenRead(path);
         return await ReadAsync(stream, cancellationToken).ConfigureAwait(false);
     }
 
-    public static async Task<RecordingSession> ReadAsync(Stream stream, CancellationToken cancellationToken)
+    public static async Task<RecordingSession> ReadAsync(
+        Stream stream,
+        CancellationToken cancellationToken
+    )
     {
-        using var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, 4096, leaveOpen: true);
+        using var reader = new StreamReader(
+            stream,
+            Encoding.UTF8,
+            detectEncodingFromByteOrderMarks: true,
+            4096,
+            leaveOpen: true
+        );
         var headerLine = await reader.ReadLineAsync().ConfigureAwait(false);
         if (string.IsNullOrWhiteSpace(headerLine))
         {
@@ -41,7 +53,10 @@ public static class AsciicastReader
             }
 
             using var document = JsonDocument.Parse(line);
-            if (document.RootElement.ValueKind != JsonValueKind.Array || document.RootElement.GetArrayLength() < 3)
+            if (
+                document.RootElement.ValueKind != JsonValueKind.Array
+                || document.RootElement.GetArrayLength() < 3
+            )
             {
                 continue;
             }

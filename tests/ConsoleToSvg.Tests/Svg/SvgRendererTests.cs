@@ -72,11 +72,7 @@ public sealed class SvgRendererTests
 
         var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
             session,
-            new ConsoleToSvg.Svg.SvgRenderOptions
-            {
-                Theme = "dark",
-                Frame = 0,
-            }
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", Frame = 0 }
         );
 
         // When a specific frame is requested, only the terminal viewport (2 rows) is shown
@@ -340,11 +336,7 @@ public sealed class SvgRendererTests
 
         var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
             session,
-            new ConsoleToSvg.Svg.SvgRenderOptions
-            {
-                Theme = "dark",
-                Padding = 2,
-            }
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", Padding = 2 }
         );
 
         svg.ShouldContain("viewBox=\"0 0 76 40\"");

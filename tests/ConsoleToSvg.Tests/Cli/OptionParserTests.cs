@@ -31,7 +31,12 @@ public sealed class OptionParserTests
     [Test]
     public void PositionalArgumentTreatedAsCommand()
     {
-        var ok = OptionParser.TryParse(new[] { "git log --oneline" }, out var options, out _, out _);
+        var ok = OptionParser.TryParse(
+            new[] { "git log --oneline" },
+            out var options,
+            out _,
+            out _
+        );
         ok.ShouldBeTrue();
         options!.Command.ShouldBe("git log --oneline");
     }
@@ -39,7 +44,12 @@ public sealed class OptionParserTests
     [Test]
     public void FontOptionParsed()
     {
-        var ok = OptionParser.TryParse(new[] { "--font", "Consolas, monospace" }, out var options, out _, out _);
+        var ok = OptionParser.TryParse(
+            new[] { "--font", "Consolas, monospace" },
+            out var options,
+            out _,
+            out _
+        );
         ok.ShouldBeTrue();
         options!.Font.ShouldBe("Consolas, monospace");
     }
@@ -96,7 +106,12 @@ public sealed class OptionParserTests
     [Test]
     public void DoubleDashCollectsRemainingTokensAsCommand()
     {
-        var ok = OptionParser.TryParse(new[] { "-w", "80", "--", "dotnet", "test.cs" }, out var options, out _, out _);
+        var ok = OptionParser.TryParse(
+            new[] { "-w", "80", "--", "dotnet", "test.cs" },
+            out var options,
+            out _,
+            out _
+        );
         ok.ShouldBeTrue();
         options!.Width.ShouldBe(80);
         options.Command.ShouldBe("dotnet test.cs");
@@ -121,7 +136,12 @@ public sealed class OptionParserTests
     [Test]
     public void WindowAndPaddingParsed()
     {
-        var ok = OptionParser.TryParse(new[] { "--window", "macos", "--padding", "4.5" }, out var options, out _, out _);
+        var ok = OptionParser.TryParse(
+            new[] { "--window", "macos", "--padding", "4.5" },
+            out var options,
+            out _,
+            out _
+        );
         ok.ShouldBeTrue();
         options!.Window.ShouldBe("macos");
         options.Padding.ShouldBe(4.5d);
@@ -138,7 +158,12 @@ public sealed class OptionParserTests
     [Test]
     public void LoopFlagParsed()
     {
-        var ok = OptionParser.TryParse(new[] { "-m", "video", "--loop" }, out var options, out _, out _);
+        var ok = OptionParser.TryParse(
+            new[] { "-m", "video", "--loop" },
+            out var options,
+            out _,
+            out _
+        );
         ok.ShouldBeTrue();
         options!.Mode.ShouldBe(OutputMode.Video);
         options.Loop.ShouldBeTrue();

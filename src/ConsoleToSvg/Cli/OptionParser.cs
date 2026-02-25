@@ -10,12 +10,11 @@ public static class OptionParser
         console2svg - Convert terminal output to SVG
 
         Usage:
-          my-command --color=always | console2svg [options]
-          console2svg --command "git log --oneline" [options]
-          console2svg "git log --oneline" [options]
-          console2svg --in session.cast [options]
+          my-command | console2svg [options]
+          console2svg "my-command with-args" [options]
 
         Options:
+          -v, --verbose              Enable verbose logging.
           -c, --command <value>      Execute command in PTY mode.
           --in <path>                Read existing asciicast file.
           -o, --out <path>           Output SVG path (default: output.svg).
@@ -116,7 +115,9 @@ public static class OptionParser
 
     private static bool RequiresValue(string name)
     {
-        return !string.Equals(name, "--help", StringComparison.OrdinalIgnoreCase);
+        return !string.Equals(name, "--help", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "-v", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--verbose", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool ApplyOption(AppOptions options, string name, string? value, out string? error)
@@ -124,6 +125,10 @@ public static class OptionParser
         error = null;
         switch (name)
         {
+            case "-v":
+            case "--verbose":
+                options.Verbose = true;
+                return true;
             case "-c":
             case "--command":
                 options.Command = value;

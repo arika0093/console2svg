@@ -77,20 +77,55 @@ public static class AnimatedSvgRenderer
         reduced.Add(frames[0]);
         var lastKeptTime = frames[0].Time;
         var lastKeptColorSignature = BuildColorSignature(frames[0].Buffer);
+        var lastKeptVisualSignature = BuildVisualSignature(frames[0].Buffer);
+        TerminalFrame? pendingFrame = null;
+        ulong pendingColorSignature = 0;
+        ulong pendingVisualSignature = 0;
 
         for (var i = 1; i < frames.Count - 1; i++)
         {
             var frame = frames[i];
             var colorSignature = BuildColorSignature(frame.Buffer);
+            var visualSignature = BuildVisualSignature(frame.Buffer);
             var colorChanged = colorSignature != lastKeptColorSignature;
-            if (!colorChanged && frame.Time - lastKeptTime < minimumInterval)
+            var visualChanged = visualSignature != lastKeptVisualSignature;
+            if (!visualChanged && frame.Time - lastKeptTime < minimumInterval)
             {
                 continue;
             }
 
-            reduced.Add(frame);
-            lastKeptTime = frame.Time;
-            lastKeptColorSignature = colorSignature;
+            if (colorChanged)
+            {
+                reduced.Add(frame);
+                lastKeptTime = frame.Time;
+                lastKeptColorSignature = colorSignature;
+                lastKeptVisualSignature = visualSignature;
+                pendingFrame = null;
+                continue;
+            }
+
+            if (frame.Time - lastKeptTime >= minimumInterval)
+            {
+                reduced.Add(frame);
+                lastKeptTime = frame.Time;
+                lastKeptColorSignature = colorSignature;
+                lastKeptVisualSignature = visualSignature;
+                pendingFrame = null;
+            }
+            else if (visualChanged)
+            {
+                pendingFrame = frame;
+                pendingColorSignature = colorSignature;
+                pendingVisualSignature = visualSignature;
+            }
+        }
+
+        if (pendingFrame is not null && !ReferenceEquals(reduced[reduced.Count - 1], pendingFrame))
+        {
+            reduced.Add(pendingFrame);
+            lastKeptTime = pendingFrame.Time;
+            lastKeptColorSignature = pendingColorSignature;
+            lastKeptVisualSignature = pendingVisualSignature;
         }
 
         var last = frames[frames.Count - 1];
@@ -129,6 +164,35 @@ public static class AnimatedSvgRenderer
         return signature;
     }
 
+    private static ulong BuildVisualSignature(ScreenBuffer buffer)
+    {
+        const ulong fnvOffset = 1469598103934665603UL;
+
+        var signature = fnvOffset;
+        signature = HashInt(signature, buffer.CursorRow);
+        signature = HashInt(signature, buffer.CursorCol);
+
+        for (var row = 0; row < buffer.Height; row++)
+        {
+            for (var col = 0; col < buffer.Width; col++)
+            {
+                var cell = buffer.GetCell(row, col);
+                signature = HashString(signature, cell.Text);
+                signature = HashString(signature, cell.Foreground);
+                signature = HashString(signature, cell.Background);
+                signature = HashBool(signature, cell.Bold);
+                signature = HashBool(signature, cell.Italic);
+                signature = HashBool(signature, cell.Underline);
+                signature = HashBool(signature, cell.Reversed);
+                signature = HashBool(signature, cell.Faint);
+                signature = HashBool(signature, cell.IsWide);
+                signature = HashBool(signature, cell.IsWideContinuation);
+            }
+        }
+
+        return signature;
+    }
+
     private static ulong HashString(ulong signature, string value)
     {
         const ulong fnvPrime = 1099511628211UL;
@@ -155,6 +219,24 @@ public static class AnimatedSvgRenderer
         const ulong fnvPrime = 1099511628211UL;
         signature ^= value ? (byte)1 : (byte)0;
         signature *= fnvPrime;
+        return signature;
+    }
+
+    private static ulong HashInt(ulong signature, int value)
+    {
+        const ulong fnvPrime = 1099511628211UL;
+        unchecked
+        {
+            signature ^= (byte)value;
+            signature *= fnvPrime;
+            signature ^= (byte)(value >> 8);
+            signature *= fnvPrime;
+            signature ^= (byte)(value >> 16);
+            signature *= fnvPrime;
+            signature ^= (byte)(value >> 24);
+            signature *= fnvPrime;
+        }
+
         return signature;
     }
 

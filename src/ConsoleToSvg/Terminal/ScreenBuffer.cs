@@ -453,6 +453,31 @@ public sealed class ScreenBuffer
         }
     }
 
+    public void EraseChars(int count)
+    {
+        if (count <= 0)
+        {
+            return;
+        }
+
+        var endCol = Math.Min(Width - 1, CursorCol + count - 1);
+        for (var col = CursorCol; col <= endCol; col++)
+        {
+            var cell = _cells[CursorRow, col];
+            if (cell.IsWideContinuation && col > 0)
+            {
+                _cells[CursorRow, col - 1] = new ScreenCell(" ", DefaultStyle);
+            }
+
+            if (cell.IsWide && col + 1 < Width)
+            {
+                _cells[CursorRow, col + 1] = new ScreenCell(" ", DefaultStyle);
+            }
+
+            _cells[CursorRow, col] = new ScreenCell(" ", DefaultStyle);
+        }
+    }
+
     public void ClearDisplay(int mode)
     {
         switch (mode)

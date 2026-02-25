@@ -270,6 +270,9 @@ public sealed class AnsiParser
             case 'K':
                 _buffer.ClearLine(GetParameter(parameters, 0, 0));
                 return;
+            case 'X':
+                _buffer.EraseChars(Math.Max(1, GetParameter(parameters, 0, 1)));
+                return;
             case 's':
                 _buffer.SaveCursor();
                 return;

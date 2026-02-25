@@ -66,8 +66,18 @@ internal static class SvgDocumentBuilder
     {
         var effectiveHeight = includeScrollback ? buffer.TotalHeight : buffer.Height;
 
-        var rowTop = crop.Top.Unit == CropUnit.Characters ? (int)Math.Floor(crop.Top.Value) : 0;
-        var rowBottom = crop.Bottom.Unit == CropUnit.Characters ? (int)Math.Floor(crop.Bottom.Value) : 0;
+        var rowTop = crop.Top.Unit switch
+        {
+            CropUnit.Characters => (int)Math.Floor(crop.Top.Value),
+            CropUnit.Text => FindFirstRowContaining(buffer, crop.Top.TextPattern, effectiveHeight, includeScrollback),
+            _ => 0,
+        };
+        var rowBottom = crop.Bottom.Unit switch
+        {
+            CropUnit.Characters => (int)Math.Floor(crop.Bottom.Value),
+            CropUnit.Text => effectiveHeight - 1 - FindLastRowContaining(buffer, crop.Bottom.TextPattern, effectiveHeight, includeScrollback),
+            _ => 0,
+        };
         var colLeft = crop.Left.Unit == CropUnit.Characters ? (int)Math.Floor(crop.Left.Value) : 0;
         var colRight = crop.Right.Unit == CropUnit.Characters ? (int)Math.Floor(crop.Right.Value) : 0;
 
@@ -112,6 +122,54 @@ internal static class SvgDocumentBuilder
             ViewWidth = viewWidth,
             ViewHeight = viewHeight,
         };
+    }
+
+    private static bool RowContainsPattern(ScreenBuffer buffer, int row, string pattern, bool includeScrollback)
+    {
+        var cells = new string[buffer.Width];
+        for (var col = 0; col < buffer.Width; col++)
+        {
+            var cell = includeScrollback ? buffer.GetCellFromTop(row, col) : buffer.GetCell(row, col);
+            cells[col] = cell.Text;
+        }
+
+        return string.Concat(cells).Contains(pattern, StringComparison.Ordinal);
+    }
+
+    private static int FindFirstRowContaining(ScreenBuffer buffer, string? pattern, int effectiveHeight, bool includeScrollback)
+    {
+        if (string.IsNullOrEmpty(pattern))
+        {
+            return 0;
+        }
+
+        for (var row = 0; row < effectiveHeight; row++)
+        {
+            if (RowContainsPattern(buffer, row, pattern, includeScrollback))
+            {
+                return row;
+            }
+        }
+
+        return 0;
+    }
+
+    private static int FindLastRowContaining(ScreenBuffer buffer, string? pattern, int effectiveHeight, bool includeScrollback)
+    {
+        if (string.IsNullOrEmpty(pattern))
+        {
+            return effectiveHeight - 1;
+        }
+
+        for (var row = effectiveHeight - 1; row >= 0; row--)
+        {
+            if (RowContainsPattern(buffer, row, pattern, includeScrollback))
+            {
+                return row;
+            }
+        }
+
+        return effectiveHeight - 1;
     }
 
     public static void BeginSvg(StringBuilder sb, Context context, Theme theme, string? additionalCss)
@@ -205,8 +263,10 @@ internal static class SvgDocumentBuilder
                 }
 
                 var cellRectWidth = cell.IsWide ? CellWidth * 2 : CellWidth;
+                var effectiveFg = cell.Reversed ? cell.Background : cell.Foreground;
+                var effectiveBg = cell.Reversed ? cell.Foreground : cell.Background;
 
-                if (!string.Equals(cell.Background, theme.Background, StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(effectiveBg, theme.Background, StringComparison.OrdinalIgnoreCase))
                 {
                     sb.Append("<rect x=\"");
                     sb.Append(Format(x));
@@ -217,7 +277,7 @@ internal static class SvgDocumentBuilder
                     sb.Append("\" height=\"");
                     sb.Append(Format(CellHeight));
                     sb.Append("\" fill=\"");
-                    sb.Append(cell.Background);
+                    sb.Append(effectiveBg);
                     sb.Append("\"/>\n");
                 }
 
@@ -231,7 +291,7 @@ internal static class SvgDocumentBuilder
                 sb.Append("\" y=\"");
                 sb.Append(Format(y + BaselineOffset));
                 sb.Append("\" fill=\"");
-                sb.Append(cell.Foreground);
+                sb.Append(effectiveFg);
                 sb.Append("\"");
 
                 if (cell.Bold || cell.Italic || cell.Underline)

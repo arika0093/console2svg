@@ -71,8 +71,12 @@ public static class AnimatedSvgRenderer
             sb.Append("%,");
             sb.Append(Format(end));
             sb.Append("%{opacity:1;}");
-            sb.Append(Format(fadeOutPoint));
-            sb.Append("%,100%{opacity:0;}");
+            if (i < frames.Count - 1)
+            {
+                sb.Append(Format(fadeOutPoint));
+                sb.Append("%,100%{opacity:0;}");
+            }
+
             sb.Append('}');
 
             sb.Append(".frame-");

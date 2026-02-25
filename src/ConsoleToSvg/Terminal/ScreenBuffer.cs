@@ -3,27 +3,14 @@ using System.Collections.Generic;
 
 namespace ConsoleToSvg.Terminal;
 
-public readonly struct TextStyle
-{
-    public TextStyle(string foreground, string background, bool bold, bool italic, bool underline)
-    {
-        Foreground = foreground;
-        Background = background;
-        Bold = bold;
-        Italic = italic;
-        Underline = underline;
-    }
-
-    public string Foreground { get; }
-
-    public string Background { get; }
-
-    public bool Bold { get; }
-
-    public bool Italic { get; }
-
-    public bool Underline { get; }
-}
+public readonly record struct TextStyle(
+    string Foreground,
+    string Background,
+    bool Bold,
+    bool Italic,
+    bool Underline,
+    bool Reversed = false
+);
 
 public readonly struct ScreenCell
 {
@@ -35,6 +22,7 @@ public readonly struct ScreenCell
         Bold = style.Bold;
         Italic = style.Italic;
         Underline = style.Underline;
+        Reversed = style.Reversed;
         IsWide = isWide;
         IsWideContinuation = isWideContinuation;
     }
@@ -51,10 +39,14 @@ public readonly struct ScreenCell
 
     public bool Underline { get; }
 
+    public bool Reversed { get; }
+
     public bool IsWide { get; }
 
     public bool IsWideContinuation { get; }
-}
+
+    public TextStyle ToTextStyle() =>
+        new TextStyle(Foreground, Background, Bold, Italic, Underline, Reversed);}
 
 public sealed class ScreenBuffer
 {
@@ -189,6 +181,37 @@ public sealed class ScreenBuffer
     public void PutSurrogatePair(string cluster, TextStyle style)
     {
         PutPrintable(cluster, style);
+    }
+
+    public void AppendToPreviousCell(string combining)
+    {
+        // Find the previous printable cell
+        var col = CursorCol - 1;
+        var row = CursorRow;
+        if (col < 0)
+        {
+            if (row == 0)
+            {
+                return;
+            }
+
+            row--;
+            col = Width - 1;
+        }
+
+        // If it's a wide continuation, step back to the actual wide cell
+        if (_cells[row, col].IsWideContinuation && col > 0)
+        {
+            col--;
+        }
+
+        var prev = _cells[row, col];
+        if (prev.Text == " ")
+        {
+            return;
+        }
+
+        _cells[row, col] = new ScreenCell(prev.Text + combining, prev.ToTextStyle(), prev.IsWide, prev.IsWideContinuation);
     }
 
     private void PutPrintable(string text, TextStyle style)

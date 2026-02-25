@@ -46,9 +46,26 @@ public sealed class AnsiParser
                 continue;
             }
 
+            if (IsZeroWidthChar(ch))
+            {
+                continue;
+            }
+
+            var category = CharUnicodeInfo.GetUnicodeCategory(ch);
+            if (category is UnicodeCategory.NonSpacingMark
+                or UnicodeCategory.SpacingCombiningMark
+                or UnicodeCategory.EnclosingMark)
+            {
+                _buffer.AppendToPreviousCell(ch.ToString());
+                continue;
+            }
+
             _buffer.PutChar(ch, _style);
         }
     }
+
+    private static bool IsZeroWidthChar(char ch) =>
+        ch is '\u00AD' or '\u200B' or '\u200C' or '\u200D' or '\uFEFF';
 
     private static bool IsVariationSelector(char ch) =>
         ch is >= '\uFE00' and <= '\uFE0F';
@@ -204,45 +221,51 @@ public sealed class AnsiParser
                     _style = _buffer.DefaultStyle;
                     break;
                 case 1:
-                    _style = new TextStyle(_style.Foreground, _style.Background, true, _style.Italic, _style.Underline);
+                    _style = _style with { Bold = true };
                     break;
                 case 3:
-                    _style = new TextStyle(_style.Foreground, _style.Background, _style.Bold, true, _style.Underline);
+                    _style = _style with { Italic = true };
                     break;
                 case 4:
-                    _style = new TextStyle(_style.Foreground, _style.Background, _style.Bold, _style.Italic, true);
+                    _style = _style with { Underline = true };
+                    break;
+                case 7:
+                    _style = _style with { Reversed = true };
                     break;
                 case 22:
-                    _style = new TextStyle(_style.Foreground, _style.Background, false, _style.Italic, _style.Underline);
+                    _style = _style with { Bold = false };
                     break;
                 case 23:
-                    _style = new TextStyle(_style.Foreground, _style.Background, _style.Bold, false, _style.Underline);
+                    _style = _style with { Italic = false };
                     break;
                 case 24:
-                    _style = new TextStyle(_style.Foreground, _style.Background, _style.Bold, _style.Italic, false);
+                    _style = _style with { Underline = false };
+                    break;
+                case 27:
+                    _style = _style with { Reversed = false };
                     break;
                 case 39:
-                    _style = new TextStyle(_buffer.DefaultStyle.Foreground, _style.Background, _style.Bold, _style.Italic, _style.Underline);
+                    _style = _style with { Foreground = _buffer.DefaultStyle.Foreground };
                     break;
                 case 49:
-                    _style = new TextStyle(_style.Foreground, _buffer.DefaultStyle.Background, _style.Bold, _style.Italic, _style.Underline);
+                    _style = _style with { Background = _buffer.DefaultStyle.Background };
                     break;
                 default:
                     if (code >= 30 && code <= 37)
                     {
-                        _style = new TextStyle(_theme.AnsiPalette[code - 30], _style.Background, _style.Bold, _style.Italic, _style.Underline);
+                        _style = _style with { Foreground = _theme.AnsiPalette[code - 30] };
                     }
                     else if (code >= 40 && code <= 47)
                     {
-                        _style = new TextStyle(_style.Foreground, _theme.AnsiPalette[code - 40], _style.Bold, _style.Italic, _style.Underline);
+                        _style = _style with { Background = _theme.AnsiPalette[code - 40] };
                     }
                     else if (code >= 90 && code <= 97)
                     {
-                        _style = new TextStyle(_theme.AnsiPalette[8 + (code - 90)], _style.Background, _style.Bold, _style.Italic, _style.Underline);
+                        _style = _style with { Foreground = _theme.AnsiPalette[8 + (code - 90)] };
                     }
                     else if (code >= 100 && code <= 107)
                     {
-                        _style = new TextStyle(_style.Foreground, _theme.AnsiPalette[8 + (code - 100)], _style.Bold, _style.Italic, _style.Underline);
+                        _style = _style with { Background = _theme.AnsiPalette[8 + (code - 100)] };
                     }
                     else if ((code == 38 || code == 48) && i + 1 < parameters.Count)
                     {
@@ -251,15 +274,9 @@ public sealed class AnsiParser
                         if (mode == 5 && i + 2 < parameters.Count)
                         {
                             var color = FromAnsi256(parameters[i + 2]);
-                            if (isForeground)
-                            {
-                                _style = new TextStyle(color, _style.Background, _style.Bold, _style.Italic, _style.Underline);
-                            }
-                            else
-                            {
-                                _style = new TextStyle(_style.Foreground, color, _style.Bold, _style.Italic, _style.Underline);
-                            }
-
+                            _style = isForeground
+                                ? _style with { Foreground = color }
+                                : _style with { Background = color };
                             i += 2;
                         }
                         else if (mode == 2 && i + 4 < parameters.Count)
@@ -268,15 +285,9 @@ public sealed class AnsiParser
                             var g = Clamp(parameters[i + 3], 0, 255);
                             var b = Clamp(parameters[i + 4], 0, 255);
                             var color = $"#{r:X2}{g:X2}{b:X2}";
-                            if (isForeground)
-                            {
-                                _style = new TextStyle(color, _style.Background, _style.Bold, _style.Italic, _style.Underline);
-                            }
-                            else
-                            {
-                                _style = new TextStyle(_style.Foreground, color, _style.Bold, _style.Italic, _style.Underline);
-                            }
-
+                            _style = isForeground
+                                ? _style with { Foreground = color }
+                                : _style with { Background = color };
                             i += 4;
                         }
                     }

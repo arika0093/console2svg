@@ -101,6 +101,8 @@ public static class PtyRecorder
             : null;
 
         var eofReached = false;
+        var processExited = false;
+        var disposed = false;
         try
         {
             while (true)
@@ -119,6 +121,7 @@ public static class PtyRecorder
 
                 if (connection.WaitForExit(50))
                 {
+                    processExited = true;
                     break;
                 }
             }
@@ -129,15 +132,18 @@ public static class PtyRecorder
             // "Killing terminal failed with error 3" (ESRCH: no such process)
         }
 
-        if (canceled || eofReached)
+        if (canceled || eofReached || processExited)
         {
             var msg = eofReached
-                ? $"PTY output stream ended. Finalizing recording."
-                : $"Cancellation requested. Finalizing partial PTY recording.";
+                ? "PTY output stream ended. Finalizing recording."
+                : canceled
+                    ? "Cancellation requested. Finalizing partial PTY recording."
+                    : "PTY process exited. Finalizing recording.";
             logger.ZLogDebug($"{msg}");
             try
             {
                 connection.Dispose();
+                disposed = true;
             }
             catch
             {
@@ -161,7 +167,7 @@ public static class PtyRecorder
             // when reading after the slave side is closed. Treat as EOF.
         }
 
-        if (!canceled && !eofReached)
+        if (!canceled && !eofReached && !processExited && !disposed)
         {
             try
             {
@@ -291,9 +297,18 @@ public static class PtyRecorder
         while (true)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var count = await readerStream
-                .ReadAsync(bytes, 0, bytes.Length, cancellationToken)
-                .ConfigureAwait(false);
+            int count;
+            try
+            {
+                count = await readerStream
+                    .ReadAsync(bytes, 0, bytes.Length, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (ObjectDisposedException)
+            {
+                logger.ZLogDebug($"Read stream disposed; treating as EOF.");
+                break;
+            }
             if (count <= 0)
             {
                 logger.ZLogDebug($"Read stream completed (EOF).");

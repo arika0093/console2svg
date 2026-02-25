@@ -28,6 +28,12 @@ internal static class Program
             return 0;
         }
 
+        if (args.Length == 0 && !Console.IsInputRedirected)
+        {
+            Console.WriteLine(OptionParser.HelpText);
+            return 0;
+        }
+
         using var cancellationTokenSource = new CancellationTokenSource();
         Console.CancelKeyPress += (_, eventArgs) =>
         {

@@ -27,6 +27,7 @@ public static class PipeRecorder
         );
 
         var buffer = new char[4096];
+        var previousWasCarriageReturn = false;
         while (true)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -36,10 +37,28 @@ public static class PipeRecorder
                 break;
             }
 
-            var text = new string(buffer, 0, count);
+            var text = NormalizeLineEndings(buffer, count, ref previousWasCarriageReturn);
             session.AddEvent(stopwatch.Elapsed.TotalSeconds, text);
         }
 
         return session;
+    }
+
+    private static string NormalizeLineEndings(char[] buffer, int count, ref bool previousWasCarriageReturn)
+    {
+        var sb = new StringBuilder(count + 16);
+        for (var i = 0; i < count; i++)
+        {
+            var ch = buffer[i];
+            if (ch == '\n' && !previousWasCarriageReturn)
+            {
+                sb.Append('\r');
+            }
+
+            sb.Append(ch);
+            previousWasCarriageReturn = ch == '\r';
+        }
+
+        return sb.ToString();
     }
 }

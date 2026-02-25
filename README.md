@@ -54,7 +54,7 @@ console2svg --command "git log" --font "Consolas, monospace" --out output.svg
 - `--frame <index>`
 - `--crop-top|--crop-right|--crop-bottom|--crop-left <px|ch|text:pattern>`
 - `--theme dark|light`
-- `--font <css-font-family>` (default: `ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', 'SFMono-Regular', Menlo, monospace`)
+- `--font <css-font-family>`
 - `--save-cast <path>`
 - `--help`
 

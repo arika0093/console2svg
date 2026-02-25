@@ -66,7 +66,15 @@ public static class PtyRecorder
             // "Killing terminal failed with error 3" (ESRCH: no such process)
         }
 
-        await readTask.ConfigureAwait(false);
+        try
+        {
+            await readTask.ConfigureAwait(false);
+        }
+        catch (IOException ex) when (IsExpectedPtyEof(ex))
+        {
+            // On Unix PTY, child exit can surface as EIO ("Input/output error")
+            // when reading after the slave side is closed. Treat as EOF.
+        }
 
         try
         {
@@ -123,6 +131,16 @@ public static class PtyRecorder
         }
 
         return session;
+    }
+
+    private static bool IsExpectedPtyEof(IOException exception)
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return false;
+        }
+
+        return exception.Message.Contains("Input/output error", StringComparison.OrdinalIgnoreCase);
     }
 
     private static async Task ReadOutputAsync(

@@ -44,7 +44,9 @@ public readonly struct ScreenCell
     public bool IsWide { get; }
 
     public bool IsWideContinuation { get; }
-}
+
+    public TextStyle ToTextStyle() =>
+        new TextStyle(Foreground, Background, Bold, Italic, Underline, Reversed);}
 
 public sealed class ScreenBuffer
 {
@@ -209,8 +211,7 @@ public sealed class ScreenBuffer
             return;
         }
 
-        var style = new TextStyle(prev.Foreground, prev.Background, prev.Bold, prev.Italic, prev.Underline, prev.Reversed);
-        _cells[row, col] = new ScreenCell(prev.Text + combining, style, prev.IsWide, prev.IsWideContinuation);
+        _cells[row, col] = new ScreenCell(prev.Text + combining, prev.ToTextStyle(), prev.IsWide, prev.IsWideContinuation);
     }
 
     private void PutPrintable(string text, TextStyle style)

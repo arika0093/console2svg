@@ -124,16 +124,16 @@ internal static class SvgDocumentBuilder
         };
     }
 
-    private static string GetRowText(ScreenBuffer buffer, int row, bool includeScrollback)
+    private static bool RowContainsPattern(ScreenBuffer buffer, int row, string pattern, bool includeScrollback)
     {
-        var sb = new System.Text.StringBuilder();
+        var cells = new string[buffer.Width];
         for (var col = 0; col < buffer.Width; col++)
         {
             var cell = includeScrollback ? buffer.GetCellFromTop(row, col) : buffer.GetCell(row, col);
-            sb.Append(cell.Text);
+            cells[col] = cell.Text;
         }
 
-        return sb.ToString();
+        return string.Concat(cells).Contains(pattern, StringComparison.Ordinal);
     }
 
     private static int FindFirstRowContaining(ScreenBuffer buffer, string? pattern, int effectiveHeight, bool includeScrollback)
@@ -145,7 +145,7 @@ internal static class SvgDocumentBuilder
 
         for (var row = 0; row < effectiveHeight; row++)
         {
-            if (GetRowText(buffer, row, includeScrollback).Contains(pattern, StringComparison.Ordinal))
+            if (RowContainsPattern(buffer, row, pattern, includeScrollback))
             {
                 return row;
             }
@@ -163,7 +163,7 @@ internal static class SvgDocumentBuilder
 
         for (var row = effectiveHeight - 1; row >= 0; row--)
         {
-            if (GetRowText(buffer, row, includeScrollback).Contains(pattern, StringComparison.Ordinal))
+            if (RowContainsPattern(buffer, row, pattern, includeScrollback))
             {
                 return row;
             }

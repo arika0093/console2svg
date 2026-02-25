@@ -47,9 +47,16 @@ console2svg "dotnet build" -m video
 console2svg "dotnet --info" --crop-top 1ch --crop-right 5px
 ```
 
+### Window chrome and padding
+
+```sh
+console2svg --window macos --padding 8 -- dotnet build
+```
+
 ## Key options
 
 - `-m, --mode image|video`
+- `--version`
 - `-c, --command <cmd>` (also works as a bare positional argument)
 - `--in <cast-path>`
 - `-o, --out <svg-path>`
@@ -57,6 +64,8 @@ console2svg "dotnet --info" --crop-top 1ch --crop-right 5px
 - `--frame <index>`
 - `--crop-top|--crop-right|--crop-bottom|--crop-left <px|ch|pattern>`
 - `--theme dark|light`
+- `--window none|macos|windows`
+- `--padding <px>` (default: 2)
 - `--font <css-font-family>`
 - `--save-cast <path>`
 - `--help`

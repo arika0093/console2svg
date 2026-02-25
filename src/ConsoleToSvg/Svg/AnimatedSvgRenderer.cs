@@ -24,13 +24,13 @@ public static class AnimatedSvgRenderer
             return SvgRenderer.Render(session, options);
         }
 
-        var context = SvgDocumentBuilder.CreateContext(frames[0].Buffer, options.Crop);
+        var context = SvgDocumentBuilder.CreateContext(frames[0].Buffer, options.Crop, includeScrollback: false, options.Window, options.Padding);
         var duration = Math.Max(0.05d, frames[frames.Count - 1].Time);
 
         var css = BuildAnimationCss(frames, duration);
 
         var sb = new StringBuilder(128 * 1024);
-        SvgDocumentBuilder.BeginSvg(sb, context, theme, css, font: options.Font);
+        SvgDocumentBuilder.BeginSvg(sb, context, theme, css, font: options.Font, windowStyle: options.Window);
         for (var i = 0; i < frames.Count; i++)
         {
             SvgDocumentBuilder.AppendFrameGroup(

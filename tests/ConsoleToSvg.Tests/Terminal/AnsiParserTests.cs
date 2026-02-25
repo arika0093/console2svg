@@ -289,4 +289,18 @@ public sealed class AnsiParserTests
         second.Foreground.ShouldBe(theme.Foreground);
         third.Text.ShouldBe(" ");
     }
+
+    [Test]
+    public void CsiGMovesCursorToAbsoluteColumn()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(12, 2, theme);
+
+        emulator.Process("abc\u001b[10GZ");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("a");
+        emulator.Buffer.GetCell(0, 1).Text.ShouldBe("b");
+        emulator.Buffer.GetCell(0, 2).Text.ShouldBe("c");
+        emulator.Buffer.GetCell(0, 9).Text.ShouldBe("Z");
+    }
 }

@@ -30,6 +30,12 @@ internal static class Program
             return 0;
         }
 
+        if (options.ShowVersion)
+        {
+            Console.WriteLine(ThisAssembly.AssemblyInformationalVersion);
+            return 0;
+        }
+
         if (args.Length == 0 && !Console.IsInputRedirected)
         {
             Console.WriteLine(OptionParser.HelpText);
@@ -40,7 +46,7 @@ internal static class Program
         var logger = loggerFactory.CreateLogger("ConsoleToSvg.Program");
         logger.ZLogDebug($"Starting console2svg. Verbose={options.Verbose} Args={string.Join(' ', args)}");
         logger.ZLogDebug(
-            $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""}"
+            $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} Window={options.Window} Padding={options.Padding} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""}"
         );
 
         using var cancellationTokenSource = new CancellationTokenSource();

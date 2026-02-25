@@ -15,22 +15,25 @@ public static class OptionParser
           console2svg [options] -- my-command with args
 
         Options:
-          -v, --verbose              Enable verbose logging.
-          -c, --command <value>      Execute command in PTY mode.
-          --in <path>                Read existing asciicast file.
-          -o, --out <path>           Output SVG path (default: output.svg).
-          -m, --mode <image|video>   Output mode (default: image).
-          -w, --width <int>          Terminal width in characters (default: auto).
-          -h, --height <int>         Terminal height in rows (default: auto).
-          --frame <int>              Frame index for image mode.
-          --crop-top <value>         Crop top by px, ch, or text pattern (examples: 10px, 2ch, ---).
-          --crop-right <value>       Crop right by px or ch.
-          --crop-bottom <value>      Crop bottom by px, ch, or text pattern (examples: 10px, 2ch, ---).
-          --crop-left <value>        Crop left by px or ch.
-          --theme <dark|light>       Color theme (default: dark).
-          --font <family>            CSS font-family for SVG text (default: system monospace).
-          --save-cast <path>         Save captured output as asciicast file.
-          --help                     Show help.
+          -c, --command <value>          Execute command in PTY mode.
+          --in <path>                    Read existing asciicast file.
+          -o, --out <path>               Output SVG path (default: output.svg).
+          -m, --mode <image|video>       Output mode (default: image).
+          -w, --width <int>              Terminal width in characters (default: auto).
+          -h, --height <int>             Terminal height in rows (default: auto).
+          -v, --verbose                  Enable verbose logging.
+          --version                      Show version and exit.
+          --frame <int>                  Frame index for image mode.
+          --crop-top <value>             Crop top by px, ch, or text pattern (examples: 10px, 2ch, ---).
+          --crop-right <value>           Crop right by px or ch.
+          --crop-bottom <value>          Crop bottom by px, ch, or text pattern (examples: 10px, 2ch, ---).
+          --crop-left <value>            Crop left by px or ch.
+          --theme <dark|light>           Color theme (default: dark).
+          --window <none|macos|windows>  Terminal window chrome style (default: none).
+          --padding <px>                 Outer padding in pixels around terminal content (default: 2).
+          --font <family>                CSS font-family for SVG text (default: system monospace).
+          --save-cast <path>             Save captured output as asciicast file.
+          --help                         Show help.
         """;
 
     public static bool TryParse(
@@ -136,6 +139,7 @@ public static class OptionParser
     private static bool RequiresValue(string name)
     {
         return !string.Equals(name, "--help", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--version", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "-v", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--verbose", StringComparison.OrdinalIgnoreCase);
     }
@@ -148,6 +152,9 @@ public static class OptionParser
             case "-v":
             case "--verbose":
                 options.Verbose = true;
+                return true;
+            case "--version":
+                options.ShowVersion = true;
                 return true;
             case "-c":
             case "--command":
@@ -217,6 +224,31 @@ public static class OptionParser
             case "--theme":
                 options.Theme = string.IsNullOrWhiteSpace(value) ? "dark" : value;
                 return true;
+            case "--window":
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    error = "--window must be none, macos, or windows.";
+                    return false;
+                }
+
+                if (!string.Equals(value, "none", StringComparison.OrdinalIgnoreCase)
+                    && !string.Equals(value, "macos", StringComparison.OrdinalIgnoreCase)
+                    && !string.Equals(value, "windows", StringComparison.OrdinalIgnoreCase))
+                {
+                    error = "--window must be none, macos, or windows.";
+                    return false;
+                }
+
+                options.Window = value;
+                return true;
+            case "--padding":
+                if (!TryParseDouble(value, "--padding", out var padding, out error))
+                {
+                    return false;
+                }
+
+                options.Padding = padding;
+                return true;
             case "--font":
                 options.Font = value;
                 return true;
@@ -248,6 +280,25 @@ public static class OptionParser
         return true;
     }
 
+    private static bool TryParseDouble(string? value, string option, out double parsedValue, out string? error)
+    {
+        error = null;
+        parsedValue = 0;
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            error = $"Missing value for {option}.";
+            return false;
+        }
+
+        if (!double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out parsedValue))
+        {
+            error = $"{option} must be a number.";
+            return false;
+        }
+
+        return true;
+    }
+
     private static bool Validate(AppOptions options, out string? error)
     {
         error = null;
@@ -273,6 +324,12 @@ public static class OptionParser
         if (options.Frame is < 0)
         {
             error = "--frame must be non-negative.";
+            return false;
+        }
+
+        if (double.IsNaN(options.Padding) || double.IsInfinity(options.Padding) || options.Padding < 0)
+        {
+            error = "--padding must be a non-negative finite number.";
             return false;
         }
 

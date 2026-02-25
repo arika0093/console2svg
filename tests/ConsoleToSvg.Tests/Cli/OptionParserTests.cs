@@ -109,4 +109,29 @@ public sealed class OptionParserTests
         ok.ShouldBeFalse();
         error.ShouldBe("Expected command after --.");
     }
+
+    [Test]
+    public void VersionFlagParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "--version" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.ShowVersion.ShouldBeTrue();
+    }
+
+    [Test]
+    public void WindowAndPaddingParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "--window", "macos", "--padding", "4.5" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Window.ShouldBe("macos");
+        options.Padding.ShouldBe(4.5d);
+    }
+
+    [Test]
+    public void InvalidWindowReturnsError()
+    {
+        var ok = OptionParser.TryParse(new[] { "--window", "linux" }, out _, out var error, out _);
+        ok.ShouldBeFalse();
+        error.ShouldBe("--window must be none, macos, or windows.");
+    }
 }

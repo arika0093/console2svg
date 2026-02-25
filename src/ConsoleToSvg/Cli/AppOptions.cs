@@ -10,6 +10,8 @@ public sealed class AppOptions
 {
     public bool Verbose { get; set; }
 
+    public bool ShowVersion { get; set; }
+
     public string? Command { get; set; }
 
     public string? InputCastPath { get; set; }
@@ -37,4 +39,8 @@ public sealed class AppOptions
     public string? SaveCastPath { get; set; }
 
     public string? Font { get; set; }
+
+    public string Window { get; set; } = "none";
+
+    public double Padding { get; set; } = 2d;
 }

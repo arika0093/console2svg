@@ -317,4 +317,43 @@ public sealed class SvgRendererTests
         svg.ShouldContain("x=\"18\"");
         svg.ShouldContain(">|<");
     }
+
+    [Test]
+    public void RenderStaticSvgWithPaddingExpandsViewBox()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "A");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                Padding = 2,
+            }
+        );
+
+        svg.ShouldContain("viewBox=\"0 0 76 40\"");
+    }
+
+    [Test]
+    public void RenderStaticSvgWithMacosWindowRendersTrafficLights()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "A");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                Window = ConsoleToSvg.Svg.WindowStyle.Macos,
+                Padding = 2,
+            }
+        );
+
+        svg.ShouldContain("#ff5f57");
+        svg.ShouldContain("#febc2e");
+        svg.ShouldContain("#28c840");
+    }
 }

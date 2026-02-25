@@ -19,9 +19,9 @@ public static class SvgRenderer
         }
 
         var includeScrollback = options.Frame == null;
-        var context = SvgDocumentBuilder.CreateContext(emulator.Buffer, options.Crop, includeScrollback);
+        var context = SvgDocumentBuilder.CreateContext(emulator.Buffer, options.Crop, includeScrollback, options.Window, options.Padding);
         var sb = new StringBuilder(32 * 1024);
-        SvgDocumentBuilder.BeginSvg(sb, context, theme, additionalCss: null, font: options.Font);
+        SvgDocumentBuilder.BeginSvg(sb, context, theme, additionalCss: null, font: options.Font, windowStyle: options.Window);
         SvgDocumentBuilder.AppendFrameGroup(sb, emulator.Buffer, context, theme, id: null, @class: null, includeScrollback);
         SvgDocumentBuilder.EndSvg(sb);
         return sb.ToString();
@@ -61,9 +61,23 @@ internal static class SvgDocumentBuilder
         public double ViewWidth { get; set; }
 
         public double ViewHeight { get; set; }
+
+        public double CanvasWidth { get; set; }
+
+        public double CanvasHeight { get; set; }
+
+        public double ContentOffsetX { get; set; }
+
+        public double ContentOffsetY { get; set; }
     }
 
-    public static Context CreateContext(ScreenBuffer buffer, CropOptions crop, bool includeScrollback = false)
+    public static Context CreateContext(
+        ScreenBuffer buffer,
+        CropOptions crop,
+        bool includeScrollback = false,
+        WindowStyle windowStyle = WindowStyle.None,
+        double padding = 0d
+    )
     {
         var effectiveHeight = includeScrollback ? buffer.TotalHeight : buffer.Height;
 
@@ -108,6 +122,35 @@ internal static class SvgDocumentBuilder
         var viewWidth = Math.Max(1d, contentWidth - pxLeft - pxRight);
         var viewHeight = Math.Max(1d, contentHeight - pxTop - pxBottom);
 
+        var normalizedPadding = Math.Max(0d, padding);
+        var chromeLeft = 0d;
+        var chromeTop = 0d;
+        var chromeRight = 0d;
+        var chromeBottom = 0d;
+
+        switch (windowStyle)
+        {
+            case WindowStyle.Macos:
+                chromeLeft = 1d;
+                chromeTop = 28d;
+                chromeRight = 1d;
+                chromeBottom = 1d;
+                break;
+            case WindowStyle.Windows:
+                chromeLeft = 1d;
+                chromeTop = 30d;
+                chromeRight = 1d;
+                chromeBottom = 1d;
+                break;
+            default:
+                break;
+        }
+
+        var contentOffsetX = chromeLeft + normalizedPadding;
+        var contentOffsetY = chromeTop + normalizedPadding;
+        var canvasWidth = chromeLeft + chromeRight + normalizedPadding + viewWidth + normalizedPadding;
+        var canvasHeight = chromeTop + chromeBottom + normalizedPadding + viewHeight + normalizedPadding;
+
         return new Context
         {
             StartRow = startRow,
@@ -122,6 +165,10 @@ internal static class SvgDocumentBuilder
             PixelCropLeft = pxLeft,
             ViewWidth = viewWidth,
             ViewHeight = viewHeight,
+            CanvasWidth = Math.Max(1d, canvasWidth),
+            CanvasHeight = Math.Max(1d, canvasHeight),
+            ContentOffsetX = contentOffsetX,
+            ContentOffsetY = contentOffsetY,
         };
     }
 
@@ -173,14 +220,21 @@ internal static class SvgDocumentBuilder
         return effectiveHeight - 1;
     }
 
-    public static void BeginSvg(StringBuilder sb, Context context, Theme theme, string? additionalCss, string? font = null)
+    public static void BeginSvg(
+        StringBuilder sb,
+        Context context,
+        Theme theme,
+        string? additionalCss,
+        string? font = null,
+        WindowStyle windowStyle = WindowStyle.None
+    )
     {
         sb.Append("<svg xmlns=\"http://www.w3.org/2000/svg\" ");
         sb.Append("xmlns:xlink=\"http://www.w3.org/1999/xlink\" ");
         sb.Append("viewBox=\"0 0 ");
-        sb.Append(Format(context.ViewWidth));
+        sb.Append(Format(context.CanvasWidth));
         sb.Append(' ');
-        sb.Append(Format(context.ViewHeight));
+        sb.Append(Format(context.CanvasHeight));
         sb.Append("\" role=\"img\" aria-label=\"console2svg output\">\n");
 
         var effectiveFont = string.IsNullOrWhiteSpace(font) ? DefaultFontFamily : EscapeAttribute(font);
@@ -198,13 +252,78 @@ internal static class SvgDocumentBuilder
         }
 
         sb.Append("</style>\n");
-        sb.Append("<rect width=\"");
-        sb.Append(Format(context.ViewWidth));
-        sb.Append("\" height=\"");
-        sb.Append(Format(context.ViewHeight));
-        sb.Append("\" fill=\"");
-        sb.Append(theme.Background);
-        sb.Append("\"/>\n");
+
+        AppendWindowChrome(sb, context, theme, windowStyle);
+    }
+
+    private static void AppendWindowChrome(StringBuilder sb, Context context, Theme theme, WindowStyle windowStyle)
+    {
+        switch (windowStyle)
+        {
+            case WindowStyle.Macos:
+                sb.Append("<rect x=\"0.5\" y=\"0.5\" rx=\"10\" ry=\"10\" width=\"");
+                sb.Append(Format(Math.Max(1d, context.CanvasWidth - 1d)));
+                sb.Append("\" height=\"");
+                sb.Append(Format(Math.Max(1d, context.CanvasHeight - 1d)));
+                sb.Append("\" fill=\"#1f1f1f\" stroke=\"#3a3a3a\"/>\n");
+                sb.Append("<rect x=\"1\" y=\"1\" rx=\"9\" ry=\"9\" width=\"");
+                sb.Append(Format(Math.Max(1d, context.CanvasWidth - 2d)));
+                sb.Append("\" height=\"27\" fill=\"#2c2c2c\"/>\n");
+                sb.Append("<circle cx=\"14\" cy=\"14\" r=\"5\" fill=\"#ff5f57\"/>\n");
+                sb.Append("<circle cx=\"30\" cy=\"14\" r=\"5\" fill=\"#febc2e\"/>\n");
+                sb.Append("<circle cx=\"46\" cy=\"14\" r=\"5\" fill=\"#28c840\"/>\n");
+                sb.Append("<rect x=\"");
+                sb.Append(Format(context.ContentOffsetX));
+                sb.Append("\" y=\"");
+                sb.Append(Format(context.ContentOffsetY));
+                sb.Append("\" width=\"");
+                sb.Append(Format(context.ViewWidth));
+                sb.Append("\" height=\"");
+                sb.Append(Format(context.ViewHeight));
+                sb.Append("\" fill=\"");
+                sb.Append(theme.Background);
+                sb.Append("\"/>\n");
+                return;
+            case WindowStyle.Windows:
+                sb.Append("<rect x=\"0.5\" y=\"0.5\" width=\"");
+                sb.Append(Format(Math.Max(1d, context.CanvasWidth - 1d)));
+                sb.Append("\" height=\"");
+                sb.Append(Format(Math.Max(1d, context.CanvasHeight - 1d)));
+                sb.Append("\" fill=\"#1f1f1f\" stroke=\"#3a3a3a\"/>\n");
+                sb.Append("<rect x=\"1\" y=\"1\" width=\"");
+                sb.Append(Format(Math.Max(1d, context.CanvasWidth - 2d)));
+                sb.Append("\" height=\"29\" fill=\"#2b2b2b\"/>\n");
+                sb.Append("<rect x=\"");
+                sb.Append(Format(context.CanvasWidth - 46d));
+                sb.Append("\" y=\"10\" width=\"10\" height=\"10\" fill=\"#cccccc\"/>\n");
+                sb.Append("<rect x=\"");
+                sb.Append(Format(context.CanvasWidth - 30d));
+                sb.Append("\" y=\"10\" width=\"10\" height=\"10\" fill=\"#cccccc\"/>\n");
+                sb.Append("<rect x=\"");
+                sb.Append(Format(context.CanvasWidth - 14d));
+                sb.Append("\" y=\"10\" width=\"10\" height=\"10\" fill=\"#e06c75\"/>\n");
+                sb.Append("<rect x=\"");
+                sb.Append(Format(context.ContentOffsetX));
+                sb.Append("\" y=\"");
+                sb.Append(Format(context.ContentOffsetY));
+                sb.Append("\" width=\"");
+                sb.Append(Format(context.ViewWidth));
+                sb.Append("\" height=\"");
+                sb.Append(Format(context.ViewHeight));
+                sb.Append("\" fill=\"");
+                sb.Append(theme.Background);
+                sb.Append("\"/>\n");
+                return;
+            default:
+                sb.Append("<rect width=\"");
+                sb.Append(Format(context.CanvasWidth));
+                sb.Append("\" height=\"");
+                sb.Append(Format(context.CanvasHeight));
+                sb.Append("\" fill=\"");
+                sb.Append(theme.Background);
+                sb.Append("\"/>\n");
+                return;
+        }
     }
 
     public static void EndSvg(StringBuilder sb)
@@ -238,9 +357,9 @@ internal static class SvgDocumentBuilder
         }
 
         sb.Append(" transform=\"translate(");
-        sb.Append(Format(-context.PixelCropLeft));
+        sb.Append(Format(context.ContentOffsetX - context.PixelCropLeft));
         sb.Append(' ');
-        sb.Append(Format(-context.PixelCropTop));
+        sb.Append(Format(context.ContentOffsetY - context.PixelCropTop));
         sb.Append(")\">\n");
 
         sb.Append("<rect width=\"");

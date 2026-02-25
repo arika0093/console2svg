@@ -209,12 +209,33 @@ public sealed class AnsiParser
             case 'D':
                 _buffer.MoveCursorBy(0, -Math.Max(1, GetParameter(parameters, 0, 1)));
                 return;
+            case 'E':
+                _buffer.MoveCursorBy(Math.Max(1, GetParameter(parameters, 0, 1)), 0);
+                _buffer.CarriageReturn();
+                return;
+            case 'F':
+                _buffer.MoveCursorBy(-Math.Max(1, GetParameter(parameters, 0, 1)), 0);
+                _buffer.CarriageReturn();
+                return;
+            case 'G':
+            case '`':
+                {
+                    var col = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
+                    _buffer.MoveCursorTo(_buffer.CursorRow, col);
+                    return;
+                }
             case 'H':
             case 'f':
                 {
                     var row = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
                     var col = Math.Max(1, GetParameter(parameters, 1, 1)) - 1;
                     _buffer.MoveCursorTo(row, col);
+                    return;
+                }
+            case 'd':
+                {
+                    var row = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
+                    _buffer.MoveCursorTo(row, _buffer.CursorCol);
                     return;
                 }
             case 'J':

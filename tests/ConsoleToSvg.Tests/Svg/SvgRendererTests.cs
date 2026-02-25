@@ -265,4 +265,36 @@ public sealed class SvgRendererTests
         // The SVG should contain the full emoji with its variation selector
         svg.ShouldContain("\U0001F6E1\uFE0F");
     }
+
+    [Test]
+    public void RenderStaticSvgKeepsPipeAlignedAfterBmpEmojiVariationSelector()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "\u2705\uFE0F|");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain(">\u2705\uFE0F<");
+        svg.ShouldContain("x=\"18\"");
+        svg.ShouldContain(">|<");
+    }
+
+    [Test]
+    public void RenderStaticSvgKeepsPipeAlignedAfterBmpEmojiWithoutVariationSelector()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "\u2705|");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain(">\u2705<");
+        svg.ShouldContain("x=\"18\"");
+        svg.ShouldContain(">|<");
+    }
 }

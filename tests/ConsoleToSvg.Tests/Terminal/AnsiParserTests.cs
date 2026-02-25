@@ -192,6 +192,42 @@ public sealed class AnsiParserTests
     }
 
     [Test]
+    public void BmpEmojiWithVariationSelectorConsumesTwoColumns()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        emulator.Process("\u2705\uFE0F|");
+
+        var emoji = emulator.Buffer.GetCell(0, 0);
+        var continuation = emulator.Buffer.GetCell(0, 1);
+        var pipe = emulator.Buffer.GetCell(0, 2);
+
+        emoji.Text.ShouldBe("\u2705\uFE0F");
+        emoji.IsWide.ShouldBeTrue();
+        continuation.IsWideContinuation.ShouldBeTrue();
+        pipe.Text.ShouldBe("|");
+    }
+
+    [Test]
+    public void BmpEmojiWithoutVariationSelectorConsumesTwoColumns()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        emulator.Process("\u2705|");
+
+        var emoji = emulator.Buffer.GetCell(0, 0);
+        var continuation = emulator.Buffer.GetCell(0, 1);
+        var pipe = emulator.Buffer.GetCell(0, 2);
+
+        emoji.Text.ShouldBe("\u2705");
+        emoji.IsWide.ShouldBeTrue();
+        continuation.IsWideContinuation.ShouldBeTrue();
+        pipe.Text.ShouldBe("|");
+    }
+
+    [Test]
     public void FullWidthLineDoesNotProduceExtraBlankRow()
     {
         var theme = Theme.Resolve("dark");

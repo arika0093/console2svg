@@ -214,6 +214,39 @@ public sealed class ScreenBuffer
         }
 
         _cells[row, col] = new ScreenCell(prev.Text + combining, prev.ToTextStyle(), prev.IsWide, prev.IsWideContinuation);
+
+        if (combining == "\uFE0F" && !prev.IsWide && !prev.IsWideContinuation)
+        {
+            TryPromoteCellToWide(row, col);
+        }
+    }
+
+    private void TryPromoteCellToWide(int row, int col)
+    {
+        if (col + 1 >= Width)
+        {
+            return;
+        }
+
+        var next = _cells[row, col + 1];
+        if (next.Text != " " || next.IsWideContinuation)
+        {
+            return;
+        }
+
+        var cell = _cells[row, col];
+        _cells[row, col] = new ScreenCell(cell.Text, cell.ToTextStyle(), isWide: true, isWideContinuation: false);
+        _cells[row, col + 1] = new ScreenCell(" ", cell.ToTextStyle(), isWide: false, isWideContinuation: true);
+
+        if (CursorRow == row && CursorCol == col + 1)
+        {
+            CursorCol++;
+            if (CursorCol >= Width)
+            {
+                _pendingWrap = true;
+                CursorCol = Width - 1;
+            }
+        }
     }
 
     private void PutPrintable(string text, TextStyle style)
@@ -283,8 +316,18 @@ public sealed class ScreenBuffer
             return false;
         }
 
-        return IsEastAsianWide(codePoint);
+        return IsEastAsianWide(codePoint) || IsBmpEmojiWide(codePoint);
     }
+
+    private static bool IsBmpEmojiWide(int cp) =>
+        cp is
+            0x2611 // ☑
+            or 0x2705 // ✅
+            or 0x274C // ❌
+            or 0x2753 // ❓
+            or 0x2754 // ❔
+            or 0x2755 // ❕
+            or 0x2757; // ❗
 
     private static bool IsEastAsianWide(int cp) =>
         cp is (>= 0x1100 and <= 0x115F)

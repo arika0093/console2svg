@@ -38,7 +38,7 @@ In video mode, you can capture the animation of the command execution and save i
 ![](./assets/cmd-loop.svg)
 
 ```bash
-console2svg -m video --loop --window macos -w 100 -h 24 --fps 30 -- cmatrix -ab
+console2svg -m video --window macos --loop -- copilot --banner
 ```
 
 Loop playback is also supported.

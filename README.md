@@ -44,3 +44,11 @@ console2svg --command "dotnet --info" --mode image --out output.svg --crop-top 1
 - `--frame <index>`
 - `--crop-top|--crop-right|--crop-bottom|--crop-left <px|ch>`
 - `--save-cast <path>`
+
+## Development
+
+```bash
+dotnet pack -o publish
+dotnet tool install -g  --add-source ./publish ConsoleToSvg --prerelease
+export DOTNET_EnableWriteXorExecute=0
+```

@@ -92,9 +92,10 @@ console2svg "dotnet --info" --crop-top 1ch --crop-right 5px
 ```
 
 You can also crop at the position where a specific character appears.
+When specifying a character, you can specify it like `:(number)`, which crops at a relative position from the detected line.
 
 ```sh
-console2svg "dotnet --info" --crop-top "Host:" --crop-bottom "Commit: "
+console2svg "dotnet --info" --crop-top "Host" --crop-bottom ".NET runtimes installed:-2"
 ```
 
 ### Window chrome and padding

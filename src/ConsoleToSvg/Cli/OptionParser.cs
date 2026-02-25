@@ -23,9 +23,9 @@ public static class OptionParser
               -v, --verbose                  Enable verbose logging.
               --version                      Show version and exit.
               --frame <int>                  Frame index for image mode.
-              --crop-top <value>             Crop top by px, ch, or text pattern (examples: 10px, 2ch, ---).
+              --crop-top <value>             Crop top by px, ch, or text pattern (examples: 10px, 2ch, ---, summary:-3).
               --crop-right <value>           Crop right by px or ch.
-              --crop-bottom <value>          Crop bottom by px, ch, or text pattern (examples: 10px, 2ch, ---).
+              --crop-bottom <value>          Crop bottom by px, ch, or text pattern (examples: 10px, 2ch, ---, summary:-3).
               --crop-left <value>            Crop left by px or ch.
               --theme <dark|light>           Color theme (default: dark).
               --window <none|macos|windows>  Terminal window chrome style (default: none).

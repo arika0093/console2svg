@@ -106,11 +106,14 @@ internal static class SvgDocumentBuilder
         var rowTop = crop.Top.Unit switch
         {
             CropUnit.Characters => (int)Math.Floor(crop.Top.Value),
-            CropUnit.Text => FindFirstRowContaining(
-                buffer,
-                crop.Top.TextPattern,
-                effectiveHeight,
-                includeScrollback
+            CropUnit.Text => ApplyTextOffset(
+                FindFirstRowContaining(
+                    buffer,
+                    crop.Top.TextPattern,
+                    effectiveHeight,
+                    includeScrollback
+                ),
+                crop.Top.TextOffset
             ),
             _ => 0,
         };
@@ -119,11 +122,14 @@ internal static class SvgDocumentBuilder
             CropUnit.Characters => (int)Math.Floor(crop.Bottom.Value),
             CropUnit.Text => effectiveHeight
                 - 1
-                - FindLastRowContaining(
-                    buffer,
-                    crop.Bottom.TextPattern,
-                    effectiveHeight,
-                    includeScrollback
+                - ApplyTextOffset(
+                    FindLastRowContaining(
+                        buffer,
+                        crop.Bottom.TextPattern,
+                        effectiveHeight,
+                        includeScrollback
+                    ),
+                    crop.Bottom.TextOffset
                 ),
             _ => 0,
         };
@@ -272,6 +278,11 @@ internal static class SvgDocumentBuilder
         }
 
         return effectiveHeight - 1;
+    }
+
+    private static int ApplyTextOffset(int row, int offset)
+    {
+        return row + offset;
     }
 
     public static void BeginSvg(

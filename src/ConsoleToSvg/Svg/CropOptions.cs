@@ -17,13 +17,15 @@ public readonly struct CropValue
         Value = value;
         Unit = unit;
         TextPattern = null;
+        TextOffset = 0;
     }
 
-    public CropValue(string textPattern)
+    public CropValue(string textPattern, int textOffset = 0)
     {
         Value = 0;
         Unit = CropUnit.Text;
         TextPattern = textPattern;
+        TextOffset = textOffset;
     }
 
     public double Value { get; }
@@ -31,6 +33,8 @@ public readonly struct CropValue
     public CropUnit Unit { get; }
 
     public string? TextPattern { get; }
+
+    public int TextOffset { get; }
 
     public static CropValue Parse(string? raw)
     {
@@ -43,7 +47,8 @@ public readonly struct CropValue
         if (value.StartsWith("text:", StringComparison.OrdinalIgnoreCase))
         {
             var pattern = value.Substring(5);
-            return new CropValue(pattern);
+            var (textPattern, textOffset) = ParseTextPattern(pattern);
+            return new CropValue(textPattern, textOffset);
         }
 
         if (value.EndsWith("ch", StringComparison.OrdinalIgnoreCase))
@@ -62,10 +67,41 @@ public readonly struct CropValue
 
         if (!double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out _))
         {
-            return new CropValue(value);
+            var (textPattern, textOffset) = ParseTextPattern(value);
+            return new CropValue(textPattern, textOffset);
         }
 
         return new CropValue(Math.Max(0, ParseNumber(value)), CropUnit.Pixels);
+    }
+
+    private static (string TextPattern, int TextOffset) ParseTextPattern(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return (value, 0);
+        }
+
+        var lastColonIndex = value.LastIndexOf(':');
+        if (lastColonIndex <= 0 || lastColonIndex == value.Length - 1)
+        {
+            return (value, 0);
+        }
+
+        var pattern = value.Substring(0, lastColonIndex);
+        var offsetText = value.Substring(lastColonIndex + 1);
+        if (
+            int.TryParse(
+                offsetText,
+                NumberStyles.Integer,
+                CultureInfo.InvariantCulture,
+                out var offset
+            )
+        )
+        {
+            return (pattern, offset);
+        }
+
+        return (value, 0);
     }
 
     private static double ParseNumber(string value)

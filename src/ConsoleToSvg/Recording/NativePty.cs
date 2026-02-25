@@ -80,7 +80,7 @@ internal static class NativePtyWindows
             throw new PlatformNotSupportedException("ConPTY is only available on Windows.");
         }
 
-        var size = new COORD((short)options.Cols, (short)options.Rows);
+        var size = new Coord((short)options.Cols, (short)options.Rows);
         EnsureWin32(CreatePipe(out var inputRead, out var inputWrite, IntPtr.Zero, 0));
         EnsureWin32(CreatePipe(out var outputRead, out var outputWrite, IntPtr.Zero, 0));
 
@@ -100,8 +100,8 @@ internal static class NativePtyWindows
         IntPtr environmentBlock = IntPtr.Zero;
         try
         {
-            var startupInfo = new STARTUPINFOEX();
-            startupInfo.StartupInfo.cb = Marshal.SizeOf<STARTUPINFOEX>();
+            var startupInfo = new StartupInfoEx();
+            startupInfo.StartupInfo.cb = Marshal.SizeOf<StartupInfoEx>();
 
             InitializeProcThreadAttributeList(IntPtr.Zero, 1, 0, out var attrListSize);
             lpAttributeList = Marshal.AllocHGlobal(attrListSize);
@@ -181,13 +181,19 @@ internal static class NativePtyWindows
                 {
                     reader.Dispose();
                 }
-                catch { }
+                catch
+                {
+                    // Best-effort cleanup; ignore failures.
+                }
 
                 try
                 {
                     writer.Dispose();
                 }
-                catch { }
+                catch
+                {
+                    // Best-effort cleanup; ignore failures.
+                }
 
                 if (!exited)
                 {
@@ -207,7 +213,10 @@ internal static class NativePtyWindows
             {
                 ClosePseudoConsole(hPC);
             }
-            catch { }
+            catch
+            {
+                // Best-effort cleanup; ignore failures.
+            }
 
             try
             {
@@ -216,7 +225,10 @@ internal static class NativePtyWindows
                 CloseHandle(outputRead);
                 CloseHandle(outputWrite);
             }
-            catch { }
+            catch
+            {
+                // Best-effort cleanup; ignore failures.
+            }
 
             throw;
         }
@@ -339,11 +351,11 @@ internal static class NativePtyWindows
         }
     }
 
-    private static PROCESS_INFORMATION CreateProcessWithRetry(
+    private static ProcessInformation CreateProcessWithRetry(
         string commandLine,
         IntPtr environmentBlock,
         string? cwd,
-        ref STARTUPINFOEX startupInfo
+        ref StartupInfoEx startupInfo
     )
     {
         if (
@@ -402,13 +414,19 @@ internal static class NativePtyWindows
                 return;
             }
         }
-        catch { }
+        catch
+        {
+            // Best-effort check; ignore failures.
+        }
 
         try
         {
             TerminateProcess(processHandle, 1);
         }
-        catch { }
+        catch
+        {
+            // Best-effort termination; ignore failures.
+        }
     }
 
     private static void ThrowWin32(string message, int hr)
@@ -417,12 +435,12 @@ internal static class NativePtyWindows
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    private struct COORD
+    private struct Coord
     {
         public short X;
         public short Y;
 
-        public COORD(short x, short y)
+        public Coord(short x, short y)
         {
             X = x;
             Y = y;
@@ -430,7 +448,7 @@ internal static class NativePtyWindows
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    private struct STARTUPINFO
+    private struct StartupInfo
     {
         public int cb;
         public string? lpReserved;
@@ -453,14 +471,14 @@ internal static class NativePtyWindows
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    private struct STARTUPINFOEX
+    private struct StartupInfoEx
     {
-        public STARTUPINFO StartupInfo;
+        public StartupInfo StartupInfo;
         public IntPtr lpAttributeList;
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    private struct PROCESS_INFORMATION
+    private struct ProcessInformation
     {
         public IntPtr hProcess;
         public IntPtr hThread;
@@ -470,7 +488,7 @@ internal static class NativePtyWindows
 
     [DllImport("kernel32.dll", SetLastError = true)]
     private static extern int CreatePseudoConsole(
-        COORD size,
+        Coord size,
         IntPtr hInput,
         IntPtr hOutput,
         uint dwFlags,
@@ -523,8 +541,8 @@ internal static class NativePtyWindows
         uint dwCreationFlags,
         IntPtr lpEnvironment,
         string? lpCurrentDirectory,
-        ref STARTUPINFOEX lpStartupInfo,
-        out PROCESS_INFORMATION lpProcessInformation
+        ref StartupInfoEx lpStartupInfo,
+        out ProcessInformation lpProcessInformation
     );
 
     [DllImport("kernel32.dll", SetLastError = true)]
@@ -586,7 +604,10 @@ internal static class NativePtyUnix
                 var args = BuildArgv(options.App, options.Args);
                 execvp(options.App, args);
             }
-            catch { }
+            catch
+            {
+                // Best-effort cleanup; ignore failures.
+            }
 
             _exit(127);
             return new NativePtyConnection(Stream.Null, Stream.Null, _ => true, () => { });
@@ -640,13 +661,19 @@ internal static class NativePtyUnix
             {
                 reader.Dispose();
             }
-            catch { }
+            catch
+            {
+                // Best-effort cleanup; ignore failures.
+            }
 
             try
             {
                 writer.Dispose();
             }
-            catch { }
+            catch
+            {
+                // Best-effort cleanup; ignore failures.
+            }
 
             if (!exited)
             {
@@ -683,7 +710,10 @@ internal static class NativePtyUnix
         {
             kill(pid, SIGTERM);
         }
-        catch { }
+        catch
+        {
+            // Best-effort signal; ignore failures.
+        }
 
         var deadline = DateTime.UtcNow.AddMilliseconds(500);
         while (DateTime.UtcNow <= deadline)
@@ -702,13 +732,19 @@ internal static class NativePtyUnix
         {
             kill(pid, SIGKILL);
         }
-        catch { }
+        catch
+        {
+            // Best-effort force kill; ignore failures.
+        }
 
         try
         {
             waitpid(pid, out _, WNOHANG);
         }
-        catch { }
+        catch
+        {
+            // Best-effort reap; ignore failures.
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]

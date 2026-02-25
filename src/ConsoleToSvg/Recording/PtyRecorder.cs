@@ -135,11 +135,19 @@ public static class PtyRecorder
 
         if (canceled || eofReached || processExited)
         {
-            var msg = eofReached
-                ? "PTY output stream ended. Finalizing recording."
-                : canceled
-                    ? "Cancellation requested. Finalizing partial PTY recording."
-                    : "PTY process exited. Finalizing recording.";
+            string msg;
+            if (eofReached)
+            {
+                msg = "PTY output stream ended. Finalizing recording.";
+            }
+            else if (canceled)
+            {
+                msg = "Cancellation requested. Finalizing partial PTY recording.";
+            }
+            else
+            {
+                msg = "PTY process exited. Finalizing recording.";
+            }
             logger.ZLogDebug($"{msg}");
             try
             {
@@ -152,7 +160,7 @@ public static class PtyRecorder
             }
         }
 
-        forwardingCancellation.Cancel();
+        await forwardingCancellation.CancelAsync().ConfigureAwait(false);
 
         try
         {
@@ -261,7 +269,7 @@ public static class PtyRecorder
             }
         }
 
-        forwardingCancellation.Cancel();
+        await forwardingCancellation.CancelAsync().ConfigureAwait(false);
         if (inputTask is not null && !canceled)
         {
             await IgnoreTaskFailureAsync(inputTask).ConfigureAwait(false);

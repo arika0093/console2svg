@@ -149,7 +149,7 @@ public sealed class AnsiParser
         return true;
     }
 
-    private bool TrySkipOsc(string text, int start, out int endIndex)
+    private static bool TrySkipOsc(string text, int start, out int endIndex)
     {
         endIndex = text.Length - 1;
         for (var i = start; i < text.Length; i++)

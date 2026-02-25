@@ -79,8 +79,6 @@ public static class AnimatedSvgRenderer
         var lastKeptColorSignature = BuildColorSignature(frames[0].Buffer);
         var lastKeptVisualSignature = BuildVisualSignature(frames[0].Buffer);
         TerminalFrame? pendingFrame = null;
-        ulong pendingColorSignature = 0;
-        ulong pendingVisualSignature = 0;
 
         for (var i = 1; i < frames.Count - 1; i++)
         {
@@ -115,17 +113,12 @@ public static class AnimatedSvgRenderer
             else if (visualChanged)
             {
                 pendingFrame = frame;
-                pendingColorSignature = colorSignature;
-                pendingVisualSignature = visualSignature;
             }
         }
 
         if (pendingFrame is not null && !ReferenceEquals(reduced[reduced.Count - 1], pendingFrame))
         {
             reduced.Add(pendingFrame);
-            lastKeptTime = pendingFrame.Time;
-            lastKeptColorSignature = pendingColorSignature;
-            lastKeptVisualSignature = pendingVisualSignature;
         }
 
         var last = frames[frames.Count - 1];

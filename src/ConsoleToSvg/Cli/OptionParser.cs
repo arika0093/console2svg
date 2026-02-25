@@ -49,7 +49,8 @@ public static class OptionParser
         error = null;
         showHelp = false;
 
-        for (var i = 0; i < args.Length; i++)
+        var i = 0;
+        while (i < args.Length)
         {
             var token = args[i];
 
@@ -89,6 +90,7 @@ public static class OptionParser
                 }
 
                 options.Command = token;
+                i++;
                 continue;
             }
 
@@ -115,6 +117,8 @@ public static class OptionParser
             {
                 return false;
             }
+
+            i++;
         }
 
         if (!Validate(options, out error))

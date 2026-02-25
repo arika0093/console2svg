@@ -20,14 +20,16 @@ public static class PtyRecorder
         int width,
         int height,
         CancellationToken cancellationToken,
-        ILogger? logger = null
+        ILogger? logger = null,
+        bool forwardToConsole = true
     )
     {
         logger ??= NullLogger.Instance;
         logger.ZLogDebug($"Start PTY recording. Command={command} Width={width} Height={height}");
         try
         {
-            return await RecordWithPtyAsync(command, width, height, cancellationToken, logger).ConfigureAwait(false);
+            return await RecordWithPtyAsync(command, width, height, cancellationToken, logger, forwardToConsole)
+                .ConfigureAwait(false);
         }
         catch (Exception ex)
             when (
@@ -38,7 +40,8 @@ public static class PtyRecorder
             )
         {
             logger.ZLogDebug(ex, $"PTY backend unavailable. Falling back to process execution.");
-            return await RecordWithProcessFallbackAsync(command, width, height, cancellationToken, logger).ConfigureAwait(false);
+            return await RecordWithProcessFallbackAsync(command, width, height, cancellationToken, logger, forwardToConsole)
+                .ConfigureAwait(false);
         }
     }
 
@@ -47,7 +50,8 @@ public static class PtyRecorder
         int width,
         int height,
         CancellationToken cancellationToken,
-        ILogger logger
+        ILogger logger,
+        bool forwardToConsole
     )
     {
         var options = BuildOptions(command, width, height);
@@ -57,10 +61,23 @@ public static class PtyRecorder
         var session = new RecordingSession(width, height);
         var stopwatch = Stopwatch.StartNew();
         var canceled = false;
+        using var forwardingCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
         var connection = await PtyProvider.SpawnAsync(options, cancellationToken).ConfigureAwait(false);
         logger.ZLogDebug($"PTY process spawned.");
-        var readTask = ReadOutputAsync(connection.ReaderStream, session, stopwatch, CancellationToken.None, logger);
+        var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
+        var inputForward = forwardToConsole ? TryOpenStandardInput(logger) : null;
+        var readTask = ReadOutputAsync(
+            connection.ReaderStream,
+            session,
+            stopwatch,
+            CancellationToken.None,
+            logger,
+            outputForward
+        );
+        var inputTask = inputForward is not null
+            ? PumpInputAsync(inputForward, connection.WriterStream, forwardingCancellation.Token, logger)
+            : null;
 
         try
         {
@@ -92,6 +109,8 @@ public static class PtyRecorder
             }
         }
 
+        forwardingCancellation.Cancel();
+
         try
         {
             await readTask.ConfigureAwait(false);
@@ -118,6 +137,11 @@ public static class PtyRecorder
             }
         }
 
+        if (inputTask is not null)
+        {
+            await IgnoreTaskFailureAsync(inputTask).ConfigureAwait(false);
+        }
+
         logger.ZLogDebug($"PTY recording completed. Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds}");
         return session;
     }
@@ -127,12 +151,14 @@ public static class PtyRecorder
         int width,
         int height,
         CancellationToken cancellationToken,
-        ILogger logger
+        ILogger logger,
+        bool forwardToConsole
     )
     {
         var session = new RecordingSession(width, height);
         var stopwatch = Stopwatch.StartNew();
         var canceled = false;
+        using var forwardingCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
         var startInfo = BuildFallbackProcessStartInfo(command);
         logger.ZLogDebug(
@@ -164,7 +190,21 @@ public static class PtyRecorder
             }
         );
 
-        await ReadOutputAsync(process.StandardOutput.BaseStream, session, stopwatch, CancellationToken.None, logger).ConfigureAwait(false);
+        var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
+        var inputForward = forwardToConsole ? TryOpenStandardInput(logger) : null;
+        var inputTask = inputForward is not null
+            ? PumpInputAsync(inputForward, process.StandardInput.BaseStream, forwardingCancellation.Token, logger)
+            : null;
+
+        await ReadOutputAsync(
+                process.StandardOutput.BaseStream,
+                session,
+                stopwatch,
+                CancellationToken.None,
+                logger,
+                outputForward
+            )
+            .ConfigureAwait(false);
         while (!process.WaitForExit(50))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -172,6 +212,12 @@ public static class PtyRecorder
                 canceled = true;
                 break;
             }
+        }
+
+        forwardingCancellation.Cancel();
+        if (inputTask is not null)
+        {
+            await IgnoreTaskFailureAsync(inputTask).ConfigureAwait(false);
         }
 
         logger.ZLogDebug($"Fallback recording completed. ExitCode={process.ExitCode} Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds} Canceled={canceled}");
@@ -193,7 +239,8 @@ public static class PtyRecorder
         RecordingSession session,
         Stopwatch stopwatch,
         CancellationToken cancellationToken,
-        ILogger logger
+        ILogger logger,
+        Stream? forwardOutput
     )
     {
         var bytes = new byte[4096];
@@ -208,6 +255,19 @@ public static class PtyRecorder
             {
                 logger.ZLogDebug($"Read stream completed (EOF).");
                 break;
+            }
+
+            if (forwardOutput is not null)
+            {
+                try
+                {
+                    await forwardOutput.WriteAsync(bytes, 0, count, cancellationToken).ConfigureAwait(false);
+                    await forwardOutput.FlushAsync(cancellationToken).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Ignore forwarding write failures; recording should continue.
+                }
             }
 
             var charCount = decoder.GetChars(bytes, 0, count, chars, 0, flush: false);
@@ -230,6 +290,84 @@ public static class PtyRecorder
             var trailing = new string(chars, 0, trailingCount);
             session.AddEvent(stopwatch.Elapsed.TotalSeconds, trailing);
             logger.ZLogDebug($"Captured trailing decoded chars={trailingCount} preview={ToPreview(trailing)}");
+        }
+    }
+
+    private static async Task PumpInputAsync(
+        Stream sourceInput,
+        Stream targetInput,
+        CancellationToken cancellationToken,
+        ILogger logger
+    )
+    {
+        var buffer = new byte[256];
+        try
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var count = await sourceInput.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+                if (count <= 0)
+                {
+                    break;
+                }
+
+                await targetInput.WriteAsync(buffer, 0, count, cancellationToken).ConfigureAwait(false);
+                await targetInput.FlushAsync(cancellationToken).ConfigureAwait(false);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected when recording stops.
+        }
+        catch (IOException)
+        {
+            // Child process may exit while forwarding input.
+        }
+        catch (ObjectDisposedException)
+        {
+            // Child process input stream already disposed.
+        }
+        catch (Exception ex)
+        {
+            logger.ZLogDebug(ex, $"Input forwarding failed.");
+        }
+    }
+
+    private static async Task IgnoreTaskFailureAsync(Task task)
+    {
+        try
+        {
+            await task.ConfigureAwait(false);
+        }
+        catch
+        {
+            // Ignore background task failures during shutdown.
+        }
+    }
+
+    private static Stream? TryOpenStandardInput(ILogger logger)
+    {
+        try
+        {
+            return Console.OpenStandardInput();
+        }
+        catch (Exception ex)
+        {
+            logger.ZLogDebug(ex, $"Standard input is unavailable. Input forwarding is disabled.");
+            return null;
+        }
+    }
+
+    private static Stream? TryOpenStandardOutput(ILogger logger)
+    {
+        try
+        {
+            return Console.OpenStandardOutput();
+        }
+        catch (Exception ex)
+        {
+            logger.ZLogDebug(ex, $"Standard output is unavailable. Output forwarding is disabled.");
+            return null;
         }
     }
 
@@ -292,6 +430,7 @@ public static class PtyRecorder
                 Arguments = "/d /c " + command + " 2>&1",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
+                RedirectStandardInput = true,
                 RedirectStandardError = false,
                 CreateNoWindow = true,
                 WorkingDirectory = Environment.CurrentDirectory,
@@ -304,6 +443,7 @@ public static class PtyRecorder
             Arguments = "-lc \"" + command.Replace("\"", "\\\"", StringComparison.Ordinal) + " 2>&1\"",
             UseShellExecute = false,
             RedirectStandardOutput = true,
+            RedirectStandardInput = true,
             RedirectStandardError = false,
             CreateNoWindow = true,
             WorkingDirectory = Environment.CurrentDirectory,

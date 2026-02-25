@@ -8,6 +8,8 @@ public enum OutputMode
 
 public sealed class AppOptions
 {
+    public bool Verbose { get; set; }
+
     public string? Command { get; set; }
 
     public string? InputCastPath { get; set; }

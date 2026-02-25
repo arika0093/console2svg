@@ -6,7 +6,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Pty.Net;
+using ZLogger;
 
 namespace ConsoleToSvg.Recording;
 
@@ -16,12 +19,15 @@ public static class PtyRecorder
         string command,
         int width,
         int height,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken,
+        ILogger? logger = null
     )
     {
+        logger ??= NullLogger.Instance;
+        logger.ZLogDebug($"Start PTY recording. Command={command} Width={width} Height={height}");
         try
         {
-            return await RecordWithPtyAsync(command, width, height, cancellationToken).ConfigureAwait(false);
+            return await RecordWithPtyAsync(command, width, height, cancellationToken, logger).ConfigureAwait(false);
         }
         catch (Exception ex)
             when (
@@ -31,7 +37,8 @@ public static class PtyRecorder
                 || ex is BadImageFormatException
             )
         {
-            return await RecordWithProcessFallbackAsync(command, width, height, cancellationToken).ConfigureAwait(false);
+            logger.ZLogDebug(ex, $"PTY backend unavailable. Falling back to process execution.");
+            return await RecordWithProcessFallbackAsync(command, width, height, cancellationToken, logger).ConfigureAwait(false);
         }
     }
 
@@ -39,15 +46,20 @@ public static class PtyRecorder
         string command,
         int width,
         int height,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken,
+        ILogger logger
     )
     {
         var options = BuildOptions(command, width, height);
+        logger.ZLogDebug(
+            $"Spawning PTY process. App={options.App} Args={string.Join(' ', options.CommandLine ?? Array.Empty<string>())} Cwd={options.Cwd} Cols={options.Cols} Rows={options.Rows}"
+        );
         var session = new RecordingSession(width, height);
         var stopwatch = Stopwatch.StartNew();
 
         var connection = await PtyProvider.SpawnAsync(options, cancellationToken).ConfigureAwait(false);
-        var readTask = ReadOutputAsync(connection.ReaderStream, session, stopwatch, cancellationToken);
+        logger.ZLogDebug($"PTY process spawned.");
+        var readTask = ReadOutputAsync(connection.ReaderStream, session, stopwatch, cancellationToken, logger);
 
         try
         {
@@ -85,6 +97,7 @@ public static class PtyRecorder
             // Ignore disposal errors when the process has already exited
         }
 
+        logger.ZLogDebug($"PTY recording completed. Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds}");
         return session;
     }
 
@@ -92,13 +105,17 @@ public static class PtyRecorder
         string command,
         int width,
         int height,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken,
+        ILogger logger
     )
     {
         var session = new RecordingSession(width, height);
         var stopwatch = Stopwatch.StartNew();
 
         var startInfo = BuildFallbackProcessStartInfo(command);
+        logger.ZLogDebug(
+            $"Using process fallback. FileName={startInfo.FileName} Arguments={startInfo.Arguments} Cwd={startInfo.WorkingDirectory}"
+        );
         using var process = new Process
         {
             StartInfo = startInfo,
@@ -106,6 +123,7 @@ public static class PtyRecorder
         };
 
         process.Start();
+        logger.ZLogDebug($"Fallback process started. Pid={process.Id}");
 
         using var registration = cancellationToken.Register(
             () =>
@@ -124,12 +142,13 @@ public static class PtyRecorder
             }
         );
 
-        await ReadOutputAsync(process.StandardOutput.BaseStream, session, stopwatch, cancellationToken).ConfigureAwait(false);
+        await ReadOutputAsync(process.StandardOutput.BaseStream, session, stopwatch, cancellationToken, logger).ConfigureAwait(false);
         while (!process.WaitForExit(50))
         {
             cancellationToken.ThrowIfCancellationRequested();
         }
 
+        logger.ZLogDebug($"Fallback recording completed. ExitCode={process.ExitCode} Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds}");
         return session;
     }
 
@@ -147,7 +166,8 @@ public static class PtyRecorder
         Stream readerStream,
         RecordingSession session,
         Stopwatch stopwatch,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken,
+        ILogger logger
     )
     {
         var bytes = new byte[4096];
@@ -160,17 +180,22 @@ public static class PtyRecorder
             var count = await readerStream.ReadAsync(bytes, 0, bytes.Length, cancellationToken).ConfigureAwait(false);
             if (count <= 0)
             {
+                logger.ZLogDebug($"Read stream completed (EOF).");
                 break;
             }
 
             var charCount = decoder.GetChars(bytes, 0, count, chars, 0, flush: false);
             if (charCount <= 0)
             {
+                logger.ZLogDebug($"Read chunk bytes={count}, no chars decoded yet.");
                 continue;
             }
 
             var text = new string(chars, 0, charCount);
             session.AddEvent(stopwatch.Elapsed.TotalSeconds, text);
+            logger.ZLogDebug(
+                $"Captured chunk bytes={count} chars={charCount} elapsedMs={stopwatch.ElapsedMilliseconds} preview={ToPreview(text)}"
+            );
         }
 
         var trailingCount = decoder.GetChars(Array.Empty<byte>(), 0, 0, chars, 0, flush: true);
@@ -178,7 +203,17 @@ public static class PtyRecorder
         {
             var trailing = new string(chars, 0, trailingCount);
             session.AddEvent(stopwatch.Elapsed.TotalSeconds, trailing);
+            logger.ZLogDebug($"Captured trailing decoded chars={trailingCount} preview={ToPreview(trailing)}");
         }
+    }
+
+    private static string ToPreview(string text)
+    {
+        var normalized = text.Replace("\r", "\\r", StringComparison.Ordinal)
+            .Replace("\n", "\\n", StringComparison.Ordinal)
+            .Replace("\t", "\\t", StringComparison.Ordinal);
+
+        return normalized.Length <= 120 ? normalized : normalized.Substring(0, 120) + "...";
     }
 
     private static PtyOptions BuildOptions(string command, int width, int height)
@@ -204,7 +239,7 @@ public static class PtyRecorder
                 Rows = height,
                 Cwd = Environment.CurrentDirectory,
                 App = "cmd.exe",
-                CommandLine = new[] { "cmd.exe", "/d", "/c", command },
+                CommandLine = ["cmd.exe", "/d", "/c", command],
                 Environment = env,
             };
         }
@@ -216,7 +251,7 @@ public static class PtyRecorder
             Rows = height,
             Cwd = Environment.CurrentDirectory,
             App = "/bin/sh",
-            CommandLine = new[] { "/bin/sh", "-lc", command },
+            CommandLine = ["/bin/sh", "-lc", command],
             Environment = env,
         };
     }

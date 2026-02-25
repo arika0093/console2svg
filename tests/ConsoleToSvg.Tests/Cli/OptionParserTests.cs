@@ -53,6 +53,30 @@ public sealed class OptionParserTests
     }
 
     [Test]
+    public void VerboseShortFlagParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "-v" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Verbose.ShouldBeTrue();
+    }
+
+    [Test]
+    public void VerboseLongFlagParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "--verbose" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Verbose.ShouldBeTrue();
+    }
+
+    [Test]
+    public void VerboseFlagParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "-v" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Verbose.ShouldBeTrue();
+    }
+
+    [Test]
     public void NullWidthHeightWhenNotSpecified()
     {
         var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);

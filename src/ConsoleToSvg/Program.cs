@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using ConsoleToSvg.Cli;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;
+using Microsoft.Extensions.Logging;
+using ZLogger;
 
 namespace ConsoleToSvg;
 
@@ -34,29 +36,43 @@ internal static class Program
             return 0;
         }
 
+        using var loggerFactory = CreateLoggerFactory(options.Verbose);
+        var logger = loggerFactory.CreateLogger("ConsoleToSvg.Program");
+        logger.ZLogDebug($"Starting console2svg. Verbose={options.Verbose} Args={string.Join(' ', args)}");
+        logger.ZLogDebug(
+            $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""}"
+        );
+
         using var cancellationTokenSource = new CancellationTokenSource();
         Console.CancelKeyPress += (_, eventArgs) =>
         {
             eventArgs.Cancel = true;
             cancellationTokenSource.Cancel();
+            logger.ZLogDebug($"Cancellation requested by Ctrl+C.");
         };
 
         try
         {
-            var session = await LoadOrRecordAsync(options, cancellationTokenSource.Token).ConfigureAwait(false);
+            var session = await LoadOrRecordAsync(options, loggerFactory, cancellationTokenSource.Token).ConfigureAwait(false);
+            logger.ZLogDebug($"Recording loaded. Events={session.Events.Count} Width={session.Header.width} Height={session.Header.height}");
 
             if (!string.IsNullOrWhiteSpace(options.SaveCastPath))
             {
+                logger.ZLogDebug($"Saving asciicast to {options.SaveCastPath}");
                 await AsciicastWriter.WriteToFileAsync(options.SaveCastPath!, session, cancellationTokenSource.Token)
                     .ConfigureAwait(false);
+                logger.ZLogDebug($"Saved asciicast to {options.SaveCastPath}");
             }
 
             var renderOptions = SvgRenderOptions.FromAppOptions(options);
+            logger.ZLogDebug($"Rendering SVG. Mode={options.Mode}");
             var svg = options.Mode == OutputMode.Video
                 ? AnimatedSvgRenderer.Render(session, renderOptions)
                 : SvgRenderer.Render(session, renderOptions);
+            logger.ZLogDebug($"Rendering completed. SvgLength={svg.Length}");
 
             EnsureDirectory(options.OutputPath);
+            logger.ZLogDebug($"Writing output file: {options.OutputPath}");
             await File.WriteAllTextAsync(
                     options.OutputPath,
                     svg,
@@ -64,26 +80,35 @@ internal static class Program
                     cancellationTokenSource.Token
                 )
                 .ConfigureAwait(false);
+            logger.ZLogDebug($"Output file written: {options.OutputPath}");
 
             await Console.Error.WriteLineAsync($"Generated: {options.OutputPath}");
             return 0;
         }
         catch (OperationCanceledException)
         {
+            logger.ZLogDebug($"Execution canceled.");
             await Console.Error.WriteLineAsync("Canceled.");
             return 130;
         }
         catch (Exception ex)
         {
+            logger.ZLogError(ex, $"Unhandled exception occurred: {ex.Message}");
             await Console.Error.WriteLineAsync(ex.Message);
             return 1;
         }
     }
 
-    private static async Task<RecordingSession> LoadOrRecordAsync(AppOptions options, CancellationToken cancellationToken)
+    private static async Task<RecordingSession> LoadOrRecordAsync(
+        AppOptions options,
+        ILoggerFactory loggerFactory,
+        CancellationToken cancellationToken
+    )
     {
+        var logger = loggerFactory.CreateLogger("ConsoleToSvg.LoadOrRecord");
         if (!string.IsNullOrWhiteSpace(options.InputCastPath))
         {
+            logger.ZLogDebug($"Input source: asciicast file. Path={options.InputCastPath}");
             return await AsciicastReader.ReadFromFileAsync(options.InputCastPath!, cancellationToken).ConfigureAwait(false);
         }
 
@@ -91,11 +116,13 @@ internal static class Program
         {
             var ptyWidth = options.Width ?? 80;
             var ptyHeight = options.Height ?? 24;
+                logger.ZLogDebug($"Input source: PTY command. Command={options.Command} Width={ptyWidth} Height={ptyHeight}");
             return await PtyRecorder.RecordAsync(
                     options.Command!,
                     ptyWidth,
                     ptyHeight,
-                    cancellationToken
+                    cancellationToken,
+                    loggerFactory.CreateLogger("ConsoleToSvg.PtyRecorder")
                 )
                 .ConfigureAwait(false);
         }
@@ -109,13 +136,25 @@ internal static class Program
 
         var pipeWidth = options.Width ?? TryGetConsoleWidth() ?? 80;
         var pipeHeight = options.Height ?? TryGetConsoleHeight() ?? 24;
+        logger.ZLogDebug($"Input source: stdin pipe. Width={pipeWidth} Height={pipeHeight}");
         return await PipeRecorder.RecordAsync(
                 Console.OpenStandardInput(),
                 pipeWidth,
                 pipeHeight,
-                cancellationToken
+                cancellationToken,
+                loggerFactory.CreateLogger("ConsoleToSvg.PipeRecorder")
             )
             .ConfigureAwait(false);
+    }
+
+    private static ILoggerFactory CreateLoggerFactory(bool verbose)
+    {
+        return LoggerFactory.Create(builder =>
+        {
+            builder.ClearProviders();
+            builder.AddZLoggerConsole();
+            builder.SetMinimumLevel(verbose ? LogLevel.Debug : LogLevel.None);
+        });
     }
 
     private static int? TryGetConsoleWidth()

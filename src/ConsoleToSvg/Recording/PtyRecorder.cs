@@ -87,7 +87,7 @@ public static class PtyRecorder
             connection.ReaderStream,
             session,
             stopwatch,
-            CancellationToken.None,
+            forwardingCancellation.Token,
             logger,
             outputForward
         );
@@ -100,13 +100,25 @@ public static class PtyRecorder
             )
             : null;
 
+        var eofReached = false;
         try
         {
-            while (!connection.WaitForExit(50))
+            while (true)
             {
+                if (readTask.IsCompleted)
+                {
+                    eofReached = true;
+                    break;
+                }
+
                 if (cancellationToken.IsCancellationRequested)
                 {
                     canceled = true;
+                    break;
+                }
+
+                if (connection.WaitForExit(50))
+                {
                     break;
                 }
             }
@@ -117,9 +129,12 @@ public static class PtyRecorder
             // "Killing terminal failed with error 3" (ESRCH: no such process)
         }
 
-        if (canceled)
+        if (canceled || eofReached)
         {
-            logger.ZLogDebug($"Cancellation requested. Finalizing partial PTY recording.");
+            var msg = eofReached
+                ? $"PTY output stream ended. Finalizing recording."
+                : $"Cancellation requested. Finalizing partial PTY recording.";
+            logger.ZLogDebug($"{msg}");
             try
             {
                 connection.Dispose();
@@ -146,7 +161,7 @@ public static class PtyRecorder
             // when reading after the slave side is closed. Treat as EOF.
         }
 
-        if (!canceled)
+        if (!canceled && !eofReached)
         {
             try
             {
@@ -409,10 +424,40 @@ public static class PtyRecorder
 
     private static string ToPreview(string text)
     {
-        var normalized = text.Replace("\r", "\\r", StringComparison.Ordinal)
-            .Replace("\n", "\\n", StringComparison.Ordinal)
-            .Replace("\t", "\\t", StringComparison.Ordinal);
+        var builder = new StringBuilder(text.Length);
+        foreach (var ch in text)
+        {
+            switch (ch)
+            {
+                case '\r':
+                    builder.Append("\\r");
+                    break;
+                case '\n':
+                    builder.Append("\\n");
+                    break;
+                case '\t':
+                    builder.Append("\\t");
+                    break;
+                default:
+                    if (char.IsControl(ch))
+                    {
+                        builder.Append("\\x");
+                        builder.Append(
+                            ((int)ch).ToString(
+                                "X2",
+                                System.Globalization.CultureInfo.InvariantCulture
+                            )
+                        );
+                    }
+                    else
+                    {
+                        builder.Append(ch);
+                    }
+                    break;
+            }
+        }
 
+        var normalized = builder.ToString();
         return normalized.Length <= 120 ? normalized : normalized.Substring(0, 120) + "...";
     }
 

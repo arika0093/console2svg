@@ -67,8 +67,11 @@ internal sealed class NativePtyConnection : IDisposable
 internal static class NativePtyWindows
 {
     private const uint EXTENDED_STARTUPINFO_PRESENT = 0x00080000;
+    private const uint CREATE_UNICODE_ENVIRONMENT = 0x00000400;
     private const int PROC_THREAD_ATTRIBUTE_PSEUDOCONSOLE = 0x00020016;
     private const uint HANDLE_FLAG_INHERIT = 0x00000001;
+    private const uint WAIT_OBJECT_0 = 0x00000000;
+    private const uint WAIT_FAILED = 0xFFFFFFFF;
 
     public static NativePtyConnection Spawn(NativePtyOptions options)
     {
@@ -78,11 +81,11 @@ internal static class NativePtyWindows
         }
 
         var size = new COORD((short)options.Cols, (short)options.Rows);
-        CreatePipe(out var inputRead, out var inputWrite, IntPtr.Zero, 0);
-        CreatePipe(out var outputRead, out var outputWrite, IntPtr.Zero, 0);
+        EnsureWin32(CreatePipe(out var inputRead, out var inputWrite, IntPtr.Zero, 0));
+        EnsureWin32(CreatePipe(out var outputRead, out var outputWrite, IntPtr.Zero, 0));
 
-        SetHandleInformation(inputWrite, HANDLE_FLAG_INHERIT, 0);
-        SetHandleInformation(outputRead, HANDLE_FLAG_INHERIT, 0);
+        EnsureWin32(SetHandleInformation(inputWrite, HANDLE_FLAG_INHERIT, 0));
+        EnsureWin32(SetHandleInformation(outputRead, HANDLE_FLAG_INHERIT, 0));
 
         var hr = CreatePseudoConsole(size, inputRead, outputWrite, 0, out var hPC);
         if (hr != 0)
@@ -126,35 +129,25 @@ internal static class NativePtyWindows
 
             var commandLine = BuildCommandLine(options.App, options.Args);
             environmentBlock = BuildEnvironmentBlock(options.Environment);
-            if (
-                !CreateProcessW(
-                    null,
-                    commandLine,
-                    IntPtr.Zero,
-                    IntPtr.Zero,
-                    false,
-                    EXTENDED_STARTUPINFO_PRESENT,
-                    environmentBlock,
-                    options.Cwd,
-                    ref startupInfo,
-                    out var processInfo
-                )
-            )
-            {
-                throw new Win32Exception(Marshal.GetLastWin32Error());
-            }
+            var cwd = string.IsNullOrWhiteSpace(options.Cwd) ? null : options.Cwd;
+            var processInfo = CreateProcessWithRetry(
+                commandLine,
+                environmentBlock,
+                cwd,
+                ref startupInfo
+            );
 
             var reader = new FileStream(
                 new SafeFileHandle(outputRead, ownsHandle: true),
                 FileAccess.Read,
                 4096,
-                isAsync: true
+                isAsync: false
             );
             var writer = new FileStream(
                 new SafeFileHandle(inputWrite, ownsHandle: true),
                 FileAccess.Write,
                 4096,
-                isAsync: true
+                isAsync: false
             );
 
             var exited = false;
@@ -167,7 +160,13 @@ internal static class NativePtyWindows
                 }
 
                 var result = WaitForSingleObject(processInfo.hProcess, milliseconds);
-                if (result == 0)
+                if (result == WAIT_OBJECT_0)
+                {
+                    exited = true;
+                    return true;
+                }
+
+                if (result == WAIT_FAILED)
                 {
                     exited = true;
                     return true;
@@ -182,27 +181,17 @@ internal static class NativePtyWindows
                 {
                     reader.Dispose();
                 }
-                catch
-                {
-                }
+                catch { }
 
                 try
                 {
                     writer.Dispose();
                 }
-                catch
-                {
-                }
+                catch { }
 
                 if (!exited)
                 {
-                    try
-                    {
-                        TerminateProcess(processInfo.hProcess, 1);
-                    }
-                    catch
-                    {
-                    }
+                    TryGracefulExit(processInfo.hProcess, ref exited);
                 }
 
                 ClosePseudoConsole(hPC);
@@ -218,9 +207,7 @@ internal static class NativePtyWindows
             {
                 ClosePseudoConsole(hPC);
             }
-            catch
-            {
-            }
+            catch { }
 
             try
             {
@@ -229,9 +216,7 @@ internal static class NativePtyWindows
                 CloseHandle(outputRead);
                 CloseHandle(outputWrite);
             }
-            catch
-            {
-            }
+            catch { }
 
             throw;
         }
@@ -324,7 +309,17 @@ internal static class NativePtyWindows
         }
 
         var builder = new StringBuilder();
+        var entries = new List<KeyValuePair<string, string>>(env.Count);
         foreach (var pair in env)
+        {
+            entries.Add(pair);
+        }
+
+        entries.Sort(
+            (left, right) => StringComparer.OrdinalIgnoreCase.Compare(left.Key, right.Key)
+        );
+
+        foreach (var pair in entries)
         {
             builder.Append(pair.Key);
             builder.Append('=');
@@ -334,6 +329,86 @@ internal static class NativePtyWindows
 
         builder.Append('\0');
         return Marshal.StringToHGlobalUni(builder.ToString());
+    }
+
+    private static void EnsureWin32(bool result)
+    {
+        if (!result)
+        {
+            throw new Win32Exception(Marshal.GetLastWin32Error());
+        }
+    }
+
+    private static PROCESS_INFORMATION CreateProcessWithRetry(
+        string commandLine,
+        IntPtr environmentBlock,
+        string? cwd,
+        ref STARTUPINFOEX startupInfo
+    )
+    {
+        if (
+            CreateProcessW(
+                null,
+                commandLine,
+                IntPtr.Zero,
+                IntPtr.Zero,
+                false,
+                EXTENDED_STARTUPINFO_PRESENT | CREATE_UNICODE_ENVIRONMENT,
+                environmentBlock,
+                cwd,
+                ref startupInfo,
+                out var processInfo
+            )
+        )
+        {
+            return processInfo;
+        }
+
+        var error = Marshal.GetLastWin32Error();
+        if (error == 87 && environmentBlock != IntPtr.Zero)
+        {
+            if (
+                CreateProcessW(
+                    null,
+                    commandLine,
+                    IntPtr.Zero,
+                    IntPtr.Zero,
+                    false,
+                    EXTENDED_STARTUPINFO_PRESENT | CREATE_UNICODE_ENVIRONMENT,
+                    IntPtr.Zero,
+                    cwd,
+                    ref startupInfo,
+                    out processInfo
+                )
+            )
+            {
+                return processInfo;
+            }
+
+            error = Marshal.GetLastWin32Error();
+        }
+
+        throw new Win32Exception(error);
+    }
+
+    private static void TryGracefulExit(IntPtr processHandle, ref bool exited)
+    {
+        try
+        {
+            var waitResult = WaitForSingleObject(processHandle, 500);
+            if (waitResult == 0)
+            {
+                exited = true;
+                return;
+            }
+        }
+        catch { }
+
+        try
+        {
+            TerminateProcess(processHandle, 1);
+        }
+        catch { }
     }
 
     private static void ThrowWin32(string message, int hr)
@@ -414,11 +489,7 @@ internal static class NativePtyWindows
     );
 
     [DllImport("kernel32.dll", SetLastError = true)]
-    private static extern bool SetHandleInformation(
-        IntPtr hObject,
-        uint dwMask,
-        uint dwFlags
-    );
+    private static extern bool SetHandleInformation(IntPtr hObject, uint dwMask, uint dwFlags);
 
     [DllImport("kernel32.dll", SetLastError = true)]
     private static extern bool InitializeProcThreadAttributeList(
@@ -470,6 +541,7 @@ internal static class NativePtyUnix
 {
     private const int WNOHANG = 1;
     private const int SIGTERM = 15;
+    private const int SIGKILL = 9;
 
     public static NativePtyConnection Spawn(NativePtyOptions options)
     {
@@ -483,13 +555,15 @@ internal static class NativePtyUnix
             ws_col = (ushort)options.Cols,
             ws_row = (ushort)options.Rows,
             ws_xpixel = 0,
-            ws_ypixel = 0
+            ws_ypixel = 0,
         };
 
         var pid = forkpty(out var masterFd, IntPtr.Zero, IntPtr.Zero, ref size);
         if (pid < 0)
         {
-            throw new InvalidOperationException($"forkpty failed. errno={Marshal.GetLastWin32Error()}");
+            throw new InvalidOperationException(
+                $"forkpty failed. errno={Marshal.GetLastWin32Error()}"
+            );
         }
 
         if (pid == 0)
@@ -512,9 +586,7 @@ internal static class NativePtyUnix
                 var args = BuildArgv(options.App, options.Args);
                 execvp(options.App, args);
             }
-            catch
-            {
-            }
+            catch { }
 
             _exit(127);
             return new NativePtyConnection(Stream.Null, Stream.Null, _ => true, () => { });
@@ -568,35 +640,17 @@ internal static class NativePtyUnix
             {
                 reader.Dispose();
             }
-            catch
-            {
-            }
+            catch { }
 
             try
             {
                 writer.Dispose();
             }
-            catch
-            {
-            }
+            catch { }
 
             if (!exited)
             {
-                try
-                {
-                    kill(pid, SIGTERM);
-                }
-                catch
-                {
-                }
-            }
-
-            try
-            {
-                waitpid(pid, out _, WNOHANG);
-            }
-            catch
-            {
+                TryGracefulExit(pid, ref exited);
             }
         }
 
@@ -621,6 +675,40 @@ internal static class NativePtyUnix
 
         Marshal.WriteIntPtr(ptr, list.Count * IntPtr.Size, IntPtr.Zero);
         return ptr;
+    }
+
+    private static void TryGracefulExit(int pid, ref bool exited)
+    {
+        try
+        {
+            kill(pid, SIGTERM);
+        }
+        catch { }
+
+        var deadline = DateTime.UtcNow.AddMilliseconds(500);
+        while (DateTime.UtcNow <= deadline)
+        {
+            var result = waitpid(pid, out _, WNOHANG);
+            if (result == pid)
+            {
+                exited = true;
+                return;
+            }
+
+            Thread.Sleep(10);
+        }
+
+        try
+        {
+            kill(pid, SIGKILL);
+        }
+        catch { }
+
+        try
+        {
+            waitpid(pid, out _, WNOHANG);
+        }
+        catch { }
     }
 
     [StructLayout(LayoutKind.Sequential)]

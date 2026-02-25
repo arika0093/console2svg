@@ -157,7 +157,8 @@ internal static class Program
                     ptyWidth,
                     ptyHeight,
                     cancellationToken,
-                    loggerFactory.CreateLogger("ConsoleToSvg.PtyRecorder")
+                    loggerFactory.CreateLogger("ConsoleToSvg.PtyRecorder"),
+                    forwardToConsole: !options.Verbose
                 )
                 .ConfigureAwait(false);
         }

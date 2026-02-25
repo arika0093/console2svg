@@ -303,4 +303,30 @@ public sealed class AnsiParserTests
         emulator.Buffer.GetCell(0, 2).Text.ShouldBe("c");
         emulator.Buffer.GetCell(0, 9).Text.ShouldBe("Z");
     }
+
+    [Test]
+    public void EscCharsetDesignationDoesNotRenderLiteralB()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(12, 2, theme);
+
+        emulator.Process("\u001b(BX");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("X");
+        emulator.Buffer.GetCell(0, 1).Text.ShouldBe(" ");
+    }
+
+    [Test]
+    public void SplitEscCharsetDesignationAcrossChunksDoesNotRenderLiteralB()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(12, 2, theme);
+
+        emulator.Process("\u001b(");
+        emulator.Process("B");
+        emulator.Process("X");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("X");
+        emulator.Buffer.GetCell(0, 1).Text.ShouldBe(" ");
+    }
 }

@@ -1,3 +1,4 @@
+#pragma warning disable S127
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -104,6 +105,16 @@ public sealed class AnsiParser
                 return TryHandleCsi(text, index + 2, out endIndex);
             case ']':
                 return TrySkipOsc(text, index + 2, out endIndex);
+            case '(':
+            case ')':
+            case '*':
+            case '+':
+            case '-':
+            case '.':
+            case '/':
+            case '#':
+            case '%':
+                return TrySkipEscSingleFinal(text, index + 2, out endIndex);
             case '7':
                 _buffer.SaveCursor();
                 endIndex = index + 1;
@@ -122,6 +133,18 @@ public sealed class AnsiParser
                 endIndex = index + 1;
                 return true;
         }
+    }
+
+    private static bool TrySkipEscSingleFinal(string text, int start, out int endIndex)
+    {
+        endIndex = start;
+        if (start >= text.Length)
+        {
+            return false;
+        }
+
+        endIndex = start;
+        return true;
     }
 
     private bool TrySkipOsc(string text, int start, out int endIndex)

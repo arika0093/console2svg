@@ -67,4 +67,39 @@ public sealed class AnimatedSvgRendererTests
         var keyframeBlock = svg.Substring(keyframeStart);
         keyframeBlock.ShouldNotContain("100%{opacity:0;}");
     }
+
+    [Test]
+    public void RenderAnimatedSvgDownsamplesDenseFrames()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        for (var i = 0; i < 60; i++)
+        {
+            session.AddEvent(i * 0.01, "A");
+        }
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        var frameTagCount = CountOccurrences(svg, "id=\"frame-");
+        frameTagCount.ShouldBeLessThan(20);
+    }
+
+    private static int CountOccurrences(string text, string token)
+    {
+        var count = 0;
+        var index = 0;
+        while (true)
+        {
+            index = text.IndexOf(token, index, StringComparison.Ordinal);
+            if (index < 0)
+            {
+                return count;
+            }
+
+            count++;
+            index += token.Length;
+        }
+    }
 }

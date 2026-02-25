@@ -8,6 +8,8 @@ namespace ConsoleToSvg.Svg;
 
 public static class AnimatedSvgRenderer
 {
+    private const double MaxFps = 12d;
+
     public static string Render(RecordingSession session, SvgRenderOptions options)
     {
         if (session.Events.Count == 0)
@@ -24,18 +26,20 @@ public static class AnimatedSvgRenderer
             return SvgRenderer.Render(session, options);
         }
 
-        var context = SvgDocumentBuilder.CreateContext(frames[0].Buffer, options.Crop, includeScrollback: false, options.Window, options.Padding);
-        var duration = Math.Max(0.05d, frames[frames.Count - 1].Time);
+        var reducedFrames = ReduceFrames(frames, MaxFps);
 
-        var css = BuildAnimationCss(frames, duration);
+        var context = SvgDocumentBuilder.CreateContext(reducedFrames[0].Buffer, options.Crop, includeScrollback: false, options.Window, options.Padding);
+        var duration = Math.Max(0.05d, reducedFrames[reducedFrames.Count - 1].Time);
+
+        var css = BuildAnimationCss(reducedFrames, duration);
 
         var sb = new StringBuilder(128 * 1024);
         SvgDocumentBuilder.BeginSvg(sb, context, theme, css, font: options.Font, windowStyle: options.Window);
-        for (var i = 0; i < frames.Count; i++)
+        for (var i = 0; i < reducedFrames.Count; i++)
         {
             SvgDocumentBuilder.AppendFrameGroup(
                 sb,
-                frames[i].Buffer,
+                reducedFrames[i].Buffer,
                 context,
                 theme,
                 id: $"frame-{i}",
@@ -45,6 +49,42 @@ public static class AnimatedSvgRenderer
 
         SvgDocumentBuilder.EndSvg(sb);
         return sb.ToString();
+    }
+
+    private static System.Collections.Generic.IReadOnlyList<TerminalFrame> ReduceFrames(
+        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
+        double maxFps
+    )
+    {
+        if (frames.Count <= 2 || maxFps <= 0)
+        {
+            return frames;
+        }
+
+        var minimumInterval = 1d / maxFps;
+        var reduced = new System.Collections.Generic.List<TerminalFrame>(frames.Count);
+        reduced.Add(frames[0]);
+        var lastKeptTime = frames[0].Time;
+
+        for (var i = 1; i < frames.Count - 1; i++)
+        {
+            var frame = frames[i];
+            if (frame.Time - lastKeptTime < minimumInterval)
+            {
+                continue;
+            }
+
+            reduced.Add(frame);
+            lastKeptTime = frame.Time;
+        }
+
+        var last = frames[frames.Count - 1];
+        if (!ReferenceEquals(reduced[reduced.Count - 1], last))
+        {
+            reduced.Add(last);
+        }
+
+        return reduced;
     }
 
     private static string BuildAnimationCss(System.Collections.Generic.IReadOnlyList<TerminalFrame> frames, double duration)

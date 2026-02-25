@@ -54,7 +54,7 @@ dotnet tool install -g ConsoleToSvg
 
 ### Pipe mode
 
-Width and height default to the current terminal dimensions (via `Console.WindowWidth`/`Console.WindowHeight`).
+Width and height default to the current terminal dimensions.
 
 ```sh
 my-command | console2svg

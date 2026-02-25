@@ -31,7 +31,7 @@ public static class OptionParser
           --theme <dark|light>           Color theme (default: dark).
           --window <none|macos|windows>  Terminal window chrome style (default: none).
           --padding <px>                 Outer padding in pixels around terminal content (default: 2).
-                    --loop                         Loop animated SVG playback in video mode (default: false).
+          --loop                         Loop animated SVG playback in video mode (default: false).
           --font <family>                CSS font-family for SVG text (default: system monospace).
           --save-cast <path>             Save captured output as asciicast file.
           --help                         Show help.

@@ -25,7 +25,7 @@ You can also generate SVG with a window frame. and some options to customize the
 
 ---
 
-![](./assets/cmd-animate.gif)
+![](./assets/cmd-animate.svg)
 
 ```bash
 console2svg -m video --window macos -w 120 -h 16 -- ./my-install.sh

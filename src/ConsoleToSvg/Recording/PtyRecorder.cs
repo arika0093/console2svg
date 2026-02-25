@@ -52,7 +52,7 @@ public static class PtyRecorder
     {
         var options = BuildOptions(command, width, height);
         logger.ZLogDebug(
-            $"Spawning PTY process. App={options.App} Args={string.Join(' ', options.CommandLine ?? Array.Empty<string>())} Cwd={options.Cwd} Cols={options.Cols} Rows={options.Rows}"
+            $"Spawning PTY process. App={options.App} Args={string.Join(' ', options.CommandLine ?? [])} Cwd={options.Cwd} Cols={options.Cols} Rows={options.Rows}"
         );
         var session = new RecordingSession(width, height);
         var stopwatch = Stopwatch.StartNew();
@@ -198,7 +198,7 @@ public static class PtyRecorder
             );
         }
 
-        var trailingCount = decoder.GetChars(Array.Empty<byte>(), 0, 0, chars, 0, flush: true);
+        var trailingCount = decoder.GetChars([], 0, 0, chars, 0, flush: true);
         if (trailingCount > 0)
         {
             var trailing = new string(chars, 0, trailingCount);

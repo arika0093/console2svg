@@ -143,4 +143,20 @@ public sealed class OptionParserTests
         options!.Mode.ShouldBe(OutputMode.Video);
         options.Loop.ShouldBeTrue();
     }
+
+    [Test]
+    public void FpsOptionParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "--fps", "24" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.VideoFps.ShouldBe(24d);
+    }
+
+    [Test]
+    public void InvalidFpsReturnsError()
+    {
+        var ok = OptionParser.TryParse(new[] { "--fps", "0" }, out _, out var error, out _);
+        ok.ShouldBeFalse();
+        error.ShouldBe("--fps must be greater than 0.");
+    }
 }

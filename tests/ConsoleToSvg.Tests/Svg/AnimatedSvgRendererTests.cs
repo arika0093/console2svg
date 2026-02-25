@@ -107,6 +107,46 @@ public sealed class AnimatedSvgRendererTests
         svg.ShouldNotContain("linear forwards;");
     }
 
+    [Test]
+    public void RenderAnimatedSvgPreservesRapidColorChanges()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.00, "\u001b[32mA");
+        session.AddEvent(0.01, "\u001b[37mA");
+        session.AddEvent(0.02, "\u001b[32mA");
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain("#0dbc79");
+        svg.ShouldContain("#e5e5e5");
+    }
+
+    [Test]
+    public void RenderAnimatedSvgHigherFpsKeepsMoreFrames()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        for (var i = 0; i < 60; i++)
+        {
+            session.AddEvent(i * 0.01, "A");
+        }
+
+        var lowFpsSvg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", VideoFps = 8 }
+        );
+        var highFpsSvg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", VideoFps = 30 }
+        );
+
+        var lowCount = CountOccurrences(lowFpsSvg, "id=\"frame-");
+        var highCount = CountOccurrences(highFpsSvg, "id=\"frame-");
+        highCount.ShouldBeGreaterThan(lowCount);
+    }
+
     private static int CountOccurrences(string text, string token)
     {
         var count = 0;

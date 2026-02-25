@@ -26,6 +26,8 @@ public sealed class SvgRenderOptions
 
     public bool Loop { get; set; }
 
+    public double VideoFps { get; set; } = 12d;
+
     public static SvgRenderOptions FromAppOptions(AppOptions appOptions)
     {
         return new SvgRenderOptions
@@ -42,6 +44,7 @@ public sealed class SvgRenderOptions
             Window = ParseWindowStyle(appOptions.Window),
             Padding = appOptions.Padding,
             Loop = appOptions.Loop,
+            VideoFps = appOptions.VideoFps,
         };
     }
 

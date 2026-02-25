@@ -16,7 +16,6 @@ public static class OptionParser
 
         Options:
           -c, --command <value>          Execute command in PTY mode.
-          --in <path>                    Read existing asciicast file.
           -o, --out <path>               Output SVG path (default: output.svg).
           -m, --mode <image|video>       Output mode (default: image).
           -w, --width <int>              Terminal width in characters (default: auto).
@@ -32,7 +31,9 @@ public static class OptionParser
           --window <none|macos|windows>  Terminal window chrome style (default: none).
           --padding <px>                 Outer padding in pixels around terminal content (default: 2).
           --loop                         Loop animated SVG playback in video mode (default: false).
+          --fps <value>                  Max FPS for animated SVG frame sampling (default: 12).
           --font <family>                CSS font-family for SVG text (default: system monospace).
+          --in <path>                    Read existing asciicast file.
           --save-cast <path>             Save captured output as asciicast file.
           --help                         Show help.
         """;
@@ -254,6 +255,14 @@ public static class OptionParser
             case "--loop":
                 options.Loop = true;
                 return true;
+            case "--fps":
+                if (!TryParseDouble(value, "--fps", out var fps, out error))
+                {
+                    return false;
+                }
+
+                options.VideoFps = fps;
+                return true;
             case "--font":
                 options.Font = value;
                 return true;
@@ -335,6 +344,12 @@ public static class OptionParser
         if (double.IsNaN(options.Padding) || double.IsInfinity(options.Padding) || options.Padding < 0)
         {
             error = "--padding must be a non-negative finite number.";
+            return false;
+        }
+
+        if (double.IsNaN(options.VideoFps) || double.IsInfinity(options.VideoFps) || options.VideoFps <= 0)
+        {
+            error = "--fps must be greater than 0.";
             return false;
         }
 

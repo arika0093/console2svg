@@ -9,7 +9,8 @@ public readonly record struct TextStyle(
     bool Bold,
     bool Italic,
     bool Underline,
-    bool Reversed = false
+    bool Reversed = false,
+    bool Faint = false
 );
 
 public readonly struct ScreenCell
@@ -23,6 +24,7 @@ public readonly struct ScreenCell
         Italic = style.Italic;
         Underline = style.Underline;
         Reversed = style.Reversed;
+        Faint = style.Faint;
         IsWide = isWide;
         IsWideContinuation = isWideContinuation;
     }
@@ -41,12 +43,15 @@ public readonly struct ScreenCell
 
     public bool Reversed { get; }
 
+    public bool Faint { get; }
+
     public bool IsWide { get; }
 
     public bool IsWideContinuation { get; }
 
     public TextStyle ToTextStyle() =>
-        new TextStyle(Foreground, Background, Bold, Italic, Underline, Reversed);}
+        new TextStyle(Foreground, Background, Bold, Italic, Underline, Reversed, Faint);
+}
 
 public sealed class ScreenBuffer
 {

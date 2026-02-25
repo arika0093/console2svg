@@ -33,6 +33,17 @@ console2svg -m video --window macos -w 120 -h 16 -- ./my-install.sh
 
 You can also capture the output of a command that runs for a while, and generate an animated SVG that replays the output.
 
+---
+
+![](./assets/cmd-loop.svg)
+
+```bash
+console2svg -m video --loop --window macos -w 100 -h 24 -- nyancat
+```
+
+Loop playback is also supported.
+
+
 ## Install
 
 ```sh
@@ -96,7 +107,6 @@ console2svg --window macos --padding 8 -- dotnet --version
 
 - `-m, --mode image|video`
 - `-c, --command <cmd>` (also works as a bare positional argument)
-- `--in <cast-path>`
 - `-o, --out <svg-path>`
 - `-w, --width <columns>` / `-h, --height <rows>` (default: auto-detected from terminal in pipe mode, 80×24 for PTY)
 - `--frame <index>`
@@ -105,7 +115,9 @@ console2svg --window macos --padding 8 -- dotnet --version
 - `--window none|macos|windows`
 - `--padding <px>` (default: 2)
 - `--loop` (video mode only, default: false)
+- `--fps <number>` (video mode only, default: 12)
 - `--font <css-font-family>`
+- `--in <cast-path>`
 - `--save-cast <path>`
 - `--help`
 - `--version`

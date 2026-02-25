@@ -294,7 +294,10 @@ public sealed class AnsiParser
                     _style = _buffer.DefaultStyle;
                     break;
                 case 1:
-                    _style = _style with { Bold = true };
+                    _style = _style with { Bold = true, Faint = false };
+                    break;
+                case 2:
+                    _style = _style with { Bold = false, Faint = true };
                     break;
                 case 3:
                     _style = _style with { Italic = true };
@@ -306,7 +309,7 @@ public sealed class AnsiParser
                     _style = _style with { Reversed = true };
                     break;
                 case 22:
-                    _style = _style with { Bold = false };
+                    _style = _style with { Bold = false, Faint = false };
                     break;
                 case 23:
                     _style = _style with { Italic = false };

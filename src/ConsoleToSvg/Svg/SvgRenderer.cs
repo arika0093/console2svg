@@ -388,6 +388,7 @@ internal static class SvgDocumentBuilder
                 var cellRectWidth = cell.IsWide ? CellWidth * 2 : CellWidth;
                 var effectiveFg = cell.Reversed ? cell.Background : cell.Foreground;
                 var effectiveBg = cell.Reversed ? cell.Foreground : cell.Background;
+                effectiveFg = ApplyIntensity(effectiveFg, cell.Bold, cell.Faint);
 
                 if (!string.Equals(effectiveBg, theme.Background, StringComparison.OrdinalIgnoreCase))
                 {
@@ -465,6 +466,91 @@ internal static class SvgDocumentBuilder
     private static string EscapeAttribute(string value)
     {
         return EscapeText(value);
+    }
+
+    private static string ApplyIntensity(string color, bool bold, bool faint)
+    {
+        var factor = 1d;
+        if (bold)
+        {
+            factor *= 1.2d;
+        }
+
+        if (faint)
+        {
+            factor *= 0.75d;
+        }
+
+        if (Math.Abs(factor - 1d) < 0.0001d)
+        {
+            return color;
+        }
+
+        if (!TryParseHexColor(color, out var r, out var g, out var b))
+        {
+            return color;
+        }
+
+        var adjustedR = Clamp((int)Math.Round(r * factor), 0, 255);
+        var adjustedG = Clamp((int)Math.Round(g * factor), 0, 255);
+        var adjustedB = Clamp((int)Math.Round(b * factor), 0, 255);
+        return $"#{adjustedR:X2}{adjustedG:X2}{adjustedB:X2}";
+    }
+
+    private static bool TryParseHexColor(string color, out int r, out int g, out int b)
+    {
+        r = 0;
+        g = 0;
+        b = 0;
+        if (string.IsNullOrWhiteSpace(color) || color.Length != 7 || color[0] != '#')
+        {
+            return false;
+        }
+
+        var parsedR = ParseHexByte(color[1], color[2]);
+        var parsedG = ParseHexByte(color[3], color[4]);
+        var parsedB = ParseHexByte(color[5], color[6]);
+        if (parsedR < 0 || parsedG < 0 || parsedB < 0)
+        {
+            return false;
+        }
+
+        r = parsedR;
+        g = parsedG;
+        b = parsedB;
+        return true;
+    }
+
+    private static int ParseHexByte(char high, char low)
+    {
+        var hi = ParseHexNibble(high);
+        var lo = ParseHexNibble(low);
+        if (hi < 0 || lo < 0)
+        {
+            return -1;
+        }
+
+        return (hi << 4) | lo;
+    }
+
+    private static int ParseHexNibble(char c)
+    {
+        if (c >= '0' && c <= '9')
+        {
+            return c - '0';
+        }
+
+        if (c >= 'A' && c <= 'F')
+        {
+            return c - 'A' + 10;
+        }
+
+        if (c >= 'a' && c <= 'f')
+        {
+            return c - 'a' + 10;
+        }
+
+        return -1;
     }
 
     private static int Clamp(int value, int min, int max)

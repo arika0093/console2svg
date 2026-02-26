@@ -1,0 +1,195 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'version.json'
+
+permissions:
+  contents: write
+
+env:
+  DOTNET_VERSION: '10.0.x'
+
+jobs:
+  build-nupkg:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.semver }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - uses: dotnet/nbgv@master
+        id: nbgv
+
+      - name: Export version
+        id: version
+        run: echo "semver=${{ steps.nbgv.outputs.SemVer2 }}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore dependencies
+        run: dotnet restore --locked-mode
+
+      - name: Build
+        run: dotnet build --no-restore -c Release
+
+      - name: Generate NuGet Package
+        run: dotnet pack --no-build -c Release --output ./nuget-artifacts
+
+      - name: Upload NuGet artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: ./nuget-artifacts/*.nupkg
+
+  build-aot:
+    needs: build-nupkg
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            rid: linux-x64
+            vpk_os: linux
+            vpk_arch: x64
+          - os: ubuntu-24.04-arm
+            rid: linux-arm64
+            vpk_os: linux
+            vpk_arch: arm64
+          - os: windows-latest
+            rid: win-x64
+            vpk_os: win
+            vpk_arch: x64
+          - os: windows-latest
+            rid: win-arm64
+            vpk_os: win
+            vpk_arch: arm64
+          - os: macos-latest
+            rid: osx-x64
+            vpk_os: osx
+            vpk_arch: x64
+          - os: macos-latest
+            rid: osx-arm64
+            vpk_os: osx
+            vpk_arch: arm64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install Velopack CLI
+        run: dotnet tool install -g vpk
+
+      - name: Publish NativeAOT
+        shell: bash
+        run: |
+          dotnet publish src/ConsoleToSvg/ConsoleToSvg.csproj \
+            -c Release \
+            -r ${{ matrix.rid }} \
+            --self-contained \
+            -p:PublishAot=true \
+            -p:PublishSingleFile=false \
+            -p:WarningLevel=0 \
+            -o ./native-publish/${{ matrix.rid }}
+
+      - name: Pack with Velopack
+        shell: bash
+        run: |
+          vpk pack \
+            --packId ConsoleToSvg \
+            --packVersion ${{ needs.build-nupkg.outputs.version }} \
+            --packDir ./native-publish/${{ matrix.rid }} \
+            --mainExe console2svg${{ matrix.vpk_os == 'win' && '.exe' || '' }} \
+            --outputDir ./velopack-output/${{ matrix.rid }} \
+            --os ${{ matrix.vpk_os }} \
+            --arch ${{ matrix.vpk_arch }}
+
+      - name: Upload Velopack artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: velopack-${{ matrix.rid }}
+          path: ./velopack-output/${{ matrix.rid }}/**
+
+  release-github:
+    needs: [build-nupkg, build-aot]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install Velopack CLI
+        run: dotnet tool install -g vpk
+
+      - name: Download NuGet artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-packages
+          path: ./nuget-artifacts
+
+      - name: Download all Velopack artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: velopack-*
+          path: ./velopack-all
+          merge-multiple: false
+
+      - name: Collect all release files
+        run: |
+          mkdir -p ./release-upload
+          for dir in ./velopack-all/velopack-*/; do
+            cp -r "$dir"* ./release-upload/ 2>/dev/null || true
+          done
+          cp ./nuget-artifacts/*.nupkg ./release-upload/ 2>/dev/null || true
+
+      - name: Publish GitHub Release with Velopack
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          vpk upload github \
+            --repoUrl https://github.com/${{ github.repository }} \
+            --publish \
+            --releaseDir ./release-upload \
+            --token ${{ secrets.GITHUB_TOKEN }} \
+            --tag v${{ needs.build-nupkg.outputs.version }} \
+            --releaseName ${{ needs.build-nupkg.outputs.version }}
+
+  release-nuget:
+    needs: build-nupkg
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download NuGet artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-packages
+          path: ./nuget-artifacts
+
+      - name: NuGet login
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: arika0093
+
+      - name: Publish NuGet Package
+        run: dotnet nuget push ./nuget-artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+

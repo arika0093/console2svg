@@ -12,6 +12,8 @@ public sealed class AppOptions
 
     public bool ShowVersion { get; set; }
 
+    public bool Update { get; set; }
+
     public string? Command { get; set; }
 
     public string? InputCastPath { get; set; }

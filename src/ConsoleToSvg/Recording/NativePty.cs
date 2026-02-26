@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Win32.SafeHandles;
+using Pty.Net;
 
 namespace ConsoleToSvg.Recording;
 
@@ -34,7 +35,7 @@ internal static class NativePty
             return Task.FromResult(NativePtyWindows.Spawn(options));
         }
 
-        return Task.FromResult(NativePtyUnix.Spawn(options));
+        return NativePtyUnix.SpawnAsync(options, cancellationToken);
     }
 }
 
@@ -557,75 +558,47 @@ internal static class NativePtyWindows
 
 internal static class NativePtyUnix
 {
-    private const int WNOHANG = 1;
-    private const int SIGTERM = 15;
-    private const int SIGKILL = 9;
-
-    public static NativePtyConnection Spawn(NativePtyOptions options)
+    public static async Task<NativePtyConnection> SpawnAsync(
+        NativePtyOptions options,
+        CancellationToken cancellationToken
+    )
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            throw new PlatformNotSupportedException("forkpty is not available on Windows.");
+            throw new PlatformNotSupportedException("Quick.PtyNet Unix backend is not available on Windows.");
         }
 
-        var size = new Winsize
+        var environment = new Dictionary<string, string>();
+        if (options.Environment is not null)
         {
-            ws_col = (ushort)options.Cols,
-            ws_row = (ushort)options.Rows,
-            ws_xpixel = 0,
-            ws_ypixel = 0,
+            foreach (var pair in options.Environment)
+            {
+                environment[pair.Key] = pair.Value;
+            }
+        }
+
+        var ptyOptions = new PtyOptions
+        {
+            Name = options.Name ?? "console2svg",
+            Cols = options.Cols,
+            Rows = options.Rows,
+            Cwd = string.IsNullOrWhiteSpace(options.Cwd) ? Environment.CurrentDirectory : options.Cwd,
+            App = options.App,
+            CommandLine = options.Args ?? Array.Empty<string>(),
+            Environment = environment,
         };
 
-        var pid = forkpty(out var masterFd, IntPtr.Zero, IntPtr.Zero, ref size);
-        if (pid < 0)
-        {
-            throw new InvalidOperationException(
-                $"forkpty failed. errno={Marshal.GetLastWin32Error()}"
-            );
-        }
-
-        if (pid == 0)
-        {
-            try
-            {
-                if (!string.IsNullOrWhiteSpace(options.Cwd))
-                {
-                    chdir(options.Cwd!);
-                }
-
-                if (options.Environment is not null)
-                {
-                    foreach (var pair in options.Environment)
-                    {
-                        setenv(pair.Key, pair.Value, 1);
-                    }
-                }
-
-                var args = BuildArgv(options.App, options.Args);
-                execvp(options.App, args);
-            }
-            catch
-            {
-                // Best-effort cleanup; ignore failures.
-            }
-
-            _exit(127);
-            return new NativePtyConnection(Stream.Null, Stream.Null, _ => true, () => { });
-        }
-
-        var readerHandle = new SafeFileHandle(new IntPtr(masterFd), ownsHandle: true);
-        var writerFd = dup(masterFd);
-        if (writerFd < 0)
-        {
-            readerHandle.Dispose();
-            throw new InvalidOperationException($"dup failed. errno={Marshal.GetLastWin32Error()}");
-        }
-
-        var writerHandle = new SafeFileHandle(new IntPtr(writerFd), ownsHandle: true);
-        var reader = new FileStream(readerHandle, FileAccess.Read, 4096, isAsync: true);
-        var writer = new FileStream(writerHandle, FileAccess.Write, 4096, isAsync: true);
+        var pty = await PtyProvider
+            .SpawnAsync(ptyOptions, cancellationToken)
+            .ConfigureAwait(false);
 
         var exited = false;
+        void OnProcessExited(object? sender, PtyExitedEventArgs eventArgs)
+        {
+            exited = true;
+        }
+
+        pty.ProcessExited += OnProcessExited;
 
         bool WaitForExit(int milliseconds)
         {
@@ -634,22 +607,18 @@ internal static class NativePtyUnix
                 return true;
             }
 
-            var deadline = DateTime.UtcNow.AddMilliseconds(milliseconds);
-            while (DateTime.UtcNow <= deadline)
+            try
             {
-                var result = waitpid(pid, out _, WNOHANG);
-                if (result == pid)
+                if (pty.WaitForExit(milliseconds))
                 {
                     exited = true;
                     return true;
                 }
-
-                if (milliseconds <= 0)
-                {
-                    break;
-                }
-
-                Thread.Sleep(10);
+            }
+            catch
+            {
+                exited = true;
+                return true;
             }
 
             return false;
@@ -657,131 +626,48 @@ internal static class NativePtyUnix
 
         void Dispose()
         {
-            try
-            {
-                reader.Dispose();
-            }
-            catch
-            {
-                // Best-effort cleanup; ignore failures.
-            }
-
-            try
-            {
-                writer.Dispose();
-            }
-            catch
-            {
-                // Best-effort cleanup; ignore failures.
-            }
+            pty.ProcessExited -= OnProcessExited;
 
             if (!exited)
             {
-                TryGracefulExit(pid, ref exited);
+                try
+                {
+                    pty.Kill();
+                }
+                catch
+                {
+                    // Best-effort kill; ignore failures.
+                }
+
+                try
+                {
+                    exited = pty.WaitForExit(500) || exited;
+                }
+                catch
+                {
+                    // Best-effort wait; ignore failures.
+                }
             }
-        }
 
-        return new NativePtyConnection(reader, writer, WaitForExit, Dispose);
-    }
-
-    private static IntPtr BuildArgv(string app, string[]? args)
-    {
-        var list = new List<string>();
-        list.Add(app);
-        if (args is not null)
-        {
-            list.AddRange(args);
-        }
-
-        var size = (list.Count + 1) * IntPtr.Size;
-        var ptr = Marshal.AllocHGlobal(size);
-        for (var i = 0; i < list.Count; i++)
-        {
-            Marshal.WriteIntPtr(ptr, i * IntPtr.Size, Marshal.StringToHGlobalAnsi(list[i]));
-        }
-
-        Marshal.WriteIntPtr(ptr, list.Count * IntPtr.Size, IntPtr.Zero);
-        return ptr;
-    }
-
-    private static void TryGracefulExit(int pid, ref bool exited)
-    {
-        try
-        {
-            kill(pid, SIGTERM);
-        }
-        catch
-        {
-            // Best-effort signal; ignore failures.
-        }
-
-        var deadline = DateTime.UtcNow.AddMilliseconds(500);
-        while (DateTime.UtcNow <= deadline)
-        {
-            var result = waitpid(pid, out _, WNOHANG);
-            if (result == pid)
+            try
             {
-                exited = true;
-                return;
+                pty.ReaderStream.Dispose();
+            }
+            catch
+            {
+                // Best-effort cleanup; ignore failures.
             }
 
-            Thread.Sleep(10);
+            try
+            {
+                pty.WriterStream.Dispose();
+            }
+            catch
+            {
+                // Best-effort cleanup; ignore failures.
+            }
         }
 
-        try
-        {
-            kill(pid, SIGKILL);
-        }
-        catch
-        {
-            // Best-effort force kill; ignore failures.
-        }
-
-        try
-        {
-            waitpid(pid, out _, WNOHANG);
-        }
-        catch
-        {
-            // Best-effort reap; ignore failures.
-        }
+        return new NativePtyConnection(pty.ReaderStream, pty.WriterStream, WaitForExit, Dispose);
     }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct Winsize
-    {
-        public ushort ws_row;
-        public ushort ws_col;
-        public ushort ws_xpixel;
-        public ushort ws_ypixel;
-    }
-
-    [DllImport("libc", SetLastError = true)]
-    private static extern int forkpty(
-        out int master,
-        IntPtr name,
-        IntPtr termp,
-        ref Winsize winsize
-    );
-
-    [DllImport("libc", SetLastError = true)]
-    private static extern int execvp(string file, IntPtr argv);
-
-    [DllImport("libc", SetLastError = true)]
-    private static extern int chdir(string path);
-
-    [DllImport("libc", SetLastError = true)]
-    private static extern int setenv(string name, string value, int overwrite);
-
-    [DllImport("libc", SetLastError = true)]
-    private static extern int dup(int fd);
-
-    [DllImport("libc", SetLastError = true)]
-    private static extern int waitpid(int pid, out int status, int options);
-
-    [DllImport("libc", SetLastError = true)]
-    private static extern int kill(int pid, int sig);
-
-    [DllImport("libc")]
-    private static extern void _exit(int status);
 }

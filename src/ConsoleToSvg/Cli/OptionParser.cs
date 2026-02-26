@@ -14,31 +14,36 @@ public static class OptionParser
               console2svg "my-command with-args" [options]
               console2svg [options] -- my-command with args
 
-            Options:
+            Options (Common):
               -c, --with-command             Prepend the command line to the output as if typed in a terminal.
               -o, --out <path>               Output SVG path (default: output.svg).
               -m, --mode <image|video>       Output mode (default: image).
               -w, --width <int>              Terminal width in characters (default: auto).
               -h, --height <int>             Terminal height in rows (default: auto).
               -v, --verbose                  Enable verbose logging.
+              -d, --window <none|macos|windows|macos-pc|windows-pc>
+                                             Terminal window chrome style (default: none).
+              --theme <dark|light>           Color theme (default: dark).
+              --font <family>                CSS font-family for SVG text (default: system monospace).
+              --in <path>                    Read existing asciicast file.
+              --save-cast <path>             Save captured output as asciicast file.
+              --help                         Show help.
               --version                      Show version and exit.
+
+            Options (Image mode):
               --frame <int>                  Frame index for image mode.
               --crop-top <value>             Crop top by px, ch, or text pattern (examples: 10px, 2ch, ---, summary:-3).
               --crop-right <value>           Crop right by px or ch.
               --crop-bottom <value>          Crop bottom by px, ch, or text pattern (examples: 10px, 2ch, ---, summary:-3).
               --crop-left <value>            Crop left by px or ch.
-              --theme <dark|light>           Color theme (default: dark).
-              -d, --window <none|macos|windows|macos-pc|windows-pc>  Terminal window chrome style (default: none).
+            
+            Options (Video mode):
               --padding <px>                 Outer padding in pixels around terminal content (default: 2, or 8 when --window is set).
               --no-loop                      Disable loop for animated SVG playback in video mode (default: loop).
               --fps <value>                  Max FPS for animated SVG frame sampling (default: 12).
               --sleep <sec>                  Wait time after execution completes in video mode (default: 2).
               --fadeout <sec>                Fade-out duration at end of video (default: 0).
               --opacity <0-1>                Background fill opacity (default: 1).
-              --font <family>                CSS font-family for SVG text (default: system monospace).
-              --in <path>                    Read existing asciicast file.
-              --save-cast <path>             Save captured output as asciicast file.
-              --help                         Show help.
             """;
 
     public static bool TryParse(

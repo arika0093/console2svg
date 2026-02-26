@@ -25,28 +25,15 @@ You can also generate SVG with a window frame. and some options to customize the
 
 ---
 
-![](./assets/cmd-animate.svg)
-
-[Play animation](https://raw.githubusercontent.com/arika0093/console2svg/refs/heads/main/assets/cmd-animate.svg)
-
-```bash
-console2svg -m video --window macos -w 120 -h 16 -- ./my-install.sh
-```
-
-In video mode, you can capture the animation of the command execution and save it as an SVG.
-
----
-
 ![](./assets/cmd-loop.svg)
 
 [Play loop animation](https://raw.githubusercontent.com/arika0093/console2svg/refs/heads/main/assets/cmd-loop.svg)
 
 ```bash
-console2svg -m video --window macos --loop -- copilot --banner
+console2svg -m video --window macos -- copilot --banner
 ```
 
-Loop playback is also supported.
-
+In video mode, you can capture the animation of the command execution and save it as an SVG.
 
 ## Install
 
@@ -78,6 +65,8 @@ console2svg -- dotnet test.cs
 
 ### Animated SVG
 
+use `-m video`.
+
 ```sh
 console2svg -m video -- dotnet build
 ```
@@ -105,24 +94,6 @@ console2svg "dotnet --info" --crop-top "Host" --crop-bottom ".NET runtimes insta
 ### Window chrome and padding
 
 ```sh
-console2svg --window macos --padding 8 -- dotnet --version
+console2svg --window macos-pc --padding 8 -- dotnet --version
 ```
 
-## Key options
-
-- `-m, --mode image|video`
-- `-c, --command <cmd>` (also works as a bare positional argument)
-- `-o, --out <svg-path>`
-- `-w, --width <columns>` / `-h, --height <rows>` (default: auto-detected from terminal in pipe mode, 80×24 for PTY)
-- `--frame <index>`
-- `--crop-top|--crop-right|--crop-bottom|--crop-left <px|ch|pattern>`
-- `--theme dark|light`
-- `--window none|macos|windows`
-- `--padding <px>` (default: 2)
-- `--loop` (video mode only, default: false)
-- `--fps <number>` (video mode only, default: 12)
-- `--font <css-font-family>`
-- `--in <cast-path>`
-- `--save-cast <path>`
-- `--help`
-- `--version`

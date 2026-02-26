@@ -152,21 +152,29 @@ public sealed class OptionParserTests
     {
         var ok = OptionParser.TryParse(new[] { "--window", "linux" }, out _, out var error, out _);
         ok.ShouldBeFalse();
-        error.ShouldBe("--window must be none, macos, or windows.");
+        error.ShouldBe("--window must be none, macos, windows, macos-pc, or windows-pc.");
     }
 
     [Test]
-    public void LoopFlagParsed()
+    public void NoLoopFlagDisablesLoop()
     {
         var ok = OptionParser.TryParse(
-            new[] { "-m", "video", "--loop" },
+            new[] { "-m", "video", "--no-loop" },
             out var options,
             out _,
             out _
         );
         ok.ShouldBeTrue();
         options!.Mode.ShouldBe(OutputMode.Video);
-        options.Loop.ShouldBeTrue();
+        options.Loop.ShouldBeFalse();
+    }
+
+    [Test]
+    public void LoopDefaultIsTrue()
+    {
+        var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Loop.ShouldBeTrue();
     }
 
     [Test]

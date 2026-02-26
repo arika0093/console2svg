@@ -362,4 +362,96 @@ public sealed class SvgRendererTests
         svg.ShouldContain("#febc2e");
         svg.ShouldContain("#28c840");
     }
+
+    [Test]
+    public void RenderStaticSvgWithMacosPcWindowRendersDesktopAndTrafficLights()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "A");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                Window = ConsoleToSvg.Svg.WindowStyle.MacosPc,
+                Padding = 2,
+            }
+        );
+
+        // Desktop background
+        svg.ShouldContain("#1e2030");
+        // Shadow (black with opacity)
+        svg.ShouldContain("fill-opacity=\"0.4\"");
+        // Traffic lights
+        svg.ShouldContain("#ff5f57");
+        svg.ShouldContain("#febc2e");
+        svg.ShouldContain("#28c840");
+    }
+
+    [Test]
+    public void RenderStaticSvgWithWindowsPcWindowRendersDesktopAndControls()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "A");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                Window = ConsoleToSvg.Svg.WindowStyle.WindowsPc,
+                Padding = 2,
+            }
+        );
+
+        // Desktop background
+        svg.ShouldContain("#1f2b3a");
+        // Shadow (black with opacity)
+        svg.ShouldContain("fill-opacity=\"0.4\"");
+        // Close button
+        svg.ShouldContain("#e06c75");
+    }
+
+    [Test]
+    public void RenderStaticSvgWithHeightLimitCapsRows()
+    {
+        // 4-row terminal with 6 lines of output (forces 2 rows to scroll off)
+        var session = new RecordingSession(width: 8, height: 4);
+        session.AddEvent(0.01, "line1\r\nline2\r\nline3\r\nline4\r\nline5\r\nline6");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                HeightRows = 3,
+            }
+        );
+
+        // Only 3 rows should be visible: height = 3 * 18 = 54, width = 8 * 9 = 72
+        svg.ShouldContain("viewBox=\"0 0 72 54\"");
+    }
+
+    [Test]
+    public void WindowAndPaddingParsedForNewStyles()
+    {
+        var ok = ConsoleToSvg.Cli.OptionParser.TryParse(
+            new[] { "--window", "macos-pc" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.Window.ShouldBe("macos-pc");
+
+        ok = ConsoleToSvg.Cli.OptionParser.TryParse(
+            new[] { "--window", "windows-pc" },
+            out options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.Window.ShouldBe("windows-pc");
+    }
 }

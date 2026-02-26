@@ -24,7 +24,8 @@ public static class SvgRenderer
             options.Crop,
             includeScrollback,
             options.Window,
-            options.Padding
+            options.Padding,
+            options.HeightRows
         );
         var sb = new StringBuilder(32 * 1024);
         SvgDocumentBuilder.BeginSvg(
@@ -55,6 +56,10 @@ internal static class SvgDocumentBuilder
     private const double CellHeight = 18d;
     private const double FontSize = 14d;
     private const double BaselineOffset = 14d;
+    private const double DesktopPadding = 20d;
+    private const double DesktopShadowOffset = 8d;
+    private const string DesktopMacosBackground = "#1e2030";
+    private const string DesktopWindowsBackground = "#1f2b3a";
     private const string DefaultFontFamily =
         "ui-monospace,\"Cascadia Mono\",\"Segoe UI Mono\",\"SFMono-Regular\",Menlo,monospace";
 
@@ -98,7 +103,8 @@ internal static class SvgDocumentBuilder
         CropOptions crop,
         bool includeScrollback = false,
         WindowStyle windowStyle = WindowStyle.None,
-        double padding = 0d
+        double padding = 0d,
+        int? heightRows = null
     )
     {
         var effectiveHeight = includeScrollback ? buffer.TotalHeight : buffer.Height;
@@ -147,6 +153,13 @@ internal static class SvgDocumentBuilder
         var startCol = colLeft;
         var endColExclusive = buffer.Width - colRight;
 
+        if (heightRows.HasValue)
+        {
+            var maxEndRow = startRow + heightRows.Value;
+            endRowExclusive = Math.Min(endRowExclusive, maxEndRow);
+            endRowExclusive = Math.Max(endRowExclusive, startRow + 1);
+        }
+
         var contentWidth = Math.Max(1d, (endColExclusive - startCol) * CellWidth);
         var contentHeight = Math.Max(1d, (endRowExclusive - startRow) * CellHeight);
 
@@ -182,6 +195,18 @@ internal static class SvgDocumentBuilder
                 chromeTop = 30d;
                 chromeRight = 1d;
                 chromeBottom = 1d;
+                break;
+            case WindowStyle.MacosPc:
+                chromeLeft = DesktopPadding + 1d;
+                chromeTop = DesktopPadding + 28d;
+                chromeRight = DesktopPadding + 1d + DesktopShadowOffset;
+                chromeBottom = DesktopPadding + 1d + DesktopShadowOffset;
+                break;
+            case WindowStyle.WindowsPc:
+                chromeLeft = DesktopPadding + 1d;
+                chromeTop = DesktopPadding + 30d;
+                chromeRight = DesktopPadding + 1d + DesktopShadowOffset;
+                chromeBottom = DesktopPadding + 1d + DesktopShadowOffset;
                 break;
             default:
                 break;
@@ -386,6 +411,138 @@ internal static class SvgDocumentBuilder
                 sb.Append(theme.Background);
                 sb.Append("\"/>\n");
                 return;
+            case WindowStyle.MacosPc:
+            {
+                var winX = DesktopPadding;
+                var winY = DesktopPadding;
+                var winW = context.CanvasWidth - 2d * DesktopPadding - DesktopShadowOffset;
+                var winH = context.CanvasHeight - 2d * DesktopPadding - DesktopShadowOffset;
+                sb.Append("<rect width=\"");
+                sb.Append(Format(context.CanvasWidth));
+                sb.Append("\" height=\"");
+                sb.Append(Format(context.CanvasHeight));
+                sb.Append("\" fill=\"");
+                sb.Append(DesktopMacosBackground);
+                sb.Append("\"/>\n");
+                sb.Append("<rect x=\"");
+                sb.Append(Format(winX + DesktopShadowOffset));
+                sb.Append("\" y=\"");
+                sb.Append(Format(winY + DesktopShadowOffset));
+                sb.Append("\" rx=\"10\" ry=\"10\" width=\"");
+                sb.Append(Format(winW));
+                sb.Append("\" height=\"");
+                sb.Append(Format(winH));
+                sb.Append("\" fill=\"black\" fill-opacity=\"0.4\"/>\n");
+                sb.Append("<rect x=\"");
+                sb.Append(Format(winX + 0.5d));
+                sb.Append("\" y=\"");
+                sb.Append(Format(winY + 0.5d));
+                sb.Append("\" rx=\"10\" ry=\"10\" width=\"");
+                sb.Append(Format(winW - 1d));
+                sb.Append("\" height=\"");
+                sb.Append(Format(winH - 1d));
+                sb.Append("\" fill=\"#1f1f1f\" stroke=\"#3a3a3a\"/>\n");
+                sb.Append("<rect x=\"");
+                sb.Append(Format(winX + 1d));
+                sb.Append("\" y=\"");
+                sb.Append(Format(winY + 1d));
+                sb.Append("\" rx=\"9\" ry=\"9\" width=\"");
+                sb.Append(Format(winW - 2d));
+                sb.Append("\" height=\"27\" fill=\"#2c2c2c\"/>\n");
+                sb.Append("<circle cx=\"");
+                sb.Append(Format(winX + 14d));
+                sb.Append("\" cy=\"");
+                sb.Append(Format(winY + 14d));
+                sb.Append("\" r=\"5\" fill=\"#ff5f57\"/>\n");
+                sb.Append("<circle cx=\"");
+                sb.Append(Format(winX + 30d));
+                sb.Append("\" cy=\"");
+                sb.Append(Format(winY + 14d));
+                sb.Append("\" r=\"5\" fill=\"#febc2e\"/>\n");
+                sb.Append("<circle cx=\"");
+                sb.Append(Format(winX + 46d));
+                sb.Append("\" cy=\"");
+                sb.Append(Format(winY + 14d));
+                sb.Append("\" r=\"5\" fill=\"#28c840\"/>\n");
+                sb.Append("<rect x=\"");
+                sb.Append(Format(context.ContentOffsetX));
+                sb.Append("\" y=\"");
+                sb.Append(Format(context.ContentOffsetY));
+                sb.Append("\" width=\"");
+                sb.Append(Format(context.ViewWidth));
+                sb.Append("\" height=\"");
+                sb.Append(Format(context.ViewHeight));
+                sb.Append("\" fill=\"");
+                sb.Append(theme.Background);
+                sb.Append("\"/>\n");
+                return;
+            }
+            case WindowStyle.WindowsPc:
+            {
+                var winX = DesktopPadding;
+                var winY = DesktopPadding;
+                var winW = context.CanvasWidth - 2d * DesktopPadding - DesktopShadowOffset;
+                var winH = context.CanvasHeight - 2d * DesktopPadding - DesktopShadowOffset;
+                sb.Append("<rect width=\"");
+                sb.Append(Format(context.CanvasWidth));
+                sb.Append("\" height=\"");
+                sb.Append(Format(context.CanvasHeight));
+                sb.Append("\" fill=\"");
+                sb.Append(DesktopWindowsBackground);
+                sb.Append("\"/>\n");
+                sb.Append("<rect x=\"");
+                sb.Append(Format(winX + DesktopShadowOffset));
+                sb.Append("\" y=\"");
+                sb.Append(Format(winY + DesktopShadowOffset));
+                sb.Append("\" width=\"");
+                sb.Append(Format(winW));
+                sb.Append("\" height=\"");
+                sb.Append(Format(winH));
+                sb.Append("\" fill=\"black\" fill-opacity=\"0.4\"/>\n");
+                sb.Append("<rect x=\"");
+                sb.Append(Format(winX + 0.5d));
+                sb.Append("\" y=\"");
+                sb.Append(Format(winY + 0.5d));
+                sb.Append("\" width=\"");
+                sb.Append(Format(winW - 1d));
+                sb.Append("\" height=\"");
+                sb.Append(Format(winH - 1d));
+                sb.Append("\" fill=\"#1f1f1f\" stroke=\"#3a3a3a\"/>\n");
+                sb.Append("<rect x=\"");
+                sb.Append(Format(winX + 1d));
+                sb.Append("\" y=\"");
+                sb.Append(Format(winY + 1d));
+                sb.Append("\" width=\"");
+                sb.Append(Format(winW - 2d));
+                sb.Append("\" height=\"29\" fill=\"#2b2b2b\"/>\n");
+                sb.Append("<rect x=\"");
+                sb.Append(Format(context.CanvasWidth - DesktopShadowOffset - 46d));
+                sb.Append("\" y=\"");
+                sb.Append(Format(winY + 10d));
+                sb.Append("\" width=\"10\" height=\"10\" fill=\"#cccccc\"/>\n");
+                sb.Append("<rect x=\"");
+                sb.Append(Format(context.CanvasWidth - DesktopShadowOffset - 30d));
+                sb.Append("\" y=\"");
+                sb.Append(Format(winY + 10d));
+                sb.Append("\" width=\"10\" height=\"10\" fill=\"#cccccc\"/>\n");
+                sb.Append("<rect x=\"");
+                sb.Append(Format(context.CanvasWidth - DesktopShadowOffset - 14d));
+                sb.Append("\" y=\"");
+                sb.Append(Format(winY + 10d));
+                sb.Append("\" width=\"10\" height=\"10\" fill=\"#e06c75\"/>\n");
+                sb.Append("<rect x=\"");
+                sb.Append(Format(context.ContentOffsetX));
+                sb.Append("\" y=\"");
+                sb.Append(Format(context.ContentOffsetY));
+                sb.Append("\" width=\"");
+                sb.Append(Format(context.ViewWidth));
+                sb.Append("\" height=\"");
+                sb.Append(Format(context.ViewHeight));
+                sb.Append("\" fill=\"");
+                sb.Append(theme.Background);
+                sb.Append("\"/>\n");
+                return;
+            }
             default:
                 sb.Append("<rect width=\"");
                 sb.Append(Format(context.CanvasWidth));

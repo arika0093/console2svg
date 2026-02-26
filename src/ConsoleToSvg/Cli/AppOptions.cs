@@ -44,7 +44,7 @@ public sealed class AppOptions
 
     public double Padding { get; set; } = 2d;
 
-    public bool Loop { get; set; }
+    public bool Loop { get; set; } = true;
 
     public double VideoFps { get; set; } = 12d;
 }

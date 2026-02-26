@@ -8,6 +8,8 @@ public enum WindowStyle
     None,
     Macos,
     Windows,
+    MacosPc,
+    WindowsPc,
 }
 
 public sealed class SvgRenderOptions
@@ -28,6 +30,8 @@ public sealed class SvgRenderOptions
 
     public double VideoFps { get; set; } = 12d;
 
+    public int? HeightRows { get; set; }
+
     public static SvgRenderOptions FromAppOptions(AppOptions appOptions)
     {
         return new SvgRenderOptions
@@ -45,6 +49,7 @@ public sealed class SvgRenderOptions
             Padding = appOptions.Padding,
             Loop = appOptions.Loop,
             VideoFps = appOptions.VideoFps,
+            HeightRows = appOptions.Height,
         };
     }
 
@@ -58,6 +63,16 @@ public sealed class SvgRenderOptions
         if (string.Equals(value, "windows", StringComparison.OrdinalIgnoreCase))
         {
             return WindowStyle.Windows;
+        }
+
+        if (string.Equals(value, "macos-pc", StringComparison.OrdinalIgnoreCase))
+        {
+            return WindowStyle.MacosPc;
+        }
+
+        if (string.Equals(value, "windows-pc", StringComparison.OrdinalIgnoreCase))
+        {
+            return WindowStyle.WindowsPc;
         }
 
         return WindowStyle.None;

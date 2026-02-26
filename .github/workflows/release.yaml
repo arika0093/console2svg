@@ -49,6 +49,7 @@ jobs:
           path: ./nuget-artifacts/*.nupkg
 
   build-aot:
+    needs: build-nupkg
     strategy:
       matrix:
         include:

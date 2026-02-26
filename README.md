@@ -1,4 +1,5 @@
 # ConsoleToSvg
+[![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) 
 
 `console2svg` is a .NET global tool that converts terminal output into SVG.
 

@@ -192,4 +192,26 @@ public sealed class OptionParserTests
         ok.ShouldBeFalse();
         error.ShouldBe("--fps must be greater than 0.");
     }
+
+    [Test]
+    public void WithCommandFlagParsed()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--with-command", "ls" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.WithCommand.ShouldBeTrue();
+        options.Command.ShouldBe("ls");
+    }
+
+    [Test]
+    public void WithCommandDefaultIsFalse()
+    {
+        var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.WithCommand.ShouldBeFalse();
+    }
 }

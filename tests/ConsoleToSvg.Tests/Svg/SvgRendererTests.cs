@@ -454,4 +454,31 @@ public sealed class SvgRendererTests
         ok.ShouldBeTrue();
         options!.Window.ShouldBe("windows-pc");
     }
+
+    [Test]
+    public void WithCommandPrependsPromptLineToSession()
+    {
+        // Simulate what Program.cs does when --with-command is set
+        var session = new RecordingSession(width: 20, height: 4);
+        session.Events.Insert(
+            0,
+            new ConsoleToSvg.Recording.AsciicastEvent
+            {
+                Time = 0.0,
+                Type = "o",
+                Data = "$ ls\r\n",
+            }
+        );
+        session.AddEvent(0.1, "file1.txt  file2.txt");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        // The prompt and command should appear in the SVG
+        svg.ShouldContain(">$<");
+        svg.ShouldContain(">l<");
+        svg.ShouldContain(">s<");
+    }
 }

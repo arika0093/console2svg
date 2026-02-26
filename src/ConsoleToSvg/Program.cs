@@ -78,6 +78,19 @@ internal static class Program
                 $"Recording loaded. Events={session.Events.Count} Width={session.Header.width} Height={session.Header.height}"
             );
 
+            if (options.WithCommand && !string.IsNullOrWhiteSpace(options.Command))
+            {
+                session.Events.Insert(
+                    0,
+                    new Recording.AsciicastEvent
+                    {
+                        Time = 0.0,
+                        Type = "o",
+                        Data = $"$ {options.Command}\r\n",
+                    }
+                );
+            }
+
             if (!string.IsNullOrWhiteSpace(options.SaveCastPath))
             {
                 logger.ZLogDebug($"Saving asciicast to {options.SaveCastPath}");

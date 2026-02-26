@@ -28,9 +28,9 @@ public static class OptionParser
               --crop-bottom <value>          Crop bottom by px, ch, or text pattern (examples: 10px, 2ch, ---, summary:-3).
               --crop-left <value>            Crop left by px or ch.
               --theme <dark|light>           Color theme (default: dark).
-              --window <none|macos|windows>  Terminal window chrome style (default: none).
+              --window <none|macos|windows|macos-pc|windows-pc>  Terminal window chrome style (default: none).
               --padding <px>                 Outer padding in pixels around terminal content (default: 2).
-              --loop                         Loop animated SVG playback in video mode (default: false).
+              --no-loop                      Disable loop for animated SVG playback in video mode (default: loop).
               --fps <value>                  Max FPS for animated SVG frame sampling (default: 12).
               --font <family>                CSS font-family for SVG text (default: system monospace).
               --in <path>                    Read existing asciicast file.
@@ -148,7 +148,7 @@ public static class OptionParser
     {
         return !string.Equals(name, "--help", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--version", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--loop", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--no-loop", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "-v", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--verbose", StringComparison.OrdinalIgnoreCase);
     }
@@ -241,7 +241,7 @@ public static class OptionParser
             case "--window":
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    error = "--window must be none, macos, or windows.";
+                    error = "--window must be none, macos, windows, macos-pc, or windows-pc.";
                     return false;
                 }
 
@@ -249,9 +249,11 @@ public static class OptionParser
                     !string.Equals(value, "none", StringComparison.OrdinalIgnoreCase)
                     && !string.Equals(value, "macos", StringComparison.OrdinalIgnoreCase)
                     && !string.Equals(value, "windows", StringComparison.OrdinalIgnoreCase)
+                    && !string.Equals(value, "macos-pc", StringComparison.OrdinalIgnoreCase)
+                    && !string.Equals(value, "windows-pc", StringComparison.OrdinalIgnoreCase)
                 )
                 {
-                    error = "--window must be none, macos, or windows.";
+                    error = "--window must be none, macos, windows, macos-pc, or windows-pc.";
                     return false;
                 }
 
@@ -265,8 +267,8 @@ public static class OptionParser
 
                 options.Padding = padding;
                 return true;
-            case "--loop":
-                options.Loop = true;
+            case "--no-loop":
+                options.Loop = false;
                 return true;
             case "--fps":
                 if (!TryParseDouble(value, "--fps", out var fps, out error))

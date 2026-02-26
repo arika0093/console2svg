@@ -149,7 +149,7 @@ jobs:
           vpk upload github \
             --repoUrl https://github.com/${{ github.repository }} \
             --publish \
-            --releaseDir ./release-upload \
+            --outputDir ./release-upload \
             --token ${{ secrets.GITHUB_TOKEN }} \
             --tag v${{ needs.build-nupkg.outputs.version }} \
             --releaseName ${{ needs.build-nupkg.outputs.version }}

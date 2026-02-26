@@ -73,7 +73,10 @@ public static class PtyRecorder
         var session = new RecordingSession(width, height);
         var stopwatch = Stopwatch.StartNew();
         var canceled = false;
-        using var forwardingCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+        using var readCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken
+        );
+        using var inputCancellation = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken
         );
         using var rawInput = forwardToConsole ? ConsoleInputMode.TryEnableRaw(logger) : null;
@@ -88,7 +91,7 @@ public static class PtyRecorder
             connection.ReaderStream,
             session,
             stopwatch,
-            forwardingCancellation.Token,
+            readCancellation.Token,
             logger,
             outputForward
         );
@@ -96,7 +99,7 @@ public static class PtyRecorder
             ? PumpInputAsync(
                 inputForward,
                 connection.WriterStream,
-                forwardingCancellation.Token,
+                inputCancellation.Token,
                 logger
             )
             : null;
@@ -160,7 +163,12 @@ public static class PtyRecorder
             }
         }
 
-        await forwardingCancellation.CancelAsync().ConfigureAwait(false);
+        if (canceled)
+        {
+            await readCancellation.CancelAsync().ConfigureAwait(false);
+        }
+
+        await inputCancellation.CancelAsync().ConfigureAwait(false);
 
         try
         {
@@ -188,9 +196,9 @@ public static class PtyRecorder
             }
         }
 
-        if (inputTask is not null && !canceled)
+        if (inputTask is not null)
         {
-            await IgnoreTaskFailureAsync(inputTask).ConfigureAwait(false);
+            await IgnoreTaskFailureWithTimeoutAsync(inputTask, 200).ConfigureAwait(false);
         }
 
         logger.ZLogDebug(
@@ -211,7 +219,7 @@ public static class PtyRecorder
         var session = new RecordingSession(width, height);
         var stopwatch = Stopwatch.StartNew();
         var canceled = false;
-        using var forwardingCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+        using var inputCancellation = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken
         );
         using var rawInput = forwardToConsole ? ConsoleInputMode.TryEnableRaw(logger) : null;
@@ -246,7 +254,7 @@ public static class PtyRecorder
             ? PumpInputAsync(
                 inputForward,
                 process.StandardInput.BaseStream,
-                forwardingCancellation.Token,
+                inputCancellation.Token,
                 logger
             )
             : null;
@@ -269,10 +277,10 @@ public static class PtyRecorder
             }
         }
 
-        await forwardingCancellation.CancelAsync().ConfigureAwait(false);
-        if (inputTask is not null && !canceled)
+        await inputCancellation.CancelAsync().ConfigureAwait(false);
+        if (inputTask is not null)
         {
-            await IgnoreTaskFailureAsync(inputTask).ConfigureAwait(false);
+            await IgnoreTaskFailureWithTimeoutAsync(inputTask, 200).ConfigureAwait(false);
         }
 
         logger.ZLogDebug(
@@ -418,6 +426,17 @@ public static class PtyRecorder
         catch
         {
             // Ignore background task failures during shutdown.
+        }
+    }
+
+    private static async Task IgnoreTaskFailureWithTimeoutAsync(Task task, int milliseconds)
+    {
+        var completed = await Task
+            .WhenAny(task, Task.Delay(milliseconds))
+            .ConfigureAwait(false);
+        if (completed == task)
+        {
+            await IgnoreTaskFailureAsync(task).ConfigureAwait(false);
         }
     }
 

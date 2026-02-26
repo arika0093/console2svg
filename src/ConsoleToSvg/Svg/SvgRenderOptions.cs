@@ -30,10 +30,20 @@ public sealed class SvgRenderOptions
 
     public double VideoFps { get; set; } = 12d;
 
+    public double VideoSleep { get; set; } = 1d;
+
+    public double VideoFadeOut { get; set; } = 0d;
+
     public int? HeightRows { get; set; }
+
+    public string? CommandHeader { get; set; }
 
     public static SvgRenderOptions FromAppOptions(AppOptions appOptions)
     {
+        var windowStyle = ParseWindowStyle(appOptions.Window);
+        var effectivePadding = appOptions.Padding
+            ?? (windowStyle != WindowStyle.None ? 8d : 2d);
+
         return new SvgRenderOptions
         {
             Theme = appOptions.Theme,
@@ -45,11 +55,16 @@ public sealed class SvgRenderOptions
             ),
             Frame = appOptions.Frame,
             Font = appOptions.Font,
-            Window = ParseWindowStyle(appOptions.Window),
-            Padding = appOptions.Padding,
+            Window = windowStyle,
+            Padding = effectivePadding,
             Loop = appOptions.Loop,
             VideoFps = appOptions.VideoFps,
+            VideoSleep = appOptions.VideoSleep,
+            VideoFadeOut = appOptions.VideoFadeOut,
             HeightRows = appOptions.Height,
+            CommandHeader = (appOptions.WithCommand && !string.IsNullOrWhiteSpace(appOptions.Command))
+                ? $"$ {appOptions.Command}"
+                : null,
         };
     }
 

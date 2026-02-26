@@ -42,11 +42,15 @@ public sealed class AppOptions
 
     public string Window { get; set; } = "none";
 
-    public double Padding { get; set; } = 2d;
+    public double? Padding { get; set; }
 
     public bool Loop { get; set; } = true;
 
     public double VideoFps { get; set; } = 12d;
+
+    public double VideoSleep { get; set; } = 1d;
+
+    public double VideoFadeOut { get; set; } = 0d;
 
     public bool WithCommand { get; set; }
 }

@@ -15,7 +15,7 @@ public static class OptionParser
               console2svg [options] -- my-command with args
 
             Options:
-              -c, --command <value>          Execute command in PTY mode.
+              -c, --with-command             Prepend the command line to the output as if typed in a terminal.
               -o, --out <path>               Output SVG path (default: output.svg).
               -m, --mode <image|video>       Output mode (default: image).
               -w, --width <int>              Terminal width in characters (default: auto).
@@ -28,12 +28,13 @@ public static class OptionParser
               --crop-bottom <value>          Crop bottom by px, ch, or text pattern (examples: 10px, 2ch, ---, summary:-3).
               --crop-left <value>            Crop left by px or ch.
               --theme <dark|light>           Color theme (default: dark).
-              --window <none|macos|windows|macos-pc|windows-pc>  Terminal window chrome style (default: none).
-              --padding <px>                 Outer padding in pixels around terminal content (default: 2).
+              -d, --window <none|macos|windows|macos-pc|windows-pc>  Terminal window chrome style (default: none).
+              --padding <px>                 Outer padding in pixels around terminal content (default: 2, or 8 when --window is set).
               --no-loop                      Disable loop for animated SVG playback in video mode (default: loop).
               --fps <value>                  Max FPS for animated SVG frame sampling (default: 12).
+              --sleep <sec>                  Wait time after execution completes in video mode (default: 1).
+              --fadeout <sec>                Fade-out duration at end of video (default: 0).
               --font <family>                CSS font-family for SVG text (default: system monospace).
-              --with-command                 Prepend the command line to the output as if typed in a terminal.
               --in <path>                    Read existing asciicast file.
               --save-cast <path>             Save captured output as asciicast file.
               --help                         Show help.
@@ -150,6 +151,7 @@ public static class OptionParser
         return !string.Equals(name, "--help", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--version", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--no-loop", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "-c", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--with-command", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "-v", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--verbose", StringComparison.OrdinalIgnoreCase);
@@ -173,8 +175,8 @@ public static class OptionParser
                 options.ShowVersion = true;
                 return true;
             case "-c":
-            case "--command":
-                options.Command = value;
+            case "--with-command":
+                options.WithCommand = true;
                 return true;
             case "--in":
                 options.InputCastPath = value;
@@ -240,6 +242,7 @@ public static class OptionParser
             case "--theme":
                 options.Theme = string.IsNullOrWhiteSpace(value) ? "dark" : value;
                 return true;
+            case "-d":
             case "--window":
                 if (string.IsNullOrWhiteSpace(value))
                 {
@@ -272,9 +275,6 @@ public static class OptionParser
             case "--no-loop":
                 options.Loop = false;
                 return true;
-            case "--with-command":
-                options.WithCommand = true;
-                return true;
             case "--fps":
                 if (!TryParseDouble(value, "--fps", out var fps, out error))
                 {
@@ -282,6 +282,22 @@ public static class OptionParser
                 }
 
                 options.VideoFps = fps;
+                return true;
+            case "--sleep":
+                if (!TryParseDouble(value, "--sleep", out var sleep, out error))
+                {
+                    return false;
+                }
+
+                options.VideoSleep = sleep;
+                return true;
+            case "--fadeout":
+                if (!TryParseDouble(value, "--fadeout", out var fadeout, out error))
+                {
+                    return false;
+                }
+
+                options.VideoFadeOut = fadeout;
                 return true;
             case "--font":
                 options.Font = value;
@@ -386,9 +402,12 @@ public static class OptionParser
         }
 
         if (
-            double.IsNaN(options.Padding)
-            || double.IsInfinity(options.Padding)
-            || options.Padding < 0
+            options.Padding.HasValue
+            && (
+                double.IsNaN(options.Padding.Value)
+                || double.IsInfinity(options.Padding.Value)
+                || options.Padding.Value < 0
+            )
         )
         {
             error = "--padding must be a non-negative finite number.";
@@ -402,6 +421,26 @@ public static class OptionParser
         )
         {
             error = "--fps must be greater than 0.";
+            return false;
+        }
+
+        if (
+            double.IsNaN(options.VideoSleep)
+            || double.IsInfinity(options.VideoSleep)
+            || options.VideoSleep < 0
+        )
+        {
+            error = "--sleep must be a non-negative number.";
+            return false;
+        }
+
+        if (
+            double.IsNaN(options.VideoFadeOut)
+            || double.IsInfinity(options.VideoFadeOut)
+            || options.VideoFadeOut < 0
+        )
+        {
+            error = "--fadeout must be a non-negative number.";
             return false;
         }
 

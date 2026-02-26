@@ -143,6 +143,76 @@ public sealed class AnimatedSvgRendererTests
         highCount.ShouldBeGreaterThan(lowCount);
     }
 
+    [Test]
+    public void RenderAnimatedSvgWithSleepExtendsAnimationDuration()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "A");
+        session.AddEvent(1.0, "B");
+
+        var noSleepSvg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", VideoSleep = 0 }
+        );
+        var withSleepSvg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", VideoSleep = 2 }
+        );
+
+        // With sleep=2, the animation duration should be ~3s vs ~1s without sleep
+        withSleepSvg.ShouldContain("3s linear");
+        noSleepSvg.ShouldNotContain("3s linear");
+    }
+
+    [Test]
+    public void RenderAnimatedSvgWithFadeOutLastFrameFadesOut()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "A");
+        session.AddEvent(1.0, "B");
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                VideoSleep = 0,
+                VideoFadeOut = 0.5,
+            }
+        );
+
+        // With fadeout, the last frame should end with opacity:0 at 100%
+        var lastKeyframeIndex = svg.LastIndexOf("@keyframes k", StringComparison.Ordinal);
+        lastKeyframeIndex.ShouldBeGreaterThanOrEqualTo(0);
+        var lastKeyframeBlock = svg.Substring(lastKeyframeIndex);
+        lastKeyframeBlock.ShouldContain("100%{opacity:0;}");
+    }
+
+    [Test]
+    public void RenderAnimatedSvgNoFadeOutLastFrameStaysVisible()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "A");
+        session.AddEvent(1.0, "B");
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                VideoSleep = 1,
+                VideoFadeOut = 0,
+            }
+        );
+
+        // Without fadeout, last frame should end at 100% opacity:1 (no fade)
+        var lastKeyframeIndex = svg.LastIndexOf("@keyframes k", StringComparison.Ordinal);
+        lastKeyframeIndex.ShouldBeGreaterThanOrEqualTo(0);
+        var lastKeyframeBlock = svg.Substring(lastKeyframeIndex);
+        lastKeyframeBlock.ShouldContain("100%{opacity:1;}");
+        lastKeyframeBlock.ShouldNotContain("100%{opacity:0;}");
+    }
+
     private static int CountOccurrences(string text, string token)
     {
         var count = 0;

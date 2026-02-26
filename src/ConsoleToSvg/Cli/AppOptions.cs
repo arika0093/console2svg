@@ -47,4 +47,6 @@ public sealed class AppOptions
     public bool Loop { get; set; } = true;
 
     public double VideoFps { get; set; } = 12d;
+
+    public bool WithCommand { get; set; }
 }

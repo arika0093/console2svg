@@ -33,6 +33,7 @@ public static class OptionParser
               --no-loop                      Disable loop for animated SVG playback in video mode (default: loop).
               --fps <value>                  Max FPS for animated SVG frame sampling (default: 12).
               --font <family>                CSS font-family for SVG text (default: system monospace).
+              --with-command                 Prepend the command line to the output as if typed in a terminal.
               --in <path>                    Read existing asciicast file.
               --save-cast <path>             Save captured output as asciicast file.
               --help                         Show help.
@@ -149,6 +150,7 @@ public static class OptionParser
         return !string.Equals(name, "--help", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--version", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--no-loop", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--with-command", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "-v", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--verbose", StringComparison.OrdinalIgnoreCase);
     }
@@ -269,6 +271,9 @@ public static class OptionParser
                 return true;
             case "--no-loop":
                 options.Loop = false;
+                return true;
+            case "--with-command":
+                options.WithCommand = true;
                 return true;
             case "--fps":
                 if (!TryParseDouble(value, "--fps", out var fps, out error))

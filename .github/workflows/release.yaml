@@ -55,28 +55,16 @@ jobs:
         include:
           - os: ubuntu-24.04
             rid: linux-x64
-            vpk_os: linux
-            vpk_arch: x64
           - os: ubuntu-24.04-arm
             rid: linux-arm64
-            vpk_os: linux
-            vpk_arch: arm64
           - os: windows-latest
             rid: win-x64
-            vpk_os: win
-            vpk_arch: x64
           - os: windows-latest
             rid: win-arm64
-            vpk_os: win
-            vpk_arch: arm64
           - os: macos-latest
             rid: osx-x64
-            vpk_os: osx
-            vpk_arch: x64
           - os: macos-latest
             rid: osx-arm64
-            vpk_os: osx
-            vpk_arch: arm64
 
     runs-on: ${{ matrix.os }}
 
@@ -107,14 +95,15 @@ jobs:
       - name: Pack with Velopack
         shell: bash
         run: |
+          EXE_SUFFIX=""
+          [[ "${{ matrix.rid }}" == win-* ]] && EXE_SUFFIX=".exe"
           vpk pack \
             --packId ConsoleToSvg \
             --packVersion ${{ needs.build-nupkg.outputs.version }} \
             --packDir ./native-publish/${{ matrix.rid }} \
-            --mainExe console2svg${{ matrix.vpk_os == 'win' && '.exe' || '' }} \
+            --mainExe console2svg${EXE_SUFFIX} \
             --outputDir ./velopack-output/${{ matrix.rid }} \
-            --os ${{ matrix.vpk_os }} \
-            --arch ${{ matrix.vpk_arch }}
+            --runtime ${{ matrix.rid }}
 
       - name: Upload Velopack artifacts
         uses: actions/upload-artifact@v4

@@ -103,3 +103,14 @@ available themes:
 * `macos-pc`: macOS style window frame with background and shadow
 * `windows`: Windows style window frame
 * `windows-pc`: Windows style window frame with background and shadow
+
+## Major options
+
+* `-o`: Output SVG file path (default: `output.svg`)
+* `-c`: Prepend the command line to the output as if typed in a terminal.
+* `-w`: width of the output SVG (default: terminal width[pipe], 80ch[pty])
+* `-h`: height of the output SVG (default: terminal height[pipe], auto[pty])
+* `-m`: output mode (image or video)
+* `-d`: window chrome style (none, macos, ...)
+* `-v`: enable verbose logging
+* `--crop-*`: crop the output by specified pixels, characters, or text patterns

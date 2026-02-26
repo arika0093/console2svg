@@ -107,6 +107,8 @@ public sealed class AnsiParser
                 return TryHandleCsi(text, index + 2, out endIndex);
             case ']':
                 return TrySkipOsc(text, index + 2, out endIndex);
+            case 'P':
+                return TrySkipDcs(text, index + 2, out endIndex);
             case '(':
             case ')':
             case '*':
@@ -150,6 +152,27 @@ public sealed class AnsiParser
     }
 
     private static bool TrySkipOsc(string text, int start, out int endIndex)
+    {
+        endIndex = text.Length - 1;
+        for (var i = start; i < text.Length; i++)
+        {
+            if (text[i] == '\a')
+            {
+                endIndex = i;
+                return true;
+            }
+
+            if (text[i] == '\u001b' && i + 1 < text.Length && text[i + 1] == '\\')
+            {
+                endIndex = i + 1;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool TrySkipDcs(string text, int start, out int endIndex)
     {
         endIndex = text.Length - 1;
         for (var i = start; i < text.Length; i++)

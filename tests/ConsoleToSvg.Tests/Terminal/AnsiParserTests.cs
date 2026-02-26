@@ -329,4 +329,30 @@ public sealed class AnsiParserTests
         emulator.Buffer.GetCell(0, 0).Text.ShouldBe("X");
         emulator.Buffer.GetCell(0, 1).Text.ShouldBe(" ");
     }
+
+    [Test]
+    public void DcsXtgettcapSequenceDoesNotRenderLiteralText()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(16, 2, theme);
+
+        emulator.Process("\u001bP+q436f+q6b75\u001b\\X");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("X");
+        emulator.Buffer.GetCell(0, 1).Text.ShouldBe(" ");
+    }
+
+    [Test]
+    public void SplitDcsXtgettcapAcrossChunksDoesNotRenderLiteralText()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(16, 2, theme);
+
+        emulator.Process("\u001bP+q436f");
+        emulator.Process("+q6b75\u001b");
+        emulator.Process("\\X");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("X");
+        emulator.Buffer.GetCell(0, 1).Text.ShouldBe(" ");
+    }
 }

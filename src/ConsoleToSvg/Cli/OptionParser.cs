@@ -32,8 +32,9 @@ public static class OptionParser
               --padding <px>                 Outer padding in pixels around terminal content (default: 2, or 8 when --window is set).
               --no-loop                      Disable loop for animated SVG playback in video mode (default: loop).
               --fps <value>                  Max FPS for animated SVG frame sampling (default: 12).
-              --sleep <sec>                  Wait time after execution completes in video mode (default: 1).
+              --sleep <sec>                  Wait time after execution completes in video mode (default: 2).
               --fadeout <sec>                Fade-out duration at end of video (default: 0).
+              --opacity <0-1>                Background fill opacity (default: 1).
               --font <family>                CSS font-family for SVG text (default: system monospace).
               --in <path>                    Read existing asciicast file.
               --save-cast <path>             Save captured output as asciicast file.
@@ -299,6 +300,14 @@ public static class OptionParser
 
                 options.VideoFadeOut = fadeout;
                 return true;
+            case "--opacity":
+                if (!TryParseDouble(value, "--opacity", out var opacity, out error))
+                {
+                    return false;
+                }
+
+                options.Opacity = opacity;
+                return true;
             case "--font":
                 options.Font = value;
                 return true;
@@ -441,6 +450,17 @@ public static class OptionParser
         )
         {
             error = "--fadeout must be a non-negative number.";
+            return false;
+        }
+
+        if (
+            double.IsNaN(options.Opacity)
+            || double.IsInfinity(options.Opacity)
+            || options.Opacity < 0
+            || options.Opacity > 1
+        )
+        {
+            error = "--opacity must be a number between 0 and 1.";
             return false;
         }
 

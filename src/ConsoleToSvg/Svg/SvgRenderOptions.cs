@@ -34,6 +34,8 @@ public sealed class SvgRenderOptions
 
     public double VideoFadeOut { get; set; } = 0d;
 
+    public double Opacity { get; set; } = 1d;
+
     public int? HeightRows { get; set; }
 
     public string? CommandHeader { get; set; }
@@ -62,6 +64,7 @@ public sealed class SvgRenderOptions
             VideoSleep = appOptions.VideoSleep,
             VideoFadeOut = appOptions.VideoFadeOut,
             HeightRows = appOptions.Height,
+            Opacity = appOptions.Opacity,
             CommandHeader = (appOptions.WithCommand && !string.IsNullOrWhiteSpace(appOptions.Command))
                 ? $"$ {appOptions.Command}"
                 : null,

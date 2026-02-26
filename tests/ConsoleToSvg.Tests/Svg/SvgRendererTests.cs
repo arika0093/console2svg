@@ -409,8 +409,12 @@ public sealed class SvgRendererTests
         svg.ShouldContain("#1f2b3a");
         // Shadow (black with opacity)
         svg.ShouldContain("fill-opacity=\"0.4\"");
-        // Close button
-        svg.ShouldContain("#e06c75");
+        // Windows Terminal style: control buttons as text characters
+        svg.ShouldContain("\u00d7"); // × close button
+        svg.ShouldContain("\u25a1"); // □ maximize button
+        svg.ShouldContain(">_<");   // minimize button text (_) inside SVG text tag
+        // Active tab shape
+        svg.ShouldContain("#2b2b2b");
     }
 
     [Test]
@@ -584,13 +588,105 @@ public sealed class SvgRendererTests
             }
         );
 
-        // The close button (#e06c75) should be inside the window, not outside it.
-        // For width=8, padding=2: canvasWidth = (20+1) + (20+1+8) + 2 + 72 + 2 = 126
-        // Close button x = 126 - 20(DesktopPadding) - 8(Shadow) - 14 = 84
-        // Window right edge = 126 - 20 - 8 = 98, so button (x=84, w=10, right=94) is inside.
-        svg.ShouldContain("x=\"84\" y=\"30\" width=\"10\" height=\"10\" fill=\"#e06c75\"");
+        // Windows Terminal style: control buttons as text characters, not colored rects.
+        // For width=8, padding=2: canvasWidth=126, winX=20, winW=78, winRight=98
+        // btnRight = winX + winW - 8 = 90
+        // Close × at x = btnRight - 8 = 82, y = winY + 24 = 44
+        // All button x values (38, 60, 82) are < winRight (98), so inside the window.
+        svg.ShouldContain("x=\"82\" y=\"44\"");  // close button position
+        svg.ShouldContain("\u00d7");              // × close button text
+        svg.ShouldContain("\u25a1");              // □ maximize button text
+        svg.ShouldContain(">_<");                 // minimize button text (_) inside SVG text tag
 
         // The desktop background is present
         svg.ShouldContain("#1f2b3a");
+    }
+
+    [Test]
+    public void RenderStaticSvgWithWindowsStyleHasTabAndTextButtons()
+    {
+        var session = new RecordingSession(width: 10, height: 2);
+        session.AddEvent(0.01, "A");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                Window = ConsoleToSvg.Svg.WindowStyle.Windows,
+                Padding = 2,
+            }
+        );
+
+        // Windows Terminal style: tab shape and text control buttons
+        svg.ShouldContain("#1c1c1c");    // tab bar / outer fill
+        svg.ShouldContain("#2b2b2b");    // active tab fill
+        svg.ShouldContain("&gt;_");      // tab icon ">_"
+        svg.ShouldContain("\u00d7");     // × close button
+        svg.ShouldContain("\u25a1");     // □ maximize button
+        svg.ShouldContain(">_<");        // minimize button text (_) inside SVG text tag
+    }
+
+    [Test]
+    public void RenderStaticSvgWithOpacityAppliedToBackground()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "Hi");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                Opacity = 0.5d,
+            }
+        );
+
+        // Background rect should have fill-opacity
+        svg.ShouldContain("fill-opacity=\"0.5\"");
+    }
+
+    [Test]
+    public void RenderStaticSvgWithFullOpacityDoesNotAddFillOpacity()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "Hi");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                Opacity = 1d,
+            }
+        );
+
+        // Default opacity=1 should not add fill-opacity attribute
+        svg.ShouldNotContain("fill-opacity");
+    }
+
+    [Test]
+    public void CommandHeaderDoesNotHideFirstTerminalRow()
+    {
+        var session = new RecordingSession(width: 20, height: 3);
+        session.AddEvent(0.01, "row0\r\nrow1\r\nrow2");
+
+        // With CommandHeader, the terminal content should show all rows starting from row 0
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                CommandHeader = "$ ls",
+            }
+        );
+
+        // All three terminal rows should be visible (not shifted/hidden by command header)
+        svg.ShouldContain(">r<");
+        svg.ShouldContain(">0<");
+        svg.ShouldContain(">1<");
+        svg.ShouldContain(">2<");
+        // The command header should also be present
+        svg.ShouldContain("$ ls");
     }
 }

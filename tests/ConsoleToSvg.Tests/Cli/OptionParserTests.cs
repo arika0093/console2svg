@@ -255,11 +255,11 @@ public sealed class OptionParserTests
     }
 
     [Test]
-    public void SleepDefaultIsOne()
+    public void SleepDefaultIsTwo()
     {
         var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
         ok.ShouldBeTrue();
-        options!.VideoSleep.ShouldBe(1d);
+        options!.VideoSleep.ShouldBe(2d);
     }
 
     [Test]
@@ -308,5 +308,29 @@ public sealed class OptionParserTests
         var ok = OptionParser.TryParse(new[] { "--padding", "5" }, out var options, out _, out _);
         ok.ShouldBeTrue();
         options!.Padding.ShouldBe(5d);
+    }
+
+    [Test]
+    public void OpacityOptionParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "--opacity", "0.5" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Opacity.ShouldBe(0.5d);
+    }
+
+    [Test]
+    public void OpacityDefaultIsOne()
+    {
+        var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Opacity.ShouldBe(1d);
+    }
+
+    [Test]
+    public void InvalidOpacityReturnsError()
+    {
+        var ok = OptionParser.TryParse(new[] { "--opacity", "1.5" }, out _, out var error, out _);
+        ok.ShouldBeFalse();
+        error.ShouldBe("--opacity must be a number between 0 and 1.");
     }
 }

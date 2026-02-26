@@ -48,9 +48,11 @@ public sealed class AppOptions
 
     public double VideoFps { get; set; } = 12d;
 
-    public double VideoSleep { get; set; } = 1d;
+    public double VideoSleep { get; set; } = 2d;
 
     public double VideoFadeOut { get; set; } = 0d;
+
+    public double Opacity { get; set; } = 1d;
 
     public bool WithCommand { get; set; }
 }

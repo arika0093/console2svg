@@ -49,7 +49,8 @@ public static class AnimatedSvgRenderer
             css,
             font: options.Font,
             windowStyle: options.Window,
-            commandHeader: options.CommandHeader
+            commandHeader: options.CommandHeader,
+            opacity: options.Opacity
         );
         for (var i = 0; i < reducedFrames.Count; i++)
         {
@@ -59,7 +60,8 @@ public static class AnimatedSvgRenderer
                 context,
                 theme,
                 id: $"frame-{i}",
-                @class: $"frame frame-{i}"
+                @class: $"frame frame-{i}",
+                opacity: options.Opacity
             );
         }
 

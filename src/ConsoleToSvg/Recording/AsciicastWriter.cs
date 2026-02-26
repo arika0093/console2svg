@@ -1,6 +1,4 @@
 using System;
-using System.Buffers;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -43,18 +41,19 @@ public static class AsciicastWriter
         var headerLine = JsonSerializer.Serialize(session.Header, AsciicastJsonContext.Default.AsciicastHeader);
         await writer.WriteLineAsync(headerLine).ConfigureAwait(false);
 
+        using var ms = new MemoryStream();
         foreach (var outputEvent in session.Events)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var bufferWriter = new ArrayBufferWriter<byte>();
-            using var jw = new Utf8JsonWriter(bufferWriter);
+            ms.SetLength(0);
+            using var jw = new Utf8JsonWriter(ms);
             jw.WriteStartArray();
             jw.WriteNumberValue(outputEvent.Time);
             jw.WriteStringValue(outputEvent.Type);
             jw.WriteStringValue(outputEvent.Data);
             jw.WriteEndArray();
             await jw.FlushAsync().ConfigureAwait(false);
-            var line = Encoding.UTF8.GetString(bufferWriter.WrittenSpan);
+            var line = Encoding.UTF8.GetString(ms.GetBuffer(), 0, (int)ms.Length);
             await writer.WriteLineAsync(line).ConfigureAwait(false);
         }
 

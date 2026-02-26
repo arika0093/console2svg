@@ -60,7 +60,7 @@ console2svg "git log --oneline"
 Or pass the command after `--`:
 
 ```sh
-console2svg -- dotnet test.cs
+console2svg -- dotnet run app.cs
 ```
 
 ### Animated SVG
@@ -68,13 +68,13 @@ console2svg -- dotnet test.cs
 use `-m video`.
 
 ```sh
-console2svg -m video -- dotnet build
+console2svg -m video -- nyancat
 ```
 
-Loop playback:
+No loop playback:
 
 ```sh
-console2svg -m video --loop -- nyancat
+console2svg -m video --no-loop -- nyancat
 ```
 
 ### Static SVG with crop

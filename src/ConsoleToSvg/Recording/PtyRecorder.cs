@@ -86,7 +86,7 @@ public static class PtyRecorder
             .ConfigureAwait(false);
         logger.ZLogDebug($"PTY process spawned.");
         var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
-        var inputForward = forwardToConsole ? TryOpenStandardInput(logger) : null;
+        var inputForward = forwardToConsole ? TryOpenInputForForwarding(logger) : null;
         var readTask = ReadOutputAsync(
             connection.ReaderStream,
             session,
@@ -249,7 +249,7 @@ public static class PtyRecorder
         });
 
         var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
-        var inputForward = forwardToConsole ? TryOpenStandardInput(logger) : null;
+        var inputForward = forwardToConsole ? TryOpenInputForForwarding(logger) : null;
         var inputTask = inputForward is not null
             ? PumpInputAsync(
                 inputForward,
@@ -440,6 +440,20 @@ public static class PtyRecorder
         }
     }
 
+    private static Stream? TryOpenInputForForwarding(ILogger logger)
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !Console.IsInputRedirected)
+        {
+            var tty = TryOpenUnixTtyInput(logger);
+            if (tty is not null)
+            {
+                return tty;
+            }
+        }
+
+        return TryOpenStandardInput(logger);
+    }
+
     private static Stream? TryOpenStandardInput(ILogger logger)
     {
         try
@@ -449,6 +463,26 @@ public static class PtyRecorder
         catch (Exception ex)
         {
             logger.ZLogDebug(ex, $"Standard input is unavailable. Input forwarding is disabled.");
+            return null;
+        }
+    }
+
+    private static Stream? TryOpenUnixTtyInput(ILogger logger)
+    {
+        try
+        {
+            return new FileStream(
+                "/dev/tty",
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.ReadWrite,
+                256,
+                FileOptions.None
+            );
+        }
+        catch (Exception ex)
+        {
+            logger.ZLogDebug(ex, $"/dev/tty is unavailable. Falling back to standard input.");
             return null;
         }
     }
@@ -590,6 +624,8 @@ public static class PtyRecorder
         private readonly IntPtr _handle;
         private readonly uint _originalMode;
         private readonly bool _changed;
+        private readonly bool _isUnix;
+        private readonly Termios _originalUnixTermios;
 
         private ConsoleInputMode(ILogger logger, IntPtr handle, uint originalMode)
         {
@@ -597,13 +633,25 @@ public static class PtyRecorder
             _handle = handle;
             _originalMode = originalMode;
             _changed = true;
+            _isUnix = false;
+            _originalUnixTermios = default;
+        }
+
+        private ConsoleInputMode(ILogger logger, Termios originalUnixTermios)
+        {
+            _logger = logger;
+            _handle = IntPtr.Zero;
+            _originalMode = 0;
+            _changed = true;
+            _isUnix = true;
+            _originalUnixTermios = originalUnixTermios;
         }
 
         public static ConsoleInputMode? TryEnableRaw(ILogger logger)
         {
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return null;
+                return TryEnableUnixRaw(logger);
             }
 
             if (Console.IsInputRedirected)
@@ -649,6 +697,43 @@ public static class PtyRecorder
             }
         }
 
+        private static ConsoleInputMode? TryEnableUnixRaw(ILogger logger)
+        {
+            if (Console.IsInputRedirected)
+            {
+                return null;
+            }
+
+            try
+            {
+                const int stdinFd = 0;
+                if (tcgetattr(stdinFd, out var termios) != 0)
+                {
+                    return null;
+                }
+
+                var raw = termios;
+                raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+                raw.c_oflag &= ~OPOST;
+                raw.c_cflag |= CS8;
+                raw.c_lflag &= ~(ICANON | ECHO | IEXTEN | ISIG);
+                raw.c_cc[VMIN] = 1;
+                raw.c_cc[VTIME] = 0;
+                if (tcsetattr(stdinFd, TCSANOW, ref raw) != 0)
+                {
+                    return null;
+                }
+
+                logger.ZLogDebug($"Enabled raw console input for PTY forwarding.");
+                return new ConsoleInputMode(logger, termios);
+            }
+            catch (Exception ex)
+            {
+                logger.ZLogDebug(ex, $"Failed to enable raw console input.");
+                return null;
+            }
+        }
+
         public void Dispose()
         {
             if (!_changed)
@@ -658,7 +743,17 @@ public static class PtyRecorder
 
             try
             {
-                SetConsoleMode(_handle, _originalMode);
+                if (_isUnix)
+                {
+                    const int stdinFd = 0;
+                    var original = _originalUnixTermios;
+                    tcsetattr(stdinFd, TCSANOW, ref original);
+                }
+                else
+                {
+                    SetConsoleMode(_handle, _originalMode);
+                }
+
                 _logger.ZLogDebug($"Restored console input mode.");
             }
             catch
@@ -666,6 +761,43 @@ public static class PtyRecorder
                 // Ignore restore failures.
             }
         }
+
+        private const int TCSANOW = 0;
+        private const uint BRKINT = 0x0002;
+        private const uint ICRNL = 0x0100;
+        private const uint INPCK = 0x0010;
+        private const uint ISTRIP = 0x0020;
+        private const uint IXON = 0x0400;
+        private const uint OPOST = 0x0001;
+        private const uint CS8 = 0x0030;
+        private const uint ICANON = 0x0002;
+        private const uint ECHO = 0x0008;
+        private const uint IEXTEN = 0x8000;
+        private const uint ISIG = 0x0001;
+        private const int VTIME = 5;
+        private const int VMIN = 6;
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct Termios
+        {
+            public uint c_iflag;
+            public uint c_oflag;
+            public uint c_cflag;
+            public uint c_lflag;
+            public byte c_line;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+            public byte[] c_cc;
+
+            public uint c_ispeed;
+            public uint c_ospeed;
+        }
+
+        [DllImport("libc", SetLastError = true)]
+        private static extern int tcgetattr(int fd, out Termios termios);
+
+        [DllImport("libc", SetLastError = true)]
+        private static extern int tcsetattr(int fd, int optional_actions, ref Termios termios);
 
         [DllImport("kernel32.dll")]
         private static extern IntPtr GetStdHandle(uint nStdHandle);

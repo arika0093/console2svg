@@ -28,7 +28,7 @@ You can also generate SVG with a window frame. and some options to customize the
 ![](./assets/cmd-loop.svg)
 
 ```bash
-console2svg -m video -d macos -- copilot --banner
+console2svg -m video -c -d macos -- copilot --banner
 ```
 
 In video mode, you can capture the animation of the command execution and save it as an SVG.

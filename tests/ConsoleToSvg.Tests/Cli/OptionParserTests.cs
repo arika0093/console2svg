@@ -208,10 +208,105 @@ public sealed class OptionParserTests
     }
 
     [Test]
+    public void ShortFlagCMapsToWithCommand()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "-c", "ls" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.WithCommand.ShouldBeTrue();
+        options.Command.ShouldBe("ls");
+    }
+
+    [Test]
+    public void LongFlagCommandIsUnknown()
+    {
+        var ok = OptionParser.TryParse(new[] { "--command", "ls" }, out _, out var error, out _);
+        ok.ShouldBeFalse();
+        error.ShouldNotBeNull();
+        error!.ShouldContain("Unknown option");
+    }
+
+    [Test]
     public void WithCommandDefaultIsFalse()
     {
         var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
         ok.ShouldBeTrue();
         options!.WithCommand.ShouldBeFalse();
+    }
+
+    [Test]
+    public void ShortFlagDMapsToWindow()
+    {
+        var ok = OptionParser.TryParse(new[] { "-d", "macos" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Window.ShouldBe("macos");
+    }
+
+    [Test]
+    public void SleepOptionParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "--sleep", "2.5" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.VideoSleep.ShouldBe(2.5d);
+    }
+
+    [Test]
+    public void SleepDefaultIsOne()
+    {
+        var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.VideoSleep.ShouldBe(1d);
+    }
+
+    [Test]
+    public void FadeOutOptionParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "--fadeout", "0.5" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.VideoFadeOut.ShouldBe(0.5d);
+    }
+
+    [Test]
+    public void FadeOutDefaultIsZero()
+    {
+        var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.VideoFadeOut.ShouldBe(0d);
+    }
+
+    [Test]
+    public void InvalidSleepReturnsError()
+    {
+        var ok = OptionParser.TryParse(new[] { "--sleep", "-1" }, out _, out var error, out _);
+        ok.ShouldBeFalse();
+        error.ShouldBe("--sleep must be a non-negative number.");
+    }
+
+    [Test]
+    public void InvalidFadeOutReturnsError()
+    {
+        var ok = OptionParser.TryParse(new[] { "--fadeout", "-0.5" }, out _, out var error, out _);
+        ok.ShouldBeFalse();
+        error.ShouldBe("--fadeout must be a non-negative number.");
+    }
+
+    [Test]
+    public void PaddingDefaultIsNullWhenNotSpecified()
+    {
+        var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Padding.ShouldBeNull();
+    }
+
+    [Test]
+    public void PaddingExplicitlySetIsPreserved()
+    {
+        var ok = OptionParser.TryParse(new[] { "--padding", "5" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Padding.ShouldBe(5d);
     }
 }

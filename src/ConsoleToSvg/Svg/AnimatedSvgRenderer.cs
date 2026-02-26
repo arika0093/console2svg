@@ -26,16 +26,20 @@ public static class AnimatedSvgRenderer
 
         var reducedFrames = ReduceFrames(frames, options.VideoFps);
 
+        var commandHeaderRows = string.IsNullOrEmpty(options.CommandHeader) ? 0 : 1;
         var context = SvgDocumentBuilder.CreateContext(
             reducedFrames[0].Buffer,
             options.Crop,
             includeScrollback: false,
             options.Window,
-            options.Padding
+            options.Padding,
+            heightRows: null,
+            commandHeaderRows
         );
-        var duration = Math.Max(0.05d, reducedFrames[reducedFrames.Count - 1].Time);
+        var lastFrameTime = Math.Max(0.05d, reducedFrames[reducedFrames.Count - 1].Time);
+        var totalDuration = lastFrameTime + options.VideoSleep + options.VideoFadeOut;
 
-        var css = BuildAnimationCss(reducedFrames, duration, options.Loop);
+        var css = BuildAnimationCss(reducedFrames, totalDuration, options.VideoFadeOut, options.Loop);
 
         var sb = new StringBuilder(128 * 1024);
         SvgDocumentBuilder.BeginSvg(
@@ -44,7 +48,8 @@ public static class AnimatedSvgRenderer
             theme,
             css,
             font: options.Font,
-            windowStyle: options.Window
+            windowStyle: options.Window,
+            commandHeader: options.CommandHeader
         );
         for (var i = 0; i < reducedFrames.Count; i++)
         {
@@ -235,7 +240,8 @@ public static class AnimatedSvgRenderer
 
     private static string BuildAnimationCss(
         System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
-        double duration,
+        double totalDuration,
+        double fadeOut,
         bool loop
     )
     {
@@ -244,11 +250,19 @@ public static class AnimatedSvgRenderer
 
         for (var i = 0; i < frames.Count; i++)
         {
-            var start = Percentage(frames[i].Time, duration);
-            var end =
-                i == frames.Count - 1
-                    ? 100d
-                    : Math.Max(start, Percentage(frames[i + 1].Time, duration));
+            var isLast = i == frames.Count - 1;
+            var start = Percentage(frames[i].Time, totalDuration);
+            double end;
+            if (isLast)
+            {
+                // Last frame visible until (lastFrameTime + sleep) which is totalDuration - fadeOut
+                end = Percentage(totalDuration - fadeOut, totalDuration);
+            }
+            else
+            {
+                end = Math.Max(start, Percentage(frames[i + 1].Time, totalDuration));
+            }
+
             var fadeInPoint = Math.Max(0d, start - 0.001d);
             var fadeOutPoint = Math.Min(100d, end + 0.001d);
 
@@ -262,7 +276,7 @@ public static class AnimatedSvgRenderer
             sb.Append("%,");
             sb.Append(Format(end));
             sb.Append("%{opacity:1;}");
-            if (i < frames.Count - 1)
+            if (!isLast || fadeOut > 0d)
             {
                 sb.Append(Format(fadeOutPoint));
                 sb.Append("%,100%{opacity:0;}");
@@ -275,7 +289,7 @@ public static class AnimatedSvgRenderer
             sb.Append("{animation:k");
             sb.Append(i.ToString(CultureInfo.InvariantCulture));
             sb.Append(' ');
-            sb.Append(Format(duration));
+            sb.Append(Format(totalDuration));
             sb.Append("s linear ");
             sb.Append(loop ? "infinite;" : "forwards;");
             sb.Append('}');

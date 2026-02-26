@@ -481,4 +481,116 @@ public sealed class SvgRendererTests
         svg.ShouldContain(">l<");
         svg.ShouldContain(">s<");
     }
+
+    [Test]
+    public void CommandHeaderRenderedAboveContentAndNotAffectedByCropTop()
+    {
+        var session = new RecordingSession(width: 20, height: 4);
+        session.AddEvent(0.01, "header-row\r\ncontent-row");
+
+        // CommandHeader is always shown; crop-top removes rows from the session content
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                Crop = ConsoleToSvg.Svg.CropOptions.Parse("1ch", "0", "0", "0"),
+                CommandHeader = "$ ls",
+            }
+        );
+
+        // Command header text should always appear in the SVG regardless of crop
+        svg.ShouldContain("$ ls");
+    }
+
+    [Test]
+    public void DefaultPaddingIsEightWhenWindowIsSet()
+    {
+        var ok = ConsoleToSvg.Cli.OptionParser.TryParse(
+            new[] { "--window", "macos" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        var renderOptions = ConsoleToSvg.Svg.SvgRenderOptions.FromAppOptions(options!);
+        renderOptions.Padding.ShouldBe(8d);
+    }
+
+    [Test]
+    public void DefaultPaddingIsTwoWhenWindowIsNone()
+    {
+        var ok = ConsoleToSvg.Cli.OptionParser.TryParse(
+            System.Array.Empty<string>(),
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        var renderOptions = ConsoleToSvg.Svg.SvgRenderOptions.FromAppOptions(options!);
+        renderOptions.Padding.ShouldBe(2d);
+    }
+
+    [Test]
+    public void ExplicitPaddingOverridesWindowDefault()
+    {
+        var ok = ConsoleToSvg.Cli.OptionParser.TryParse(
+            new[] { "--window", "macos", "--padding", "3" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        var renderOptions = ConsoleToSvg.Svg.SvgRenderOptions.FromAppOptions(options!);
+        renderOptions.Padding.ShouldBe(3d);
+    }
+
+    [Test]
+    public void HeightPreservedWhenCropReducesBelowSpecifiedHeight()
+    {
+        // 4-row terminal with content only in first 2 rows
+        var session = new RecordingSession(width: 8, height: 4);
+        session.AddEvent(0.01, "line1\r\nline2");
+
+        // With --height=4 and --crop-bottom=3ch, only 1 row would normally be visible
+        // but -h should preserve the 4-row height
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                HeightRows = 4,
+                Crop = ConsoleToSvg.Svg.CropOptions.Parse("0", "0", "3ch", "0"),
+            }
+        );
+
+        // Canvas height should be at least 4 * 18 = 72 pixels (not reduced by crop)
+        svg.ShouldContain("viewBox=\"0 0 72 72\"");
+    }
+
+    [Test]
+    public void WindowsPcButtonsAreInsideWindow()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "A");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                Window = ConsoleToSvg.Svg.WindowStyle.WindowsPc,
+                Padding = 2,
+            }
+        );
+
+        // The close button (#e06c75) should be inside the window, not outside it.
+        // For width=8, padding=2: canvasWidth = (20+1) + (20+1+8) + 2 + 72 + 2 = 126
+        // Close button x = 126 - 20(DesktopPadding) - 8(Shadow) - 14 = 84
+        // Window right edge = 126 - 20 - 8 = 98, so button (x=84, w=10, right=94) is inside.
+        svg.ShouldContain("x=\"84\" y=\"30\" width=\"10\" height=\"10\" fill=\"#e06c75\"");
+
+        // The desktop background is present
+        svg.ShouldContain("#1f2b3a");
+    }
 }

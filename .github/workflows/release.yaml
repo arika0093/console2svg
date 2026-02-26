@@ -49,13 +49,12 @@ jobs:
           path: ./nuget-artifacts/*.nupkg
 
   build-aot:
-    needs: build-nupkg
     strategy:
       matrix:
         include:
-          - os: ubuntu-24.04
+          - os: ubuntu-latest
             rid: linux-x64
-          - os: ubuntu-24.04-arm
+          - os: ubuntu-latest
             rid: linux-arm64
           - os: windows-latest
             rid: win-x64
@@ -63,8 +62,6 @@ jobs:
             rid: win-arm64
           - os: macos-latest
             rid: osx-x64
-          - os: macos-latest
-            rid: osx-arm64
 
     runs-on: ${{ matrix.os }}
 
@@ -101,7 +98,7 @@ jobs:
             --packId ConsoleToSvg \
             --packVersion ${{ needs.build-nupkg.outputs.version }} \
             --packDir ./native-publish/${{ matrix.rid }} \
-            --mainExe console2svg${EXE_SUFFIX} \
+            --mainExe ConsoleToSvg${EXE_SUFFIX} \
             --outputDir ./velopack-output/${{ matrix.rid }} \
             --runtime ${{ matrix.rid }}
 

@@ -153,3 +153,22 @@ jobs:
       - name: Publish NuGet Package
         run: dotnet nuget push ./nuget-artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
 
+  release-npm:
+    needs: [build-nupkg, release-github]
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+
+      - name: Set npm package version
+        working-directory: npm
+        run: npm pkg set version="${{ needs.build-nupkg.outputs.version }}"
+
+      - name: Publish npm package
+        working-directory: npm
+        run: npm publish --provenance --access public
+

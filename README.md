@@ -49,13 +49,16 @@ console2svg -v -c -d macos -- copilot --banner
 ![](./assets/cmd-loop.svg)
 
 ## Install
-[![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest)
+[![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) [![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=CB3837)](https://www.npmjs.com/package/console2svg) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest)
+ 
 
-
-You can install it as a global tool using the dotnet command.
+You can install it as a global tool using the dotnet or npm package manager.
 
 ```sh
+# dotnet global tool
 dotnet tool install -g ConsoleToSvg
+# npm global package
+npm install -g console2svg
 ```
 
 It is also distributed as a static binary.

@@ -1,0 +1,37 @@
+{
+  "name": "console2svg",
+  "version": "0.2.0",
+  "description": "Convert terminal output into SVG images",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arika0093/console2svg.git"
+  },
+  "homepage": "https://github.com/arika0093/console2svg#readme",
+  "bugs": {
+    "url": "https://github.com/arika0093/console2svg/issues"
+  },
+  "bin": {
+    "console2svg": "cli/console2svg.js"
+  },
+  "files": [
+    "cli",
+    "README.md"
+  ],
+  "scripts": {
+    "postinstall": "node cli/install.js"
+  },
+  "dependencies": {
+    "https-proxy-agent": "^7.0.4",
+    "proxy-from-env": "^1.1.0"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "preferGlobal": true
+}

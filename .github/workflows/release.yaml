@@ -49,7 +49,6 @@ jobs:
           path: ./nuget-artifacts/*.nupkg
 
   build-aot:
-    needs: build-nupkg
     strategy:
       matrix:
         include:
@@ -71,9 +70,6 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Install Velopack CLI
-        run: dotnet tool install -g vpk
-
       - name: Publish NativeAOT
         shell: bash
         run: |
@@ -82,77 +78,56 @@ jobs:
             -r ${{ matrix.rid }} \
             --self-contained \
             -p:PublishAot=true \
-            -p:PublishSingleFile=false \
+            -p:PublishSingleFile=true \
             -p:WarningLevel=0 \
             -o ./native-publish/${{ matrix.rid }}
 
-      - name: Pack with Velopack
-        shell: bash
-        run: |
-          EXE_SUFFIX=""
-          [[ "${{ matrix.rid }}" == win-* ]] && EXE_SUFFIX=".exe"
-          vpk pack \
-            --packId ConsoleToSvg \
-            --packVersion ${{ needs.build-nupkg.outputs.version }} \
-            --packDir ./native-publish/${{ matrix.rid }} \
-            --mainExe ConsoleToSvg${EXE_SUFFIX} \
-            --outputDir ./velopack-output/${{ matrix.rid }} \
-            --runtime ${{ matrix.rid }}
-
-      - name: Upload Velopack artifacts
+      - name: Upload native binary
         uses: actions/upload-artifact@v4
         with:
-          name: velopack-${{ matrix.rid }}
-          path: ./velopack-output/${{ matrix.rid }}/**
+          name: native-${{ matrix.rid }}
+          path: ./native-publish/${{ matrix.rid }}/ConsoleToSvg*
 
   release-github:
     needs: [build-nupkg, build-aot]
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: Install Velopack CLI
-        run: dotnet tool install -g vpk
-
       - name: Download NuGet artifacts
         uses: actions/download-artifact@v4
         with:
           name: nuget-packages
-          path: ./nuget-artifacts
+          path: ./release-upload
 
-      - name: Download all Velopack artifacts
+      - name: Download all native binary artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: velopack-*
-          path: ./velopack-all
+          pattern: native-*
+          path: ./native-artifacts
           merge-multiple: false
 
-      - name: Collect all release files
+      - name: Collect native binaries
+        shell: bash
         run: |
-          mkdir -p ./release-upload
-          for dir in ./velopack-all/velopack-*/; do
-            cp -r "$dir"* ./release-upload/ 2>/dev/null || true
+          for dir in ./native-artifacts/native-*/; do
+            rid=$(basename "$dir" | sed 's/^native-//')
+            if [[ "$rid" == win-* ]]; then
+              src="$dir/ConsoleToSvg.exe"
+              dst="./release-upload/console2svg-${rid}.exe"
+            else
+              src="$dir/ConsoleToSvg"
+              dst="./release-upload/console2svg-${rid}"
+            fi
+            [ -f "$src" ] && cp "$src" "$dst"
           done
-          cp ./nuget-artifacts/*.nupkg ./release-upload/ 2>/dev/null || true
 
-      - name: Publish GitHub Release with Velopack
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          vpk upload github \
-            --repoUrl https://github.com/${{ github.repository }} \
-            --publish \
-            --outputDir ./release-upload \
-            --token ${{ secrets.GITHUB_TOKEN }} \
-            --tag v${{ needs.build-nupkg.outputs.version }} \
-            --releaseName ${{ needs.build-nupkg.outputs.version }}
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.build-nupkg.outputs.version }}
+          name: ${{ needs.build-nupkg.outputs.version }}
+          generate_release_notes: true
+          files: ./release-upload/*
 
   release-nuget:
     needs: build-nupkg

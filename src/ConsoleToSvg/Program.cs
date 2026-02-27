@@ -7,8 +7,6 @@ using ConsoleToSvg.Cli;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;
 using Microsoft.Extensions.Logging;
-using Velopack;
-using Velopack.Sources;
 using ZLogger;
 
 namespace ConsoleToSvg;
@@ -17,10 +15,6 @@ internal static class Program
 {
     public static async Task<int> Main(string[] args)
     {
-        // Velopack must be initialized first, before any other code runs.
-        // When installed as a dotnet tool, VelopackApp.Build().Run() is a no-op.
-        VelopackApp.Build().Run();
-
         var parseResult = OptionParser.TryParse(
             args,
             out var options,
@@ -45,11 +39,6 @@ internal static class Program
         {
             Console.WriteLine(ThisAssembly.AssemblyInformationalVersion);
             return 0;
-        }
-
-        if (options.Update)
-        {
-            return await RunUpdateAsync().ConfigureAwait(false);
         }
 
         if (args.Length == 0 && !Console.IsInputRedirected)
@@ -228,71 +217,6 @@ internal static class Program
         catch
         {
             return null;
-        }
-    }
-
-    private static async Task<int> RunUpdateAsync()
-    {
-        // If running as a dotnet tool, the Velopack update source is not available.
-        // Detect dotnet tool installation by checking for DOTNET_TOOL_PATH or typical dotnet tool directory.
-        var assembly = System.Reflection.Assembly.GetEntryAssembly();
-        var location = assembly?.Location ?? string.Empty;
-        var isDotnetTool =
-            location.Contains(
-                Path.Combine(".dotnet", "tools"),
-                StringComparison.OrdinalIgnoreCase
-            )
-            || location.Contains(
-                Path.Combine(".nuget", "packages"),
-                StringComparison.OrdinalIgnoreCase
-            );
-
-        if (isDotnetTool)
-        {
-            await Console.Error.WriteLineAsync(
-                "Warning: Self-update is not supported when installed as a dotnet tool."
-            );
-            await Console.Error.WriteLineAsync(
-                "To update, run: dotnet tool update -g ConsoleToSvg"
-            );
-            return 0;
-        }
-
-        try
-        {
-            var mgr = new UpdateManager(
-                new GithubSource(
-                    "https://github.com/arika0093/console2svg",
-                    null,
-                    prerelease: false
-                )
-            );
-
-            if (!mgr.IsInstalled)
-            {
-                await Console.Error.WriteLineAsync(
-                    "Warning: Self-update is not supported in this environment."
-                );
-                return 0;
-            }
-
-            await Console.Error.WriteLineAsync("Checking for updates...");
-            var newVersion = await mgr.CheckForUpdatesAsync().ConfigureAwait(false);
-            if (newVersion == null)
-            {
-                Console.WriteLine("Already up to date.");
-                return 0;
-            }
-
-            await Console.Error.WriteLineAsync($"Updating to {newVersion.TargetFullRelease.Version}...");
-            await mgr.DownloadUpdatesAsync(newVersion).ConfigureAwait(false);
-            mgr.ApplyUpdatesAndRestart(newVersion);
-            return 0;
-        }
-        catch (Exception ex)
-        {
-            await Console.Error.WriteLineAsync($"Update failed: {ex.Message}");
-            return 1;
         }
     }
 

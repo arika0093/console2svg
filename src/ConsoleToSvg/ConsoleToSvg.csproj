@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <PackageReference Include="Quick.PtyNet" Version="1.0.3" />
-    <PackageReference Include="Velopack" Version="0.0.1298" />
     <PackageReference Include="ZLogger" Version="2.5.10" />
   </ItemGroup>
 </Project>

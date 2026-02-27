@@ -27,7 +27,6 @@ public static class OptionParser
               --font <family>                CSS font-family for SVG text (default: system monospace).
               --in <path>                    Read existing asciicast file.
               --save-cast <path>             Save captured output as asciicast file.
-              --update                       Update to the latest release from GitHub.
               --help                         Show help.
               --version                      Show version and exit.
 
@@ -157,7 +156,6 @@ public static class OptionParser
     {
         return !string.Equals(name, "--help", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--version", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--update", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--no-loop", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "-c", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--with-command", StringComparison.OrdinalIgnoreCase)
@@ -181,9 +179,6 @@ public static class OptionParser
                 return true;
             case "--version":
                 options.ShowVersion = true;
-                return true;
-            case "--update":
-                options.Update = true;
                 return true;
             case "-c":
             case "--with-command":

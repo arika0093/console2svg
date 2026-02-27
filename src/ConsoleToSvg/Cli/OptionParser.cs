@@ -44,9 +44,14 @@ public static class OptionParser
             --sleep <sec>             Wait time after execution completes in video mode (default: 2).
             --fadeout <sec>           Fade-out duration at end of video (default: 0).
             --opacity <0-1>           Background fill opacity (default: 1).
-            --background <color|path>  Desktop background. Specify once for solid color (e.g. #rrggbb, rgb(), hsl(), oklch())
-                                       or image path, twice for a gradient (first color = start, second = end).
-                                       Applies to *-pc window styles and canvas background for none style.
+            --background <color|path> [color]
+                Desktop background. Accepts:
+                    Solid color  : --background "#rrggbb"
+                    Gradient     : --background "#from" "#to"
+                                   --background "#from:#to"
+                                   --background "#from" --background "#to"
+                    Image        : --background path/to/image.png
+                Colors: #hex, rgb(), hsl(), oklch(), named colors.
         """;
 
     public static bool TryParse(
@@ -143,6 +148,21 @@ public static class OptionParser
                 return false;
             }
 
+            // --background: optionally consume the very next token as the second (end) color
+            // when it looks like a color/path value and not another flag or command.
+            if (
+                (string.Equals(name, "--background", StringComparison.OrdinalIgnoreCase))
+                && options.Background.Count == 1
+                && i + 1 < args.Length
+                && !args[i + 1].StartsWith("-", StringComparison.Ordinal)
+                && !string.Equals(args[i + 1], "--", StringComparison.Ordinal)
+                && LooksLikeBackgroundValue(args[i + 1])
+            )
+            {
+                i++;
+                options.Background.Add(args[i]);
+            }
+
             i++;
         }
 
@@ -189,6 +209,35 @@ public static class OptionParser
         || string.Equals(token, "windows", StringComparison.OrdinalIgnoreCase)
         || string.Equals(token, "macos-pc", StringComparison.OrdinalIgnoreCase)
         || string.Equals(token, "windows-pc", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Returns true when a token looks like a color value or image path that can
+    /// be used as a --background argument (as opposed to a positional command name).
+    /// </summary>
+    private static bool LooksLikeBackgroundValue(string token)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+            return false;
+        // CSS hex colors
+        if (token.StartsWith("#", StringComparison.Ordinal))
+            return true;
+        // CSS function colors: rgb(), rgba(), hsl(), hsla(), oklch(), color(), ...
+        if (token.Contains('(') && token.TrimEnd().EndsWith(")", StringComparison.Ordinal))
+            return true;
+        // URLs
+        if (token.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            || token.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            return true;
+        // File paths with known image extensions
+        var lower = token.ToLowerInvariant();
+        return lower.EndsWith(".png", StringComparison.Ordinal)
+            || lower.EndsWith(".jpg", StringComparison.Ordinal)
+            || lower.EndsWith(".jpeg", StringComparison.Ordinal)
+            || lower.EndsWith(".gif", StringComparison.Ordinal)
+            || lower.EndsWith(".svg", StringComparison.Ordinal)
+            || lower.EndsWith(".webp", StringComparison.Ordinal)
+            || lower.EndsWith(".bmp", StringComparison.Ordinal);
+    }
 
     private static bool ApplyOption(
         AppOptions options,
@@ -354,6 +403,23 @@ public static class OptionParser
                 {
                     error = "--background can be specified at most twice (start color and end color).";
                     return false;
+                }
+
+                // Support "#from:#to" colon-separated gradient shorthand.
+                // Skip split when the value is a URL (contains "://").
+                if (options.Background.Count == 0
+                    && value.Contains(':', StringComparison.Ordinal)
+                    && !value.Contains("://", StringComparison.Ordinal))
+                {
+                    var colonIdx = value.IndexOf(':', StringComparison.Ordinal);
+                    var part1 = value.Substring(0, colonIdx);
+                    var part2 = value.Substring(colonIdx + 1);
+                    if (!string.IsNullOrWhiteSpace(part1) && !string.IsNullOrWhiteSpace(part2))
+                    {
+                        options.Background.Add(part1);
+                        options.Background.Add(part2);
+                        return true;
+                    }
                 }
 
                 options.Background.Add(value);

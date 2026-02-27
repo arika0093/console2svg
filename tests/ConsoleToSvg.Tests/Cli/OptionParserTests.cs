@@ -362,4 +362,76 @@ public sealed class OptionParserTests
         ok.ShouldBeFalse();
         error.ShouldBe("--opacity must be a number between 0 and 1.");
     }
+
+    [Test]
+    public void BackgroundSingleColorParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "--background", "#ff0000" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Background.Count.ShouldBe(1);
+        options.Background[0].ShouldBe("#ff0000");
+    }
+
+    [Test]
+    public void BackgroundTwoArgGradientParsed()
+    {
+        // --background "#from" "#to" syntax
+        var ok = OptionParser.TryParse(
+            new[] { "--background", "#ff0000", "#0000ff" },
+            out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Background.Count.ShouldBe(2);
+        options.Background[0].ShouldBe("#ff0000");
+        options.Background[1].ShouldBe("#0000ff");
+    }
+
+    [Test]
+    public void BackgroundColonGradientParsed()
+    {
+        // --background "#from:#to" syntax
+        var ok = OptionParser.TryParse(
+            new[] { "--background", "#ff0000:#0000ff" },
+            out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Background.Count.ShouldBe(2);
+        options.Background[0].ShouldBe("#ff0000");
+        options.Background[1].ShouldBe("#0000ff");
+    }
+
+    [Test]
+    public void BackgroundTwoFlagGradientParsed()
+    {
+        // --background c1 --background c2 legacy syntax
+        var ok = OptionParser.TryParse(
+            new[] { "--background", "#ff0000", "--background", "#0000ff" },
+            out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Background.Count.ShouldBe(2);
+        options.Background[0].ShouldBe("#ff0000");
+        options.Background[1].ShouldBe("#0000ff");
+    }
+
+    [Test]
+    public void BackgroundTwoArgDoesNotConsumeNonColorToken()
+    {
+        // Next token after --background value is a command-like string, should not be consumed
+        var ok = OptionParser.TryParse(
+            new[] { "--background", "#ff0000", "--", "echo", "hello" },
+            out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Background.Count.ShouldBe(1);
+        options.Background[0].ShouldBe("#ff0000");
+        options!.Command.ShouldBe("echo hello");
+    }
+
+    [Test]
+    public void BackgroundUrlNotSplitOnColon()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--background", "https://example.com/bg.png" },
+            out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Background.Count.ShouldBe(1);
+        options.Background[0].ShouldBe("https://example.com/bg.png");
+    }
 }

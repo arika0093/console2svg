@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1084 436" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 724 436" role="img" aria-label="console2svg output">
 <style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}.bg{shape-rendering:crispEdges;}</style>
 <g transform="translate(2 2)">
-<rect width="1080" height="432" fill="#1e1e1e"/>
+<rect width="720" height="432" fill="#1e1e1e"/>
 <text class="crt" x="0" y="14" fill="#d4d4d4" textLength="99" lengthAdjust="spacingAndGlyphs">console2svg</text>
 <text class="crt" x="108" y="14" fill="#d4d4d4" textLength="9" lengthAdjust="spacingAndGlyphs">-</text>
 <text class="crt" x="126" y="14" fill="#d4d4d4" textLength="63" lengthAdjust="spacingAndGlyphs">Convert</text>
@@ -78,41 +78,42 @@
 <text class="crt" x="459" y="248" fill="#d4d4d4" textLength="54" lengthAdjust="spacingAndGlyphs">macos,</text>
 <text class="crt" x="522" y="248" fill="#d4d4d4" textLength="72" lengthAdjust="spacingAndGlyphs">windows,</text>
 <text class="crt" x="603" y="248" fill="#d4d4d4" textLength="81" lengthAdjust="spacingAndGlyphs">macos-pc,</text>
-<text class="crt" x="693" y="248" fill="#d4d4d4" textLength="99" lengthAdjust="spacingAndGlyphs">windows-pc.</text>
-<text class="crt" x="36" y="266" fill="#d4d4d4" textLength="81" lengthAdjust="spacingAndGlyphs">--opacity</text>
-<text class="crt" x="126" y="266" fill="#d4d4d4" textLength="45" lengthAdjust="spacingAndGlyphs">&lt;0-1&gt;</text>
-<text class="crt" x="270" y="266" fill="#d4d4d4" textLength="63" lengthAdjust="spacingAndGlyphs">Opacity</text>
-<text class="crt" x="342" y="266" fill="#d4d4d4" textLength="18" lengthAdjust="spacingAndGlyphs">of</text>
-<text class="crt" x="369" y="266" fill="#d4d4d4" textLength="135" lengthAdjust="spacingAndGlyphs">window/terminal</text>
-<text class="crt" x="513" y="266" fill="#d4d4d4" textLength="63" lengthAdjust="spacingAndGlyphs">content</text>
-<text class="crt" x="585" y="266" fill="#d4d4d4" textLength="81" lengthAdjust="spacingAndGlyphs">(default:</text>
-<text class="crt" x="675" y="266" fill="#d4d4d4" textLength="27" lengthAdjust="spacingAndGlyphs">1).</text>
-<text class="crt" x="36" y="284" fill="#d4d4d4" textLength="108" lengthAdjust="spacingAndGlyphs">--background</text>
-<text class="crt" x="153" y="284" fill="#d4d4d4" textLength="63" lengthAdjust="spacingAndGlyphs">&lt;color&gt;</text>
-<text class="crt" x="225" y="284" fill="#d4d4d4" textLength="63" lengthAdjust="spacingAndGlyphs">[color]</text>
-<text class="crt" x="306" y="284" fill="#d4d4d4" textLength="90" lengthAdjust="spacingAndGlyphs">Background</text>
-<text class="crt" x="405" y="284" fill="#d4d4d4" textLength="54" lengthAdjust="spacingAndGlyphs">color,</text>
-<text class="crt" x="468" y="284" fill="#d4d4d4" textLength="81" lengthAdjust="spacingAndGlyphs">gradient,</text>
-<text class="crt" x="558" y="284" fill="#d4d4d4" textLength="18" lengthAdjust="spacingAndGlyphs">or</text>
-<text class="crt" x="585" y="284" fill="#d4d4d4" textLength="45" lengthAdjust="spacingAndGlyphs">image</text>
-<text class="crt" x="639" y="284" fill="#d4d4d4" textLength="45" lengthAdjust="spacingAndGlyphs">path.</text>
-<text class="crt" x="36" y="302" fill="#d4d4d4" textLength="252" lengthAdjust="spacingAndGlyphs">--crop-top/bottom/left/right</text>
-<text class="crt" x="306" y="302" fill="#d4d4d4" textLength="36" lengthAdjust="spacingAndGlyphs">Crop</text>
-<text class="crt" x="351" y="302" fill="#d4d4d4" textLength="18" lengthAdjust="spacingAndGlyphs">by</text>
-<text class="crt" x="378" y="302" fill="#d4d4d4" textLength="27" lengthAdjust="spacingAndGlyphs">px,</text>
-<text class="crt" x="414" y="302" fill="#d4d4d4" textLength="27" lengthAdjust="spacingAndGlyphs">ch,</text>
-<text class="crt" x="450" y="302" fill="#d4d4d4" textLength="18" lengthAdjust="spacingAndGlyphs">or</text>
-<text class="crt" x="477" y="302" fill="#d4d4d4" textLength="36" lengthAdjust="spacingAndGlyphs">text</text>
-<text class="crt" x="522" y="302" fill="#d4d4d4" textLength="72" lengthAdjust="spacingAndGlyphs">pattern.</text>
-<text class="crt" x="36" y="320" fill="#d4d4d4" textLength="81" lengthAdjust="spacingAndGlyphs">--verbose</text>
-<text class="crt" x="270" y="320" fill="#d4d4d4" textLength="54" lengthAdjust="spacingAndGlyphs">Enable</text>
-<text class="crt" x="333" y="320" fill="#d4d4d4" textLength="63" lengthAdjust="spacingAndGlyphs">verbose</text>
-<text class="crt" x="405" y="320" fill="#d4d4d4" textLength="72" lengthAdjust="spacingAndGlyphs">logging.</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="27" lengthAdjust="spacingAndGlyphs">For</text>
-<text class="crt" x="36" y="356" fill="#d4d4d4" textLength="36" lengthAdjust="spacingAndGlyphs">full</text>
-<text class="crt" x="81" y="356" fill="#d4d4d4" textLength="54" lengthAdjust="spacingAndGlyphs">option</text>
-<text class="crt" x="144" y="356" fill="#d4d4d4" textLength="45" lengthAdjust="spacingAndGlyphs">list,</text>
-<text class="crt" x="198" y="356" fill="#d4d4d4" textLength="27" lengthAdjust="spacingAndGlyphs">see</text>
-<text class="crt" x="234" y="356" fill="#d4d4d4" textLength="63" lengthAdjust="spacingAndGlyphs">--help.</text>
+<text class="crt" x="693" y="248" fill="#d4d4d4" textLength="27" lengthAdjust="spacingAndGlyphs">win</text>
+<text class="crt" x="0" y="266" fill="#d4d4d4" textLength="72" lengthAdjust="spacingAndGlyphs">dows-pc.</text>
+<text class="crt" x="36" y="284" fill="#d4d4d4" textLength="81" lengthAdjust="spacingAndGlyphs">--opacity</text>
+<text class="crt" x="126" y="284" fill="#d4d4d4" textLength="45" lengthAdjust="spacingAndGlyphs">&lt;0-1&gt;</text>
+<text class="crt" x="270" y="284" fill="#d4d4d4" textLength="63" lengthAdjust="spacingAndGlyphs">Opacity</text>
+<text class="crt" x="342" y="284" fill="#d4d4d4" textLength="18" lengthAdjust="spacingAndGlyphs">of</text>
+<text class="crt" x="369" y="284" fill="#d4d4d4" textLength="135" lengthAdjust="spacingAndGlyphs">window/terminal</text>
+<text class="crt" x="513" y="284" fill="#d4d4d4" textLength="63" lengthAdjust="spacingAndGlyphs">content</text>
+<text class="crt" x="585" y="284" fill="#d4d4d4" textLength="81" lengthAdjust="spacingAndGlyphs">(default:</text>
+<text class="crt" x="675" y="284" fill="#d4d4d4" textLength="27" lengthAdjust="spacingAndGlyphs">1).</text>
+<text class="crt" x="36" y="302" fill="#d4d4d4" textLength="108" lengthAdjust="spacingAndGlyphs">--background</text>
+<text class="crt" x="153" y="302" fill="#d4d4d4" textLength="63" lengthAdjust="spacingAndGlyphs">&lt;color&gt;</text>
+<text class="crt" x="225" y="302" fill="#d4d4d4" textLength="63" lengthAdjust="spacingAndGlyphs">[color]</text>
+<text class="crt" x="306" y="302" fill="#d4d4d4" textLength="90" lengthAdjust="spacingAndGlyphs">Background</text>
+<text class="crt" x="405" y="302" fill="#d4d4d4" textLength="54" lengthAdjust="spacingAndGlyphs">color,</text>
+<text class="crt" x="468" y="302" fill="#d4d4d4" textLength="81" lengthAdjust="spacingAndGlyphs">gradient,</text>
+<text class="crt" x="558" y="302" fill="#d4d4d4" textLength="18" lengthAdjust="spacingAndGlyphs">or</text>
+<text class="crt" x="585" y="302" fill="#d4d4d4" textLength="45" lengthAdjust="spacingAndGlyphs">image</text>
+<text class="crt" x="639" y="302" fill="#d4d4d4" textLength="45" lengthAdjust="spacingAndGlyphs">path.</text>
+<text class="crt" x="36" y="320" fill="#d4d4d4" textLength="252" lengthAdjust="spacingAndGlyphs">--crop-top/bottom/left/right</text>
+<text class="crt" x="306" y="320" fill="#d4d4d4" textLength="36" lengthAdjust="spacingAndGlyphs">Crop</text>
+<text class="crt" x="351" y="320" fill="#d4d4d4" textLength="18" lengthAdjust="spacingAndGlyphs">by</text>
+<text class="crt" x="378" y="320" fill="#d4d4d4" textLength="27" lengthAdjust="spacingAndGlyphs">px,</text>
+<text class="crt" x="414" y="320" fill="#d4d4d4" textLength="27" lengthAdjust="spacingAndGlyphs">ch,</text>
+<text class="crt" x="450" y="320" fill="#d4d4d4" textLength="18" lengthAdjust="spacingAndGlyphs">or</text>
+<text class="crt" x="477" y="320" fill="#d4d4d4" textLength="36" lengthAdjust="spacingAndGlyphs">text</text>
+<text class="crt" x="522" y="320" fill="#d4d4d4" textLength="72" lengthAdjust="spacingAndGlyphs">pattern.</text>
+<text class="crt" x="36" y="338" fill="#d4d4d4" textLength="81" lengthAdjust="spacingAndGlyphs">--verbose</text>
+<text class="crt" x="270" y="338" fill="#d4d4d4" textLength="54" lengthAdjust="spacingAndGlyphs">Enable</text>
+<text class="crt" x="333" y="338" fill="#d4d4d4" textLength="63" lengthAdjust="spacingAndGlyphs">verbose</text>
+<text class="crt" x="405" y="338" fill="#d4d4d4" textLength="72" lengthAdjust="spacingAndGlyphs">logging.</text>
+<text class="crt" x="0" y="374" fill="#d4d4d4" textLength="27" lengthAdjust="spacingAndGlyphs">For</text>
+<text class="crt" x="36" y="374" fill="#d4d4d4" textLength="36" lengthAdjust="spacingAndGlyphs">full</text>
+<text class="crt" x="81" y="374" fill="#d4d4d4" textLength="54" lengthAdjust="spacingAndGlyphs">option</text>
+<text class="crt" x="144" y="374" fill="#d4d4d4" textLength="45" lengthAdjust="spacingAndGlyphs">list,</text>
+<text class="crt" x="198" y="374" fill="#d4d4d4" textLength="27" lengthAdjust="spacingAndGlyphs">see</text>
+<text class="crt" x="234" y="374" fill="#d4d4d4" textLength="63" lengthAdjust="spacingAndGlyphs">--help.</text>
 </g>
 </svg>

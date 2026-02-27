@@ -144,33 +144,29 @@ public static class OptionParser
             }
 
             var value = inlineValue;
-            if (value is null && RequiresValue(name))
-            {
-                if (i + 1 >= args.Length)
-                {
-                    error = $"Missing value for option: {name}";
-                    return false;
-                }
-
-                i++;
-                value = args[i];
-            }
-            else if (
+            var requiresValue = value is null && RequiresValue(name);
+            var optionalWindowValue =
                 value is null
                 && (
                     string.Equals(name, "-d", StringComparison.OrdinalIgnoreCase)
                     || string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase)
                 )
-            )
+                && i + 1 < args.Length
+                && IsWindowStyleValue(args[i + 1]);
+
+            if (requiresValue && i + 1 >= args.Length)
             {
-                // Value is optional: consume next token only if it is a known window style
-                if (i + 1 < args.Length && IsWindowStyleValue(args[i + 1]))
-                {
-                    i++;
-                    value = args[i];
-                }
-                // else: value stays null → ApplyOption defaults to "macos"
+                error = $"Missing value for option: {name}";
+                return false;
             }
+
+            if (requiresValue || optionalWindowValue)
+            {
+                // Value is required, or optional window style was provided.
+                i++;
+                value = args[i];
+            }
+            // else: value stays null - ApplyOption defaults to "macos"
 
             if (!ApplyOption(options, name, value, out error))
             {

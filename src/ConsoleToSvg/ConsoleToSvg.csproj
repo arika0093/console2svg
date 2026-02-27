@@ -10,6 +10,7 @@
     <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
     <RollForward>LatestMajor</RollForward>
     <IsAotCompatible>true</IsAotCompatible>
+    <NoWarn>$(NoWarn);AD0001</NoWarn>
   </PropertyGroup>
 
   <!-- NativeAOT publish settings (activated when PublishAot=true) -->

@@ -388,7 +388,7 @@ internal static class SvgDocumentBuilder
         sb.Append("</style>\n");
 
         AppendDefs(sb, context, windowStyle, background);
-        AppendBackground(sb, context, theme, windowStyle, background);
+        AppendBackground(sb, context, windowStyle, background);
         AppendGroupOpen(sb, opacity);
         AppendChrome(sb, context, theme, windowStyle);
         if (context.HeaderRows > 0 && !string.IsNullOrEmpty(commandHeader))
@@ -433,7 +433,6 @@ internal static class SvgDocumentBuilder
     private static void AppendBackground(
         StringBuilder sb,
         Context context,
-        Theme theme,
         WindowStyle windowStyle,
         string[]? background = null
     )
@@ -452,7 +451,7 @@ internal static class SvgDocumentBuilder
                 sb.Append("\"/>\n");
                 break;
             default:
-                AppendCanvasBackground(sb, context, theme, windowStyle, background);
+                AppendCanvasBackground(sb, context, windowStyle, background);
                 break;
         }
     }
@@ -576,7 +575,6 @@ internal static class SvgDocumentBuilder
     private static void AppendCanvasBackground(
         StringBuilder sb,
         Context context,
-        Theme theme,
         WindowStyle windowStyle,
         string[]? background
     )
@@ -1241,29 +1239,6 @@ internal static class SvgDocumentBuilder
         return value.ToString("0.###", CultureInfo.InvariantCulture);
     }
 
-    /// <summary>
-    /// Renders Unicode Block Elements (U+2580–U+259F) as calibrated SVG rects so that
-    /// adjacent cells tile perfectly regardless of font metrics.
-    /// Returns <see langword="true"/> when the character was handled.
-    /// </summary>
-    private static bool TryRenderBlockElement(
-        StringBuilder sb,
-        string text,
-        double x,
-        double y,
-        double cellRectWidth,
-        string fill
-    )
-    {
-        if (!IsBlockElement(text))
-        {
-            return false;
-        }
-
-        RenderBlockElement(sb, text, x, y, cellRectWidth, fill);
-        return true;
-    }
-
     private static bool IsBlockElement(string text)
     {
         if (string.IsNullOrEmpty(text))
@@ -1271,14 +1246,19 @@ internal static class SvgDocumentBuilder
             return false;
         }
 
-        var cp =
-            text.Length == 1
-                ? text[0]
-                : (
-                    char.IsHighSurrogate(text[0]) && text.Length >= 2
-                        ? char.ConvertToUtf32(text[0], text[1])
-                        : -1
-                );
+        int cp;
+        if (text.Length == 1)
+        {
+            cp = text[0];
+        }
+        else if (char.IsHighSurrogate(text[0]) && text.Length >= 2)
+        {
+            cp = char.ConvertToUtf32(text[0], text[1]);
+        }
+        else
+        {
+            cp = -1;
+        }
 
         // Unicode Block Elements (U+2580–U+259F), excluding shade chars (U+2591–U+2593)
         return cp is >= 0x2580 and <= 0x259F and not (0x2591 or 0x2592 or 0x2593);

@@ -699,7 +699,12 @@ internal static class NativePtyUnix
                 return;
             }
 
-            var fd = (int)fs.SafeFileHandle.DangerousGetHandle();
+            var fd = fs.SafeFileHandle;
+            if (fd.IsInvalid)
+            {
+                return;
+            }
+
             if (tcgetattr(fd, out var t) != 0)
             {
                 return;
@@ -713,12 +718,7 @@ internal static class NativePtyUnix
             const uint ECHONL = 0x0040u;
             const uint ECHOCTL = 0x0200u;
             t.c_lflag &= ~(ECHO | ECHOE | ECHOK | ECHONL | ECHOCTL);
-            tcsetattr(
-                fd,
-                0 /* TCSANOW */
-                ,
-                ref t
-            );
+            tcsetattr(fd, 0 /* TCSANOW */, ref t);
         }
         catch
         {
@@ -743,8 +743,12 @@ internal static class NativePtyUnix
     }
 
     [DllImport("libc", SetLastError = true)]
-    private static extern int tcgetattr(int fd, out Termios termios);
+    private static extern int tcgetattr(SafeFileHandle fd, out Termios termios);
 
     [DllImport("libc", SetLastError = true)]
-    private static extern int tcsetattr(int fd, int optional_actions, ref Termios termios);
+    private static extern int tcsetattr(
+        SafeFileHandle fd,
+        int optional_actions,
+        ref Termios termios
+    );
 }

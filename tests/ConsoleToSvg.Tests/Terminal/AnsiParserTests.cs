@@ -355,4 +355,45 @@ public sealed class AnsiParserTests
         emulator.Buffer.GetCell(0, 0).Text.ShouldBe("X");
         emulator.Buffer.GetCell(0, 1).Text.ShouldBe(" ");
     }
+
+    [Test]
+    public void CaretNotationOscSequenceIsSkipped()
+    {
+        // PTY ECHOCTL converts ESC (0x1b) to the two printable chars '^' + '['.
+        // The resulting "^[]10;rgb:e6e6/eded/f3f3^[\" should be treated as invisible.
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(16, 2, theme);
+
+        emulator.Process("^[]10;rgb:e6e6/eded/f3f3^[\\X");
+
+        // OSC content must NOT appear as text; only "X" should be written.
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("X");
+        emulator.Buffer.GetCell(0, 1).Text.ShouldBe(" ");
+    }
+
+    [Test]
+    public void CaretNotationOscWithBelTerminatorIsSkipped()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(16, 2, theme);
+
+        emulator.Process("^[]11;rgb:0101/0404/0909\aX");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("X");
+        emulator.Buffer.GetCell(0, 1).Text.ShouldBe(" ");
+    }
+
+    [Test]
+    public void CaretNotationOscAcrossChunksIsSkipped()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(16, 2, theme);
+
+        // Sequence split across two chunks
+        emulator.Process("^[]10;rgb:e6e6/");
+        emulator.Process("eded/f3f3^[\\X");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("X");
+        emulator.Buffer.GetCell(0, 1).Text.ShouldBe(" ");
+    }
 }

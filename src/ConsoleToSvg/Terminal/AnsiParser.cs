@@ -11,6 +11,8 @@ public sealed class AnsiParser
     private readonly Theme _theme;
     private TextStyle _style;
     private string _pendingEscapeSequence = string.Empty;
+    // Holds a partial caret-notation sequence that spans event chunks (e.g. echoed ESC as "^[")
+    private string _pendingCaretSequence = string.Empty;
 
     public AnsiParser(ScreenBuffer buffer, Theme theme)
     {
@@ -32,6 +34,12 @@ public sealed class AnsiParser
             _pendingEscapeSequence = string.Empty;
         }
 
+        if (!string.IsNullOrEmpty(_pendingCaretSequence))
+        {
+            text = _pendingCaretSequence + text;
+            _pendingCaretSequence = string.Empty;
+        }
+
         for (var i = 0; i < text.Length; i++)
         {
             var ch = text[i];
@@ -44,6 +52,25 @@ public sealed class AnsiParser
                 }
 
                 i = escapeEndIndex;
+                continue;
+            }
+
+            // Caret-notation OSC: PTY ECHOCTL converts \x1b (ESC) to '^' + '['.
+            // Only handle "^[]..." (OSC start) to avoid false positives with legitimate
+            // text output that contains "^[" (e.g. docstrings, cat -v output).
+            if (ch == '^'
+                && i + 2 < text.Length
+                && text[i + 1] == '['
+                && text[i + 2] == ']')
+            {
+                if (!TrySkipCaretOsc(text, i + 3, out var oscEnd))
+                {
+                    // Incomplete sequence (spans chunks); save and wait for the rest.
+                    _pendingCaretSequence = text.Substring(i);
+                    break;
+                }
+
+                i = oscEnd;
                 continue;
             }
 
@@ -170,6 +197,81 @@ public sealed class AnsiParser
         }
 
         return false;
+    }
+
+    // Handles caret-notation escape sequences produced when PTY ECHOCTL converts
+    // the raw ESC byte (0x1b) into the printable two-character sequence '^' + '['.
+    // 'index' points to '^'; text[index+1] must be '['.
+    private static bool TrySkipCaretEscape(string text, int index, out int endIndex)
+    {
+        endIndex = index;
+        // Need at least "^[X" (3 chars) to determine the sequence type.
+        if (index + 2 >= text.Length)
+        {
+            return false;
+        }
+
+        switch (text[index + 2])
+        {
+            case ']':
+                // Caret-notation OSC: ^[]...(^[\ or BEL)
+                return TrySkipCaretOsc(text, index + 3, out endIndex);
+            case '[':
+                // Caret-notation CSI with sub-parameter: ^[[...final
+                return TrySkipCaretCsi(text, index + 3, out endIndex);
+            default:
+                // Caret-notation two-char escape: ^[X — skip all three chars.
+                endIndex = index + 2;
+                return true;
+        }
+    }
+
+    // Skips the body of a caret-notation OSC sequence up to:
+    //   • BEL (\a)
+    //   • Caret-notation ST: ^[\
+    //   • Real ST: ESC\
+    private static bool TrySkipCaretOsc(string text, int start, out int endIndex)
+    {
+        endIndex = start;
+        for (var i = start; i < text.Length; i++)
+        {
+            if (text[i] == '\a')
+            {
+                endIndex = i;
+                return true;
+            }
+            // Caret-notation string terminator: ^[\
+            if (text[i] == '^' && i + 2 < text.Length && text[i + 1] == '[' && text[i + 2] == '\\')
+            {
+                endIndex = i + 2;
+                return true;
+            }
+            // Real ESC-backslash string terminator (mixed notation)
+            if (text[i] == '\u001b' && i + 1 < text.Length && text[i + 1] == '\\')
+            {
+                endIndex = i + 1;
+                return true;
+            }
+        }
+
+        return false; // incomplete — caller will store as pending
+    }
+
+    // Skips the body of a caret-notation CSI sequence up to the final byte (@–~).
+    private static bool TrySkipCaretCsi(string text, int start, out int endIndex)
+    {
+        endIndex = start;
+        for (var i = start; i < text.Length; i++)
+        {
+            var c = text[i];
+            if (c >= '@' && c <= '~')
+            {
+                endIndex = i;
+                return true;
+            }
+        }
+
+        return false; // incomplete
     }
 
     private static bool TrySkipDcs(string text, int start, out int endIndex)

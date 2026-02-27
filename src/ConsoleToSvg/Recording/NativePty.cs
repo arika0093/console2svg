@@ -592,6 +592,10 @@ internal static class NativePtyUnix
             .SpawnAsync(ptyOptions, cancellationToken)
             .ConfigureAwait(false);
 
+        // Disable PTY slave ECHO to prevent echoed input bytes from being captured
+        // in the recording output with ECHOCTL caret-notation (e.g. ESC → "^[").
+        TryDisablePtyEcho(pty.WriterStream);
+
         var exited = false;
         void OnProcessExited(object? sender, PtyExitedEventArgs eventArgs)
         {
@@ -670,4 +674,68 @@ internal static class NativePtyUnix
 
         return new NativePtyConnection(pty.ReaderStream, pty.WriterStream, WaitForExit, Dispose);
     }
+
+    // Attempt to disable PTY slave ECHO so that input bytes forwarded from the outer
+    // terminal (e.g. OSC color-query responses) are not echoed back into the recording
+    // with ECHOCTL caret-notation conversion (ESC → "^[").
+    private static void TryDisablePtyEcho(Stream masterStream)
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux) &&
+            !RuntimeInformation.IsOSPlatform(OSPlatform.OSX) &&
+            !RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
+        {
+            return;
+        }
+
+        try
+        {
+            // Quick.PtyNet wraps the master fd in a FileStream on Unix.
+            if (masterStream is not FileStream fs)
+            {
+                return;
+            }
+
+            var fd = (int)fs.SafeFileHandle.DangerousGetHandle();
+            if (tcgetattr(fd, out var t) != 0)
+            {
+                return;
+            }
+
+            // Clear echo-related flags on the PTY slave (tcsetattr on the master fd
+            // modifies the slave's termios settings on Linux/macOS).
+            const uint ECHO    = 0x0008u;
+            const uint ECHOE   = 0x0010u;
+            const uint ECHOK   = 0x0020u;
+            const uint ECHONL  = 0x0040u;
+            const uint ECHOCTL = 0x0200u;
+            t.c_lflag &= ~(ECHO | ECHOE | ECHOK | ECHONL | ECHOCTL);
+            tcsetattr(fd, 0 /* TCSANOW */, ref t);
+        }
+        catch
+        {
+            // Best-effort; ignore failures.
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct Termios
+    {
+        public uint c_iflag;
+        public uint c_oflag;
+        public uint c_cflag;
+        public uint c_lflag;
+        public byte c_line;
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] c_cc;
+
+        public uint c_ispeed;
+        public uint c_ospeed;
+    }
+
+    [DllImport("libc", SetLastError = true)]
+    private static extern int tcgetattr(int fd, out Termios termios);
+
+    [DllImport("libc", SetLastError = true)]
+    private static extern int tcsetattr(int fd, int optional_actions, ref Termios termios);
 }

@@ -4,8 +4,8 @@
     <OutputType>Exe</OutputType>
     <PackAsTool>true</PackAsTool>
     <PackageId>ConsoleToSvg</PackageId>
-    <AssemblyName>c2s</AssemblyName>
-    <ToolCommandName>c2s</ToolCommandName>
+    <AssemblyName>console2svg</AssemblyName>
+    <ToolCommandName>console2svg</ToolCommandName>
     <CheckEolTargetFramework>false</CheckEolTargetFramework>
     <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
     <RollForward>LatestMajor</RollForward>

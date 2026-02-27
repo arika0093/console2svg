@@ -1,14 +1,14 @@
-# C2S
+# ConsoleToSvg
 [![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) 
 
-`c2s` is a tool that converts terminal output into SVG.
+`console2svg` is a tool that converts terminal output into SVG.
 
 ## Overview
 
-The simplest way to use it is to just put the command you want to run after `c2s`. For example, the following command converts the description text of `c2s` into SVG (oh, how meta).
+The simplest way to use it is to just put the command you want to run after `console2svg`. For example, the following command converts the description text of `console2svg` into SVG (oh, how meta).
 
 ```bash
-c2s c2s
+console2svg console2svg
 ```
 
 ![](./assets/cmd.svg)
@@ -18,7 +18,7 @@ c2s c2s
 You can also generate SVG with a window frame. and some options to customize the appearance.
 
 ```bash
-c2s -w 120 -c -d macos-pc -- c2s
+console2svg -w 120 -c -d macos-pc -- console2svg
 ```
 
 ![](./assets/cmd-window.svg)
@@ -28,7 +28,7 @@ c2s -w 120 -c -d macos-pc -- c2s
 In video mode, you can capture the animation of the command execution and save it as an SVG.
 
 ```bash
-c2s -v -c -d macos -- copilot --banner
+console2svg -v -c -d macos -- copilot --banner
 ```
 
 ![](./assets/cmd-loop.svg)
@@ -45,15 +45,15 @@ It is also distributed as a static binary.
 
 ```sh
 # linux
-curl -sSL https://github.com/arika0093/c2s/releases/latest/download/c2s-linux-x64 -o c2s
-chmod +x c2s
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-linux-x64 -o console2svg
+chmod +x console2svg
 
 # macos
-curl -sSL https://github.com/arika0093/c2s/releases/latest/download/c2s-osx-x64 -o c2s
-chmod +x c2s
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-osx-x64 -o console2svg
+chmod +x console2svg
 
 # windows (cmd)
-curl -sSL https://github.com/arika0093/c2s/releases/latest/download/c2s-win-x64.exe -o c2s.exe
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64.exe -o console2svg.exe
 ```
 
 ## Usage
@@ -63,19 +63,19 @@ curl -sSL https://github.com/arika0093/c2s/releases/latest/download/c2s-win-x64.
 Width and height default to the current terminal dimensions.
 
 ```sh
-my-command | c2s
+my-command | console2svg
 ```
 
 ### PTY command mode
 
 ```sh
-c2s "git log --oneline"
+console2svg "git log --oneline"
 ```
 
 Or pass the command after `--`:
 
 ```sh
-c2s -- dotnet run app.cs
+console2svg -- dotnet run app.cs
 ```
 
 ### Animated SVG
@@ -83,20 +83,20 @@ c2s -- dotnet run app.cs
 use `-m video` or `-v` to capture the animation of the command execution and save it as an SVG.
 
 ```sh
-c2s -v -- nyancat
+console2svg -v -- nyancat
 ```
 
 No loop playback:
 
 ```sh
-c2s -v --no-loop -- nyancat
+console2svg -v --no-loop -- nyancat
 ```
 
 ### Static SVG with crop
 
 ```sh
 # ch: character width, px: pixel
-c2s "dotnet --info" --crop-top 1ch --crop-right 5px
+console2svg "dotnet --info" --crop-top 1ch --crop-right 5px
 ```
 
 You can also crop at the position where a specific character appears.
@@ -105,13 +105,13 @@ When specifying a character, you can specify it like `:(number)`, which crops at
 For example, the following example crops from the line where the character `Host` is located to 2 lines above the line where the character `.NET runtimes installed:` is located.
 
 ```sh
-c2s "dotnet --info" --crop-top "Host" --crop-bottom ".NET runtimes installed:-2"
+console2svg "dotnet --info" --crop-top "Host" --crop-bottom ".NET runtimes installed:-2"
 ```
 
 ### Window chrome and padding
 
 ```sh
-c2s -d macos-pc --padding 4 -- dotnet --version
+console2svg -d macos-pc --padding 4 -- dotnet --version
 ```
 
 available themes:

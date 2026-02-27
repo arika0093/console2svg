@@ -557,7 +557,7 @@ public static class PtyRecorder
         {
             return new NativePtyOptions
             {
-                Name = "c2s",
+                Name = "console2svg",
                 Cols = width,
                 Rows = height,
                 Cwd = Environment.CurrentDirectory,
@@ -569,7 +569,7 @@ public static class PtyRecorder
 
         return new NativePtyOptions
         {
-            Name = "c2s",
+            Name = "console2svg",
             Cols = width,
             Rows = height,
             Cwd = Environment.CurrentDirectory,

@@ -50,7 +50,7 @@ internal static class Program
         using var loggerFactory = CreateLoggerFactory(options.Verbose);
         var logger = loggerFactory.CreateLogger("ConsoleToSvg.Program");
         logger.ZLogDebug(
-            $"Starting c2s. Verbose={options.Verbose} Args={string.Join(' ', args)}"
+            $"Starting console2svg. Verbose={options.Verbose} Args={string.Join(' ', args)}"
         );
         logger.ZLogDebug(
             $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} Window={options.Window} Padding={options.Padding} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""}"
@@ -166,7 +166,7 @@ internal static class Program
         if (!Console.IsInputRedirected)
         {
             throw new InvalidOperationException(
-                "No input source. Use --command, --in, or pipe stdout into c2s."
+                "No input source. Use --command, --in, or pipe stdout into console2svg."
             );
         }
 

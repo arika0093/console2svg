@@ -86,7 +86,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: native-${{ matrix.rid }}
-          path: ./native-publish/${{ matrix.rid }}/c2s*
+          path: ./native-publish/${{ matrix.rid }}/console2svg*
 
   release-github:
     needs: [build-nupkg, build-aot]
@@ -112,11 +112,11 @@ jobs:
           for dir in ./native-artifacts/native-*/; do
             rid=$(basename "$dir" | sed 's/^native-//')
             if [[ "$rid" == win-* ]]; then
-              src="$dir/c2s.exe"
-              dst="./release-upload/c2s-${rid}.exe"
+              src="$dir/console2svg.exe"
+              dst="./release-upload/console2svg-${rid}.exe"
             else
-              src="$dir/c2s"
-              dst="./release-upload/c2s-${rid}"
+              src="$dir/console2svg"
+              dst="./release-upload/console2svg-${rid}"
             fi
             if [ -f "$src" ]; then
               cp "$src" "$dst"

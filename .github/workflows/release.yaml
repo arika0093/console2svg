@@ -7,6 +7,7 @@ on:
       - 'version.json'
 
 permissions:
+  id-token: write
   contents: write
 
 env:
@@ -133,8 +134,6 @@ jobs:
 
   release-nuget:
     needs: build-nupkg
-    permissions:
-      id-token: write
     runs-on: ubuntu-latest
 
     steps:
@@ -155,8 +154,6 @@ jobs:
 
   release-npm:
     needs: [build-nupkg, release-github]
-    permissions:
-      id-token: write
     runs-on: ubuntu-latest
 
     steps:
@@ -164,7 +161,11 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Update npm
+        run: npm install -g npm@latest
 
       - name: Set npm package version
         working-directory: wrapper/npm

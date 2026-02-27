@@ -1,7 +1,8 @@
 # ConsoleToSvg
 [![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) 
 
-`console2svg` is a tool that converts terminal output into SVG.
+Easily convert terminal output into SVG images.  
+Colorful, animated, with cropping and window frame options.
 
 ![](./assets/cmd-hero.svg)
 

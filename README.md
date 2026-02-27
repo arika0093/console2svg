@@ -36,8 +36,21 @@ In video mode, you can capture the animation of the command execution and save i
 
 ## Install
 
+You can install it as a global tool using the dotnet command.
+
 ```sh
 dotnet tool install -g ConsoleToSvg
+```
+
+It is also distributed as a static binary.
+
+```sh
+# linux
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-linux-x64 -o console2svg
+chmod +x console2svg
+
+# windows (cmd)
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-windows-x64.exe -o console2svg.exe
 ```
 
 ## Usage

@@ -29,7 +29,7 @@ You can also generate SVG with a window frame. and some options to customize the
 ![](./assets/cmd-loop.svg)
 
 ```bash
-console2svg -m video -c -d macos -- copilot --banner
+console2svg -v -c -d macos -- copilot --banner
 ```
 
 In video mode, you can capture the animation of the command execution and save it as an SVG.
@@ -49,8 +49,12 @@ It is also distributed as a static binary.
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-linux-x64 -o console2svg
 chmod +x console2svg
 
+# macos
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-osx-x64 -o console2svg
+chmod +x console2svg
+
 # windows (cmd)
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-windows-x64.exe -o console2svg.exe
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64.exe -o console2svg.exe
 ```
 
 ## Usage
@@ -77,22 +81,22 @@ console2svg -- dotnet run app.cs
 
 ### Animated SVG
 
-use `-m video`.
+use `-m video` or `-v` to capture the animation of the command execution and save it as an SVG.
 
 ```sh
-console2svg -m video -- nyancat
+console2svg -v -- nyancat
 ```
 
 No loop playback:
 
 ```sh
-console2svg -m video --no-loop -- nyancat
+console2svg -v --no-loop -- nyancat
 ```
 
 ### Static SVG with crop
 
 ```sh
-# ch: charactor width, px: pixel
+# ch: character width, px: pixel
 console2svg "dotnet --info" --crop-top 1ch --crop-right 5px
 ```
 

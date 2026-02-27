@@ -11,6 +11,7 @@ public sealed class AnsiParser
     private readonly Theme _theme;
     private TextStyle _style;
     private string _pendingEscapeSequence = string.Empty;
+
     // Holds a partial caret-notation sequence that spans event chunks (e.g. echoed ESC as "^[")
     private string _pendingCaretSequence = string.Empty;
 
@@ -58,10 +59,7 @@ public sealed class AnsiParser
             // Caret-notation OSC: PTY ECHOCTL converts \x1b (ESC) to '^' + '['.
             // Only handle "^[]..." (OSC start) to avoid false positives with legitimate
             // text output that contains "^[" (e.g. docstrings, cat -v output).
-            if (ch == '^'
-                && i + 2 < text.Length
-                && text[i + 1] == '['
-                && text[i + 2] == ']')
+            if (ch == '^' && i + 2 < text.Length && text[i + 1] == '[' && text[i + 2] == ']')
             {
                 if (!TrySkipCaretOsc(text, i + 3, out var oscEnd))
                 {
@@ -230,8 +228,8 @@ public sealed class AnsiParser
         return false; // incomplete — caller will store as pending
     }
 
-    private static bool TrySkipDcs(string text, int start, out int endIndex)
-        => TrySkipOsc(text, start, out endIndex);
+    private static bool TrySkipDcs(string text, int start, out int endIndex) =>
+        TrySkipOsc(text, start, out endIndex);
 
     private bool TryHandleCsi(string text, int start, out int endIndex)
     {

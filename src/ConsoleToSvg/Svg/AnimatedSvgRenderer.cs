@@ -44,7 +44,12 @@ public static class AnimatedSvgRenderer
         var lastFrameTime = Math.Max(0.05d, reducedFrames[reducedFrames.Count - 1].Time);
         var totalDuration = lastFrameTime + options.VideoSleep + options.VideoFadeOut;
 
-        var css = BuildAnimationCss(reducedFrames, totalDuration, options.VideoFadeOut, options.Loop);
+        var css = BuildAnimationCss(
+            reducedFrames,
+            totalDuration,
+            options.VideoFadeOut,
+            options.Loop
+        );
 
         var sb = new StringBuilder(128 * 1024);
         SvgDocumentBuilder.BeginSvg(

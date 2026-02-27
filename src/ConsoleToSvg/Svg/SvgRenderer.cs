@@ -194,9 +194,11 @@ internal static class SvgDocumentBuilder
         var viewHeight = Math.Max(1d, contentHeight - pxTop - pxBottom);
 
         // When -h is specified, preserve the requested height unless px crop is actively reducing height
-        if (heightRows.HasValue
+        if (
+            heightRows.HasValue
             && !(crop.Top.Unit == CropUnit.Pixels && crop.Top.Value > 0)
-            && !(crop.Bottom.Unit == CropUnit.Pixels && crop.Bottom.Value > 0))
+            && !(crop.Bottom.Unit == CropUnit.Pixels && crop.Bottom.Value > 0)
+        )
         {
             viewHeight = Math.Max(viewHeight, heightRows.Value * CellHeight);
         }
@@ -245,7 +247,12 @@ internal static class SvgDocumentBuilder
         var canvasWidth =
             chromeLeft + chromeRight + normalizedPadding + viewWidth + normalizedPadding;
         var canvasHeight =
-            chromeTop + chromeBottom + normalizedPadding + headerHeight + viewHeight + normalizedPadding;
+            chromeTop
+            + chromeBottom
+            + normalizedPadding
+            + headerHeight
+            + viewHeight
+            + normalizedPadding;
 
         return new Context
         {
@@ -477,7 +484,14 @@ internal static class SvgDocumentBuilder
             }
             case WindowStyle.Windows:
             {
-                AppendWindowsTerminalChrome(sb, 0d, 0d, context.CanvasWidth, context.CanvasHeight, theme);
+                AppendWindowsTerminalChrome(
+                    sb,
+                    0d,
+                    0d,
+                    context.CanvasWidth,
+                    context.CanvasHeight,
+                    theme
+                );
                 return;
             }
             case WindowStyle.MacosPc:
@@ -564,13 +578,17 @@ internal static class SvgDocumentBuilder
         Context context,
         Theme theme,
         WindowStyle windowStyle,
-        string[]? background)
+        string[]? background
+    )
     {
         // Determine the fill
         string? fill = null;
         if (background is { Length: 1 } && !IsImagePath(background[0]))
             fill = background[0]; // solid color
-        else if (background is { Length: >= 2 } || (background is { Length: 1 } && IsImagePath(background[0])))
+        else if (
+            background is { Length: >= 2 }
+            || (background is { Length: 1 } && IsImagePath(background[0]))
+        )
             fill = "url(#desktop-bg)"; // gradient / image
         else if (windowStyle != WindowStyle.None)
             fill = null; // macos/windows: no background rect needed (outer window rect provides fill)
@@ -625,7 +643,8 @@ internal static class SvgDocumentBuilder
         StringBuilder sb,
         Context context,
         WindowStyle windowStyle,
-        string[]? background)
+        string[]? background
+    )
     {
         bool isPcStyle = windowStyle is WindowStyle.MacosPc or WindowStyle.WindowsPc;
 
@@ -656,16 +675,22 @@ internal static class SvgDocumentBuilder
         else
         {
             // Default gradient for *-pc styles — subtle diagonal to avoid being too flashy
-            var (c1, c2) = windowStyle == WindowStyle.MacosPc
-                ? ("#1a1d2e", "#252840")
-                : ("#1a2535", "#253345");
+            var (c1, c2) =
+                windowStyle == WindowStyle.MacosPc
+                    ? ("#1a1d2e", "#252840")
+                    : ("#1a2535", "#253345");
             AppendLinearGradientDef(sb, "desktop-bg", c1, c2);
         }
 
         sb.Append("</defs>\n");
     }
 
-    private static void AppendLinearGradientDef(StringBuilder sb, string id, string color1, string color2)
+    private static void AppendLinearGradientDef(
+        StringBuilder sb,
+        string id,
+        string color1,
+        string color2
+    )
     {
         sb.Append("<linearGradient id=\"");
         sb.Append(EscapeAttribute(id));
@@ -679,12 +704,19 @@ internal static class SvgDocumentBuilder
         sb.Append("</linearGradient>\n");
     }
 
-    private static void AppendImagePatternDef(StringBuilder sb, string imagePath, double width, double height)
+    private static void AppendImagePatternDef(
+        StringBuilder sb,
+        string imagePath,
+        double width,
+        double height
+    )
     {
         string href;
         var mimeType = GetImageMimeType(imagePath);
-        if (imagePath.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
-            || imagePath.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        if (
+            imagePath.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            || imagePath.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+        )
         {
             href = imagePath;
         }
@@ -734,12 +766,12 @@ internal static class SvgDocumentBuilder
         var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
         return ext switch
         {
-            ".png"  => "image/png",
+            ".png" => "image/png",
             ".jpg" or ".jpeg" => "image/jpeg",
-            ".gif"  => "image/gif",
-            ".svg"  => "image/svg+xml",
+            ".gif" => "image/gif",
+            ".svg" => "image/svg+xml",
             ".webp" => "image/webp",
-            ".bmp"  => "image/bmp",
+            ".bmp" => "image/bmp",
             _ => "image/png",
         };
     }
@@ -828,10 +860,20 @@ internal static class SvgDocumentBuilder
         var iconY = winY + TabBarHeight / 2d + 2d;
         // ">" chevron (vector polyline)
         sb.Append("<polyline points=\"");
-        sb.Append(Format(iconX)); sb.Append(','); sb.Append(Format(iconY - 4d)); sb.Append(' ');
-        sb.Append(Format(iconX + 4d)); sb.Append(','); sb.Append(Format(iconY)); sb.Append(' ');
-        sb.Append(Format(iconX)); sb.Append(','); sb.Append(Format(iconY + 4d));
-        sb.Append("\" fill=\"none\" stroke=\"#cccccc\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\n");
+        sb.Append(Format(iconX));
+        sb.Append(',');
+        sb.Append(Format(iconY - 4d));
+        sb.Append(' ');
+        sb.Append(Format(iconX + 4d));
+        sb.Append(',');
+        sb.Append(Format(iconY));
+        sb.Append(' ');
+        sb.Append(Format(iconX));
+        sb.Append(',');
+        sb.Append(Format(iconY + 4d));
+        sb.Append(
+            "\" fill=\"none\" stroke=\"#cccccc\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\n"
+        );
         // "_" underline (vector line)
         sb.Append("<line x1=\"");
         sb.Append(Format(iconX + 7d));
@@ -847,54 +889,84 @@ internal static class SvgDocumentBuilder
         var tabCloseCX = tbRight - 12d;
         var tabCloseCY = iconY;
         const double TabCloseR = 3.5d;
-        sb.Append("<line x1=\""); sb.Append(Format(tabCloseCX - TabCloseR));
-        sb.Append("\" y1=\""); sb.Append(Format(tabCloseCY - TabCloseR));
-        sb.Append("\" x2=\""); sb.Append(Format(tabCloseCX + TabCloseR));
-        sb.Append("\" y2=\""); sb.Append(Format(tabCloseCY + TabCloseR));
+        sb.Append("<line x1=\"");
+        sb.Append(Format(tabCloseCX - TabCloseR));
+        sb.Append("\" y1=\"");
+        sb.Append(Format(tabCloseCY - TabCloseR));
+        sb.Append("\" x2=\"");
+        sb.Append(Format(tabCloseCX + TabCloseR));
+        sb.Append("\" y2=\"");
+        sb.Append(Format(tabCloseCY + TabCloseR));
         sb.Append("\" stroke=\"#888888\" stroke-width=\"1.1\"/>\n");
-        sb.Append("<line x1=\""); sb.Append(Format(tabCloseCX + TabCloseR));
-        sb.Append("\" y1=\""); sb.Append(Format(tabCloseCY - TabCloseR));
-        sb.Append("\" x2=\""); sb.Append(Format(tabCloseCX - TabCloseR));
-        sb.Append("\" y2=\""); sb.Append(Format(tabCloseCY + TabCloseR));
+        sb.Append("<line x1=\"");
+        sb.Append(Format(tabCloseCX + TabCloseR));
+        sb.Append("\" y1=\"");
+        sb.Append(Format(tabCloseCY - TabCloseR));
+        sb.Append("\" x2=\"");
+        sb.Append(Format(tabCloseCX - TabCloseR));
+        sb.Append("\" y2=\"");
+        sb.Append(Format(tabCloseCY + TabCloseR));
         sb.Append("\" stroke=\"#888888\" stroke-width=\"1.1\"/>\n");
 
         // "+" new-tab button — aligned to iconY
         var plusCX = tbRight + 16d;
         var plusCY = iconY;
         const double PlusR = 5d;
-        sb.Append("<line x1=\""); sb.Append(Format(plusCX - PlusR));
-        sb.Append("\" y1=\""); sb.Append(Format(plusCY));
-        sb.Append("\" x2=\""); sb.Append(Format(plusCX + PlusR));
-        sb.Append("\" y2=\""); sb.Append(Format(plusCY));
+        sb.Append("<line x1=\"");
+        sb.Append(Format(plusCX - PlusR));
+        sb.Append("\" y1=\"");
+        sb.Append(Format(plusCY));
+        sb.Append("\" x2=\"");
+        sb.Append(Format(plusCX + PlusR));
+        sb.Append("\" y2=\"");
+        sb.Append(Format(plusCY));
         sb.Append("\" stroke=\"#888888\" stroke-width=\"1.2\"/>\n");
-        sb.Append("<line x1=\""); sb.Append(Format(plusCX));
-        sb.Append("\" y1=\""); sb.Append(Format(plusCY - PlusR));
-        sb.Append("\" x2=\""); sb.Append(Format(plusCX));
-        sb.Append("\" y2=\""); sb.Append(Format(plusCY + PlusR));
+        sb.Append("<line x1=\"");
+        sb.Append(Format(plusCX));
+        sb.Append("\" y1=\"");
+        sb.Append(Format(plusCY - PlusR));
+        sb.Append("\" x2=\"");
+        sb.Append(Format(plusCX));
+        sb.Append("\" y2=\"");
+        sb.Append(Format(plusCY + PlusR));
         sb.Append("\" stroke=\"#888888\" stroke-width=\"1.2\"/>\n");
 
         // "|" vertical separator
         var sepX = tbRight + 36d;
-        sb.Append("<line x1=\""); sb.Append(Format(sepX));
-        sb.Append("\" y1=\""); sb.Append(Format(winY + 9d));
-        sb.Append("\" x2=\""); sb.Append(Format(sepX));
-        sb.Append("\" y2=\""); sb.Append(Format(winY + TabBarHeight - 9d));
+        sb.Append("<line x1=\"");
+        sb.Append(Format(sepX));
+        sb.Append("\" y1=\"");
+        sb.Append(Format(winY + 9d));
+        sb.Append("\" x2=\"");
+        sb.Append(Format(sepX));
+        sb.Append("\" y2=\"");
+        sb.Append(Format(winY + TabBarHeight - 9d));
         sb.Append("\" stroke=\"#4a4a4a\" stroke-width=\"1\"/>\n");
 
         // "v" dropdown chevron — aligned to iconY
         var dropCX = tbRight + 52d;
         var dropCY = iconY;
         sb.Append("<polyline points=\"");
-        sb.Append(Format(dropCX - 4d)); sb.Append(','); sb.Append(Format(dropCY - 2d)); sb.Append(' ');
-        sb.Append(Format(dropCX)); sb.Append(','); sb.Append(Format(dropCY + 2d)); sb.Append(' ');
-        sb.Append(Format(dropCX + 4d)); sb.Append(','); sb.Append(Format(dropCY - 2d));
-        sb.Append("\" fill=\"none\" stroke=\"#888888\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\n");
+        sb.Append(Format(dropCX - 4d));
+        sb.Append(',');
+        sb.Append(Format(dropCY - 2d));
+        sb.Append(' ');
+        sb.Append(Format(dropCX));
+        sb.Append(',');
+        sb.Append(Format(dropCY + 2d));
+        sb.Append(' ');
+        sb.Append(Format(dropCX + 4d));
+        sb.Append(',');
+        sb.Append(Format(dropCY - 2d));
+        sb.Append(
+            "\" fill=\"none\" stroke=\"#888888\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\n"
+        );
 
         // Window control buttons: each occupies BtnColW=46px column, icons centered
         var btnCenterY = iconY;
         var closeX = winX + winW - BtnColW / 2d;
-        var maxX   = closeX - BtnColW;
-        var minX   = maxX - BtnColW;
+        var maxX = closeX - BtnColW;
+        var minX = maxX - BtnColW;
         const double IconHalf = 5d;
 
         // Minimize ( — )
@@ -940,7 +1012,6 @@ internal static class SvgDocumentBuilder
         sb.Append("\" stroke=\"#cccccc\" stroke-width=\"1.3\"/>\n");
         // Inner area (content + padding) is rendered by AppendFrameGroup — do not duplicate here
     }
-
 
     public static void EndSvg(StringBuilder sb, double opacity = 1d)
     {
@@ -1004,15 +1075,16 @@ internal static class SvgDocumentBuilder
                         ? buffer.GetCellFromTop(row, col)
                         : buffer.GetCell(row, col);
                     var eBg = c.Reversed ? c.Foreground : c.Background;
-                    if (
-                        !string.Equals(eBg, theme.Background, StringComparison.OrdinalIgnoreCase)
-                    )
+                    if (!string.Equals(eBg, theme.Background, StringComparison.OrdinalIgnoreCase))
                     {
                         cellBg = eBg;
                     }
                 }
 
-                if (cellBg != null && string.Equals(cellBg, bgRunColor, StringComparison.OrdinalIgnoreCase))
+                if (
+                    cellBg != null
+                    && string.Equals(cellBg, bgRunColor, StringComparison.OrdinalIgnoreCase)
+                )
                 {
                     // extend current run
                     continue;
@@ -1044,7 +1116,9 @@ internal static class SvgDocumentBuilder
             var fgRunStart = context.StartCol;
             var fgRunText = new StringBuilder();
             string? fgRunColor = null;
-            bool fgBold = false, fgItalic = false, fgUnderline = false;
+            bool fgBold = false,
+                fgItalic = false,
+                fgUnderline = false;
             int fgRunCellCount = 0;
 
             void FlushFgRun()
@@ -1068,9 +1142,12 @@ internal static class SvgDocumentBuilder
                 if (fgBold || fgItalic || fgUnderline)
                 {
                     sb.Append(" style=\"");
-                    if (fgBold) sb.Append("font-weight:bold;");
-                    if (fgItalic) sb.Append("font-style:italic;");
-                    if (fgUnderline) sb.Append("text-decoration:underline;");
+                    if (fgBold)
+                        sb.Append("font-weight:bold;");
+                    if (fgItalic)
+                        sb.Append("font-style:italic;");
+                    if (fgUnderline)
+                        sb.Append("text-decoration:underline;");
                     sb.Append("\"");
                 }
                 sb.Append('>');
@@ -1194,11 +1271,14 @@ internal static class SvgDocumentBuilder
             return false;
         }
 
-        var cp = text.Length == 1
-            ? text[0]
-            : (char.IsHighSurrogate(text[0]) && text.Length >= 2
-                ? char.ConvertToUtf32(text[0], text[1])
-                : -1);
+        var cp =
+            text.Length == 1
+                ? text[0]
+                : (
+                    char.IsHighSurrogate(text[0]) && text.Length >= 2
+                        ? char.ConvertToUtf32(text[0], text[1])
+                        : -1
+                );
 
         // Unicode Block Elements (U+2580–U+259F), excluding shade chars (U+2591–U+2593)
         return cp is >= 0x2580 and <= 0x259F and not (0x2591 or 0x2592 or 0x2593);
@@ -1213,9 +1293,7 @@ internal static class SvgDocumentBuilder
         string fill
     )
     {
-        var cp = text.Length == 1
-            ? text[0]
-            : char.ConvertToUtf32(text[0], text[1]);
+        var cp = text.Length == 1 ? text[0] : char.ConvertToUtf32(text[0], text[1]);
 
         var w = cellRectWidth;
         var h = CellHeight;
@@ -1224,36 +1302,100 @@ internal static class SvgDocumentBuilder
 
         switch (cp)
         {
-            case 0x2580: R(x, y, w, hh); break;                                                // ▀ Upper half
-            case 0x2581: R(x, y + h * 7d/8, w, h / 8d); break;                                // ▁ Lower 1/8
-            case 0x2582: R(x, y + h * 3d/4, w, h / 4d); break;                                // ▂ Lower 1/4
-            case 0x2583: R(x, y + h * 5d/8, w, h * 3d/8); break;                              // ▃ Lower 3/8
-            case 0x2584: R(x, y + hh, w, hh); break;                                          // ▄ Lower half
-            case 0x2585: R(x, y + h * 3d/8, w, h * 5d/8); break;                              // ▅ Lower 5/8
-            case 0x2586: R(x, y + h / 4d, w, h * 3d/4); break;                                // ▆ Lower 3/4
-            case 0x2587: R(x, y + h / 8d, w, h * 7d/8); break;                                // ▇ Lower 7/8
-            case 0x2588: R(x, y, w, h); break;                                                 // █ Full block
-            case 0x2589: R(x, y, w * 7d/8, h); break;                                         // ▉ Left 7/8
-            case 0x258A: R(x, y, w * 3d/4, h); break;                                         // ▊ Left 3/4
-            case 0x258B: R(x, y, w * 5d/8, h); break;                                         // ▋ Left 5/8
-            case 0x258C: R(x, y, hw, h); break;                                                // ▌ Left half
-            case 0x258D: R(x, y, w * 3d/8, h); break;                                         // ▍ Left 3/8
-            case 0x258E: R(x, y, w / 4d, h); break;                                           // ▎ Left 1/4
-            case 0x258F: R(x, y, w / 8d, h); break;                                           // ▏ Left 1/8
-            case 0x2590: R(x + hw, y, hw, h); break;                                          // ▐ Right half
+            case 0x2580:
+                R(x, y, w, hh);
+                break; // ▀ Upper half
+            case 0x2581:
+                R(x, y + h * 7d / 8, w, h / 8d);
+                break; // ▁ Lower 1/8
+            case 0x2582:
+                R(x, y + h * 3d / 4, w, h / 4d);
+                break; // ▂ Lower 1/4
+            case 0x2583:
+                R(x, y + h * 5d / 8, w, h * 3d / 8);
+                break; // ▃ Lower 3/8
+            case 0x2584:
+                R(x, y + hh, w, hh);
+                break; // ▄ Lower half
+            case 0x2585:
+                R(x, y + h * 3d / 8, w, h * 5d / 8);
+                break; // ▅ Lower 5/8
+            case 0x2586:
+                R(x, y + h / 4d, w, h * 3d / 4);
+                break; // ▆ Lower 3/4
+            case 0x2587:
+                R(x, y + h / 8d, w, h * 7d / 8);
+                break; // ▇ Lower 7/8
+            case 0x2588:
+                R(x, y, w, h);
+                break; // █ Full block
+            case 0x2589:
+                R(x, y, w * 7d / 8, h);
+                break; // ▉ Left 7/8
+            case 0x258A:
+                R(x, y, w * 3d / 4, h);
+                break; // ▊ Left 3/4
+            case 0x258B:
+                R(x, y, w * 5d / 8, h);
+                break; // ▋ Left 5/8
+            case 0x258C:
+                R(x, y, hw, h);
+                break; // ▌ Left half
+            case 0x258D:
+                R(x, y, w * 3d / 8, h);
+                break; // ▍ Left 3/8
+            case 0x258E:
+                R(x, y, w / 4d, h);
+                break; // ▎ Left 1/4
+            case 0x258F:
+                R(x, y, w / 8d, h);
+                break; // ▏ Left 1/8
+            case 0x2590:
+                R(x + hw, y, hw, h);
+                break; // ▐ Right half
             // 0x2591–0x2593: shade chars handled by font (IsBlockElement returns false)
-            case 0x2594: R(x, y, w, h / 8d); break;                                           // ▔ Upper 1/8
-            case 0x2595: R(x + w * 7d/8, y, w / 8d, h); break;                               // ▕ Right 1/8
-            case 0x2596: R(x, y + hh, hw, hh); break;                                         // ▖ Quad lower-left
-            case 0x2597: R(x + hw, y + hh, hw, hh); break;                                    // ▗ Quad lower-right
-            case 0x2598: R(x, y, hw, hh); break;                                              // ▘ Quad upper-left
-            case 0x2599: R(x, y, hw, hh); R(x, y + hh, w, hh); break;                        // ▙
-            case 0x259A: R(x, y, hw, hh); R(x + hw, y + hh, hw, hh); break;                  // ▚
-            case 0x259B: R(x, y, w, hh); R(x, y + hh, hw, hh); break;                        // ▛
-            case 0x259C: R(x, y, w, hh); R(x + hw, y + hh, hw, hh); break;                   // ▜
-            case 0x259D: R(x + hw, y, hw, hh); break;                                         // ▝ Quad upper-right
-            case 0x259E: R(x + hw, y, hw, hh); R(x, y + hh, hw, hh); break;                  // ▞
-            case 0x259F: R(x + hw, y, hw, hh); R(x, y + hh, w, hh); break;                   // ▟
+            case 0x2594:
+                R(x, y, w, h / 8d);
+                break; // ▔ Upper 1/8
+            case 0x2595:
+                R(x + w * 7d / 8, y, w / 8d, h);
+                break; // ▕ Right 1/8
+            case 0x2596:
+                R(x, y + hh, hw, hh);
+                break; // ▖ Quad lower-left
+            case 0x2597:
+                R(x + hw, y + hh, hw, hh);
+                break; // ▗ Quad lower-right
+            case 0x2598:
+                R(x, y, hw, hh);
+                break; // ▘ Quad upper-left
+            case 0x2599:
+                R(x, y, hw, hh);
+                R(x, y + hh, w, hh);
+                break; // ▙
+            case 0x259A:
+                R(x, y, hw, hh);
+                R(x + hw, y + hh, hw, hh);
+                break; // ▚
+            case 0x259B:
+                R(x, y, w, hh);
+                R(x, y + hh, hw, hh);
+                break; // ▛
+            case 0x259C:
+                R(x, y, w, hh);
+                R(x + hw, y + hh, hw, hh);
+                break; // ▜
+            case 0x259D:
+                R(x + hw, y, hw, hh);
+                break; // ▝ Quad upper-right
+            case 0x259E:
+                R(x + hw, y, hw, hh);
+                R(x, y + hh, hw, hh);
+                break; // ▞
+            case 0x259F:
+                R(x + hw, y, hw, hh);
+                R(x, y + hh, w, hh);
+                break; // ▟
         }
 
         void R(double rx, double ry, double rw, double rh)

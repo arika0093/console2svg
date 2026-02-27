@@ -46,8 +46,7 @@ public sealed class SvgRenderOptions
     public static SvgRenderOptions FromAppOptions(AppOptions appOptions)
     {
         var windowStyle = ParseWindowStyle(appOptions.Window);
-        var effectivePadding = appOptions.Padding
-            ?? (windowStyle != WindowStyle.None ? 8d : 2d);
+        var effectivePadding = appOptions.Padding ?? (windowStyle != WindowStyle.None ? 8d : 2d);
 
         return new SvgRenderOptions
         {
@@ -68,9 +67,10 @@ public sealed class SvgRenderOptions
             VideoFadeOut = appOptions.VideoFadeOut,
             HeightRows = appOptions.Height,
             Opacity = appOptions.Opacity,
-            CommandHeader = (appOptions.WithCommand && !string.IsNullOrWhiteSpace(appOptions.Command))
-                ? $"$ {appOptions.Command}"
-                : null,
+            CommandHeader =
+                (appOptions.WithCommand && !string.IsNullOrWhiteSpace(appOptions.Command))
+                    ? $"$ {appOptions.Command}"
+                    : null,
             Background = appOptions.Background.Count > 0 ? appOptions.Background.ToArray() : null,
         };
     }

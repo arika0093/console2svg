@@ -5,79 +5,81 @@ namespace ConsoleToSvg.Cli;
 
 public static class OptionParser
 {
-    public static string ShortHelpText => """
-        console2svg - Convert terminal output to SVG
+    public static string ShortHelpText =>
+        """
+            console2svg - Convert terminal output to SVG
 
-        Usage:
-            my-command | console2svg [options]
-            console2svg "my-command with-args" [options]
-            console2svg [options] -- my-command with args
+            Usage:
+                my-command | console2svg [options]
+                console2svg "my-command with-args" [options]
+                console2svg [options] -- my-command with args
 
-        Major options:
-            -c, --with-command        Prepend the command line to the output.
-            -o, --out <path>          Output SVG path (default: output.svg).
-            -w, --width <int>         Terminal width in characters (default: auto).
-            -h, --height <int>        Terminal height in rows (default: auto).
-            -v                        Output animated SVG (alias for --mode video).
-            -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc.
-            --opacity <0-1>           Opacity of window/terminal content (default: 1).
-            --background <color> [color]  Background color, gradient, or image path.
-            --crop-top/bottom/left/right  Crop by px, ch, or text pattern.
-            --verbose                 Enable verbose logging.
+            Major options:
+                -c, --with-command        Prepend the command line to the output.
+                -o, --out <path>          Output SVG path (default: output.svg).
+                -w, --width <int>         Terminal width in characters (default: auto).
+                -h, --height <int>        Terminal height in rows (default: auto).
+                -v                        Output animated SVG (alias for --mode video).
+                -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc.
+                --opacity <0-1>           Opacity of window/terminal content (default: 1).
+                --background <color> [color]  Background color, gradient, or image path.
+                --crop-top/bottom/left/right  Crop by px, ch, or text pattern.
+                --verbose                 Enable verbose logging.
 
-        For full option list, see --help.
-        """;
+            For full option list, see --help.
+            """;
 
-    public static string HelpText => """
-        console2svg - Convert terminal output to SVG
+    public static string HelpText =>
+        """
+            console2svg - Convert terminal output to SVG
 
-        Usage:
-            my-command | console2svg [options]
-            console2svg "my-command with-args" [options]
-            console2svg [options] -- my-command with args
+            Usage:
+                my-command | console2svg [options]
+                console2svg "my-command with-args" [options]
+                console2svg [options] -- my-command with args
 
-        Options (Common):
-            -c, --with-command        Prepend the command line to the output as if typed in a terminal.
-            -o, --out <path>          Output SVG path (default: output.svg).
-            -m, --mode <image|video>  Output mode (default: image).
-            -v                        is alias for --mode video.
-            -w, --width <int>         Terminal width in characters (default: auto).
-            -h, --height <int>        Terminal height in rows (default: auto).
-            --font <family>           CSS font-family for SVG text.
-            --in <path>               Read existing asciicast file.
-            --save-cast <path>        Save captured output as asciicast file.
-            --help                    Show help.
-            --verbose                 Enable verbose logging.
-            --version                 Show version and exit.
+            Options (Common):
+                -c, --with-command        Prepend the command line to the output as if typed in a terminal.
+                -o, --out <path>          Output SVG path (default: output.svg).
+                -m, --mode <image|video>  Output mode (default: image).
+                -v                        is alias for --mode video.
+                -w, --width <int>         Terminal width in characters (default: auto).
+                -h, --height <int>        Terminal height in rows (default: auto).
+                --font <family>           CSS font-family for SVG text.
+                --in <path>               Read existing asciicast file.
+                --save-cast <path>        Save captured output as asciicast file.
+                --help                    Show help.
+                --verbose                 Enable verbose logging.
+                --version                 Show version and exit.
 
-        Options (Appearance):
-            -d, --window [none|macos|windows|macos-pc|windows-pc]
-                                      Terminal window chrome style (default: none, or macos if specified without a value).
-            --opacity <0-1>           Background fill opacity (default: 1).
-            --theme <dark|light>      Color theme (default: dark).
-            --padding <px>            Outer padding in pixels (default: 2, or 8 when window is set).
-            --background <color|path> [color]
-                Desktop background. Accepts:
-                    Solid color  : --background "#rrggbb"
-                    Gradient     : --background "#from" "#to"
-                                   --background "#from:#to"
-                                   --background "#from" --background "#to"
-                    Image        : --background path/to/image.png
-                Colors: #hex, rgb(), hsl(), oklch(), named colors.
+            Options (Appearance):
+                -d, --window [none|macos|windows|macos-pc|windows-pc]
+                                          Terminal window chrome style (default: none, or macos if specified without a value).
+                --opacity <0-1>           Background fill opacity (default: 1).
+                --theme <dark|light>      Color theme (default: dark).
+                --padding <px>            Outer padding in pixels (default: 2, or 8 when window is set).
+                --background <color|path> [color]
+                    Desktop background. Accepts:
+                        Solid color  : --background "#rrggbb"
+                        Gradient     : --background "#from" "#to"
+                                       --background "#from:#to"
+                                       --background "#from" --background "#to"
+                        Image        : --background path/to/image.png
+                    Colors: #hex, rgb(), hsl(), oklch(), named colors.
 
-        Options (Image mode):
-            --frame <int>             Frame index for image mode.
-            --crop-top <value>        Crop top by px, ch, or text pattern (e.g. 10px, 2ch, sometext, summary:-3).
-            --crop-bottom <value>     Crop bottom by px, ch, or text pattern.
-            --crop-right <value>      Crop right by px or ch.
-            --crop-left <value>       Crop left by px or ch.
-        
-        Options (Video mode):
-            --no-loop                 Disable loop for animated SVG playback in video mode (default: loop).
-            --fps <value>             Max FPS for animated SVG frame sampling (default: 12).
-            --sleep <sec>             Wait time after execution completes in video mode (default: 2).
-            --fadeout <sec>           Fade-out duration at end of video (default: 0).
-        """;
+            Options (Image mode):
+                --frame <int>             Frame index for image mode.
+                --crop-top <value>        Crop top by px, ch, or text pattern (e.g. 10px, 2ch, sometext, summary:-3).
+                --crop-bottom <value>     Crop bottom by px, ch, or text pattern.
+                --crop-right <value>      Crop right by px or ch.
+                --crop-left <value>       Crop left by px or ch.
+
+            Options (Video mode):
+                --no-loop                 Disable loop for animated SVG playback in video mode (default: loop).
+                --fps <value>             Max FPS for animated SVG frame sampling (default: 12).
+                --sleep <sec>             Wait time after execution completes in video mode (default: 2).
+                --fadeout <sec>           Fade-out duration at end of video (default: 0).
+            """;
 
     public static bool TryParse(
         string[] args,
@@ -155,8 +157,10 @@ public static class OptionParser
             }
             else if (
                 value is null
-                && (string.Equals(name, "-d", StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase))
+                && (
+                    string.Equals(name, "-d", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase)
+                )
             )
             {
                 // Value is optional: consume next token only if it is a known window style
@@ -250,8 +254,10 @@ public static class OptionParser
         if (token.Contains('(') && token.TrimEnd().EndsWith(")", StringComparison.Ordinal))
             return true;
         // URLs
-        if (token.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
-            || token.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        if (
+            token.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            || token.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+        )
             return true;
         // File paths with known image extensions
         var lower = token.ToLowerInvariant();
@@ -426,15 +432,18 @@ public static class OptionParser
 
                 if (options.Background.Count >= 2)
                 {
-                    error = "--background can be specified at most twice (start color and end color).";
+                    error =
+                        "--background can be specified at most twice (start color and end color).";
                     return false;
                 }
 
                 // Support "#from:#to" colon-separated gradient shorthand.
                 // Skip split when the value is a URL (contains "://").
-                if (options.Background.Count == 0
+                if (
+                    options.Background.Count == 0
                     && value.Contains(':', StringComparison.Ordinal)
-                    && !value.Contains("://", StringComparison.Ordinal))
+                    && !value.Contains("://", StringComparison.Ordinal)
+                )
                 {
                     var colonIdx = value.IndexOf(':', StringComparison.Ordinal);
                     var part1 = value.Substring(0, colonIdx);

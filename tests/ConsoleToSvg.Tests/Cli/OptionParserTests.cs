@@ -239,12 +239,7 @@ public sealed class OptionParserTests
     [Test]
     public void ShortFlagCMapsToWithCommand()
     {
-        var ok = OptionParser.TryParse(
-            new[] { "-c", "ls" },
-            out var options,
-            out _,
-            out _
-        );
+        var ok = OptionParser.TryParse(new[] { "-c", "ls" }, out var options, out _, out _);
         ok.ShouldBeTrue();
         options!.WithCommand.ShouldBeTrue();
         options.Command.ShouldBe("ls");
@@ -366,7 +361,12 @@ public sealed class OptionParserTests
     [Test]
     public void BackgroundSingleColorParsed()
     {
-        var ok = OptionParser.TryParse(new[] { "--background", "#ff0000" }, out var options, out _, out _);
+        var ok = OptionParser.TryParse(
+            new[] { "--background", "#ff0000" },
+            out var options,
+            out _,
+            out _
+        );
         ok.ShouldBeTrue();
         options!.Background.Count.ShouldBe(1);
         options.Background[0].ShouldBe("#ff0000");
@@ -378,7 +378,10 @@ public sealed class OptionParserTests
         // --background "#from" "#to" syntax
         var ok = OptionParser.TryParse(
             new[] { "--background", "#ff0000", "#0000ff" },
-            out var options, out _, out _);
+            out var options,
+            out _,
+            out _
+        );
         ok.ShouldBeTrue();
         options!.Background.Count.ShouldBe(2);
         options.Background[0].ShouldBe("#ff0000");
@@ -391,7 +394,10 @@ public sealed class OptionParserTests
         // --background "#from:#to" syntax
         var ok = OptionParser.TryParse(
             new[] { "--background", "#ff0000:#0000ff" },
-            out var options, out _, out _);
+            out var options,
+            out _,
+            out _
+        );
         ok.ShouldBeTrue();
         options!.Background.Count.ShouldBe(2);
         options.Background[0].ShouldBe("#ff0000");
@@ -404,7 +410,10 @@ public sealed class OptionParserTests
         // --background c1 --background c2 legacy syntax
         var ok = OptionParser.TryParse(
             new[] { "--background", "#ff0000", "--background", "#0000ff" },
-            out var options, out _, out _);
+            out var options,
+            out _,
+            out _
+        );
         ok.ShouldBeTrue();
         options!.Background.Count.ShouldBe(2);
         options.Background[0].ShouldBe("#ff0000");
@@ -417,7 +426,10 @@ public sealed class OptionParserTests
         // Next token after --background value is a command-like string, should not be consumed
         var ok = OptionParser.TryParse(
             new[] { "--background", "#ff0000", "--", "echo", "hello" },
-            out var options, out _, out _);
+            out var options,
+            out _,
+            out _
+        );
         ok.ShouldBeTrue();
         options!.Background.Count.ShouldBe(1);
         options.Background[0].ShouldBe("#ff0000");
@@ -429,7 +441,10 @@ public sealed class OptionParserTests
     {
         var ok = OptionParser.TryParse(
             new[] { "--background", "https://example.com/bg.png" },
-            out var options, out _, out _);
+            out var options,
+            out _,
+            out _
+        );
         ok.ShouldBeTrue();
         options!.Background.Count.ShouldBe(1);
         options.Background[0].ShouldBe("https://example.com/bg.png");

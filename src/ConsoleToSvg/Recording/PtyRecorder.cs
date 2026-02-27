@@ -96,12 +96,7 @@ public static class PtyRecorder
             outputForward
         );
         var inputTask = inputForward is not null
-            ? PumpInputAsync(
-                inputForward,
-                connection.WriterStream,
-                inputCancellation.Token,
-                logger
-            )
+            ? PumpInputAsync(inputForward, connection.WriterStream, inputCancellation.Token, logger)
             : null;
 
         var eofReached = false;
@@ -431,9 +426,7 @@ public static class PtyRecorder
 
     private static async Task IgnoreTaskFailureWithTimeoutAsync(Task task, int milliseconds)
     {
-        var completed = await Task
-            .WhenAny(task, Task.Delay(milliseconds))
-            .ConfigureAwait(false);
+        var completed = await Task.WhenAny(task, Task.Delay(milliseconds)).ConfigureAwait(false);
         if (completed == task)
         {
             await IgnoreTaskFailureAsync(task).ConfigureAwait(false);

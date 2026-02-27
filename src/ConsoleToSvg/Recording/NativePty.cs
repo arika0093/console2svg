@@ -565,7 +565,9 @@ internal static class NativePtyUnix
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            throw new PlatformNotSupportedException("Quick.PtyNet Unix backend is not available on Windows.");
+            throw new PlatformNotSupportedException(
+                "Quick.PtyNet Unix backend is not available on Windows."
+            );
         }
 
         var environment = new Dictionary<string, string>();
@@ -582,15 +584,15 @@ internal static class NativePtyUnix
             Name = options.Name ?? "console2svg",
             Cols = options.Cols,
             Rows = options.Rows,
-            Cwd = string.IsNullOrWhiteSpace(options.Cwd) ? Environment.CurrentDirectory : options.Cwd,
+            Cwd = string.IsNullOrWhiteSpace(options.Cwd)
+                ? Environment.CurrentDirectory
+                : options.Cwd,
             App = options.App,
             CommandLine = options.Args ?? Array.Empty<string>(),
             Environment = environment,
         };
 
-        var pty = await PtyProvider
-            .SpawnAsync(ptyOptions, cancellationToken)
-            .ConfigureAwait(false);
+        var pty = await PtyProvider.SpawnAsync(ptyOptions, cancellationToken).ConfigureAwait(false);
 
         // Disable PTY slave ECHO to prevent echoed input bytes from being captured
         // in the recording output with ECHOCTL caret-notation (e.g. ESC → "^[").
@@ -680,9 +682,11 @@ internal static class NativePtyUnix
     // with ECHOCTL caret-notation conversion (ESC → "^[").
     private static void TryDisablePtyEcho(Stream masterStream)
     {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux) &&
-            !RuntimeInformation.IsOSPlatform(OSPlatform.OSX) &&
-            !RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
+        if (
+            !RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+            && !RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+            && !RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD)
+        )
         {
             return;
         }
@@ -703,13 +707,18 @@ internal static class NativePtyUnix
 
             // Clear echo-related flags on the PTY slave (tcsetattr on the master fd
             // modifies the slave's termios settings on Linux/macOS).
-            const uint ECHO    = 0x0008u;
-            const uint ECHOE   = 0x0010u;
-            const uint ECHOK   = 0x0020u;
-            const uint ECHONL  = 0x0040u;
+            const uint ECHO = 0x0008u;
+            const uint ECHOE = 0x0010u;
+            const uint ECHOK = 0x0020u;
+            const uint ECHONL = 0x0040u;
             const uint ECHOCTL = 0x0200u;
             t.c_lflag &= ~(ECHO | ECHOE | ECHOK | ECHONL | ECHOCTL);
-            tcsetattr(fd, 0 /* TCSANOW */, ref t);
+            tcsetattr(
+                fd,
+                0 /* TCSANOW */
+                ,
+                ref t
+            );
         }
         catch
         {

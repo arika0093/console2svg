@@ -38,7 +38,10 @@ public static class AsciicastWriter
             leaveOpen: true
         );
 
-        var headerLine = JsonSerializer.Serialize(session.Header, AsciicastJsonContext.Default.AsciicastHeader);
+        var headerLine = JsonSerializer.Serialize(
+            session.Header,
+            AsciicastJsonContext.Default.AsciicastHeader
+        );
         await writer.WriteLineAsync(headerLine).ConfigureAwait(false);
 
         using var ms = new MemoryStream();

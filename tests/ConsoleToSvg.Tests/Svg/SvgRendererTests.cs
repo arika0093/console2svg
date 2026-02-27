@@ -412,9 +412,9 @@ public sealed class SvgRendererTests
         // Shadow (black with opacity)
         svg.ShouldContain("fill-opacity=\"0.4\"");
         // Windows Terminal style: control buttons as vector lines/rects
-        svg.ShouldContain("stroke=\"#cccccc\"");    // icon stroke color
+        svg.ShouldContain("stroke=\"#cccccc\""); // icon stroke color
         svg.ShouldContain("fill=\"none\" stroke=\"#cccccc\""); // maximize □ rect
-        svg.ShouldContain("stroke-width=\"1.3\"");  // close × lines
+        svg.ShouldContain("stroke-width=\"1.3\""); // close × lines
         // Active tab shape present
         svg.ShouldContain("#1c1c1c");
         // Tab close ×, + button, | separator, v chevron all present
@@ -430,11 +430,7 @@ public sealed class SvgRendererTests
 
         var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
             session,
-            new ConsoleToSvg.Svg.SvgRenderOptions
-            {
-                Theme = "dark",
-                HeightRows = 3,
-            }
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", HeightRows = 3 }
         );
 
         // Only 3 rows should be visible: height = 3 * 18 = 54, width = 8 * 9 = 72
@@ -594,10 +590,10 @@ public sealed class SvgRendererTests
         // Windows Terminal style: control buttons as vector lines/rects, inside the window.
         // Active tab uses theme.Background (same as content area)
         // Tab close, +, |, v buttons all use stroke=#888888
-        svg.ShouldContain("stroke=\"#888888\"");    // tab icons (×, +, |, v)
-        svg.ShouldContain("stroke=\"#cccccc\"");    // window control buttons
+        svg.ShouldContain("stroke=\"#888888\""); // tab icons (×, +, |, v)
+        svg.ShouldContain("stroke=\"#cccccc\""); // window control buttons
         svg.ShouldContain("fill=\"none\" stroke=\"#cccccc\""); // maximize □
-        svg.ShouldContain("stroke-width=\"1.3\"");  // close × lines
+        svg.ShouldContain("stroke-width=\"1.3\""); // close × lines
 
         // The desktop background uses a gradient
         svg.ShouldContain("linearGradient");
@@ -620,12 +616,12 @@ public sealed class SvgRendererTests
         );
 
         // Windows Terminal style: tab shape and vector control buttons
-        svg.ShouldContain("#1c1c1c");    // tab bar / outer fill
-        svg.ShouldContain("polyline");   // tab icon chevron (>) and v-dropdown
-        svg.ShouldContain("stroke=\"#888888\"");    // tab icons (×, +, |, v)
-        svg.ShouldContain("stroke=\"#cccccc\"");    // window control icons
+        svg.ShouldContain("#1c1c1c"); // tab bar / outer fill
+        svg.ShouldContain("polyline"); // tab icon chevron (>) and v-dropdown
+        svg.ShouldContain("stroke=\"#888888\""); // tab icons (×, +, |, v)
+        svg.ShouldContain("stroke=\"#cccccc\""); // window control icons
         svg.ShouldContain("fill=\"none\" stroke=\"#cccccc\""); // maximize □
-        svg.ShouldContain("stroke-width=\"1.3\"");  // close × lines
+        svg.ShouldContain("stroke-width=\"1.3\""); // close × lines
     }
 
     [Test]
@@ -636,11 +632,7 @@ public sealed class SvgRendererTests
 
         var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
             session,
-            new ConsoleToSvg.Svg.SvgRenderOptions
-            {
-                Theme = "dark",
-                Opacity = 0.5d,
-            }
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", Opacity = 0.5d }
         );
 
         // Content should be wrapped in a <g opacity> group
@@ -655,11 +647,7 @@ public sealed class SvgRendererTests
 
         var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
             session,
-            new ConsoleToSvg.Svg.SvgRenderOptions
-            {
-                Theme = "dark",
-                Opacity = 1d,
-            }
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", Opacity = 1d }
         );
 
         // Default opacity=1 should not add fill-opacity attribute
@@ -675,11 +663,7 @@ public sealed class SvgRendererTests
         // With CommandHeader, the terminal content should show all rows starting from row 0
         var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
             session,
-            new ConsoleToSvg.Svg.SvgRenderOptions
-            {
-                Theme = "dark",
-                CommandHeader = "$ ls",
-            }
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", CommandHeader = "$ ls" }
         );
 
         // All three terminal rows should be visible (not shifted/hidden by command header)

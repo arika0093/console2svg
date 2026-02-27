@@ -36,7 +36,10 @@ public static class AsciicastReader
             throw new InvalidDataException("Invalid asciicast: missing header line.");
         }
 
-        var header = JsonSerializer.Deserialize(headerLine, AsciicastJsonContext.Default.AsciicastHeader);
+        var header = JsonSerializer.Deserialize(
+            headerLine,
+            AsciicastJsonContext.Default.AsciicastHeader
+        );
         if (header is null)
         {
             throw new InvalidDataException("Invalid asciicast header JSON.");

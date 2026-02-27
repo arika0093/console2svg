@@ -118,7 +118,9 @@ jobs:
               src="$dir/console2svg"
               dst="./release-upload/console2svg-${rid}"
             fi
-            [ -f "$src" ] && cp "$src" "$dst"
+            if [ -f "$src" ]; then
+              cp "$src" "$dst"
+            fi
           done
 
       - name: Create GitHub Release

@@ -3,6 +3,8 @@
 
 `console2svg` is a tool that converts terminal output into SVG.
 
+![](./assets/cmd-hero.svg)
+
 ## Overview
 
 The simplest way to use it is to just put the command you want to run after `console2svg`. For example, the following command converts the description text of `console2svg` into SVG (oh, how meta).

@@ -150,9 +150,38 @@ public sealed class OptionParserTests
     [Test]
     public void InvalidWindowReturnsError()
     {
-        var ok = OptionParser.TryParse(new[] { "--window", "linux" }, out _, out var error, out _);
+        // When using = syntax, an unrecognised value must still error
+        var ok = OptionParser.TryParse(new[] { "--window=linux" }, out _, out var error, out _);
         ok.ShouldBeFalse();
         error.ShouldBe("--window must be none, macos, windows, macos-pc, or windows-pc.");
+    }
+
+    [Test]
+    public void WindowWithoutValueDefaultsToMacos()
+    {
+        // -d with no value defaults to macos
+        var ok = OptionParser.TryParse(new[] { "-d" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Window.ShouldBe("macos");
+    }
+
+    [Test]
+    public void WindowWithoutValueFollowedByOptionDefaultsToMacos()
+    {
+        // -d followed by another option (not a window style) doesn't consume that option
+        var ok = OptionParser.TryParse(new[] { "-d", "-w", "80" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Window.ShouldBe("macos");
+        options.Width.ShouldBe(80);
+    }
+
+    [Test]
+    public void WindowWithSpaceSeparatedValueParsed()
+    {
+        // -d windows (space-separated) continues to work
+        var ok = OptionParser.TryParse(new[] { "-d", "windows" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Window.ShouldBe("windows");
     }
 
     [Test]

@@ -1,7 +1,7 @@
 # ConsoleToSvg
 [![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) 
 
-`console2svg` is a .NET global tool that converts terminal output into SVG.
+`console2svg` is a tool that converts terminal output into SVG.
 
 ## Overview
 
@@ -116,8 +116,8 @@ console2svg -d macos-pc --padding 4 -- dotnet --version
 ```
 
 available themes:
-* `none`: no window frame
-* `macos`: macOS style window frame
+* `none`: no window frame (default)
+* `macos`: macOS style window frame (default if `-d` is specified without a value)
 * `macos-pc`: macOS style window frame with background and shadow
 * `windows`: Windows style window frame
 * `windows-pc`: Windows style window frame with background and shadow
@@ -128,7 +128,7 @@ available themes:
 * `-c`: Prepend the command line to the output as if typed in a terminal.
 * `-w`: width of the output SVG (default: terminal width[pipe], 80ch[pty])
 * `-h`: height of the output SVG (default: terminal height[pipe], auto[pty])
-* `-m`: output mode (image or video)
+* `-v`: output to video mode SVG (animated, looped by default)
 * `-d`: window chrome style (none, macos, ...)
-* `-v`: enable verbose logging
+* `--verbose`: enable verbose logging
 * `--crop-*`: crop the output by specified pixels, characters, or text patterns

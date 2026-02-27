@@ -20,8 +20,8 @@ public static class OptionParser
             -v                        is alias for --mode video.
             -w, --width <int>         Terminal width in characters (default: auto).
             -h, --height <int>        Terminal height in rows (default: auto).
-            -d, --window <none|macos|windows|macos-pc|windows-pc>
-                                      Terminal window chrome style (default: none).
+            -d, --window [none|macos|windows|macos-pc|windows-pc]
+                                      Terminal window chrome style (default: none, or macos if specified without a value).
             --theme <dark|light>      Color theme (default: dark).
             --font <family>           CSS font-family for SVG text.
             --in <path>               Read existing asciicast file.
@@ -120,6 +120,20 @@ public static class OptionParser
                 i++;
                 value = args[i];
             }
+            else if (
+                value is null
+                && (string.Equals(name, "-d", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase))
+            )
+            {
+                // Value is optional: consume next token only if it is a known window style
+                if (i + 1 < args.Length && IsWindowStyleValue(args[i + 1]))
+                {
+                    i++;
+                    value = args[i];
+                }
+                // else: value stays null → ApplyOption defaults to "macos"
+            }
 
             if (!ApplyOption(options, name, value, out error))
             {
@@ -160,8 +174,18 @@ public static class OptionParser
             && !string.Equals(name, "-c", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--with-command", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "-v", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--verbose", StringComparison.OrdinalIgnoreCase);
+            && !string.Equals(name, "--verbose", StringComparison.OrdinalIgnoreCase)
+            // -d/--window is optional-value; handled separately in the main loop
+            && !string.Equals(name, "-d", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase);
     }
+
+    private static bool IsWindowStyleValue(string token) =>
+        string.Equals(token, "none", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(token, "macos", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(token, "windows", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(token, "macos-pc", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(token, "windows-pc", StringComparison.OrdinalIgnoreCase);
 
     private static bool ApplyOption(
         AppOptions options,
@@ -254,8 +278,9 @@ public static class OptionParser
             case "--window":
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    error = "--window must be none, macos, windows, macos-pc, or windows-pc.";
-                    return false;
+                    // No value supplied: default to macos
+                    options.Window = "macos";
+                    return true;
                 }
 
                 if (

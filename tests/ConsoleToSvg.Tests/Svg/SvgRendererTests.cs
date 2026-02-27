@@ -21,8 +21,7 @@ public sealed class SvgRendererTests
 
         svg.ShouldContain("<svg");
         svg.ShouldContain("viewBox=\"0 0 72 36\"");
-        svg.ShouldContain(">H<");
-        svg.ShouldContain(">i<");
+        svg.ShouldContain(">Hi<");
     }
 
     [Test]
@@ -58,9 +57,8 @@ public sealed class SvgRendererTests
         // The SVG should include all 6 rows (4 screen + 2 scrollback)
         svg.ShouldContain("viewBox=\"0 0 72 108\"");
         // All six lines should appear in the SVG
-        svg.ShouldContain(">l<");
-        svg.ShouldContain(">1<");
-        svg.ShouldContain(">6<");
+        svg.ShouldContain("line1");
+        svg.ShouldContain("line6");
     }
 
     [Test]
@@ -167,11 +165,11 @@ public sealed class SvgRendererTests
 
         // Only 2 rows visible: "line1" (row 0) and "---" (row 1)
         svg.ShouldContain("viewBox=\"0 0 72 36\"");
-        svg.ShouldContain(">l<");
-        svg.ShouldContain(">-<");
+        svg.ShouldContain("line1");
+        svg.ShouldContain(">---<");
         // "line3" and "line4" should NOT be in the output
-        svg.ShouldNotContain(">3<");
-        svg.ShouldNotContain(">4<");
+        svg.ShouldNotContain("line3");
+        svg.ShouldNotContain("line4");
     }
 
     [Test]
@@ -193,10 +191,10 @@ public sealed class SvgRendererTests
 
         // 3 rows visible: "---" (row 1), "keep" (row 2), "more" (row 3)
         svg.ShouldContain("viewBox=\"0 0 72 54\"");
-        svg.ShouldContain(">-<");
-        svg.ShouldContain(">k<");
+        svg.ShouldContain(">---<");
+        svg.ShouldContain("keep");
         // "skip" row should NOT be in the output
-        svg.ShouldNotContain(">s<");
+        svg.ShouldNotContain("skip");
     }
 
     [Test]
@@ -214,9 +212,9 @@ public sealed class SvgRendererTests
             }
         );
 
-        svg.ShouldContain(">s<");
-        svg.ShouldContain(">a<");
-        svg.ShouldNotContain(">b<");
+        svg.ShouldContain("summary");
+        svg.ShouldContain("after");
+        svg.ShouldNotContain("before");
     }
 
     [Test]
@@ -262,8 +260,8 @@ public sealed class SvgRendererTests
 
         // The terminal viewport is 3 rows × 4 cols = height 54, width 36
         svg.ShouldContain("viewBox=\"0 0 36 54\"");
-        svg.ShouldContain(">A<");
-        svg.ShouldContain(">E<");
+        svg.ShouldContain(">ABCD<");
+        svg.ShouldContain(">EF<");
     }
 
     [Test]
@@ -484,8 +482,7 @@ public sealed class SvgRendererTests
 
         // The prompt and command should appear in the SVG
         svg.ShouldContain(">$<");
-        svg.ShouldContain(">l<");
-        svg.ShouldContain(">s<");
+        svg.ShouldContain(">ls<");
     }
 
     [Test]
@@ -682,10 +679,9 @@ public sealed class SvgRendererTests
         );
 
         // All three terminal rows should be visible (not shifted/hidden by command header)
-        svg.ShouldContain(">r<");
-        svg.ShouldContain(">0<");
-        svg.ShouldContain(">1<");
-        svg.ShouldContain(">2<");
+        svg.ShouldContain("row0");
+        svg.ShouldContain("row1");
+        svg.ShouldContain("row2");
         // The command header should also be present
         svg.ShouldContain("$ ls");
     }

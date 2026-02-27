@@ -373,6 +373,7 @@ internal static class SvgDocumentBuilder
         sb.Append(Format(FontSize));
         sb.Append("px;}");
         sb.Append("text{dominant-baseline:alphabetic;}");
+        sb.Append(".bg{shape-rendering:crispEdges;}");
         if (!string.IsNullOrWhiteSpace(additionalCss))
         {
             sb.Append(additionalCss);
@@ -849,22 +850,117 @@ internal static class SvgDocumentBuilder
 
         for (var row = context.StartRow; row < context.EndRowExclusive; row++)
         {
+            var y = (row - context.StartRow) * CellHeight;
+
+            // --- Background pass: merge consecutive cells of the same bg color ---
+            var bgRunStart = context.StartCol;
+            string? bgRunColor = null;
+            for (var col = context.StartCol; col <= context.EndColExclusive; col++)
+            {
+                string? cellBg = null;
+                if (col < context.EndColExclusive)
+                {
+                    var c = includeScrollback
+                        ? buffer.GetCellFromTop(row, col)
+                        : buffer.GetCell(row, col);
+                    var eBg = c.Reversed ? c.Foreground : c.Background;
+                    if (
+                        !string.Equals(eBg, theme.Background, StringComparison.OrdinalIgnoreCase)
+                    )
+                    {
+                        cellBg = eBg;
+                    }
+                }
+
+                if (cellBg != null && string.Equals(cellBg, bgRunColor, StringComparison.OrdinalIgnoreCase))
+                {
+                    // extend current run
+                    continue;
+                }
+
+                // flush previous run
+                if (bgRunColor != null && col > bgRunStart)
+                {
+                    var rx = (bgRunStart - context.StartCol) * CellWidth;
+                    var rw = (col - bgRunStart) * CellWidth;
+                    sb.Append("<rect class=\"bg\" x=\"");
+                    sb.Append(Format(rx));
+                    sb.Append("\" y=\"");
+                    sb.Append(Format(y));
+                    sb.Append("\" width=\"");
+                    sb.Append(Format(rw));
+                    sb.Append("\" height=\"");
+                    sb.Append(Format(CellHeight));
+                    sb.Append("\" fill=\"");
+                    sb.Append(bgRunColor);
+                    sb.Append("\"/>\n");
+                }
+
+                bgRunColor = cellBg;
+                bgRunStart = col;
+            }
+
+            // --- Foreground pass: group consecutive cells with identical style ---
+            var fgRunStart = context.StartCol;
+            var fgRunText = new StringBuilder();
+            string? fgRunColor = null;
+            bool fgBold = false, fgItalic = false, fgUnderline = false;
+            int fgRunCellCount = 0;
+
+            void FlushFgRun()
+            {
+                if (fgRunCellCount == 0 || fgRunColor == null)
+                {
+                    return;
+                }
+
+                var tx = (fgRunStart - context.StartCol) * CellWidth;
+                var tLen = fgRunCellCount * CellWidth;
+                sb.Append("<text class=\"crt\" x=\"");
+                sb.Append(Format(tx));
+                sb.Append("\" y=\"");
+                sb.Append(Format(y + BaselineOffset));
+                sb.Append("\" fill=\"");
+                sb.Append(fgRunColor);
+                sb.Append("\" textLength=\"");
+                sb.Append(Format(tLen));
+                sb.Append("\" lengthAdjust=\"spacingAndGlyphs\"");
+                if (fgBold || fgItalic || fgUnderline)
+                {
+                    sb.Append(" style=\"");
+                    if (fgBold) sb.Append("font-weight:bold;");
+                    if (fgItalic) sb.Append("font-style:italic;");
+                    if (fgUnderline) sb.Append("text-decoration:underline;");
+                    sb.Append("\"");
+                }
+                sb.Append('>');
+                sb.Append(fgRunText);
+                sb.Append("</text>\n");
+                fgRunText.Clear();
+                fgRunCellCount = 0;
+                fgRunColor = null;
+            }
+
             for (var col = context.StartCol; col < context.EndColExclusive; col++)
             {
                 var cell = includeScrollback
                     ? buffer.GetCellFromTop(row, col)
                     : buffer.GetCell(row, col);
-                var x = (col - context.StartCol) * CellWidth;
-                var y = (row - context.StartRow) * CellHeight;
 
                 if (cell.IsWideContinuation)
                 {
                     continue;
                 }
 
-                var cellRectWidth = cell.IsWide ? CellWidth * 2 : CellWidth;
+                if (cell.Text == " ")
+                {
+                    // Space: flush current run and skip (background already drawn)
+                    FlushFgRun();
+                    fgRunStart = col + 1;
+                    continue;
+                }
+
                 var effectiveFg = cell.Reversed ? cell.Background : cell.Foreground;
-                var effectiveBg = cell.Reversed ? cell.Foreground : cell.Background;
                 effectiveFg = ApplyIntensity(effectiveFg, cell.Bold, cell.Faint);
                 effectiveFg = ApplyContextualMatrixTint(
                     buffer,
@@ -875,65 +971,36 @@ internal static class SvgDocumentBuilder
                     theme
                 );
 
-                if (
-                    !string.Equals(
-                        effectiveBg,
-                        theme.Background,
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                )
+                var sameStyle =
+                    string.Equals(effectiveFg, fgRunColor, StringComparison.OrdinalIgnoreCase)
+                    && cell.Bold == fgBold
+                    && cell.Italic == fgItalic
+                    && cell.Underline == fgUnderline
+                    && !cell.IsWide;
+
+                if (!sameStyle)
                 {
-                    sb.Append("<rect x=\"");
-                    sb.Append(Format(x));
-                    sb.Append("\" y=\"");
-                    sb.Append(Format(y));
-                    sb.Append("\" width=\"");
-                    sb.Append(Format(cellRectWidth));
-                    sb.Append("\" height=\"");
-                    sb.Append(Format(CellHeight));
-                    sb.Append("\" fill=\"");
-                    sb.Append(effectiveBg);
-                    sb.Append("\"/>\n");
+                    FlushFgRun();
+                    fgRunStart = col;
+                    fgRunColor = effectiveFg;
+                    fgBold = cell.Bold;
+                    fgItalic = cell.Italic;
+                    fgUnderline = cell.Underline;
                 }
 
-                if (cell.Text == " ")
+                fgRunText.Append(EscapeText(cell.Text));
+                fgRunCellCount += cell.IsWide ? 2 : 1;
+
+                // Wide chars must always be emitted immediately so the next char
+                // starts its own run at the correct x-offset.
+                if (cell.IsWide)
                 {
-                    continue;
+                    FlushFgRun();
+                    fgRunStart = col + 1; // col+1 is IsWideContinuation, next real col is col+2
                 }
-
-                sb.Append("<text class=\"crt\" x=\"");
-                sb.Append(Format(x));
-                sb.Append("\" y=\"");
-                sb.Append(Format(y + BaselineOffset));
-                sb.Append("\" fill=\"");
-                sb.Append(effectiveFg);
-                sb.Append("\"");
-
-                if (cell.Bold || cell.Italic || cell.Underline)
-                {
-                    sb.Append(" style=\"");
-                    if (cell.Bold)
-                    {
-                        sb.Append("font-weight:bold;");
-                    }
-
-                    if (cell.Italic)
-                    {
-                        sb.Append("font-style:italic;");
-                    }
-
-                    if (cell.Underline)
-                    {
-                        sb.Append("text-decoration:underline;");
-                    }
-
-                    sb.Append("\"");
-                }
-
-                sb.Append('>');
-                sb.Append(EscapeText(cell.Text));
-                sb.Append("</text>\n");
             }
+
+            FlushFgRun();
         }
 
         sb.Append("</g>\n");

@@ -67,7 +67,7 @@ internal static class SvgDocumentBuilder
     private const double FontSize = 14d;
     private const double BaselineOffset = 14d;
     private const double DesktopPadding = 20d;
-    private const double DesktopShadowOffset = 8d;
+    private const double DesktopShadowOffset = 6d;
     private const string DefaultFontFamily =
         "ui-monospace,\"Cascadia Mono\",\"Segoe UI Mono\",\"SFMono-Regular\",Menlo,monospace";
 
@@ -495,7 +495,7 @@ internal static class SvgDocumentBuilder
                 sb.Append(Format(winW));
                 sb.Append("\" height=\"");
                 sb.Append(Format(winH));
-                sb.Append("\" fill=\"black\" fill-opacity=\"0.4\"/>\n");
+                sb.Append("\" fill=\"black\" fill-opacity=\"0.3\"/>\n");
                 sb.Append("<rect x=\"");
                 sb.Append(Format(winX + 0.5d));
                 sb.Append("\" y=\"");
@@ -544,7 +544,7 @@ internal static class SvgDocumentBuilder
                 sb.Append(Format(winW));
                 sb.Append("\" height=\"");
                 sb.Append(Format(winH));
-                sb.Append("\" fill=\"black\" fill-opacity=\"0.4\"/>\n");
+                sb.Append("\" fill=\"black\" fill-opacity=\"0.25\"/>\n");
                 AppendWindowsTerminalChrome(sb, winX, winY, winW, winH, theme);
                 return;
             }

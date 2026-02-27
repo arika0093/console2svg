@@ -35,7 +35,7 @@ console2svg -v -c -d macos -- copilot --banner
 ![](./assets/cmd-loop.svg)
 
 ## Install
-[![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) 
+[![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=binary&color=%2300A0FF)](https://github.com/arika0093/console2svg/releases/latest)
 
 
 You can install it as a global tool using the dotnet command.

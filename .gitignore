@@ -1,6 +1,7 @@
 *.db*
 .generated/
 exported/
+output.svg
 *.recieved.*
 
 ## Ignore Visual Studio temporary files, build results, and

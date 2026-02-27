@@ -63,11 +63,8 @@ It is also distributed as a static binary.
 ```sh
 # linux
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-linux-x64 -o console2svg
-chmod +x console2svg
-
-# macos
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-osx-x64 -o console2svg
-chmod +x console2svg
+mv -f console2svg /usr/local/bin/
+chmod +x /usr/local/bin/console2svg
 
 # windows (cmd)
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64.exe -o console2svg.exe

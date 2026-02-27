@@ -1,5 +1,6 @@
 # required: sudo npm install -g oh-my-logo
 console2svg -c -d macos-pc -w 100 -h 10 --opacity 0.9 --background ./assets/bg.png -o ./assets/cmd-hero.svg -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
+ console2svg -c -d macos-pc -w 100 -h 10 --opacity 0.95 --background "#30a0d0" "#0060c0" -o ./assets/cmd-hero-grad.svg -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
 console2svg console2svg -w 120 -o assets/cmd.svg 
 console2svg -w 120 -c -d macos-pc -o ./assets/cmd-window.svg -- console2svg
 console2svg --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -o ./assets/cmd-crop-word.svg -- dotnet --info

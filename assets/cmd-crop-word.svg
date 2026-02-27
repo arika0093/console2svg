@@ -1,18 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 724 130" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 724 166" role="img" aria-label="console2svg output">
 <style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}.bg{shape-rendering:crispEdges;}</style>
 <g transform="translate(2 2)">
-<rect width="720" height="126" fill="#1e1e1e"/>
+<rect width="720" height="162" fill="#1e1e1e"/>
 <text class="crt" x="0" y="14" fill="#d4d4d4" textLength="45" lengthAdjust="spacingAndGlyphs">Host:</text>
 <text class="crt" x="18" y="32" fill="#d4d4d4" textLength="72" lengthAdjust="spacingAndGlyphs">Version:</text>
-<text class="crt" x="144" y="32" fill="#d4d4d4" textLength="54" lengthAdjust="spacingAndGlyphs">10.0.0</text>
+<text class="crt" x="144" y="32" fill="#d4d4d4" textLength="54" lengthAdjust="spacingAndGlyphs">10.0.2</text>
 <text class="crt" x="18" y="50" fill="#d4d4d4" textLength="117" lengthAdjust="spacingAndGlyphs">Architecture:</text>
 <text class="crt" x="144" y="50" fill="#d4d4d4" textLength="27" lengthAdjust="spacingAndGlyphs">x64</text>
 <text class="crt" x="18" y="68" fill="#d4d4d4" textLength="63" lengthAdjust="spacingAndGlyphs">Commit:</text>
-<text class="crt" x="144" y="68" fill="#d4d4d4" textLength="90" lengthAdjust="spacingAndGlyphs">b0f34d51fc</text>
+<text class="crt" x="144" y="68" fill="#d4d4d4" textLength="90" lengthAdjust="spacingAndGlyphs">4452502459</text>
 <text class="crt" x="0" y="104" fill="#d4d4d4" textLength="36" lengthAdjust="spacingAndGlyphs">.NET</text>
 <text class="crt" x="45" y="104" fill="#d4d4d4" textLength="36" lengthAdjust="spacingAndGlyphs">SDKs</text>
 <text class="crt" x="90" y="104" fill="#d4d4d4" textLength="90" lengthAdjust="spacingAndGlyphs">installed:</text>
-<text class="crt" x="18" y="122" fill="#d4d4d4" textLength="72" lengthAdjust="spacingAndGlyphs">10.0.100</text>
-<text class="crt" x="99" y="122" fill="#d4d4d4" textLength="207" lengthAdjust="spacingAndGlyphs">[/usr/share/dotnet/sdk]</text>
+<text class="crt" x="18" y="122" fill="#d4d4d4" textLength="63" lengthAdjust="spacingAndGlyphs">8.0.303</text>
+<text class="crt" x="90" y="122" fill="#d4d4d4" textLength="99" lengthAdjust="spacingAndGlyphs">[C:\Program</text>
+<text class="crt" x="198" y="122" fill="#d4d4d4" textLength="153" lengthAdjust="spacingAndGlyphs">Files\dotnet\sdk]</text>
+<text class="crt" x="18" y="140" fill="#d4d4d4" textLength="63" lengthAdjust="spacingAndGlyphs">9.0.301</text>
+<text class="crt" x="90" y="140" fill="#d4d4d4" textLength="99" lengthAdjust="spacingAndGlyphs">[C:\Program</text>
+<text class="crt" x="198" y="140" fill="#d4d4d4" textLength="153" lengthAdjust="spacingAndGlyphs">Files\dotnet\sdk]</text>
+<text class="crt" x="18" y="158" fill="#d4d4d4" textLength="252" lengthAdjust="spacingAndGlyphs">10.0.200-preview.0.26103.119</text>
+<text class="crt" x="279" y="158" fill="#d4d4d4" textLength="99" lengthAdjust="spacingAndGlyphs">[C:\Program</text>
+<text class="crt" x="387" y="158" fill="#d4d4d4" textLength="153" lengthAdjust="spacingAndGlyphs">Files\dotnet\sdk]</text>
 </g>
 </svg>

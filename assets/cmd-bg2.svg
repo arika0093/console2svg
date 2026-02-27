@@ -1,11 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 966 291" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 964 289" role="img" aria-label="console2svg output">
 <style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}.bg{shape-rendering:crispEdges;}</style>
 <defs>
 <linearGradient id="desktop-bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#004060"/><stop offset="100%" stop-color="#0080c0"/></linearGradient>
 </defs>
-<rect width="966" height="291" fill="url(#desktop-bg)"/>
+<rect width="964" height="289" fill="url(#desktop-bg)"/>
 <g opacity="0.8">
-<rect x="28" y="28" rx="10" ry="10" width="918" height="243" fill="black" fill-opacity="0.4"/>
+<rect x="26" y="26" rx="10" ry="10" width="918" height="243" fill="black" fill-opacity="0.3"/>
 <rect x="20.5" y="20.5" rx="10" ry="10" width="917" height="242" fill="#1f1f1f" stroke="#3a3a3a"/>
 <rect x="21" y="21" rx="9" ry="9" width="916" height="27" fill="#2c2c2c"/>
 <circle cx="34" cy="34" r="5" fill="#ff5f57"/>
@@ -15,7 +15,7 @@
 <text class="crt" x="29" y="70" fill="#d4d4d4">$ dotnet --version</text>
 <g transform="translate(29 74)">
 <rect width="900" height="180" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="72" lengthAdjust="spacingAndGlyphs">10.0.100</text>
+<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="252" lengthAdjust="spacingAndGlyphs">10.0.200-preview.0.26103.119</text>
 </g>
 </g>
 </svg>

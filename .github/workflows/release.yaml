@@ -165,10 +165,10 @@ jobs:
       - uses: actions/setup-node@v4
 
       - name: Set npm package version
-        working-directory: npm
+        working-directory: wrapper/npm
         run: npm pkg set version="${{ needs.build-nupkg.outputs.version }}"
 
       - name: Publish npm package
-        working-directory: npm
+        working-directory: wrapper/npm
         run: npm publish --provenance --access public
 

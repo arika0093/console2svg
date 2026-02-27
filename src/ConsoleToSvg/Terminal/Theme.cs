@@ -20,6 +20,9 @@ public sealed class Theme
 
     public string[] AnsiPalette { get; }
 
+    public Theme WithBackground(string background) =>
+        new(Name, background, Foreground, AnsiPalette);
+
     public static Theme Resolve(string? name)
     {
         if (string.Equals(name, "light", StringComparison.OrdinalIgnoreCase))

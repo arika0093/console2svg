@@ -11,6 +11,11 @@ public static class SvgRenderer
     public static string Render(RecordingSession session, SvgRenderOptions options)
     {
         var theme = Theme.Resolve(options.Theme);
+        // Windows Terminal uses a near-black background distinct from the default dark theme
+        if (options.Window is WindowStyle.Windows or WindowStyle.WindowsPc)
+        {
+            theme = theme.WithBackground("#0c0c0c");
+        }
         var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
         var targetFrame = options.Frame ?? (session.Events.Count - 1);
         if (targetFrame >= 0)
@@ -458,7 +463,6 @@ internal static class SvgDocumentBuilder
                     0d,
                     context.CanvasWidth,
                     context.CanvasHeight,
-                    context,
                     theme,
                     opacity
                 );
@@ -558,7 +562,6 @@ internal static class SvgDocumentBuilder
                     winY,
                     winW,
                     winH,
-                    context,
                     theme,
                     opacity
                 );
@@ -583,15 +586,16 @@ internal static class SvgDocumentBuilder
         double winY,
         double winW,
         double winH,
-        Context context,
         Theme theme,
         double opacity
     )
     {
         const double TabBarHeight = 35d;
-        const double TabTop = 7d;
-        const double TabWidth = 120d;
+        const double TabTop = 6d;
+        const double TabWidth = 160d;
         const double TabRadius = 5d;
+        // Each window-control button column width (wider spacing matching real Windows Terminal)
+        const double BtnColW = 46d;
 
         // Outer window border
         sb.Append("<rect x=\"");
@@ -615,7 +619,7 @@ internal static class SvgDocumentBuilder
         sb.Append(Format(TabBarHeight - 1d));
         sb.Append("\" fill=\"#1c1c1c\"/>\n");
 
-        // Active tab: rounded top corners only (path)
+        // Active tab: fill = terminal background color (matches content area)
         var tbLeft = winX + 8d;
         var tbTop = winY + TabTop;
         var tbBottom = winY + TabBarHeight;
@@ -652,43 +656,135 @@ internal static class SvgDocumentBuilder
         sb.Append(Format(tbRight));
         sb.Append(',');
         sb.Append(Format(tbBottom));
-        sb.Append(" Z\" fill=\"#2b2b2b\"/>\n");
+        sb.Append(" Z\" fill=\"");
+        sb.Append(theme.Background);
+        sb.Append("\"/>\n");
 
-        // Tab icon ">_"
-        sb.Append("<text x=\"");
-        sb.Append(Format(tbLeft + 8d));
-        sb.Append("\" y=\"");
-        sb.Append(Format(winY + 24d));
-        sb.Append("\" fill=\"#cccccc\" font-size=\"11\" font-family=\"monospace\">&gt;_</text>\n");
+        // Tab icon ">_" — 2px lower than center
+        var iconX = tbLeft + 8d;
+        var iconY = winY + TabBarHeight / 2d + 2d;
+        // ">" chevron (vector polyline)
+        sb.Append("<polyline points=\"");
+        sb.Append(Format(iconX)); sb.Append(','); sb.Append(Format(iconY - 4d)); sb.Append(' ');
+        sb.Append(Format(iconX + 4d)); sb.Append(','); sb.Append(Format(iconY)); sb.Append(' ');
+        sb.Append(Format(iconX)); sb.Append(','); sb.Append(Format(iconY + 4d));
+        sb.Append("\" fill=\"none\" stroke=\"#cccccc\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\n");
+        // "_" underline (vector line)
+        sb.Append("<line x1=\"");
+        sb.Append(Format(iconX + 7d));
+        sb.Append("\" y1=\"");
+        sb.Append(Format(iconY + 4.5d));
+        sb.Append("\" x2=\"");
+        sb.Append(Format(iconX + 13d));
+        sb.Append("\" y2=\"");
+        sb.Append(Format(iconY + 4.5d));
+        sb.Append("\" stroke=\"#cccccc\" stroke-width=\"1.2\"/>\n");
 
-        // Control buttons: _ □ ×
-        var btnY = winY + 24d;
-        var btnRight = winX + winW - 8d;
-        sb.Append("<text x=\"");
-        sb.Append(Format(btnRight - 52d));
-        sb.Append("\" y=\"");
-        sb.Append(Format(btnY));
-        sb.Append("\" fill=\"#cccccc\" font-size=\"12\" font-family=\"system-ui,sans-serif\">_</text>\n");
-        sb.Append("<text x=\"");
-        sb.Append(Format(btnRight - 30d));
-        sb.Append("\" y=\"");
-        sb.Append(Format(btnY));
-        sb.Append("\" fill=\"#cccccc\" font-size=\"12\" font-family=\"system-ui,sans-serif\">\u25a1</text>\n");
-        sb.Append("<text x=\"");
-        sb.Append(Format(btnRight - 8d));
-        sb.Append("\" y=\"");
-        sb.Append(Format(btnY));
-        sb.Append("\" fill=\"#cccccc\" font-size=\"12\" font-family=\"system-ui,sans-serif\">\u00d7</text>\n");
+        // Tab close button × (inside tab, right side) — aligned to iconY
+        var tabCloseCX = tbRight - 12d;
+        var tabCloseCY = iconY;
+        const double TabCloseR = 3.5d;
+        sb.Append("<line x1=\""); sb.Append(Format(tabCloseCX - TabCloseR));
+        sb.Append("\" y1=\""); sb.Append(Format(tabCloseCY - TabCloseR));
+        sb.Append("\" x2=\""); sb.Append(Format(tabCloseCX + TabCloseR));
+        sb.Append("\" y2=\""); sb.Append(Format(tabCloseCY + TabCloseR));
+        sb.Append("\" stroke=\"#888888\" stroke-width=\"1.1\"/>\n");
+        sb.Append("<line x1=\""); sb.Append(Format(tabCloseCX + TabCloseR));
+        sb.Append("\" y1=\""); sb.Append(Format(tabCloseCY - TabCloseR));
+        sb.Append("\" x2=\""); sb.Append(Format(tabCloseCX - TabCloseR));
+        sb.Append("\" y2=\""); sb.Append(Format(tabCloseCY + TabCloseR));
+        sb.Append("\" stroke=\"#888888\" stroke-width=\"1.1\"/>\n");
 
-        // Content area
+        // "+" new-tab button — aligned to iconY
+        var plusCX = tbRight + 16d;
+        var plusCY = iconY;
+        const double PlusR = 5d;
+        sb.Append("<line x1=\""); sb.Append(Format(plusCX - PlusR));
+        sb.Append("\" y1=\""); sb.Append(Format(plusCY));
+        sb.Append("\" x2=\""); sb.Append(Format(plusCX + PlusR));
+        sb.Append("\" y2=\""); sb.Append(Format(plusCY));
+        sb.Append("\" stroke=\"#888888\" stroke-width=\"1.2\"/>\n");
+        sb.Append("<line x1=\""); sb.Append(Format(plusCX));
+        sb.Append("\" y1=\""); sb.Append(Format(plusCY - PlusR));
+        sb.Append("\" x2=\""); sb.Append(Format(plusCX));
+        sb.Append("\" y2=\""); sb.Append(Format(plusCY + PlusR));
+        sb.Append("\" stroke=\"#888888\" stroke-width=\"1.2\"/>\n");
+
+        // "|" vertical separator
+        var sepX = tbRight + 36d;
+        sb.Append("<line x1=\""); sb.Append(Format(sepX));
+        sb.Append("\" y1=\""); sb.Append(Format(winY + 9d));
+        sb.Append("\" x2=\""); sb.Append(Format(sepX));
+        sb.Append("\" y2=\""); sb.Append(Format(winY + TabBarHeight - 9d));
+        sb.Append("\" stroke=\"#4a4a4a\" stroke-width=\"1\"/>\n");
+
+        // "v" dropdown chevron — aligned to iconY
+        var dropCX = tbRight + 52d;
+        var dropCY = iconY;
+        sb.Append("<polyline points=\"");
+        sb.Append(Format(dropCX - 4d)); sb.Append(','); sb.Append(Format(dropCY - 2d)); sb.Append(' ');
+        sb.Append(Format(dropCX)); sb.Append(','); sb.Append(Format(dropCY + 2d)); sb.Append(' ');
+        sb.Append(Format(dropCX + 4d)); sb.Append(','); sb.Append(Format(dropCY - 2d));
+        sb.Append("\" fill=\"none\" stroke=\"#888888\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\n");
+
+        // Window control buttons: each occupies BtnColW=46px column, icons centered
+        var btnCenterY = iconY;
+        var closeX = winX + winW - BtnColW / 2d;
+        var maxX   = closeX - BtnColW;
+        var minX   = maxX - BtnColW;
+        const double IconHalf = 5d;
+
+        // Minimize ( — )
+        sb.Append("<line x1=\"");
+        sb.Append(Format(minX - IconHalf));
+        sb.Append("\" y1=\"");
+        sb.Append(Format(btnCenterY));
+        sb.Append("\" x2=\"");
+        sb.Append(Format(minX + IconHalf));
+        sb.Append("\" y2=\"");
+        sb.Append(Format(btnCenterY));
+        sb.Append("\" stroke=\"#cccccc\" stroke-width=\"1.2\"/>\n");
+
+        // Maximize ( □ )
         sb.Append("<rect x=\"");
-        sb.Append(Format(context.ContentOffsetX));
+        sb.Append(Format(maxX - IconHalf));
         sb.Append("\" y=\"");
-        sb.Append(Format(context.ContentOffsetY));
+        sb.Append(Format(btnCenterY - IconHalf));
         sb.Append("\" width=\"");
-        sb.Append(Format(context.ViewWidth));
+        sb.Append(Format(IconHalf * 2d));
         sb.Append("\" height=\"");
-        sb.Append(Format(context.ViewHeight));
+        sb.Append(Format(IconHalf * 2d));
+        sb.Append("\" fill=\"none\" stroke=\"#cccccc\" stroke-width=\"1.2\"/>\n");
+
+        // Close ( × )
+        sb.Append("<line x1=\"");
+        sb.Append(Format(closeX - IconHalf));
+        sb.Append("\" y1=\"");
+        sb.Append(Format(btnCenterY - IconHalf));
+        sb.Append("\" x2=\"");
+        sb.Append(Format(closeX + IconHalf));
+        sb.Append("\" y2=\"");
+        sb.Append(Format(btnCenterY + IconHalf));
+        sb.Append("\" stroke=\"#cccccc\" stroke-width=\"1.3\"/>\n");
+        sb.Append("<line x1=\"");
+        sb.Append(Format(closeX + IconHalf));
+        sb.Append("\" y1=\"");
+        sb.Append(Format(btnCenterY - IconHalf));
+        sb.Append("\" x2=\"");
+        sb.Append(Format(closeX - IconHalf));
+        sb.Append("\" y2=\"");
+        sb.Append(Format(btnCenterY + IconHalf));
+        sb.Append("\" stroke=\"#cccccc\" stroke-width=\"1.3\"/>\n");
+
+        // Inner area below tab bar: fill entirely with terminal background (no gap, padding included)
+        sb.Append("<rect x=\"");
+        sb.Append(Format(winX + 1d));
+        sb.Append("\" y=\"");
+        sb.Append(Format(winY + TabBarHeight));
+        sb.Append("\" width=\"");
+        sb.Append(Format(winW - 2d));
+        sb.Append("\" height=\"");
+        sb.Append(Format(winH - TabBarHeight - 1d));
         sb.Append("\" fill=\"");
         sb.Append(theme.Background);
         AppendFillOpacity(sb, opacity);

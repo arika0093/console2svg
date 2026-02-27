@@ -409,12 +409,14 @@ public sealed class SvgRendererTests
         svg.ShouldContain("#1f2b3a");
         // Shadow (black with opacity)
         svg.ShouldContain("fill-opacity=\"0.4\"");
-        // Windows Terminal style: control buttons as text characters
-        svg.ShouldContain("\u00d7"); // × close button
-        svg.ShouldContain("\u25a1"); // □ maximize button
-        svg.ShouldContain(">_<");   // minimize button text (_) inside SVG text tag
-        // Active tab shape
-        svg.ShouldContain("#2b2b2b");
+        // Windows Terminal style: control buttons as vector lines/rects
+        svg.ShouldContain("stroke=\"#cccccc\"");    // icon stroke color
+        svg.ShouldContain("fill=\"none\" stroke=\"#cccccc\""); // maximize □ rect
+        svg.ShouldContain("stroke-width=\"1.3\"");  // close × lines
+        // Active tab shape present
+        svg.ShouldContain("#1c1c1c");
+        // Tab close ×, + button, | separator, v chevron all present
+        svg.ShouldContain("stroke=\"#888888\"");
     }
 
     [Test]
@@ -588,15 +590,13 @@ public sealed class SvgRendererTests
             }
         );
 
-        // Windows Terminal style: control buttons as text characters, not colored rects.
-        // For width=8, padding=2: canvasWidth=126, winX=20, winW=78, winRight=98
-        // btnRight = winX + winW - 8 = 90
-        // Close × at x = btnRight - 8 = 82, y = winY + 24 = 44
-        // All button x values (38, 60, 82) are < winRight (98), so inside the window.
-        svg.ShouldContain("x=\"82\" y=\"44\"");  // close button position
-        svg.ShouldContain("\u00d7");              // × close button text
-        svg.ShouldContain("\u25a1");              // □ maximize button text
-        svg.ShouldContain(">_<");                 // minimize button text (_) inside SVG text tag
+        // Windows Terminal style: control buttons as vector lines/rects, inside the window.
+        // Active tab uses theme.Background (same as content area)
+        // Tab close, +, |, v buttons all use stroke=#888888
+        svg.ShouldContain("stroke=\"#888888\"");    // tab icons (×, +, |, v)
+        svg.ShouldContain("stroke=\"#cccccc\"");    // window control buttons
+        svg.ShouldContain("fill=\"none\" stroke=\"#cccccc\""); // maximize □
+        svg.ShouldContain("stroke-width=\"1.3\"");  // close × lines
 
         // The desktop background is present
         svg.ShouldContain("#1f2b3a");
@@ -618,13 +618,13 @@ public sealed class SvgRendererTests
             }
         );
 
-        // Windows Terminal style: tab shape and text control buttons
+        // Windows Terminal style: tab shape and vector control buttons
         svg.ShouldContain("#1c1c1c");    // tab bar / outer fill
-        svg.ShouldContain("#2b2b2b");    // active tab fill
-        svg.ShouldContain("&gt;_");      // tab icon ">_"
-        svg.ShouldContain("\u00d7");     // × close button
-        svg.ShouldContain("\u25a1");     // □ maximize button
-        svg.ShouldContain(">_<");        // minimize button text (_) inside SVG text tag
+        svg.ShouldContain("polyline");   // tab icon chevron (>) and v-dropdown
+        svg.ShouldContain("stroke=\"#888888\"");    // tab icons (×, +, |, v)
+        svg.ShouldContain("stroke=\"#cccccc\"");    // window control icons
+        svg.ShouldContain("fill=\"none\" stroke=\"#cccccc\""); // maximize □
+        svg.ShouldContain("stroke-width=\"1.3\"");  // close × lines
     }
 
     [Test]

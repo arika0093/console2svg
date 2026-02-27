@@ -16,6 +16,11 @@ public static class AnimatedSvgRenderer
         }
 
         var theme = Theme.Resolve(options.Theme);
+        // Windows Terminal uses a near-black background distinct from the default dark theme
+        if (options.Window is WindowStyle.Windows or WindowStyle.WindowsPc)
+        {
+            theme = theme.WithBackground("#0c0c0c");
+        }
         var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
         var frames = emulator.ReplayFrames(session);
 

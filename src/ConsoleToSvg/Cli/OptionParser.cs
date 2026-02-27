@@ -44,6 +44,9 @@ public static class OptionParser
             --sleep <sec>             Wait time after execution completes in video mode (default: 2).
             --fadeout <sec>           Fade-out duration at end of video (default: 0).
             --opacity <0-1>           Background fill opacity (default: 1).
+            --background <color|path>  Desktop background. Specify once for solid color (e.g. #rrggbb, rgb(), hsl(), oklch())
+                                       or image path, twice for a gradient (first color = start, second = end).
+                                       Applies to *-pc window styles and canvas background for none style.
         """;
 
     public static bool TryParse(
@@ -339,6 +342,21 @@ public static class OptionParser
                 }
 
                 options.Opacity = opacity;
+                return true;
+            case "--background":
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    error = "--background requires a value.";
+                    return false;
+                }
+
+                if (options.Background.Count >= 2)
+                {
+                    error = "--background can be specified at most twice (start color and end color).";
+                    return false;
+                }
+
+                options.Background.Add(value);
                 return true;
             case "--font":
                 options.Font = value;

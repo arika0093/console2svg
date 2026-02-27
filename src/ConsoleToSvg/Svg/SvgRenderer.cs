@@ -43,7 +43,8 @@ public static class SvgRenderer
             font: options.Font,
             windowStyle: options.Window,
             commandHeader: options.CommandHeader,
-            opacity: options.Opacity
+            opacity: options.Opacity,
+            background: options.Background
         );
         SvgDocumentBuilder.AppendFrameGroup(
             sb,
@@ -52,10 +53,9 @@ public static class SvgRenderer
             theme,
             id: null,
             @class: null,
-            includeScrollback,
-            opacity: options.Opacity
+            includeScrollback
         );
-        SvgDocumentBuilder.EndSvg(sb);
+        SvgDocumentBuilder.EndSvg(sb, options.Opacity);
         return sb.ToString();
     }
 }
@@ -68,8 +68,6 @@ internal static class SvgDocumentBuilder
     private const double BaselineOffset = 14d;
     private const double DesktopPadding = 20d;
     private const double DesktopShadowOffset = 8d;
-    private const string DesktopMacosBackground = "#1e2030";
-    private const string DesktopWindowsBackground = "#1f2b3a";
     private const string DefaultFontFamily =
         "ui-monospace,\"Cascadia Mono\",\"Segoe UI Mono\",\"SFMono-Regular\",Menlo,monospace";
 
@@ -351,7 +349,8 @@ internal static class SvgDocumentBuilder
         string? font = null,
         WindowStyle windowStyle = WindowStyle.None,
         string? commandHeader = null,
-        double opacity = 1d
+        double opacity = 1d,
+        string[]? background = null
     )
     {
         sb.Append("<svg xmlns=\"http://www.w3.org/2000/svg\" ");
@@ -381,10 +380,13 @@ internal static class SvgDocumentBuilder
 
         sb.Append("</style>\n");
 
-        AppendWindowChrome(sb, context, theme, windowStyle, opacity);
+        AppendDefs(sb, context, windowStyle, background);
+        AppendBackground(sb, context, theme, windowStyle, background);
+        AppendGroupOpen(sb, opacity);
+        AppendChrome(sb, context, theme, windowStyle);
         if (context.HeaderRows > 0 && !string.IsNullOrEmpty(commandHeader))
         {
-            AppendCommandHeader(sb, context, theme, commandHeader, opacity);
+            AppendCommandHeader(sb, context, theme, commandHeader);
         }
     }
 
@@ -392,8 +394,7 @@ internal static class SvgDocumentBuilder
         StringBuilder sb,
         Context context,
         Theme theme,
-        string commandHeader,
-        double opacity = 1d
+        string commandHeader
     )
     {
         var x = context.HeaderOffsetX;
@@ -409,7 +410,6 @@ internal static class SvgDocumentBuilder
         sb.Append(Format(bgH));
         sb.Append("\" fill=\"");
         sb.Append(theme.Background);
-        AppendFillOpacity(sb, opacity);
         sb.Append("\"/>\n");
         sb.Append("<text class=\"crt\" x=\"");
         sb.Append(Format(x));
@@ -422,17 +422,46 @@ internal static class SvgDocumentBuilder
         sb.Append("</text>\n");
     }
 
-    private static void AppendWindowChrome(
+    /// <summary>Renders the always-opaque background layer (desktop bg for *-pc, canvas bg otherwise).</summary>
+    private static void AppendBackground(
         StringBuilder sb,
         Context context,
         Theme theme,
         WindowStyle windowStyle,
-        double opacity = 1d
+        string[]? background = null
+    )
+    {
+        switch (windowStyle)
+        {
+            case WindowStyle.MacosPc:
+            case WindowStyle.WindowsPc:
+                // Desktop background only — shadow + chrome go in AppendChrome (inside the single opacity group)
+                sb.Append("<rect width=\"");
+                sb.Append(Format(context.CanvasWidth));
+                sb.Append("\" height=\"");
+                sb.Append(Format(context.CanvasHeight));
+                sb.Append("\" fill=\"");
+                sb.Append(GetDesktopBgFill(background));
+                sb.Append("\"/>\n");
+                break;
+            default:
+                AppendCanvasBackground(sb, context, theme, windowStyle, background);
+                break;
+        }
+    }
+
+    /// <summary>Renders chrome elements. No opacity wrapper — caller owns the single outer g opacity group.</summary>
+    private static void AppendChrome(
+        StringBuilder sb,
+        Context context,
+        Theme theme,
+        WindowStyle windowStyle
     )
     {
         switch (windowStyle)
         {
             case WindowStyle.Macos:
+            {
                 sb.Append("<rect x=\"0.5\" y=\"0.5\" rx=\"10\" ry=\"10\" width=\"");
                 sb.Append(Format(Math.Max(1d, context.CanvasWidth - 1d)));
                 sb.Append("\" height=\"");
@@ -444,43 +473,20 @@ internal static class SvgDocumentBuilder
                 sb.Append("<circle cx=\"14\" cy=\"14\" r=\"5\" fill=\"#ff5f57\"/>\n");
                 sb.Append("<circle cx=\"30\" cy=\"14\" r=\"5\" fill=\"#febc2e\"/>\n");
                 sb.Append("<circle cx=\"46\" cy=\"14\" r=\"5\" fill=\"#28c840\"/>\n");
-                sb.Append("<rect x=\"");
-                sb.Append(Format(context.ContentOffsetX));
-                sb.Append("\" y=\"");
-                sb.Append(Format(context.ContentOffsetY));
-                sb.Append("\" width=\"");
-                sb.Append(Format(context.ViewWidth));
-                sb.Append("\" height=\"");
-                sb.Append(Format(context.ViewHeight));
-                sb.Append("\" fill=\"");
-                sb.Append(theme.Background);
-                AppendFillOpacity(sb, opacity);
-                sb.Append("\"/>\n");
                 return;
+            }
             case WindowStyle.Windows:
-                AppendWindowsTerminalChrome(
-                    sb,
-                    0d,
-                    0d,
-                    context.CanvasWidth,
-                    context.CanvasHeight,
-                    theme,
-                    opacity
-                );
+            {
+                AppendWindowsTerminalChrome(sb, 0d, 0d, context.CanvasWidth, context.CanvasHeight, theme);
                 return;
+            }
             case WindowStyle.MacosPc:
             {
                 var winX = DesktopPadding;
                 var winY = DesktopPadding;
                 var winW = context.CanvasWidth - 2d * DesktopPadding - DesktopShadowOffset;
                 var winH = context.CanvasHeight - 2d * DesktopPadding - DesktopShadowOffset;
-                sb.Append("<rect width=\"");
-                sb.Append(Format(context.CanvasWidth));
-                sb.Append("\" height=\"");
-                sb.Append(Format(context.CanvasHeight));
-                sb.Append("\" fill=\"");
-                sb.Append(DesktopMacosBackground);
-                sb.Append("\"/>\n");
+                // Shadow — inside the single opacity group so it fades with the window
                 sb.Append("<rect x=\"");
                 sb.Append(Format(winX + DesktopShadowOffset));
                 sb.Append("\" y=\"");
@@ -521,18 +527,6 @@ internal static class SvgDocumentBuilder
                 sb.Append("\" cy=\"");
                 sb.Append(Format(winY + 14d));
                 sb.Append("\" r=\"5\" fill=\"#28c840\"/>\n");
-                sb.Append("<rect x=\"");
-                sb.Append(Format(context.ContentOffsetX));
-                sb.Append("\" y=\"");
-                sb.Append(Format(context.ContentOffsetY));
-                sb.Append("\" width=\"");
-                sb.Append(Format(context.ViewWidth));
-                sb.Append("\" height=\"");
-                sb.Append(Format(context.ViewHeight));
-                sb.Append("\" fill=\"");
-                sb.Append(theme.Background);
-                AppendFillOpacity(sb, opacity);
-                sb.Append("\"/>\n");
                 return;
             }
             case WindowStyle.WindowsPc:
@@ -541,13 +535,7 @@ internal static class SvgDocumentBuilder
                 var winY = DesktopPadding;
                 var winW = context.CanvasWidth - 2d * DesktopPadding - DesktopShadowOffset;
                 var winH = context.CanvasHeight - 2d * DesktopPadding - DesktopShadowOffset;
-                sb.Append("<rect width=\"");
-                sb.Append(Format(context.CanvasWidth));
-                sb.Append("\" height=\"");
-                sb.Append(Format(context.CanvasHeight));
-                sb.Append("\" fill=\"");
-                sb.Append(DesktopWindowsBackground);
-                sb.Append("\"/>\n");
+                // Shadow — inside the single opacity group so it fades with the window
                 sb.Append("<rect x=\"");
                 sb.Append(Format(winX + DesktopShadowOffset));
                 sb.Append("\" y=\"");
@@ -557,28 +545,203 @@ internal static class SvgDocumentBuilder
                 sb.Append("\" height=\"");
                 sb.Append(Format(winH));
                 sb.Append("\" fill=\"black\" fill-opacity=\"0.4\"/>\n");
-                AppendWindowsTerminalChrome(
-                    sb,
-                    winX,
-                    winY,
-                    winW,
-                    winH,
-                    theme,
-                    opacity
-                );
+                AppendWindowsTerminalChrome(sb, winX, winY, winW, winH, theme);
                 return;
             }
             default:
-                sb.Append("<rect width=\"");
-                sb.Append(Format(context.CanvasWidth));
-                sb.Append("\" height=\"");
-                sb.Append(Format(context.CanvasHeight));
-                sb.Append("\" fill=\"");
-                sb.Append(theme.Background);
-                AppendFillOpacity(sb, opacity);
-                sb.Append("\"/>\n");
+                // None: no chrome elements
                 return;
         }
+    }
+
+    /// <summary>
+    /// For non-*-pc window styles, renders the canvas-level background rect.
+    /// When opacity &lt; 1 and no explicit background is given, the rect is omitted for
+    /// None style (the SVG becomes transparent behind the terminal content).
+    /// </summary>
+    private static void AppendCanvasBackground(
+        StringBuilder sb,
+        Context context,
+        Theme theme,
+        WindowStyle windowStyle,
+        string[]? background)
+    {
+        // Determine the fill
+        string? fill = null;
+        if (background is { Length: 1 } && !IsImagePath(background[0]))
+            fill = background[0]; // solid color
+        else if (background is { Length: >= 2 } || (background is { Length: 1 } && IsImagePath(background[0])))
+            fill = "url(#desktop-bg)"; // gradient / image
+        else if (windowStyle != WindowStyle.None)
+            fill = null; // macos/windows: no background rect needed (outer window rect provides fill)
+        // else None without --background: omit background rect → transparent canvas
+
+        if (fill == null)
+            return;
+
+        sb.Append("<rect width=\"");
+        sb.Append(Format(context.CanvasWidth));
+        sb.Append("\" height=\"");
+        sb.Append(Format(context.CanvasHeight));
+        sb.Append("\" fill=\"");
+        sb.Append(fill);
+        sb.Append("\"/>\n"); // always fully opaque
+    }
+
+    /// <summary>Opens a &lt;g opacity&gt; group if opacity &lt; 1.</summary>
+    private static void AppendGroupOpen(StringBuilder sb, double opacity)
+    {
+        if (opacity < 1d)
+        {
+            sb.Append("<g opacity=\"");
+            sb.Append(Format(opacity));
+            sb.Append("\">\n");
+        }
+    }
+
+    /// <summary>Closes a &lt;g&gt; group previously opened by AppendGroupOpen.</summary>
+    private static void AppendGroupClose(StringBuilder sb, double opacity)
+    {
+        if (opacity < 1d)
+        {
+            sb.Append("</g>\n");
+        }
+    }
+
+    /// <summary>
+    /// Returns the desktop background fill value for *-pc window styles.
+    /// Uses a default gradient (url(#desktop-bg)) when no user background is specified.
+    /// </summary>
+    private static string GetDesktopBgFill(string[]? background)
+    {
+        if (background is { Length: 1 } && !IsImagePath(background[0]))
+            return background[0]; // solid user color
+        // gradient (2 colors), image, or default → reference defs
+        return "url(#desktop-bg)";
+    }
+
+    /// <summary>Emits SVG &lt;defs&gt; containing gradient or image background definitions if needed.</summary>
+    private static void AppendDefs(
+        StringBuilder sb,
+        Context context,
+        WindowStyle windowStyle,
+        string[]? background)
+    {
+        bool isPcStyle = windowStyle is WindowStyle.MacosPc or WindowStyle.WindowsPc;
+
+        // Determine if <defs> are needed
+        bool needsDefs;
+        if (background is { Length: 1 } && !IsImagePath(background[0]))
+            needsDefs = false; // solid color — no defs needed
+        else if (background is { Length: >= 2 })
+            needsDefs = true; // user gradient
+        else if (background is { Length: 1 } && IsImagePath(background[0]))
+            needsDefs = true; // user image
+        else
+            needsDefs = isPcStyle; // default gradient for *-pc styles
+
+        if (!needsDefs)
+            return;
+
+        sb.Append("<defs>\n");
+
+        if (background is { Length: 1 } && IsImagePath(background[0]))
+        {
+            AppendImagePatternDef(sb, background[0], context.CanvasWidth, context.CanvasHeight);
+        }
+        else if (background is { Length: >= 2 })
+        {
+            AppendLinearGradientDef(sb, "desktop-bg", background[0], background[1]);
+        }
+        else
+        {
+            // Default gradient for *-pc styles — subtle diagonal to avoid being too flashy
+            var (c1, c2) = windowStyle == WindowStyle.MacosPc
+                ? ("#1a1d2e", "#252840")
+                : ("#1a2535", "#253345");
+            AppendLinearGradientDef(sb, "desktop-bg", c1, c2);
+        }
+
+        sb.Append("</defs>\n");
+    }
+
+    private static void AppendLinearGradientDef(StringBuilder sb, string id, string color1, string color2)
+    {
+        sb.Append("<linearGradient id=\"");
+        sb.Append(EscapeAttribute(id));
+        sb.Append("\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">");
+        sb.Append("<stop offset=\"0%\" stop-color=\"");
+        sb.Append(EscapeAttribute(color1));
+        sb.Append("\"/>");
+        sb.Append("<stop offset=\"100%\" stop-color=\"");
+        sb.Append(EscapeAttribute(color2));
+        sb.Append("\"/>");
+        sb.Append("</linearGradient>\n");
+    }
+
+    private static void AppendImagePatternDef(StringBuilder sb, string imagePath, double width, double height)
+    {
+        string href;
+        var mimeType = GetImageMimeType(imagePath);
+        if (imagePath.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            || imagePath.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            href = imagePath;
+        }
+        else if (System.IO.File.Exists(imagePath))
+        {
+            var bytes = System.IO.File.ReadAllBytes(imagePath);
+            href = $"data:{mimeType};base64,{Convert.ToBase64String(bytes)}";
+        }
+        else
+        {
+            href = imagePath; // fallback: use as-is
+        }
+
+        sb.Append("<pattern id=\"desktop-bg\" patternUnits=\"userSpaceOnUse\" width=\"");
+        sb.Append(Format(width));
+        sb.Append("\" height=\"");
+        sb.Append(Format(height));
+        sb.Append("\">");
+        sb.Append("<image href=\"");
+        sb.Append(EscapeAttribute(href));
+        sb.Append("\" width=\"");
+        sb.Append(Format(width));
+        sb.Append("\" height=\"");
+        sb.Append(Format(height));
+        sb.Append("\" preserveAspectRatio=\"xMidYMid slice\"/>");
+        sb.Append("</pattern>\n");
+    }
+
+    private static bool IsImagePath(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return false;
+        var lower = value.ToLowerInvariant();
+        return lower.EndsWith(".png", StringComparison.Ordinal)
+            || lower.EndsWith(".jpg", StringComparison.Ordinal)
+            || lower.EndsWith(".jpeg", StringComparison.Ordinal)
+            || lower.EndsWith(".gif", StringComparison.Ordinal)
+            || lower.EndsWith(".svg", StringComparison.Ordinal)
+            || lower.EndsWith(".webp", StringComparison.Ordinal)
+            || lower.EndsWith(".bmp", StringComparison.Ordinal)
+            || value.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            || value.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetImageMimeType(string path)
+    {
+        var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
+        return ext switch
+        {
+            ".png"  => "image/png",
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".gif"  => "image/gif",
+            ".svg"  => "image/svg+xml",
+            ".webp" => "image/webp",
+            ".bmp"  => "image/bmp",
+            _ => "image/png",
+        };
     }
 
     private static void AppendWindowsTerminalChrome(
@@ -587,8 +750,7 @@ internal static class SvgDocumentBuilder
         double winY,
         double winW,
         double winH,
-        Theme theme,
-        double opacity
+        Theme theme
     )
     {
         const double TabBarHeight = 35d;
@@ -776,34 +938,13 @@ internal static class SvgDocumentBuilder
         sb.Append("\" y2=\"");
         sb.Append(Format(btnCenterY + IconHalf));
         sb.Append("\" stroke=\"#cccccc\" stroke-width=\"1.3\"/>\n");
-
-        // Inner area below tab bar: fill entirely with terminal background (no gap, padding included)
-        sb.Append("<rect x=\"");
-        sb.Append(Format(winX + 1d));
-        sb.Append("\" y=\"");
-        sb.Append(Format(winY + TabBarHeight));
-        sb.Append("\" width=\"");
-        sb.Append(Format(winW - 2d));
-        sb.Append("\" height=\"");
-        sb.Append(Format(winH - TabBarHeight - 1d));
-        sb.Append("\" fill=\"");
-        sb.Append(theme.Background);
-        AppendFillOpacity(sb, opacity);
-        sb.Append("\"/>\n");
-    }
-
-    private static void AppendFillOpacity(StringBuilder sb, double opacity)
-    {
-        if (opacity < 1d)
-        {
-            sb.Append("\" fill-opacity=\"");
-            sb.Append(Format(opacity));
-        }
+        // Inner area (content + padding) is rendered by AppendFrameGroup — do not duplicate here
     }
 
 
-    public static void EndSvg(StringBuilder sb)
+    public static void EndSvg(StringBuilder sb, double opacity = 1d)
     {
+        AppendGroupClose(sb, opacity);
         sb.Append("</svg>");
     }
 
@@ -845,7 +986,6 @@ internal static class SvgDocumentBuilder
         sb.Append(Format(context.ContentHeight));
         sb.Append("\" fill=\"");
         sb.Append(theme.Background);
-        AppendFillOpacity(sb, opacity);
         sb.Append("\"/>\n");
 
         for (var row = context.StartRow; row < context.EndRowExclusive; row++)

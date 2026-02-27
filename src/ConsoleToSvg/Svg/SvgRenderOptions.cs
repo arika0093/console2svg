@@ -40,6 +40,9 @@ public sealed class SvgRenderOptions
 
     public string? CommandHeader { get; set; }
 
+    /// <summary>背景指定: null=デフォルト、1要素=単色または画像パス、2要素=グラデーション</summary>
+    public string[]? Background { get; set; }
+
     public static SvgRenderOptions FromAppOptions(AppOptions appOptions)
     {
         var windowStyle = ParseWindowStyle(appOptions.Window);
@@ -68,6 +71,7 @@ public sealed class SvgRenderOptions
             CommandHeader = (appOptions.WithCommand && !string.IsNullOrWhiteSpace(appOptions.Command))
                 ? $"$ {appOptions.Command}"
                 : null,
+            Background = appOptions.Background.Count > 0 ? appOptions.Background.ToArray() : null,
         };
     }
 

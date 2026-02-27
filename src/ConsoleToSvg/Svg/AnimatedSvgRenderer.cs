@@ -55,7 +55,8 @@ public static class AnimatedSvgRenderer
             font: options.Font,
             windowStyle: options.Window,
             commandHeader: options.CommandHeader,
-            opacity: options.Opacity
+            opacity: options.Opacity,
+            background: options.Background
         );
         for (var i = 0; i < reducedFrames.Count; i++)
         {
@@ -70,7 +71,7 @@ public static class AnimatedSvgRenderer
             );
         }
 
-        SvgDocumentBuilder.EndSvg(sb);
+        SvgDocumentBuilder.EndSvg(sb, options.Opacity);
         return sb.ToString();
     }
 

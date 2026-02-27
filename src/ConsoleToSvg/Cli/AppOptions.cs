@@ -55,4 +55,6 @@ public sealed class AppOptions
     public double Opacity { get; set; } = 1d;
 
     public bool WithCommand { get; set; }
+
+    public System.Collections.Generic.List<string> Background { get; set; } = [];
 }

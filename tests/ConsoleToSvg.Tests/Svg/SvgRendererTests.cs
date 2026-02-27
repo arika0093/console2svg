@@ -377,8 +377,10 @@ public sealed class SvgRendererTests
             }
         );
 
-        // Desktop background
-        svg.ShouldContain("#1e2030");
+        // Desktop background — now uses a gradient
+        svg.ShouldContain("linearGradient");
+        svg.ShouldContain("#1a1d2e"); // gradient start
+        svg.ShouldContain("#252840"); // gradient end
         // Shadow (black with opacity)
         svg.ShouldContain("fill-opacity=\"0.4\"");
         // Traffic lights
@@ -403,8 +405,10 @@ public sealed class SvgRendererTests
             }
         );
 
-        // Desktop background
-        svg.ShouldContain("#1f2b3a");
+        // Desktop background — now uses a gradient
+        svg.ShouldContain("linearGradient");
+        svg.ShouldContain("#1a2535"); // gradient start
+        svg.ShouldContain("#253345"); // gradient end
         // Shadow (black with opacity)
         svg.ShouldContain("fill-opacity=\"0.4\"");
         // Windows Terminal style: control buttons as vector lines/rects
@@ -595,8 +599,8 @@ public sealed class SvgRendererTests
         svg.ShouldContain("fill=\"none\" stroke=\"#cccccc\""); // maximize □
         svg.ShouldContain("stroke-width=\"1.3\"");  // close × lines
 
-        // The desktop background is present
-        svg.ShouldContain("#1f2b3a");
+        // The desktop background uses a gradient
+        svg.ShouldContain("linearGradient");
     }
 
     [Test]
@@ -639,8 +643,8 @@ public sealed class SvgRendererTests
             }
         );
 
-        // Background rect should have fill-opacity
-        svg.ShouldContain("fill-opacity=\"0.5\"");
+        // Content should be wrapped in a <g opacity> group
+        svg.ShouldContain("opacity=\"0.5\"");
     }
 
     [Test]

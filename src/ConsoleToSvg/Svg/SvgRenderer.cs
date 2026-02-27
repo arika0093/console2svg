@@ -971,6 +971,19 @@ internal static class SvgDocumentBuilder
                     theme
                 );
 
+                var cellX = (col - context.StartCol) * CellWidth;
+                var cellW = cell.IsWide ? CellWidth * 2d : CellWidth;
+
+                // Unicode Block Elements (U+2580–U+259F): render as calibrated rects so that
+                // adjacent cells always tile seamlessly regardless of font metrics.
+                if (IsBlockElement(cell.Text))
+                {
+                    FlushFgRun();
+                    RenderBlockElement(sb, cell.Text, cellX, y, cellW, effectiveFg);
+                    fgRunStart = col + (cell.IsWide ? 2 : 1);
+                    continue;
+                }
+
                 var sameStyle =
                     string.Equals(effectiveFg, fgRunColor, StringComparison.OrdinalIgnoreCase)
                     && cell.Bold == fgBold
@@ -1009,6 +1022,114 @@ internal static class SvgDocumentBuilder
     public static string Format(double value)
     {
         return value.ToString("0.###", CultureInfo.InvariantCulture);
+    }
+
+    /// <summary>
+    /// Renders Unicode Block Elements (U+2580–U+259F) as calibrated SVG rects so that
+    /// adjacent cells tile perfectly regardless of font metrics.
+    /// Returns <see langword="true"/> when the character was handled.
+    /// </summary>
+    private static bool TryRenderBlockElement(
+        StringBuilder sb,
+        string text,
+        double x,
+        double y,
+        double cellRectWidth,
+        string fill
+    )
+    {
+        if (!IsBlockElement(text))
+        {
+            return false;
+        }
+
+        RenderBlockElement(sb, text, x, y, cellRectWidth, fill);
+        return true;
+    }
+
+    private static bool IsBlockElement(string text)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return false;
+        }
+
+        var cp = text.Length == 1
+            ? text[0]
+            : (char.IsHighSurrogate(text[0]) && text.Length >= 2
+                ? char.ConvertToUtf32(text[0], text[1])
+                : -1);
+
+        // Unicode Block Elements (U+2580–U+259F), excluding shade chars (U+2591–U+2593)
+        return cp is >= 0x2580 and <= 0x259F and not (0x2591 or 0x2592 or 0x2593);
+    }
+
+    private static void RenderBlockElement(
+        StringBuilder sb,
+        string text,
+        double x,
+        double y,
+        double cellRectWidth,
+        string fill
+    )
+    {
+        var cp = text.Length == 1
+            ? text[0]
+            : char.ConvertToUtf32(text[0], text[1]);
+
+        var w = cellRectWidth;
+        var h = CellHeight;
+        var hh = h / 2d;
+        var hw = w / 2d;
+
+        switch (cp)
+        {
+            case 0x2580: R(x, y, w, hh); break;                                                // ▀ Upper half
+            case 0x2581: R(x, y + h * 7d/8, w, h / 8d); break;                                // ▁ Lower 1/8
+            case 0x2582: R(x, y + h * 3d/4, w, h / 4d); break;                                // ▂ Lower 1/4
+            case 0x2583: R(x, y + h * 5d/8, w, h * 3d/8); break;                              // ▃ Lower 3/8
+            case 0x2584: R(x, y + hh, w, hh); break;                                          // ▄ Lower half
+            case 0x2585: R(x, y + h * 3d/8, w, h * 5d/8); break;                              // ▅ Lower 5/8
+            case 0x2586: R(x, y + h / 4d, w, h * 3d/4); break;                                // ▆ Lower 3/4
+            case 0x2587: R(x, y + h / 8d, w, h * 7d/8); break;                                // ▇ Lower 7/8
+            case 0x2588: R(x, y, w, h); break;                                                 // █ Full block
+            case 0x2589: R(x, y, w * 7d/8, h); break;                                         // ▉ Left 7/8
+            case 0x258A: R(x, y, w * 3d/4, h); break;                                         // ▊ Left 3/4
+            case 0x258B: R(x, y, w * 5d/8, h); break;                                         // ▋ Left 5/8
+            case 0x258C: R(x, y, hw, h); break;                                                // ▌ Left half
+            case 0x258D: R(x, y, w * 3d/8, h); break;                                         // ▍ Left 3/8
+            case 0x258E: R(x, y, w / 4d, h); break;                                           // ▎ Left 1/4
+            case 0x258F: R(x, y, w / 8d, h); break;                                           // ▏ Left 1/8
+            case 0x2590: R(x + hw, y, hw, h); break;                                          // ▐ Right half
+            // 0x2591–0x2593: shade chars handled by font (IsBlockElement returns false)
+            case 0x2594: R(x, y, w, h / 8d); break;                                           // ▔ Upper 1/8
+            case 0x2595: R(x + w * 7d/8, y, w / 8d, h); break;                               // ▕ Right 1/8
+            case 0x2596: R(x, y + hh, hw, hh); break;                                         // ▖ Quad lower-left
+            case 0x2597: R(x + hw, y + hh, hw, hh); break;                                    // ▗ Quad lower-right
+            case 0x2598: R(x, y, hw, hh); break;                                              // ▘ Quad upper-left
+            case 0x2599: R(x, y, hw, hh); R(x, y + hh, w, hh); break;                        // ▙
+            case 0x259A: R(x, y, hw, hh); R(x + hw, y + hh, hw, hh); break;                  // ▚
+            case 0x259B: R(x, y, w, hh); R(x, y + hh, hw, hh); break;                        // ▛
+            case 0x259C: R(x, y, w, hh); R(x + hw, y + hh, hw, hh); break;                   // ▜
+            case 0x259D: R(x + hw, y, hw, hh); break;                                         // ▝ Quad upper-right
+            case 0x259E: R(x + hw, y, hw, hh); R(x, y + hh, hw, hh); break;                  // ▞
+            case 0x259F: R(x + hw, y, hw, hh); R(x, y + hh, w, hh); break;                   // ▟
+        }
+
+        void R(double rx, double ry, double rw, double rh)
+        {
+            sb.Append("<rect class=\"bg\" x=\"");
+            sb.Append(Format(rx));
+            sb.Append("\" y=\"");
+            sb.Append(Format(ry));
+            sb.Append("\" width=\"");
+            sb.Append(Format(rw));
+            sb.Append("\" height=\"");
+            sb.Append(Format(rh));
+            sb.Append("\" fill=\"");
+            sb.Append(fill);
+            sb.Append("\"/>\n");
+        }
     }
 
     private static string EscapeText(string value)

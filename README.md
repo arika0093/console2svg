@@ -97,9 +97,11 @@ console2svg -v --no-loop -- nyancat
 
 ### Static SVG with crop
 
+You can crop the output by specifying the number of pixels or characters to crop from each side.
+
 ```sh
 # ch: character width, px: pixel
-console2svg "dotnet --info" --crop-top 1ch --crop-right 5px
+console2svg --crop-top 1ch --crop-left 5px --crop-right 30px -- your-command
 ```
 
 You can also crop at the position where a specific character appears.
@@ -108,13 +110,44 @@ When specifying a character, you can specify it like `:(number)`, which crops at
 For example, the following example crops from the line where the character `Host` is located to 2 lines above the line where the character `.NET runtimes installed:` is located.
 
 ```sh
-console2svg "dotnet --info" --crop-top "Host" --crop-bottom ".NET runtimes installed:-2"
+console2svg --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -- dotnet --info
 ```
 
-### Window chrome and padding
+The result will look like this.
+
+![](./assets/cmd-crop-word.svg)
+
+
+### Background and opacity
+
+You can set the background color or image of the output SVG, and adjust the opacity of the background fill.
 
 ```sh
-console2svg -d macos-pc --padding 4 -- dotnet --version
+console2svg -w 100 -h 10 -c -d macos-pc --background "#003060" --opacity 0.8 -- dotnet --version
+```
+
+![](./assets/cmd-bg1.svg)
+
+You can also set a gradient background.
+
+```sh
+console2svg -w 100 -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.8 -- dotnet --version
+```
+
+![](./assets/cmd-bg2.svg)
+
+Image background is also supported.
+
+```sh
+console2svg -w 100 -h 10 -c -d macos-pc --background image.png --opacity 0.8  -- dotnet --version
+```
+
+![](./assets/cmd-bg3.svg)
+
+### Window chrome
+
+```sh
+console2svg -d macos-pc -- dotnet --version
 ```
 
 available themes:
@@ -132,5 +165,6 @@ available themes:
 * `-h`: height of the output SVG (default: terminal height[pipe], auto[pty])
 * `-v`: output to video mode SVG (animated, looped by default)
 * `-d`: window chrome style (none, macos, ...)
+* `--background`: background color or image for the output SVG
 * `--verbose`: enable verbose logging
 * `--crop-*`: crop the output by specified pixels, characters, or text patterns

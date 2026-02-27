@@ -199,33 +199,6 @@ public sealed class AnsiParser
         return false;
     }
 
-    // Handles caret-notation escape sequences produced when PTY ECHOCTL converts
-    // the raw ESC byte (0x1b) into the printable two-character sequence '^' + '['.
-    // 'index' points to '^'; text[index+1] must be '['.
-    private static bool TrySkipCaretEscape(string text, int index, out int endIndex)
-    {
-        endIndex = index;
-        // Need at least "^[X" (3 chars) to determine the sequence type.
-        if (index + 2 >= text.Length)
-        {
-            return false;
-        }
-
-        switch (text[index + 2])
-        {
-            case ']':
-                // Caret-notation OSC: ^[]...(^[\ or BEL)
-                return TrySkipCaretOsc(text, index + 3, out endIndex);
-            case '[':
-                // Caret-notation CSI with sub-parameter: ^[[...final
-                return TrySkipCaretCsi(text, index + 3, out endIndex);
-            default:
-                // Caret-notation two-char escape: ^[X — skip all three chars.
-                endIndex = index + 2;
-                return true;
-        }
-    }
-
     // Skips the body of a caret-notation OSC sequence up to:
     //   • BEL (\a)
     //   • Caret-notation ST: ^[\
@@ -255,23 +228,6 @@ public sealed class AnsiParser
         }
 
         return false; // incomplete — caller will store as pending
-    }
-
-    // Skips the body of a caret-notation CSI sequence up to the final byte (@–~).
-    private static bool TrySkipCaretCsi(string text, int start, out int endIndex)
-    {
-        endIndex = start;
-        for (var i = start; i < text.Length; i++)
-        {
-            var c = text[i];
-            if (c >= '@' && c <= '~')
-            {
-                endIndex = i;
-                return true;
-            }
-        }
-
-        return false; // incomplete
     }
 
     private static bool TrySkipDcs(string text, int start, out int endIndex)

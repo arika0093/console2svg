@@ -1,8 +1,9 @@
 # console2svg
-Easily convert terminal output into SVG images. Colorful, animated, with cropping and window frame options.
+Easily convert terminal output into SVG images. truecolor, animation, cropping and many appearance options are supported.
 
 ![](./assets/cmd-hero.svg)
 
+Of course, this image is [automatically](./scripts/image-gen.sh) generated 😉
 
 ## Overview
 
@@ -35,7 +36,7 @@ console2svg -v -c -d macos -- copilot --banner
 ![](./assets/cmd-loop.svg)
 
 ## Install
-[![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=binary&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest)
+[![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest)
 
 
 You can install it as a global tool using the dotnet command.

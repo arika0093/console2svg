@@ -25,7 +25,7 @@ internal static class Program
         {
             await Console.Error.WriteLineAsync(error);
             await Console.Error.WriteLineAsync();
-            await Console.Error.WriteLineAsync(OptionParser.HelpText);
+            await Console.Error.WriteLineAsync(OptionParser.ShortHelpText);
             return 1;
         }
 
@@ -43,7 +43,7 @@ internal static class Program
 
         if (args.Length == 0 && !Console.IsInputRedirected)
         {
-            Console.WriteLine(OptionParser.HelpText);
+            Console.WriteLine(OptionParser.ShortHelpText);
             return 0;
         }
 

@@ -5,6 +5,29 @@ namespace ConsoleToSvg.Cli;
 
 public static class OptionParser
 {
+    public static string ShortHelpText => """
+        console2svg - Convert terminal output to SVG
+
+        Usage:
+            my-command | console2svg [options]
+            console2svg "my-command with-args" [options]
+            console2svg [options] -- my-command with args
+
+        Major options:
+            -c, --with-command        Prepend the command line to the output.
+            -o, --out <path>          Output SVG path (default: output.svg).
+            -w, --width <int>         Terminal width in characters (default: auto).
+            -h, --height <int>        Terminal height in rows (default: auto).
+            -v                        Output animated SVG (alias for --mode video).
+            -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc.
+            --opacity <0-1>           Opacity of window/terminal content (default: 1).
+            --background <color> [color]  Background color, gradient, or image path.
+            --crop-top/bottom/left/right  Crop by px, ch, or text pattern.
+            --verbose                 Enable verbose logging.
+
+        For full option list, see --help.
+        """;
+
     public static string HelpText => """
         console2svg - Convert terminal output to SVG
 
@@ -20,15 +43,27 @@ public static class OptionParser
             -v                        is alias for --mode video.
             -w, --width <int>         Terminal width in characters (default: auto).
             -h, --height <int>        Terminal height in rows (default: auto).
-            -d, --window [none|macos|windows|macos-pc|windows-pc]
-                                      Terminal window chrome style (default: none, or macos if specified without a value).
-            --theme <dark|light>      Color theme (default: dark).
             --font <family>           CSS font-family for SVG text.
             --in <path>               Read existing asciicast file.
             --save-cast <path>        Save captured output as asciicast file.
             --help                    Show help.
             --verbose                 Enable verbose logging.
             --version                 Show version and exit.
+
+        Options (Appearance):
+            -d, --window [none|macos|windows|macos-pc|windows-pc]
+                                      Terminal window chrome style (default: none, or macos if specified without a value).
+            --opacity <0-1>           Background fill opacity (default: 1).
+            --theme <dark|light>      Color theme (default: dark).
+            --padding <px>            Outer padding in pixels (default: 2, or 8 when window is set).
+            --background <color|path> [color]
+                Desktop background. Accepts:
+                    Solid color  : --background "#rrggbb"
+                    Gradient     : --background "#from" "#to"
+                                   --background "#from:#to"
+                                   --background "#from" --background "#to"
+                    Image        : --background path/to/image.png
+                Colors: #hex, rgb(), hsl(), oklch(), named colors.
 
         Options (Image mode):
             --frame <int>             Frame index for image mode.
@@ -38,20 +73,10 @@ public static class OptionParser
             --crop-left <value>       Crop left by px or ch.
         
         Options (Video mode):
-            --padding <px>            Outer padding in pixels (default: 2, or 8 when window is set).
             --no-loop                 Disable loop for animated SVG playback in video mode (default: loop).
             --fps <value>             Max FPS for animated SVG frame sampling (default: 12).
             --sleep <sec>             Wait time after execution completes in video mode (default: 2).
             --fadeout <sec>           Fade-out duration at end of video (default: 0).
-            --opacity <0-1>           Background fill opacity (default: 1).
-            --background <color|path> [color]
-                Desktop background. Accepts:
-                    Solid color  : --background "#rrggbb"
-                    Gradient     : --background "#from" "#to"
-                                   --background "#from:#to"
-                                   --background "#from" --background "#to"
-                    Image        : --background path/to/image.png
-                Colors: #hex, rgb(), hsl(), oklch(), named colors.
         """;
 
     public static bool TryParse(

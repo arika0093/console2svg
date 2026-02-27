@@ -190,8 +190,10 @@ internal static class SvgDocumentBuilder
         var viewWidth = Math.Max(1d, contentWidth - pxLeft - pxRight);
         var viewHeight = Math.Max(1d, contentHeight - pxTop - pxBottom);
 
-        // When -h is specified, preserve height even if crop reduces visible rows
-        if (heightRows.HasValue)
+        // When -h is specified, preserve the requested height unless px crop is actively reducing height
+        if (heightRows.HasValue
+            && !(crop.Top.Unit == CropUnit.Pixels && crop.Top.Value > 0)
+            && !(crop.Bottom.Unit == CropUnit.Pixels && crop.Bottom.Value > 0))
         {
             viewHeight = Math.Max(viewHeight, heightRows.Value * CellHeight);
         }

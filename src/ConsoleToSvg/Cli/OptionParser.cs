@@ -17,9 +17,9 @@ public static class OptionParser
             -c, --with-command        Prepend the command line to the output as if typed in a terminal.
             -o, --out <path>          Output SVG path (default: output.svg).
             -m, --mode <image|video>  Output mode (default: image).
+            -v                        is alias for --mode video.
             -w, --width <int>         Terminal width in characters (default: auto).
             -h, --height <int>        Terminal height in rows (default: auto).
-            -v, --verbose             Enable verbose logging.
             -d, --window <none|macos|windows|macos-pc|windows-pc>
                                       Terminal window chrome style (default: none).
             --theme <dark|light>      Color theme (default: dark).
@@ -27,6 +27,7 @@ public static class OptionParser
             --in <path>               Read existing asciicast file.
             --save-cast <path>        Save captured output as asciicast file.
             --help                    Show help.
+            --verbose                 Enable verbose logging.
             --version                 Show version and exit.
 
         Options (Image mode):
@@ -173,6 +174,8 @@ public static class OptionParser
         switch (name)
         {
             case "-v":
+                options.Mode = OutputMode.Video;
+                return true;
             case "--verbose":
                 options.Verbose = true;
                 return true;

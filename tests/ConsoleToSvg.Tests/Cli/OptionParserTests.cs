@@ -63,11 +63,11 @@ public sealed class OptionParserTests
     }
 
     [Test]
-    public void VerboseShortFlagParsed()
+    public void VerboseShortFlagSetsVideoMode()
     {
         var ok = OptionParser.TryParse(new[] { "-v" }, out var options, out _, out _);
         ok.ShouldBeTrue();
-        options!.Verbose.ShouldBeTrue();
+        options!.Mode.ShouldBe(OutputMode.Video);
     }
 
     [Test]
@@ -79,11 +79,11 @@ public sealed class OptionParserTests
     }
 
     [Test]
-    public void VerboseFlagParsed()
+    public void VerboseFlagSetsVideoMode()
     {
         var ok = OptionParser.TryParse(new[] { "-v" }, out var options, out _, out _);
         ok.ShouldBeTrue();
-        options!.Verbose.ShouldBeTrue();
+        options!.Mode.ShouldBe(OutputMode.Video);
     }
 
     [Test]

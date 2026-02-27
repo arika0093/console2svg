@@ -112,10 +112,10 @@ jobs:
           for dir in ./native-artifacts/native-*/; do
             rid=$(basename "$dir" | sed 's/^native-//')
             if [[ "$rid" == win-* ]]; then
-              src="$dir/ConsoleToSvg.exe"
+              src="$dir/console2svg.exe"
               dst="./release-upload/console2svg-${rid}.exe"
             else
-              src="$dir/ConsoleToSvg"
+              src="$dir/console2svg"
               dst="./release-upload/console2svg-${rid}"
             fi
             [ -f "$src" ] && cp "$src" "$dst"

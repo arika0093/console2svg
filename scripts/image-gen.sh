@@ -7,4 +7,5 @@ console2svg --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -o ./as
 console2svg -w 100 -h 10 -c -d macos-pc --background "#003060" --opacity 0.8 -o ./assets/cmd-bg1.svg -- dotnet --version
 console2svg -w 100 -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.8 -o ./assets/cmd-bg2.svg -- dotnet --version
 console2svg -w 100 -h 10 -c -d macos-pc --background ./assets/bg.png --opacity 0.8 -o ./assets/cmd-bg3.svg  -- dotnet --version
-# console2svg -v -c -d -h 28 -o ./assets/cmd-loop.svg -- copilot --banner
+# required: sudo npm install -g @github/copilot
+# console2svg -w 100 -v -c -d -o ./assets/cmd-loop.svg -- copilot --banner

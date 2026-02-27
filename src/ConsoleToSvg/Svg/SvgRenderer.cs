@@ -360,7 +360,7 @@ internal static class SvgDocumentBuilder
         sb.Append(Format(context.CanvasWidth));
         sb.Append(' ');
         sb.Append(Format(context.CanvasHeight));
-        sb.Append("\" role=\"img\" aria-label=\"console2svg output\">\n");
+        sb.Append("\" role=\"img\" aria-label=\"c2s output\">\n");
 
         var effectiveFont = string.IsNullOrWhiteSpace(font)
             ? DefaultFontFamily

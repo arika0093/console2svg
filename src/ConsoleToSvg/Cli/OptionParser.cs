@@ -6,12 +6,12 @@ namespace ConsoleToSvg.Cli;
 public static class OptionParser
 {
     public static string HelpText => """
-        console2svg - Convert terminal output to SVG
+        c2s - Convert terminal output to SVG
 
         Usage:
-            my-command | console2svg [options]
-            console2svg "my-command with-args" [options]
-            console2svg [options] -- my-command with args
+            my-command | c2s [options]
+            c2s "my-command with-args" [options]
+            c2s [options] -- my-command with args
 
         Options (Common):
             -c, --with-command        Prepend the command line to the output as if typed in a terminal.

@@ -579,7 +579,7 @@ internal static class NativePtyUnix
 
         var ptyOptions = new PtyOptions
         {
-            Name = options.Name ?? "console2svg",
+            Name = options.Name ?? "c2s",
             Cols = options.Cols,
             Rows = options.Rows,
             Cwd = string.IsNullOrWhiteSpace(options.Cwd) ? Environment.CurrentDirectory : options.Cwd,

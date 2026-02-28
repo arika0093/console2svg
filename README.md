@@ -7,16 +7,16 @@ Easily convert terminal output into SVG images. truecolor, animation, cropping a
 
 Console screenshots in raster formats (PNG, etc.) often make text look blurry. console2svg converts console output into vector SVG images so you can save your terminal as a crisp, scalable image.
 
-For example, open [this image](https://raw.githubusercontent.com/arika0093/console2svg/refs/heads/main/assets/cmd-hero-grad.svg) in your browser and zoom in — the text remains sharp at any scale.
+For example, let's open [this image](https://raw.githubusercontent.com/arika0093/console2svg/refs/heads/main/assets/cmd-hero-grad.svg) in your browser and zoom in — the text remains sharp at any scale.
 
 There are similar tools, but console2svg stands out for:
 
-* **Standalone**: no additional software or libraries required.
-* **Windows support**: works on Windows, Linux and macOS.
-* **Video mode**: save command execution animations as SVG.
-* **Crop**: trim specific parts of the output.
-* **Background and window chrome**: add background colors/images and window frames to produce presentation-ready SVGs for docs or social media.
-
+* **Standalone**: no additional software or libraries required. support npm, dotnet tool and standalone binary.
+* **Video mode**: save command execution animations as SVG. great for documentation and blog posts.
+* **Crop**: trim specific parts of the output. Crop based on text patterns is also supported, making it easy to trim specific lines or sections.
+* **Background and window**: add background and window frames to produce presentation-ready SVGs for documentation, blogs, social media, etc.
+* **CI friendly**: With features like replay and timeout, it can generate both static and animated SVGs in CI environments, minimizing discrepancies between code and images.
+* **Windows support**: works on Windows, macOS and Linux.
 
 ## Overview
 
@@ -24,13 +24,13 @@ The simplest way to use it is to just put the command you want to run after `con
 
 ```bash
 console2svg console2svg
+
 ```
 
 ![](./assets/cmd.svg)
 
----
-
-You can also generate SVG with a window frame. and some options to customize the appearance.
+You can also generate SVG with a window frame. and some options to customize the appearance.  
+For example, `-w` specifies the width, `-c` is an option to display the command at the beginning of the output, and `-d` is an option to specify the style of the window frame, where we specify a macOS-like frame. If the command is long, you can also write it together after `--`.
 
 ```bash
 console2svg -w 120 -c -d macos-pc -- console2svg
@@ -40,13 +40,27 @@ console2svg -w 120 -c -d macos-pc -- console2svg
 
 ---
 
-In video mode, you can capture the animation of the command execution and save it as an SVG.
+In video mode(`-v`), you can capture the animation of the command execution and save it as an SVG.
 
 ```bash
 console2svg -v -c -d macos -- copilot --banner
 ```
 
 ![](./assets/cmd-loop.svg)
+
+
+By using the replay input feature, you can reliably convert command execution animations into SVG.  
+For example, the following example captures the execution of the `ls` command on `bash` and converts it into SVG.
+
+```bash
+# save replay
+console2svg --replay-save ./replay.json -- bash
+# > ls
+# > exit
+
+# and then generate SVG from the replay
+console2svg -v -c -d macos --replay ./replay.json -- bash
+```
 
 ## Install
 [![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) [![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest)
@@ -61,7 +75,7 @@ dotnet tool install -g ConsoleToSvg
 npm install -g console2svg
 ```
 
-It is also distributed as a static binary.
+It is also available as a standalone binary that you can download from the releases page and add to your PATH.
 
 ```sh
 # linux
@@ -74,7 +88,6 @@ curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/cons
 ```
 
 ## Usage
-
 ### Pipe mode
 
 Width and height default to the current terminal dimensions.
@@ -85,28 +98,18 @@ my-command | console2svg
 
 ### PTY command mode
 
+Width is 80 characters by default, and height is automatically adjusted to fit the content.
+
 ```sh
 console2svg "git log --oneline"
+# or 
+console2svg -- git log --oneline
 ```
 
-Or pass the command after `--`:
+If you want to set a fixed width and height, you can use the `-w` and `-h` options.
 
 ```sh
-console2svg -- dotnet run app.cs
-```
-
-### Animated SVG
-
-use `-m video` or `-v` to capture the animation of the command execution and save it as an SVG.
-
-```sh
-console2svg -v -- nyancat
-```
-
-No loop playback:
-
-```sh
-console2svg -v --no-loop -- nyancat
+console2svg -w 100 -h 20 -- git log --oneline
 ```
 
 ### Static SVG with crop
@@ -158,20 +161,39 @@ console2svg -w 100 -h 10 -c -d macos-pc --background image.png --opacity 0.8  --
 
 ![](./assets/cmd-bg3.svg)
 
-### Window chrome
+
+### Animated SVG
+
+use `-m video` or `-v` to capture the animation of the command execution and save it as an SVG.
 
 ```sh
-console2svg -d macos-pc -- dotnet --version
+console2svg -c -d -v -- sl
 ```
 
-available themes:
-* `none`: no window frame (default)
-* `macos`: macOS style window frame (default if `-d` is specified without a value)
-* `macos-pc`: macOS style window frame with background and shadow
-* `windows`: Windows style window frame
-* `windows-pc`: Windows style window frame with background and shadow
+You can specify the `--timeout` option to output SVG after a certain time has elapsed.
+This is useful for converting commands that do not terminate, such as `nyancat`, into SVG.
 
-## Major options
+```sh
+console2svg -c -d -v --timeout 5 -- nyancat
+```
+
+### Replay input
+You can also save the command execution record and later regenerate the SVG based on that record. 
+To save the record, use the `--replay-save` option to save the command execution.
+
+```sh
+console2svg --replay-save ./replay.json -- bash
+# save key inputs to replay.json
+```
+
+Then, generate the SVG based on the saved key input.
+
+```sh
+console2svg -v -c -d macos --replay ./replay.json -- bash
+```
+
+## Options
+### Major options
 
 * `-o`: Output SVG file path (default: `output.svg`)
 * `-c`: Prepend the command line to the output as if typed in a terminal.
@@ -182,3 +204,13 @@ available themes:
 * `--background`: background color or image for the output SVG
 * `--verbose`: enable verbose logging
 * `--crop-*`: crop the output by specified pixels, characters, or text patterns
+
+### Window chrome
+
+`-d` option allows you to specify the style of the window frame. 
+
+* `none`: no window frame (default)
+* `macos`: macOS style window frame (default if `-d` is specified without a value)
+* `macos-pc`: macOS style window frame with background and shadow
+* `windows`: Windows style window frame
+* `windows-pc`: Windows style window frame with background and shadow

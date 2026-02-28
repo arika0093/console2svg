@@ -111,7 +111,7 @@ public static class PtyRecorder
             inputForward = forwardToConsole ? TryOpenInputForForwarding(logger) : null;
         }
 
-        StreamWriter? replaySaveWriter = null;
+        InputReplayFile.InputReplayWriter? replaySaveWriter = null;
         if (!string.IsNullOrWhiteSpace(replaySavePath))
         {
             logger.ZLogDebug($"Saving input to replay file. Path={replaySavePath}");
@@ -121,16 +121,18 @@ public static class PtyRecorder
                 Directory.CreateDirectory(dir);
             }
 
-            replaySaveWriter = new StreamWriter(
-                new FileStream(
-                    replaySavePath!,
-                    FileMode.Create,
-                    FileAccess.Write,
-                    FileShare.None,
-                    4096,
-                    FileOptions.Asynchronous
-                ),
-                new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
+            replaySaveWriter = new InputReplayFile.InputReplayWriter(
+                new StreamWriter(
+                    new FileStream(
+                        replaySavePath!,
+                        FileMode.Create,
+                        FileAccess.Write,
+                        FileShare.None,
+                        4096,
+                        FileOptions.Asynchronous
+                    ),
+                    new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
+                )
             );
         }
 
@@ -329,7 +331,7 @@ public static class PtyRecorder
             inputForward = forwardToConsole ? TryOpenInputForForwarding(logger) : null;
         }
 
-        StreamWriter? replaySaveWriter = null;
+        InputReplayFile.InputReplayWriter? replaySaveWriter = null;
         if (!string.IsNullOrWhiteSpace(replaySavePath))
         {
             logger.ZLogDebug($"Saving input to replay file. Path={replaySavePath}");
@@ -339,16 +341,18 @@ public static class PtyRecorder
                 Directory.CreateDirectory(dir);
             }
 
-            replaySaveWriter = new StreamWriter(
-                new FileStream(
-                    replaySavePath!,
-                    FileMode.Create,
-                    FileAccess.Write,
-                    FileShare.None,
-                    4096,
-                    FileOptions.Asynchronous
-                ),
-                new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
+            replaySaveWriter = new InputReplayFile.InputReplayWriter(
+                new StreamWriter(
+                    new FileStream(
+                        replaySavePath!,
+                        FileMode.Create,
+                        FileAccess.Write,
+                        FileShare.None,
+                        4096,
+                        FileOptions.Asynchronous
+                    ),
+                    new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
+                )
             );
         }
 
@@ -495,7 +499,7 @@ public static class PtyRecorder
         CancellationToken cancellationToken,
         ILogger logger,
         Stopwatch? stopwatch = null,
-        TextWriter? inputSave = null
+        InputReplayFile.InputReplayWriter? inputSave = null
     )
     {
         var buffer = new byte[256];
@@ -520,11 +524,20 @@ public static class PtyRecorder
 
                 if (inputSave != null && stopwatch != null)
                 {
-                    var charCount = inputDecoder.GetChars(buffer, 0, count, inputChars, 0, flush: false);
+                    var charCount = inputDecoder.GetChars(
+                        buffer,
+                        0,
+                        count,
+                        inputChars,
+                        0,
+                        flush: false
+                    );
                     if (charCount > 0)
                     {
                         var text = new string(inputChars, 0, charCount);
-                        InputReplayFile.WriteEvent(inputSave, stopwatch.Elapsed.TotalSeconds, text);
+                        var t = stopwatch.Elapsed.TotalSeconds;
+                        foreach (var evt in InputReplayFile.ParseInputText(text, t))
+                            inputSave.AppendEvent(evt);
                     }
                 }
             }

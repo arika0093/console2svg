@@ -22,7 +22,7 @@ public static class InputReplayFile
         while (true)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var line = await reader.ReadLineAsync(cancellationToken).ConfigureAwait(false);
+            var line = await reader.ReadLineAsync().ConfigureAwait(false);
             if (line is null)
             {
                 break;

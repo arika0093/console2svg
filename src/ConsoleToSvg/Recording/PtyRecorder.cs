@@ -499,6 +499,8 @@ public static class PtyRecorder
     )
     {
         var buffer = new byte[256];
+        var inputDecoder = Encoding.UTF8.GetDecoder();
+        var inputChars = new char[512];
         try
         {
             while (!cancellationToken.IsCancellationRequested)
@@ -518,8 +520,12 @@ public static class PtyRecorder
 
                 if (inputSave != null && stopwatch != null)
                 {
-                    var text = Encoding.UTF8.GetString(buffer, 0, count);
-                    InputReplayFile.WriteEvent(inputSave, stopwatch.Elapsed.TotalSeconds, text);
+                    var charCount = inputDecoder.GetChars(buffer, 0, count, inputChars, 0, flush: false);
+                    if (charCount > 0)
+                    {
+                        var text = new string(inputChars, 0, charCount);
+                        InputReplayFile.WriteEvent(inputSave, stopwatch.Elapsed.TotalSeconds, text);
+                    }
                 }
             }
         }

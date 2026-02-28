@@ -503,7 +503,7 @@ public static class PtyRecorder
     )
     {
         var buffer = new byte[256];
-        var inputDecoder = Encoding.UTF8.GetDecoder();
+        var inputDecoder = Console.InputEncoding.GetDecoder();
         var inputChars = new char[512];
         try
         {

@@ -63,6 +63,8 @@ public static class InputReplayFile
         ("B", "ArrowDown"),
         ("C", "ArrowRight"),
         ("D", "ArrowLeft"),
+        ("H", "Home"),
+        ("F", "End"),
         ("P", "F1"),
         ("Q", "F2"),
         ("R", "F3"),
@@ -148,7 +150,11 @@ public static class InputReplayFile
             if (c == '\x0a' || c == '\x0d')
             {
                 yield return new InputEvent(time, "Enter", [], "keydown");
-                i++;
+                i++; // advance past CR or LF
+                // If we just consumed a CR, absorb an immediately following LF so that
+                // a Windows-style CR+LF pair produces only one Enter event.
+                if (c == '\x0d' && i < text.Length && text[i] == '\x0a')
+                    i++;
                 continue;
             }
 
@@ -309,6 +315,16 @@ public static class InputReplayFile
         return result;
     }
 
+    private static string[] PrependShift(string[] mods)
+    {
+        if (ArrayContains(mods, "shift"))
+            return mods;
+        var result = new string[mods.Length + 1];
+        result[0] = "shift";
+        mods.CopyTo(result, 1);
+        return result;
+    }
+
     /// <summary>Convert a single char to a key name + modifiers (used for Alt+char sequences).</summary>
     private static (string Key, string[] Modifiers) CharToKeyAndMods(char c)
     {
@@ -355,6 +371,9 @@ public static class InputReplayFile
             var parts = param.Split(';');
             string[] mods = parts.Length >= 2 ? DecodeVtMods(parts[1]) : [];
             var finStr = fin.ToString();
+            // Z = Back-Tab (Shift+Tab): carry any decoded modifiers plus an implied shift.
+            if (finStr == "Z")
+                return ("Tab", PrependShift(mods), len);
             foreach (var (final, key) in s_csiLetterKeys)
                 if (final == finStr)
                     return (key, mods, len);

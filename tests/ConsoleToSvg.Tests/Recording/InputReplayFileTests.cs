@@ -294,5 +294,78 @@ public sealed class InputReplayFileTests
         parsed.Count.ShouldBe(1);
         parsed[0].Key.ShouldBe("ArrowUp");
     }
+
+    // ── Windows-specific sequences ───────────────────────────────────────────
+
+    [Test]
+    public void ParseInputTextSs3HomeEnd()
+    {
+        // Windows Terminal sends \x1bOH for Home and \x1bOF for End in application-cursor-keys mode.
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText("\x1bOH\x1bOF", 0.0)
+        );
+        events.Count.ShouldBe(2);
+        events[0].Key.ShouldBe("Home");
+        events[1].Key.ShouldBe("End");
+    }
+
+    [Test]
+    public void ParseInputTextShiftTab()
+    {
+        // \x1b[Z = Back-Tab / Shift+Tab (sent by Windows Terminal and xterm alike).
+        var events = new List<InputEvent>(InputReplayFile.ParseInputText("\x1b[Z", 0.0));
+        events.Count.ShouldBe(1);
+        events[0].Key.ShouldBe("Tab");
+        events[0].Modifiers.ShouldContain("shift");
+    }
+
+    [Test]
+    public void ParseInputTextCrlfProducesSingleEnter()
+    {
+        // Windows console may send CR+LF for Enter; should produce only one Enter event.
+        var events = new List<InputEvent>(InputReplayFile.ParseInputText("\r\n", 0.0));
+        events.Count.ShouldBe(1);
+        events[0].Key.ShouldBe("Enter");
+    }
+
+    [Test]
+    public void ParseInputTextConsecutiveCrsProduceTwoEnters()
+    {
+        // Two distinct CR presses (\r then \r) should still produce two Enter events.
+        var events = new List<InputEvent>(InputReplayFile.ParseInputText("\r\r", 0.0));
+        events.Count.ShouldBe(2);
+        events[0].Key.ShouldBe("Enter");
+        events[1].Key.ShouldBe("Enter");
+    }
+
+    [Test]
+    public void EventToBytesShiftTabRoundTrip()
+    {
+        // Shift+Tab → \x1b[Z → parse → Shift+Tab
+        var bytes = InputReplayFile.EventToBytes(new InputEvent(0, "Tab", ["shift"], "keydown"));
+        var text = Encoding.UTF8.GetString(bytes);
+        var events = new List<InputEvent>(InputReplayFile.ParseInputText(text, 0.0));
+        events.Count.ShouldBe(1);
+        events[0].Key.ShouldBe("Tab");
+        events[0].Modifiers.ShouldContain("shift");
+    }
+
+    [Test]
+    public void EventToBytesHomeEndRoundTrip()
+    {
+        // Home → \x1b[H → parse → Home
+        var homeBytes = InputReplayFile.EventToBytes(new InputEvent(0, "Home", [], "keydown"));
+        var homeText = Encoding.UTF8.GetString(homeBytes);
+        var homeEvents = new List<InputEvent>(InputReplayFile.ParseInputText(homeText, 0.0));
+        homeEvents.Count.ShouldBe(1);
+        homeEvents[0].Key.ShouldBe("Home");
+
+        // End → \x1b[F → parse → End
+        var endBytes = InputReplayFile.EventToBytes(new InputEvent(0, "End", [], "keydown"));
+        var endText = Encoding.UTF8.GetString(endBytes);
+        var endEvents = new List<InputEvent>(InputReplayFile.ParseInputText(endText, 0.0));
+        endEvents.Count.ShouldBe(1);
+        endEvents[0].Key.ShouldBe("End");
+    }
 }
 

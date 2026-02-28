@@ -199,6 +199,10 @@ internal static class Program
             builder.ClearProviders();
             builder.AddZLoggerConsole();
             builder.SetMinimumLevel(verbose ? LogLevel.Debug : LogLevel.None);
+            if (verbose)
+            {
+                builder.AddZLoggerFile("console2svg.log");
+            }
         });
     }
 

@@ -80,6 +80,8 @@ public static class OptionParser
                 --fps <value>             Max FPS for animated SVG frame sampling (default: 12).
                 --sleep <sec>             Wait time after execution completes in video mode (default: 2).
                 --fadeout <sec>           Fade-out duration at end of video (default: 0).
+                --replay-save <path>      Save keyboard input to a replay file during command execution.
+                --replay <path>           Replay keyboard input from a file instead of reading from the console.
             """;
 
     public static bool TryParse(
@@ -477,6 +479,12 @@ public static class OptionParser
             case "--save-cast":
                 options.SaveCastPath = value;
                 return true;
+            case "--replay-save":
+                options.ReplaySavePath = value;
+                return true;
+            case "--replay":
+                options.ReplayPath = value;
+                return true;
             default:
                 error = $"Unknown option: {name}";
                 return false;
@@ -645,6 +653,33 @@ public static class OptionParser
         )
         {
             error = "--command and --in cannot be used together.";
+            return false;
+        }
+
+        if (
+            !string.IsNullOrWhiteSpace(options.ReplayPath)
+            && !string.IsNullOrWhiteSpace(options.ReplaySavePath)
+        )
+        {
+            error = "--replay and --replay-save cannot be used together.";
+            return false;
+        }
+
+        if (
+            !string.IsNullOrWhiteSpace(options.ReplayPath)
+            && string.IsNullOrWhiteSpace(options.Command)
+        )
+        {
+            error = "--replay requires a command to be specified.";
+            return false;
+        }
+
+        if (
+            !string.IsNullOrWhiteSpace(options.ReplaySavePath)
+            && string.IsNullOrWhiteSpace(options.Command)
+        )
+        {
+            error = "--replay-save requires a command to be specified.";
             return false;
         }
 

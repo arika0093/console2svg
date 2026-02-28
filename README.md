@@ -41,6 +41,7 @@ console2svg -w 120 -c -d macos-pc -- console2svg
 ---
 
 In video mode(`-v`), you can capture the animation of the command execution and save it as an SVG.
+By using the [replay feature](#replay-input), you can save the command execution record and later regenerate the SVG based on that record.
 
 ```bash
 console2svg -v -c -d macos -- copilot --banner

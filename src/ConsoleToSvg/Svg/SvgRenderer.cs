@@ -524,7 +524,7 @@ internal static class SvgDocumentBuilder
                 sb.Append(Format(winW));
                 sb.Append("\" height=\"");
                 sb.Append(Format(winH));
-                sb.Append("\" fill=\"black\" fill-opacity=\"0.3\"/>\n");
+                sb.Append("\" fill=\"black\" fill-opacity=\"0.4\"/>\n");
                 sb.Append("<rect x=\"");
                 sb.Append(Format(winX + 0.5d));
                 sb.Append("\" y=\"");
@@ -573,7 +573,7 @@ internal static class SvgDocumentBuilder
                 sb.Append(Format(winW));
                 sb.Append("\" height=\"");
                 sb.Append(Format(winH));
-                sb.Append("\" fill=\"black\" fill-opacity=\"0.25\"/>\n");
+                sb.Append("\" fill=\"black\" fill-opacity=\"0.4\"/>\n");
                 AppendWindowsTerminalChrome(sb, winX, winY, winW, winH, theme);
                 return;
             }

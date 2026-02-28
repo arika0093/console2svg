@@ -13,11 +13,14 @@ public sealed class InputReplayFileTests
     [Test]
     public async Task WriteAndReadRoundTrip()
     {
+        var helloBytes = Encoding.UTF8.GetBytes("hello");
+        var worldBytes = Encoding.UTF8.GetBytes("world\r\n");
+
         using var ms = new MemoryStream();
         using var writer = new StreamWriter(ms, new UTF8Encoding(false), leaveOpen: true);
 
-        InputReplayFile.WriteEvent(writer, 0.5, "hello");
-        InputReplayFile.WriteEvent(writer, 1.25, "world\r\n");
+        InputReplayFile.WriteEvent(writer, 0.5, helloBytes, helloBytes.Length);
+        InputReplayFile.WriteEvent(writer, 1.25, worldBytes, worldBytes.Length);
         writer.Flush();
 
         ms.Position = 0;
@@ -29,9 +32,41 @@ public sealed class InputReplayFileTests
 
             events.Count.ShouldBe(2);
             events[0].Time.ShouldBe(0.5);
-            events[0].Data.ShouldBe("hello");
+            events[0].Data.ShouldBeEquivalentTo(helloBytes);
             events[1].Time.ShouldBe(1.25);
-            events[1].Data.ShouldBe("world\r\n");
+            events[1].Data.ShouldBeEquivalentTo(worldBytes);
+        }
+        finally
+        {
+            File.Delete(tmpPath);
+        }
+    }
+
+    [Test]
+    public async Task SpecialKeyEscapeSequenceRoundTrip()
+    {
+        // Up arrow = ESC [ A (bytes 0x1B 0x5B 0x41)
+        var upArrow = new byte[] { 0x1B, 0x5B, 0x41 };
+        // Shift+Tab = ESC [ Z (bytes 0x1B 0x5B 0x5A)
+        var shiftTab = new byte[] { 0x1B, 0x5B, 0x5A };
+
+        using var ms = new MemoryStream();
+        using var writer = new StreamWriter(ms, new UTF8Encoding(false), leaveOpen: true);
+
+        InputReplayFile.WriteEvent(writer, 0.1, upArrow, upArrow.Length);
+        InputReplayFile.WriteEvent(writer, 0.2, shiftTab, shiftTab.Length);
+        writer.Flush();
+
+        ms.Position = 0;
+        var tmpPath = Path.GetTempFileName();
+        try
+        {
+            await File.WriteAllBytesAsync(tmpPath, ms.ToArray());
+            var events = await InputReplayFile.ReadAllAsync(tmpPath, CancellationToken.None);
+
+            events.Count.ShouldBe(2);
+            events[0].Data.ShouldBeEquivalentTo(upArrow);
+            events[1].Data.ShouldBeEquivalentTo(shiftTab);
         }
         finally
         {
@@ -42,10 +77,10 @@ public sealed class InputReplayFileTests
     [Test]
     public async Task ReplayStreamReturnsEventsSequentially()
     {
-        var events = new List<(double Time, string Data)>
+        var events = new List<(double Time, byte[] Data)>
         {
-            (0.0, "abc"),
-            (0.0, "def"),
+            (0.0, Encoding.UTF8.GetBytes("abc")),
+            (0.0, Encoding.UTF8.GetBytes("def")),
         };
 
         using var stream = new InputReplayFile.ReplayStream(events);
@@ -67,7 +102,7 @@ public sealed class InputReplayFileTests
     [Test]
     public async Task ReplayStreamReturnsZeroOnEmpty()
     {
-        var events = new List<(double Time, string Data)>();
+        var events = new List<(double Time, byte[] Data)>();
         using var stream = new InputReplayFile.ReplayStream(events);
         var buffer = new byte[16];
 
@@ -79,7 +114,9 @@ public sealed class InputReplayFileTests
     [Test]
     public async Task ReadAllAsyncSkipsBlankLines()
     {
-        var content = "[0.1,\"a\"]\n\n[0.2,\"b\"]\n";
+        var aBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes("a"));
+        var bBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes("b"));
+        var content = $"[0.1,\"{aBase64}\"]\n\n[0.2,\"{bBase64}\"]\n";
         var tmpPath = Path.GetTempFileName();
         try
         {
@@ -87,8 +124,8 @@ public sealed class InputReplayFileTests
             var events = await InputReplayFile.ReadAllAsync(tmpPath, CancellationToken.None);
 
             events.Count.ShouldBe(2);
-            events[0].Data.ShouldBe("a");
-            events[1].Data.ShouldBe("b");
+            events[0].Data.ShouldBeEquivalentTo(Encoding.UTF8.GetBytes("a"));
+            events[1].Data.ShouldBeEquivalentTo(Encoding.UTF8.GetBytes("b"));
         }
         finally
         {

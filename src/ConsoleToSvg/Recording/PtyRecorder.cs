@@ -518,8 +518,7 @@ public static class PtyRecorder
 
                 if (inputSave != null && stopwatch != null)
                 {
-                    var text = Encoding.UTF8.GetString(buffer, 0, count);
-                    InputReplayFile.WriteEvent(inputSave, stopwatch.Elapsed.TotalSeconds, text);
+                    InputReplayFile.WriteEvent(inputSave, stopwatch.Elapsed.TotalSeconds, buffer, count);
                 }
             }
         }

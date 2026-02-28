@@ -57,4 +57,6 @@ public sealed class AppOptions
     public bool WithCommand { get; set; }
 
     public System.Collections.Generic.List<string> Background { get; set; } = [];
+
+    public int? Timeout { get; set; } = null;
 }

@@ -64,6 +64,12 @@ internal static class Program
             logger.ZLogDebug($"Cancellation requested by Ctrl+C.");
         };
 
+        if (options.Timeout.HasValue)
+        {
+            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(options.Timeout.Value));
+            logger.ZLogDebug($"Timeout set: {options.Timeout.Value} seconds.");
+        }
+
         try
         {
             var session = await LoadOrRecordAsync(
@@ -109,7 +115,7 @@ internal static class Program
             if (wasCanceled)
             {
                 await Console.Error.WriteLineAsync($"Generated (partial): {options.OutputPath}");
-                return 130;
+                return 0;
             }
 
             await Console.Error.WriteLineAsync($"Generated: {options.OutputPath}");
@@ -119,7 +125,7 @@ internal static class Program
         {
             logger.ZLogDebug($"Execution canceled.");
             await Console.Error.WriteLineAsync("Canceled.");
-            return 130;
+            return 0;
         }
         catch (Exception ex)
         {

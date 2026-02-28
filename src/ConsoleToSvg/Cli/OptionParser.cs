@@ -25,6 +25,7 @@ public static class OptionParser
                 --background <color> [color]  Background color, gradient, or image path.
                 --crop-top/bottom/left/right  Crop by px, ch, or text pattern.
                 --verbose                 Enable verbose logging.
+                --timeout <sec>           Stop recording after specified seconds.
 
             For full option list, see --help.
             """;
@@ -51,6 +52,7 @@ public static class OptionParser
                 --help                    Show help.
                 --verbose                 Enable verbose logging.
                 --version                 Show version and exit.
+                --timeout <sec>           Stop recording after specified seconds (integer >= 1).
 
             Options (Appearance):
                 -d, --window [none|macos|windows|macos-pc|windows-pc]
@@ -225,7 +227,8 @@ public static class OptionParser
             && !string.Equals(name, "--verbose", StringComparison.OrdinalIgnoreCase)
             // -d/--window is optional-value; handled separately in the main loop
             && !string.Equals(name, "-d", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase);
+            && !string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--timeout", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsWindowStyleValue(string token) =>
@@ -454,6 +457,14 @@ public static class OptionParser
 
                 options.Background.Add(value);
                 return true;
+            case "--timeout":
+                if (!TryParseInt(value, "--timeout", out var timeout, out error))
+                {
+                    return false;
+                }
+
+                options.Timeout = timeout;
+                return true;
             case "--font":
                 options.Font = value;
                 return true;
@@ -607,6 +618,12 @@ public static class OptionParser
         )
         {
             error = "--opacity must be a number between 0 and 1.";
+            return false;
+        }
+
+        if (options.Timeout.HasValue && options.Timeout.Value < 1)
+        {
+            error = "--timeout must be greater than or equal to 1.";
             return false;
         }
 

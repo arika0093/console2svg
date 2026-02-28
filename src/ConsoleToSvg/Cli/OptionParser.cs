@@ -225,8 +225,7 @@ public static class OptionParser
             && !string.Equals(name, "--verbose", StringComparison.OrdinalIgnoreCase)
             // -d/--window is optional-value; handled separately in the main loop
             && !string.Equals(name, "-d", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--timeout", StringComparison.OrdinalIgnoreCase);
+            && !string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsWindowStyleValue(string token) =>

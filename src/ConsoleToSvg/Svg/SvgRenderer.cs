@@ -62,9 +62,13 @@ public static class SvgRenderer
 
 internal static class SvgDocumentBuilder
 {
-    private const double CellWidth = 9d;
-    private const double CellHeight = 18d;
+    // 14px font size is common for terminal screenshots and provides good fidelity at
+    // typical widths; line spacing is handled by CellHeight, so no need to include it here
     private const double FontSize = 14d;
+    // 14px font at 80 chars per line → ~8.4px per char
+    private const double CellWidth = 8.4d;
+    // 14px font with line spacing → 18px per line
+    private const double CellHeight = 18d;
     private const double BaselineOffset = 14d;
     private const double DesktopPadding = 20d;
     private const double DesktopShadowOffset = 6d;

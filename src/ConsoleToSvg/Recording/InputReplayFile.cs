@@ -10,21 +10,6 @@ using System.Threading.Tasks;
 
 namespace ConsoleToSvg.Recording;
 
-/// <summary>Cross-platform keyboard input event stored in replay files.</summary>
-public sealed record InputEvent(
-    double Time,
-    string Key,
-    string[] Modifiers,
-    string Type = "keydown"
-);
-
-/// <summary>Wrapper type for the JSON replay file: <c>{"Replay":[...]}</c>.</summary>
-public sealed class InputReplayData
-{
-    [JsonPropertyName("Replay")]
-    public List<InputEvent> Replay { get; set; } = [];
-}
-
 public static class InputReplayFile
 {
     // ── VT escape sequence tables ───────────────────────────────────────────
@@ -88,8 +73,7 @@ public static class InputReplayFile
     )
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var json = await File
-            .ReadAllTextAsync(path, Encoding.UTF8, cancellationToken)
+        var json = await File.ReadAllTextAsync(path, Encoding.UTF8, cancellationToken)
             .ConfigureAwait(false);
         return ParseJsonObject(json);
     }
@@ -109,7 +93,7 @@ public static class InputReplayFile
             {
                 if (i + 1 >= text.Length)
                 {
-                    yield return new InputEvent(time, "Escape", [], "keydown");
+                    yield return new InputEvent { Time = time, Key = "Escape", Modifiers = [], Type = "keydown" };
                     i++;
                     continue;
                 }
@@ -118,27 +102,27 @@ public static class InputReplayFile
                 {
                     var (key, mods, len) = ParseCsiSequence(text, i);
                     if (key is not null)
-                        yield return new InputEvent(time, key, mods, "keydown");
+                        yield return new InputEvent { Time = time, Key = key, Modifiers = mods, Type = "keydown" };
                     i += len;
                     continue;
                 }
                 if (next == 'O')
                 {
                     var (key, len) = ParseSs3Sequence(text, i);
-                    yield return new InputEvent(time, key, [], "keydown");
+                    yield return new InputEvent { Time = time, Key = key, Modifiers = [], Type = "keydown" };
                     i += len;
                     continue;
                 }
                 if (next == '\x1b')
                 {
                     // Two consecutive ESCs → first is a lone Escape; second handled next iteration.
-                    yield return new InputEvent(time, "Escape", [], "keydown");
+                    yield return new InputEvent { Time = time, Key = "Escape", Modifiers = [], Type = "keydown" };
                     i++;
                     continue;
                 }
                 // ESC + char → Alt prefix
                 var (altKey, altMods) = CharToKeyAndMods(next);
-                yield return new InputEvent(time, altKey, PrependAlt(altMods), "keydown");
+                yield return new InputEvent { Time = time, Key = altKey, Modifiers = PrependAlt(altMods), Type = "keydown" };
                 i += 2;
                 continue;
             }
@@ -146,19 +130,19 @@ public static class InputReplayFile
             // Common control characters
             if (c == '\x08' || c == '\x7f')
             {
-                yield return new InputEvent(time, "Backspace", [], "keydown");
+                yield return new InputEvent { Time = time, Key = "Backspace", Modifiers = [], Type = "keydown" };
                 i++;
                 continue;
             }
             if (c == '\x09')
             {
-                yield return new InputEvent(time, "Tab", [], "keydown");
+                yield return new InputEvent { Time = time, Key = "Tab", Modifiers = [], Type = "keydown" };
                 i++;
                 continue;
             }
             if (c == '\x0a' || c == '\x0d')
             {
-                yield return new InputEvent(time, "Enter", [], "keydown");
+                yield return new InputEvent { Time = time, Key = "Enter", Modifiers = [], Type = "keydown" };
                 i++; // advance past CR or LF
                 // If we just consumed a CR, absorb an immediately following LF so that
                 // a Windows-style CR+LF pair produces only one Enter event.
@@ -171,7 +155,7 @@ public static class InputReplayFile
             if (c >= '\x01' && c <= '\x1a')
             {
                 var letter = (char)('a' + (c - 1));
-                yield return new InputEvent(time, letter.ToString(), ["ctrl"], "keydown");
+                yield return new InputEvent { Time = time, Key = letter.ToString(), Modifiers = ["ctrl"], Type = "keydown" };
                 i++;
                 continue;
             }
@@ -179,12 +163,12 @@ public static class InputReplayFile
             // Printable (handle surrogate pairs for non-BMP Unicode)
             if (char.IsHighSurrogate(c) && i + 1 < text.Length && char.IsLowSurrogate(text[i + 1]))
             {
-                yield return new InputEvent(time, text.Substring(i, 2), [], "keydown");
+                yield return new InputEvent { Time = time, Key = text.Substring(i, 2), Modifiers = [], Type = "keydown" };
                 i += 2;
                 continue;
             }
 
-            yield return new InputEvent(time, c.ToString(), [], "keydown");
+            yield return new InputEvent { Time = time, Key = c.ToString(), Modifiers = [], Type = "keydown" };
             i++;
         }
     }
@@ -206,9 +190,12 @@ public static class InputReplayFile
             case "Enter":
                 return alt ? new byte[] { 0x1b, 0x0d } : new byte[] { 0x0d };
             case "Tab":
-                if (shift && alt) return new byte[] { 0x1b, 0x1b, 0x5b, 0x5a };
-                if (shift) return new byte[] { 0x1b, 0x5b, 0x5a };
-                if (alt) return new byte[] { 0x1b, 0x09 };
+                if (shift && alt)
+                    return new byte[] { 0x1b, 0x1b, 0x5b, 0x5a };
+                if (shift)
+                    return new byte[] { 0x1b, 0x5b, 0x5a };
+                if (alt)
+                    return new byte[] { 0x1b, 0x09 };
                 return new byte[] { 0x09 };
             case "Escape":
                 return alt ? new byte[] { 0x1b, 0x1b } : new byte[] { 0x1b };
@@ -240,8 +227,7 @@ public static class InputReplayFile
         }
 
         // Cursor / function keys with optional VT modifier parameter
-        int modBits =
-            (shift ? 1 : 0) | (alt ? 2 : 0) | (ctrl ? 4 : 0) | (meta ? 8 : 0);
+        int modBits = (shift ? 1 : 0) | (alt ? 2 : 0) | (ctrl ? 4 : 0) | (meta ? 8 : 0);
         string modParam = modBits > 0 ? $";{modBits + 1}" : "";
 
         return evt.Key switch
@@ -279,7 +265,10 @@ public static class InputReplayFile
     {
         if (string.IsNullOrWhiteSpace(json))
             return [];
-        var data = JsonSerializer.Deserialize(json, InputReplayJsonContext.Default.InputReplayData);
+        var data = JsonSerializer.Deserialize(
+            json,
+            InputReplaySerializerContext.Default.InputReplayData
+        );
         return data?.Replay ?? [];
     }
 
@@ -327,10 +316,7 @@ public static class InputReplayFile
         return (c.ToString(), []);
     }
 
-    private static (string? Key, string[] Mods, int Length) ParseCsiSequence(
-        string text,
-        int start
-    )
+    private static (string? Key, string[] Mods, int Length) ParseCsiSequence(string text, int start)
     {
         // text[start] == ESC, text[start+1] == '['
         int i = start + 2;
@@ -529,7 +515,9 @@ public static class InputReplayFile
         {
             if (_hasEvents)
                 _writer.Write(",");
-            _writer.Write(JsonSerializer.Serialize(evt, InputReplayJsonContext.Default.InputEvent));
+            _writer.Write(
+                JsonSerializer.Serialize(evt, InputReplaySerializerContext.Default.InputEvent)
+            );
             _hasEvents = true;
         }
 
@@ -611,8 +599,7 @@ public static class InputReplayFile
                     var delay = time - _stopwatch.Elapsed.TotalSeconds;
                     if (delay > 0)
                     {
-                        await Task
-                            .Delay(TimeSpan.FromSeconds(delay), cancellationToken)
+                        await Task.Delay(TimeSpan.FromSeconds(delay), cancellationToken)
                             .ConfigureAwait(false);
                     }
                 }

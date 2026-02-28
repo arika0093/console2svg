@@ -106,6 +106,18 @@ public static class InputReplayFile
                 char next = text[i + 1];
                 if (next == '[')
                 {
+                    // Some terminals (e.g. copilot CLI) send VT escape sequences
+                    // through Win32-input-mode as individual VK=0 character events.
+                    // Detect and reassemble them before regular CSI parsing.
+                    var (vtEvents, vtLen) = TryParseWin32VtPassthrough(text, i, time);
+                    if (vtEvents is not null)
+                    {
+                        foreach (var evt in vtEvents)
+                            yield return evt;
+                        i += vtLen;
+                        continue;
+                    }
+
                     var (key, mods, len) = ParseCsiSequence(text, i);
                     if (key is not null)
                         yield return new InputEvent
@@ -553,6 +565,94 @@ public static class InputReplayFile
     }
 
     // ── Win32-input-mode helpers ─────────────────────────────────────────────
+
+    /// <summary>
+    /// Detect consecutive Win32-input-mode VK=0 sequences whose UC values
+    /// form a VT escape sequence (e.g. ESC + '[' + 'Z' = Shift+Tab).
+    /// Some terminals send VT escape sequences this way instead of using
+    /// proper VK codes (VK_TAB, VK_DOWN, etc.).
+    /// Returns null if the text at <paramref name="start"/> is not this pattern.
+    /// </summary>
+    private static (List<InputEvent>? Events, int TotalLength) TryParseWin32VtPassthrough(
+        string text,
+        int start,
+        double time
+    )
+    {
+        // The first sequence must be VK=0 with UC=ESC (0x1B) key-down.
+        var first = TryParseWin32VkZeroEvent(text, start);
+        if (first == null || first.Value.Uc != 0x1B || first.Value.Kd != 1)
+            return (null, 0);
+
+        // Collect UC values from consecutive VK=0 sequences.
+        var vtChars = new StringBuilder();
+        vtChars.Append('\x1B');
+        int totalLen = first.Value.Len;
+        int pos = start + first.Value.Len;
+
+        while (pos < text.Length)
+        {
+            var next = TryParseWin32VkZeroEvent(text, pos);
+            if (next == null)
+                break;
+
+            totalLen += next.Value.Len;
+            pos += next.Value.Len;
+
+            // Only include key-down characters in the reassembled VT string.
+            if (next.Value.Kd == 1 && next.Value.Uc >= 0)
+                vtChars.Append(
+                    next.Value.Uc < 0x10000
+                        ? (char)next.Value.Uc
+                        : char.ConvertFromUtf32(next.Value.Uc)
+                );
+        }
+
+        if (vtChars.Length <= 1)
+            return (null, 0); // Only ESC with no continuation
+
+        // Re-parse the reassembled VT string through normal input parsing.
+        var events = new List<InputEvent>(ParseInputText(vtChars.ToString(), time));
+        return events.Count > 0 ? (events, totalLen) : (null, 0);
+    }
+
+    /// <summary>
+    /// Try to parse a Win32-input-mode CSI sequence at <paramref name="pos"/>
+    /// and return its details if VK=0 (character passthrough event).
+    /// Returns null if not a Win32-input-mode sequence or VK is not 0.
+    /// </summary>
+    private static (int Uc, int Kd, int Len)? TryParseWin32VkZeroEvent(string text, int pos)
+    {
+        if (pos + 2 >= text.Length || text[pos] != '\x1B' || text[pos + 1] != '[')
+            return null;
+
+        int i = pos + 2;
+        // Win32-input-mode never has a private prefix
+        if (i < text.Length && text[i] >= '<' && text[i] <= '?')
+            return null;
+
+        int paramStart = i;
+        while (i < text.Length && (text[i] == ';' || (text[i] >= '0' && text[i] <= '9')))
+            i++;
+
+        if (i >= text.Length || text[i] != '_')
+            return null;
+
+        int len = i - pos + 1;
+        var parts = text.Substring(paramStart, i - paramStart).Split(';');
+        if (parts.Length < 6)
+            return null;
+
+        if (
+            !int.TryParse(parts[0], out int vk)
+            || vk != 0
+            || !int.TryParse(parts[2], out int uc)
+            || !int.TryParse(parts[3], out int kd)
+        )
+            return null;
+
+        return (uc, kd, len);
+    }
 
     /// <summary>
     /// Parse a Win32-input-mode CSI sequence: <c>\x1b[Vk;Sc;Uc;Kd;Cs;Rc_</c>.

@@ -21,11 +21,9 @@ public static class OptionParser
                 -h, --height <int>        Terminal height in rows (default: auto).
                 -v                        Output animated SVG (alias for --mode video).
                 -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc.
-                --opacity <0-1>           Opacity of window/terminal content (default: 1).
                 --background <color> [color]  Background color, gradient, or image path.
                 --crop-top/bottom/left/right  Crop by px, ch, or text pattern.
                 --verbose                 Enable verbose logging.
-                --timeout <sec>           Stop recording after specified seconds.
 
             For full option list, see --help.
             """;
@@ -52,7 +50,7 @@ public static class OptionParser
                 --help                    Show help.
                 --verbose                 Enable verbose logging.
                 --version                 Show version and exit.
-                --timeout <sec>           Stop recording after specified seconds (integer >= 1).
+                --timeout <sec>           Stop recording after specified seconds (e.g. 5, 0.5).
 
             Options (Appearance):
                 -d, --window [none|macos|windows|macos-pc|windows-pc]
@@ -458,7 +456,7 @@ public static class OptionParser
                 options.Background.Add(value);
                 return true;
             case "--timeout":
-                if (!TryParseInt(value, "--timeout", out var timeout, out error))
+                if (!TryParseDouble(value, "--timeout", out var timeout, out error))
                 {
                     return false;
                 }
@@ -621,9 +619,9 @@ public static class OptionParser
             return false;
         }
 
-        if (options.Timeout.HasValue && options.Timeout.Value < 1)
+        if (options.Timeout.HasValue && (double.IsNaN(options.Timeout.Value) || double.IsInfinity(options.Timeout.Value) || options.Timeout.Value <= 0))
         {
-            error = "--timeout must be greater than or equal to 1.";
+            error = "--timeout must be greater than 0.";
             return false;
         }
 

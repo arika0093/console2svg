@@ -58,5 +58,5 @@ public sealed class AppOptions
 
     public System.Collections.Generic.List<string> Background { get; set; } = [];
 
-    public int? Timeout { get; set; } = null;
+    public double? Timeout { get; set; } = null;
 }

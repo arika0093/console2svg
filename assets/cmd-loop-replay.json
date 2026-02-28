@@ -1,0 +1,90 @@
+{
+  "replay": [
+    {
+      "time": 5.3918479,
+      "key": "Enter",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "time": 6.5853124,
+      "key": "h",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "time": 6.6678321,
+      "key": "e",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "time": 6.8100855,
+      "key": "l",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "time": 6.9483194,
+      "key": "l",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "time": 7.1154726,
+      "key": "o",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "time": 7.73212,
+      "key": "Tab",
+      "modifiers": [
+        "shift"
+      ],
+      "type": "keydown"
+    },
+    {
+      "time": 7.9870348,
+      "key": "Tab",
+      "modifiers": [
+        "shift"
+      ],
+      "type": "keydown"
+    },
+    {
+      "time": 8.9698839,
+      "key": "ArrowDown",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "time": 9.2855597,
+      "key": "ArrowUp",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "time": 9.8493693,
+      "key": "Enter",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "time": 10.8019185,
+      "key": "c",
+      "modifiers": [
+        "ctrl"
+      ],
+      "type": "keydown"
+    },
+    {
+      "time": 11.2717161,
+      "key": "c",
+      "modifiers": [
+        "ctrl"
+      ],
+      "type": "keydown"
+    }
+  ]
+}

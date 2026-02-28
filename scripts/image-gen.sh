@@ -8,4 +8,4 @@ console2svg -w 100 -h 10 -c -d macos-pc --background "#003060" --opacity 0.8 -o 
 console2svg -w 100 -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.8 -o ./assets/cmd-bg2.svg -- dotnet --version
 console2svg -w 100 -h 10 -c -d macos-pc --background ./assets/bg.png --opacity 0.8 -o ./assets/cmd-bg3.svg  -- dotnet --version
 # required: sudo npm install -g @github/copilot
-# console2svg -w 100 -v -c -d -o ./assets/cmd-loop.svg --replay ./assets/cmd-loop-replay.json -- copilot --banner
+console2svg -w 100 -v -c -d -o ./assets/cmd-loop.svg --replay ./assets/cmd-loop-replay.json -- copilot --banner

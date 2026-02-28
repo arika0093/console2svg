@@ -20,7 +20,7 @@ public sealed class InputReplayFileTests
         {
             await using (
                 var writer = new InputReplayFile.InputReplayWriter(
-                    new StreamWriter(File.OpenWrite(tmpPath), new UTF8Encoding(false))
+                    File.OpenWrite(tmpPath)
                 )
             )
             {
@@ -56,7 +56,7 @@ public sealed class InputReplayFileTests
         {
             await using (
                 var writer = new InputReplayFile.InputReplayWriter(
-                    new StreamWriter(File.OpenWrite(tmpPath), new UTF8Encoding(false))
+                    File.OpenWrite(tmpPath)
                 )
             )
             {
@@ -85,7 +85,7 @@ public sealed class InputReplayFileTests
         {
             await using (
                 var writer = new InputReplayFile.InputReplayWriter(
-                    new StreamWriter(File.OpenWrite(tmpPath), new UTF8Encoding(false))
+                    File.OpenWrite(tmpPath)
                 )
             )
             {

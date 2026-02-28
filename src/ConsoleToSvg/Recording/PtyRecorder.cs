@@ -122,16 +122,13 @@ public static class PtyRecorder
             }
 
             replaySaveWriter = new InputReplayFile.InputReplayWriter(
-                new StreamWriter(
-                    new FileStream(
-                        replaySavePath!,
-                        FileMode.Create,
-                        FileAccess.Write,
-                        FileShare.None,
-                        4096,
-                        FileOptions.Asynchronous
-                    ),
-                    new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
+                new FileStream(
+                    replaySavePath!,
+                    FileMode.Create,
+                    FileAccess.Write,
+                    FileShare.None,
+                    4096,
+                    FileOptions.Asynchronous
                 )
             );
         }
@@ -342,16 +339,13 @@ public static class PtyRecorder
             }
 
             replaySaveWriter = new InputReplayFile.InputReplayWriter(
-                new StreamWriter(
-                    new FileStream(
-                        replaySavePath!,
-                        FileMode.Create,
-                        FileAccess.Write,
-                        FileShare.None,
-                        4096,
-                        FileOptions.Asynchronous
-                    ),
-                    new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
+                new FileStream(
+                    replaySavePath!,
+                    FileMode.Create,
+                    FileAccess.Write,
+                    FileShare.None,
+                    4096,
+                    FileOptions.Asynchronous
                 )
             );
         }

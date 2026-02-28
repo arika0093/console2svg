@@ -497,45 +497,44 @@ public static class InputReplayFile
     // ── Writer ───────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Streams <see cref="InputEvent"/> objects to a <c>{"Replay":[...]}</c> JSON file
-    /// incrementally. Dispose (or <c>await using</c>) to write the closing brackets and flush.
+    /// Collects <see cref="InputEvent"/> objects and writes the entire
+    /// <see cref="InputReplayData"/> JSON to the stream on dispose.
     /// </summary>
     public sealed class InputReplayWriter : IDisposable, IAsyncDisposable
     {
-        private readonly TextWriter _writer;
-        private bool _hasEvents;
+        private readonly Stream _stream;
+        private readonly InputReplayData _data = new();
 
-        public InputReplayWriter(TextWriter writer)
+        public InputReplayWriter(Stream stream)
         {
-            _writer = writer;
-            _writer.Write("{\"Replay\":[");
+            _stream = stream;
         }
 
         public void AppendEvent(InputEvent evt)
         {
-            if (_hasEvents)
-                _writer.Write(",");
-            _writer.Write(
-                JsonSerializer.Serialize(evt, InputReplaySerializerContext.Default.InputEvent)
-            );
-            _hasEvents = true;
+            _data.Replay.Add(evt);
         }
 
         public void Dispose()
         {
-            _writer.Write("]}");
-            _writer.Flush();
-            _writer.Dispose();
+            JsonSerializer.Serialize(
+                _stream,
+                _data,
+                InputReplaySerializerContext.Default.InputReplayData
+            );
+            _stream.Flush();
+            _stream.Dispose();
         }
 
         public async ValueTask DisposeAsync()
         {
-            await _writer.WriteAsync("]}").ConfigureAwait(false);
-            await _writer.FlushAsync().ConfigureAwait(false);
-            if (_writer is IAsyncDisposable ad)
-                await ad.DisposeAsync().ConfigureAwait(false);
-            else
-                _writer.Dispose();
+            await JsonSerializer.SerializeAsync(
+                _stream,
+                _data,
+                InputReplaySerializerContext.Default.InputReplayData
+            ).ConfigureAwait(false);
+            await _stream.FlushAsync().ConfigureAwait(false);
+            await _stream.DisposeAsync().ConfigureAwait(false);
         }
     }
 

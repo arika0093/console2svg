@@ -449,4 +449,80 @@ public sealed class OptionParserTests
         options!.Background.Count.ShouldBe(1);
         options.Background[0].ShouldBe("https://example.com/bg.png");
     }
+
+    [Test]
+    public void ReplaySaveOptionParsed()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--replay-save", "replay.jsonl", "echo hi" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.ReplaySavePath.ShouldBe("replay.jsonl");
+        options.Command.ShouldBe("echo hi");
+    }
+
+    [Test]
+    public void ReplayOptionParsed()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--replay", "replay.jsonl", "echo hi" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.ReplayPath.ShouldBe("replay.jsonl");
+        options.Command.ShouldBe("echo hi");
+    }
+
+    [Test]
+    public void ReplayAndReplaySaveTogetherReturnsError()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--replay", "r.jsonl", "--replay-save", "s.jsonl", "echo hi" },
+            out _,
+            out var error,
+            out _
+        );
+        ok.ShouldBeFalse();
+        error.ShouldBe("--replay and --replay-save cannot be used together.");
+    }
+
+    [Test]
+    public void ReplayWithoutCommandReturnsError()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--replay", "replay.jsonl" },
+            out _,
+            out var error,
+            out _
+        );
+        ok.ShouldBeFalse();
+        error.ShouldBe("--replay requires a command to be specified.");
+    }
+
+    [Test]
+    public void ReplaySaveWithoutCommandReturnsError()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--replay-save", "replay.jsonl" },
+            out _,
+            out var error,
+            out _
+        );
+        ok.ShouldBeFalse();
+        error.ShouldBe("--replay-save requires a command to be specified.");
+    }
+
+    [Test]
+    public void ReplayDefaultIsNull()
+    {
+        var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.ReplayPath.ShouldBeNull();
+        options.ReplaySavePath.ShouldBeNull();
+    }
 }

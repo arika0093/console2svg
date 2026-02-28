@@ -20,7 +20,9 @@ public static class PtyRecorder
         int height,
         CancellationToken cancellationToken,
         ILogger? logger = null,
-        bool forwardToConsole = true
+        bool forwardToConsole = true,
+        string? replaySavePath = null,
+        string? replayPath = null
     )
     {
         logger ??= NullLogger.Instance;
@@ -33,7 +35,9 @@ public static class PtyRecorder
                     height,
                     cancellationToken,
                     logger,
-                    forwardToConsole
+                    forwardToConsole,
+                    replaySavePath,
+                    replayPath
                 )
                 .ConfigureAwait(false);
         }
@@ -51,7 +55,9 @@ public static class PtyRecorder
                     height,
                     cancellationToken,
                     logger,
-                    forwardToConsole
+                    forwardToConsole,
+                    replaySavePath,
+                    replayPath
                 )
                 .ConfigureAwait(false);
         }
@@ -63,7 +69,9 @@ public static class PtyRecorder
         int height,
         CancellationToken cancellationToken,
         ILogger logger,
-        bool forwardToConsole
+        bool forwardToConsole,
+        string? replaySavePath,
+        string? replayPath
     )
     {
         var options = BuildOptions(command, width, height);
@@ -79,14 +87,52 @@ public static class PtyRecorder
         using var inputCancellation = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken
         );
-        using var rawInput = forwardToConsole ? ConsoleInputMode.TryEnableRaw(logger) : null;
+        using var rawInput =
+            forwardToConsole && string.IsNullOrWhiteSpace(replayPath)
+                ? ConsoleInputMode.TryEnableRaw(logger)
+                : null;
 
         var connection = await NativePty
             .SpawnAsync(options, cancellationToken)
             .ConfigureAwait(false);
         logger.ZLogDebug($"PTY process spawned.");
         var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
-        var inputForward = forwardToConsole ? TryOpenInputForForwarding(logger) : null;
+        Stream? inputForward;
+        if (!string.IsNullOrWhiteSpace(replayPath))
+        {
+            logger.ZLogDebug($"Input source: replay file. Path={replayPath}");
+            var replayEvents = await InputReplayFile
+                .ReadAllAsync(replayPath!, cancellationToken)
+                .ConfigureAwait(false);
+            inputForward = new InputReplayFile.ReplayStream(replayEvents);
+        }
+        else
+        {
+            inputForward = forwardToConsole ? TryOpenInputForForwarding(logger) : null;
+        }
+
+        InputReplayFile.InputReplayWriter? replaySaveWriter = null;
+        if (!string.IsNullOrWhiteSpace(replaySavePath))
+        {
+            logger.ZLogDebug($"Saving input to replay file. Path={replaySavePath}");
+            var dir = Path.GetDirectoryName(Path.GetFullPath(replaySavePath!));
+            if (!string.IsNullOrWhiteSpace(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            replaySaveWriter = new InputReplayFile.InputReplayWriter(
+                new FileStream(
+                    replaySavePath!,
+                    FileMode.Create,
+                    FileAccess.Write,
+                    FileShare.None,
+                    4096,
+                    FileOptions.Asynchronous
+                )
+            );
+        }
+
         var readTask = ReadOutputAsync(
             connection.ReaderStream,
             session,
@@ -96,7 +142,14 @@ public static class PtyRecorder
             outputForward
         );
         var inputTask = inputForward is not null
-            ? PumpInputAsync(inputForward, connection.WriterStream, inputCancellation.Token, logger)
+            ? PumpInputAsync(
+                inputForward,
+                connection.WriterStream,
+                inputCancellation.Token,
+                logger,
+                stopwatch,
+                replaySaveWriter
+            )
             : null;
 
         var eofReached = false;
@@ -196,6 +249,18 @@ public static class PtyRecorder
             await IgnoreTaskFailureWithTimeoutAsync(inputTask, 200).ConfigureAwait(false);
         }
 
+        if (replaySaveWriter != null)
+        {
+            try
+            {
+                await replaySaveWriter.DisposeAsync().ConfigureAwait(false);
+            }
+            catch
+            {
+                // Ignore disposal errors.
+            }
+        }
+
         logger.ZLogDebug(
             $"PTY recording completed. Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds}"
         );
@@ -208,7 +273,9 @@ public static class PtyRecorder
         int height,
         CancellationToken cancellationToken,
         ILogger logger,
-        bool forwardToConsole
+        bool forwardToConsole,
+        string? replaySavePath,
+        string? replayPath
     )
     {
         var session = new RecordingSession(width, height);
@@ -217,7 +284,10 @@ public static class PtyRecorder
         using var inputCancellation = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken
         );
-        using var rawInput = forwardToConsole ? ConsoleInputMode.TryEnableRaw(logger) : null;
+        using var rawInput =
+            forwardToConsole && string.IsNullOrWhiteSpace(replayPath)
+                ? ConsoleInputMode.TryEnableRaw(logger)
+                : null;
 
         var startInfo = BuildFallbackProcessStartInfo(command);
         logger.ZLogDebug(
@@ -244,13 +314,50 @@ public static class PtyRecorder
         });
 
         var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
-        var inputForward = forwardToConsole ? TryOpenInputForForwarding(logger) : null;
+        Stream? inputForward;
+        if (!string.IsNullOrWhiteSpace(replayPath))
+        {
+            logger.ZLogDebug($"Input source: replay file. Path={replayPath}");
+            var replayEvents = await InputReplayFile
+                .ReadAllAsync(replayPath!, cancellationToken)
+                .ConfigureAwait(false);
+            inputForward = new InputReplayFile.ReplayStream(replayEvents);
+        }
+        else
+        {
+            inputForward = forwardToConsole ? TryOpenInputForForwarding(logger) : null;
+        }
+
+        InputReplayFile.InputReplayWriter? replaySaveWriter = null;
+        if (!string.IsNullOrWhiteSpace(replaySavePath))
+        {
+            logger.ZLogDebug($"Saving input to replay file. Path={replaySavePath}");
+            var dir = Path.GetDirectoryName(Path.GetFullPath(replaySavePath!));
+            if (!string.IsNullOrWhiteSpace(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            replaySaveWriter = new InputReplayFile.InputReplayWriter(
+                new FileStream(
+                    replaySavePath!,
+                    FileMode.Create,
+                    FileAccess.Write,
+                    FileShare.None,
+                    4096,
+                    FileOptions.Asynchronous
+                )
+            );
+        }
+
         var inputTask = inputForward is not null
             ? PumpInputAsync(
                 inputForward,
                 process.StandardInput.BaseStream,
                 inputCancellation.Token,
-                logger
+                logger,
+                stopwatch,
+                replaySaveWriter
             )
             : null;
 
@@ -276,6 +383,18 @@ public static class PtyRecorder
         if (inputTask is not null)
         {
             await IgnoreTaskFailureWithTimeoutAsync(inputTask, 200).ConfigureAwait(false);
+        }
+
+        if (replaySaveWriter != null)
+        {
+            try
+            {
+                await replaySaveWriter.DisposeAsync().ConfigureAwait(false);
+            }
+            catch
+            {
+                // Ignore disposal errors.
+            }
         }
 
         logger.ZLogDebug(
@@ -372,10 +491,22 @@ public static class PtyRecorder
         Stream sourceInput,
         Stream targetInput,
         CancellationToken cancellationToken,
-        ILogger logger
+        ILogger logger,
+        Stopwatch? stopwatch = null,
+        InputReplayFile.InputReplayWriter? inputSave = null
     )
     {
         var buffer = new byte[256];
+        // Use UTF-8 for decoding VT input.  VT sequences are always ASCII, and
+        // Console.InputEncoding (e.g. CP932 / Shift_JIS on Japanese Windows)
+        // may treat ESC (0x1B) as an ISO-2022 lead byte and silently consume it,
+        // which breaks every CSI sequence (arrows, Shift+Tab, etc.).
+        // Modern Windows Terminal sends all characters (including CJK) as UTF-8
+        // regardless of the console code page, so UTF-8 is the correct choice.
+        var inputDecoder = Encoding.UTF8.GetDecoder();
+        var inputChars = new char[512];
+        // Carry-over for incomplete ESC sequences split across reads.
+        var pending = "";
         try
         {
             while (!cancellationToken.IsCancellationRequested)
@@ -392,6 +523,28 @@ public static class PtyRecorder
                     .WriteAsync(buffer, 0, count, cancellationToken)
                     .ConfigureAwait(false);
                 await targetInput.FlushAsync(cancellationToken).ConfigureAwait(false);
+
+                if (inputSave != null && stopwatch != null)
+                {
+                    var charCount = inputDecoder.GetChars(
+                        buffer,
+                        0,
+                        count,
+                        inputChars,
+                        0,
+                        flush: false
+                    );
+                    if (charCount > 0)
+                    {
+                        var text = pending + new string(inputChars, 0, charCount);
+                        var t = stopwatch.Elapsed.TotalSeconds;
+                        var (events, remainder) =
+                            InputReplayFile.ParseInputTextPartial(text, t);
+                        foreach (var evt in events)
+                            inputSave.AppendEvent(evt);
+                        pending = remainder;
+                    }
+                }
             }
         }
         catch (OperationCanceledException)
@@ -409,6 +562,18 @@ public static class PtyRecorder
         catch (Exception ex)
         {
             logger.ZLogDebug(ex, $"Input forwarding failed.");
+        }
+        finally
+        {
+            // Flush any remaining incomplete sequence (treat as-is).
+            // This must be in finally because OperationCanceledException from
+            // ReadAsync would otherwise skip the flush, losing the last pending event.
+            if (inputSave != null && stopwatch != null && pending.Length > 0)
+            {
+                var t = stopwatch?.Elapsed.TotalSeconds ?? 0;
+                foreach (var evt in InputReplayFile.ParseInputText(pending, t))
+                    inputSave.AppendEvent(evt);
+            }
         }
     }
 

@@ -38,6 +38,10 @@ public sealed class AppOptions
 
     public string? SaveCastPath { get; set; }
 
+    public string? ReplaySavePath { get; set; }
+
+    public string? ReplayPath { get; set; }
+
     public string? Font { get; set; }
 
     public double? FontSize { get; set; } = null;

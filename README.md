@@ -41,6 +41,7 @@ console2svg -w 120 -c -d macos-pc -- console2svg
 ---
 
 In video mode(`-v`), you can capture the animation of the command execution and save it as an SVG.
+By using the [replay feature](#replay-input), you can save the command execution record and later regenerate the SVG based on that record.
 
 ```bash
 console2svg -v -c -d macos -- copilot --banner
@@ -161,6 +162,40 @@ This is useful for converting commands that do not terminate, such as `nyancat`,
 
 ```sh
 console2svg -c -d -v --timeout 5 -- nyancat
+```
+
+### Replay input
+You can also save the command execution record and later regenerate the SVG based on that record. 
+To save the record, use the `--replay-save` option to save the command execution.
+
+```sh
+console2svg --replay-save ./replay.json -- bash
+# save key inputs to replay.json
+```
+
+Then, generate the SVG based on the saved key input.
+
+```sh
+console2svg -v -c -d macos --replay ./replay.json -- bash
+```
+
+The replay file is in a simple JSON format. If you make a mistake in the input, you can directly edit this file (or of course, you can ask AI to fix it for you).
+
+```jsonc
+// replay.json
+{
+  "replay": [
+    {
+      "time": 6.6815547,
+      "key": "Tab",
+      "modifiers": [
+        "shift"
+      ],
+      "type": "keydown"
+    },
+    // and so on...
+  ]
+}
 ```
 
 ## Options

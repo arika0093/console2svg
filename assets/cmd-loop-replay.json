@@ -1,43 +1,45 @@
 {
+  "version": "1",
+  "createdAt": "2026-02-28T16:55:14.8050162+00:00",
   "replay": [
     {
-      "time": 5.3918479,
+      "time": 5.0521974,
       "key": "Enter",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "time": 6.5853124,
+      "tick": 0.8847348,
       "key": "h",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "time": 6.6678321,
+      "tick": 0.08248,
       "key": "e",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "time": 6.8100855,
+      "tick": 0.1352958,
       "key": "l",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "time": 6.9483194,
+      "tick": 0.1276889,
       "key": "l",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "time": 7.1154726,
+      "tick": 0.1720695,
       "key": "o",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "time": 7.73212,
+      "tick": 0.832305,
       "key": "Tab",
       "modifiers": [
         "shift"
@@ -45,7 +47,7 @@
       "type": "keydown"
     },
     {
-      "time": 7.9870348,
+      "tick": 0.2549014,
       "key": "Tab",
       "modifiers": [
         "shift"
@@ -53,25 +55,25 @@
       "type": "keydown"
     },
     {
-      "time": 8.9698839,
+      "tick": 1.6135295,
       "key": "ArrowDown",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "time": 9.2855597,
+      "tick": 0.2098184,
       "key": "ArrowUp",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "time": 9.8493693,
+      "tick": 0.3373736,
       "key": "Enter",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "time": 10.8019185,
+      "tick": 1.2369341,
       "key": "c",
       "modifiers": [
         "ctrl"
@@ -79,7 +81,7 @@
       "type": "keydown"
     },
     {
-      "time": 11.2717161,
+      "tick": 0.202196,
       "key": "c",
       "modifiers": [
         "ctrl"

@@ -414,7 +414,40 @@ public static class InputReplayFile
             json,
             InputReplaySerializerContext.Default.InputReplayData
         );
-        return data?.Replay ?? [];
+        var events = data?.Replay ?? [];
+        ResolveAbsoluteTimes(events);
+        return events;
+    }
+
+    /// <summary>
+    /// Resolves each event's absolute time from either its explicit <c>time</c> or
+    /// a cumulative <c>tick</c> (delta from the previous event).
+    /// <c>time</c> always takes priority when both fields are present.
+    /// After resolution all events carry an absolute <see cref="InputEvent.Time"/> and
+    /// <see cref="InputEvent.Tick"/> is cleared.
+    /// </summary>
+    private static void ResolveAbsoluteTimes(List<InputEvent> events)
+    {
+        double lastTime = 0;
+        foreach (var evt in events)
+        {
+            if (evt.Time.HasValue)
+            {
+                // Explicit absolute time always wins.
+                lastTime = evt.Time.Value;
+            }
+            else if (evt.Tick.HasValue)
+            {
+                evt.Time = lastTime + evt.Tick.Value;
+                lastTime = evt.Time.Value;
+            }
+            else
+            {
+                // Neither specified: keep at same time as previous event.
+                evt.Time = lastTime;
+            }
+            evt.Tick = null;
+        }
     }
 
     private static byte[] Enc(string s) => Encoding.UTF8.GetBytes(s);
@@ -760,6 +793,7 @@ public static class InputReplayFile
     {
         private readonly Stream _stream;
         private readonly InputReplayData _data = new();
+        private readonly DateTimeOffset _createdAt = DateTimeOffset.UtcNow;
 
         public InputReplayWriter(Stream stream)
         {
@@ -771,11 +805,47 @@ public static class InputReplayFile
             _data.Replay.Add(evt);
         }
 
+        /// <summary>
+        /// Builds a serialization-ready copy of the data:
+        /// sets <see cref="InputReplayData.Version"/> and <see cref="InputReplayData.CreatedAt"/>,
+        /// and converts events so the first uses <c>time</c> and the rest use <c>tick</c>.
+        /// </summary>
+        private InputReplayData BuildSerializableData()
+        {
+            var result = new InputReplayData
+            {
+                Version = InputReplayData.CurrentVersion,
+                CreatedAt = _createdAt,
+                Replay = new List<InputEvent>(_data.Replay.Count),
+            };
+
+            double lastTime = 0;
+            for (var i = 0; i < _data.Replay.Count; i++)
+            {
+                var src = _data.Replay[i];
+                double absTime = src.Time ?? 0;
+                var evt = new InputEvent
+                {
+                    Key = src.Key,
+                    Modifiers = src.Modifiers,
+                    Type = src.Type,
+                };
+                if (i == 0)
+                    evt.Time = absTime;
+                else
+                    evt.Tick = Math.Round(absTime - lastTime, 7);
+                lastTime = absTime;
+                result.Replay.Add(evt);
+            }
+
+            return result;
+        }
+
         public void Dispose()
         {
             JsonSerializer.Serialize(
                 _stream,
-                _data,
+                BuildSerializableData(),
                 InputReplaySerializerContext.Default.InputReplayData
             );
             _stream.Flush();
@@ -787,7 +857,7 @@ public static class InputReplayFile
             await JsonSerializer
                 .SerializeAsync(
                     _stream,
-                    _data,
+                    BuildSerializableData(),
                     InputReplaySerializerContext.Default.InputReplayData
                 )
                 .ConfigureAwait(false);
@@ -809,7 +879,7 @@ public static class InputReplayFile
         {
             _events = new (double, byte[])[events.Count];
             for (var i = 0; i < events.Count; i++)
-                _events[i] = (events[i].Time, EventToBytes(events[i]));
+                _events[i] = (events[i].Time ?? 0, EventToBytes(events[i]));
         }
 
         public override bool CanRead => true;

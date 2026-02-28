@@ -184,13 +184,27 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
 ```jsonc
 // replay.json
 {
+  "version": "1",
+  "createdAt": "2025-01-15T12:34:56+00:00",
   "replay": [
     {
-      "time": 6.6815547,
-      "key": "Tab",
-      "modifiers": [
-        "shift"
-      ],
+      // first event: absolute time from recording start (seconds)
+      "time": 1.5,
+      "key": "e",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      // subsequent events: delta from the previous event (seconds)
+      "tick": 0.08,
+      "key": "c",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.12,
+      "key": "h",
+      "modifiers": [],
       "type": "keydown"
     },
     // and so on...

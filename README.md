@@ -48,20 +48,6 @@ console2svg -v -c -d macos -- copilot --banner
 
 ![](./assets/cmd-loop.svg)
 
-
-By using the replay input feature, you can reliably convert command execution animations into SVG.  
-For example, the following example captures the execution of the `ls` command on `bash` and converts it into SVG.
-
-```bash
-# save replay
-console2svg --replay-save ./replay.json -- bash
-# > ls
-# > exit
-
-# and then generate SVG from the replay
-console2svg -v -c -d macos --replay ./replay.json -- bash
-```
-
 ## Install
 [![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) [![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest)
  

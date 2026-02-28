@@ -421,10 +421,7 @@ public static class InputReplayFile
 
     private static bool ArrayContains(string[] arr, string val)
     {
-        foreach (var s in arr)
-            if (s == val)
-                return true;
-        return false;
+        return Array.Exists(arr, s => s == val);
     }
 
     private static string[] PrependAlt(string[] mods)

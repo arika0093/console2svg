@@ -497,7 +497,13 @@ public static class PtyRecorder
     )
     {
         var buffer = new byte[256];
-        var inputDecoder = Console.InputEncoding.GetDecoder();
+        // Use UTF-8 for decoding VT input.  VT sequences are always ASCII, and
+        // Console.InputEncoding (e.g. CP932 / Shift_JIS on Japanese Windows)
+        // may treat ESC (0x1B) as an ISO-2022 lead byte and silently consume it,
+        // which breaks every CSI sequence (arrows, Shift+Tab, etc.).
+        // Modern Windows Terminal sends all characters (including CJK) as UTF-8
+        // regardless of the console code page, so UTF-8 is the correct choice.
+        var inputDecoder = Encoding.UTF8.GetDecoder();
         var inputChars = new char[512];
         // Carry-over for incomplete ESC sequences split across reads.
         var pending = "";
@@ -540,14 +546,6 @@ public static class PtyRecorder
                     }
                 }
             }
-
-            // Flush any remaining incomplete sequence (treat as-is).
-            if (inputSave != null && stopwatch != null && pending.Length > 0)
-            {
-                var t = stopwatch.Elapsed.TotalSeconds;
-                foreach (var evt in InputReplayFile.ParseInputText(pending, t))
-                    inputSave.AppendEvent(evt);
-            }
         }
         catch (OperationCanceledException)
         {
@@ -564,6 +562,18 @@ public static class PtyRecorder
         catch (Exception ex)
         {
             logger.ZLogDebug(ex, $"Input forwarding failed.");
+        }
+        finally
+        {
+            // Flush any remaining incomplete sequence (treat as-is).
+            // This must be in finally because OperationCanceledException from
+            // ReadAsync would otherwise skip the flush, losing the last pending event.
+            if (inputSave != null && stopwatch != null && pending.Length > 0)
+            {
+                var t = stopwatch?.Elapsed.TotalSeconds ?? 0;
+                foreach (var evt in InputReplayFile.ParseInputText(pending, t))
+                    inputSave.AppendEvent(evt);
+            }
         }
     }
 

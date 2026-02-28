@@ -49,7 +49,7 @@ public sealed class InputReplayFileTests
     }
 
     [Test]
-    public async Task WrittenFileIsValidJsonArray()
+    public async Task WrittenFileIsValidJsonObject()
     {
         var tmpPath = Path.GetTempFileName();
         try
@@ -66,8 +66,10 @@ public sealed class InputReplayFileTests
 
             var json = await File.ReadAllTextAsync(tmpPath);
             using var doc = System.Text.Json.JsonDocument.Parse(json);
-            doc.RootElement.ValueKind.ShouldBe(System.Text.Json.JsonValueKind.Array);
-            doc.RootElement.GetArrayLength().ShouldBe(2);
+            doc.RootElement.ValueKind.ShouldBe(System.Text.Json.JsonValueKind.Object);
+            var replay = doc.RootElement.GetProperty("Replay");
+            replay.ValueKind.ShouldBe(System.Text.Json.JsonValueKind.Array);
+            replay.GetArrayLength().ShouldBe(2);
         }
         finally
         {
@@ -76,7 +78,7 @@ public sealed class InputReplayFileTests
     }
 
     [Test]
-    public async Task EmptyWriterProducesEmptyJsonArray()
+    public async Task EmptyWriterProducesEmptyReplay()
     {
         var tmpPath = Path.GetTempFileName();
         try
@@ -366,6 +368,140 @@ public sealed class InputReplayFileTests
         var endEvents = new List<InputEvent>(InputReplayFile.ParseInputText(endText, 0.0));
         endEvents.Count.ShouldBe(1);
         endEvents[0].Key.ShouldBe("End");
+    }
+
+    // ── Win32-input-mode sequences ────────────────────────────────────────────
+
+    [Test]
+    public void ParseInputTextWin32PrintableKey()
+    {
+        // \x1b[86;47;118;1;0;1_ → Vk=86('V'), Sc=47, Uc=118('v'), Kd=1(down), Cs=0(no mods), Rc=1
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText("\x1b[86;47;118;1;0;1_", 0.0)
+        );
+        events.Count.ShouldBe(1);
+        events[0].Key.ShouldBe("v");
+        events[0].Modifiers.Length.ShouldBe(0);
+    }
+
+    [Test]
+    public void ParseInputTextWin32KeyUpSkipped()
+    {
+        // Kd=0 → key-up, should be skipped entirely
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText("\x1b[86;47;118;0;0;1_", 0.0)
+        );
+        events.Count.ShouldBe(0);
+    }
+
+    [Test]
+    public void ParseInputTextWin32ArrowKey()
+    {
+        // VK_UP = 0x26 (38), VK_DOWN = 0x28 (40)
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText("\x1b[38;72;0;1;0;1_\x1b[40;80;0;1;0;1_", 0.0)
+        );
+        events.Count.ShouldBe(2);
+        events[0].Key.ShouldBe("ArrowUp");
+        events[1].Key.ShouldBe("ArrowDown");
+    }
+
+    [Test]
+    public void ParseInputTextWin32SpecialKeys()
+    {
+        // Home=0x24(36), End=0x23(35), PageUp=0x21(33), PageDown=0x22(34)
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText(
+                "\x1b[36;71;0;1;0;1_\x1b[35;79;0;1;0;1_\x1b[33;73;0;1;0;1_\x1b[34;81;0;1;0;1_",
+                0.0
+            )
+        );
+        events.Count.ShouldBe(4);
+        events[0].Key.ShouldBe("Home");
+        events[1].Key.ShouldBe("End");
+        events[2].Key.ShouldBe("PageUp");
+        events[3].Key.ShouldBe("PageDown");
+    }
+
+    [Test]
+    public void ParseInputTextWin32CtrlKey()
+    {
+        // Ctrl+C: Vk=0x43(67,'C'), Uc=3(Ctrl+C ctrl-char), Kd=1, Cs=8(LeftCtrl)
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText("\x1b[67;46;3;1;8;1_", 0.0)
+        );
+        events.Count.ShouldBe(1);
+        events[0].Key.ShouldBe("c");
+        events[0].Modifiers.ShouldContain("ctrl");
+    }
+
+    [Test]
+    public void ParseInputTextWin32ShiftKey()
+    {
+        // Shift+V: Vk=86, Uc=86('V'), Kd=1, Cs=16(0x10=Shift)
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText("\x1b[86;47;86;1;16;1_", 0.0)
+        );
+        events.Count.ShouldBe(1);
+        events[0].Key.ShouldBe("V");
+        events[0].Modifiers.ShouldContain("shift");
+    }
+
+    [Test]
+    public void ParseInputTextWin32FunctionKey()
+    {
+        // F1=0x70(112), F5=0x74(116), F12=0x7B(123)
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText(
+                "\x1b[112;59;0;1;0;1_\x1b[116;63;0;1;0;1_\x1b[123;88;0;1;0;1_",
+                0.0
+            )
+        );
+        events.Count.ShouldBe(3);
+        events[0].Key.ShouldBe("F1");
+        events[1].Key.ShouldBe("F5");
+        events[2].Key.ShouldBe("F12");
+    }
+
+    [Test]
+    public void ParseInputTextWin32EnterBackspaceEscape()
+    {
+        // Enter=0x0D(13), Backspace=0x08(8), Escape=0x1B(27)
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText(
+                "\x1b[13;28;13;1;0;1_\x1b[8;14;8;1;0;1_\x1b[27;1;27;1;0;1_",
+                0.0
+            )
+        );
+        events.Count.ShouldBe(3);
+        events[0].Key.ShouldBe("Enter");
+        events[1].Key.ShouldBe("Backspace");
+        events[2].Key.ShouldBe("Escape");
+    }
+
+    [Test]
+    public void ParseInputTextFocusEventsSkipped()
+    {
+        // \x1b[I = focus-in, \x1b[O = focus-out; both should be silently skipped.
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText("\x1b[Ia\x1b[O", 0.0)
+        );
+        events.Count.ShouldBe(1);
+        events[0].Key.ShouldBe("a");
+    }
+
+    [Test]
+    public void ParseInputTextWin32KeyUpAndDownSequence()
+    {
+        // Typical Win32 pair: key-down ('v'), key-up ('v') — only down event emitted.
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText(
+                "\x1b[86;47;118;1;0;1_\x1b[86;47;118;0;0;1_",
+                0.0
+            )
+        );
+        events.Count.ShouldBe(1);
+        events[0].Key.ShouldBe("v");
     }
 }
 

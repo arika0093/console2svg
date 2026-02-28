@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,6 +17,13 @@ public sealed record InputEvent(
     string[] Modifiers,
     string Type = "keydown"
 );
+
+/// <summary>Wrapper type for the JSON replay file: <c>{"Replay":[...]}</c>.</summary>
+public sealed class InputReplayData
+{
+    [JsonPropertyName("Replay")]
+    public List<InputEvent> Replay { get; set; } = [];
+}
 
 public static class InputReplayFile
 {
@@ -73,7 +81,7 @@ public static class InputReplayFile
 
     // ── Public API ──────────────────────────────────────────────────────────
 
-    /// <summary>Read all events from a JSON-array replay file.</summary>
+    /// <summary>Read all events from a JSON replay file (<c>{"Replay":[...]}</c>).</summary>
     public static async Task<List<InputEvent>> ReadAllAsync(
         string path,
         CancellationToken cancellationToken
@@ -83,7 +91,7 @@ public static class InputReplayFile
         var json = await File
             .ReadAllTextAsync(path, Encoding.UTF8, cancellationToken)
             .ConfigureAwait(false);
-        return ParseJsonArray(json);
+        return ParseJsonObject(json);
     }
 
     /// <summary>
@@ -109,7 +117,8 @@ public static class InputReplayFile
                 if (next == '[')
                 {
                     var (key, mods, len) = ParseCsiSequence(text, i);
-                    yield return new InputEvent(time, key, mods, "keydown");
+                    if (key is not null)
+                        yield return new InputEvent(time, key, mods, "keydown");
                     i += len;
                     continue;
                 }
@@ -266,33 +275,12 @@ public static class InputReplayFile
 
     // ── Helpers ─────────────────────────────────────────────────────────────
 
-    internal static List<InputEvent> ParseJsonArray(string json)
+    internal static List<InputEvent> ParseJsonObject(string json)
     {
-        var events = new List<InputEvent>();
         if (string.IsNullOrWhiteSpace(json))
-            return events;
-        using var doc = JsonDocument.Parse(json);
-        if (doc.RootElement.ValueKind != JsonValueKind.Array)
-            return events;
-        foreach (var el in doc.RootElement.EnumerateArray())
-        {
-            if (
-                !el.TryGetProperty("time", out var timeProp)
-                || !el.TryGetProperty("key", out var keyProp)
-            )
-                continue;
-            var time = timeProp.GetDouble();
-            var key = keyProp.GetString() ?? "";
-            var modifiers = new List<string>();
-            if (el.TryGetProperty("modifiers", out var modsProp))
-                foreach (var m in modsProp.EnumerateArray())
-                    modifiers.Add(m.GetString() ?? "");
-            var type = el.TryGetProperty("type", out var typeProp)
-                ? typeProp.GetString() ?? "keydown"
-                : "keydown";
-            events.Add(new InputEvent(time, key, [.. modifiers], type));
-        }
-        return events;
+            return [];
+        var data = JsonSerializer.Deserialize(json, InputReplayJsonContext.Default.InputReplayData);
+        return data?.Replay ?? [];
     }
 
     private static byte[] Enc(string s) => Encoding.UTF8.GetBytes(s);
@@ -339,7 +327,7 @@ public static class InputReplayFile
         return (c.ToString(), []);
     }
 
-    private static (string Key, string[] Mods, int Length) ParseCsiSequence(
+    private static (string? Key, string[] Mods, int Length) ParseCsiSequence(
         string text,
         int start
     )
@@ -355,6 +343,10 @@ public static class InputReplayFile
         char fin = text[i];
         int len = i - start + 1;
         string param = text.Substring(start + 2, i - (start + 2));
+
+        // Win32-input-mode: \x1b[Vk;Sc;Uc;Kd;Cs;Rc_
+        if (fin == '_')
+            return ParseWin32InputMode(param, len);
 
         if (fin == '~')
         {
@@ -374,6 +366,9 @@ public static class InputReplayFile
             // Z = Back-Tab (Shift+Tab): carry any decoded modifiers plus an implied shift.
             if (finStr == "Z")
                 return ("Tab", PrependShift(mods), len);
+            // Focus-in / focus-out events (xterm focus-tracking protocol) — skip silently.
+            if ((fin == 'I' || fin == 'O') && param.Length == 0)
+                return (null, [], len);
             foreach (var (final, key) in s_csiLetterKeys)
                 if (final == finStr)
                     return (key, mods, len);
@@ -412,11 +407,112 @@ public static class InputReplayFile
         return [.. result];
     }
 
+    // ── Win32-input-mode helpers ─────────────────────────────────────────────
+
+    /// <summary>
+    /// Parse a Win32-input-mode CSI sequence: <c>\x1b[Vk;Sc;Uc;Kd;Cs;Rc_</c>.
+    /// Returns null key for key-up or unhandled events (caller skips them).
+    /// </summary>
+    private static (string? Key, string[] Mods, int Length) ParseWin32InputMode(
+        string param,
+        int len
+    )
+    {
+        var parts = param.Split(';');
+        if (parts.Length < 6)
+            return (null, [], len);
+
+        if (
+            !int.TryParse(parts[0], out int vk)
+            || !int.TryParse(parts[2], out int uc)
+            || !int.TryParse(parts[3], out int kd)
+            || !int.TryParse(parts[4], out int cs)
+        )
+            return (null, [], len);
+
+        // Skip key-up events (Kd == 0).
+        if (kd == 0)
+            return (null, [], len);
+
+        var mods = DecodeWin32ControlState(cs);
+
+        // Named special/function key from Virtual Key code.
+        var namedKey = VkToNamedKey(vk);
+        if (namedKey is not null)
+            return (namedKey, mods, len);
+
+        // Ctrl+letter: Uc is a control character (1–26); derive letter from Vk (A=0x41).
+        bool hasCtrl = (cs & 0x0C) != 0;
+        if (hasCtrl && vk >= 0x41 && vk <= 0x5A)
+        {
+            var letter = (char)('a' + (vk - 0x41));
+            return (letter.ToString(), mods, len);
+        }
+
+        // Printable Unicode character (Uc already reflects shift state).
+        if (uc > 0x1F && uc != 0x7F && uc <= 0x10FFFF && (uc < 0xD800 || uc >= 0xE000))
+        {
+            var keyStr = uc < 0x10000 ? ((char)uc).ToString() : char.ConvertFromUtf32(uc);
+            return (keyStr, mods, len);
+        }
+
+        // Unhandled (NumLock, CapsLock, etc.) — skip.
+        return (null, [], len);
+    }
+
+    /// <summary>Decode Win32 control-key state bits into modifier names.</summary>
+    private static string[] DecodeWin32ControlState(int cs)
+    {
+        // Bit 0–1: Right/Left Alt; bit 2–3: Right/Left Ctrl; bit 4: Shift.
+        var mods = new List<string>(3);
+        if ((cs & 0x0C) != 0)
+            mods.Add("ctrl");
+        if ((cs & 0x03) != 0)
+            mods.Add("alt");
+        if ((cs & 0x10) != 0)
+            mods.Add("shift");
+        return [.. mods];
+    }
+
+    /// <summary>Map a Windows Virtual Key code to a named key string, or null if not a special key.</summary>
+    private static string? VkToNamedKey(int vk) =>
+        vk switch
+        {
+            0x08 => "Backspace",
+            0x09 => "Tab",
+            0x0D => "Enter",
+            0x1B => "Escape",
+            0x20 => "Space",
+            0x21 => "PageUp",
+            0x22 => "PageDown",
+            0x23 => "End",
+            0x24 => "Home",
+            0x25 => "ArrowLeft",
+            0x26 => "ArrowUp",
+            0x27 => "ArrowRight",
+            0x28 => "ArrowDown",
+            0x2D => "Insert",
+            0x2E => "Delete",
+            0x70 => "F1",
+            0x71 => "F2",
+            0x72 => "F3",
+            0x73 => "F4",
+            0x74 => "F5",
+            0x75 => "F6",
+            0x76 => "F7",
+            0x77 => "F8",
+            0x78 => "F9",
+            0x79 => "F10",
+            0x7A => "F11",
+            0x7B => "F12",
+            _ => null,
+        };
+
     // ── Writer ───────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Streams <see cref="InputEvent"/> objects to a valid JSON array file incrementally.
-    /// Dispose (or <c>await using</c>) to write the closing bracket and flush.
+    /// Streams <see cref="InputEvent"/> objects to a <c>{"Replay":[...]}</c> JSON file
+    /// incrementally. Dispose (or <c>await using</c>) to write the closing brackets and flush.
     /// </summary>
     public sealed class InputReplayWriter : IDisposable, IAsyncDisposable
     {
@@ -426,48 +522,27 @@ public static class InputReplayFile
         public InputReplayWriter(TextWriter writer)
         {
             _writer = writer;
-            _writer.Write("[");
+            _writer.Write("{\"Replay\":[");
         }
 
         public void AppendEvent(InputEvent evt)
         {
             if (_hasEvents)
                 _writer.Write(",");
-            _writer.WriteLine();
-            WriteEventJson(_writer, evt);
+            _writer.Write(JsonSerializer.Serialize(evt, InputReplayJsonContext.Default.InputEvent));
             _hasEvents = true;
-        }
-
-        private static void WriteEventJson(TextWriter writer, InputEvent evt)
-        {
-            using var ms = new MemoryStream();
-            using var jw = new Utf8JsonWriter(ms);
-            jw.WriteStartObject();
-            jw.WriteNumber("time", evt.Time);
-            jw.WriteString("key", evt.Key);
-            jw.WritePropertyName("modifiers");
-            jw.WriteStartArray();
-            foreach (var m in evt.Modifiers)
-                jw.WriteStringValue(m);
-            jw.WriteEndArray();
-            jw.WriteString("type", evt.Type);
-            jw.WriteEndObject();
-            jw.Flush();
-            writer.Write(Encoding.UTF8.GetString(ms.GetBuffer(), 0, (int)ms.Length));
         }
 
         public void Dispose()
         {
-            _writer.WriteLine();
-            _writer.Write("]");
+            _writer.Write("]}");
             _writer.Flush();
             _writer.Dispose();
         }
 
         public async ValueTask DisposeAsync()
         {
-            _writer.WriteLine();
-            await _writer.WriteAsync("]").ConfigureAwait(false);
+            await _writer.WriteAsync("]}").ConfigureAwait(false);
             await _writer.FlushAsync().ConfigureAwait(false);
             if (_writer is IAsyncDisposable ad)
                 await ad.DisposeAsync().ConfigureAwait(false);

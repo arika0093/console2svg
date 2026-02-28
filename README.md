@@ -163,21 +163,6 @@ This is useful for converting commands that do not terminate, such as `nyancat`,
 console2svg -c -d -v --timeout 5 -- nyancat
 ```
 
-### Replay input
-You can also save the command execution record and later regenerate the SVG based on that record. 
-To save the record, use the `--replay-save` option to save the command execution.
-
-```sh
-console2svg --replay-save ./replay.json -- bash
-# save key inputs to replay.json
-```
-
-Then, generate the SVG based on the saved key input.
-
-```sh
-console2svg -v -c -d macos --replay ./replay.json -- bash
-```
-
 ## Options
 ### Major options
 

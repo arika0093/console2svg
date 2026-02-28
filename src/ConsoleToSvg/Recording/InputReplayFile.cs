@@ -239,6 +239,73 @@ public static class InputReplayFile
         }
     }
 
+    /// <summary>
+    /// Like <see cref="ParseInputText"/> but returns any trailing incomplete ESC sequence
+    /// as <paramref name="remainder"/> instead of misinterpreting it. The caller should
+    /// prepend <paramref name="remainder"/> to the next chunk of input.
+    /// </summary>
+    public static (List<InputEvent> Events, string Remainder) ParseInputTextPartial(
+        string text,
+        double time
+    )
+    {
+        // Find the last ESC in the text; if it starts an incomplete sequence, split there.
+        int lastEsc = text.LastIndexOf('\x1b');
+        if (lastEsc >= 0 && !IsCompleteEscSequenceAt(text, lastEsc))
+        {
+            var head = lastEsc > 0 ? text.Substring(0, lastEsc) : "";
+            var remainder = text.Substring(lastEsc);
+            var events = new List<InputEvent>(ParseInputText(head, time));
+            return (events, remainder);
+        }
+
+        return (new List<InputEvent>(ParseInputText(text, time)), "");
+    }
+
+    /// <summary>
+    /// Returns true if the ESC sequence starting at <paramref name="pos"/> is complete
+    /// (has all required bytes including the final byte).
+    /// </summary>
+    private static bool IsCompleteEscSequenceAt(string text, int pos)
+    {
+        if (pos >= text.Length || text[pos] != '\x1b')
+            return true;
+
+        // Lone ESC at end
+        if (pos + 1 >= text.Length)
+            return false;
+
+        char next = text[pos + 1];
+
+        // ESC ESC → complete (two consecutive ESCs)
+        if (next == '\x1b')
+            return true;
+
+        // CSI: ESC[
+        if (next == '[')
+        {
+            int i = pos + 2;
+            // Private parameter prefix: ?, >, <, =
+            if (i < text.Length && text[i] >= '<' && text[i] <= '?')
+                i++;
+            // Parameter bytes: digits and semicolons
+            while (i < text.Length && (text[i] == ';' || (text[i] >= '0' && text[i] <= '9')))
+                i++;
+            // Intermediate bytes: 0x20-0x2F
+            while (i < text.Length && text[i] >= 0x20 && text[i] <= 0x2F)
+                i++;
+            // Must have a final byte
+            return i < text.Length;
+        }
+
+        // SS3: ESC O
+        if (next == 'O')
+            return pos + 2 < text.Length;
+
+        // ESC + any other char = Alt+key → complete (2 bytes consumed)
+        return true;
+    }
+
     /// <summary>Convert a structured <see cref="InputEvent"/> back to the VT bytes for the PTY.</summary>
     public static byte[] EventToBytes(InputEvent evt)
     {

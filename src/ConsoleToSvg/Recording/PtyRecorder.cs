@@ -499,6 +499,8 @@ public static class PtyRecorder
         var buffer = new byte[256];
         var inputDecoder = Console.InputEncoding.GetDecoder();
         var inputChars = new char[512];
+        // Carry-over for incomplete ESC sequences split across reads.
+        var pending = "";
         try
         {
             while (!cancellationToken.IsCancellationRequested)
@@ -528,12 +530,23 @@ public static class PtyRecorder
                     );
                     if (charCount > 0)
                     {
-                        var text = new string(inputChars, 0, charCount);
+                        var text = pending + new string(inputChars, 0, charCount);
                         var t = stopwatch.Elapsed.TotalSeconds;
-                        foreach (var evt in InputReplayFile.ParseInputText(text, t))
+                        var (events, remainder) =
+                            InputReplayFile.ParseInputTextPartial(text, t);
+                        foreach (var evt in events)
                             inputSave.AppendEvent(evt);
+                        pending = remainder;
                     }
                 }
+            }
+
+            // Flush any remaining incomplete sequence (treat as-is).
+            if (inputSave != null && stopwatch != null && pending.Length > 0)
+            {
+                var t = stopwatch.Elapsed.TotalSeconds;
+                foreach (var evt in InputReplayFile.ParseInputText(pending, t))
+                    inputSave.AppendEvent(evt);
             }
         }
         catch (OperationCanceledException)

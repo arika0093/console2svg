@@ -580,4 +580,137 @@ public sealed class InputReplayFileTests
         events[3].Key.ShouldBe("Tab");
         events[3].Modifiers.ShouldContain("shift");
     }
+
+    // ── ParseInputTextPartial ────────────────────────────────────────────────
+
+    [Test]
+    public void ParseInputTextPartialLoneEscAtEnd()
+    {
+        var (events, remainder) = InputReplayFile.ParseInputTextPartial("hello\x1b", 1.0);
+        events.Count.ShouldBe(5); // h, e, l, l, o
+        remainder.ShouldBe("\x1b");
+    }
+
+    [Test]
+    public void ParseInputTextPartialCsiPrefixAtEnd()
+    {
+        // ESC[ at end → incomplete CSI
+        var (events, remainder) = InputReplayFile.ParseInputTextPartial("ab\x1b[", 1.0);
+        events.Count.ShouldBe(2); // a, b
+        remainder.ShouldBe("\x1b[");
+    }
+
+    [Test]
+    public void ParseInputTextPartialSs3PrefixAtEnd()
+    {
+        // ESCO at end → incomplete SS3
+        var (events, remainder) = InputReplayFile.ParseInputTextPartial("x\x1bO", 1.0);
+        events.Count.ShouldBe(1); // x
+        remainder.ShouldBe("\x1bO");
+    }
+
+    [Test]
+    public void ParseInputTextPartialCsiParamsNoFinalByte()
+    {
+        // ESC[1;2 at end → incomplete CSI with params
+        var (events, remainder) = InputReplayFile.ParseInputTextPartial("z\x1b[1;2", 1.0);
+        events.Count.ShouldBe(1); // z
+        remainder.ShouldBe("\x1b[1;2");
+    }
+
+    [Test]
+    public void ParseInputTextPartialCompleteSequenceNotCarriedOver()
+    {
+        // Complete CSI → no remainder
+        var (events, remainder) = InputReplayFile.ParseInputTextPartial("a\x1b[Z", 1.0);
+        events.Count.ShouldBe(2); // a, Tab(shift)
+        remainder.ShouldBe("");
+        events[0].Key.ShouldBe("a");
+        events[1].Key.ShouldBe("Tab");
+        events[1].Modifiers.ShouldContain("shift");
+    }
+
+    [Test]
+    public void ParseInputTextPartialCompleteSs3NotCarriedOver()
+    {
+        // Complete SS3 → no remainder
+        var (events, remainder) = InputReplayFile.ParseInputTextPartial("a\x1bOB", 1.0);
+        events.Count.ShouldBe(2); // a, ArrowDown
+        remainder.ShouldBe("");
+        events[1].Key.ShouldBe("ArrowDown");
+    }
+
+    [Test]
+    public void ParseInputTextPartialMultipleChunksJoin()
+    {
+        // Simulate two ReadAsync calls: first "hello\x1b", then "[Z"
+        var (events1, rem1) = InputReplayFile.ParseInputTextPartial("hello\x1b", 1.0);
+        events1.Count.ShouldBe(5); // h, e, l, l, o
+        rem1.ShouldBe("\x1b");
+
+        // Prepend remainder to next chunk
+        var (events2, rem2) = InputReplayFile.ParseInputTextPartial(rem1 + "[Z", 1.1);
+        events2.Count.ShouldBe(1); // Tab(shift)
+        events2[0].Key.ShouldBe("Tab");
+        events2[0].Modifiers.ShouldContain("shift");
+        rem2.ShouldBe("");
+    }
+
+    [Test]
+    public void ParseInputTextPartialArrowKeysSplitAcrossChunks()
+    {
+        // Simulate: first "\x1b", then "OA" (ArrowUp via SS3)
+        var (events1, rem1) = InputReplayFile.ParseInputTextPartial("text\x1b", 1.0);
+        events1.Count.ShouldBe(4); // t, e, x, t
+        rem1.ShouldBe("\x1b");
+
+        var (events2, rem2) = InputReplayFile.ParseInputTextPartial(rem1 + "OA", 1.1);
+        events2.Count.ShouldBe(1);
+        events2[0].Key.ShouldBe("ArrowUp");
+        rem2.ShouldBe("");
+    }
+
+    [Test]
+    public void ParseInputTextPartialThreeChunkJoin()
+    {
+        // Simulate: "\x1b" → "[" → "A"
+        var (e1, r1) = InputReplayFile.ParseInputTextPartial("a\x1b", 1.0);
+        e1.Count.ShouldBe(1); // a
+        r1.ShouldBe("\x1b");
+
+        var (e2, r2) = InputReplayFile.ParseInputTextPartial(r1 + "[", 1.1);
+        e2.Count.ShouldBe(0); // nothing complete yet
+        r2.ShouldBe("\x1b[");
+
+        var (e3, r3) = InputReplayFile.ParseInputTextPartial(r2 + "A", 1.2);
+        e3.Count.ShouldBe(1);
+        e3[0].Key.ShouldBe("ArrowUp");
+        r3.ShouldBe("");
+    }
+
+    [Test]
+    public void ParseInputTextPartialNoEscNoRemainder()
+    {
+        // Plain text → no remainder
+        var (events, remainder) = InputReplayFile.ParseInputTextPartial("hello", 1.0);
+        events.Count.ShouldBe(5);
+        remainder.ShouldBe("");
+    }
+
+    [Test]
+    public void ParseInputTextPartialEmptyInput()
+    {
+        var (events, remainder) = InputReplayFile.ParseInputTextPartial("", 1.0);
+        events.Count.ShouldBe(0);
+        remainder.ShouldBe("");
+    }
+
+    [Test]
+    public void ParseInputTextPartialCsiWithPrivatePrefix()
+    {
+        // ESC[? at end → incomplete (terminal response prefix)
+        var (events, remainder) = InputReplayFile.ParseInputTextPartial("x\x1b[?", 1.0);
+        events.Count.ShouldBe(1); // x
+        remainder.ShouldBe("\x1b[?");
+    }
 }

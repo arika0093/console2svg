@@ -386,15 +386,41 @@ public static class InputReplayFile
     {
         // text[start] == ESC, text[start+1] == '['
         int i = start + 2;
+
+        // Private parameter prefix: ?, >, <, = (0x3C-0x3F)
+        bool hasPrivatePrefix = false;
+        if (i < text.Length && text[i] >= '<' && text[i] <= '?')
+        {
+            hasPrivatePrefix = true;
+            i++;
+        }
+
+        // Parameter bytes: digits and semicolons
+        int paramStart = i;
         while (i < text.Length && (text[i] == ';' || (text[i] >= '0' && text[i] <= '9')))
             i++;
+        int paramEnd = i;
+
+        // Intermediate bytes: 0x20-0x2F (space, !, ", #, $, %, &, etc.)
+        bool hasIntermediateBytes = false;
+        while (i < text.Length && text[i] >= 0x20 && text[i] <= 0x2F)
+        {
+            hasIntermediateBytes = true;
+            i++;
+        }
 
         if (i >= text.Length)
             return ("Escape", [], 1); // incomplete — consume only the ESC
 
         char fin = text[i];
         int len = i - start + 1;
-        string param = text.Substring(start + 2, i - (start + 2));
+
+        // Terminal responses have private prefixes (DA1 ESC[?…c, DA2 ESC[>…c,
+        // DECRPM ESC[?…$y, etc.) or intermediate bytes — never user input.
+        if (hasPrivatePrefix || hasIntermediateBytes)
+            return (null, [], len);
+
+        string param = text.Substring(paramStart, paramEnd - paramStart);
 
         // Win32-input-mode: \x1b[Vk;Sc;Uc;Kd;Cs;Rc_
         if (fin == '_')

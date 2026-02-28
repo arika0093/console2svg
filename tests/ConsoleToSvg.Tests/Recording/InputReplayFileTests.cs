@@ -22,9 +22,9 @@ public sealed class InputReplayFileTests
                 var writer = new InputReplayFile.InputReplayWriter(File.OpenWrite(tmpPath))
             )
             {
-                writer.AppendEvent(new InputEvent(0.5, "h", [], "keydown"));
-                writer.AppendEvent(new InputEvent(1.25, "Enter", [], "keydown"));
-                writer.AppendEvent(new InputEvent(2.0, "c", ["ctrl"], "keydown"));
+                writer.AppendEvent(new InputEvent { Time = 0.5, Key = "h", Modifiers = [], Type = "keydown" });
+                writer.AppendEvent(new InputEvent { Time = 1.25, Key = "Enter", Modifiers = [], Type = "keydown" });
+                writer.AppendEvent(new InputEvent { Time = 2.0, Key = "c", Modifiers = ["ctrl"], Type = "keydown" });
             }
 
             var events = await InputReplayFile.ReadAllAsync(tmpPath, CancellationToken.None);
@@ -56,14 +56,14 @@ public sealed class InputReplayFileTests
                 var writer = new InputReplayFile.InputReplayWriter(File.OpenWrite(tmpPath))
             )
             {
-                writer.AppendEvent(new InputEvent(0.1, "a", [], "keydown"));
-                writer.AppendEvent(new InputEvent(0.2, "ArrowUp", [], "keydown"));
+                writer.AppendEvent(new InputEvent { Time = 0.1, Key = "a", Modifiers = [], Type = "keydown" });
+                writer.AppendEvent(new InputEvent { Time = 0.2, Key = "ArrowUp", Modifiers = [], Type = "keydown" });
             }
 
             var json = await File.ReadAllTextAsync(tmpPath);
             using var doc = System.Text.Json.JsonDocument.Parse(json);
             doc.RootElement.ValueKind.ShouldBe(System.Text.Json.JsonValueKind.Object);
-            var replay = doc.RootElement.GetProperty("Replay");
+            var replay = doc.RootElement.GetProperty("replay");
             replay.ValueKind.ShouldBe(System.Text.Json.JsonValueKind.Array);
             replay.GetArrayLength().ShouldBe(2);
         }
@@ -191,7 +191,7 @@ public sealed class InputReplayFileTests
     [Test]
     public void EventToBytesArrowUpRoundTrip()
     {
-        var bytes = InputReplayFile.EventToBytes(new InputEvent(0, "ArrowUp", [], "keydown"));
+        var bytes = InputReplayFile.EventToBytes(new InputEvent { Key = "ArrowUp", Modifiers = [] });
         var text = Encoding.UTF8.GetString(bytes);
         var events = new List<InputEvent>(InputReplayFile.ParseInputText(text, 0.0));
         events.Count.ShouldBe(1);
@@ -201,14 +201,14 @@ public sealed class InputReplayFileTests
     [Test]
     public void EventToBytesEnter()
     {
-        var bytes = InputReplayFile.EventToBytes(new InputEvent(0, "Enter", [], "keydown"));
+        var bytes = InputReplayFile.EventToBytes(new InputEvent { Key = "Enter", Modifiers = [] });
         bytes.ShouldBe(new byte[] { 0x0d });
     }
 
     [Test]
     public void EventToBytesCtrlC()
     {
-        var bytes = InputReplayFile.EventToBytes(new InputEvent(0, "c", ["ctrl"], "keydown"));
+        var bytes = InputReplayFile.EventToBytes(new InputEvent { Key = "c", Modifiers = ["ctrl"] });
         bytes.ShouldBe(new byte[] { 0x03 });
     }
 
@@ -216,7 +216,7 @@ public sealed class InputReplayFileTests
     public void EventToBytesShiftArrowUp()
     {
         var bytes = InputReplayFile.EventToBytes(
-            new InputEvent(0, "ArrowUp", ["shift"], "keydown")
+            new InputEvent { Key = "ArrowUp", Modifiers = ["shift"] }
         );
         var text = Encoding.UTF8.GetString(bytes);
         var events = new List<InputEvent>(InputReplayFile.ParseInputText(text, 0.0));
@@ -232,8 +232,8 @@ public sealed class InputReplayFileTests
     {
         var events = new List<InputEvent>
         {
-            new InputEvent(0.0, "a", [], "keydown"),
-            new InputEvent(0.0, "b", [], "keydown"),
+            new InputEvent { Time = 0.0, Key = "a", Modifiers = [] },
+            new InputEvent { Time = 0.0, Key = "b", Modifiers = [] },
         };
 
         using var stream = new InputReplayFile.ReplayStream(events);
@@ -268,7 +268,7 @@ public sealed class InputReplayFileTests
     public async Task ReplayStreamArrowKeyRoundTrip()
     {
         // Write ArrowUp event, replay it, parse the bytes, verify the key name survives.
-        var events = new List<InputEvent> { new InputEvent(0.0, "ArrowUp", [], "keydown") };
+        var events = new List<InputEvent> { new InputEvent { Time = 0.0, Key = "ArrowUp", Modifiers = [] } };
 
         using var stream = new InputReplayFile.ReplayStream(events);
         var buffer = new byte[32];
@@ -325,7 +325,7 @@ public sealed class InputReplayFileTests
     public void EventToBytesShiftTabRoundTrip()
     {
         // Shift+Tab → \x1b[Z → parse → Shift+Tab
-        var bytes = InputReplayFile.EventToBytes(new InputEvent(0, "Tab", ["shift"], "keydown"));
+        var bytes = InputReplayFile.EventToBytes(new InputEvent { Key = "Tab", Modifiers = ["shift"] });
         var text = Encoding.UTF8.GetString(bytes);
         var events = new List<InputEvent>(InputReplayFile.ParseInputText(text, 0.0));
         events.Count.ShouldBe(1);
@@ -337,14 +337,14 @@ public sealed class InputReplayFileTests
     public void EventToBytesHomeEndRoundTrip()
     {
         // Home → \x1b[H → parse → Home
-        var homeBytes = InputReplayFile.EventToBytes(new InputEvent(0, "Home", [], "keydown"));
+        var homeBytes = InputReplayFile.EventToBytes(new InputEvent { Key = "Home", Modifiers = [] });
         var homeText = Encoding.UTF8.GetString(homeBytes);
         var homeEvents = new List<InputEvent>(InputReplayFile.ParseInputText(homeText, 0.0));
         homeEvents.Count.ShouldBe(1);
         homeEvents[0].Key.ShouldBe("Home");
 
         // End → \x1b[F → parse → End
-        var endBytes = InputReplayFile.EventToBytes(new InputEvent(0, "End", [], "keydown"));
+        var endBytes = InputReplayFile.EventToBytes(new InputEvent { Key = "End", Modifiers = [] });
         var endText = Encoding.UTF8.GetString(endBytes);
         var endEvents = new List<InputEvent>(InputReplayFile.ParseInputText(endText, 0.0));
         endEvents.Count.ShouldBe(1);
@@ -478,5 +478,106 @@ public sealed class InputReplayFileTests
         );
         events.Count.ShouldBe(1);
         events[0].Key.ShouldBe("v");
+    }
+
+    // ── Terminal response filtering ──────────────────────────────────────────
+
+    [Test]
+    public void ParseInputTextDa2ResponseIsFiltered()
+    {
+        // DA2 response: ESC[>0;10;1c — should be completely skipped.
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText("a\x1b[>0;10;1cb", 0.0)
+        );
+        events.Count.ShouldBe(2);
+        events[0].Key.ShouldBe("a");
+        events[1].Key.ShouldBe("b");
+    }
+
+    [Test]
+    public void ParseInputTextDa1ResponseIsFiltered()
+    {
+        // DA1 response: ESC[?64;1;2;6;21;22c
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText("x\x1b[?64;1;2;6;21;22cy", 0.0)
+        );
+        events.Count.ShouldBe(2);
+        events[0].Key.ShouldBe("x");
+        events[1].Key.ShouldBe("y");
+    }
+
+    [Test]
+    public void ParseInputTextDecrpmResponseIsFiltered()
+    {
+        // DECRPM response: ESC[?12;2$y — has both private prefix '?' and intermediate byte '$'.
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText("a\x1b[?12;2$yb", 0.0)
+        );
+        events.Count.ShouldBe(2);
+        events[0].Key.ShouldBe("a");
+        events[1].Key.ShouldBe("b");
+    }
+
+    [Test]
+    public void ParseInputTextMultipleTerminalResponsesAreFiltered()
+    {
+        // Simulate the WSL vim startup: user types "vim\r", then terminal sends responses.
+        var input = "vim\r"
+            + "\x1b[>0;10;1c"   // DA2 response
+            + "\x1b[?12;2$y"    // DECRPM response
+            + "\x1b[?64;1;2c"   // DA1 response
+            + "ihello\x1b:q!\r"; // user types in vim (ESC+: = Alt+:)
+        var events = new List<InputEvent>(InputReplayFile.ParseInputText(input, 0.0));
+
+        // ESC followed immediately by ':' is parsed as Alt+: (standard VT behavior).
+        // Terminal responses (DA2, DECRPM, DA1) should all be filtered.
+        var keys = events.ConvertAll(e => e.Key);
+        keys.ShouldBe(
+            new[] { "v", "i", "m", "Enter", "i", "h", "e", "l", "l", "o", ":", "q", "!", "Enter" }
+        );
+        // The ':' after ESC should have an 'alt' modifier.
+        var altColon = events.Find(e => e.Key == ":");
+        altColon.ShouldNotBeNull();
+        altColon!.Modifiers.ShouldContain("alt");
+    }
+
+    [Test]
+    public void ParseInputTextLonePrivatePrefixCsiIsFiltered()
+    {
+        // ESC[<0;35;1M — xterm mouse event with '<' private prefix — should be filtered.
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText("a\x1b[<0;35;1Mb", 0.0)
+        );
+        events.Count.ShouldBe(2);
+        events[0].Key.ShouldBe("a");
+        events[1].Key.ShouldBe("b");
+    }
+
+    [Test]
+    public void ParseInputTextIntermediateByteOnlyIsFiltered()
+    {
+        // A CSI sequence with intermediate byte but no private prefix: ESC[0\"q (DECSCA)
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText("a\x1b[0\"qb", 0.0)
+        );
+        events.Count.ShouldBe(2);
+        events[0].Key.ShouldBe("a");
+        events[1].Key.ShouldBe("b");
+    }
+
+    [Test]
+    public void ParseInputTextNormalCsiUnaffected()
+    {
+        // Normal user input CSI sequences should still work after the fix.
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText("\x1b[A\x1b[1;2B\x1b[15~\x1b[Z", 0.0)
+        );
+        events.Count.ShouldBe(4);
+        events[0].Key.ShouldBe("ArrowUp");
+        events[1].Key.ShouldBe("ArrowDown");
+        events[1].Modifiers.ShouldContain("shift");
+        events[2].Key.ShouldBe("F5");
+        events[3].Key.ShouldBe("Tab");
+        events[3].Modifiers.ShouldContain("shift");
     }
 }

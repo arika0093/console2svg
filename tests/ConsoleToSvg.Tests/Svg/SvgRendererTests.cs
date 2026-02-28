@@ -20,7 +20,7 @@ public sealed class SvgRendererTests
         );
 
         svg.ShouldContain("<svg");
-        svg.ShouldContain("viewBox=\"0 0 72 36\"");
+        svg.ShouldContain("viewBox=\"0 0 67.2 36\"");
         svg.ShouldContain(">Hi<");
     }
 
@@ -39,7 +39,7 @@ public sealed class SvgRendererTests
             }
         );
 
-        svg.ShouldContain("viewBox=\"0 0 63 18\"");
+        svg.ShouldContain("viewBox=\"0 0 58.8 18\"");
     }
 
     [Test]
@@ -55,7 +55,7 @@ public sealed class SvgRendererTests
         );
 
         // The SVG should include all 6 rows (4 screen + 2 scrollback)
-        svg.ShouldContain("viewBox=\"0 0 72 108\"");
+        svg.ShouldContain("viewBox=\"0 0 67.2 108\"");
         // All six lines should appear in the SVG
         svg.ShouldContain("line1");
         svg.ShouldContain("line6");
@@ -74,7 +74,7 @@ public sealed class SvgRendererTests
         );
 
         // When a specific frame is requested, only the terminal viewport (2 rows) is shown
-        svg.ShouldContain("viewBox=\"0 0 72 36\"");
+        svg.ShouldContain("viewBox=\"0 0 67.2 36\"");
     }
 
     [Test]
@@ -91,8 +91,8 @@ public sealed class SvgRendererTests
 
         svg.ShouldContain(">\u4e2d<");
         svg.ShouldContain(">\u6587<");
-        // The second CJK character starts at x=18 (2 cells from the first)
-        svg.ShouldContain("x=\"18\"");
+        // The second CJK character starts at x=16.8 (2 cells * 8.4px from the first)
+        svg.ShouldContain("x=\"16.8\"");
     }
 
     [Test]
@@ -164,7 +164,7 @@ public sealed class SvgRendererTests
         );
 
         // Only 2 rows visible: "line1" (row 0) and "---" (row 1)
-        svg.ShouldContain("viewBox=\"0 0 72 36\"");
+        svg.ShouldContain("viewBox=\"0 0 67.2 36\"");
         svg.ShouldContain("line1");
         svg.ShouldContain(">---<");
         // "line3" and "line4" should NOT be in the output
@@ -190,7 +190,7 @@ public sealed class SvgRendererTests
         );
 
         // 3 rows visible: "---" (row 1), "keep" (row 2), "more" (row 3)
-        svg.ShouldContain("viewBox=\"0 0 72 54\"");
+        svg.ShouldContain("viewBox=\"0 0 67.2 54\"");
         svg.ShouldContain(">---<");
         svg.ShouldContain("keep");
         // "skip" row should NOT be in the output
@@ -258,8 +258,8 @@ public sealed class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        // The terminal viewport is 3 rows × 4 cols = height 54, width 36
-        svg.ShouldContain("viewBox=\"0 0 36 54\"");
+        // The terminal viewport is 3 rows × 4 cols = height 54, width 33.6
+        svg.ShouldContain("viewBox=\"0 0 33.6 54\"");
         svg.ShouldContain(">ABCD<");
         svg.ShouldContain(">EF<");
     }
@@ -292,7 +292,7 @@ public sealed class SvgRendererTests
         );
 
         svg.ShouldContain(">\u2705\uFE0F<");
-        svg.ShouldContain("x=\"18\"");
+        svg.ShouldContain("x=\"16.8\"");
         svg.ShouldContain(">|<");
     }
 
@@ -308,7 +308,7 @@ public sealed class SvgRendererTests
         );
 
         svg.ShouldContain(">\u2705<");
-        svg.ShouldContain("x=\"18\"");
+        svg.ShouldContain("x=\"16.8\"");
         svg.ShouldContain(">|<");
     }
 
@@ -337,7 +337,7 @@ public sealed class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", Padding = 2 }
         );
 
-        svg.ShouldContain("viewBox=\"0 0 76 40\"");
+        svg.ShouldContain("viewBox=\"0 0 71.2 40\"");
     }
 
     [Test]
@@ -382,7 +382,7 @@ public sealed class SvgRendererTests
         svg.ShouldContain("#1a1d2e"); // gradient start
         svg.ShouldContain("#252840"); // gradient end
         // Shadow (black with opacity)
-        svg.ShouldContain("fill-opacity=\"0.4\"");
+        svg.ShouldContain("fill-opacity=\"0.3\"");
         // Traffic lights
         svg.ShouldContain("#ff5f57");
         svg.ShouldContain("#febc2e");
@@ -410,7 +410,7 @@ public sealed class SvgRendererTests
         svg.ShouldContain("#1a2535"); // gradient start
         svg.ShouldContain("#253345"); // gradient end
         // Shadow (black with opacity)
-        svg.ShouldContain("fill-opacity=\"0.4\"");
+        svg.ShouldContain("fill-opacity=\"0.25\"");
         // Windows Terminal style: control buttons as vector lines/rects
         svg.ShouldContain("stroke=\"#cccccc\""); // icon stroke color
         svg.ShouldContain("fill=\"none\" stroke=\"#cccccc\""); // maximize □ rect
@@ -433,8 +433,8 @@ public sealed class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", HeightRows = 3 }
         );
 
-        // Only 3 rows should be visible: height = 3 * 18 = 54, width = 8 * 9 = 72
-        svg.ShouldContain("viewBox=\"0 0 72 54\"");
+        // Only 3 rows should be visible: height = 3 * 18 = 54, width = 8 * 8.4 = 67.2
+        svg.ShouldContain("viewBox=\"0 0 67.2 54\"");
     }
 
     [Test]
@@ -568,7 +568,7 @@ public sealed class SvgRendererTests
         );
 
         // Canvas height should be at least 4 * 18 = 72 pixels (not reduced by crop)
-        svg.ShouldContain("viewBox=\"0 0 72 72\"");
+        svg.ShouldContain("viewBox=\"0 0 67.2 72\"");
     }
 
     [Test]

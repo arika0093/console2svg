@@ -383,7 +383,6 @@ public sealed class SvgRendererTests
         svg.ShouldContain("#252840"); // gradient end
         // Shadow (black with opacity)
         svg.ShouldContain("fill-opacity=\"0.3\"");
-        // Traffic lights
         svg.ShouldContain("#ff5f57");
         svg.ShouldContain("#febc2e");
         svg.ShouldContain("#28c840");

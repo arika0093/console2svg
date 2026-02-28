@@ -11,12 +11,12 @@ namespace ConsoleToSvg.Recording;
 
 public static class InputReplayFile
 {
-    public static async Task<List<(double Time, byte[] Data)>> ReadAllAsync(
+    public static async Task<List<(double Time, string Data)>> ReadAllAsync(
         string path,
         CancellationToken cancellationToken
     )
     {
-        var events = new List<(double Time, byte[] Data)>();
+        var events = new List<(double Time, string Data)>();
         await using var stream = File.OpenRead(path);
         using var reader = new StreamReader(stream, Encoding.UTF8);
         while (true)
@@ -43,21 +43,20 @@ public static class InputReplayFile
             }
 
             var time = doc.RootElement[0].GetDouble();
-            var base64 = doc.RootElement[1].GetString() ?? string.Empty;
-            var data = Convert.FromBase64String(base64);
+            var data = doc.RootElement[1].GetString() ?? string.Empty;
             events.Add((time, data));
         }
 
         return events;
     }
 
-    public static void WriteEvent(TextWriter writer, double timeSeconds, byte[] data, int count)
+    public static void WriteEvent(TextWriter writer, double timeSeconds, string data)
     {
         using var ms = new MemoryStream();
         using var jw = new Utf8JsonWriter(ms);
         jw.WriteStartArray();
         jw.WriteNumberValue(timeSeconds);
-        jw.WriteStringValue(Convert.ToBase64String(data, 0, count));
+        jw.WriteStringValue(data);
         jw.WriteEndArray();
         jw.Flush();
         var line = Encoding.UTF8.GetString(ms.GetBuffer(), 0, (int)ms.Length);
@@ -71,12 +70,12 @@ public static class InputReplayFile
         private int _eventIndex;
         private int _eventOffset;
 
-        public ReplayStream(IList<(double Time, byte[] Data)> events)
+        public ReplayStream(IList<(double Time, string Data)> events)
         {
             _events = new (double, byte[])[events.Count];
             for (var i = 0; i < events.Count; i++)
             {
-                _events[i] = (events[i].Time, (byte[])events[i].Data.Clone());
+                _events[i] = (events[i].Time, Encoding.UTF8.GetBytes(events[i].Data));
             }
         }
 

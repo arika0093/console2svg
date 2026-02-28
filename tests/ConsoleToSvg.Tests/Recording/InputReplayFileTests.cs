@@ -19,9 +19,7 @@ public sealed class InputReplayFileTests
         try
         {
             await using (
-                var writer = new InputReplayFile.InputReplayWriter(
-                    File.OpenWrite(tmpPath)
-                )
+                var writer = new InputReplayFile.InputReplayWriter(File.OpenWrite(tmpPath))
             )
             {
                 writer.AppendEvent(new InputEvent(0.5, "h", [], "keydown"));
@@ -55,9 +53,7 @@ public sealed class InputReplayFileTests
         try
         {
             await using (
-                var writer = new InputReplayFile.InputReplayWriter(
-                    File.OpenWrite(tmpPath)
-                )
+                var writer = new InputReplayFile.InputReplayWriter(File.OpenWrite(tmpPath))
             )
             {
                 writer.AppendEvent(new InputEvent(0.1, "a", [], "keydown"));
@@ -84,9 +80,7 @@ public sealed class InputReplayFileTests
         try
         {
             await using (
-                var writer = new InputReplayFile.InputReplayWriter(
-                    File.OpenWrite(tmpPath)
-                )
+                var writer = new InputReplayFile.InputReplayWriter(File.OpenWrite(tmpPath))
             )
             {
                 // no events appended
@@ -133,9 +127,7 @@ public sealed class InputReplayFileTests
     public void ParseInputTextCtrlKeys()
     {
         // Ctrl+A = \x01, Ctrl+C = \x03, Ctrl+Z = \x1a
-        var events = new List<InputEvent>(
-            InputReplayFile.ParseInputText("\x01\x03\x1a", 0.0)
-        );
+        var events = new List<InputEvent>(InputReplayFile.ParseInputText("\x01\x03\x1a", 0.0));
         events.Count.ShouldBe(3);
         events[0].Key.ShouldBe("a");
         events[0].Modifiers.ShouldContain("ctrl");
@@ -148,9 +140,7 @@ public sealed class InputReplayFileTests
     [Test]
     public void ParseInputTextSpecialKeys()
     {
-        var events = new List<InputEvent>(
-            InputReplayFile.ParseInputText("\x09\x0d\x7f", 0.0)
-        );
+        var events = new List<InputEvent>(InputReplayFile.ParseInputText("\x09\x0d\x7f", 0.0));
         events.Count.ShouldBe(3);
         events[0].Key.ShouldBe("Tab");
         events[1].Key.ShouldBe("Enter");
@@ -190,9 +180,7 @@ public sealed class InputReplayFileTests
     public void ParseInputTextFunctionKeys()
     {
         // F1 via SS3, F5 via CSI tilde
-        var events = new List<InputEvent>(
-            InputReplayFile.ParseInputText("\x1bOP\x1b[15~", 0.0)
-        );
+        var events = new List<InputEvent>(InputReplayFile.ParseInputText("\x1bOP\x1b[15~", 0.0));
         events.Count.ShouldBe(2);
         events[0].Key.ShouldBe("F1");
         events[1].Key.ShouldBe("F5");
@@ -220,9 +208,7 @@ public sealed class InputReplayFileTests
     [Test]
     public void EventToBytesCtrlC()
     {
-        var bytes = InputReplayFile.EventToBytes(
-            new InputEvent(0, "c", ["ctrl"], "keydown")
-        );
+        var bytes = InputReplayFile.EventToBytes(new InputEvent(0, "c", ["ctrl"], "keydown"));
         bytes.ShouldBe(new byte[] { 0x03 });
     }
 
@@ -282,10 +268,7 @@ public sealed class InputReplayFileTests
     public async Task ReplayStreamArrowKeyRoundTrip()
     {
         // Write ArrowUp event, replay it, parse the bytes, verify the key name survives.
-        var events = new List<InputEvent>
-        {
-            new InputEvent(0.0, "ArrowUp", [], "keydown"),
-        };
+        var events = new List<InputEvent> { new InputEvent(0.0, "ArrowUp", [], "keydown") };
 
         using var stream = new InputReplayFile.ReplayStream(events);
         var buffer = new byte[32];
@@ -303,9 +286,7 @@ public sealed class InputReplayFileTests
     public void ParseInputTextSs3HomeEnd()
     {
         // Windows Terminal sends \x1bOH for Home and \x1bOF for End in application-cursor-keys mode.
-        var events = new List<InputEvent>(
-            InputReplayFile.ParseInputText("\x1bOH\x1bOF", 0.0)
-        );
+        var events = new List<InputEvent>(InputReplayFile.ParseInputText("\x1bOH\x1bOF", 0.0));
         events.Count.ShouldBe(2);
         events[0].Key.ShouldBe("Home");
         events[1].Key.ShouldBe("End");
@@ -483,9 +464,7 @@ public sealed class InputReplayFileTests
     public void ParseInputTextFocusEventsSkipped()
     {
         // \x1b[I = focus-in, \x1b[O = focus-out; both should be silently skipped.
-        var events = new List<InputEvent>(
-            InputReplayFile.ParseInputText("\x1b[Ia\x1b[O", 0.0)
-        );
+        var events = new List<InputEvent>(InputReplayFile.ParseInputText("\x1b[Ia\x1b[O", 0.0));
         events.Count.ShouldBe(1);
         events[0].Key.ShouldBe("a");
     }
@@ -495,13 +474,9 @@ public sealed class InputReplayFileTests
     {
         // Typical Win32 pair: key-down ('v'), key-up ('v') — only down event emitted.
         var events = new List<InputEvent>(
-            InputReplayFile.ParseInputText(
-                "\x1b[86;47;118;1;0;1_\x1b[86;47;118;0;0;1_",
-                0.0
-            )
+            InputReplayFile.ParseInputText("\x1b[86;47;118;1;0;1_\x1b[86;47;118;0;0;1_", 0.0)
         );
         events.Count.ShouldBe(1);
         events[0].Key.ShouldBe("v");
     }
 }
-

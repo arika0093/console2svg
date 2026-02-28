@@ -93,7 +93,13 @@ public static class InputReplayFile
             {
                 if (i + 1 >= text.Length)
                 {
-                    yield return new InputEvent { Time = time, Key = "Escape", Modifiers = [], Type = "keydown" };
+                    yield return new InputEvent
+                    {
+                        Time = time,
+                        Key = "Escape",
+                        Modifiers = [],
+                        Type = "keydown",
+                    };
                     i++;
                     continue;
                 }
@@ -102,27 +108,51 @@ public static class InputReplayFile
                 {
                     var (key, mods, len) = ParseCsiSequence(text, i);
                     if (key is not null)
-                        yield return new InputEvent { Time = time, Key = key, Modifiers = mods, Type = "keydown" };
+                        yield return new InputEvent
+                        {
+                            Time = time,
+                            Key = key,
+                            Modifiers = mods,
+                            Type = "keydown",
+                        };
                     i += len;
                     continue;
                 }
                 if (next == 'O')
                 {
                     var (key, len) = ParseSs3Sequence(text, i);
-                    yield return new InputEvent { Time = time, Key = key, Modifiers = [], Type = "keydown" };
+                    yield return new InputEvent
+                    {
+                        Time = time,
+                        Key = key,
+                        Modifiers = [],
+                        Type = "keydown",
+                    };
                     i += len;
                     continue;
                 }
                 if (next == '\x1b')
                 {
                     // Two consecutive ESCs → first is a lone Escape; second handled next iteration.
-                    yield return new InputEvent { Time = time, Key = "Escape", Modifiers = [], Type = "keydown" };
+                    yield return new InputEvent
+                    {
+                        Time = time,
+                        Key = "Escape",
+                        Modifiers = [],
+                        Type = "keydown",
+                    };
                     i++;
                     continue;
                 }
                 // ESC + char → Alt prefix
                 var (altKey, altMods) = CharToKeyAndMods(next);
-                yield return new InputEvent { Time = time, Key = altKey, Modifiers = PrependAlt(altMods), Type = "keydown" };
+                yield return new InputEvent
+                {
+                    Time = time,
+                    Key = altKey,
+                    Modifiers = PrependAlt(altMods),
+                    Type = "keydown",
+                };
                 i += 2;
                 continue;
             }
@@ -130,19 +160,37 @@ public static class InputReplayFile
             // Common control characters
             if (c == '\x08' || c == '\x7f')
             {
-                yield return new InputEvent { Time = time, Key = "Backspace", Modifiers = [], Type = "keydown" };
+                yield return new InputEvent
+                {
+                    Time = time,
+                    Key = "Backspace",
+                    Modifiers = [],
+                    Type = "keydown",
+                };
                 i++;
                 continue;
             }
             if (c == '\x09')
             {
-                yield return new InputEvent { Time = time, Key = "Tab", Modifiers = [], Type = "keydown" };
+                yield return new InputEvent
+                {
+                    Time = time,
+                    Key = "Tab",
+                    Modifiers = [],
+                    Type = "keydown",
+                };
                 i++;
                 continue;
             }
             if (c == '\x0a' || c == '\x0d')
             {
-                yield return new InputEvent { Time = time, Key = "Enter", Modifiers = [], Type = "keydown" };
+                yield return new InputEvent
+                {
+                    Time = time,
+                    Key = "Enter",
+                    Modifiers = [],
+                    Type = "keydown",
+                };
                 i++; // advance past CR or LF
                 // If we just consumed a CR, absorb an immediately following LF so that
                 // a Windows-style CR+LF pair produces only one Enter event.
@@ -155,7 +203,13 @@ public static class InputReplayFile
             if (c >= '\x01' && c <= '\x1a')
             {
                 var letter = (char)('a' + (c - 1));
-                yield return new InputEvent { Time = time, Key = letter.ToString(), Modifiers = ["ctrl"], Type = "keydown" };
+                yield return new InputEvent
+                {
+                    Time = time,
+                    Key = letter.ToString(),
+                    Modifiers = ["ctrl"],
+                    Type = "keydown",
+                };
                 i++;
                 continue;
             }
@@ -163,12 +217,24 @@ public static class InputReplayFile
             // Printable (handle surrogate pairs for non-BMP Unicode)
             if (char.IsHighSurrogate(c) && i + 1 < text.Length && char.IsLowSurrogate(text[i + 1]))
             {
-                yield return new InputEvent { Time = time, Key = text.Substring(i, 2), Modifiers = [], Type = "keydown" };
+                yield return new InputEvent
+                {
+                    Time = time,
+                    Key = text.Substring(i, 2),
+                    Modifiers = [],
+                    Type = "keydown",
+                };
                 i += 2;
                 continue;
             }
 
-            yield return new InputEvent { Time = time, Key = c.ToString(), Modifiers = [], Type = "keydown" };
+            yield return new InputEvent
+            {
+                Time = time,
+                Key = c.ToString(),
+                Modifiers = [],
+                Type = "keydown",
+            };
             i++;
         }
     }
@@ -528,11 +594,13 @@ public static class InputReplayFile
 
         public async ValueTask DisposeAsync()
         {
-            await JsonSerializer.SerializeAsync(
-                _stream,
-                _data,
-                InputReplaySerializerContext.Default.InputReplayData
-            ).ConfigureAwait(false);
+            await JsonSerializer
+                .SerializeAsync(
+                    _stream,
+                    _data,
+                    InputReplaySerializerContext.Default.InputReplayData
+                )
+                .ConfigureAwait(false);
             await _stream.FlushAsync().ConfigureAwait(false);
             await _stream.DisposeAsync().ConfigureAwait(false);
         }

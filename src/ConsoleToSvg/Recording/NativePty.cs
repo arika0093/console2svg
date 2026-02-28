@@ -718,7 +718,12 @@ internal static class NativePtyUnix
             const uint ECHONL = 0x0040u;
             const uint ECHOCTL = 0x0200u;
             t.c_lflag &= ~(ECHO | ECHOE | ECHOK | ECHONL | ECHOCTL);
-            tcsetattr(fd, 0 /* TCSANOW */, ref t);
+            tcsetattr(
+                fd,
+                0 /* TCSANOW */
+                ,
+                ref t
+            );
         }
         catch
         {

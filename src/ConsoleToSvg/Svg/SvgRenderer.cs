@@ -1210,7 +1210,15 @@ internal static class SvgDocumentBuilder
                 if (IsBlockElement(cell.Text))
                 {
                     FlushFgRun();
-                    RenderBlockElement(sb, cell.Text, cellX, y, cellW, context.CellHeight, effectiveFg);
+                    RenderBlockElement(
+                        sb,
+                        cell.Text,
+                        cellX,
+                        y,
+                        cellW,
+                        context.CellHeight,
+                        effectiveFg
+                    );
                     fgRunStart = col + (cell.IsWide ? 2 : 1);
                     continue;
                 }

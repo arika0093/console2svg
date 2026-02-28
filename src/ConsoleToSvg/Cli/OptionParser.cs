@@ -635,13 +635,27 @@ public static class OptionParser
             return false;
         }
 
-        if (options.FontSize.HasValue && (double.IsNaN(options.FontSize.Value) || double.IsInfinity(options.FontSize.Value) || options.FontSize.Value <= 0))
+        if (
+            options.FontSize.HasValue
+            && (
+                double.IsNaN(options.FontSize.Value)
+                || double.IsInfinity(options.FontSize.Value)
+                || options.FontSize.Value <= 0
+            )
+        )
         {
             error = "--fontsize must be greater than 0.";
             return false;
         }
 
-        if (options.Timeout.HasValue && (double.IsNaN(options.Timeout.Value) || double.IsInfinity(options.Timeout.Value) || options.Timeout.Value <= 0))
+        if (
+            options.Timeout.HasValue
+            && (
+                double.IsNaN(options.Timeout.Value)
+                || double.IsInfinity(options.Timeout.Value)
+                || options.Timeout.Value <= 0
+            )
+        )
         {
             error = "--timeout must be greater than 0.";
             return false;

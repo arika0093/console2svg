@@ -7,11 +7,11 @@ Easily convert terminal output into SVG images. truecolor, animation, cropping a
 
 Console screenshots in raster formats (PNG, etc.) often make text look blurry. console2svg converts console output into vector SVG images so you can save your terminal as a crisp, scalable image.
 
-For example, let's open [this image](https://raw.githubusercontent.com/arika0093/console2svg/refs/heads/main/assets/cmd-hero-grad.svg) in your browser and zoom in — the text remains sharp at any scale.
+For example, let's open [this image](https://raw.githubusercontent.com/arika0093/console2svg/refs/heads/main/assets/cmd-hero-grad.svg) in your browser and zoom in — the text remains sharp at any scale 👀
 
 There are similar tools, but console2svg stands out for:
 
-* **Standalone**: no additional software or libraries required. support npm, dotnet tool and standalone binary.
+* **No dependencies**: no additional software or libraries required. available as npm, dotnet tool and static binary.
 * **Video mode**: save command execution animations as SVG. great for documentation and blog posts.
 * **Crop**: trim specific parts of the output. Crop based on text patterns is also supported, making it easy to trim specific lines or sections.
 * **Background and window**: add background and window frames to produce presentation-ready SVGs for documentation, blogs, social media, etc.

@@ -32,7 +32,8 @@ public static class SvgRenderer
             options.Window,
             options.Padding,
             options.HeightRows,
-            commandHeaderRows
+            commandHeaderRows,
+            options.FontSize
         );
         var sb = new StringBuilder(32 * 1024);
         SvgDocumentBuilder.BeginSvg(
@@ -62,14 +63,6 @@ public static class SvgRenderer
 
 internal static class SvgDocumentBuilder
 {
-    // 14px font size is common for terminal screenshots and provides good fidelity at
-    // typical widths; line spacing is handled by CellHeight, so no need to include it here
-    private const double FontSize = 14d;
-    // 14px font at 80 chars per line → ~8.4px per char
-    private const double CellWidth = 8.4d;
-    // 14px font with line spacing → 18px per line
-    private const double CellHeight = 18d;
-    private const double BaselineOffset = 14d;
     private const double DesktopPadding = 20d;
     private const double DesktopShadowOffset = 6d;
     private const string DefaultFontFamily =
@@ -114,6 +107,15 @@ internal static class SvgDocumentBuilder
         public double HeaderOffsetX { get; set; }
 
         public double HeaderOffsetY { get; set; }
+
+        // Font metrics derived from the configured font size
+        public double FontSize { get; set; }
+
+        public double CellWidth { get; set; }
+
+        public double CellHeight { get; set; }
+
+        public double BaselineOffset { get; set; }
     }
 
     public static Context CreateContext(
@@ -123,9 +125,15 @@ internal static class SvgDocumentBuilder
         WindowStyle windowStyle = WindowStyle.None,
         double padding = 0d,
         int? heightRows = null,
-        int commandHeaderRows = 0
+        int commandHeaderRows = 0,
+        double fontSize = 14d
     )
     {
+        // Derive font metrics from fontSize
+        var cellWidth = fontSize * 0.6d;
+        var cellHeight = fontSize * (18d / 14d);
+        var baselineOffset = fontSize;
+
         var effectiveHeight = includeScrollback ? buffer.TotalHeight : buffer.Height;
 
         var rowTop = crop.Top.Unit switch
@@ -181,8 +189,8 @@ internal static class SvgDocumentBuilder
             endRowExclusive = Math.Max(endRowExclusive, startRow + 1);
         }
 
-        var contentWidth = Math.Max(1d, (endColExclusive - startCol) * CellWidth);
-        var contentHeight = Math.Max(1d, (endRowExclusive - startRow) * CellHeight);
+        var contentWidth = Math.Max(1d, (endColExclusive - startCol) * cellWidth);
+        var contentHeight = Math.Max(1d, (endRowExclusive - startRow) * cellHeight);
 
         var pxTop = crop.Top.Unit == CropUnit.Pixels ? Math.Max(0d, crop.Top.Value) : 0d;
         var pxRight = crop.Right.Unit == CropUnit.Pixels ? Math.Max(0d, crop.Right.Value) : 0d;
@@ -204,7 +212,7 @@ internal static class SvgDocumentBuilder
             && !(crop.Bottom.Unit == CropUnit.Pixels && crop.Bottom.Value > 0)
         )
         {
-            viewHeight = Math.Max(viewHeight, heightRows.Value * CellHeight);
+            viewHeight = Math.Max(viewHeight, heightRows.Value * cellHeight);
         }
 
         var normalizedPadding = Math.Max(0d, padding);
@@ -243,7 +251,7 @@ internal static class SvgDocumentBuilder
                 break;
         }
 
-        var headerHeight = commandHeaderRows * CellHeight;
+        var headerHeight = commandHeaderRows * cellHeight;
         var headerOffsetX = chromeLeft + normalizedPadding;
         var headerOffsetY = chromeTop + normalizedPadding;
         var contentOffsetX = chromeLeft + normalizedPadding;
@@ -279,6 +287,10 @@ internal static class SvgDocumentBuilder
             HeaderRows = commandHeaderRows,
             HeaderOffsetX = headerOffsetX,
             HeaderOffsetY = headerOffsetY,
+            FontSize = fontSize,
+            CellWidth = cellWidth,
+            CellHeight = cellHeight,
+            BaselineOffset = baselineOffset,
         };
     }
 
@@ -380,7 +392,7 @@ internal static class SvgDocumentBuilder
         sb.Append(effectiveFont);
         sb.Append(';');
         sb.Append("font-size:");
-        sb.Append(Format(FontSize));
+        sb.Append(Format(context.FontSize));
         sb.Append("px;}");
         sb.Append("text{dominant-baseline:alphabetic;}");
         sb.Append(".bg{shape-rendering:crispEdges;}");
@@ -410,7 +422,7 @@ internal static class SvgDocumentBuilder
     {
         var x = context.HeaderOffsetX;
         var bgY = context.HeaderOffsetY;
-        var bgH = context.HeaderRows * CellHeight;
+        var bgH = context.HeaderRows * context.CellHeight;
         sb.Append("<rect x=\"");
         sb.Append(Format(x));
         sb.Append("\" y=\"");
@@ -425,7 +437,7 @@ internal static class SvgDocumentBuilder
         sb.Append("<text class=\"crt\" x=\"");
         sb.Append(Format(x));
         sb.Append("\" y=\"");
-        sb.Append(Format(bgY + BaselineOffset));
+        sb.Append(Format(bgY + context.BaselineOffset));
         sb.Append("\" fill=\"");
         sb.Append(theme.Foreground);
         sb.Append("\">");
@@ -1063,7 +1075,7 @@ internal static class SvgDocumentBuilder
 
         for (var row = context.StartRow; row < context.EndRowExclusive; row++)
         {
-            var y = (row - context.StartRow) * CellHeight;
+            var y = (row - context.StartRow) * context.CellHeight;
 
             // --- Background pass: merge consecutive cells of the same bg color ---
             var bgRunStart = context.StartCol;
@@ -1095,8 +1107,8 @@ internal static class SvgDocumentBuilder
                 // flush previous run
                 if (bgRunColor != null && col > bgRunStart)
                 {
-                    var rx = (bgRunStart - context.StartCol) * CellWidth;
-                    var rw = (col - bgRunStart) * CellWidth;
+                    var rx = (bgRunStart - context.StartCol) * context.CellWidth;
+                    var rw = (col - bgRunStart) * context.CellWidth;
                     sb.Append("<rect class=\"bg\" x=\"");
                     sb.Append(Format(rx));
                     sb.Append("\" y=\"");
@@ -1104,7 +1116,7 @@ internal static class SvgDocumentBuilder
                     sb.Append("\" width=\"");
                     sb.Append(Format(rw));
                     sb.Append("\" height=\"");
-                    sb.Append(Format(CellHeight));
+                    sb.Append(Format(context.CellHeight));
                     sb.Append("\" fill=\"");
                     sb.Append(bgRunColor);
                     sb.Append("\"/>\n");
@@ -1130,12 +1142,12 @@ internal static class SvgDocumentBuilder
                     return;
                 }
 
-                var tx = (fgRunStart - context.StartCol) * CellWidth;
-                var tLen = fgRunCellCount * CellWidth;
+                var tx = (fgRunStart - context.StartCol) * context.CellWidth;
+                var tLen = fgRunCellCount * context.CellWidth;
                 sb.Append("<text class=\"crt\" x=\"");
                 sb.Append(Format(tx));
                 sb.Append("\" y=\"");
-                sb.Append(Format(y + BaselineOffset));
+                sb.Append(Format(y + context.BaselineOffset));
                 sb.Append("\" fill=\"");
                 sb.Append(fgRunColor);
                 sb.Append("\" textLength=\"");
@@ -1190,15 +1202,15 @@ internal static class SvgDocumentBuilder
                     theme
                 );
 
-                var cellX = (col - context.StartCol) * CellWidth;
-                var cellW = cell.IsWide ? CellWidth * 2d : CellWidth;
+                var cellX = (col - context.StartCol) * context.CellWidth;
+                var cellW = cell.IsWide ? context.CellWidth * 2d : context.CellWidth;
 
                 // Unicode Block Elements (U+2580–U+259F): render as calibrated rects so that
                 // adjacent cells always tile seamlessly regardless of font metrics.
                 if (IsBlockElement(cell.Text))
                 {
                     FlushFgRun();
-                    RenderBlockElement(sb, cell.Text, cellX, y, cellW, effectiveFg);
+                    RenderBlockElement(sb, cell.Text, cellX, y, cellW, context.CellHeight, effectiveFg);
                     fgRunStart = col + (cell.IsWide ? 2 : 1);
                     continue;
                 }
@@ -1274,13 +1286,14 @@ internal static class SvgDocumentBuilder
         double x,
         double y,
         double cellRectWidth,
+        double cellRectHeight,
         string fill
     )
     {
         var cp = text.Length == 1 ? text[0] : char.ConvertToUtf32(text[0], text[1]);
 
         var w = cellRectWidth;
-        var h = CellHeight;
+        var h = cellRectHeight;
         var hh = h / 2d;
         var hw = w / 2d;
 

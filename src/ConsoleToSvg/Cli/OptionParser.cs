@@ -45,6 +45,7 @@ public static class OptionParser
                 -w, --width <int>         Terminal width in characters (default: auto).
                 -h, --height <int>        Terminal height in rows (default: auto).
                 --font <family>           CSS font-family for SVG text.
+                --fontsize <px>           Font size in pixels (default: 14).
                 --in <path>               Read existing asciicast file.
                 --save-cast <path>        Save captured output as asciicast file.
                 --help                    Show help.
@@ -465,6 +466,14 @@ public static class OptionParser
             case "--font":
                 options.Font = value;
                 return true;
+            case "--fontsize":
+                if (!TryParseDouble(value, "--fontsize", out var fontsize, out error))
+                {
+                    return false;
+                }
+
+                options.FontSize = fontsize;
+                return true;
             case "--save-cast":
                 options.SaveCastPath = value;
                 return true;
@@ -615,6 +624,12 @@ public static class OptionParser
         )
         {
             error = "--opacity must be a number between 0 and 1.";
+            return false;
+        }
+
+        if (options.FontSize.HasValue && (double.IsNaN(options.FontSize.Value) || double.IsInfinity(options.FontSize.Value) || options.FontSize.Value <= 0))
+        {
+            error = "--fontsize must be greater than 0.";
             return false;
         }
 

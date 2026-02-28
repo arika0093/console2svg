@@ -22,6 +22,8 @@ public sealed class SvgRenderOptions
 
     public string? Font { get; set; }
 
+    public double FontSize { get; set; } = 14d;
+
     public WindowStyle Window { get; set; } = WindowStyle.None;
 
     public double Padding { get; set; }
@@ -59,6 +61,7 @@ public sealed class SvgRenderOptions
             ),
             Frame = appOptions.Frame,
             Font = appOptions.Font,
+            FontSize = appOptions.FontSize ?? 14d,
             Window = windowStyle,
             Padding = effectivePadding,
             Loop = appOptions.Loop,

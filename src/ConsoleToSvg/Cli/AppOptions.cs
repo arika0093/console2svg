@@ -40,6 +40,8 @@ public sealed class AppOptions
 
     public string? Font { get; set; }
 
+    public double? FontSize { get; set; } = null;
+
     public string Window { get; set; } = "none";
 
     public double? Padding { get; set; }

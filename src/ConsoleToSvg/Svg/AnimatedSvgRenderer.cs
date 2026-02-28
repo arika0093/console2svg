@@ -39,7 +39,8 @@ public static class AnimatedSvgRenderer
             options.Window,
             options.Padding,
             heightRows: null,
-            commandHeaderRows
+            commandHeaderRows,
+            options.FontSize
         );
         var lastFrameTime = Math.Max(0.05d, reducedFrames[reducedFrames.Count - 1].Time);
         var totalDuration = lastFrameTime + options.VideoSleep + options.VideoFadeOut;

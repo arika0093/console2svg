@@ -201,10 +201,11 @@ internal static class Program
         {
             builder.ClearProviders();
             builder.AddZLoggerConsole();
-            builder.SetMinimumLevel(verbose ? LogLevel.Debug : LogLevel.None);
+            builder.SetMinimumLevel(LogLevel.None);
             if (verbose)
             {
-                builder.AddZLoggerFile("console2svg.log");
+                var dt = DateTime.Now;
+                builder.AddZLoggerFile($"console2svg.{dt:yyyyMMdd_HHmmss}.log");
             }
         });
     }

@@ -6,19 +6,25 @@ inputs:
     description: 'Version to install (e.g. 0.4.3). Defaults to the latest release.'
     required: false
     default: 'latest'
+  overwrite_env:
+    description: 'Whether to overwrite color-related environment variables (TERM/COLORTERM/FORCE_COLOR/CLICOLOR_FORCE).'
+    required: false
+    default: 'true'
 
 runs:
   using: composite
   steps:
-    - name: Set up environment variables for color support
+    - name: Set up environment variables for 256-color support
       shell: bash
       run: |
-         {
-           echo "TERM=${TERM:-xterm-256color}"
-           echo "COLORTERM=${COLORTERM:-truecolor}"
-           echo "FORCE_COLOR=${FORCE_COLOR:-3}"
-           echo "CLICOLOR_FORCE=${CLICOLOR_FORCE:-1}"
-         } >> "$GITHUB_ENV"
+        if [ "${{ inputs.overwrite_env }}" = "true" ]; then
+          {
+            echo "TERM=${TERM:-xterm-256color}"
+            echo "COLORTERM=${COLORTERM:-256color}"
+            echo "FORCE_COLOR=${FORCE_COLOR:-1}"
+            echo "CLICOLOR_FORCE=${CLICOLOR_FORCE:-1}"
+          } >> "$GITHUB_ENV"
+        fi
 
     - name: Download and install console2svg
       shell: bash

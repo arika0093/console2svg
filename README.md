@@ -167,10 +167,10 @@ There is also a `--sleep` option to specify the stop time after playback. This a
 
 ```sh
 # apt install nyancat
-console2svg -w 120 -h 28 -c -d -v --timeout 3 --sleep 1 -- nyancat
+console2svg -w 120 -h 28 -c -d -v --timeout 3 --sleep 0 -- nyancat
 ```
 
-![console2svg -w 120 -h 28 -c -d -v --timeout 3 --sleep 1 -- nyancat](./assets/cmd-nyancat.svg)
+![console2svg -w 120 -h 28 -c -d -v --timeout 3 --sleep 0 -- nyancat](./assets/cmd-nyancat.svg)
 
 ### Replay input
 You can also save the command execution record and later regenerate the SVG based on that record. 

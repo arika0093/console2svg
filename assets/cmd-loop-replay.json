@@ -1,45 +1,47 @@
 {
   "version": "1",
-  "createdAt": "2026-02-28T16:55:14.8050162+00:00",
+  "appVersion": "0.3.0.1+1b9fc65751",
+  "createdAt": "2026-03-01T02:01:18.4139609+00:00",
+  "totalDuration": 11.404151,
   "replay": [
     {
-      "time": 5.0521974,
+      "time": 5.0846566,
       "key": "Enter",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.8847348,
+      "tick": 1.0412049,
       "key": "h",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.08248,
+      "tick": 0.0838172,
       "key": "e",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1352958,
+      "tick": 0.1493114,
       "key": "l",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1276889,
+      "tick": 0.1420066,
       "key": "l",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1720695,
+      "tick": 0.1504047,
       "key": "o",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.832305,
+      "tick": 0.5775756,
       "key": "Tab",
       "modifiers": [
         "shift"
@@ -47,7 +49,7 @@
       "type": "keydown"
     },
     {
-      "tick": 0.2549014,
+      "tick": 0.389944,
       "key": "Tab",
       "modifiers": [
         "shift"
@@ -55,25 +57,25 @@
       "type": "keydown"
     },
     {
-      "tick": 1.6135295,
+      "tick": 0.8629487,
       "key": "ArrowDown",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.2098184,
+      "tick": 0.4823481,
       "key": "ArrowUp",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.3373736,
+      "tick": 0.4623101,
       "key": "Enter",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 1.2369341,
+      "tick": 1.0494015,
       "key": "c",
       "modifiers": [
         "ctrl"
@@ -81,7 +83,7 @@
       "type": "keydown"
     },
     {
-      "tick": 0.202196,
+      "tick": 0.4501623,
       "key": "c",
       "modifiers": [
         "ctrl"

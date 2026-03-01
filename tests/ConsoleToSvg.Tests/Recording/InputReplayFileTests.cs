@@ -95,6 +95,76 @@ public sealed class InputReplayFileTests
         }
     }
 
+    [Test]
+    public async Task TotalDurationIsWrittenAndReadBack()
+    {
+        var tmpPath = Path.GetTempFileName();
+        try
+        {
+            await using (
+                var writer = new InputReplayFile.InputReplayWriter(File.OpenWrite(tmpPath))
+            )
+            {
+                writer.AppendEvent(new InputEvent { Time = 0.5, Key = "a", Modifiers = [], Type = "keydown" });
+                writer.TotalDuration = 5.0;
+            }
+
+            var data = await InputReplayFile.ReadDataAsync(tmpPath, CancellationToken.None);
+            data.TotalDuration.ShouldBe(5.0);
+            data.Replay.Count.ShouldBe(1);
+        }
+        finally
+        {
+            File.Delete(tmpPath);
+        }
+    }
+
+    [Test]
+    public async Task TotalDurationIsAbsentWhenNotSet()
+    {
+        var tmpPath = Path.GetTempFileName();
+        try
+        {
+            await using (
+                var writer = new InputReplayFile.InputReplayWriter(File.OpenWrite(tmpPath))
+            )
+            {
+                writer.AppendEvent(new InputEvent { Time = 0.5, Key = "a", Modifiers = [], Type = "keydown" });
+                // TotalDuration not set
+            }
+
+            var data = await InputReplayFile.ReadDataAsync(tmpPath, CancellationToken.None);
+            data.TotalDuration.ShouldBeNull();
+
+            var json = await File.ReadAllTextAsync(tmpPath);
+            using var doc = System.Text.Json.JsonDocument.Parse(json);
+            doc.RootElement.TryGetProperty("totalDuration", out _).ShouldBeFalse();
+        }
+        finally
+        {
+            File.Delete(tmpPath);
+        }
+    }
+
+    [Test]
+    public async Task ParseJsonDataReturnsTotalDuration()
+    {
+        var json = """{"version":"1","totalDuration":3.5,"replay":[{"time":0.1,"key":"a","modifiers":[],"type":"keydown"}]}""";
+        var tmpPath = Path.GetTempFileName();
+        try
+        {
+            await File.WriteAllTextAsync(tmpPath, json);
+            var data = await InputReplayFile.ReadDataAsync(tmpPath, CancellationToken.None);
+            data.TotalDuration.ShouldBe(3.5);
+            data.Replay.Count.ShouldBe(1);
+            data.Replay[0].Key.ShouldBe("a");
+        }
+        finally
+        {
+            File.Delete(tmpPath);
+        }
+    }
+
     // ── ParseInputText ───────────────────────────────────────────────────────
 
     [Test]

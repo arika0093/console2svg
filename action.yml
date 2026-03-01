@@ -7,7 +7,7 @@ inputs:
     required: false
     default: 'latest'
   overwrite_env:
-    description: 'Whether to overwrite color-related environment variables (TERM/COLORTERM/FORCE_COLOR/CLICOLOR_FORCE).'
+    description: 'Whether to overwrite color-related environment variables.'
     required: false
     default: 'true'
 
@@ -19,10 +19,8 @@ runs:
       run: |
         if [ "${{ inputs.overwrite_env }}" = "true" ]; then
           {
-            echo "TERM=${TERM:-xterm-256color}"
-            echo "COLORTERM=${COLORTERM:-256color}"
-            echo "FORCE_COLOR=${FORCE_COLOR:-1}"
-            echo "CLICOLOR_FORCE=${CLICOLOR_FORCE:-1}"
+            echo "TERM=xterm-256color"
+            echo "COLORTERM=truecolor"
           } >> "$GITHUB_ENV"
         fi
 

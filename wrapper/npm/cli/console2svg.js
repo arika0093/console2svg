@@ -15,7 +15,10 @@ if (!fs.existsSync(binPath)) {
   process.exit(1);
 }
 
-const child = spawn(binPath, process.argv.slice(2), { stdio: 'inherit' });
+const child = spawn(binPath, process.argv.slice(2), {
+  stdio: 'inherit',
+  env: { ...process.env, DOTNET_EnableWriteXorExecute: '0' }
+});
 child.on('exit', (code) => {
   process.exit(code == null ? 1 : code);
 });

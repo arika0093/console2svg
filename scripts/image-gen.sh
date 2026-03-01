@@ -1,17 +1,18 @@
+# --- image ---
 # required: sudo npm install -g oh-my-logo
-console2svg -c -d macos-pc -h 10 --opacity 0.9 --background ./assets/bg.png -o ./assets/cmd-hero.svg -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
-console2svg -c -d macos-pc -h 10 --opacity 0.95 --background "#30a0d0" "#0060c0" -o ./assets/cmd-hero-grad.svg -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
-console2svg console2svg -o assets/cmd.svg 
-console2svg -w 120 -c -d macos-pc -o ./assets/cmd-window.svg -- console2svg
-console2svg --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -o ./assets/cmd-crop-word.svg -- dotnet --info
-console2svg -h 10 -c -d macos-pc --background "#003060" --opacity 0.8 -o ./assets/cmd-bg1.svg -- dotnet --version
-console2svg -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.8 -o ./assets/cmd-bg2.svg -- dotnet --version
-console2svg -h 10 -c -d macos-pc --background ./assets/bg.png --opacity 0.8 -o ./assets/cmd-bg3.svg  -- dotnet --version
+console2svg -o ./assets/cmd-hero.svg      --verbose ./logs/cmd-hero.log       -c -d macos-pc -h 10 --opacity 0.9 --background ./assets/bg.png  -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
+console2svg -o ./assets/cmd-hero-grad.svg --verbose ./logs/cmd-hero-grad.log  -c -d macos-pc -h 10 --opacity 0.95 --background "#30a0d0" "#0060c0" -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
+console2svg -o ./assets/cmd.svg           --verbose ./logs/cmd.log            console2svg 
+console2svg -o ./assets/cmd-window.svg    --verbose ./logs/cmd-window.log     -w 120 -c -d macos-pc  -- console2svg
+console2svg -o ./assets/cmd-crop-word.svg --verbose ./logs/cmd-crop-word.log  --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -- dotnet --info
+console2svg -o ./assets/cmd-bg1.svg       --verbose ./logs/cmd-bg1.log        -h 10 -c -d macos-pc --background "#003060" --opacity 0.8  -- dotnet --version
+console2svg -o ./assets/cmd-bg2.svg       --verbose ./logs/cmd-bg2.log        -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.8  -- dotnet --version
+console2svg -o ./assets/cmd-bg3.svg       --verbose ./logs/cmd-bg3.log        -h 10 -c -d macos-pc --background ./assets/bg.png --opacity 0.8   -- dotnet --version
 # required: sudo apt install -y sl nyancat
-console2svg -w 120 -h 16 -c -d -v -o ./assets/cmd-sl.svg -- sl
-console2svg -w 120 -h 28 -c -d -v --timeout 3 --sleep 0 -o ./assets/cmd-nyancat.svg -- nyancat
+console2svg -o ./assets/cmd-sl.svg        --verbose ./logs/cmd-sl.log         -w 120 -h 16 -c -d -v  -- sl
+console2svg -o ./assets/cmd-nyancat.svg   --verbose ./logs/cmd-nyancat.log    -w 120 -h 28 -c -d -v --timeout 3 --sleep 0  -- nyancat
 # --- video ---
 # required: sudo apt install -y vim
-console2svg -v -d -o ./assets/cmd-bash-vim.svg --replay ./assets/cmd-bash-vim-replay.json -- bash
+console2svg -o ./assets/cmd-bash-vim.svg  --verbose ./logs/cmd-bash-vim.log   -v -d --replay ./assets/cmd-bash-vim-replay.json -- bash
 # required: sudo npm install -g @github/copilot
-# console2svg -v -c -d -o ./assets/cmd-loop.svg --replay ./assets/cmd-loop-replay.json -- copilot --banner
+# console2svg -o ./assets/cmd-loop.svg      --verbose ./logs/cmd-loop.log       -v -c -d  --replay ./assets/cmd-loop-replay.json -- copilot --banner

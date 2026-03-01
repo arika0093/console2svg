@@ -27,7 +27,7 @@ console2svg console2svg
 
 ```
 
-![](./assets/cmd.svg)
+![console2svg console2svg](./assets/cmd.svg)
 
 You can also generate SVG with a window frame. and some options to customize the appearance.  
 For example, `-w` specifies the width, `-c` is an option to display the command at the beginning of the output, and `-d` is an option to specify the style of the window frame, where we specify a macOS-like frame. If the command is long, you can also write it together after `--`.
@@ -36,7 +36,7 @@ For example, `-w` specifies the width, `-c` is an option to display the command 
 console2svg -w 120 -c -d macos-pc -- console2svg
 ```
 
-![](./assets/cmd-window.svg)
+![console2svg -w 120 -c -d macos-pc -- console2svg](./assets/cmd-window.svg)
 
 ---
 
@@ -47,7 +47,7 @@ By using the [replay feature](#replay-input), you can save the command execution
 console2svg -v -c -d macos -- copilot --banner
 ```
 
-![](./assets/cmd-loop.svg)
+![console2svg -v -c -d macos -- copilot --banner](./assets/cmd-loop.svg)
 
 ## Install
 [![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) [![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest)
@@ -119,7 +119,7 @@ console2svg --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -- dotn
 
 The result will look like this.
 
-![](./assets/cmd-crop-word.svg)
+![console2svg --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -- dotnet --info](./assets/cmd-crop-word.svg)
 
 
 ### Background and opacity
@@ -130,7 +130,7 @@ You can set the background color or image of the output SVG, and adjust the opac
 console2svg -w 100 -h 10 -c -d macos-pc --background "#003060" --opacity 0.8 -- dotnet --version
 ```
 
-![](./assets/cmd-bg1.svg)
+![console2svg -w 100 -h 10 -c -d macos-pc --background "#003060" --opacity 0.8 -- dotnet --version](./assets/cmd-bg1.svg)
 
 You can also set a gradient background.
 
@@ -138,7 +138,7 @@ You can also set a gradient background.
 console2svg -w 100 -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.8 -- dotnet --version
 ```
 
-![](./assets/cmd-bg2.svg)
+![console2svg -w 100 -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.8 -- dotnet --version](./assets/cmd-bg2.svg)
 
 Image background is also supported.
 
@@ -146,7 +146,7 @@ Image background is also supported.
 console2svg -w 100 -h 10 -c -d macos-pc --background image.png --opacity 0.8  -- dotnet --version
 ```
 
-![](./assets/cmd-bg3.svg)
+![console2svg -w 100 -h 10 -c -d macos-pc --background image.png --opacity 0.8  -- dotnet --version](./assets/cmd-bg3.svg)
 
 
 ### Animated SVG

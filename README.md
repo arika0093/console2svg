@@ -228,9 +228,6 @@ By using this feature, you can generate an SVG that records terminal operations 
 console2svg -v -c -d macos --replay ./replay.json -- bash
 ```
 
-![console2svg -v -c -d macos --replay ./replay.json -- bash](./assets/cmd-bash-vim.svg)
-
-
 The replay file is in a simple JSON format. If you make a mistake in the input, you can directly edit this file (or of course, you can ask AI to fix it for you).
 
 <details>

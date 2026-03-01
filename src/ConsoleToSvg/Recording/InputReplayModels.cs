@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
 
 namespace ConsoleToSvg.Recording;
@@ -7,10 +8,6 @@ namespace ConsoleToSvg.Recording;
 /// <summary>
 /// Source-generated JSON serializer context for the input replay data.
 /// </summary>
-[JsonSourceGenerationOptions(
-    WriteIndented = true,
-    PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase
-)]
 [JsonSerializable(typeof(InputReplayData))]
 [JsonSerializable(typeof(InputEvent))]
 internal partial class InputReplaySerializerContext : JsonSerializerContext { }
@@ -47,6 +44,9 @@ public sealed class InputReplayData
     /// <summary>Format version of this replay file.</summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Version { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? AppVersion { get; set; }
 
     /// <summary>UTC date and time when this replay file was created.</summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

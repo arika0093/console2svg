@@ -204,11 +204,14 @@ internal static class Program
         return LoggerFactory.Create(builder =>
         {
             builder.ClearProviders();
-            builder.SetMinimumLevel(verbose ? LogLevel.Debug : LogLevel.None);
             if (verbose)
             {
-                var dt = DateTime.Now;
-                builder.AddZLoggerFile($"console2svg.{dt:yyyyMMdd_HHmmss}.log");
+                builder.AddZLoggerFile($"console2svg.log", fileShared: false);
+                builder.SetMinimumLevel(LogLevel.Debug);
+            }
+            else
+            {
+                builder.SetMinimumLevel(LogLevel.None);
             }
         });
     }

@@ -17,7 +17,7 @@ public static class OptionParser
             Major options:
                 -c, --with-command        Prepend the command line to the output.
                 -o, --out <path>          Output SVG path (default: output.svg).
-                -w, --width <int>         Terminal width in characters (default: auto).
+                -w, --width <int>         Terminal width in characters (default: 100).
                 -h, --height <int>        Terminal height in rows (default: auto).
                 -v                        Output animated SVG (alias for --mode video).
                 -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc.
@@ -42,7 +42,7 @@ public static class OptionParser
                 -o, --out <path>          Output SVG path (default: output.svg).
                 -m, --mode <image|video>  Output mode (default: image).
                 -v                        is alias for --mode video.
-                -w, --width <int>         Terminal width in characters (default: auto).
+                -w, --width <int>         Terminal width in characters (default: 100).
                 -h, --height <int>        Terminal height in rows (default: auto).
                 --font <family>           CSS font-family for SVG text.
                 --fontsize <px>           Font size in pixels (default: 14).

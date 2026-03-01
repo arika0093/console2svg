@@ -14,13 +14,14 @@ namespace ConsoleToSvg.Recording;
 public static class InputReplayFile
 {
     // Use default json options tuned for human readability
-    private static JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web)
+    private static readonly JsonSerializerOptions s_jsonOptions = new(JsonSerializerDefaults.Web)
     {
         WriteIndented = true,
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     };
+    private static readonly InputReplaySerializerContext s_jsonContext = new(s_jsonOptions);
 
     // ── VT escape sequence tables ───────────────────────────────────────────
 
@@ -437,9 +438,9 @@ public static class InputReplayFile
         {
             return new InputReplayData();
         }
-        var context = new InputReplaySerializerContext(_jsonOptions);
         var data =
-            JsonSerializer.Deserialize(json, context.InputReplayData) ?? new InputReplayData();
+            JsonSerializer.Deserialize(json, s_jsonContext.InputReplayData)
+            ?? new InputReplayData();
         ResolveAbsoluteTimes(data.Replay);
         return data;
     }
@@ -876,17 +877,19 @@ public static class InputReplayFile
 
         public void Dispose()
         {
-            var context = new InputReplaySerializerContext(_jsonOptions);
-            JsonSerializer.Serialize(_stream, BuildSerializableData(), context.InputReplayData);
+            JsonSerializer.Serialize(
+                _stream,
+                BuildSerializableData(),
+                s_jsonContext.InputReplayData
+            );
             _stream.Flush();
             _stream.Dispose();
         }
 
         public async ValueTask DisposeAsync()
         {
-            var context = new InputReplaySerializerContext(_jsonOptions);
             await JsonSerializer
-                .SerializeAsync(_stream, BuildSerializableData(), context.InputReplayData)
+                .SerializeAsync(_stream, BuildSerializableData(), s_jsonContext.InputReplayData)
                 .ConfigureAwait(false);
             await _stream.FlushAsync().ConfigureAwait(false);
             await _stream.DisposeAsync().ConfigureAwait(false);

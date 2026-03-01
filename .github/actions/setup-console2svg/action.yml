@@ -14,14 +14,6 @@ runs:
       shell: bash
       run: |
         VERSION="${{ inputs.version }}"
-        if [ "$VERSION" = "latest" ]; then
-          VERSION=$(curl -fsSL "https://api.github.com/repos/arika0093/console2svg/releases/latest" \
-            | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
-          if [ -z "$VERSION" ]; then
-            echo "Failed to determine the latest console2svg version from GitHub API."
-            exit 1
-          fi
-        fi
 
         case "${{ runner.os }}" in
           Linux)   RID="linux-x64" ; EXT="" ;;
@@ -33,10 +25,15 @@ runs:
             ;;
         esac
 
+        FILE="console2svg-${RID}${EXT}"
+        if [ "$VERSION" = "latest" ]; then
+          URL="https://github.com/arika0093/console2svg/releases/latest/download/${FILE}"
+        else
+          URL="https://github.com/arika0093/console2svg/releases/download/v${VERSION}/${FILE}"
+        fi
+
         INSTALL_DIR="${{ runner.tool_cache }}/console2svg/${VERSION}/x64"
         mkdir -p "$INSTALL_DIR"
-        FILE="console2svg-${RID}${EXT}"
-        URL="https://github.com/arika0093/console2svg/releases/download/v${VERSION}/${FILE}"
 
         echo "Downloading ${URL} ..."
         curl -fsSL -L -o "${INSTALL_DIR}/console2svg${EXT}" "${URL}"

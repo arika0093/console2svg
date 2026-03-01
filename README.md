@@ -74,6 +74,39 @@ chmod +x /usr/local/bin/console2svg
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64.exe -o console2svg.exe
 ```
 
+### GitHub Actions
+
+You can use the [`setup-console2svg`](.github/actions/setup-console2svg) composite action to install the binary on a CI runner and add it to `PATH`.
+
+```yaml
+- uses: arika0093/console2svg/.github/actions/setup-console2svg@main
+```
+
+By default the latest release is installed. Pin to a specific version with the `version` input:
+
+```yaml
+- uses: arika0093/console2svg/.github/actions/setup-console2svg@main
+  with:
+    version: '0.4.3'
+```
+
+Full workflow example that generates an SVG and commits it back:
+
+```yaml
+jobs:
+  gen:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: arika0093/console2svg/.github/actions/setup-console2svg@main
+      - run: console2svg -w 120 -c -d macos-pc -o output.svg -- dotnet --version
+      - uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "chore: regenerate SVG"
+```
+
 ## Usage
 ### Pipe mode
 

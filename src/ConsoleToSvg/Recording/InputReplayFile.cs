@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -12,6 +13,16 @@ namespace ConsoleToSvg.Recording;
 
 public static class InputReplayFile
 {
+    // Use default json options tuned for human readability
+    private static readonly JsonSerializerOptions s_jsonOptions = new(JsonSerializerDefaults.Web)
+    {
+        WriteIndented = true,
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    };
+    private static readonly InputReplaySerializerContext s_jsonContext = new(s_jsonOptions);
+
     // ── VT escape sequence tables ───────────────────────────────────────────
 
     private static readonly (string Final, string Key)[] s_csiLetterKeys =
@@ -72,10 +83,23 @@ public static class InputReplayFile
         CancellationToken cancellationToken
     )
     {
+        var data = await ReadDataAsync(path, cancellationToken).ConfigureAwait(false);
+        return data.Replay;
+    }
+
+    /// <summary>
+    /// Read the full replay data (including metadata such as <see cref="InputReplayData.TotalDuration"/>)
+    /// from a JSON replay file.
+    /// </summary>
+    public static async Task<InputReplayData> ReadDataAsync(
+        string path,
+        CancellationToken cancellationToken
+    )
+    {
         cancellationToken.ThrowIfCancellationRequested();
         var json = await File.ReadAllTextAsync(path, Encoding.UTF8, cancellationToken)
             .ConfigureAwait(false);
-        return ParseJsonObject(json);
+        return ParseJsonData(json);
     }
 
     /// <summary>
@@ -406,17 +430,19 @@ public static class InputReplayFile
 
     // ── Helpers ─────────────────────────────────────────────────────────────
 
-    internal static List<InputEvent> ParseJsonObject(string json)
+    internal static List<InputEvent> ParseJsonObject(string json) => ParseJsonData(json).Replay;
+
+    internal static InputReplayData ParseJsonData(string json)
     {
         if (string.IsNullOrWhiteSpace(json))
-            return [];
-        var data = JsonSerializer.Deserialize(
-            json,
-            InputReplaySerializerContext.Default.InputReplayData
-        );
-        var events = data?.Replay ?? [];
-        ResolveAbsoluteTimes(events);
-        return events;
+        {
+            return new InputReplayData();
+        }
+        var data =
+            JsonSerializer.Deserialize(json, s_jsonContext.InputReplayData)
+            ?? new InputReplayData();
+        ResolveAbsoluteTimes(data.Replay);
+        return data;
     }
 
     /// <summary>
@@ -795,6 +821,12 @@ public static class InputReplayFile
         private readonly InputReplayData _data = new();
         private readonly DateTimeOffset _createdAt = DateTimeOffset.UtcNow;
 
+        /// <summary>
+        /// Total duration in seconds of the recording session. When set, the value
+        /// is written to the replay file and can be used as a timeout when replaying.
+        /// </summary>
+        public double? TotalDuration { get; set; }
+
         public InputReplayWriter(Stream stream)
         {
             _stream = stream;
@@ -815,7 +847,9 @@ public static class InputReplayFile
             var result = new InputReplayData
             {
                 Version = InputReplayData.CurrentVersion,
+                AppVersion = ThisAssembly.AssemblyInformationalVersion,
                 CreatedAt = _createdAt,
+                TotalDuration = TotalDuration,
                 Replay = new List<InputEvent>(_data.Replay.Count),
             };
 
@@ -846,7 +880,7 @@ public static class InputReplayFile
             JsonSerializer.Serialize(
                 _stream,
                 BuildSerializableData(),
-                InputReplaySerializerContext.Default.InputReplayData
+                s_jsonContext.InputReplayData
             );
             _stream.Flush();
             _stream.Dispose();
@@ -855,11 +889,7 @@ public static class InputReplayFile
         public async ValueTask DisposeAsync()
         {
             await JsonSerializer
-                .SerializeAsync(
-                    _stream,
-                    BuildSerializableData(),
-                    InputReplaySerializerContext.Default.InputReplayData
-                )
+                .SerializeAsync(_stream, BuildSerializableData(), s_jsonContext.InputReplayData)
                 .ConfigureAwait(false);
             await _stream.FlushAsync().ConfigureAwait(false);
             await _stream.DisposeAsync().ConfigureAwait(false);

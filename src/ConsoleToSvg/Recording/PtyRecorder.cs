@@ -98,13 +98,14 @@ public static class PtyRecorder
         logger.ZLogDebug($"PTY process spawned.");
         var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
         Stream? inputForward;
+        InputReplayData? replayData = null;
         if (!string.IsNullOrWhiteSpace(replayPath))
         {
             logger.ZLogDebug($"Input source: replay file. Path={replayPath}");
-            var replayEvents = await InputReplayFile
-                .ReadAllAsync(replayPath!, cancellationToken)
+            replayData = await InputReplayFile
+                .ReadDataAsync(replayPath!, cancellationToken)
                 .ConfigureAwait(false);
-            inputForward = new InputReplayFile.ReplayStream(replayEvents);
+            inputForward = new InputReplayFile.ReplayStream(replayData.Replay);
         }
         else
         {
@@ -155,6 +156,7 @@ public static class PtyRecorder
         var eofReached = false;
         var processExited = false;
         var disposed = false;
+        double? replayTimeoutExceeded = null;
         try
         {
             while (true)
@@ -176,12 +178,29 @@ public static class PtyRecorder
                     processExited = true;
                     break;
                 }
+
+                if (
+                    replayData?.TotalDuration is double replayTotalDuration
+                    && stopwatch.Elapsed.TotalSeconds > replayTotalDuration + 1.0
+                )
+                {
+                    replayTimeoutExceeded = replayTotalDuration;
+                    canceled = true;
+                    break;
+                }
             }
         }
         catch
         {
             // PTY process may have already exited; ignore cleanup errors such as
             // "Killing terminal failed with error 3" (ESRCH: no such process)
+        }
+
+        if (replayTimeoutExceeded is double exceededDuration)
+        {
+            logger.ZLogDebug(
+                $"Replay timeout exceeded ({exceededDuration:F1}s + 1s). Finalizing PTY recording."
+            );
         }
 
         if (canceled || eofReached || processExited)
@@ -253,6 +272,7 @@ public static class PtyRecorder
         {
             try
             {
+                replaySaveWriter.TotalDuration = stopwatch.Elapsed.TotalSeconds;
                 await replaySaveWriter.DisposeAsync().ConfigureAwait(false);
             }
             catch
@@ -264,6 +284,14 @@ public static class PtyRecorder
         logger.ZLogDebug(
             $"PTY recording completed. Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds}"
         );
+
+        if (replayTimeoutExceeded is double exceededDurationFinal)
+        {
+            throw new TimeoutException(
+                $"Replay did not complete within the expected duration ({exceededDurationFinal:F1}s + 1s timeout)."
+            );
+        }
+
         return session;
     }
 
@@ -315,13 +343,14 @@ public static class PtyRecorder
 
         var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
         Stream? inputForward;
+        InputReplayData? replayData = null;
         if (!string.IsNullOrWhiteSpace(replayPath))
         {
             logger.ZLogDebug($"Input source: replay file. Path={replayPath}");
-            var replayEvents = await InputReplayFile
-                .ReadAllAsync(replayPath!, cancellationToken)
+            replayData = await InputReplayFile
+                .ReadDataAsync(replayPath!, cancellationToken)
                 .ConfigureAwait(false);
-            inputForward = new InputReplayFile.ReplayStream(replayEvents);
+            inputForward = new InputReplayFile.ReplayStream(replayData.Replay);
         }
         else
         {
@@ -361,15 +390,48 @@ public static class PtyRecorder
             )
             : null;
 
-        await ReadOutputAsync(
-                process.StandardOutput.BaseStream,
-                session,
-                stopwatch,
-                CancellationToken.None,
-                logger,
-                outputForward
-            )
-            .ConfigureAwait(false);
+        // When replaying with a TotalDuration, create a timeout CTS so that ReadOutputAsync
+        // is cancelled (and the process is killed) if stdout stays open beyond the deadline.
+        using var replayTimeoutCts =
+            replayData?.TotalDuration is double replayTotalDur
+                ? new CancellationTokenSource(TimeSpan.FromSeconds(replayTotalDur + 1.0))
+                : null;
+        using var timeoutKillRegistration = replayTimeoutCts?.Token.Register(() =>
+        {
+            try
+            {
+                if (!process.HasExited)
+                    process.Kill();
+            }
+            catch (InvalidOperationException)
+            {
+                // Process has already exited; nothing to kill.
+            }
+            catch (System.ComponentModel.Win32Exception)
+            {
+                // Kill may fail on Windows if the process is already gone.
+            }
+        });
+
+        var replayTimedOut = false;
+        try
+        {
+            await ReadOutputAsync(
+                    process.StandardOutput.BaseStream,
+                    session,
+                    stopwatch,
+                    replayTimeoutCts?.Token ?? CancellationToken.None,
+                    logger,
+                    outputForward
+                )
+                .ConfigureAwait(false);
+        }
+        catch (OperationCanceledException ex)
+            when (replayTimeoutCts is not null && ex.CancellationToken == replayTimeoutCts.Token)
+        {
+            replayTimedOut = true;
+        }
+
         while (!process.WaitForExit(50))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -389,6 +451,7 @@ public static class PtyRecorder
         {
             try
             {
+                replaySaveWriter.TotalDuration = stopwatch.Elapsed.TotalSeconds;
                 await replaySaveWriter.DisposeAsync().ConfigureAwait(false);
             }
             catch
@@ -400,6 +463,14 @@ public static class PtyRecorder
         logger.ZLogDebug(
             $"Fallback recording completed. ExitCode={process.ExitCode} Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds} Canceled={canceled}"
         );
+
+        if (replayTimedOut && replayData?.TotalDuration is double exceededDuration)
+        {
+            throw new TimeoutException(
+                $"Replay did not complete within the expected duration ({exceededDuration:F1}s + 1s timeout)."
+            );
+        }
+
         return session;
     }
 

@@ -76,21 +76,14 @@ curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/cons
 
 ### GitHub Actions
 
-> 💡 **This repository uses this action itself** to automatically regenerate all the SVG images in the [`assets/`](assets/) directory on every push via the [`image-gen`](.github/workflows/image-gen.yaml) workflow — so the screenshots in this README are always up to date.
-
 A composite action is provided at the root of this repository. It installs the platform-matched console2svg binary and adds it to `PATH`.
 
 ```yaml
 - uses: arika0093/console2svg@main
 ```
 
-By default the latest release is installed. Pin to a specific version with the `version` input:
-
-```yaml
-- uses: arika0093/console2svg@main
-  with:
-    version: '0.4.3'
-```
+<details>
+<summary>Example usage in GitHub Actions</summary>
 
 Full workflow example that generates an SVG and commits it back:
 
@@ -101,13 +94,25 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: arika0093/console2svg@main
-      - run: console2svg -w 120 -c -d macos-pc -o output.svg -- dotnet --version
-      - uses: stefanzweifel/git-auto-commit-action@v7
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup console2svg
+        uses: arika0093/console2svg@main
+
+      - name: Generate SVG
+        run: console2svg -w 120 -c -d macos-pc -o output.svg -- dotnet --version
+
+      - name: Commit Changes
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_message: "chore: regenerate SVG"
+          commit_message: "[skip-ci] chore: regenerate SVG"
 ```
+
+</details>
+
+> [!TIP]
+> This repository uses this action itself to automatically regenerate all the SVG images in the [`assets/`](assets/) directory on every push via the [`image-gen`](.github/workflows/image-gen.yaml) workflow.
 
 ## Usage
 ### Pipe mode

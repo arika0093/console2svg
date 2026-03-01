@@ -158,6 +158,8 @@ use `-m video` or `-v` to capture the animation of the command execution and sav
 console2svg -c -d -v -- sl
 ```
 
+![console2svg -c -d -v -- sl](./assets/cmd-sl.svg)
+
 You can specify the `--timeout` option to output SVG after a certain time has elapsed.
 This is useful for converting commands that do not terminate, such as `nyancat`, into SVG.
 

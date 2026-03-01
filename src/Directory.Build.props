@@ -3,6 +3,7 @@
     <IsPackable>true</IsPackable>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+    <NoWarn>$(NoWarn);NETSDK1057</NoWarn>
     <PackageDescription>A .NET CLI tool to convert console output to SVG.</PackageDescription>
     <PackageProjectUrl>https://github.com/arika0093/ConsoleToSvg</PackageProjectUrl>
     <RepositoryUrl>https://github.com/arika0093/ConsoleToSvg</RepositoryUrl>

@@ -5,6 +5,7 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <NoWarn>$(NoWarn);NETSDK1057</NoWarn>
     <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
     <SuppressTfmSupportBuildErrors>true</SuppressTfmSupportBuildErrors>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>

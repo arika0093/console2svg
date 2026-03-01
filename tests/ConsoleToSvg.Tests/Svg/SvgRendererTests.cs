@@ -351,7 +351,7 @@ public sealed class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions
             {
                 Theme = "dark",
-                Window = ConsoleToSvg.Svg.WindowStyle.Macos,
+                Chrome = ConsoleToSvg.Svg.ChromeLoader.Load("macos"),
                 Padding = 2,
             }
         );
@@ -372,7 +372,7 @@ public sealed class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions
             {
                 Theme = "dark",
-                Window = ConsoleToSvg.Svg.WindowStyle.MacosPc,
+                Chrome = ConsoleToSvg.Svg.ChromeLoader.Load("macos-pc"),
                 Padding = 2,
             }
         );
@@ -399,7 +399,7 @@ public sealed class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions
             {
                 Theme = "dark",
-                Window = ConsoleToSvg.Svg.WindowStyle.WindowsPc,
+                Chrome = ConsoleToSvg.Svg.ChromeLoader.Load("windows-pc"),
                 Padding = 2,
             }
         );
@@ -581,7 +581,7 @@ public sealed class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions
             {
                 Theme = "dark",
-                Window = ConsoleToSvg.Svg.WindowStyle.WindowsPc,
+                Chrome = ConsoleToSvg.Svg.ChromeLoader.Load("windows-pc"),
                 Padding = 2,
             }
         );
@@ -609,7 +609,7 @@ public sealed class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions
             {
                 Theme = "dark",
-                Window = ConsoleToSvg.Svg.WindowStyle.Windows,
+                Chrome = ConsoleToSvg.Svg.ChromeLoader.Load("windows"),
                 Padding = 2,
             }
         );

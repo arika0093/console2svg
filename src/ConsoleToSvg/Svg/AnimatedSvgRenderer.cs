@@ -16,10 +16,9 @@ public static class AnimatedSvgRenderer
         }
 
         var theme = Theme.Resolve(options.Theme);
-        // Windows Terminal uses a near-black background distinct from the default dark theme
-        if (options.Window is WindowStyle.Windows or WindowStyle.WindowsPc)
+        if (options.Chrome?.ThemeBackgroundOverride is string bgOverride)
         {
-            theme = theme.WithBackground("#0c0c0c");
+            theme = theme.WithBackground(bgOverride);
         }
         var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
         var frames = emulator.ReplayFrames(session);
@@ -36,7 +35,7 @@ public static class AnimatedSvgRenderer
             reducedFrames[0].Buffer,
             options.Crop,
             includeScrollback: false,
-            options.Window,
+            options.Chrome,
             options.Padding,
             heightRows: null,
             commandHeaderRows,
@@ -59,7 +58,7 @@ public static class AnimatedSvgRenderer
             theme,
             css,
             font: options.Font,
-            windowStyle: options.Window,
+            chrome: options.Chrome,
             commandHeader: options.CommandHeader,
             opacity: options.Opacity,
             background: options.Background

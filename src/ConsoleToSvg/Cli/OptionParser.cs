@@ -54,8 +54,10 @@ public static class OptionParser
                 --timeout <sec>           Stop recording after specified seconds (e.g. 5, 0.5).
 
             Options (Appearance):
-                -d, --window [none|macos|windows|macos-pc|windows-pc]
+                -d, --window [none|macos|windows|macos-pc|windows-pc|path/to/chrome.json]
                                           Terminal window chrome style (default: none, or macos if specified without a value).
+                                          Built-in styles: none, macos, windows, macos-pc, windows-pc.
+                                          Custom: provide a path to a .json chrome definition file.
                 --opacity <0-1>           Background fill opacity (default: 1).
                 --theme <dark|light>      Color theme (default: dark).
                 --padding <px>            Outer padding in pixels (default: 2, or 8 when window is set).
@@ -236,7 +238,10 @@ public static class OptionParser
         || string.Equals(token, "macos", StringComparison.OrdinalIgnoreCase)
         || string.Equals(token, "windows", StringComparison.OrdinalIgnoreCase)
         || string.Equals(token, "macos-pc", StringComparison.OrdinalIgnoreCase)
-        || string.Equals(token, "windows-pc", StringComparison.OrdinalIgnoreCase);
+        || string.Equals(token, "windows-pc", StringComparison.OrdinalIgnoreCase)
+        || token.EndsWith(".json", StringComparison.OrdinalIgnoreCase)
+        || token.Contains('/')
+        || token.Contains('\\');
 
     /// <summary>
     /// Returns true when a token looks like a color value or image path that can
@@ -358,26 +363,10 @@ public static class OptionParser
                 return true;
             case "-d":
             case "--window":
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    // No value supplied: default to macos
-                    options.Window = "macos";
-                    return true;
-                }
-
-                if (
-                    !string.Equals(value, "none", StringComparison.OrdinalIgnoreCase)
-                    && !string.Equals(value, "macos", StringComparison.OrdinalIgnoreCase)
-                    && !string.Equals(value, "windows", StringComparison.OrdinalIgnoreCase)
-                    && !string.Equals(value, "macos-pc", StringComparison.OrdinalIgnoreCase)
-                    && !string.Equals(value, "windows-pc", StringComparison.OrdinalIgnoreCase)
-                )
-                {
-                    error = "--window must be none, macos, windows, macos-pc, or windows-pc.";
-                    return false;
-                }
-
-                options.Window = value;
+                // Accept built-in names (macos, windows, macos-pc, windows-pc, none)
+                // or a path to a custom .json chrome definition file.
+                // Validation of the value happens at load time via ChromeLoader.
+                options.Window = string.IsNullOrWhiteSpace(value) ? "macos" : value;
                 return true;
             case "--padding":
                 if (!TryParseDouble(value, "--padding", out var padding, out error))

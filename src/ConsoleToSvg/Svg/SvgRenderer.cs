@@ -11,10 +11,9 @@ public static class SvgRenderer
     public static string Render(RecordingSession session, SvgRenderOptions options)
     {
         var theme = Theme.Resolve(options.Theme);
-        // Windows Terminal uses a near-black background distinct from the default dark theme
-        if (options.Window is WindowStyle.Windows or WindowStyle.WindowsPc)
+        if (options.Chrome?.ThemeBackgroundOverride is string bgOverride)
         {
-            theme = theme.WithBackground("#0c0c0c");
+            theme = theme.WithBackground(bgOverride);
         }
         var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
         var targetFrame = options.Frame ?? (session.Events.Count - 1);
@@ -29,7 +28,7 @@ public static class SvgRenderer
             emulator.Buffer,
             options.Crop,
             includeScrollback,
-            options.Window,
+            options.Chrome,
             options.Padding,
             options.HeightRows,
             commandHeaderRows,
@@ -42,7 +41,7 @@ public static class SvgRenderer
             theme,
             additionalCss: null,
             font: options.Font,
-            windowStyle: options.Window,
+            chrome: options.Chrome,
             commandHeader: options.CommandHeader,
             opacity: options.Opacity,
             background: options.Background
@@ -63,8 +62,6 @@ public static class SvgRenderer
 
 internal static class SvgDocumentBuilder
 {
-    private const double DesktopPadding = 20d;
-    private const double DesktopShadowOffset = 6d;
     private const string DefaultFontFamily =
         "ui-monospace,\"Cascadia Mono\",\"Segoe UI Mono\",\"SFMono-Regular\",Menlo,monospace";
 
@@ -122,7 +119,7 @@ internal static class SvgDocumentBuilder
         ScreenBuffer buffer,
         CropOptions crop,
         bool includeScrollback = false,
-        WindowStyle windowStyle = WindowStyle.None,
+        ChromeDefinition? chrome = null,
         double padding = 0d,
         int? heightRows = null,
         int commandHeaderRows = 0,
@@ -221,34 +218,22 @@ internal static class SvgDocumentBuilder
         var chromeRight = 0d;
         var chromeBottom = 0d;
 
-        switch (windowStyle)
+        if (chrome != null)
         {
-            case WindowStyle.Macos:
-                chromeLeft = 1d;
-                chromeTop = 28d;
-                chromeRight = 1d;
-                chromeBottom = 1d;
-                break;
-            case WindowStyle.Windows:
-                chromeLeft = 1d;
-                chromeTop = 35d;
-                chromeRight = 1d;
-                chromeBottom = 1d;
-                break;
-            case WindowStyle.MacosPc:
-                chromeLeft = DesktopPadding + 1d;
-                chromeTop = DesktopPadding + 28d;
-                chromeRight = DesktopPadding + 1d + DesktopShadowOffset;
-                chromeBottom = DesktopPadding + 1d + DesktopShadowOffset;
-                break;
-            case WindowStyle.WindowsPc:
-                chromeLeft = DesktopPadding + 1d;
-                chromeTop = DesktopPadding + 35d;
-                chromeRight = DesktopPadding + 1d + DesktopShadowOffset;
-                chromeBottom = DesktopPadding + 1d + DesktopShadowOffset;
-                break;
-            default:
-                break;
+            if (chrome.IsDesktop)
+            {
+                chromeLeft = chrome.DesktopPadding + chrome.PaddingLeft;
+                chromeTop = chrome.DesktopPadding + chrome.PaddingTop;
+                chromeRight = chrome.DesktopPadding + chrome.PaddingRight + chrome.ShadowOffset;
+                chromeBottom = chrome.DesktopPadding + chrome.PaddingBottom + chrome.ShadowOffset;
+            }
+            else
+            {
+                chromeLeft = chrome.PaddingLeft;
+                chromeTop = chrome.PaddingTop;
+                chromeRight = chrome.PaddingRight;
+                chromeBottom = chrome.PaddingBottom;
+            }
         }
 
         var headerHeight = commandHeaderRows * cellHeight;
@@ -370,7 +355,7 @@ internal static class SvgDocumentBuilder
         Theme theme,
         string? additionalCss,
         string? font = null,
-        WindowStyle windowStyle = WindowStyle.None,
+        ChromeDefinition? chrome = null,
         string? commandHeader = null,
         double opacity = 1d,
         string[]? background = null
@@ -403,10 +388,10 @@ internal static class SvgDocumentBuilder
 
         sb.Append("</style>\n");
 
-        AppendDefs(sb, context, windowStyle, background);
-        AppendBackground(sb, context, windowStyle, background);
+        AppendDefs(sb, context, chrome, background);
+        AppendBackground(sb, context, chrome, background);
         AppendGroupOpen(sb, opacity);
-        AppendChrome(sb, context, theme, windowStyle);
+        AppendChrome(sb, context, theme, chrome);
         if (context.HeaderRows > 0 && !string.IsNullOrEmpty(commandHeader))
         {
             AppendCommandHeader(sb, context, theme, commandHeader);
@@ -445,153 +430,73 @@ internal static class SvgDocumentBuilder
         sb.Append("</text>\n");
     }
 
-    /// <summary>Renders the always-opaque background layer (desktop bg for *-pc, canvas bg otherwise).</summary>
+    /// <summary>Renders the always-opaque background layer (desktop bg for desktop styles, canvas bg otherwise).</summary>
     private static void AppendBackground(
         StringBuilder sb,
         Context context,
-        WindowStyle windowStyle,
+        ChromeDefinition? chrome,
         string[]? background = null
     )
     {
-        switch (windowStyle)
+        if (chrome?.IsDesktop == true)
         {
-            case WindowStyle.MacosPc:
-            case WindowStyle.WindowsPc:
-                // Desktop background only — shadow + chrome go in AppendChrome (inside the single opacity group)
-                sb.Append("<rect width=\"");
-                sb.Append(Format(context.CanvasWidth));
-                sb.Append("\" height=\"");
-                sb.Append(Format(context.CanvasHeight));
-                sb.Append("\" fill=\"");
-                sb.Append(GetDesktopBgFill(background));
-                sb.Append("\"/>\n");
-                break;
-            default:
-                AppendCanvasBackground(sb, context, windowStyle, background);
-                break;
+            // Desktop background only — shadow + chrome go in AppendChrome (inside the single opacity group)
+            sb.Append("<rect width=\"");
+            sb.Append(Format(context.CanvasWidth));
+            sb.Append("\" height=\"");
+            sb.Append(Format(context.CanvasHeight));
+            sb.Append("\" fill=\"");
+            sb.Append(GetDesktopBgFill(background));
+            sb.Append("\"/>\n");
+        }
+        else
+        {
+            AppendCanvasBackground(sb, context, chrome, background);
         }
     }
 
-    /// <summary>Renders chrome elements. No opacity wrapper — caller owns the single outer g opacity group.</summary>
+    /// <summary>Renders chrome elements via the ChromeDefinition template. No opacity wrapper — caller owns the outer g.</summary>
     private static void AppendChrome(
         StringBuilder sb,
         Context context,
         Theme theme,
-        WindowStyle windowStyle
+        ChromeDefinition? chrome
     )
     {
-        switch (windowStyle)
+        if (chrome == null)
         {
-            case WindowStyle.Macos:
-            {
-                sb.Append("<rect x=\"0.5\" y=\"0.5\" rx=\"10\" ry=\"10\" width=\"");
-                sb.Append(Format(Math.Max(1d, context.CanvasWidth - 1d)));
-                sb.Append("\" height=\"");
-                sb.Append(Format(Math.Max(1d, context.CanvasHeight - 1d)));
-                sb.Append("\" fill=\"#1f1f1f\" stroke=\"#3a3a3a\"/>\n");
-                sb.Append("<rect x=\"1\" y=\"1\" rx=\"9\" ry=\"9\" width=\"");
-                sb.Append(Format(Math.Max(1d, context.CanvasWidth - 2d)));
-                sb.Append("\" height=\"27\" fill=\"#2c2c2c\"/>\n");
-                sb.Append("<circle cx=\"14\" cy=\"14\" r=\"5\" fill=\"#ff5f57\"/>\n");
-                sb.Append("<circle cx=\"30\" cy=\"14\" r=\"5\" fill=\"#febc2e\"/>\n");
-                sb.Append("<circle cx=\"46\" cy=\"14\" r=\"5\" fill=\"#28c840\"/>\n");
-                return;
-            }
-            case WindowStyle.Windows:
-            {
-                AppendWindowsTerminalChrome(
-                    sb,
-                    0d,
-                    0d,
-                    context.CanvasWidth,
-                    context.CanvasHeight,
-                    theme
-                );
-                return;
-            }
-            case WindowStyle.MacosPc:
-            {
-                var winX = DesktopPadding;
-                var winY = DesktopPadding;
-                var winW = context.CanvasWidth - 2d * DesktopPadding - DesktopShadowOffset;
-                var winH = context.CanvasHeight - 2d * DesktopPadding - DesktopShadowOffset;
-                // Shadow — inside the single opacity group so it fades with the window
-                sb.Append("<rect x=\"");
-                sb.Append(Format(winX + DesktopShadowOffset));
-                sb.Append("\" y=\"");
-                sb.Append(Format(winY + DesktopShadowOffset));
-                sb.Append("\" rx=\"10\" ry=\"10\" width=\"");
-                sb.Append(Format(winW));
-                sb.Append("\" height=\"");
-                sb.Append(Format(winH));
-                sb.Append("\" fill=\"black\" fill-opacity=\"0.3\"/>\n");
-                sb.Append("<rect x=\"");
-                sb.Append(Format(winX + 0.5d));
-                sb.Append("\" y=\"");
-                sb.Append(Format(winY + 0.5d));
-                sb.Append("\" rx=\"10\" ry=\"10\" width=\"");
-                sb.Append(Format(winW - 1d));
-                sb.Append("\" height=\"");
-                sb.Append(Format(winH - 1d));
-                sb.Append("\" fill=\"#1f1f1f\" stroke=\"#3a3a3a\"/>\n");
-                sb.Append("<rect x=\"");
-                sb.Append(Format(winX + 1d));
-                sb.Append("\" y=\"");
-                sb.Append(Format(winY + 1d));
-                sb.Append("\" rx=\"9\" ry=\"9\" width=\"");
-                sb.Append(Format(winW - 2d));
-                sb.Append("\" height=\"27\" fill=\"#2c2c2c\"/>\n");
-                sb.Append("<circle cx=\"");
-                sb.Append(Format(winX + 14d));
-                sb.Append("\" cy=\"");
-                sb.Append(Format(winY + 14d));
-                sb.Append("\" r=\"5\" fill=\"#ff5f57\"/>\n");
-                sb.Append("<circle cx=\"");
-                sb.Append(Format(winX + 30d));
-                sb.Append("\" cy=\"");
-                sb.Append(Format(winY + 14d));
-                sb.Append("\" r=\"5\" fill=\"#febc2e\"/>\n");
-                sb.Append("<circle cx=\"");
-                sb.Append(Format(winX + 46d));
-                sb.Append("\" cy=\"");
-                sb.Append(Format(winY + 14d));
-                sb.Append("\" r=\"5\" fill=\"#28c840\"/>\n");
-                return;
-            }
-            case WindowStyle.WindowsPc:
-            {
-                var winX = DesktopPadding;
-                var winY = DesktopPadding;
-                var winW = context.CanvasWidth - 2d * DesktopPadding - DesktopShadowOffset;
-                var winH = context.CanvasHeight - 2d * DesktopPadding - DesktopShadowOffset;
-                // Shadow — inside the single opacity group so it fades with the window
-                sb.Append("<rect x=\"");
-                sb.Append(Format(winX + DesktopShadowOffset));
-                sb.Append("\" y=\"");
-                sb.Append(Format(winY + DesktopShadowOffset));
-                sb.Append("\" width=\"");
-                sb.Append(Format(winW));
-                sb.Append("\" height=\"");
-                sb.Append(Format(winH));
-                sb.Append("\" fill=\"black\" fill-opacity=\"0.25\"/>\n");
-                AppendWindowsTerminalChrome(sb, winX, winY, winW, winH, theme);
-                return;
-            }
-            default:
-                // None: no chrome elements
-                return;
+            return;
         }
+
+        double winX, winY, winW, winH;
+        if (chrome.IsDesktop)
+        {
+            winX = chrome.DesktopPadding;
+            winY = chrome.DesktopPadding;
+            winW = context.CanvasWidth - 2d * chrome.DesktopPadding - chrome.ShadowOffset;
+            winH = context.CanvasHeight - 2d * chrome.DesktopPadding - chrome.ShadowOffset;
+        }
+        else
+        {
+            winX = 0d;
+            winY = 0d;
+            winW = context.CanvasWidth;
+            winH = context.CanvasHeight;
+        }
+
+        sb.Append(chrome.Render(winX, winY, winW, winH, context.CanvasWidth, context.CanvasHeight, theme.Background));
+        sb.Append('\n');
     }
 
     /// <summary>
-    /// For non-*-pc window styles, renders the canvas-level background rect.
-    /// When opacity &lt; 1 and no explicit background is given, the rect is omitted for
-    /// None style (the SVG becomes transparent behind the terminal content).
+    /// For non-desktop chrome styles (or no chrome), renders the canvas-level background rect.
+    /// When no explicit background is given, the rect is omitted for non-None styles
+    /// (the chrome window rect provides fill) and for None style (transparent canvas).
     /// </summary>
     private static void AppendCanvasBackground(
         StringBuilder sb,
         Context context,
-        WindowStyle windowStyle,
+        ChromeDefinition? chrome,
         string[]? background
     )
     {
@@ -604,9 +509,9 @@ internal static class SvgDocumentBuilder
             || (background is { Length: 1 } && IsImagePath(background[0]))
         )
             fill = "url(#desktop-bg)"; // gradient / image
-        else if (windowStyle != WindowStyle.None)
-            fill = null; // macos/windows: no background rect needed (outer window rect provides fill)
-        // else None without --background: omit background rect → transparent canvas
+        else if (chrome != null)
+            fill = null; // chrome window rect provides the background fill
+        // else no chrome and no --background: omit rect → transparent canvas
 
         if (fill == null)
             return;
@@ -656,11 +561,11 @@ internal static class SvgDocumentBuilder
     private static void AppendDefs(
         StringBuilder sb,
         Context context,
-        WindowStyle windowStyle,
+        ChromeDefinition? chrome,
         string[]? background
     )
     {
-        bool isPcStyle = windowStyle is WindowStyle.MacosPc or WindowStyle.WindowsPc;
+        bool isDesktopStyle = chrome?.IsDesktop == true;
 
         // Determine if <defs> are needed
         bool needsDefs;
@@ -671,7 +576,7 @@ internal static class SvgDocumentBuilder
         else if (background is { Length: 1 } && IsImagePath(background[0]))
             needsDefs = true; // user image
         else
-            needsDefs = isPcStyle; // default gradient for *-pc styles
+            needsDefs = isDesktopStyle; // default gradient for desktop styles
 
         if (!needsDefs)
             return;
@@ -688,11 +593,9 @@ internal static class SvgDocumentBuilder
         }
         else
         {
-            // Default gradient for *-pc styles — subtle diagonal to avoid being too flashy
-            var (c1, c2) =
-                windowStyle == WindowStyle.MacosPc
-                    ? ("#1a1d2e", "#252840")
-                    : ("#1a2535", "#253345");
+            // Default gradient from chrome definition — subtle diagonal
+            var c1 = chrome?.DesktopGradientFrom ?? "#1a1d2e";
+            var c2 = chrome?.DesktopGradientTo ?? "#252840";
             AppendLinearGradientDef(sb, "desktop-bg", c1, c2);
         }
 
@@ -788,243 +691,6 @@ internal static class SvgDocumentBuilder
             ".bmp" => "image/bmp",
             _ => "image/png",
         };
-    }
-
-    private static void AppendWindowsTerminalChrome(
-        StringBuilder sb,
-        double winX,
-        double winY,
-        double winW,
-        double winH,
-        Theme theme
-    )
-    {
-        const double TabBarHeight = 35d;
-        const double TabTop = 6d;
-        const double TabWidth = 160d;
-        const double TabRadius = 5d;
-        // Each window-control button column width (wider spacing matching real Windows Terminal)
-        const double BtnColW = 46d;
-
-        // Outer window border
-        sb.Append("<rect x=\"");
-        sb.Append(Format(winX + 0.5d));
-        sb.Append("\" y=\"");
-        sb.Append(Format(winY + 0.5d));
-        sb.Append("\" width=\"");
-        sb.Append(Format(winW - 1d));
-        sb.Append("\" height=\"");
-        sb.Append(Format(winH - 1d));
-        sb.Append("\" fill=\"#1c1c1c\" stroke=\"#3a3a3a\"/>\n");
-
-        // Tab bar background
-        sb.Append("<rect x=\"");
-        sb.Append(Format(winX + 1d));
-        sb.Append("\" y=\"");
-        sb.Append(Format(winY + 1d));
-        sb.Append("\" width=\"");
-        sb.Append(Format(winW - 2d));
-        sb.Append("\" height=\"");
-        sb.Append(Format(TabBarHeight - 1d));
-        sb.Append("\" fill=\"#1c1c1c\"/>\n");
-
-        // Active tab: fill = terminal background color (matches content area)
-        var tbLeft = winX + 8d;
-        var tbTop = winY + TabTop;
-        var tbBottom = winY + TabBarHeight;
-        var tbRight = tbLeft + TabWidth;
-        sb.Append("<path d=\"M ");
-        sb.Append(Format(tbLeft));
-        sb.Append(',');
-        sb.Append(Format(tbBottom));
-        sb.Append(" L ");
-        sb.Append(Format(tbLeft));
-        sb.Append(',');
-        sb.Append(Format(tbTop + TabRadius));
-        sb.Append(" Q ");
-        sb.Append(Format(tbLeft));
-        sb.Append(',');
-        sb.Append(Format(tbTop));
-        sb.Append(' ');
-        sb.Append(Format(tbLeft + TabRadius));
-        sb.Append(',');
-        sb.Append(Format(tbTop));
-        sb.Append(" L ");
-        sb.Append(Format(tbRight - TabRadius));
-        sb.Append(',');
-        sb.Append(Format(tbTop));
-        sb.Append(" Q ");
-        sb.Append(Format(tbRight));
-        sb.Append(',');
-        sb.Append(Format(tbTop));
-        sb.Append(' ');
-        sb.Append(Format(tbRight));
-        sb.Append(',');
-        sb.Append(Format(tbTop + TabRadius));
-        sb.Append(" L ");
-        sb.Append(Format(tbRight));
-        sb.Append(',');
-        sb.Append(Format(tbBottom));
-        sb.Append(" Z\" fill=\"");
-        sb.Append(theme.Background);
-        sb.Append("\"/>\n");
-
-        // Tab icon ">_" — 2px lower than center
-        var iconX = tbLeft + 8d;
-        var iconY = winY + TabBarHeight / 2d + 2d;
-        // ">" chevron (vector polyline)
-        sb.Append("<polyline points=\"");
-        sb.Append(Format(iconX));
-        sb.Append(',');
-        sb.Append(Format(iconY - 4d));
-        sb.Append(' ');
-        sb.Append(Format(iconX + 4d));
-        sb.Append(',');
-        sb.Append(Format(iconY));
-        sb.Append(' ');
-        sb.Append(Format(iconX));
-        sb.Append(',');
-        sb.Append(Format(iconY + 4d));
-        sb.Append(
-            "\" fill=\"none\" stroke=\"#cccccc\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\n"
-        );
-        // "_" underline (vector line)
-        sb.Append("<line x1=\"");
-        sb.Append(Format(iconX + 7d));
-        sb.Append("\" y1=\"");
-        sb.Append(Format(iconY + 4.5d));
-        sb.Append("\" x2=\"");
-        sb.Append(Format(iconX + 13d));
-        sb.Append("\" y2=\"");
-        sb.Append(Format(iconY + 4.5d));
-        sb.Append("\" stroke=\"#cccccc\" stroke-width=\"1.2\"/>\n");
-
-        // Tab close button × (inside tab, right side) — aligned to iconY
-        var tabCloseCX = tbRight - 12d;
-        var tabCloseCY = iconY;
-        const double TabCloseR = 3.5d;
-        sb.Append("<line x1=\"");
-        sb.Append(Format(tabCloseCX - TabCloseR));
-        sb.Append("\" y1=\"");
-        sb.Append(Format(tabCloseCY - TabCloseR));
-        sb.Append("\" x2=\"");
-        sb.Append(Format(tabCloseCX + TabCloseR));
-        sb.Append("\" y2=\"");
-        sb.Append(Format(tabCloseCY + TabCloseR));
-        sb.Append("\" stroke=\"#888888\" stroke-width=\"1.1\"/>\n");
-        sb.Append("<line x1=\"");
-        sb.Append(Format(tabCloseCX + TabCloseR));
-        sb.Append("\" y1=\"");
-        sb.Append(Format(tabCloseCY - TabCloseR));
-        sb.Append("\" x2=\"");
-        sb.Append(Format(tabCloseCX - TabCloseR));
-        sb.Append("\" y2=\"");
-        sb.Append(Format(tabCloseCY + TabCloseR));
-        sb.Append("\" stroke=\"#888888\" stroke-width=\"1.1\"/>\n");
-
-        // "+" new-tab button — aligned to iconY
-        var plusCX = tbRight + 16d;
-        var plusCY = iconY;
-        const double PlusR = 5d;
-        sb.Append("<line x1=\"");
-        sb.Append(Format(plusCX - PlusR));
-        sb.Append("\" y1=\"");
-        sb.Append(Format(plusCY));
-        sb.Append("\" x2=\"");
-        sb.Append(Format(plusCX + PlusR));
-        sb.Append("\" y2=\"");
-        sb.Append(Format(plusCY));
-        sb.Append("\" stroke=\"#888888\" stroke-width=\"1.2\"/>\n");
-        sb.Append("<line x1=\"");
-        sb.Append(Format(plusCX));
-        sb.Append("\" y1=\"");
-        sb.Append(Format(plusCY - PlusR));
-        sb.Append("\" x2=\"");
-        sb.Append(Format(plusCX));
-        sb.Append("\" y2=\"");
-        sb.Append(Format(plusCY + PlusR));
-        sb.Append("\" stroke=\"#888888\" stroke-width=\"1.2\"/>\n");
-
-        // "|" vertical separator
-        var sepX = tbRight + 36d;
-        sb.Append("<line x1=\"");
-        sb.Append(Format(sepX));
-        sb.Append("\" y1=\"");
-        sb.Append(Format(winY + 9d));
-        sb.Append("\" x2=\"");
-        sb.Append(Format(sepX));
-        sb.Append("\" y2=\"");
-        sb.Append(Format(winY + TabBarHeight - 9d));
-        sb.Append("\" stroke=\"#4a4a4a\" stroke-width=\"1\"/>\n");
-
-        // "v" dropdown chevron — aligned to iconY
-        var dropCX = tbRight + 52d;
-        var dropCY = iconY;
-        sb.Append("<polyline points=\"");
-        sb.Append(Format(dropCX - 4d));
-        sb.Append(',');
-        sb.Append(Format(dropCY - 2d));
-        sb.Append(' ');
-        sb.Append(Format(dropCX));
-        sb.Append(',');
-        sb.Append(Format(dropCY + 2d));
-        sb.Append(' ');
-        sb.Append(Format(dropCX + 4d));
-        sb.Append(',');
-        sb.Append(Format(dropCY - 2d));
-        sb.Append(
-            "\" fill=\"none\" stroke=\"#888888\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\n"
-        );
-
-        // Window control buttons: each occupies BtnColW=46px column, icons centered
-        var btnCenterY = iconY;
-        var closeX = winX + winW - BtnColW / 2d;
-        var maxX = closeX - BtnColW;
-        var minX = maxX - BtnColW;
-        const double IconHalf = 5d;
-
-        // Minimize ( — )
-        sb.Append("<line x1=\"");
-        sb.Append(Format(minX - IconHalf));
-        sb.Append("\" y1=\"");
-        sb.Append(Format(btnCenterY));
-        sb.Append("\" x2=\"");
-        sb.Append(Format(minX + IconHalf));
-        sb.Append("\" y2=\"");
-        sb.Append(Format(btnCenterY));
-        sb.Append("\" stroke=\"#cccccc\" stroke-width=\"1.2\"/>\n");
-
-        // Maximize ( □ )
-        sb.Append("<rect x=\"");
-        sb.Append(Format(maxX - IconHalf));
-        sb.Append("\" y=\"");
-        sb.Append(Format(btnCenterY - IconHalf));
-        sb.Append("\" width=\"");
-        sb.Append(Format(IconHalf * 2d));
-        sb.Append("\" height=\"");
-        sb.Append(Format(IconHalf * 2d));
-        sb.Append("\" fill=\"none\" stroke=\"#cccccc\" stroke-width=\"1.2\"/>\n");
-
-        // Close ( × )
-        sb.Append("<line x1=\"");
-        sb.Append(Format(closeX - IconHalf));
-        sb.Append("\" y1=\"");
-        sb.Append(Format(btnCenterY - IconHalf));
-        sb.Append("\" x2=\"");
-        sb.Append(Format(closeX + IconHalf));
-        sb.Append("\" y2=\"");
-        sb.Append(Format(btnCenterY + IconHalf));
-        sb.Append("\" stroke=\"#cccccc\" stroke-width=\"1.3\"/>\n");
-        sb.Append("<line x1=\"");
-        sb.Append(Format(closeX + IconHalf));
-        sb.Append("\" y1=\"");
-        sb.Append(Format(btnCenterY - IconHalf));
-        sb.Append("\" x2=\"");
-        sb.Append(Format(closeX - IconHalf));
-        sb.Append("\" y2=\"");
-        sb.Append(Format(btnCenterY + IconHalf));
-        sb.Append("\" stroke=\"#cccccc\" stroke-width=\"1.3\"/>\n");
-        // Inner area (content + padding) is rendered by AppendFrameGroup — do not duplicate here
     }
 
     public static void EndSvg(StringBuilder sb, double opacity = 1d)

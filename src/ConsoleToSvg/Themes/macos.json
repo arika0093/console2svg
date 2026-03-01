@@ -1,0 +1,7 @@
+{
+  "paddingTop": 28,
+  "paddingRight": 1,
+  "paddingBottom": 1,
+  "paddingLeft": 1,
+  "svgTemplate": "<rect x=\"{winX+0.5}\" y=\"{winY+0.5}\" rx=\"10\" ry=\"10\" width=\"{winW-1}\" height=\"{winH-1}\" fill=\"#1f1f1f\" stroke=\"#3a3a3a\"/>\n<rect x=\"{winX+1}\" y=\"{winY+1}\" rx=\"9\" ry=\"9\" width=\"{winW-2}\" height=\"27\" fill=\"#2c2c2c\"/>\n<circle cx=\"{winX+14}\" cy=\"{winY+14}\" r=\"5\" fill=\"#ff5f57\"/>\n<circle cx=\"{winX+30}\" cy=\"{winY+14}\" r=\"5\" fill=\"#febc2e\"/>\n<circle cx=\"{winX+46}\" cy=\"{winY+14}\" r=\"5\" fill=\"#28c840\"/>"
+}

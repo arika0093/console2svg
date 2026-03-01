@@ -1,16 +1,6 @@
-using System;
 using ConsoleToSvg.Cli;
 
 namespace ConsoleToSvg.Svg;
-
-public enum WindowStyle
-{
-    None,
-    Macos,
-    Windows,
-    MacosPc,
-    WindowsPc,
-}
 
 public sealed class SvgRenderOptions
 {
@@ -24,7 +14,8 @@ public sealed class SvgRenderOptions
 
     public double FontSize { get; set; } = 14d;
 
-    public WindowStyle Window { get; set; } = WindowStyle.None;
+    /// <summary>Window chrome definition. null = no chrome (transparent/plain).</summary>
+    public ChromeDefinition? Chrome { get; set; }
 
     public double Padding { get; set; }
 
@@ -47,8 +38,8 @@ public sealed class SvgRenderOptions
 
     public static SvgRenderOptions FromAppOptions(AppOptions appOptions)
     {
-        var windowStyle = ParseWindowStyle(appOptions.Window);
-        var effectivePadding = appOptions.Padding ?? (windowStyle != WindowStyle.None ? 8d : 2d);
+        var chrome = ChromeLoader.Load(appOptions.Window);
+        var effectivePadding = appOptions.Padding ?? (chrome != null ? 8d : 2d);
 
         return new SvgRenderOptions
         {
@@ -62,7 +53,7 @@ public sealed class SvgRenderOptions
             Frame = appOptions.Frame,
             Font = appOptions.Font,
             FontSize = appOptions.FontSize ?? 14d,
-            Window = windowStyle,
+            Chrome = chrome,
             Padding = effectivePadding,
             Loop = appOptions.Loop,
             VideoFps = appOptions.VideoFps,
@@ -76,30 +67,5 @@ public sealed class SvgRenderOptions
                     : null,
             Background = appOptions.Background.Count > 0 ? appOptions.Background.ToArray() : null,
         };
-    }
-
-    private static WindowStyle ParseWindowStyle(string? value)
-    {
-        if (string.Equals(value, "macos", StringComparison.OrdinalIgnoreCase))
-        {
-            return WindowStyle.Macos;
-        }
-
-        if (string.Equals(value, "windows", StringComparison.OrdinalIgnoreCase))
-        {
-            return WindowStyle.Windows;
-        }
-
-        if (string.Equals(value, "macos-pc", StringComparison.OrdinalIgnoreCase))
-        {
-            return WindowStyle.MacosPc;
-        }
-
-        if (string.Equals(value, "windows-pc", StringComparison.OrdinalIgnoreCase))
-        {
-            return WindowStyle.WindowsPc;
-        }
-
-        return WindowStyle.None;
     }
 }

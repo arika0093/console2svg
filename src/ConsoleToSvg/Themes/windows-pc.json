@@ -1,0 +1,13 @@
+{
+  "paddingTop": 35,
+  "paddingRight": 1,
+  "paddingBottom": 1,
+  "paddingLeft": 1,
+  "isDesktop": true,
+  "desktopPadding": 20,
+  "shadowOffset": 6,
+  "desktopGradientFrom": "#1a2535",
+  "desktopGradientTo": "#253345",
+  "themeBackgroundOverride": "#0c0c0c",
+  "svgTemplate": "<rect x=\"{winX+6}\" y=\"{winY+6}\" width=\"{winW}\" height=\"{winH}\" fill=\"black\" fill-opacity=\"0.25\"/>\n<rect x=\"{winX+0.5}\" y=\"{winY+0.5}\" width=\"{winW-1}\" height=\"{winH-1}\" fill=\"#1c1c1c\" stroke=\"#3a3a3a\"/>\n<rect x=\"{winX+1}\" y=\"{winY+1}\" width=\"{winW-2}\" height=\"34\" fill=\"#1c1c1c\"/>\n<path d=\"M {winX+8},{winY+35} L {winX+8},{winY+11} Q {winX+8},{winY+6} {winX+13},{winY+6} L {winX+163},{winY+6} Q {winX+168},{winY+6} {winX+168},{winY+11} L {winX+168},{winY+35} Z\" fill=\"{bg}\"/>\n<polyline points=\"{winX+16},{winY+15.5} {winX+20},{winY+19.5} {winX+16},{winY+23.5}\" fill=\"none\" stroke=\"#cccccc\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\n<line x1=\"{winX+23}\" y1=\"{winY+24}\" x2=\"{winX+29}\" y2=\"{winY+24}\" stroke=\"#cccccc\" stroke-width=\"1.2\"/>\n<line x1=\"{winX+152.5}\" y1=\"{winY+16}\" x2=\"{winX+159.5}\" y2=\"{winY+23}\" stroke=\"#888888\" stroke-width=\"1.1\"/>\n<line x1=\"{winX+159.5}\" y1=\"{winY+16}\" x2=\"{winX+152.5}\" y2=\"{winY+23}\" stroke=\"#888888\" stroke-width=\"1.1\"/>\n<line x1=\"{winX+179}\" y1=\"{winY+19.5}\" x2=\"{winX+189}\" y2=\"{winY+19.5}\" stroke=\"#888888\" stroke-width=\"1.2\"/>\n<line x1=\"{winX+184}\" y1=\"{winY+14.5}\" x2=\"{winX+184}\" y2=\"{winY+24.5}\" stroke=\"#888888\" stroke-width=\"1.2\"/>\n<line x1=\"{winX+204}\" y1=\"{winY+9}\" x2=\"{winX+204}\" y2=\"{winY+26}\" stroke=\"#4a4a4a\" stroke-width=\"1\"/>\n<polyline points=\"{winX+216},{winY+17.5} {winX+220},{winY+21.5} {winX+224},{winY+17.5}\" fill=\"none\" stroke=\"#888888\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\n<line x1=\"{winRight-120}\" y1=\"{winY+19.5}\" x2=\"{winRight-110}\" y2=\"{winY+19.5}\" stroke=\"#cccccc\" stroke-width=\"1.2\"/>\n<rect x=\"{winRight-74}\" y=\"{winY+14.5}\" width=\"10\" height=\"10\" fill=\"none\" stroke=\"#cccccc\" stroke-width=\"1.2\"/>\n<line x1=\"{winRight-28}\" y1=\"{winY+14.5}\" x2=\"{winRight-18}\" y2=\"{winY+24.5}\" stroke=\"#cccccc\" stroke-width=\"1.3\"/>\n<line x1=\"{winRight-18}\" y1=\"{winY+14.5}\" x2=\"{winRight-28}\" y2=\"{winY+24.5}\" stroke=\"#cccccc\" stroke-width=\"1.3\"/>"
+}

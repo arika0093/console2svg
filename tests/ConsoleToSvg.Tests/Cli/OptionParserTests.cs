@@ -150,10 +150,12 @@ public sealed class OptionParserTests
     [Test]
     public void InvalidWindowReturnsError()
     {
-        // When using = syntax, an unrecognised value must still error
-        var ok = OptionParser.TryParse(new[] { "--window=linux" }, out _, out var error, out _);
-        ok.ShouldBeFalse();
-        error.ShouldBe("--window must be none, macos, windows, macos-pc, or windows-pc.");
+        // Unknown window values are now accepted at parse time and validated at load time.
+        // The value is stored as-is; ChromeLoader.Load() will throw for unrecognised names/missing files.
+        var ok = OptionParser.TryParse(new[] { "--window=linux" }, out var options, out var error, out _);
+        ok.ShouldBeTrue();
+        error.ShouldBeNull();
+        options!.Window.ShouldBe("linux");
     }
 
     [Test]

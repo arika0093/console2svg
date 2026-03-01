@@ -453,6 +453,28 @@ public sealed class ScreenBuffer
         }
     }
 
+    public void DeleteCharacters(int count)
+    {
+        if (count <= 0)
+        {
+            return;
+        }
+
+        count = Math.Min(count, Width - CursorCol);
+
+        // Shift remaining cells in the row to the left
+        for (var col = CursorCol; col < Width - count; col++)
+        {
+            _cells[CursorRow, col] = _cells[CursorRow, col + count];
+        }
+
+        // Fill vacated cells on the right with blanks
+        for (var col = Width - count; col < Width; col++)
+        {
+            _cells[CursorRow, col] = new ScreenCell(" ", DefaultStyle);
+        }
+    }
+
     public void EraseChars(int count)
     {
         if (count <= 0)

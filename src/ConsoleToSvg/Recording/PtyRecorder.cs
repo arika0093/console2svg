@@ -788,6 +788,14 @@ public static class PtyRecorder
         env["COLUMNS"] = width.ToString(System.Globalization.CultureInfo.InvariantCulture);
         env["LINES"] = height.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
+        // Ensure TERM is set to a value that supports color and cursor control.
+        // On headless CI runners (ubuntu-latest, etc.), TERM is often unset or "dumb",
+        // which prevents programs like vim from rendering characters in the PTY.
+        if (!env.TryGetValue("TERM", out var termValue) || string.IsNullOrEmpty(termValue) || termValue == "dumb")
+        {
+            env["TERM"] = "xterm-256color";
+        }
+
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             return new NativePtyOptions

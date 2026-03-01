@@ -10,6 +10,16 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Set up environment variables for color support
+      shell: bash
+      run: |
+         {
+           echo "TERM=${TERM:-xterm-256color}"
+           echo "COLORTERM=${COLORTERM:-truecolor}"
+           echo "FORCE_COLOR=${FORCE_COLOR:-3}"
+           echo "CLICOLOR_FORCE=${CLICOLOR_FORCE:-1}"
+         } >> "$GITHUB_ENV"
+
     - name: Download and install console2svg
       shell: bash
       run: |

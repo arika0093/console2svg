@@ -63,7 +63,7 @@
 <text class="crt" x="378" y="194" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">in</text>
 <text class="crt" x="403.2" y="194" fill="#d4d4d4" textLength="84" lengthAdjust="spacingAndGlyphs">characters</text>
 <text class="crt" x="495.6" y="194" fill="#d4d4d4" textLength="75.6" lengthAdjust="spacingAndGlyphs">(default:</text>
-<text class="crt" x="579.6" y="194" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">auto).</text>
+<text class="crt" x="579.6" y="194" fill="#d4d4d4" textLength="42" lengthAdjust="spacingAndGlyphs">100).</text>
 <text class="crt" x="33.6" y="212" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">-h,</text>
 <text class="crt" x="67.2" y="212" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">--height</text>
 <text class="crt" x="142.8" y="212" fill="#d4d4d4" textLength="42" lengthAdjust="spacingAndGlyphs">&lt;int&gt;</text>

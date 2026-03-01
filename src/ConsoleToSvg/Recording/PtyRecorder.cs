@@ -74,7 +74,8 @@ public static class PtyRecorder
         string? replayPath
     )
     {
-        var options = BuildOptions(command, width, height);
+        var disableInputEcho = forwardToConsole && string.IsNullOrWhiteSpace(replayPath);
+        var options = BuildOptions(command, width, height, disableInputEcho);
         logger.ZLogDebug(
             $"Spawning PTY process. App={options.App} Args={string.Join(' ', options.Args ?? [])} Cwd={options.Cwd} Cols={options.Cols} Rows={options.Rows}"
         );
@@ -96,7 +97,9 @@ public static class PtyRecorder
             .SpawnAsync(options, cancellationToken)
             .ConfigureAwait(false);
         logger.ZLogDebug($"PTY process spawned.");
-        var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
+        var outputForward = forwardToConsole && string.IsNullOrWhiteSpace(replayPath)
+            ? TryOpenStandardOutput(logger)
+            : null;
         Stream? inputForward;
         InputReplayData? replayData = null;
         if (!string.IsNullOrWhiteSpace(replayPath))
@@ -341,7 +344,9 @@ public static class PtyRecorder
             }
         });
 
-        var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
+        var outputForward = forwardToConsole && string.IsNullOrWhiteSpace(replayPath)
+            ? TryOpenStandardOutput(logger)
+            : null;
         Stream? inputForward;
         InputReplayData? replayData = null;
         if (!string.IsNullOrWhiteSpace(replayPath))
@@ -768,7 +773,12 @@ public static class PtyRecorder
         return normalized.Length <= 120 ? normalized : normalized.Substring(0, 120) + "...";
     }
 
-    private static NativePtyOptions BuildOptions(string command, int width, int height)
+    private static NativePtyOptions BuildOptions(
+        string command,
+        int width,
+        int height,
+        bool disableInputEcho
+    )
     {
         var env = new Dictionary<string, string>();
         foreach (System.Collections.DictionaryEntry entry in Environment.GetEnvironmentVariables())
@@ -793,6 +803,7 @@ public static class PtyRecorder
                 App = "cmd.exe",
                 Args = ["/d", "/c", command],
                 Environment = env,
+                DisableInputEcho = false,
             };
         }
 
@@ -805,6 +816,7 @@ public static class PtyRecorder
             App = "/bin/sh",
             Args = ["-lc", command],
             Environment = env,
+            DisableInputEcho = disableInputEcho,
         };
     }
 

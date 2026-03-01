@@ -20,6 +20,7 @@ internal sealed class NativePtyOptions
     public string App { get; init; } = "";
     public string[]? Args { get; init; }
     public IReadOnlyDictionary<string, string>? Environment { get; init; }
+    public bool DisableInputEcho { get; init; }
 }
 
 internal static class NativePty
@@ -594,9 +595,13 @@ internal static class NativePtyUnix
 
         var pty = await PtyProvider.SpawnAsync(ptyOptions, cancellationToken).ConfigureAwait(false);
 
-        // Disable PTY slave ECHO to prevent echoed input bytes from being captured
-        // in the recording output with ECHOCTL caret-notation (e.g. ESC → "^[").
-        TryDisablePtyEcho(pty.WriterStream);
+        // Optionally disable PTY slave ECHO to prevent echoed input bytes from being
+        // captured in the recording output with ECHOCTL caret-notation (e.g. ESC → "^[").
+        // This should be enabled only when forwarding live host-terminal input.
+        if (options.DisableInputEcho)
+        {
+            TrySetPtyEcho(pty.WriterStream, enabled: false);
+        }
 
         var exited = false;
         void OnProcessExited(object? sender, PtyExitedEventArgs eventArgs)
@@ -677,10 +682,9 @@ internal static class NativePtyUnix
         return new NativePtyConnection(pty.ReaderStream, pty.WriterStream, WaitForExit, Dispose);
     }
 
-    // Attempt to disable PTY slave ECHO so that input bytes forwarded from the outer
-    // terminal (e.g. OSC color-query responses) are not echoed back into the recording
-    // with ECHOCTL caret-notation conversion (ESC → "^[").
-    private static void TryDisablePtyEcho(Stream masterStream)
+    // Attempt to set PTY slave ECHO state so that input bytes forwarded from the outer
+    // terminal (e.g. OSC color-query responses) can be suppressed when needed.
+    private static void TrySetPtyEcho(Stream masterStream, bool enabled)
     {
         if (
             !RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
@@ -710,14 +714,22 @@ internal static class NativePtyUnix
                 return;
             }
 
-            // Clear echo-related flags on the PTY slave (tcsetattr on the master fd
+            // Toggle echo-related flags on the PTY slave (tcsetattr on the master fd
             // modifies the slave's termios settings on Linux/macOS).
             const uint ECHO = 0x0008u;
             const uint ECHOE = 0x0010u;
             const uint ECHOK = 0x0020u;
             const uint ECHONL = 0x0040u;
             const uint ECHOCTL = 0x0200u;
-            t.c_lflag &= ~(ECHO | ECHOE | ECHOK | ECHONL | ECHOCTL);
+            const uint flags = ECHO | ECHOE | ECHOK | ECHONL | ECHOCTL;
+            if (enabled)
+            {
+                t.c_lflag |= flags;
+            }
+            else
+            {
+                t.c_lflag &= ~flags;
+            }
             tcsetattr(
                 fd,
                 0 /* TCSANOW */

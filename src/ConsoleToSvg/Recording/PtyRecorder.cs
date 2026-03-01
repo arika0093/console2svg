@@ -763,8 +763,7 @@ public static class PtyRecorder
             }
         }
 
-        var normalized = builder.ToString();
-        return normalized.Length <= 120 ? normalized : normalized.Substring(0, 120) + "...";
+        return builder.ToString();
     }
 
     private static NativePtyOptions BuildOptions(

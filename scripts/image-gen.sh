@@ -14,4 +14,4 @@ console2svg -w 120 -h 28 -c -d -v --timeout 3 --sleep 0 -o ./assets/cmd-nyancat.
 # required: sudo apt install -y vim
 console2svg -v -d -o ./assets/cmd-bash-vim.svg --replay ./assets/cmd-bash-vim-replay.json -- bash
 # required: sudo npm install -g @github/copilot
-console2svg -v -c -d -o ./assets/cmd-loop.svg --replay ./assets/cmd-loop-replay.json -- copilot --banner
+# console2svg -v -c -d -o ./assets/cmd-loop.svg --replay ./assets/cmd-loop-replay.json -- copilot --banner

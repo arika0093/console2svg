@@ -1,0 +1,44 @@
+name: Generate Assets
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/image-gen.sh'
+      - 'src/ConsoleToSvg/**'
+      - 'assets/*.json'
+      - '.github/workflows/image-gen.yaml'
+
+permissions:
+  contents: write
+
+jobs:
+  image-gen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Setup console2svg
+        uses: ./
+
+      - name: Install dependencies
+        run: |
+          sudo npm install -g oh-my-logo
+          sudo apt-get install -y sl nyancat vim
+
+      - name: Generate images
+        run: bash scripts/image-gen.sh
+
+      - name: Commit & Push
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "[skip-ci] chore: regenerate assets"
+          branch: ${{ github.ref_name }}

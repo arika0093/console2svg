@@ -74,6 +74,46 @@ chmod +x /usr/local/bin/console2svg
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64.exe -o console2svg.exe
 ```
 
+### GitHub Actions
+
+A composite action is provided at the root of this repository. It installs the platform-matched console2svg binary and adds it to `PATH`.
+
+```yaml
+- uses: arika0093/console2svg@main
+```
+
+<details>
+<summary>Example usage in GitHub Actions</summary>
+
+Full workflow example that generates an SVG and commits it back:
+
+```yaml
+jobs:
+  gen:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup console2svg
+        uses: arika0093/console2svg@main
+
+      - name: Generate SVG
+        run: console2svg -w 120 -c -d macos-pc -o output.svg -- dotnet --version
+
+      - name: Commit Changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "[skip-ci] chore: regenerate SVG"
+```
+
+</details>
+
+> [!TIP]
+> This repository uses this action itself to automatically regenerate all the SVG images in the [`assets/`](assets/) directory on every push via the [`image-gen`](.github/workflows/image-gen.yaml) workflow.
+
 ## Usage
 ### Pipe mode
 

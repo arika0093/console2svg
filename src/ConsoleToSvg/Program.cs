@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -57,7 +58,7 @@ internal static class Program
         using var loggerFactory = CreateLoggerFactory(options.Verbose, options.VerboseLogPath);
         var logger = loggerFactory.CreateLogger("ConsoleToSvg.Program");
         logger.ZLogDebug(
-            $"Application started. Version={ThisAssembly.AssemblyInformationalVersion}"
+            $"Application started. Version={ThisAssembly.AssemblyInformationalVersion} OS={Environment.OSVersion.Platform} Arch={RuntimeInformation.ProcessArchitecture}"
         );
         logger.ZLogDebug(
             $"Verbose={options.Verbose} VerboseLogPath={options.VerboseLogPath ?? "(default)"} Args={string.Join(' ', args)}"
@@ -240,7 +241,7 @@ internal static class Program
                         options.UsePlainTextFormatter(formatter =>
                         {
                             formatter.SetPrefixFormatter(
-                                $"[{0:yyyyMMddTHH:mm:ss}] ",
+                                $"[{0:yyyy-MM-ddTHH:mm:ss}] ",
                                 (in MessageTemplate template, in LogInfo info) =>
                                     template.Format(info.Timestamp.Local.DateTime)
                             );

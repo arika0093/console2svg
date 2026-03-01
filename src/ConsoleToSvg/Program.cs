@@ -18,6 +18,10 @@ internal static class Program
 
     public static async Task<int> Main(string[] args)
     {
+        // Ensure DOTNET_EnableWriteXorExecute=0 is set to prevent potential issues with memory protection on some platforms,
+        // especially when using features that involve dynamic code generation or execution.
+        ForceSetEnvDisableWriteXorExecute();
+
         var parseResult = OptionParser.TryParse(
             args,
             out var options,
@@ -241,6 +245,18 @@ internal static class Program
         if (!string.IsNullOrWhiteSpace(directory))
         {
             Directory.CreateDirectory(directory);
+        }
+    }
+
+    private static void ForceSetEnvDisableWriteXorExecute()
+    {
+        try
+        {
+            Environment.SetEnvironmentVariable("DOTNET_EnableWriteXorExecute", "0");
+        }
+        catch
+        {
+            // Ignore any exceptions when setting the environment variable
         }
     }
 }

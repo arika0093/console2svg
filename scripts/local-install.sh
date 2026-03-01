@@ -1,4 +1,3 @@
-export DOTNET_EnableWriteXorExecute=0
 rm -rf ./publish || true
 dotnet clean
 dotnet build -c Release --no-cache

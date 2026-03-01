@@ -97,9 +97,7 @@ public static class PtyRecorder
             .SpawnAsync(options, cancellationToken)
             .ConfigureAwait(false);
         logger.ZLogDebug($"PTY process spawned.");
-        var outputForward = forwardToConsole && string.IsNullOrWhiteSpace(replayPath)
-            ? TryOpenStandardOutput(logger)
-            : null;
+        var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
         Stream? inputForward;
         InputReplayData? replayData = null;
         if (!string.IsNullOrWhiteSpace(replayPath))
@@ -344,9 +342,7 @@ public static class PtyRecorder
             }
         });
 
-        var outputForward = forwardToConsole && string.IsNullOrWhiteSpace(replayPath)
-            ? TryOpenStandardOutput(logger)
-            : null;
+        var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
         Stream? inputForward;
         InputReplayData? replayData = null;
         if (!string.IsNullOrWhiteSpace(replayPath))
@@ -769,7 +765,8 @@ public static class PtyRecorder
             }
         }
 
-        return builder.ToString();
+        var normalized = builder.ToString();
+        return normalized.Length <= 120 ? normalized : normalized.Substring(0, 120) + "...";
     }
 
     private static NativePtyOptions BuildOptions(

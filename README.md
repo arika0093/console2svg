@@ -272,7 +272,7 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
 
 * `-o`: Output SVG file path (default: `output.svg`)
 * `-c`: Prepend the command line to the output as if typed in a terminal.
-* `-w`: width of the output SVG (default: terminal width[pipe], 80ch[pty])
+* `-w`: width of the output SVG (default: terminal width[pipe], 100ch[pty])
 * `-h`: height of the output SVG (default: terminal height[pipe], auto[pty])
 * `-v`: output to video mode SVG (animated, looped by default)
 * `-d`: window chrome style (none, macos, ...)

@@ -246,11 +246,11 @@ public sealed class AnsiParser
     private bool TryHandleCsi(string text, int start, out int endIndex)
     {
         endIndex = text.Length - 1;
-        var privateMode = false;
+        char? privateMarker = null;
         var paramStart = start;
-        if (start < text.Length && text[start] == '?')
+        if (start < text.Length && text[start] is '<' or '=' or '>' or '?')
         {
-            privateMode = true;
+            privateMarker = text[start];
             paramStart++;
             start++;
         }
@@ -264,7 +264,7 @@ public sealed class AnsiParser
                 var parameterText =
                     paramStart <= i ? text.Substring(paramStart, i - paramStart) : string.Empty;
                 var parameters = ParseParameters(parameterText);
-                ApplyCsi(privateMode, c, parameters);
+                ApplyCsi(privateMarker, c, parameters);
                 endIndex = i;
                 return true;
             }
@@ -275,9 +275,9 @@ public sealed class AnsiParser
         return false;
     }
 
-    private void ApplyCsi(bool privateMode, char command, List<int> parameters)
+    private void ApplyCsi(char? privateMarker, char command, List<int> parameters)
     {
-        if (privateMode && parameters.Count > 0 && parameters[0] == 1049)
+        if (privateMarker == '?' && parameters.Count > 0 && parameters[0] == 1049)
         {
             if (command == 'h')
             {
@@ -288,6 +288,13 @@ public sealed class AnsiParser
                 _buffer.SetAlternateScreen(false);
             }
 
+            return;
+        }
+
+        // Private CSI sequences (e.g. CSI ? 4 m, CSI > 4 ; 2 m) are not SGR.
+        // Ignore them unless explicitly handled above.
+        if (privateMarker is not null)
+        {
             return;
         }
 

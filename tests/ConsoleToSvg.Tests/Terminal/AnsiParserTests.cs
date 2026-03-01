@@ -22,6 +22,35 @@ public sealed class AnsiParserTests
     }
 
     [Test]
+    public void PrivateCsiQuestionMarkMDoesNotApplyUnderline()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        // DEC private mode sequence emitted by some terminals; not an SGR underline.
+        emulator.Process("\u001b[?4mA");
+
+        var cell = emulator.Buffer.GetCell(0, 0);
+        cell.Text.ShouldBe("A");
+        cell.Underline.ShouldBeFalse();
+    }
+
+    [Test]
+    public void PrivateCsiGreaterThanMDoesNotApplySgrAttributes()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        // xterm modifyOtherKeys sequence; not an SGR style sequence.
+        emulator.Process("\u001b[>4;2mA");
+
+        var cell = emulator.Buffer.GetCell(0, 0);
+        cell.Text.ShouldBe("A");
+        cell.Underline.ShouldBeFalse();
+        cell.Faint.ShouldBeFalse();
+    }
+
+    [Test]
     public void MoveCursorAndOverwrite()
     {
         var theme = Theme.Resolve("dark");

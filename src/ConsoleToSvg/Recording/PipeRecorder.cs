@@ -82,10 +82,8 @@ public static class PipeRecorder
 
     private static string ToPreview(string text)
     {
-        var normalized = text.Replace("\r", "\\r", StringComparison.Ordinal)
+        return text.Replace("\r", "\\r", StringComparison.Ordinal)
             .Replace("\n", "\\n", StringComparison.Ordinal)
             .Replace("\t", "\\t", StringComparison.Ordinal);
-
-        return normalized.Length <= 120 ? normalized : normalized.Substring(0, 120) + "...";
     }
 }

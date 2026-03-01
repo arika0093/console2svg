@@ -9,6 +9,7 @@ on:
       - 'scripts/image-gen.sh'
       - 'src/ConsoleToSvg/**'
       - 'assets/*.json'
+      - 'action.yml'
       - '.github/workflows/image-gen.yaml'
 
 permissions:

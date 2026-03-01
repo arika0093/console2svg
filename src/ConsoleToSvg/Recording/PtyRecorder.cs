@@ -185,6 +185,7 @@ public static class PtyRecorder
                 )
                 {
                     replayTimeoutExceeded = replayTotalDuration;
+                    canceled = true;
                     break;
                 }
             }
@@ -197,8 +198,8 @@ public static class PtyRecorder
 
         if (replayTimeoutExceeded is double exceededDuration)
         {
-            throw new TimeoutException(
-                $"Replay did not complete within the expected duration ({exceededDuration:F1}s + 1s timeout)."
+            logger.ZLogDebug(
+                $"Replay timeout exceeded ({exceededDuration:F1}s + 1s). Finalizing PTY recording."
             );
         }
 
@@ -283,6 +284,14 @@ public static class PtyRecorder
         logger.ZLogDebug(
             $"PTY recording completed. Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds}"
         );
+
+        if (replayTimeoutExceeded is double exceededDurationFinal)
+        {
+            throw new TimeoutException(
+                $"Replay did not complete within the expected duration ({exceededDurationFinal:F1}s + 1s timeout)."
+            );
+        }
+
         return session;
     }
 
@@ -381,31 +390,54 @@ public static class PtyRecorder
             )
             : null;
 
-        await ReadOutputAsync(
-                process.StandardOutput.BaseStream,
-                session,
-                stopwatch,
-                CancellationToken.None,
-                logger,
-                outputForward
-            )
-            .ConfigureAwait(false);
+        // When replaying with a TotalDuration, create a timeout CTS so that ReadOutputAsync
+        // is cancelled (and the process is killed) if stdout stays open beyond the deadline.
+        using var replayTimeoutCts =
+            replayData?.TotalDuration is double replayTotalDur
+                ? new CancellationTokenSource(TimeSpan.FromSeconds(replayTotalDur + 1.0))
+                : null;
+        using var timeoutKillRegistration = replayTimeoutCts?.Token.Register(() =>
+        {
+            try
+            {
+                if (!process.HasExited)
+                    process.Kill();
+            }
+            catch (InvalidOperationException)
+            {
+                // Process has already exited; nothing to kill.
+            }
+            catch (System.ComponentModel.Win32Exception)
+            {
+                // Kill may fail on Windows if the process is already gone.
+            }
+        });
+
+        var replayTimedOut = false;
+        try
+        {
+            await ReadOutputAsync(
+                    process.StandardOutput.BaseStream,
+                    session,
+                    stopwatch,
+                    replayTimeoutCts?.Token ?? CancellationToken.None,
+                    logger,
+                    outputForward
+                )
+                .ConfigureAwait(false);
+        }
+        catch (OperationCanceledException ex)
+            when (replayTimeoutCts is not null && ex.CancellationToken == replayTimeoutCts.Token)
+        {
+            replayTimedOut = true;
+        }
+
         while (!process.WaitForExit(50))
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 canceled = true;
                 break;
-            }
-
-            if (
-                replayData?.TotalDuration is double replayTotalDuration
-                && stopwatch.Elapsed.TotalSeconds > replayTotalDuration + 1.0
-            )
-            {
-                throw new TimeoutException(
-                    $"Replay did not complete within the expected duration ({replayTotalDuration:F1}s + 1s timeout)."
-                );
             }
         }
 
@@ -431,6 +463,14 @@ public static class PtyRecorder
         logger.ZLogDebug(
             $"Fallback recording completed. ExitCode={process.ExitCode} Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds} Canceled={canceled}"
         );
+
+        if (replayTimedOut && replayData?.TotalDuration is double exceededDuration)
+        {
+            throw new TimeoutException(
+                $"Replay did not complete within the expected duration ({exceededDuration:F1}s + 1s timeout)."
+            );
+        }
+
         return session;
     }
 

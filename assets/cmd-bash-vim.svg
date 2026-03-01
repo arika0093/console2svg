@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 858 477" role="img" aria-label="console2svg output">
-<style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}.bg{shape-rendering:crispEdges;}.frame{opacity:0;}@keyframes k0{0%,0.676%{opacity:0;}0.677%,29.464%{opacity:1;}29.465%,100%{opacity:0;}}.frame-0{animation:k0 12.245s linear infinite;}@keyframes k1{0%,29.463%{opacity:0;}29.464%,35.579%{opacity:1;}35.58%,100%{opacity:0;}}.frame-1{animation:k1 12.245s linear infinite;}@keyframes k2{0%,35.578%{opacity:0;}35.579%,43.734%{opacity:1;}43.735%,100%{opacity:0;}}.frame-2{animation:k2 12.245s linear infinite;}@keyframes k3{0%,43.733%{opacity:0;}43.734%,44.469%{opacity:1;}44.47%,100%{opacity:0;}}.frame-3{animation:k3 12.245s linear infinite;}@keyframes k4{0%,44.468%{opacity:0;}44.469%,45.508%{opacity:1;}45.509%,100%{opacity:0;}}.frame-4{animation:k4 12.245s linear infinite;}@keyframes k5{0%,45.507%{opacity:0;}45.508%,46.676%{opacity:1;}46.677%,100%{opacity:0;}}.frame-5{animation:k5 12.245s linear infinite;}@keyframes k6{0%,46.675%{opacity:0;}46.676%,48.075%{opacity:1;}48.076%,100%{opacity:0;}}.frame-6{animation:k6 12.245s linear infinite;}@keyframes k7{0%,48.074%{opacity:0;}48.075%,53.221%{opacity:1;}53.222%,100%{opacity:0;}}.frame-7{animation:k7 12.245s linear infinite;}@keyframes k8{0%,53.22%{opacity:0;}53.221%,61.455%{opacity:1;}61.456%,100%{opacity:0;}}.frame-8{animation:k8 12.245s linear infinite;}@keyframes k9{0%,61.454%{opacity:0;}61.455%,62.274%{opacity:1;}62.275%,100%{opacity:0;}}.frame-9{animation:k9 12.245s linear infinite;}@keyframes k10{0%,62.273%{opacity:0;}62.274%,67.253%{opacity:1;}67.254%,100%{opacity:0;}}.frame-10{animation:k10 12.245s linear infinite;}@keyframes k11{0%,67.252%{opacity:0;}67.253%,68.407%{opacity:1;}68.408%,100%{opacity:0;}}.frame-11{animation:k11 12.245s linear infinite;}@keyframes k12{0%,68.406%{opacity:0;}68.407%,71.233%{opacity:1;}71.234%,100%{opacity:0;}}.frame-12{animation:k12 12.245s linear infinite;}@keyframes k13{0%,71.232%{opacity:0;}71.233%,74.853%{opacity:1;}74.854%,100%{opacity:0;}}.frame-13{animation:k13 12.245s linear infinite;}@keyframes k14{0%,74.852%{opacity:0;}74.853%,75.934%{opacity:1;}75.935%,100%{opacity:0;}}.frame-14{animation:k14 12.245s linear infinite;}@keyframes k15{0%,75.933%{opacity:0;}75.934%,83.667%{opacity:1;}83.668%,100%{opacity:0;}}.frame-15{animation:k15 12.245s linear infinite;}@keyframes k16{0%,83.666%{opacity:0;}83.667%,100%{opacity:1;}}.frame-16{animation:k16 12.245s linear infinite;}</style>
+<style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}.bg{shape-rendering:crispEdges;}.frame{opacity:0;}@keyframes k0{0%,0.396%{opacity:0;}0.397%,0.398%{opacity:1;}0.399%,100%{opacity:0;}}.frame-0{animation:k0 12.245s linear infinite;}@keyframes k1{0%,0.397%{opacity:0;}0.398%,23.343%{opacity:1;}23.344%,100%{opacity:0;}}.frame-1{animation:k1 12.245s linear infinite;}@keyframes k2{0%,23.342%{opacity:0;}23.343%,32.65%{opacity:1;}32.651%,100%{opacity:0;}}.frame-2{animation:k2 12.245s linear infinite;}@keyframes k3{0%,32.649%{opacity:0;}32.65%,32.655%{opacity:1;}32.656%,100%{opacity:0;}}.frame-3{animation:k3 12.245s linear infinite;}@keyframes k4{0%,32.654%{opacity:0;}32.655%,32.656%{opacity:1;}32.657%,100%{opacity:0;}}.frame-4{animation:k4 12.245s linear infinite;}@keyframes k5{0%,32.655%{opacity:0;}32.656%,35.578%{opacity:1;}35.579%,100%{opacity:0;}}.frame-5{animation:k5 12.245s linear infinite;}@keyframes k6{0%,35.577%{opacity:0;}35.578%,35.579%{opacity:1;}35.58%,100%{opacity:0;}}.frame-6{animation:k6 12.245s linear infinite;}@keyframes k7{0%,35.578%{opacity:0;}35.579%,43.733%{opacity:1;}43.734%,100%{opacity:0;}}.frame-7{animation:k7 12.245s linear infinite;}@keyframes k8{0%,43.732%{opacity:0;}43.733%,44.469%{opacity:1;}44.47%,100%{opacity:0;}}.frame-8{animation:k8 12.245s linear infinite;}@keyframes k9{0%,44.468%{opacity:0;}44.469%,45.508%{opacity:1;}45.509%,100%{opacity:0;}}.frame-9{animation:k9 12.245s linear infinite;}@keyframes k10{0%,45.507%{opacity:0;}45.508%,46.677%{opacity:1;}46.678%,100%{opacity:0;}}.frame-10{animation:k10 12.245s linear infinite;}@keyframes k11{0%,46.676%{opacity:0;}46.677%,48.075%{opacity:1;}48.076%,100%{opacity:0;}}.frame-11{animation:k11 12.245s linear infinite;}@keyframes k12{0%,48.074%{opacity:0;}48.075%,53.223%{opacity:1;}53.224%,100%{opacity:0;}}.frame-12{animation:k12 12.245s linear infinite;}@keyframes k13{0%,53.222%{opacity:0;}53.223%,61.455%{opacity:1;}61.456%,100%{opacity:0;}}.frame-13{animation:k13 12.245s linear infinite;}@keyframes k14{0%,61.454%{opacity:0;}61.455%,62.273%{opacity:1;}62.274%,100%{opacity:0;}}.frame-14{animation:k14 12.245s linear infinite;}@keyframes k15{0%,62.272%{opacity:0;}62.273%,67.254%{opacity:1;}67.255%,100%{opacity:0;}}.frame-15{animation:k15 12.245s linear infinite;}@keyframes k16{0%,67.253%{opacity:0;}67.254%,68.407%{opacity:1;}68.408%,100%{opacity:0;}}.frame-16{animation:k16 12.245s linear infinite;}@keyframes k17{0%,68.406%{opacity:0;}68.407%,71.226%{opacity:1;}71.227%,100%{opacity:0;}}.frame-17{animation:k17 12.245s linear infinite;}@keyframes k18{0%,71.225%{opacity:0;}71.226%,74.854%{opacity:1;}74.855%,100%{opacity:0;}}.frame-18{animation:k18 12.245s linear infinite;}@keyframes k19{0%,74.853%{opacity:0;}74.854%,74.896%{opacity:1;}74.897%,100%{opacity:0;}}.frame-19{animation:k19 12.245s linear infinite;}@keyframes k20{0%,74.895%{opacity:0;}74.896%,74.942%{opacity:1;}74.943%,100%{opacity:0;}}.frame-20{animation:k20 12.245s linear infinite;}@keyframes k21{0%,74.941%{opacity:0;}74.942%,83.667%{opacity:1;}83.668%,100%{opacity:0;}}.frame-21{animation:k21 12.245s linear infinite;}@keyframes k22{0%,83.666%{opacity:0;}83.667%,83.667%{opacity:1;}83.668%,100%{opacity:0;}}.frame-22{animation:k22 12.245s linear infinite;}@keyframes k23{0%,83.666%{opacity:0;}83.667%,100%{opacity:1;}}.frame-23{animation:k23 12.245s linear infinite;}</style>
 <rect x="0.5" y="0.5" rx="10" ry="10" width="857" height="476" fill="#1f1f1f" stroke="#3a3a3a"/>
 <rect x="1" y="1" rx="9" ry="9" width="856" height="27" fill="#2c2c2c"/>
 <circle cx="14" cy="14" r="5" fill="#ff5f57"/>
@@ -7,58 +7,72 @@
 <circle cx="46" cy="14" r="5" fill="#28c840"/>
 <g id="frame-0" class="frame frame-0" transform="translate(9 36)">
 <rect width="840" height="432" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="436.8" lengthAdjust="spacingAndGlyphs">runner@runnervmnay03:~/work/console2svg/console2svg$</text>
 </g>
 <g id="frame-1" class="frame frame-1" transform="translate(9 36)">
 <rect width="840" height="432" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="436.8" lengthAdjust="spacingAndGlyphs">runner@runnervmnay03:~/work/console2svg/console2svg$</text>
-<text class="crt" x="0" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="86" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="122" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="140" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="158" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="176" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="212" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="230" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="248" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="302" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="320" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="338" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;">runner@runnervmnay03</text>
+<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">:</text>
+<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;">~/work/console2svg/console2svg</text>
+<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">$</text>
 </g>
 <g id="frame-2" class="frame frame-2" transform="translate(9 36)">
 <rect width="840" height="432" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="436.8" lengthAdjust="spacingAndGlyphs">runner@runnervmnay03:~/work/console2svg/console2svg$</text>
-<text class="crt" x="0" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="86" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;">runner@runnervmnay03</text>
+<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">:</text>
+<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;">~/work/console2svg/console2svg</text>
+<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">$</text>
+</g>
+<g id="frame-3" class="frame frame-3" transform="translate(9 36)">
+<rect width="840" height="432" fill="#1e1e1e"/>
+</g>
+<g id="frame-4" class="frame frame-4" transform="translate(9 36)">
+<rect width="840" height="432" fill="#1e1e1e"/>
+<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="356" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+</g>
+<g id="frame-5" class="frame frame-5" transform="translate(9 36)">
+<rect width="840" height="432" fill="#1e1e1e"/>
+<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
 <text class="crt" x="344.4" y="104" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">VIM</text>
 <text class="crt" x="378" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">-</text>
 <text class="crt" x="394.8" y="104" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">Vi</text>
 <text class="crt" x="420" y="104" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">IMproved</text>
-<text class="crt" x="0" y="122" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="140" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
 <text class="crt" x="352.8" y="140" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacingAndGlyphs">version</text>
 <text class="crt" x="420" y="140" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacingAndGlyphs">9.1.697</text>
-<text class="crt" x="0" y="158" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
 <text class="crt" x="319.2" y="158" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">by</text>
 <text class="crt" x="344.4" y="158" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">Bram</text>
 <text class="crt" x="386.4" y="158" fill="#d4d4d4" textLength="75.6" lengthAdjust="spacingAndGlyphs">Moolenaar</text>
 <text class="crt" x="470.4" y="158" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">et</text>
 <text class="crt" x="495.6" y="158" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">al.</text>
-<text class="crt" x="0" y="176" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
 <text class="crt" x="252" y="176" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">Modified</text>
 <text class="crt" x="327.6" y="176" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">by</text>
 <text class="crt" x="352.8" y="176" fill="#d4d4d4" textLength="226.8" lengthAdjust="spacingAndGlyphs">team+vim@tracker.debian.org</text>
-<text class="crt" x="0" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
 <text class="crt" x="235.2" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">Vim</text>
 <text class="crt" x="268.8" y="194" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">is</text>
 <text class="crt" x="294" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">open</text>
@@ -66,450 +80,602 @@
 <text class="crt" x="394.8" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">and</text>
 <text class="crt" x="428.4" y="194" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">freely</text>
 <text class="crt" x="487.2" y="194" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacingAndGlyphs">distributable</text>
-<text class="crt" x="0" y="212" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="230" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
 <text class="crt" x="294" y="230" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">Help</text>
 <text class="crt" x="336" y="230" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">poor</text>
 <text class="crt" x="378" y="230" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">children</text>
 <text class="crt" x="453.6" y="230" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">in</text>
 <text class="crt" x="478.8" y="230" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacingAndGlyphs">Uganda!</text>
-<text class="crt" x="0" y="248" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
 <text class="crt" x="226.8" y="248" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">type</text>
 <text class="crt" x="277.2" y="248" fill="#d4d4d4" textLength="42" lengthAdjust="spacingAndGlyphs">:help</text>
-<text class="crt" x="327.6" y="248" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacingAndGlyphs">iccf&lt;Enter&gt;</text>
+<text class="crt" x="327.6" y="248" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">iccf</text>
+<text class="crt" x="361.2" y="248" fill="#2472c8" textLength="58.8" lengthAdjust="spacingAndGlyphs">&lt;Enter&gt;</text>
 <text class="crt" x="478.8" y="248" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">for</text>
 <text class="crt" x="512.4" y="248" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacingAndGlyphs">information</text>
-<text class="crt" x="0" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
 <text class="crt" x="226.8" y="284" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">type</text>
-<text class="crt" x="277.2" y="284" fill="#d4d4d4" textLength="75.6" lengthAdjust="spacingAndGlyphs">:q&lt;Enter&gt;</text>
+<text class="crt" x="277.2" y="284" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">:q</text>
+<text class="crt" x="294" y="284" fill="#2472c8" textLength="58.8" lengthAdjust="spacingAndGlyphs">&lt;Enter&gt;</text>
 <text class="crt" x="478.8" y="284" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">to</text>
 <text class="crt" x="504" y="284" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">exit</text>
-<text class="crt" x="0" y="302" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
 <text class="crt" x="226.8" y="302" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">type</text>
-<text class="crt" x="277.2" y="302" fill="#d4d4d4" textLength="100.8" lengthAdjust="spacingAndGlyphs">:help&lt;Enter&gt;</text>
+<text class="crt" x="277.2" y="302" fill="#d4d4d4" textLength="42" lengthAdjust="spacingAndGlyphs">:help</text>
+<text class="crt" x="319.2" y="302" fill="#2472c8" textLength="58.8" lengthAdjust="spacingAndGlyphs">&lt;Enter&gt;</text>
 <text class="crt" x="394.8" y="302" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">or</text>
-<text class="crt" x="428.4" y="302" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">&lt;F1&gt;</text>
+<text class="crt" x="428.4" y="302" fill="#2472c8" textLength="33.6" lengthAdjust="spacingAndGlyphs">&lt;F1&gt;</text>
 <text class="crt" x="478.8" y="302" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">for</text>
 <text class="crt" x="512.4" y="302" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacingAndGlyphs">on-line</text>
 <text class="crt" x="579.6" y="302" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">help</text>
-<text class="crt" x="0" y="320" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
 <text class="crt" x="226.8" y="320" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">type</text>
 <text class="crt" x="277.2" y="320" fill="#d4d4d4" textLength="42" lengthAdjust="spacingAndGlyphs">:help</text>
-<text class="crt" x="327.6" y="320" fill="#d4d4d4" textLength="126" lengthAdjust="spacingAndGlyphs">version9&lt;Enter&gt;</text>
+<text class="crt" x="327.6" y="320" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">version9</text>
+<text class="crt" x="394.8" y="320" fill="#2472c8" textLength="58.8" lengthAdjust="spacingAndGlyphs">&lt;Enter&gt;</text>
 <text class="crt" x="478.8" y="320" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">for</text>
 <text class="crt" x="512.4" y="320" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacingAndGlyphs">version</text>
 <text class="crt" x="579.6" y="320" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">info</text>
-<text class="crt" x="0" y="338" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="374" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="392" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="410" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="604.8" y="428" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">i</text>
+<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="356" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="374" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="392" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="410" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
 <text class="crt" x="688.8" y="428" fill="#d4d4d4" textLength="42" lengthAdjust="spacingAndGlyphs">0,0-1</text>
-<text class="crt" x="806.4" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">All</text>
-</g>
-<g id="frame-3" class="frame frame-3" transform="translate(9 36)">
-<rect width="840" height="432" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="436.8" lengthAdjust="spacingAndGlyphs">hunner@runnervmnay03:~/work/console2svg/console2svg$</text>
-<text class="crt" x="0" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="86" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="122" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="140" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="158" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="176" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="212" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="230" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="248" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="302" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="320" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="338" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="374" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="392" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="410" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="428" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">--</text>
-<text class="crt" x="25.2" y="428" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">INSERT</text>
-<text class="crt" x="84" y="428" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">--</text>
-<text class="crt" x="688.8" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">1,2</text>
-<text class="crt" x="806.4" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">All</text>
-</g>
-<g id="frame-4" class="frame frame-4" transform="translate(9 36)">
-<rect width="840" height="432" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="436.8" lengthAdjust="spacingAndGlyphs">henner@runnervmnay03:~/work/console2svg/console2svg$</text>
-<text class="crt" x="0" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="86" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="122" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="140" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="158" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="176" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="212" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="230" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="248" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="302" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="320" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="338" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="374" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="392" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="410" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="428" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">--</text>
-<text class="crt" x="25.2" y="428" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">INSERT</text>
-<text class="crt" x="84" y="428" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">--</text>
-<text class="crt" x="688.8" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">1,3</text>
-<text class="crt" x="806.4" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">All</text>
-</g>
-<g id="frame-5" class="frame frame-5" transform="translate(9 36)">
-<rect width="840" height="432" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="436.8" lengthAdjust="spacingAndGlyphs">helner@runnervmnay03:~/work/console2svg/console2svg$</text>
-<text class="crt" x="0" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="86" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="122" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="140" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="158" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="176" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="212" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="230" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="248" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="302" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="320" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="338" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="374" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="392" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="410" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="428" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">--</text>
-<text class="crt" x="25.2" y="428" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">INSERT</text>
-<text class="crt" x="84" y="428" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">--</text>
-<text class="crt" x="688.8" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">1,4</text>
 <text class="crt" x="806.4" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">All</text>
 </g>
 <g id="frame-6" class="frame frame-6" transform="translate(9 36)">
 <rect width="840" height="432" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="436.8" lengthAdjust="spacingAndGlyphs">heller@runnervmnay03:~/work/console2svg/console2svg$</text>
-<text class="crt" x="0" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="86" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="122" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="140" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="158" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="176" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="212" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="230" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="248" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="302" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="320" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="338" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="374" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="392" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="410" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="428" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">--</text>
-<text class="crt" x="25.2" y="428" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">INSERT</text>
-<text class="crt" x="84" y="428" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">--</text>
-<text class="crt" x="688.8" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">1,5</text>
+<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="344.4" y="104" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">VIM</text>
+<text class="crt" x="378" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">-</text>
+<text class="crt" x="394.8" y="104" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">Vi</text>
+<text class="crt" x="420" y="104" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">IMproved</text>
+<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="352.8" y="140" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacingAndGlyphs">version</text>
+<text class="crt" x="420" y="140" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacingAndGlyphs">9.1.697</text>
+<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="319.2" y="158" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">by</text>
+<text class="crt" x="344.4" y="158" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">Bram</text>
+<text class="crt" x="386.4" y="158" fill="#d4d4d4" textLength="75.6" lengthAdjust="spacingAndGlyphs">Moolenaar</text>
+<text class="crt" x="470.4" y="158" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">et</text>
+<text class="crt" x="495.6" y="158" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">al.</text>
+<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="252" y="176" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">Modified</text>
+<text class="crt" x="327.6" y="176" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">by</text>
+<text class="crt" x="352.8" y="176" fill="#d4d4d4" textLength="226.8" lengthAdjust="spacingAndGlyphs">team+vim@tracker.debian.org</text>
+<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="235.2" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">Vim</text>
+<text class="crt" x="268.8" y="194" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">is</text>
+<text class="crt" x="294" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">open</text>
+<text class="crt" x="336" y="194" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">source</text>
+<text class="crt" x="394.8" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">and</text>
+<text class="crt" x="428.4" y="194" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">freely</text>
+<text class="crt" x="487.2" y="194" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacingAndGlyphs">distributable</text>
+<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="294" y="230" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">Help</text>
+<text class="crt" x="336" y="230" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">poor</text>
+<text class="crt" x="378" y="230" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">children</text>
+<text class="crt" x="453.6" y="230" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">in</text>
+<text class="crt" x="478.8" y="230" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacingAndGlyphs">Uganda!</text>
+<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="226.8" y="248" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">type</text>
+<text class="crt" x="277.2" y="248" fill="#d4d4d4" textLength="42" lengthAdjust="spacingAndGlyphs">:help</text>
+<text class="crt" x="327.6" y="248" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">iccf</text>
+<text class="crt" x="361.2" y="248" fill="#2472c8" textLength="58.8" lengthAdjust="spacingAndGlyphs">&lt;Enter&gt;</text>
+<text class="crt" x="478.8" y="248" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">for</text>
+<text class="crt" x="512.4" y="248" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacingAndGlyphs">information</text>
+<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="226.8" y="284" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">type</text>
+<text class="crt" x="277.2" y="284" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">:q</text>
+<text class="crt" x="294" y="284" fill="#2472c8" textLength="58.8" lengthAdjust="spacingAndGlyphs">&lt;Enter&gt;</text>
+<text class="crt" x="478.8" y="284" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">to</text>
+<text class="crt" x="504" y="284" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">exit</text>
+<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="226.8" y="302" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">type</text>
+<text class="crt" x="277.2" y="302" fill="#d4d4d4" textLength="42" lengthAdjust="spacingAndGlyphs">:help</text>
+<text class="crt" x="319.2" y="302" fill="#2472c8" textLength="58.8" lengthAdjust="spacingAndGlyphs">&lt;Enter&gt;</text>
+<text class="crt" x="394.8" y="302" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">or</text>
+<text class="crt" x="428.4" y="302" fill="#2472c8" textLength="33.6" lengthAdjust="spacingAndGlyphs">&lt;F1&gt;</text>
+<text class="crt" x="478.8" y="302" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">for</text>
+<text class="crt" x="512.4" y="302" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacingAndGlyphs">on-line</text>
+<text class="crt" x="579.6" y="302" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">help</text>
+<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="226.8" y="320" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">type</text>
+<text class="crt" x="277.2" y="320" fill="#d4d4d4" textLength="42" lengthAdjust="spacingAndGlyphs">:help</text>
+<text class="crt" x="327.6" y="320" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">version9</text>
+<text class="crt" x="394.8" y="320" fill="#2472c8" textLength="58.8" lengthAdjust="spacingAndGlyphs">&lt;Enter&gt;</text>
+<text class="crt" x="478.8" y="320" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">for</text>
+<text class="crt" x="512.4" y="320" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacingAndGlyphs">version</text>
+<text class="crt" x="579.6" y="320" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">info</text>
+<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="356" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="374" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="392" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="410" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="604.8" y="428" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs" style="text-decoration:underline;">i</text>
+<text class="crt" x="688.8" y="428" fill="#d4d4d4" textLength="42" lengthAdjust="spacingAndGlyphs">0,0-1</text>
 <text class="crt" x="806.4" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">All</text>
 </g>
 <g id="frame-7" class="frame frame-7" transform="translate(9 36)">
 <rect width="840" height="432" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="436.8" lengthAdjust="spacingAndGlyphs">hellor@runnervmnay03:~/work/console2svg/console2svg$</text>
-<text class="crt" x="0" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="86" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="122" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="140" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="158" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="176" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="212" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="230" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="248" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="302" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="320" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="338" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="374" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="392" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="410" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="428" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">--</text>
-<text class="crt" x="25.2" y="428" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">INSERT</text>
-<text class="crt" x="84" y="428" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">--</text>
-<text class="crt" x="688.8" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">1,6</text>
+<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="344.4" y="104" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">VIM</text>
+<text class="crt" x="378" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">-</text>
+<text class="crt" x="394.8" y="104" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">Vi</text>
+<text class="crt" x="420" y="104" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">IMproved</text>
+<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="352.8" y="140" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacingAndGlyphs">version</text>
+<text class="crt" x="420" y="140" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacingAndGlyphs">9.1.697</text>
+<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="319.2" y="158" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">by</text>
+<text class="crt" x="344.4" y="158" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">Bram</text>
+<text class="crt" x="386.4" y="158" fill="#d4d4d4" textLength="75.6" lengthAdjust="spacingAndGlyphs">Moolenaar</text>
+<text class="crt" x="470.4" y="158" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">et</text>
+<text class="crt" x="495.6" y="158" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">al.</text>
+<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="252" y="176" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">Modified</text>
+<text class="crt" x="327.6" y="176" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">by</text>
+<text class="crt" x="352.8" y="176" fill="#d4d4d4" textLength="226.8" lengthAdjust="spacingAndGlyphs">team+vim@tracker.debian.org</text>
+<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="235.2" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">Vim</text>
+<text class="crt" x="268.8" y="194" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">is</text>
+<text class="crt" x="294" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">open</text>
+<text class="crt" x="336" y="194" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">source</text>
+<text class="crt" x="394.8" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">and</text>
+<text class="crt" x="428.4" y="194" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">freely</text>
+<text class="crt" x="487.2" y="194" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacingAndGlyphs">distributable</text>
+<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="294" y="230" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">Help</text>
+<text class="crt" x="336" y="230" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">poor</text>
+<text class="crt" x="378" y="230" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">children</text>
+<text class="crt" x="453.6" y="230" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">in</text>
+<text class="crt" x="478.8" y="230" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacingAndGlyphs">Uganda!</text>
+<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="226.8" y="248" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">type</text>
+<text class="crt" x="277.2" y="248" fill="#d4d4d4" textLength="42" lengthAdjust="spacingAndGlyphs">:help</text>
+<text class="crt" x="327.6" y="248" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">iccf</text>
+<text class="crt" x="361.2" y="248" fill="#2472c8" textLength="58.8" lengthAdjust="spacingAndGlyphs">&lt;Enter&gt;</text>
+<text class="crt" x="478.8" y="248" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">for</text>
+<text class="crt" x="512.4" y="248" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacingAndGlyphs">information</text>
+<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="226.8" y="284" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">type</text>
+<text class="crt" x="277.2" y="284" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">:q</text>
+<text class="crt" x="294" y="284" fill="#2472c8" textLength="58.8" lengthAdjust="spacingAndGlyphs">&lt;Enter&gt;</text>
+<text class="crt" x="478.8" y="284" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">to</text>
+<text class="crt" x="504" y="284" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">exit</text>
+<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="226.8" y="302" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">type</text>
+<text class="crt" x="277.2" y="302" fill="#d4d4d4" textLength="42" lengthAdjust="spacingAndGlyphs">:help</text>
+<text class="crt" x="319.2" y="302" fill="#2472c8" textLength="58.8" lengthAdjust="spacingAndGlyphs">&lt;Enter&gt;</text>
+<text class="crt" x="394.8" y="302" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">or</text>
+<text class="crt" x="428.4" y="302" fill="#2472c8" textLength="33.6" lengthAdjust="spacingAndGlyphs">&lt;F1&gt;</text>
+<text class="crt" x="478.8" y="302" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">for</text>
+<text class="crt" x="512.4" y="302" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacingAndGlyphs">on-line</text>
+<text class="crt" x="579.6" y="302" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">help</text>
+<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="226.8" y="320" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">type</text>
+<text class="crt" x="277.2" y="320" fill="#d4d4d4" textLength="42" lengthAdjust="spacingAndGlyphs">:help</text>
+<text class="crt" x="327.6" y="320" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">version9</text>
+<text class="crt" x="394.8" y="320" fill="#2472c8" textLength="58.8" lengthAdjust="spacingAndGlyphs">&lt;Enter&gt;</text>
+<text class="crt" x="478.8" y="320" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">for</text>
+<text class="crt" x="512.4" y="320" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacingAndGlyphs">version</text>
+<text class="crt" x="579.6" y="320" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">info</text>
+<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="356" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="374" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="392" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="410" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="428" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">--</text>
+<text class="crt" x="25.2" y="428" fill="#FEFEFE" textLength="50.4" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">INSERT</text>
+<text class="crt" x="84" y="428" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">--</text>
+<text class="crt" x="688.8" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">0,1</text>
 <text class="crt" x="806.4" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">All</text>
 </g>
 <g id="frame-8" class="frame frame-8" transform="translate(9 36)">
 <rect width="840" height="432" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="436.8" lengthAdjust="spacingAndGlyphs">hello!@runnervmnay03:~/work/console2svg/console2svg$</text>
-<text class="crt" x="0" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="86" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="122" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="140" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="158" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="176" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="212" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="230" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="248" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="302" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="320" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="338" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="374" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="392" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="410" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="428" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">--</text>
-<text class="crt" x="25.2" y="428" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">INSERT</text>
-<text class="crt" x="84" y="428" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">--</text>
-<text class="crt" x="688.8" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">1,7</text>
+<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">h</text>
+<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="356" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="374" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="392" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="410" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="428" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">--</text>
+<text class="crt" x="25.2" y="428" fill="#FEFEFE" textLength="50.4" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">INSERT</text>
+<text class="crt" x="84" y="428" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">--</text>
+<text class="crt" x="688.8" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">1,2</text>
 <text class="crt" x="806.4" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">All</text>
 </g>
 <g id="frame-9" class="frame frame-9" transform="translate(9 36)">
 <rect width="840" height="432" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="436.8" lengthAdjust="spacingAndGlyphs">hello!@runnervmnay03:~/work/console2svg/console2svg$</text>
-<text class="crt" x="0" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="86" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="122" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="140" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="158" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="176" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="212" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="230" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="248" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="302" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="320" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="338" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="374" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="392" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="410" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="604.8" y="428" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">^[</text>
+<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">he</text>
+<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="356" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="374" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="392" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="410" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="428" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">--</text>
+<text class="crt" x="25.2" y="428" fill="#FEFEFE" textLength="50.4" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">INSERT</text>
+<text class="crt" x="84" y="428" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">--</text>
+<text class="crt" x="688.8" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">1,3</text>
+<text class="crt" x="806.4" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">All</text>
 </g>
 <g id="frame-10" class="frame frame-10" transform="translate(9 36)">
 <rect width="840" height="432" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="436.8" lengthAdjust="spacingAndGlyphs">hello!@runnervmnay03:~/work/console2svg/console2svg$</text>
-<text class="crt" x="0" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="86" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="122" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="140" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="158" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="176" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="212" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="230" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="248" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="302" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="320" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="338" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="374" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="392" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="410" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">hel</text>
+<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="356" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="374" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="392" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="410" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="428" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">--</text>
+<text class="crt" x="25.2" y="428" fill="#FEFEFE" textLength="50.4" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">INSERT</text>
+<text class="crt" x="84" y="428" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">--</text>
+<text class="crt" x="688.8" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">1,4</text>
+<text class="crt" x="806.4" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">All</text>
 </g>
 <g id="frame-11" class="frame frame-11" transform="translate(9 36)">
 <rect width="840" height="432" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="436.8" lengthAdjust="spacingAndGlyphs">hello!@runnervmnay03:~/work/console2svg/console2svg$</text>
-<text class="crt" x="0" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="86" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="122" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="140" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="158" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="176" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="212" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="230" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="248" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="302" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="320" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="338" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="374" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="392" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="410" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="604.8" y="428" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">:</text>
-<text class="crt" x="688.8" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">1,6</text>
+<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">hell</text>
+<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="356" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="374" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="392" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="410" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="428" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">--</text>
+<text class="crt" x="25.2" y="428" fill="#FEFEFE" textLength="50.4" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">INSERT</text>
+<text class="crt" x="84" y="428" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">--</text>
+<text class="crt" x="688.8" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">1,5</text>
 <text class="crt" x="806.4" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">All</text>
 </g>
 <g id="frame-12" class="frame frame-12" transform="translate(9 36)">
 <rect width="840" height="432" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="436.8" lengthAdjust="spacingAndGlyphs">hello!@runnervmnay03:~/work/console2svg/console2svg$</text>
-<text class="crt" x="0" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="86" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="122" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="140" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="158" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="176" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="212" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="230" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="248" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="302" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="320" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="338" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="374" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="392" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="410" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="428" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">:q</text>
+<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="42" lengthAdjust="spacingAndGlyphs">hello</text>
+<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="356" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="374" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="392" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="410" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="428" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">--</text>
+<text class="crt" x="25.2" y="428" fill="#FEFEFE" textLength="50.4" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">INSERT</text>
+<text class="crt" x="84" y="428" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">--</text>
+<text class="crt" x="688.8" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">1,6</text>
+<text class="crt" x="806.4" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">All</text>
 </g>
 <g id="frame-13" class="frame frame-13" transform="translate(9 36)">
 <rect width="840" height="432" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="436.8" lengthAdjust="spacingAndGlyphs">hello!@runnervmnay03:~/work/console2svg/console2svg$</text>
-<text class="crt" x="0" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="86" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="122" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="140" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="158" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="176" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="212" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="230" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="248" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="302" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="320" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="338" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="374" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="392" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="410" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">:q!</text>
+<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">hello!</text>
+<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="356" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="374" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="392" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="410" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="428" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">--</text>
+<text class="crt" x="25.2" y="428" fill="#FEFEFE" textLength="50.4" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">INSERT</text>
+<text class="crt" x="84" y="428" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;text-decoration:underline;">--</text>
+<text class="crt" x="688.8" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">1,7</text>
+<text class="crt" x="806.4" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">All</text>
 </g>
 <g id="frame-14" class="frame frame-14" transform="translate(9 36)">
 <rect width="840" height="432" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="436.8" lengthAdjust="spacingAndGlyphs">hello!@runnervmnay03:~/work/console2svg/console2svg$</text>
-<text class="crt" x="0" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="86" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="122" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="140" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="158" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="176" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="212" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="230" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="248" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="302" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="320" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="338" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="374" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="392" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="410" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">:q!</text>
+<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">hello!</text>
+<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="356" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="374" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="392" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="410" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="604.8" y="428" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">^[</text>
 </g>
 <g id="frame-15" class="frame frame-15" transform="translate(9 36)">
 <rect width="840" height="432" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="436.8" lengthAdjust="spacingAndGlyphs">hello!@runnervmnay03:~/work/console2svg/console2svg$</text>
-<text class="crt" x="0" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="86" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="122" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="140" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="158" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="176" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="212" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="230" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="248" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="302" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="320" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="338" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="374" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="392" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="410" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="428" fill="#d4d4d4" textLength="436.8" lengthAdjust="spacingAndGlyphs">runner@runnervmnay03:~/work/console2svg/console2svg$</text>
+<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">hello!</text>
+<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="356" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="374" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="392" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="410" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
 </g>
 <g id="frame-16" class="frame frame-16" transform="translate(9 36)">
 <rect width="840" height="432" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="86" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="122" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="140" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="158" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="176" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="212" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="230" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="248" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="302" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="320" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="338" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="374" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="392" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
-<text class="crt" x="0" y="410" fill="#d4d4d4" textLength="436.8" lengthAdjust="spacingAndGlyphs">runner@runnervmnay03:~/work/console2svg/console2svg$</text>
-<text class="crt" x="445.2" y="410" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">exit</text>
+<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">hello!</text>
+<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="356" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="374" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="392" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="410" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="604.8" y="428" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">:</text>
+<text class="crt" x="688.8" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">1,6</text>
+<text class="crt" x="806.4" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">All</text>
+</g>
+<g id="frame-17" class="frame frame-17" transform="translate(9 36)">
+<rect width="840" height="432" fill="#1e1e1e"/>
+<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">hello!</text>
+<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="356" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="374" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="392" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="410" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="428" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">:q</text>
+</g>
+<g id="frame-18" class="frame frame-18" transform="translate(9 36)">
+<rect width="840" height="432" fill="#1e1e1e"/>
+<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">hello!</text>
+<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="356" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="374" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="392" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="410" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">:q!</text>
+</g>
+<g id="frame-19" class="frame frame-19" transform="translate(9 36)">
+<rect width="840" height="432" fill="#1e1e1e"/>
+<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">hello!</text>
+<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="356" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="374" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="392" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="410" fill="#3b8eea" textLength="8.4" lengthAdjust="spacingAndGlyphs">~</text>
+<text class="crt" x="0" y="428" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">:q!</text>
+</g>
+<g id="frame-20" class="frame frame-20" transform="translate(9 36)">
+<rect width="840" height="432" fill="#1e1e1e"/>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;">runner@runnervmnay03</text>
+<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">:</text>
+<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;">~/work/console2svg/console2svg</text>
+<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">$</text>
+</g>
+<g id="frame-21" class="frame frame-21" transform="translate(9 36)">
+<rect width="840" height="432" fill="#1e1e1e"/>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;">runner@runnervmnay03</text>
+<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">:</text>
+<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;">~/work/console2svg/console2svg</text>
+<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">$</text>
+<text class="crt" x="0" y="32" fill="#10E291" textLength="168" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;">runner@runnervmnay03</text>
+<text class="crt" x="168" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">:</text>
+<text class="crt" x="176.4" y="32" fill="#2B89F0" textLength="252" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;">~/work/console2svg/console2svg</text>
+<text class="crt" x="428.4" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">$</text>
+</g>
+<g id="frame-22" class="frame frame-22" transform="translate(9 36)">
+<rect width="840" height="432" fill="#1e1e1e"/>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;">runner@runnervmnay03</text>
+<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">:</text>
+<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;">~/work/console2svg/console2svg</text>
+<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">$</text>
+<text class="crt" x="0" y="32" fill="#10E291" textLength="168" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;">runner@runnervmnay03</text>
+<text class="crt" x="168" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">:</text>
+<text class="crt" x="176.4" y="32" fill="#2B89F0" textLength="252" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;">~/work/console2svg/console2svg</text>
+<text class="crt" x="428.4" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">$</text>
+</g>
+<g id="frame-23" class="frame frame-23" transform="translate(9 36)">
+<rect width="840" height="432" fill="#1e1e1e"/>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;">runner@runnervmnay03</text>
+<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">:</text>
+<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;">~/work/console2svg/console2svg</text>
+<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">$</text>
+<text class="crt" x="0" y="32" fill="#10E291" textLength="168" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;">runner@runnervmnay03</text>
+<text class="crt" x="168" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">:</text>
+<text class="crt" x="176.4" y="32" fill="#2B89F0" textLength="252" lengthAdjust="spacingAndGlyphs" style="font-weight:bold;">~/work/console2svg/console2svg</text>
+<text class="crt" x="428.4" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">$</text>
+<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">exit</text>
 </g>
 </svg>

@@ -200,8 +200,7 @@ internal static class Program
         return LoggerFactory.Create(builder =>
         {
             builder.ClearProviders();
-            builder.AddZLoggerConsole();
-            builder.SetMinimumLevel(LogLevel.None);
+            builder.SetMinimumLevel(verbose ? LogLevel.Debug : LogLevel.None);
             if (verbose)
             {
                 var dt = DateTime.Now;

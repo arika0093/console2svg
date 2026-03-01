@@ -23,7 +23,9 @@
     <!-- Disable dotnet tool packaging for NativeAOT builds -->
     <PackAsTool>false</PackAsTool>
   </PropertyGroup>
-
+  <ItemGroup>
+    <RuntimeHostConfigurationOption Include="System.Runtime.EnableWriteXorExecute" Value="false" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Quick.PtyNet" Version="1.0.3" />
     <PackageReference Include="ZLogger" Version="2.5.10" />

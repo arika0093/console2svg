@@ -8,6 +8,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using ZLogger;
 
 namespace ConsoleToSvg.Recording;
 
@@ -900,16 +902,18 @@ public static class InputReplayFile
 
     public sealed class ReplayStream : Stream
     {
-        private readonly (double Time, byte[] Data)[] _events;
+        private readonly (double Time, byte[] Data, InputEvent Evt)[] _events;
         private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
         private int _eventIndex;
         private int _eventOffset;
+        private readonly ILogger? _logger;
 
-        public ReplayStream(IList<InputEvent> events)
+        public ReplayStream(IList<InputEvent> events, ILogger? logger = null)
         {
-            _events = new (double, byte[])[events.Count];
+            _logger = logger;
+            _events = new (double, byte[], InputEvent)[events.Count];
             for (var i = 0; i < events.Count; i++)
-                _events[i] = (events[i].Time ?? 0, EventToBytes(events[i]));
+                _events[i] = (events[i].Time ?? 0, EventToBytes(events[i]), events[i]);
         }
 
         public override bool CanRead => true;
@@ -949,7 +953,7 @@ public static class InputReplayFile
             while (_eventIndex < _events.Length)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var (time, data) = _events[_eventIndex];
+                var (time, data, evt) = _events[_eventIndex];
 
                 if (_eventOffset == 0)
                 {
@@ -959,6 +963,9 @@ public static class InputReplayFile
                         await Task.Delay(TimeSpan.FromSeconds(delay), cancellationToken)
                             .ConfigureAwait(false);
                     }
+                    _logger?.ZLogDebug(
+                        $"Replay input: t={time:F3}s Key={evt.Key} Modifiers={string.Join("+", evt.Modifiers)}"
+                    );
                 }
 
                 var available = data.Length - _eventOffset;

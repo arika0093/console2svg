@@ -106,7 +106,7 @@ public static class PtyRecorder
             replayData = await InputReplayFile
                 .ReadDataAsync(replayPath!, cancellationToken)
                 .ConfigureAwait(false);
-            inputForward = new InputReplayFile.ReplayStream(replayData.Replay);
+            inputForward = new InputReplayFile.ReplayStream(replayData.Replay, logger);
         }
         else
         {
@@ -351,7 +351,7 @@ public static class PtyRecorder
             replayData = await InputReplayFile
                 .ReadDataAsync(replayPath!, cancellationToken)
                 .ConfigureAwait(false);
-            inputForward = new InputReplayFile.ReplayStream(replayData.Replay);
+            inputForward = new InputReplayFile.ReplayStream(replayData.Replay, logger);
         }
         else
         {

@@ -57,16 +57,24 @@ internal static class Program
         using var loggerFactory = CreateLoggerFactory(options.Verbose, options.VerboseLogPath);
         var logger = loggerFactory.CreateLogger("ConsoleToSvg.Program");
         logger.ZLogDebug(
-            $"Starting console2svg. Verbose={options.Verbose} VerboseLogPath={options.VerboseLogPath ?? "(default)"} Args={string.Join(' ', args)}"
+            $"Application started. Version={ThisAssembly.AssemblyInformationalVersion}"
+        );
+        logger.ZLogDebug(
+            $"Verbose={options.Verbose} VerboseLogPath={options.VerboseLogPath ?? "(default)"} Args={string.Join(' ', args)}"
         );
         logger.ZLogDebug(
             $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} Window={options.Window} Padding={options.Padding} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""}"
         );
+        logger.ZLogDebug(
+            $"Environment: COLUMNS={Environment.GetEnvironmentVariable("COLUMNS") ?? ""} ROWS={Environment.GetEnvironmentVariable("ROWS") ?? ""} TERM={Environment.GetEnvironmentVariable("TERM") ?? ""} COLORTERM={Environment.GetEnvironmentVariable("COLORTERM") ?? ""} TERM_PROGRAM={Environment.GetEnvironmentVariable("TERM_PROGRAM") ?? ""} TERM_PROGRAM_VERSION={Environment.GetEnvironmentVariable("TERM_PROGRAM_VERSION") ?? ""} LANG={Environment.GetEnvironmentVariable("LANG") ?? ""} LC_ALL={Environment.GetEnvironmentVariable("LC_ALL") ?? ""} LC_CTYPE={Environment.GetEnvironmentVariable("LC_CTYPE") ?? ""}"
+        );
 
+        var canceledByCtrlC = false;
         using var cancellationTokenSource = new CancellationTokenSource();
         Console.CancelKeyPress += (_, eventArgs) =>
         {
             eventArgs.Cancel = true;
+            canceledByCtrlC = true;
             cancellationTokenSource.Cancel();
             logger.ZLogDebug($"Cancellation requested by Ctrl+C.");
         };
@@ -121,6 +129,8 @@ internal static class Program
 
             if (wasCanceled)
             {
+                var cause = canceledByCtrlC ? "Ctrl+C" : options.Timeout.HasValue ? $"timeout ({options.Timeout.Value}s)" : "cancellation";
+                logger.ZLogDebug($"Recording stopped. Cause={cause}");
                 await Console.Error.WriteLineAsync($"Generated (partial): {options.OutputPath}");
                 return 0;
             }
@@ -130,7 +140,8 @@ internal static class Program
         }
         catch (OperationCanceledException)
         {
-            logger.ZLogDebug($"Execution canceled.");
+            var cause = canceledByCtrlC ? "Ctrl+C" : options.Timeout.HasValue ? $"timeout ({options.Timeout.Value}s)" : "cancellation";
+            logger.ZLogDebug($"Execution canceled. Cause={cause}");
             await Console.Error.WriteLineAsync("Canceled.");
             return 0;
         }
@@ -207,7 +218,20 @@ internal static class Program
             if (verbose)
             {
                 var path = string.IsNullOrWhiteSpace(logPath) ? "console2svg.log" : logPath;
-                builder.AddZLoggerFile(path, fileShared: false);
+                builder.AddZLoggerFile(
+                    path,
+                    options =>
+                    {
+                        options.UsePlainTextFormatter(formatter =>
+                        {
+                            formatter.SetPrefixFormatter(
+                                $"[{0:yyyyMMddTHH:mm:ss}] ",
+                                (in MessageTemplate template, in LogInfo info) =>
+                                    template.Format(info.Timestamp.Local.DateTime)
+                            );
+                        });
+                    }
+                );
                 builder.SetMinimumLevel(LogLevel.Debug);
             }
             else

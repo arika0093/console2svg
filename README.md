@@ -182,18 +182,29 @@ console2svg --replay-save ./replay.json -- bash
 ```
 
 Then, generate the SVG based on the saved key input.
+By using this feature, you can generate an SVG that records terminal operations as shown below.
 
 ```sh
 console2svg -v -c -d macos --replay ./replay.json -- bash
 ```
 
+![console2svg -v -c -d macos --replay ./replay.json -- bash](./assets/cmd-bash-vim.svg)
+
+
 The replay file is in a simple JSON format. If you make a mistake in the input, you can directly edit this file (or of course, you can ask AI to fix it for you).
+
+<details>
+<summary>Replay file format</summary>
 
 ```jsonc
 // replay.json
 {
   "version": "1",
-  "createdAt": "2025-01-15T12:34:56+00:00",
+  "appVersion": "0.4.0.2+17cc95284e",
+  "createdAt": "2026-03-01T06:52:43.3615812+00:00",
+  // If more than 1 second has passed from the total time,
+  // it will exit with an error as a timeout.
+  "totalDuration": 10.9530099,
   "replay": [
     {
       // first event: absolute time from recording start (seconds)
@@ -206,19 +217,15 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
       // subsequent events: delta from the previous event (seconds)
       "tick": 0.08,
       "key": "c",
-      "modifiers": [],
-      "type": "keydown"
-    },
-    {
-      "tick": 0.12,
-      "key": "h",
-      "modifiers": [],
+      "modifiers": ["shift"],
       "type": "keydown"
     },
     // and so on...
   ]
 }
 ```
+
+</details>
 
 ## Options
 ### Major options

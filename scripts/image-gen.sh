@@ -10,5 +10,8 @@ console2svg -h 10 -c -d macos-pc --background ./assets/bg.png --opacity 0.8 -o .
 # required: sudo apt install -y sl nyancat
 console2svg -w 120 -h 16 -c -d -v -o ./assets/cmd-sl.svg -- sl
 console2svg -w 120 -h 28 -c -d -v --timeout 3 --sleep 0 -o ./assets/cmd-nyancat.svg -- nyancat
+# --- video ---
+# required: sudo apt install -y vim
+console2svg -v -d -o ./assets/cmd-bash-vim.svg --replay ./assets/cmd-bash-vim-replay.json -- bash
 # required: sudo npm install -g @github/copilot
 console2svg -v -c -d -o ./assets/cmd-loop.svg --replay ./assets/cmd-loop-replay.json -- copilot --banner

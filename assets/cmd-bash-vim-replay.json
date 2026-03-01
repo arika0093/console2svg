@@ -1,0 +1,116 @@
+{
+  "version": "1",
+  "appVersion": "0.4.0.2+17cc95284e",
+  "createdAt": "2026-03-01T06:52:43.3615812+00:00",
+  "totalDuration": 10.9530099,
+  "replay": [
+    {
+      "time": 2.2929455,
+      "key": "v",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.1049708,
+      "key": "i",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.1274177,
+      "key": "m",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.3307067,
+      "key": "Enter",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 1.4989553,
+      "key": "i",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.9982764,
+      "key": "h",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.0899143,
+      "key": "e",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.1269353,
+      "key": "l",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.143059,
+      "key": "l",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.1718777,
+      "key": "o",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.6300305,
+      "key": "!",
+      "modifiers": [
+        "shift"
+      ],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.9833659,
+      "key": "Escape",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.7347161,
+      "key": ":",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.1416228,
+      "key": "q",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.3452076,
+      "key": "!",
+      "modifiers": [
+        "shift"
+      ],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.4442923,
+      "key": "Enter",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 1.0789984,
+      "key": "d",
+      "modifiers": [
+        "ctrl"
+      ],
+      "type": "keydown"
+    }
+  ]
+}

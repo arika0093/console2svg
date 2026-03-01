@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1026 351" role="img" aria-label="console2svg output">
-<style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}.bg{shape-rendering:crispEdges;}.frame{opacity:0;}@keyframes k0{0%,0.08%{opacity:0;}0.081%,1.266%{opacity:1;}1.267%,100%{opacity:0;}}.frame-0{animation:k0 10.155s linear infinite;}@keyframes k1{0%,1.265%{opacity:0;}1.266%,2.453%{opacity:1;}2.454%,100%{opacity:0;}}.frame-1{animation:k1 10.155s linear infinite;}@keyframes k2{0%,2.452%{opacity:0;}2.453%,80.306%{opacity:1;}80.307%,100%{opacity:0;}}.frame-2{animation:k2 10.155s linear infinite;}@keyframes k3{0%,80.305%{opacity:0;}80.306%,100%{opacity:1;}}.frame-3{animation:k3 10.155s linear infinite;}</style>
+<style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}.bg{shape-rendering:crispEdges;}.frame{opacity:0;}@keyframes k0{0%,0.074%{opacity:0;}0.075%,1.261%{opacity:1;}1.262%,100%{opacity:0;}}.frame-0{animation:k0 10.156s linear infinite;}@keyframes k1{0%,1.26%{opacity:0;}1.261%,2.447%{opacity:1;}2.448%,100%{opacity:0;}}.frame-1{animation:k1 10.156s linear infinite;}@keyframes k2{0%,2.446%{opacity:0;}2.447%,80.307%{opacity:1;}80.308%,100%{opacity:0;}}.frame-2{animation:k2 10.156s linear infinite;}@keyframes k3{0%,80.306%{opacity:0;}80.307%,100%{opacity:1;}}.frame-3{animation:k3 10.156s linear infinite;}</style>
 <rect x="0.5" y="0.5" rx="10" ry="10" width="1025" height="350" fill="#1f1f1f" stroke="#3a3a3a"/>
 <rect x="1" y="1" rx="9" ry="9" width="1024" height="27" fill="#2c2c2c"/>
 <circle cx="14" cy="14" r="5" fill="#ff5f57"/>
@@ -14,6 +14,8 @@
 <rect width="1008" height="288" fill="#1e1e1e"/>
 <text class="crt" x="0" y="284" fill="#d4d4d4" textLength="151.2" lengthAdjust="spacingAndGlyphs">__|_|||__/|/\_D|/|</text>
 <text class="crt" x="159.6" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacingAndGlyphs">|</text>
+<text class="crt" x="176.4" y="284" fill="#d4d4d4" textLength="42" lengthAdjust="spacingAndGlyphs">|/__/</text>
+<text class="crt" x="226.8" y="284" fill="#d4d4d4" textLength="42" lengthAdjust="spacingAndGlyphs">|/-\_</text>
 </g>
 <g id="frame-2" class="frame frame-2" transform="translate(9 54)">
 <rect width="1008" height="288" fill="#1e1e1e"/>

@@ -69,6 +69,8 @@ public sealed class ScreenBuffer
     private int _savedCol;
     private int _savedMainRow;
     private int _savedMainCol;
+    private int _scrollTop;
+    private int _scrollBottom;
     private bool _pendingWrap;
     private readonly List<ScreenCell[]> _scrollbackRows = new();
 
@@ -82,6 +84,8 @@ public sealed class ScreenBuffer
         _mainCells = CreateBlankCells();
         _altCells = CreateBlankCells();
         _cells = _mainCells;
+        _scrollTop = 0;
+        _scrollBottom = Height - 1;
         CursorRow = 0;
         CursorCol = 0;
     }
@@ -141,6 +145,8 @@ public sealed class ScreenBuffer
             _savedMainRow = _savedMainRow,
             _savedMainCol = _savedMainCol,
             _isAltScreen = _isAltScreen,
+            _scrollTop = _scrollTop,
+            _scrollBottom = _scrollBottom,
             _pendingWrap = _pendingWrap,
             _mainCells = CloneCells(_mainCells),
             _altCells = CloneCells(_altCells),
@@ -281,12 +287,7 @@ public sealed class ScreenBuffer
         {
             _pendingWrap = false;
             CursorCol = 0;
-            CursorRow++;
-            if (CursorRow >= Height)
-            {
-                ScrollUp(1);
-                CursorRow = Height - 1;
-            }
+            Index();
         }
 
         var isWide = IsWideCharacter(text);
@@ -295,12 +296,7 @@ public sealed class ScreenBuffer
         {
             _cells[CursorRow, CursorCol] = new ScreenCell(" ", DefaultStyle);
             CursorCol = 0;
-            CursorRow++;
-            if (CursorRow >= Height)
-            {
-                ScrollUp(1);
-                CursorRow = Height - 1;
-            }
+            Index();
         }
 
         _cells[CursorRow, CursorCol] = new ScreenCell(text, style, isWide);
@@ -411,13 +407,61 @@ public sealed class ScreenBuffer
 
     public void LineFeed()
     {
+        Index();
+    }
+
+    public void Index()
+    {
         _pendingWrap = false;
-        CursorRow++;
-        if (CursorRow >= Height)
+        if (CursorRow == _scrollBottom)
         {
-            ScrollUp(1);
-            CursorRow = Height - 1;
+            ScrollRegionUp(
+                _scrollTop,
+                _scrollBottom,
+                1,
+                includeScrollback: !_isAltScreen && _scrollTop == 0 && _scrollBottom == Height - 1
+            );
+            return;
         }
+
+        CursorRow = Math.Min(Height - 1, CursorRow + 1);
+    }
+
+    public void NextLine()
+    {
+        CarriageReturn();
+        Index();
+    }
+
+    public void ReverseIndex()
+    {
+        _pendingWrap = false;
+        if (CursorRow == _scrollTop)
+        {
+            ScrollRegionDown(_scrollTop, _scrollBottom, 1);
+            return;
+        }
+
+        CursorRow = Math.Max(0, CursorRow - 1);
+    }
+
+    public void SetScrollRegion(int top, int bottom)
+    {
+        top = Clamp(top, 0, Height - 1);
+        bottom = Clamp(bottom, 0, Height - 1);
+
+        if (top >= bottom)
+        {
+            _scrollTop = 0;
+            _scrollBottom = Height - 1;
+        }
+        else
+        {
+            _scrollTop = top;
+            _scrollBottom = bottom;
+        }
+
+        MoveCursorTo(0, 0);
     }
 
     public void Backspace()
@@ -473,6 +517,85 @@ public sealed class ScreenBuffer
         {
             _cells[CursorRow, col] = new ScreenCell(" ", DefaultStyle);
         }
+    }
+
+    public void InsertBlankCharacters(int count)
+    {
+        if (count <= 0)
+        {
+            return;
+        }
+
+        count = Math.Min(count, Width - CursorCol);
+
+        for (var col = Width - 1; col >= CursorCol + count; col--)
+        {
+            _cells[CursorRow, col] = _cells[CursorRow, col - count];
+        }
+
+        for (var col = CursorCol; col < CursorCol + count; col++)
+        {
+            _cells[CursorRow, col] = new ScreenCell(" ", DefaultStyle);
+        }
+    }
+
+    public void InsertLines(int count)
+    {
+        if (count <= 0 || CursorRow < _scrollTop || CursorRow > _scrollBottom)
+        {
+            return;
+        }
+
+        count = Math.Min(count, _scrollBottom - CursorRow + 1);
+        for (var row = _scrollBottom; row >= CursorRow + count; row--)
+        {
+            for (var col = 0; col < Width; col++)
+            {
+                _cells[row, col] = _cells[row - count, col];
+            }
+        }
+
+        for (var row = CursorRow; row < CursorRow + count; row++)
+        {
+            ClearRow(row);
+        }
+    }
+
+    public void DeleteLines(int count)
+    {
+        if (count <= 0 || CursorRow < _scrollTop || CursorRow > _scrollBottom)
+        {
+            return;
+        }
+
+        count = Math.Min(count, _scrollBottom - CursorRow + 1);
+        for (var row = CursorRow; row <= _scrollBottom - count; row++)
+        {
+            for (var col = 0; col < Width; col++)
+            {
+                _cells[row, col] = _cells[row + count, col];
+            }
+        }
+
+        for (var row = _scrollBottom - count + 1; row <= _scrollBottom; row++)
+        {
+            ClearRow(row);
+        }
+    }
+
+    public void ScrollUpLines(int count)
+    {
+        ScrollRegionUp(
+            _scrollTop,
+            _scrollBottom,
+            count,
+            includeScrollback: !_isAltScreen && _scrollTop == 0 && _scrollBottom == Height - 1
+        );
+    }
+
+    public void ScrollDownLines(int count)
+    {
+        ScrollRegionDown(_scrollTop, _scrollBottom, count);
     }
 
     public void EraseChars(int count)
@@ -554,6 +677,8 @@ public sealed class ScreenBuffer
             _cells = _altCells;
             CursorRow = 0;
             CursorCol = 0;
+            _scrollTop = 0;
+            _scrollBottom = Height - 1;
             _isAltScreen = true;
             return;
         }
@@ -567,21 +692,32 @@ public sealed class ScreenBuffer
         _isAltScreen = false;
         CursorRow = Clamp(_savedMainRow, 0, Height - 1);
         CursorCol = Clamp(_savedMainCol, 0, Width - 1);
+        _scrollTop = 0;
+        _scrollBottom = Height - 1;
     }
 
-    private void ScrollUp(int count)
+    private void ScrollRegionUp(int top, int bottom, int count, bool includeScrollback)
     {
+        if (count <= 0 || top < 0 || bottom >= Height || top > bottom)
+        {
+            return;
+        }
+
+        count = Math.Min(count, bottom - top + 1);
         for (var i = 0; i < count; i++)
         {
-            var topRow = new ScreenCell[Width];
-            for (var col = 0; col < Width; col++)
+            if (includeScrollback && top == 0)
             {
-                topRow[col] = _cells[0, col];
+                var topRow = new ScreenCell[Width];
+                for (var col = 0; col < Width; col++)
+                {
+                    topRow[col] = _cells[0, col];
+                }
+
+                _scrollbackRows.Add(topRow);
             }
 
-            _scrollbackRows.Add(topRow);
-
-            for (var row = 1; row < Height; row++)
+            for (var row = top + 1; row <= bottom; row++)
             {
                 for (var col = 0; col < Width; col++)
                 {
@@ -589,10 +725,37 @@ public sealed class ScreenBuffer
                 }
             }
 
-            for (var col = 0; col < Width; col++)
+            ClearRow(bottom);
+        }
+    }
+
+    private void ScrollRegionDown(int top, int bottom, int count)
+    {
+        if (count <= 0 || top < 0 || bottom >= Height || top > bottom)
+        {
+            return;
+        }
+
+        count = Math.Min(count, bottom - top + 1);
+        for (var i = 0; i < count; i++)
+        {
+            for (var row = bottom - 1; row >= top; row--)
             {
-                _cells[Height - 1, col] = new ScreenCell(" ", DefaultStyle);
+                for (var col = 0; col < Width; col++)
+                {
+                    _cells[row + 1, col] = _cells[row, col];
+                }
             }
+
+            ClearRow(top);
+        }
+    }
+
+    private void ClearRow(int row)
+    {
+        for (var col = 0; col < Width; col++)
+        {
+            _cells[row, col] = new ScreenCell(" ", DefaultStyle);
         }
     }
 

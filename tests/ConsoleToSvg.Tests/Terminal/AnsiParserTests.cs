@@ -396,4 +396,99 @@ public sealed class AnsiParserTests
         emulator.Buffer.GetCell(0, 0).Text.ShouldBe("X");
         emulator.Buffer.GetCell(0, 1).Text.ShouldBe(" ");
     }
+
+    [Test]
+    public void CsiAtInsertsBlankCharacters()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(6, 2, theme);
+
+        emulator.Process("ABCD\u001b[2G\u001b[2@Z");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("A");
+        emulator.Buffer.GetCell(0, 1).Text.ShouldBe("Z");
+        emulator.Buffer.GetCell(0, 2).Text.ShouldBe(" ");
+        emulator.Buffer.GetCell(0, 3).Text.ShouldBe("B");
+        emulator.Buffer.GetCell(0, 4).Text.ShouldBe("C");
+        emulator.Buffer.GetCell(0, 5).Text.ShouldBe("D");
+    }
+
+    [Test]
+    public void CsiLInsertsLinesInScrollRegion()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(3, 4, theme);
+
+        emulator.Process("\u001b[1;1H111\u001b[2;1H222\u001b[3;1H333\u001b[4;1H444");
+        emulator.Process("\u001b[2;1H\u001b[1L");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("1");
+        emulator.Buffer.GetCell(1, 0).Text.ShouldBe(" ");
+        emulator.Buffer.GetCell(2, 0).Text.ShouldBe("2");
+        emulator.Buffer.GetCell(3, 0).Text.ShouldBe("3");
+    }
+
+    [Test]
+    public void CsiMDeletesLinesInScrollRegion()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(3, 4, theme);
+
+        emulator.Process("\u001b[1;1H111\u001b[2;1H222\u001b[3;1H333\u001b[4;1H444");
+        emulator.Process("\u001b[2;1H\u001b[1M");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("1");
+        emulator.Buffer.GetCell(1, 0).Text.ShouldBe("3");
+        emulator.Buffer.GetCell(2, 0).Text.ShouldBe("4");
+        emulator.Buffer.GetCell(3, 0).Text.ShouldBe(" ");
+    }
+
+    [Test]
+    public void DecstbmAndLineFeedScrollOnlyInsideMargins()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(5, 4, theme);
+
+        emulator.Process("\u001b[1;1HAAAAA\u001b[2;1HBBBBB\u001b[3;1HCCCCC\u001b[4;1HDDDDD");
+        emulator.Process("\u001b[2;3r\u001b[3;1H\n");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("A");
+        emulator.Buffer.GetCell(1, 0).Text.ShouldBe("C");
+        emulator.Buffer.GetCell(2, 0).Text.ShouldBe(" ");
+        emulator.Buffer.GetCell(3, 0).Text.ShouldBe("D");
+    }
+
+    [Test]
+    public void EscMReverseIndexScrollsDownInsideMargins()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(3, 4, theme);
+
+        emulator.Process("\u001b[1;1HAAA\u001b[2;1HBBB\u001b[3;1HCCC\u001b[4;1HDDD");
+        emulator.Process("\u001b[2;3r\u001b[2;1H\u001bM");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("A");
+        emulator.Buffer.GetCell(1, 0).Text.ShouldBe(" ");
+        emulator.Buffer.GetCell(2, 0).Text.ShouldBe("B");
+        emulator.Buffer.GetCell(3, 0).Text.ShouldBe("D");
+    }
+
+    [Test]
+    public void CsiSAndCsiTScrollUpDown()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(2, 2, theme);
+
+        emulator.Process("\u001b[1;1HAA\u001b[2;1HBB");
+        emulator.Process("\u001b[1S");
+
+        emulator.Buffer.ScrollbackCount.ShouldBe(1);
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("B");
+        emulator.Buffer.GetCell(1, 0).Text.ShouldBe(" ");
+
+        emulator.Process("\u001b[1T");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe(" ");
+        emulator.Buffer.GetCell(1, 0).Text.ShouldBe("B");
+    }
 }

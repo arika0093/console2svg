@@ -152,6 +152,18 @@ public sealed class AnsiParser
                 _buffer.RestoreCursor();
                 endIndex = index + 1;
                 return true;
+            case 'D':
+                _buffer.Index();
+                endIndex = index + 1;
+                return true;
+            case 'E':
+                _buffer.NextLine();
+                endIndex = index + 1;
+                return true;
+            case 'M':
+                _buffer.ReverseIndex();
+                endIndex = index + 1;
+                return true;
             case 'c':
                 _buffer.ClearDisplay(2);
                 _buffer.MoveCursorTo(0, 0);
@@ -288,9 +300,11 @@ public sealed class AnsiParser
                 _buffer.MoveCursorBy(-Math.Max(1, GetParameter(parameters, 0, 1)), 0);
                 return;
             case 'B':
+            case 'e':
                 _buffer.MoveCursorBy(Math.Max(1, GetParameter(parameters, 0, 1)), 0);
                 return;
             case 'C':
+            case 'a':
                 _buffer.MoveCursorBy(0, Math.Max(1, GetParameter(parameters, 0, 1)));
                 return;
             case 'D':
@@ -334,6 +348,28 @@ public sealed class AnsiParser
             case 'P':
                 _buffer.DeleteCharacters(Math.Max(1, GetParameter(parameters, 0, 1)));
                 return;
+            case '@':
+                _buffer.InsertBlankCharacters(Math.Max(1, GetParameter(parameters, 0, 1)));
+                return;
+            case 'L':
+                _buffer.InsertLines(Math.Max(1, GetParameter(parameters, 0, 1)));
+                return;
+            case 'M':
+                _buffer.DeleteLines(Math.Max(1, GetParameter(parameters, 0, 1)));
+                return;
+            case 'S':
+                _buffer.ScrollUpLines(Math.Max(1, GetParameter(parameters, 0, 1)));
+                return;
+            case 'T':
+                _buffer.ScrollDownLines(Math.Max(1, GetParameter(parameters, 0, 1)));
+                return;
+            case 'r':
+            {
+                var top = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
+                var bottom = Math.Max(1, GetParameter(parameters, 1, _buffer.Height)) - 1;
+                _buffer.SetScrollRegion(top, bottom);
+                return;
+            }
             case 'X':
                 _buffer.EraseChars(Math.Max(1, GetParameter(parameters, 0, 1)));
                 return;

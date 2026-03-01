@@ -52,5 +52,9 @@ public sealed class InputReplayData
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public DateTimeOffset? CreatedAt { get; set; }
 
+    /// <summary>Total duration in seconds of the recording session.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public double? TotalDuration { get; set; }
+
     public List<InputEvent> Replay { get; set; } = [];
 }

@@ -72,10 +72,23 @@ public static class InputReplayFile
         CancellationToken cancellationToken
     )
     {
+        var data = await ReadDataAsync(path, cancellationToken).ConfigureAwait(false);
+        return data.Replay;
+    }
+
+    /// <summary>
+    /// Read the full replay data (including metadata such as <see cref="InputReplayData.TotalDuration"/>)
+    /// from a JSON replay file.
+    /// </summary>
+    public static async Task<InputReplayData> ReadDataAsync(
+        string path,
+        CancellationToken cancellationToken
+    )
+    {
         cancellationToken.ThrowIfCancellationRequested();
         var json = await File.ReadAllTextAsync(path, Encoding.UTF8, cancellationToken)
             .ConfigureAwait(false);
-        return ParseJsonObject(json);
+        return ParseJsonData(json);
     }
 
     /// <summary>
@@ -406,17 +419,19 @@ public static class InputReplayFile
 
     // ── Helpers ─────────────────────────────────────────────────────────────
 
-    internal static List<InputEvent> ParseJsonObject(string json)
+    internal static List<InputEvent> ParseJsonObject(string json) => ParseJsonData(json).Replay;
+
+    internal static InputReplayData ParseJsonData(string json)
     {
         if (string.IsNullOrWhiteSpace(json))
-            return [];
-        var data = JsonSerializer.Deserialize(
-            json,
-            InputReplaySerializerContext.Default.InputReplayData
-        );
-        var events = data?.Replay ?? [];
-        ResolveAbsoluteTimes(events);
-        return events;
+            return new InputReplayData();
+        var data =
+            JsonSerializer.Deserialize(
+                json,
+                InputReplaySerializerContext.Default.InputReplayData
+            ) ?? new InputReplayData();
+        ResolveAbsoluteTimes(data.Replay);
+        return data;
     }
 
     /// <summary>
@@ -795,6 +810,12 @@ public static class InputReplayFile
         private readonly InputReplayData _data = new();
         private readonly DateTimeOffset _createdAt = DateTimeOffset.UtcNow;
 
+        /// <summary>
+        /// Total duration in seconds of the recording session. When set, the value
+        /// is written to the replay file and can be used as a timeout when replaying.
+        /// </summary>
+        public double? TotalDuration { get; set; }
+
         public InputReplayWriter(Stream stream)
         {
             _stream = stream;
@@ -816,6 +837,7 @@ public static class InputReplayFile
             {
                 Version = InputReplayData.CurrentVersion,
                 CreatedAt = _createdAt,
+                TotalDuration = TotalDuration,
                 Replay = new List<InputEvent>(_data.Replay.Count),
             };
 

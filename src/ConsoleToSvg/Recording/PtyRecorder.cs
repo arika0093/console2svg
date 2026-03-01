@@ -98,13 +98,14 @@ public static class PtyRecorder
         logger.ZLogDebug($"PTY process spawned.");
         var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
         Stream? inputForward;
+        InputReplayData? replayData = null;
         if (!string.IsNullOrWhiteSpace(replayPath))
         {
             logger.ZLogDebug($"Input source: replay file. Path={replayPath}");
-            var replayEvents = await InputReplayFile
-                .ReadAllAsync(replayPath!, cancellationToken)
+            replayData = await InputReplayFile
+                .ReadDataAsync(replayPath!, cancellationToken)
                 .ConfigureAwait(false);
-            inputForward = new InputReplayFile.ReplayStream(replayEvents);
+            inputForward = new InputReplayFile.ReplayStream(replayData.Replay);
         }
         else
         {
@@ -155,6 +156,7 @@ public static class PtyRecorder
         var eofReached = false;
         var processExited = false;
         var disposed = false;
+        double? replayTimeoutExceeded = null;
         try
         {
             while (true)
@@ -176,12 +178,28 @@ public static class PtyRecorder
                     processExited = true;
                     break;
                 }
+
+                if (
+                    replayData?.TotalDuration is double replayTotalDuration
+                    && stopwatch.Elapsed.TotalSeconds > replayTotalDuration + 1.0
+                )
+                {
+                    replayTimeoutExceeded = replayTotalDuration;
+                    break;
+                }
             }
         }
         catch
         {
             // PTY process may have already exited; ignore cleanup errors such as
             // "Killing terminal failed with error 3" (ESRCH: no such process)
+        }
+
+        if (replayTimeoutExceeded is double exceededDuration)
+        {
+            throw new TimeoutException(
+                $"Replay did not complete within the expected duration ({exceededDuration:F1}s + 1s timeout)."
+            );
         }
 
         if (canceled || eofReached || processExited)
@@ -253,6 +271,7 @@ public static class PtyRecorder
         {
             try
             {
+                replaySaveWriter.TotalDuration = stopwatch.Elapsed.TotalSeconds;
                 await replaySaveWriter.DisposeAsync().ConfigureAwait(false);
             }
             catch
@@ -315,13 +334,14 @@ public static class PtyRecorder
 
         var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
         Stream? inputForward;
+        InputReplayData? replayData = null;
         if (!string.IsNullOrWhiteSpace(replayPath))
         {
             logger.ZLogDebug($"Input source: replay file. Path={replayPath}");
-            var replayEvents = await InputReplayFile
-                .ReadAllAsync(replayPath!, cancellationToken)
+            replayData = await InputReplayFile
+                .ReadDataAsync(replayPath!, cancellationToken)
                 .ConfigureAwait(false);
-            inputForward = new InputReplayFile.ReplayStream(replayEvents);
+            inputForward = new InputReplayFile.ReplayStream(replayData.Replay);
         }
         else
         {
@@ -377,6 +397,16 @@ public static class PtyRecorder
                 canceled = true;
                 break;
             }
+
+            if (
+                replayData?.TotalDuration is double replayTotalDuration
+                && stopwatch.Elapsed.TotalSeconds > replayTotalDuration + 1.0
+            )
+            {
+                throw new TimeoutException(
+                    $"Replay did not complete within the expected duration ({replayTotalDuration:F1}s + 1s timeout)."
+                );
+            }
         }
 
         await inputCancellation.CancelAsync().ConfigureAwait(false);
@@ -389,6 +419,7 @@ public static class PtyRecorder
         {
             try
             {
+                replaySaveWriter.TotalDuration = stopwatch.Elapsed.TotalSeconds;
                 await replaySaveWriter.DisposeAsync().ConfigureAwait(false);
             }
             catch

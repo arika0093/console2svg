@@ -154,15 +154,21 @@ console2svg -w 100 -h 10 -c -d macos-pc --background image.png --opacity 0.8  --
 use `-m video` or `-v` to capture the animation of the command execution and save it as an SVG.
 
 ```sh
+# apt install sl
 console2svg -c -d -v -- sl
 ```
 
 You can specify the `--timeout` option to output SVG after a certain time has elapsed.
 This is useful for converting commands that do not terminate, such as `nyancat`, into SVG.
 
+There is also a `--sleep` option to specify the stop time after playback. This allows you to display the last frame for a specified time after the command execution is finished (2 seconds by default).
+
 ```sh
-console2svg -c -d -v --timeout 5 -- nyancat
+# apt install nyancat
+console2svg -w 120 -h 28 -c -d -v --timeout 3 --sleep 1 -- nyancat
 ```
+
+![console2svg -w 120 -h 28 -c -d -v --timeout 3 --sleep 1 -- nyancat](./assets/cmd-nyancat.svg)
 
 ### Replay input
 You can also save the command execution record and later regenerate the SVG based on that record. 

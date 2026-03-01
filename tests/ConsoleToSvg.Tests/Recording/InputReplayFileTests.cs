@@ -22,9 +22,33 @@ public sealed class InputReplayFileTests
                 var writer = new InputReplayFile.InputReplayWriter(File.OpenWrite(tmpPath))
             )
             {
-                writer.AppendEvent(new InputEvent { Time = 0.5, Key = "h", Modifiers = [], Type = "keydown" });
-                writer.AppendEvent(new InputEvent { Time = 1.25, Key = "Enter", Modifiers = [], Type = "keydown" });
-                writer.AppendEvent(new InputEvent { Time = 2.0, Key = "c", Modifiers = ["ctrl"], Type = "keydown" });
+                writer.AppendEvent(
+                    new InputEvent
+                    {
+                        Time = 0.5,
+                        Key = "h",
+                        Modifiers = [],
+                        Type = "keydown",
+                    }
+                );
+                writer.AppendEvent(
+                    new InputEvent
+                    {
+                        Time = 1.25,
+                        Key = "Enter",
+                        Modifiers = [],
+                        Type = "keydown",
+                    }
+                );
+                writer.AppendEvent(
+                    new InputEvent
+                    {
+                        Time = 2.0,
+                        Key = "c",
+                        Modifiers = ["ctrl"],
+                        Type = "keydown",
+                    }
+                );
             }
 
             var events = await InputReplayFile.ReadAllAsync(tmpPath, CancellationToken.None);
@@ -56,8 +80,24 @@ public sealed class InputReplayFileTests
                 var writer = new InputReplayFile.InputReplayWriter(File.OpenWrite(tmpPath))
             )
             {
-                writer.AppendEvent(new InputEvent { Time = 0.1, Key = "a", Modifiers = [], Type = "keydown" });
-                writer.AppendEvent(new InputEvent { Time = 0.2, Key = "ArrowUp", Modifiers = [], Type = "keydown" });
+                writer.AppendEvent(
+                    new InputEvent
+                    {
+                        Time = 0.1,
+                        Key = "a",
+                        Modifiers = [],
+                        Type = "keydown",
+                    }
+                );
+                writer.AppendEvent(
+                    new InputEvent
+                    {
+                        Time = 0.2,
+                        Key = "ArrowUp",
+                        Modifiers = [],
+                        Type = "keydown",
+                    }
+                );
             }
 
             var json = await File.ReadAllTextAsync(tmpPath);
@@ -105,7 +145,15 @@ public sealed class InputReplayFileTests
                 var writer = new InputReplayFile.InputReplayWriter(File.OpenWrite(tmpPath))
             )
             {
-                writer.AppendEvent(new InputEvent { Time = 0.5, Key = "a", Modifiers = [], Type = "keydown" });
+                writer.AppendEvent(
+                    new InputEvent
+                    {
+                        Time = 0.5,
+                        Key = "a",
+                        Modifiers = [],
+                        Type = "keydown",
+                    }
+                );
                 writer.TotalDuration = 5.0;
             }
 
@@ -129,7 +177,15 @@ public sealed class InputReplayFileTests
                 var writer = new InputReplayFile.InputReplayWriter(File.OpenWrite(tmpPath))
             )
             {
-                writer.AppendEvent(new InputEvent { Time = 0.5, Key = "a", Modifiers = [], Type = "keydown" });
+                writer.AppendEvent(
+                    new InputEvent
+                    {
+                        Time = 0.5,
+                        Key = "a",
+                        Modifiers = [],
+                        Type = "keydown",
+                    }
+                );
                 // TotalDuration not set
             }
 
@@ -149,7 +205,8 @@ public sealed class InputReplayFileTests
     [Test]
     public async Task ParseJsonDataReturnsTotalDuration()
     {
-        var json = """{"version":"1","totalDuration":3.5,"replay":[{"time":0.1,"key":"a","modifiers":[],"type":"keydown"}]}""";
+        var json =
+            """{"version":"1","totalDuration":3.5,"replay":[{"time":0.1,"key":"a","modifiers":[],"type":"keydown"}]}""";
         var tmpPath = Path.GetTempFileName();
         try
         {
@@ -261,7 +318,9 @@ public sealed class InputReplayFileTests
     [Test]
     public void EventToBytesArrowUpRoundTrip()
     {
-        var bytes = InputReplayFile.EventToBytes(new InputEvent { Key = "ArrowUp", Modifiers = [] });
+        var bytes = InputReplayFile.EventToBytes(
+            new InputEvent { Key = "ArrowUp", Modifiers = [] }
+        );
         var text = Encoding.UTF8.GetString(bytes);
         var events = new List<InputEvent>(InputReplayFile.ParseInputText(text, 0.0));
         events.Count.ShouldBe(1);
@@ -278,7 +337,9 @@ public sealed class InputReplayFileTests
     [Test]
     public void EventToBytesCtrlC()
     {
-        var bytes = InputReplayFile.EventToBytes(new InputEvent { Key = "c", Modifiers = ["ctrl"] });
+        var bytes = InputReplayFile.EventToBytes(
+            new InputEvent { Key = "c", Modifiers = ["ctrl"] }
+        );
         bytes.ShouldBe(new byte[] { 0x03 });
     }
 
@@ -302,8 +363,18 @@ public sealed class InputReplayFileTests
     {
         var events = new List<InputEvent>
         {
-            new InputEvent { Time = 0.0, Key = "a", Modifiers = [] },
-            new InputEvent { Time = 0.0, Key = "b", Modifiers = [] },
+            new InputEvent
+            {
+                Time = 0.0,
+                Key = "a",
+                Modifiers = [],
+            },
+            new InputEvent
+            {
+                Time = 0.0,
+                Key = "b",
+                Modifiers = [],
+            },
         };
 
         using var stream = new InputReplayFile.ReplayStream(events);
@@ -338,7 +409,15 @@ public sealed class InputReplayFileTests
     public async Task ReplayStreamArrowKeyRoundTrip()
     {
         // Write ArrowUp event, replay it, parse the bytes, verify the key name survives.
-        var events = new List<InputEvent> { new InputEvent { Time = 0.0, Key = "ArrowUp", Modifiers = [] } };
+        var events = new List<InputEvent>
+        {
+            new InputEvent
+            {
+                Time = 0.0,
+                Key = "ArrowUp",
+                Modifiers = [],
+            },
+        };
 
         using var stream = new InputReplayFile.ReplayStream(events);
         var buffer = new byte[32];
@@ -395,7 +474,9 @@ public sealed class InputReplayFileTests
     public void EventToBytesShiftTabRoundTrip()
     {
         // Shift+Tab → \x1b[Z → parse → Shift+Tab
-        var bytes = InputReplayFile.EventToBytes(new InputEvent { Key = "Tab", Modifiers = ["shift"] });
+        var bytes = InputReplayFile.EventToBytes(
+            new InputEvent { Key = "Tab", Modifiers = ["shift"] }
+        );
         var text = Encoding.UTF8.GetString(bytes);
         var events = new List<InputEvent>(InputReplayFile.ParseInputText(text, 0.0));
         events.Count.ShouldBe(1);
@@ -407,7 +488,9 @@ public sealed class InputReplayFileTests
     public void EventToBytesHomeEndRoundTrip()
     {
         // Home → \x1b[H → parse → Home
-        var homeBytes = InputReplayFile.EventToBytes(new InputEvent { Key = "Home", Modifiers = [] });
+        var homeBytes = InputReplayFile.EventToBytes(
+            new InputEvent { Key = "Home", Modifiers = [] }
+        );
         var homeText = Encoding.UTF8.GetString(homeBytes);
         var homeEvents = new List<InputEvent>(InputReplayFile.ParseInputText(homeText, 0.0));
         homeEvents.Count.ShouldBe(1);
@@ -556,9 +639,7 @@ public sealed class InputReplayFileTests
     public void ParseInputTextDa2ResponseIsFiltered()
     {
         // DA2 response: ESC[>0;10;1c — should be completely skipped.
-        var events = new List<InputEvent>(
-            InputReplayFile.ParseInputText("a\x1b[>0;10;1cb", 0.0)
-        );
+        var events = new List<InputEvent>(InputReplayFile.ParseInputText("a\x1b[>0;10;1cb", 0.0));
         events.Count.ShouldBe(2);
         events[0].Key.ShouldBe("a");
         events[1].Key.ShouldBe("b");
@@ -580,9 +661,7 @@ public sealed class InputReplayFileTests
     public void ParseInputTextDecrpmResponseIsFiltered()
     {
         // DECRPM response: ESC[?12;2$y — has both private prefix '?' and intermediate byte '$'.
-        var events = new List<InputEvent>(
-            InputReplayFile.ParseInputText("a\x1b[?12;2$yb", 0.0)
-        );
+        var events = new List<InputEvent>(InputReplayFile.ParseInputText("a\x1b[?12;2$yb", 0.0));
         events.Count.ShouldBe(2);
         events[0].Key.ShouldBe("a");
         events[1].Key.ShouldBe("b");
@@ -592,10 +671,11 @@ public sealed class InputReplayFileTests
     public void ParseInputTextMultipleTerminalResponsesAreFiltered()
     {
         // Simulate the WSL vim startup: user types "vim\r", then terminal sends responses.
-        var input = "vim\r"
-            + "\x1b[>0;10;1c"   // DA2 response
-            + "\x1b[?12;2$y"    // DECRPM response
-            + "\x1b[?64;1;2c"   // DA1 response
+        var input =
+            "vim\r"
+            + "\x1b[>0;10;1c" // DA2 response
+            + "\x1b[?12;2$y" // DECRPM response
+            + "\x1b[?64;1;2c" // DA1 response
             + "ihello\x1b:q!\r"; // user types in vim (ESC+: = Alt+:)
         var events = new List<InputEvent>(InputReplayFile.ParseInputText(input, 0.0));
 
@@ -615,9 +695,7 @@ public sealed class InputReplayFileTests
     public void ParseInputTextLonePrivatePrefixCsiIsFiltered()
     {
         // ESC[<0;35;1M — xterm mouse event with '<' private prefix — should be filtered.
-        var events = new List<InputEvent>(
-            InputReplayFile.ParseInputText("a\x1b[<0;35;1Mb", 0.0)
-        );
+        var events = new List<InputEvent>(InputReplayFile.ParseInputText("a\x1b[<0;35;1Mb", 0.0));
         events.Count.ShouldBe(2);
         events[0].Key.ShouldBe("a");
         events[1].Key.ShouldBe("b");
@@ -627,9 +705,7 @@ public sealed class InputReplayFileTests
     public void ParseInputTextIntermediateByteOnlyIsFiltered()
     {
         // A CSI sequence with intermediate byte but no private prefix: ESC[0\"q (DECSCA)
-        var events = new List<InputEvent>(
-            InputReplayFile.ParseInputText("a\x1b[0\"qb", 0.0)
-        );
+        var events = new List<InputEvent>(InputReplayFile.ParseInputText("a\x1b[0\"qb", 0.0));
         events.Count.ShouldBe(2);
         events[0].Key.ShouldBe("a");
         events[1].Key.ShouldBe("b");
@@ -832,9 +908,12 @@ public sealed class InputReplayFileTests
         // Enter (VK=13), h (VK=72), e (VK=69), l (VK=76), l, o (VK=79),
         // then Shift+Tab as VK=0 passthrough, then ArrowDown as VK=0 passthrough
         var text =
-            "\x1b[13;28;13;1;0;1_\x1b[13;28;13;0;0;1_" + // Enter (down+up)
-            "\x1b[72;35;104;1;0;1_\x1b[72;35;104;0;0;1_" + // h (down+up)
-            "\x1b[0;0;27;1;0;1_\x1b[0;0;91;1;0;1_\x1b[0;0;90;1;0;1_" + // Shift+Tab (VK=0)
+            "\x1b[13;28;13;1;0;1_\x1b[13;28;13;0;0;1_"
+            + // Enter (down+up)
+            "\x1b[72;35;104;1;0;1_\x1b[72;35;104;0;0;1_"
+            + // h (down+up)
+            "\x1b[0;0;27;1;0;1_\x1b[0;0;91;1;0;1_\x1b[0;0;90;1;0;1_"
+            + // Shift+Tab (VK=0)
             "\x1b[0;0;27;1;0;1_\x1b[0;0;91;1;0;1_\x1b[0;0;66;1;0;1_"; // ArrowDown (VK=0)
         var events = new List<InputEvent>(InputReplayFile.ParseInputText(text, 1.0));
         events.Count.ShouldBe(4);
@@ -852,18 +931,30 @@ public sealed class InputReplayFileTests
         // Enter, h, e, l, l, o, ShiftTab(VK=0), ShiftTab(VK=0),
         // ArrowDown(VK=0), ArrowUp(VK=0), Enter, Ctrl+C, Ctrl+C
         var text =
-            "\x1b[13;28;13;1;0;1_\x1b[13;28;13;0;0;1_" + // Enter
-            "\x1b[72;35;104;1;0;1_\x1b[72;35;104;0;0;1_" + // h
-            "\x1b[69;18;101;1;0;1_\x1b[69;18;101;0;0;1_" + // e
-            "\x1b[76;38;108;1;0;1_\x1b[76;38;108;0;0;1_" + // l
-            "\x1b[76;38;108;1;0;1_\x1b[76;38;108;0;0;1_" + // l
-            "\x1b[79;24;111;1;0;1_\x1b[79;24;111;0;0;1_" + // o
-            "\x1b[0;0;27;1;0;1_\x1b[0;0;91;1;0;1_\x1b[0;0;90;1;0;1_" + // Shift+Tab
-            "\x1b[0;0;27;1;0;1_\x1b[0;0;91;1;0;1_\x1b[0;0;90;1;0;1_" + // Shift+Tab
-            "\x1b[0;0;27;1;0;1_\x1b[0;0;91;1;0;1_\x1b[0;0;66;1;0;1_" + // ArrowDown
-            "\x1b[0;0;27;1;0;1_\x1b[0;0;91;1;0;1_\x1b[0;0;65;1;0;1_" + // ArrowUp
-            "\x1b[13;28;13;1;0;1_\x1b[13;28;13;0;0;1_" + // Enter
-            "\x1b[67;0;3;1;8;1_" + // Ctrl+C
+            "\x1b[13;28;13;1;0;1_\x1b[13;28;13;0;0;1_"
+            + // Enter
+            "\x1b[72;35;104;1;0;1_\x1b[72;35;104;0;0;1_"
+            + // h
+            "\x1b[69;18;101;1;0;1_\x1b[69;18;101;0;0;1_"
+            + // e
+            "\x1b[76;38;108;1;0;1_\x1b[76;38;108;0;0;1_"
+            + // l
+            "\x1b[76;38;108;1;0;1_\x1b[76;38;108;0;0;1_"
+            + // l
+            "\x1b[79;24;111;1;0;1_\x1b[79;24;111;0;0;1_"
+            + // o
+            "\x1b[0;0;27;1;0;1_\x1b[0;0;91;1;0;1_\x1b[0;0;90;1;0;1_"
+            + // Shift+Tab
+            "\x1b[0;0;27;1;0;1_\x1b[0;0;91;1;0;1_\x1b[0;0;90;1;0;1_"
+            + // Shift+Tab
+            "\x1b[0;0;27;1;0;1_\x1b[0;0;91;1;0;1_\x1b[0;0;66;1;0;1_"
+            + // ArrowDown
+            "\x1b[0;0;27;1;0;1_\x1b[0;0;91;1;0;1_\x1b[0;0;65;1;0;1_"
+            + // ArrowUp
+            "\x1b[13;28;13;1;0;1_\x1b[13;28;13;0;0;1_"
+            + // Enter
+            "\x1b[67;0;3;1;8;1_"
+            + // Ctrl+C
             "\x1b[67;0;3;1;8;1_"; // Ctrl+C
         var events = new List<InputEvent>(InputReplayFile.ParseInputText(text, 1.0));
         events.Count.ShouldBe(13);
@@ -921,7 +1012,8 @@ public sealed class InputReplayFileTests
     {
         // Two VT sequences in a row as VK=0: ESC[B + ESC[A
         var text =
-            "\x1b[0;0;27;1;0;1_\x1b[0;0;91;1;0;1_\x1b[0;0;66;1;0;1_" + // ArrowDown
+            "\x1b[0;0;27;1;0;1_\x1b[0;0;91;1;0;1_\x1b[0;0;66;1;0;1_"
+            + // ArrowDown
             "\x1b[0;0;27;1;0;1_\x1b[0;0;91;1;0;1_\x1b[0;0;65;1;0;1_"; // ArrowUp
         var events = new List<InputEvent>(InputReplayFile.ParseInputText(text, 1.0));
         events.Count.ShouldBe(2);

@@ -393,10 +393,9 @@ public static class PtyRecorder
 
         // When replaying with a TotalDuration, create a timeout CTS so that ReadOutputAsync
         // is cancelled (and the process is killed) if stdout stays open beyond the deadline.
-        using var replayTimeoutCts =
-            replayData?.TotalDuration is double replayTotalDur
-                ? new CancellationTokenSource(TimeSpan.FromSeconds(replayTotalDur + 1.0))
-                : null;
+        using var replayTimeoutCts = replayData?.TotalDuration is double replayTotalDur
+            ? new CancellationTokenSource(TimeSpan.FromSeconds(replayTotalDur + 1.0))
+            : null;
         using var timeoutKillRegistration = replayTimeoutCts?.Token.Register(() =>
         {
             try
@@ -610,8 +609,7 @@ public static class PtyRecorder
                     {
                         var text = pending + new string(inputChars, 0, charCount);
                         var t = stopwatch.Elapsed.TotalSeconds;
-                        var (events, remainder) =
-                            InputReplayFile.ParseInputTextPartial(text, t);
+                        var (events, remainder) = InputReplayFile.ParseInputTextPartial(text, t);
                         foreach (var evt in events)
                             inputSave.AppendEvent(evt);
                         pending = remainder;
@@ -791,7 +789,11 @@ public static class PtyRecorder
         // Ensure TERM is set to a value that supports color and cursor control.
         // On headless CI runners (ubuntu-latest, etc.), TERM is often unset or "dumb",
         // which prevents programs like vim from rendering characters in the PTY.
-        if (!env.TryGetValue("TERM", out var termValue) || string.IsNullOrEmpty(termValue) || termValue == "dumb")
+        if (
+            !env.TryGetValue("TERM", out var termValue)
+            || string.IsNullOrEmpty(termValue)
+            || termValue == "dumb"
+        )
         {
             env["TERM"] = "xterm-256color";
         }

@@ -10,8 +10,7 @@ namespace ConsoleToSvg.Svg;
 /// </summary>
 public static class ChromeLoader
 {
-    private static readonly string[] BuiltinNames =
-        ["macos", "macos-pc", "windows", "windows-pc"];
+    private static readonly string[] BuiltinNames = ["macos", "macos-pc", "windows", "windows-pc"];
 
     /// <summary>
     /// Loads a <see cref="ChromeDefinition"/> from a built-in name or a file path.
@@ -24,15 +23,18 @@ public static class ChromeLoader
     /// </param>
     public static ChromeDefinition? Load(string? value)
     {
-        if (string.IsNullOrWhiteSpace(value)
-            || string.Equals(value, "none", StringComparison.OrdinalIgnoreCase))
+        if (
+            string.IsNullOrWhiteSpace(value)
+            || string.Equals(value, "none", StringComparison.OrdinalIgnoreCase)
+        )
         {
             return null;
         }
 
         var builtinName = Array.Find(
             BuiltinNames,
-            name => string.Equals(value, name, StringComparison.OrdinalIgnoreCase));
+            name => string.Equals(value, name, StringComparison.OrdinalIgnoreCase)
+        );
         if (builtinName is not null)
         {
             return LoadBuiltin(builtinName);
@@ -45,27 +47,36 @@ public static class ChromeLoader
     {
         var assembly = Assembly.GetExecutingAssembly();
         var resourceName = $"chrome.{name}.json";
-        using var stream = assembly.GetManifestResourceStream(resourceName)
+        using var stream =
+            assembly.GetManifestResourceStream(resourceName)
             ?? throw new InvalidOperationException(
                 $"Built-in chrome theme '{name}' could not be found. "
-                + $"Expected embedded resource: {resourceName}");
+                    + $"Expected embedded resource: {resourceName}"
+            );
 
-        return JsonSerializer.Deserialize(stream, ChromeDefinitionJsonContext.Default.ChromeDefinition)
+        return JsonSerializer.Deserialize(
+                stream,
+                ChromeDefinitionJsonContext.Default.ChromeDefinition
+            )
             ?? throw new InvalidOperationException(
-                $"Failed to parse built-in chrome theme '{name}'.");
+                $"Failed to parse built-in chrome theme '{name}'."
+            );
     }
 
     private static ChromeDefinition LoadFromFile(string path)
     {
         if (!File.Exists(path))
         {
-            throw new FileNotFoundException(
-                $"Chrome definition file not found: '{path}'.", path);
+            throw new FileNotFoundException($"Chrome definition file not found: '{path}'.", path);
         }
 
         using var stream = File.OpenRead(path);
-        return JsonSerializer.Deserialize(stream, ChromeDefinitionJsonContext.Default.ChromeDefinition)
+        return JsonSerializer.Deserialize(
+                stream,
+                ChromeDefinitionJsonContext.Default.ChromeDefinition
+            )
             ?? throw new InvalidOperationException(
-                $"Failed to parse chrome definition file: '{path}'.");
+                $"Failed to parse chrome definition file: '{path}'."
+            );
     }
 }

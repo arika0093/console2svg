@@ -468,7 +468,10 @@ internal static class SvgDocumentBuilder
             return;
         }
 
-        double winX, winY, winW, winH;
+        double winX,
+            winY,
+            winW,
+            winH;
         if (chrome.IsDesktop)
         {
             winX = chrome.DesktopPadding;
@@ -484,7 +487,17 @@ internal static class SvgDocumentBuilder
             winH = context.CanvasHeight;
         }
 
-        sb.Append(chrome.Render(winX, winY, winW, winH, context.CanvasWidth, context.CanvasHeight, theme.Background));
+        sb.Append(
+            chrome.Render(
+                winX,
+                winY,
+                winW,
+                winH,
+                context.CanvasWidth,
+                context.CanvasHeight,
+                theme.Background
+            )
+        );
         sb.Append('\n');
     }
 

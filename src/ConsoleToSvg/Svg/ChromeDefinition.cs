@@ -75,10 +75,14 @@ public sealed class ChromeDefinition
     /// Renders the chrome SVG by substituting template variables.
     /// </summary>
     internal string Render(
-        double winX, double winY,
-        double winW, double winH,
-        double totalW, double totalH,
-        string themeBackground)
+        double winX,
+        double winY,
+        double winW,
+        double winH,
+        double totalW,
+        double totalH,
+        string themeBackground
+    )
     {
         if (string.IsNullOrEmpty(SvgTemplate))
         {
@@ -116,10 +120,14 @@ public sealed class ChromeDefinition
 
     private static string EvaluateExpr(
         string expr,
-        double winX, double winY,
-        double winW, double winH,
-        double totalW, double totalH,
-        string themeBackground)
+        double winX,
+        double winY,
+        double winW,
+        double winH,
+        double totalW,
+        double totalH,
+        string themeBackground
+    )
     {
         // {bg} expands to the theme background color string
         if (string.Equals(expr, "bg", StringComparison.OrdinalIgnoreCase))
@@ -145,11 +153,14 @@ public sealed class ChromeDefinition
         {
             varName = expr.Substring(0, opIdx);
             var offsetStr = expr.Substring(opIdx); // includes the sign character
-            if (!double.TryParse(
+            if (
+                !double.TryParse(
                     offsetStr,
                     NumberStyles.Float | NumberStyles.AllowLeadingSign,
                     CultureInfo.InvariantCulture,
-                    out offset))
+                    out offset
+                )
+            )
             {
                 return "{" + expr + "}"; // can't evaluate — keep as-is
             }

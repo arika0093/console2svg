@@ -152,7 +152,12 @@ public sealed class OptionParserTests
     {
         // Unknown window values are now accepted at parse time and validated at load time.
         // The value is stored as-is; ChromeLoader.Load() will throw for unrecognised names/missing files.
-        var ok = OptionParser.TryParse(new[] { "--window=linux" }, out var options, out var error, out _);
+        var ok = OptionParser.TryParse(
+            new[] { "--window=linux" },
+            out var options,
+            out var error,
+            out _
+        );
         ok.ShouldBeTrue();
         error.ShouldBeNull();
         options!.Window.ShouldBe("linux");

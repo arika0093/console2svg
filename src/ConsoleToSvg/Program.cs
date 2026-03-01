@@ -13,6 +13,9 @@ namespace ConsoleToSvg;
 
 internal static class Program
 {
+    private const int DefaultWidth = 100;
+    private const int DefaultHeight = 24;
+
     public static async Task<int> Main(string[] args)
     {
         var parseResult = OptionParser.TryParse(
@@ -152,8 +155,8 @@ internal static class Program
 
         if (!string.IsNullOrWhiteSpace(options.Command))
         {
-            var ptyWidth = options.Width ?? 80;
-            var ptyHeight = options.Height ?? 24;
+            var ptyWidth = options.Width ?? DefaultWidth;
+            var ptyHeight = options.Height ?? DefaultHeight;
             logger.ZLogDebug(
                 $"Input source: PTY command. Command={options.Command} Width={ptyWidth} Height={ptyHeight}"
             );
@@ -178,8 +181,8 @@ internal static class Program
             );
         }
 
-        var pipeWidth = options.Width ?? TryGetConsoleWidth() ?? 80;
-        var pipeHeight = options.Height ?? TryGetConsoleHeight() ?? 24;
+        var pipeWidth = options.Width ?? TryGetConsoleWidth() ?? DefaultWidth;
+        var pipeHeight = options.Height ?? TryGetConsoleHeight() ?? DefaultHeight;
         logger.ZLogDebug($"Input source: stdin pipe. Width={pipeWidth} Height={pipeHeight}");
         return await PipeRecorder
             .RecordAsync(

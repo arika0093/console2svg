@@ -54,10 +54,10 @@ internal static class Program
             return 0;
         }
 
-        using var loggerFactory = CreateLoggerFactory(options.Verbose);
+        using var loggerFactory = CreateLoggerFactory(options.Verbose, options.VerboseLogPath);
         var logger = loggerFactory.CreateLogger("ConsoleToSvg.Program");
         logger.ZLogDebug(
-            $"Starting console2svg. Verbose={options.Verbose} Args={string.Join(' ', args)}"
+            $"Starting console2svg. Verbose={options.Verbose} VerboseLogPath={options.VerboseLogPath ?? "(default)"} Args={string.Join(' ', args)}"
         );
         logger.ZLogDebug(
             $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} Window={options.Window} Padding={options.Padding} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""}"
@@ -199,14 +199,15 @@ internal static class Program
             .ConfigureAwait(false);
     }
 
-    private static ILoggerFactory CreateLoggerFactory(bool verbose)
+    private static ILoggerFactory CreateLoggerFactory(bool verbose, string? logPath)
     {
         return LoggerFactory.Create(builder =>
         {
             builder.ClearProviders();
             if (verbose)
             {
-                builder.AddZLoggerFile($"console2svg.log", fileShared: false);
+                var path = string.IsNullOrWhiteSpace(logPath) ? "console2svg.log" : logPath;
+                builder.AddZLoggerFile(path, fileShared: false);
                 builder.SetMinimumLevel(LogLevel.Debug);
             }
             else

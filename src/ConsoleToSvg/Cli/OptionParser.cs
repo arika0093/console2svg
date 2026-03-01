@@ -23,7 +23,7 @@ public static class OptionParser
                 -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc.
                 --background <color> [color]  Background color, gradient, or image path.
                 --crop-top/bottom/left/right  Crop by px, ch, or text pattern.
-                --verbose                 Enable verbose logging.
+                --verbose [path]          Enable verbose logging (log to path, default: console2svg.log).
 
             For full option list, see --help.
             """;
@@ -49,7 +49,7 @@ public static class OptionParser
                 --in <path>               Read existing asciicast file.
                 --save-cast <path>        Save captured output as asciicast file.
                 --help                    Show help.
-                --verbose                 Enable verbose logging.
+                --verbose [path]          Enable verbose logging; write to path (default: console2svg.log).
                 --version                 Show version and exit.
                 --timeout <sec>           Stop recording after specified seconds (e.g. 5, 0.5).
 
@@ -159,19 +159,25 @@ public static class OptionParser
                 && i + 1 < args.Length
                 && IsWindowStyleValue(args[i + 1]);
 
+            var optionalVerboseValue =
+                value is null
+                && string.Equals(name, "--verbose", StringComparison.OrdinalIgnoreCase)
+                && i + 1 < args.Length
+                && IsVerboseLogPathValue(args[i + 1]);
+
             if (requiresValue && i + 1 >= args.Length)
             {
                 error = $"Missing value for option: {name}";
                 return false;
             }
 
-            if (requiresValue || optionalWindowValue)
+            if (requiresValue || optionalWindowValue || optionalVerboseValue)
             {
-                // Value is required, or optional window style was provided.
+                // Value is required, or optional window/verbose value was provided.
                 i++;
                 value = args[i];
             }
-            // else: value stays null - ApplyOption defaults to "macos"
+            // else: value stays null - ApplyOption uses defaults
 
             if (!ApplyOption(options, name, value, out error))
             {
@@ -233,6 +239,17 @@ public static class OptionParser
             && !string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase);
     }
 
+    private static bool IsVerboseLogPathValue(string token) =>
+        !token.StartsWith("-", StringComparison.Ordinal)
+        && !string.Equals(token, "--", StringComparison.Ordinal)
+        && (
+            token.Contains('/', StringComparison.Ordinal)
+            || token.Contains('\\', StringComparison.Ordinal)
+            || token.StartsWith(".", StringComparison.Ordinal)
+            || token.EndsWith(".log", StringComparison.OrdinalIgnoreCase)
+            || token.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)
+        );
+
     private static bool IsWindowStyleValue(string token) =>
         string.Equals(token, "none", StringComparison.OrdinalIgnoreCase)
         || string.Equals(token, "macos", StringComparison.OrdinalIgnoreCase)
@@ -289,6 +306,7 @@ public static class OptionParser
                 return true;
             case "--verbose":
                 options.Verbose = true;
+                options.VerboseLogPath = string.IsNullOrWhiteSpace(value) ? null : value;
                 return true;
             case "--version":
                 options.ShowVersion = true;

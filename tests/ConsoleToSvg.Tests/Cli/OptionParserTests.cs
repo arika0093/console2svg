@@ -76,6 +76,65 @@ public sealed class OptionParserTests
         var ok = OptionParser.TryParse(new[] { "--verbose" }, out var options, out _, out _);
         ok.ShouldBeTrue();
         options!.Verbose.ShouldBeTrue();
+        options.VerboseLogPath.ShouldBeNull();
+    }
+
+    [Test]
+    public void VerboseWithLogPathParsed()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--verbose", "debug.log" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.Verbose.ShouldBeTrue();
+        options.VerboseLogPath.ShouldBe("debug.log");
+    }
+
+    [Test]
+    public void VerboseWithAbsolutePathParsed()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--verbose", "/tmp/console2svg.log" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.Verbose.ShouldBeTrue();
+        options.VerboseLogPath.ShouldBe("/tmp/console2svg.log");
+    }
+
+    [Test]
+    public void VerboseWithInlinePathParsed()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--verbose=./output.log" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.Verbose.ShouldBeTrue();
+        options.VerboseLogPath.ShouldBe("./output.log");
+    }
+
+    [Test]
+    public void VerboseWithoutPathDoesNotConsumeNextArg()
+    {
+        // --verbose followed by a plain command-like token (no path chars/extension)
+        var ok = OptionParser.TryParse(
+            new[] { "--verbose", "mycommand" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.Verbose.ShouldBeTrue();
+        options.VerboseLogPath.ShouldBeNull();
+        options.Command.ShouldBe("mycommand");
     }
 
     [Test]

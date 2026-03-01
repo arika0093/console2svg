@@ -10,6 +10,8 @@ public sealed class AppOptions
 {
     public bool Verbose { get; set; }
 
+    public string? VerboseLogPath { get; set; }
+
     public bool ShowVersion { get; set; }
 
     public string? Command { get; set; }

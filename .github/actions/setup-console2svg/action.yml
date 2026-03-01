@@ -1,0 +1,45 @@
+name: Setup console2svg
+description: Downloads the matching version of the console2svg binary and adds it to PATH
+
+inputs:
+  version:
+    description: 'Version to install (e.g. 0.4.3). Defaults to the latest release.'
+    required: false
+    default: 'latest'
+
+runs:
+  using: composite
+  steps:
+    - name: Download and install console2svg
+      shell: bash
+      run: |
+        VERSION="${{ inputs.version }}"
+        if [ "$VERSION" = "latest" ]; then
+          VERSION=$(curl -fsSL "https://api.github.com/repos/arika0093/console2svg/releases/latest" \
+            | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
+          if [ -z "$VERSION" ]; then
+            echo "Failed to determine the latest console2svg version from GitHub API."
+            exit 1
+          fi
+        fi
+
+        case "${{ runner.os }}" in
+          Linux)   RID="linux-x64" ; EXT="" ;;
+          Windows) RID="win-x64"   ; EXT=".exe" ;;
+          macOS)   RID="osx-x64"   ; EXT="" ;;
+          *)
+            echo "Unsupported OS: ${{ runner.os }}"
+            exit 1
+            ;;
+        esac
+
+        INSTALL_DIR="${{ runner.tool_cache }}/console2svg/${VERSION}/x64"
+        mkdir -p "$INSTALL_DIR"
+        FILE="console2svg-${RID}${EXT}"
+        URL="https://github.com/arika0093/console2svg/releases/download/v${VERSION}/${FILE}"
+
+        echo "Downloading ${URL} ..."
+        curl -fsSL -L -o "${INSTALL_DIR}/console2svg${EXT}" "${URL}"
+        [ -z "${EXT}" ] && chmod +x "${INSTALL_DIR}/console2svg"
+
+        echo "${INSTALL_DIR}" >> "$GITHUB_PATH"

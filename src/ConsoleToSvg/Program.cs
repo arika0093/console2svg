@@ -129,7 +129,7 @@ internal static class Program
 
             if (wasCanceled)
             {
-                var cause = canceledByCtrlC ? "Ctrl+C" : options.Timeout.HasValue ? $"timeout ({options.Timeout.Value}s)" : "cancellation";
+                var cause = GetCancellationCause(options, canceledByCtrlC);
                 logger.ZLogDebug($"Recording stopped. Cause={cause}");
                 await Console.Error.WriteLineAsync($"Generated (partial): {options.OutputPath}");
                 return 0;
@@ -140,7 +140,7 @@ internal static class Program
         }
         catch (OperationCanceledException)
         {
-            var cause = canceledByCtrlC ? "Ctrl+C" : options.Timeout.HasValue ? $"timeout ({options.Timeout.Value}s)" : "cancellation";
+            var cause = GetCancellationCause(options, canceledByCtrlC);
             logger.ZLogDebug($"Execution canceled. Cause={cause}");
             await Console.Error.WriteLineAsync("Canceled.");
             return 0;
@@ -208,6 +208,21 @@ internal static class Program
                 loggerFactory.CreateLogger("ConsoleToSvg.PipeRecorder")
             )
             .ConfigureAwait(false);
+    }
+
+    private static string GetCancellationCause(AppOptions options, bool canceledByCtrlC)
+    {
+        if (canceledByCtrlC)
+        {
+            return "Ctrl+C";
+        }
+
+        if (options.Timeout.HasValue)
+        {
+            return $"timeout ({options.Timeout.Value}s)";
+        }
+
+        return "cancellation";
     }
 
     private static ILoggerFactory CreateLoggerFactory(bool verbose, string? logPath)

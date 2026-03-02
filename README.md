@@ -76,7 +76,7 @@ curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/cons
 
 ### GitHub Actions
 
-A composite action is provided at the root of this repository. It installs the platform-matched console2svg binary and adds it to `PATH`.
+A convenient GitHub Action is also available for use in CI. To use the latest version of `console2svg`, simply add the following step to your workflow:
 
 ```yaml
 - uses: arika0093/console2svg@main

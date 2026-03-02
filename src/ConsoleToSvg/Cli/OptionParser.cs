@@ -20,9 +20,13 @@ public static class OptionParser
                 -w, --width <int>         Terminal width in characters (default: 100).
                 -h, --height <int>        Terminal height in rows (default: auto).
                 -v                        Output animated SVG (alias for --mode video).
-            -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc, transparent.
+                -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc, transparent.
                 --background <color> [color]  Background color, gradient, or image path.
                 --crop-top/bottom/left/right  Crop by px, ch, or text pattern.
+                --forecolor <color>      Override default foreground color.
+                --adjust <value>         SVG text lengthAdjust (default: spacing).
+                --header <text>          Override command header text.
+                --prompt <text>          Override prompt prefix for -c (default: $ or # when root).
                 --verbose [path]          Enable verbose logging (log to path, default: console2svg.log).
 
             For full option list, see --help.
@@ -54,6 +58,8 @@ public static class OptionParser
                 --timeout <sec>           Stop recording after specified seconds (e.g. 5, 0.5).
                 --no-colorenv             Disable PTY color environment overrides (TERM/COLORTERM/FORCE_COLOR).
                 --no-delete-envs          Keep CI/TF_BUILD in shell execution environment.
+                --header <text>          Override command header text (shown even without -c).
+                --prompt <text>          Prompt prefix for -c (default: $ or # when root).
 
             Options (Appearance):
                 -d, --window [none|macos|windows|macos-pc|windows-pc|transparent|path/to/chrome.json]
@@ -62,7 +68,9 @@ public static class OptionParser
                                           Custom: provide a path to a .json chrome definition file.
                 --opacity <0-1>           Background fill opacity (default: 1).
                 --theme <dark|light>      Color theme (default: dark).
+                --forecolor <color>     Override default foreground color.
                 --padding <px>            Outer padding in pixels (default: 2, or 8 when window is set).
+                --adjust <value>        SVG text lengthAdjust (default: spacing).
                 --background <color|path> [color]
                     Desktop background. Accepts:
                         Solid color  : --background "#rrggbb"
@@ -296,6 +304,10 @@ public static class OptionParser
             || lower.EndsWith(".bmp", StringComparison.Ordinal);
     }
 
+    private static bool IsLengthAdjustValue(string value) =>
+        string.Equals(value, "spacing", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(value, "spacingAndGlyphs", StringComparison.OrdinalIgnoreCase);
+
     private static bool ApplyOption(
         AppOptions options,
         string name,
@@ -384,6 +396,15 @@ public static class OptionParser
             case "--theme":
                 options.Theme = string.IsNullOrWhiteSpace(value) ? "dark" : value;
                 return true;
+            case "--forecolor":
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    error = "--forecolor requires a value.";
+                    return false;
+                }
+
+                options.ForeColor = value;
+                return true;
             case "-d":
             case "--window":
                 // Accept built-in names (macos, windows, macos-pc, windows-pc, transparent, none)
@@ -439,6 +460,15 @@ public static class OptionParser
                 }
 
                 options.Opacity = opacity;
+                return true;
+            case "--adjust":
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    error = "--adjust requires a value.";
+                    return false;
+                }
+
+                options.LengthAdjust = value;
                 return true;
             case "--background":
                 if (string.IsNullOrWhiteSpace(value))
@@ -502,6 +532,24 @@ public static class OptionParser
                 return true;
             case "--replay":
                 options.ReplayPath = value;
+                return true;
+            case "--header":
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    error = "--header requires a value.";
+                    return false;
+                }
+
+                options.Header = value;
+                return true;
+            case "--prompt":
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    error = "--prompt requires a value.";
+                    return false;
+                }
+
+                options.Prompt = value;
                 return true;
             default:
                 error = $"Unknown option: {name}";
@@ -650,6 +698,12 @@ public static class OptionParser
         )
         {
             error = "--opacity must be a number between 0 and 1.";
+            return false;
+        }
+
+        if (!IsLengthAdjustValue(options.LengthAdjust))
+        {
+            error = "--adjust must be spacing or spacingAndGlyphs.";
             return false;
         }
 

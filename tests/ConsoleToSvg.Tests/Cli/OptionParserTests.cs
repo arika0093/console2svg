@@ -55,6 +55,32 @@ public sealed class OptionParserTests
     }
 
     [Test]
+    public void ForeColorOptionParsed()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--forecolor", "#ff00ff" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.ForeColor.ShouldBe("#ff00ff");
+    }
+
+    [Test]
+    public void AdjustOptionParsed()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--adjust", "spacingAndGlyphs" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.LengthAdjust.ShouldBe("spacingAndGlyphs");
+    }
+
+    [Test]
     public void HelpFlagShowsHelp()
     {
         var ok = OptionParser.TryParse(new[] { "--help" }, out _, out _, out var showHelp);
@@ -361,6 +387,32 @@ public sealed class OptionParserTests
     }
 
     [Test]
+    public void HeaderOptionParsed()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--header", "custom header" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.Header.ShouldBe("custom header");
+    }
+
+    [Test]
+    public void PromptOptionParsed()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--prompt", "#" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.Prompt.ShouldBe("#");
+    }
+
+    [Test]
     public void ShortFlagDMapsToWindow()
     {
         var ok = OptionParser.TryParse(new[] { "-d", "macos" }, out var options, out _, out _);
@@ -454,6 +506,14 @@ public sealed class OptionParserTests
         var ok = OptionParser.TryParse(new[] { "--opacity", "1.5" }, out _, out var error, out _);
         ok.ShouldBeFalse();
         error.ShouldBe("--opacity must be a number between 0 and 1.");
+    }
+
+    [Test]
+    public void InvalidAdjustReturnsError()
+    {
+        var ok = OptionParser.TryParse(new[] { "--adjust", "invalid" }, out _, out var error, out _);
+        ok.ShouldBeFalse();
+        error.ShouldBe("--adjust must be spacing or spacingAndGlyphs.");
     }
 
     [Test]

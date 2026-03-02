@@ -38,6 +38,8 @@ public sealed class AppOptions
 
     public string Theme { get; set; } = "dark";
 
+    public string? ForeColor { get; set; }
+
     public string? SaveCastPath { get; set; }
 
     public string? ReplaySavePath { get; set; }
@@ -67,6 +69,12 @@ public sealed class AppOptions
     public double Opacity { get; set; } = 1d;
 
     public bool WithCommand { get; set; }
+
+    public string? Prompt { get; set; }
+
+    public string? Header { get; set; }
+
+    public string LengthAdjust { get; set; } = "spacing";
 
     public System.Collections.Generic.List<string> Background { get; set; } = [];
 

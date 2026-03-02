@@ -20,6 +20,10 @@ public static class AnimatedSvgRenderer
         {
             theme = theme.WithBackground(bgOverride);
         }
+        if (!string.IsNullOrWhiteSpace(options.ForeColor))
+        {
+            theme = theme.WithForeground(options.ForeColor);
+        }
         var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
         var frames = emulator.ReplayFrames(session);
 
@@ -91,6 +95,7 @@ public static class AnimatedSvgRenderer
             uniqueFrameIndices,
             context,
             theme,
+            lengthAdjust: options.LengthAdjust,
             opacity: options.Opacity
         );
         for (var i = 0; i < reducedFrames.Count; i++)

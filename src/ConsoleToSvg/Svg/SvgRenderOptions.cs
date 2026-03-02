@@ -33,6 +33,10 @@ public sealed class SvgRenderOptions
 
     public string? CommandHeader { get; set; }
 
+    public string? ForeColor { get; set; }
+
+    public string LengthAdjust { get; set; } = "spacing";
+
     /// <summary>背景指定: null=デフォルト、1要素=単色または画像パス、2要素=グラデーション</summary>
     public string[]? Background { get; set; }
 
@@ -40,6 +44,16 @@ public sealed class SvgRenderOptions
     {
         var chrome = ChromeLoader.Load(appOptions.Window);
         var effectivePadding = appOptions.Padding ?? (chrome != null ? 8d : 2d);
+        var prompt = string.IsNullOrWhiteSpace(appOptions.Prompt) ? "$" : appOptions.Prompt;
+        string? commandHeader = null;
+        if (!string.IsNullOrWhiteSpace(appOptions.Header))
+        {
+            commandHeader = $"{prompt} {appOptions.Header}";
+        }
+        else if (appOptions.WithCommand && !string.IsNullOrWhiteSpace(appOptions.Command))
+        {
+            commandHeader = $"{prompt} {appOptions.Command}";
+        }
 
         return new SvgRenderOptions
         {
@@ -61,10 +75,9 @@ public sealed class SvgRenderOptions
             VideoFadeOut = appOptions.VideoFadeOut,
             HeightRows = appOptions.Height,
             Opacity = appOptions.Opacity,
-            CommandHeader =
-                (appOptions.WithCommand && !string.IsNullOrWhiteSpace(appOptions.Command))
-                    ? $"$ {appOptions.Command}"
-                    : null,
+            CommandHeader = commandHeader,
+            ForeColor = appOptions.ForeColor,
+            LengthAdjust = appOptions.LengthAdjust,
             Background = appOptions.Background.Count > 0 ? appOptions.Background.ToArray() : null,
         };
     }

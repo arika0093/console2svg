@@ -15,6 +15,10 @@ public static class SvgRenderer
         {
             theme = theme.WithBackground(bgOverride);
         }
+        if (!string.IsNullOrWhiteSpace(options.ForeColor))
+        {
+            theme = theme.WithForeground(options.ForeColor);
+        }
         var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
         var targetFrame = options.Frame ?? (session.Events.Count - 1);
         if (targetFrame >= 0)
@@ -53,7 +57,8 @@ public static class SvgRenderer
             theme,
             id: null,
             @class: null,
-            includeScrollback
+            includeScrollback,
+            lengthAdjust: options.LengthAdjust
         );
         SvgDocumentBuilder.EndSvg(sb, options.Opacity);
         return sb.ToString();
@@ -389,7 +394,7 @@ internal static class SvgDocumentBuilder
         sb.Append("</style>\n");
 
         AppendDefs(sb, context, chrome, background);
-        AppendBackground(sb, context, theme, chrome, background);
+        AppendBackground(sb, context, chrome, background);
         AppendGroupOpen(sb, opacity);
         AppendChrome(sb, context, theme, chrome);
         AppendClientBackground(sb, context, theme, chrome);
@@ -435,7 +440,6 @@ internal static class SvgDocumentBuilder
     private static void AppendBackground(
         StringBuilder sb,
         Context context,
-        Theme theme,
         ChromeDefinition? chrome,
         string[]? background = null
     )
@@ -453,7 +457,7 @@ internal static class SvgDocumentBuilder
         }
         else
         {
-            AppendCanvasBackground(sb, context, theme, chrome, background);
+            AppendCanvasBackground(sb, context, chrome, background);
         }
     }
 
@@ -568,7 +572,6 @@ internal static class SvgDocumentBuilder
     private static void AppendCanvasBackground(
         StringBuilder sb,
         Context context,
-        Theme theme,
         ChromeDefinition? chrome,
         string[]? background
     )
@@ -783,6 +786,7 @@ internal static class SvgDocumentBuilder
         System.Collections.Generic.IReadOnlyList<int> uniqueFrameIndices,
         Context context,
         Theme theme,
+        string lengthAdjust,
         double opacity = 1d
     )
     {
@@ -796,7 +800,8 @@ internal static class SvgDocumentBuilder
                 theme,
                 id: $"fd-{fi}",
                 @class: null,
-                opacity: opacity
+                opacity: opacity,
+                lengthAdjust: lengthAdjust
             );
         }
 
@@ -831,9 +836,13 @@ internal static class SvgDocumentBuilder
         string? id,
         string? @class,
         bool includeScrollback = false,
-        double opacity = 1d
+        double opacity = 1d,
+        string lengthAdjust = "spacing"
     )
     {
+        var effectiveLengthAdjust = string.IsNullOrWhiteSpace(lengthAdjust)
+            ? "spacing"
+            : lengthAdjust;
         sb.Append("<g");
         if (!string.IsNullOrWhiteSpace(id))
         {
@@ -942,7 +951,9 @@ internal static class SvgDocumentBuilder
                 sb.Append(fgRunColor);
                 sb.Append("\" textLength=\"");
                 sb.Append(Format(tLen));
-                sb.Append("\" lengthAdjust=\"spacingAndGlyphs\"");
+                sb.Append("\" lengthAdjust=\"");
+                sb.Append(EscapeAttribute(effectiveLengthAdjust));
+                sb.Append("\"");
                 if (fgBold || fgItalic || fgUnderline)
                 {
                     sb.Append(" style=\"");

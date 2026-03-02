@@ -307,5 +307,8 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
 * `-v`: output to video mode SVG (animated, looped by default)
 * `-d`: window chrome style (none, macos, windows, macos-pc, windows-pc, transparent, ...)
 * `--background`: background color or image for the output SVG
+* `--forecolor`: override default console foreground color
+* `--header`: override command header text (shown even without `-c`)
+* `--prompt`: override prompt prefix for `-c` (default: `$` or `#` when root)
 * `--verbose`: enable verbose logging
 * `--crop-*`: crop the output by specified pixels, characters, or text patterns

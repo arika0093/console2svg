@@ -23,6 +23,9 @@ public sealed class Theme
     public Theme WithBackground(string background) =>
         new(Name, background, Foreground, AnsiPalette);
 
+    public Theme WithForeground(string foreground) =>
+        new(Name, Background, foreground, AnsiPalette);
+
     public static Theme Resolve(string? name)
     {
         if (string.Equals(name, "light", StringComparison.OrdinalIgnoreCase))

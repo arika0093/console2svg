@@ -52,6 +52,11 @@ internal static class Program
             return 0;
         }
 
+        if (string.IsNullOrWhiteSpace(options.Prompt))
+        {
+            options.Prompt = GetDefaultPrompt();
+        }
+
         using var loggerFactory = CreateLoggerFactory(options.Verbose, options.VerboseLogPath);
         var logger = loggerFactory.CreateLogger("ConsoleToSvg.Program");
         logger.ZLogDebug(
@@ -61,7 +66,7 @@ internal static class Program
             $"Verbose={options.Verbose} VerboseLogPath={options.VerboseLogPath ?? "(default)"} Args={string.Join(' ', args)}"
         );
         logger.ZLogDebug(
-            $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} Window={options.Window} Padding={options.Padding} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""} NoColorEnv={options.NoColorEnv} NoDeleteEnvs={options.NoDeleteEnvs}"
+            $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} ForeColor={options.ForeColor ?? ""} Window={options.Window} Padding={options.Padding} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""} LengthAdjust={options.LengthAdjust} Prompt={options.Prompt} Header={options.Header ?? ""} NoColorEnv={options.NoColorEnv} NoDeleteEnvs={options.NoDeleteEnvs}"
         );
         using var environmentScope = ApplyProcessEnvironmentOverrides(options, logger);
 
@@ -294,6 +299,36 @@ internal static class Program
             Directory.CreateDirectory(directory);
         }
     }
+
+    private static string GetDefaultPrompt()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return "$";
+        }
+
+        try
+        {
+            return GetEffectiveUserId() == 0 ? "#" : "$";
+        }
+        catch
+        {
+            return "$";
+        }
+    }
+
+    private static uint GetEffectiveUserId()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return 1;
+        }
+
+        return geteuid();
+    }
+
+    [DllImport("libc")]
+    private static extern uint geteuid();
 
     private static IDisposable ApplyProcessEnvironmentOverrides(AppOptions options, ILogger logger)
     {

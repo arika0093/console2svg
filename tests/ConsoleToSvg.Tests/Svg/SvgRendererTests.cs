@@ -548,6 +548,34 @@ public sealed class SvgRendererTests
     }
 
     [Test]
+    public void HeaderOverridesCommandInRenderOptions()
+    {
+        var ok = ConsoleToSvg.Cli.OptionParser.TryParse(
+            new[] { "-c", "ls", "--header", "custom", "--prompt", "@" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        var renderOptions = ConsoleToSvg.Svg.SvgRenderOptions.FromAppOptions(options!);
+        renderOptions.CommandHeader.ShouldBe("@ custom");
+    }
+
+    [Test]
+    public void PromptOverridesCommandPrefixInRenderOptions()
+    {
+        var ok = ConsoleToSvg.Cli.OptionParser.TryParse(
+            new[] { "-c", "ls", "--prompt", "#" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        var renderOptions = ConsoleToSvg.Svg.SvgRenderOptions.FromAppOptions(options!);
+        renderOptions.CommandHeader.ShouldBe("# ls");
+    }
+
+    [Test]
     public void HeightPreservedWhenCropReducesBelowSpecifiedHeight()
     {
         // 4-row terminal with content only in first 2 rows

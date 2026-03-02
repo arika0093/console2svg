@@ -2,10 +2,10 @@
   "version": "1",
   "appVersion": "0.4.0.2+17cc95284e",
   "createdAt": "2026-03-01T06:52:43.3615812+00:00",
-  "totalDuration": 10.9530099,
+  "totalDuration": 11.9530099,
   "replay": [
     {
-      "time": 2.2929455,
+      "time": 2.6,
       "key": "v",
       "modifiers": [],
       "type": "keydown"
@@ -29,7 +29,7 @@
       "type": "keydown"
     },
     {
-      "tick": 1.4989553,
+      "tick": 1.8989553,
       "key": "i",
       "modifiers": [],
       "type": "keydown"

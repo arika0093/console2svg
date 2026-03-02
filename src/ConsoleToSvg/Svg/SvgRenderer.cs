@@ -392,6 +392,7 @@ internal static class SvgDocumentBuilder
         AppendBackground(sb, context, chrome, background);
         AppendGroupOpen(sb, opacity);
         AppendChrome(sb, context, theme, chrome);
+        AppendClientBackground(sb, context, theme, chrome);
         if (context.HeaderRows > 0 && !string.IsNullOrEmpty(commandHeader))
         {
             AppendCommandHeader(sb, context, theme, commandHeader);
@@ -499,6 +500,61 @@ internal static class SvgDocumentBuilder
             )
         );
         sb.Append('\n');
+    }
+
+    /// <summary>
+    /// Fills the terminal client area (inside chrome padding) with the theme background.
+    /// Ensures padding space is not transparent when a window chrome is used.
+    /// </summary>
+    private static void AppendClientBackground(
+        StringBuilder sb,
+        Context context,
+        Theme theme,
+        ChromeDefinition? chrome
+    )
+    {
+        if (chrome == null)
+        {
+            return;
+        }
+
+        double left,
+            top,
+            right,
+            bottom;
+        if (chrome.IsDesktop)
+        {
+            left = chrome.DesktopPadding + chrome.PaddingLeft;
+            top = chrome.DesktopPadding + chrome.PaddingTop;
+            right = chrome.DesktopPadding + chrome.PaddingRight + chrome.ShadowOffset;
+            bottom = chrome.DesktopPadding + chrome.PaddingBottom + chrome.ShadowOffset;
+        }
+        else
+        {
+            left = chrome.PaddingLeft;
+            top = chrome.PaddingTop;
+            right = chrome.PaddingRight;
+            bottom = chrome.PaddingBottom;
+        }
+
+        var width = Math.Max(0d, context.CanvasWidth - left - right);
+        var height = Math.Max(0d, context.CanvasHeight - top - bottom);
+        if (width <= 0d || height <= 0d)
+        {
+            return;
+        }
+
+        sb.Append("<rect x=\"");
+        sb.Append(Format(left));
+        sb.Append("\" y=\"");
+        sb.Append(Format(top));
+        sb.Append("\" width=\"");
+        sb.Append(Format(width));
+        sb.Append("\" height=\"");
+        sb.Append(Format(height));
+        sb.Append("\" fill=\"");
+        sb.Append(theme.Background);
+        sb.Append("\"/>\n");
     }
 
     /// <summary>

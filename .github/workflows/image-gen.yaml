@@ -1,4 +1,4 @@
-name: Generate Assets
+name: Generate SVG Assets
 
 on:
   workflow_dispatch:
@@ -18,11 +18,6 @@ permissions:
 jobs:
   image-gen:
     runs-on: ubuntu-latest
-    env:
-      # Set environment variables for color support in the generated images
-      TERM: xterm-256color
-      COLORTERM: truecolor
-      FORCE_COLOR: 3
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

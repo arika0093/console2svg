@@ -15,11 +15,11 @@ console2svg -o ./assets/window/macos.svg      -d macos      -w 40 -h 4 -c -- dot
 console2svg -o ./assets/window/macos-pc.svg   -d macos-pc   -w 40 -h 4 -c -- dotnet --version
 console2svg -o ./assets/window/windows.svg    -d windows    -w 40 -h 4 -c -- dotnet --version
 console2svg -o ./assets/window/windows-pc.svg -d windows-pc -w 40 -h 4 -c -- dotnet --version
-# required: sudo apt install -y sl htop
-console2svg -o ./assets/cmd-sl.svg        --verbose ./logs/cmd-sl.log         -w 120 -h 16 -c -d -v  -- sl
-console2svg -o ./assets/cmd-htop.svg      --verbose ./logs/cmd-htop.log       -w 120 -h 20 -c -d -v --timeout 8 --sleep 0 -- htop -d 10
 # --- video ---
+# required: sudo apt install -y sl htop
+console2svg -o ./assets/cmd-sl.svg        --verbose ./logs/cmd-sl.log         -w 120 -h 16 -c -d -v -- sl
+console2svg -o ./assets/cmd-htop.svg      --verbose ./logs/cmd-htop.log       -w 120 -h 20 -c -d -v --timeout 8 --sleep 0 -- htop -d 10
 # required: sudo apt install -y vim
-console2svg -o ./assets/cmd-bash-vim.svg  --verbose ./logs/cmd-bash-vim.log   -v -d --replay ./assets/cmd-bash-vim-replay.json -- bash
+console2svg -o ./assets/cmd-bash-vim.svg  --verbose ./logs/cmd-bash-vim.log   -w 80 -h 20 -v -d --replay ./assets/cmd-bash-vim-replay.json -- bash
 # required: sudo npm install -g @github/copilot
 # console2svg -o ./assets/cmd-loop.svg      --verbose ./logs/cmd-loop.log       -v -c -d  --replay ./assets/cmd-loop-replay.json -- copilot --banner

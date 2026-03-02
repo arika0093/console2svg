@@ -64,7 +64,7 @@ internal static class Program
             $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} Window={options.Window} Padding={options.Padding} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""} NoColorEnv={options.NoColorEnv} NoDeleteEnvs={options.NoDeleteEnvs}"
         );
         using var environmentScope = ApplyProcessEnvironmentOverrides(options, logger);
-        
+
         var canceledByCtrlC = false;
         using var cancellationTokenSource = new CancellationTokenSource();
         Console.CancelKeyPress += (_, eventArgs) =>
@@ -317,8 +317,9 @@ internal static class Program
 
     private sealed class EnvironmentVariableScope(ILogger logger) : IDisposable
     {
-        private readonly Dictionary<string, (bool Exists, string? Value)> _originalValues =
-            new(StringComparer.Ordinal);
+        private readonly Dictionary<string, (bool Exists, string? Value)> _originalValues = new(
+            StringComparer.Ordinal
+        );
         private readonly List<string> _appliedKeys = [];
         private bool _disposed;
 
@@ -337,7 +338,10 @@ internal static class Program
                 var original = _originalValues[key];
                 try
                 {
-                    Environment.SetEnvironmentVariable(key, original.Exists ? original.Value : null);
+                    Environment.SetEnvironmentVariable(
+                        key,
+                        original.Exists ? original.Value : null
+                    );
                 }
                 catch (Exception ex)
                 {

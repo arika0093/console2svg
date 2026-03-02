@@ -29,6 +29,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Themes\macos.json" LogicalName="chrome.macos.json" />
     <EmbeddedResource Include="Themes\macos-pc.json" LogicalName="chrome.macos-pc.json" />
+    <EmbeddedResource Include="Themes\transparent.json" LogicalName="chrome.transparent.json" />
     <EmbeddedResource Include="Themes\windows.json" LogicalName="chrome.windows.json" />
     <EmbeddedResource Include="Themes\windows-pc.json" LogicalName="chrome.windows-pc.json" />
   </ItemGroup>

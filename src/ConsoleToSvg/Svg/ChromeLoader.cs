@@ -10,14 +10,15 @@ namespace ConsoleToSvg.Svg;
 /// </summary>
 public static class ChromeLoader
 {
-    private static readonly string[] BuiltinNames = ["macos", "macos-pc", "windows", "windows-pc"];
+    private static readonly string[] BuiltinNames =
+        ["macos", "macos-pc", "transparent", "windows", "windows-pc"];
 
     /// <summary>
     /// Loads a <see cref="ChromeDefinition"/> from a built-in name or a file path.
     /// Returns <c>null</c> for <c>"none"</c>, <c>null</c>, or empty input.
     /// </summary>
     /// <param name="value">
-    /// A built-in style name (<c>macos</c>, <c>windows</c>, <c>macos-pc</c>, <c>windows-pc</c>),
+    /// A built-in style name (<c>macos</c>, <c>windows</c>, <c>macos-pc</c>, <c>windows-pc</c>, <c>transparent</c>),
     /// a path to a custom <c>.json</c> chrome definition file,
     /// or <c>"none"</c> / empty to disable chrome.
     /// </param>

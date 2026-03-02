@@ -20,7 +20,7 @@ public static class OptionParser
                 -w, --width <int>         Terminal width in characters (default: 100).
                 -h, --height <int>        Terminal height in rows (default: auto).
                 -v                        Output animated SVG (alias for --mode video).
-                -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc.
+            -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc, transparent.
                 --background <color> [color]  Background color, gradient, or image path.
                 --crop-top/bottom/left/right  Crop by px, ch, or text pattern.
                 --verbose [path]          Enable verbose logging (log to path, default: console2svg.log).
@@ -56,9 +56,9 @@ public static class OptionParser
                 --no-delete-envs          Keep CI/TF_BUILD in shell execution environment.
 
             Options (Appearance):
-                -d, --window [none|macos|windows|macos-pc|windows-pc|path/to/chrome.json]
+                -d, --window [none|macos|windows|macos-pc|windows-pc|transparent|path/to/chrome.json]
                                           Terminal window chrome style (default: none, or macos if specified without a value).
-                                          Built-in styles: none, macos, windows, macos-pc, windows-pc.
+                                          Built-in styles: none, macos, windows, macos-pc, windows-pc, transparent.
                                           Custom: provide a path to a .json chrome definition file.
                 --opacity <0-1>           Background fill opacity (default: 1).
                 --theme <dark|light>      Color theme (default: dark).
@@ -260,6 +260,7 @@ public static class OptionParser
         || string.Equals(token, "windows", StringComparison.OrdinalIgnoreCase)
         || string.Equals(token, "macos-pc", StringComparison.OrdinalIgnoreCase)
         || string.Equals(token, "windows-pc", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(token, "transparent", StringComparison.OrdinalIgnoreCase)
         || token.EndsWith(".json", StringComparison.OrdinalIgnoreCase)
         || token.Contains('/')
         || token.Contains('\\');
@@ -385,7 +386,7 @@ public static class OptionParser
                 return true;
             case "-d":
             case "--window":
-                // Accept built-in names (macos, windows, macos-pc, windows-pc, none)
+                // Accept built-in names (macos, windows, macos-pc, windows-pc, transparent, none)
                 // or a path to a custom .json chrome definition file.
                 // Validation of the value happens at load time via ChromeLoader.
                 options.Window = string.IsNullOrWhiteSpace(value) ? "macos" : value;

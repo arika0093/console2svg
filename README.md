@@ -283,13 +283,14 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
 
 `-d` option allows you to specify the style of the window frame. 
 
-| Image                                                                   | Style         | Description |
-|-------------------------------------------------------------------------|---------------|----|
-| <img src="./assets/window/none.svg" width="400" alt="none">             | `none`        | no window frame |
-| <img src="./assets/window/macos.svg" width="400" alt="macos">           | `macos`       | macOS style window frame (default if `-d` is specified without a value) |
-| <img src="./assets/window/macos-pc.svg" width="400" alt="macos-pc">     | `macos-pc`    | macOS style window frame with background and shadow |
-| <img src="./assets/window/windows.svg" width="400" alt="windows">       | `windows`     | Windows style window frame |
-| <img src="./assets/window/windows-pc.svg" width="400" alt="windows-pc"> | `windows-pc`  | Windows style window frame with background and shadow |
+| Image                                                                      | Style(`-d`)   | Description |
+|----------------------------------------------------------------------------|---------------|----|
+| <img src="./assets/window/none.svg" width="400" alt="none">                | `none`        | no window frame |
+| <img src="./assets/window/transparent.svg" width="400" alt="transparent">  | `transparent` | transparent background (text-only output) |
+| <img src="./assets/window/macos.svg" width="400" alt="macos">              | `macos`       | macOS style window frame |
+| <img src="./assets/window/macos-pc.svg" width="400" alt="macos-pc">        | `macos-pc`    | macOS style window frame with background and shadow |
+| <img src="./assets/window/windows.svg" width="400" alt="windows">          | `windows`     | Windows style window frame |
+| <img src="./assets/window/windows-pc.svg" width="400" alt="windows-pc">    | `windows-pc`  | Windows style window frame with background and shadow |
 
 ## Supported platforms
 
@@ -304,7 +305,7 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
 * `-w`: width of the output SVG (default: terminal width[pipe], 100ch[pty])
 * `-h`: height of the output SVG (default: terminal height[pipe], auto[pty])
 * `-v`: output to video mode SVG (animated, looped by default)
-* `-d`: window chrome style (none, macos, ...)
+* `-d`: window chrome style (none, macos, windows, macos-pc, windows-pc, transparent, ...)
 * `--background`: background color or image for the output SVG
 * `--verbose`: enable verbose logging
 * `--crop-*`: crop the output by specified pixels, characters, or text patterns

@@ -443,6 +443,22 @@ public sealed class AnsiParserTests
     }
 
     [Test]
+    public void CsiKErasesUsingCurrentStyleBackground()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(6, 2, theme);
+
+        // Set blue background, print one char, then erase to end of line.
+        emulator.Process("\u001b[44mA\u001b[K");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("A");
+        emulator.Buffer.GetCell(0, 1).Text.ShouldBe(" ");
+        emulator.Buffer.GetCell(0, 5).Text.ShouldBe(" ");
+        emulator.Buffer.GetCell(0, 1).Background.ShouldBe(theme.AnsiPalette[4]);
+        emulator.Buffer.GetCell(0, 5).Background.ShouldBe(theme.AnsiPalette[4]);
+    }
+
+    [Test]
     public void CsiLInsertsLinesInScrollRegion()
     {
         var theme = Theme.Resolve("dark");

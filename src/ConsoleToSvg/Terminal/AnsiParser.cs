@@ -347,16 +347,16 @@ public sealed class AnsiParser
                 return;
             }
             case 'J':
-                _buffer.ClearDisplay(GetParameter(parameters, 0, 0));
+                _buffer.ClearDisplay(GetParameter(parameters, 0, 0), _style);
                 return;
             case 'K':
-                _buffer.ClearLine(GetParameter(parameters, 0, 0));
+                _buffer.ClearLine(GetParameter(parameters, 0, 0), _style);
                 return;
             case 'P':
-                _buffer.DeleteCharacters(Math.Max(1, GetParameter(parameters, 0, 1)));
+                _buffer.DeleteCharacters(Math.Max(1, GetParameter(parameters, 0, 1)), _style);
                 return;
             case '@':
-                _buffer.InsertBlankCharacters(Math.Max(1, GetParameter(parameters, 0, 1)));
+                _buffer.InsertBlankCharacters(Math.Max(1, GetParameter(parameters, 0, 1)), _style);
                 return;
             case 'L':
                 _buffer.InsertLines(Math.Max(1, GetParameter(parameters, 0, 1)));
@@ -378,7 +378,7 @@ public sealed class AnsiParser
                 return;
             }
             case 'X':
-                _buffer.EraseChars(Math.Max(1, GetParameter(parameters, 0, 1)));
+                _buffer.EraseChars(Math.Max(1, GetParameter(parameters, 0, 1)), _style);
                 return;
             case 's':
                 _buffer.SaveCursor();

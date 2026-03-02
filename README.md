@@ -119,12 +119,12 @@ Some libraries (for example [chalk](https://www.npmjs.com/package/chalk)) detect
 * `CI` (deleted): removed because some libraries disable color when they detect a CI environment.
 * `TF_BUILD` (deleted): removed for the same reason (used by Azure Pipelines).
 
-To disable this behavior, use the `-no-colorenv` and `--no-delete-envs` options.
+To disable this behavior, use the `--no-colorenv` and `--no-delete-envs` options.
 
 </details>
 
 > [!TIP]
-> This repository uses this action itself to automatically regenerate all the SVG images in the [`assets/`](assets/) directory on every push via the [`image-gen`](.github/workflows/image-gen.yaml) workflow.
+> This repository uses this action itself to automatically regenerate all the SVG images in the [`assets/`](assets/) directory whenever a new release is published.
 
 ## Usage
 ### Pipe mode

@@ -125,6 +125,8 @@ To disable this behavior, use the `-no-colorenv` and `--no-delete-envs` options.
 
 </details>
 
+> [!TIP]
+> This repository uses this action itself to automatically regenerate all the SVG images in the [`assets/`](assets/) directory on every push via the [`image-gen`](.github/workflows/image-gen.yaml) workflow.
 
 ## Usage
 ### Pipe mode

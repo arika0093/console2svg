@@ -2,15 +2,15 @@ name: Generate SVG Assets
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - 'scripts/image-gen.sh'
-  #     - 'src/ConsoleToSvg/**'
-  #     - 'assets/*.json'
-  #     - 'action.yml'
-  #     - '.github/workflows/image-gen.yaml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/image-gen.sh'
+      - 'src/ConsoleToSvg/**'
+      - 'assets/*.json'
+      - 'action.yml'
+      - '.github/workflows/image-gen.yaml'
 
 permissions:
   contents: write

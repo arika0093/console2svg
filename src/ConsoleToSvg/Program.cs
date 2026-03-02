@@ -236,6 +236,7 @@ internal static class Program
                     path,
                     options =>
                     {
+                        options.FileShared = false;
                         options.UsePlainTextFormatter(formatter =>
                         {
                             formatter.SetPrefixFormatter(

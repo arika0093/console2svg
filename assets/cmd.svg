@@ -97,9 +97,15 @@
 <text class="crt" x="445.2" y="284" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">text</text>
 <text class="crt" x="487.2" y="284" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">pattern.</text>
 <text class="crt" x="33.6" y="302" fill="#d4d4d4" textLength="75.6" lengthAdjust="spacingAndGlyphs">--verbose</text>
+<text class="crt" x="117.6" y="302" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">[path]</text>
 <text class="crt" x="252" y="302" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">Enable</text>
 <text class="crt" x="310.8" y="302" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacingAndGlyphs">verbose</text>
-<text class="crt" x="378" y="302" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">logging.</text>
+<text class="crt" x="378" y="302" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacingAndGlyphs">logging</text>
+<text class="crt" x="445.2" y="302" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">(log</text>
+<text class="crt" x="487.2" y="302" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacingAndGlyphs">to</text>
+<text class="crt" x="512.4" y="302" fill="#d4d4d4" textLength="42" lengthAdjust="spacingAndGlyphs">path,</text>
+<text class="crt" x="562.8" y="302" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">default:</text>
+<text class="crt" x="638.4" y="302" fill="#d4d4d4" textLength="142.8" lengthAdjust="spacingAndGlyphs">console2svg.log).</text>
 <text class="crt" x="0" y="338" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacingAndGlyphs">For</text>
 <text class="crt" x="33.6" y="338" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacingAndGlyphs">full</text>
 <text class="crt" x="75.6" y="338" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacingAndGlyphs">option</text>

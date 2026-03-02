@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 858 207" role="img" aria-label="console2svg output">
+<style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}.bg{shape-rendering:crispEdges;}</style>
+<rect x="0.5" y="0.5" rx="10" ry="10" width="857" height="206" fill="#1f1f1f" stroke="#3a3a3a"/>
+<rect x="1" y="1" rx="9" ry="9" width="856" height="27" fill="#2c2c2c"/>
+<circle cx="14" cy="14" r="5" fill="#ff5f57"/>
+<circle cx="30" cy="14" r="5" fill="#febc2e"/>
+<circle cx="46" cy="14" r="5" fill="#28c840"/>
+<rect x="9" y="36" width="840" height="18" fill="#1e1e1e"/>
+<text class="crt" x="9" y="50" fill="#d4d4d4">$ dotnet --version</text>
+<g transform="translate(9 54)">
+<rect width="840" height="144" fill="#1e1e1e"/>
+<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">10.0.100</text>
+</g>
+</svg>

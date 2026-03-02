@@ -11,12 +11,12 @@ For example, let's open [this image](https://raw.githubusercontent.com/arika0093
 
 There are similar tools, but console2svg stands out for:
 
-* **No dependencies**: no additional software or libraries required. available as npm, dotnet tool and static binary.
-* **Video mode**: save command execution animations as SVG. great for documentation and blog posts.
-* **Crop**: trim specific parts of the output. Crop based on text patterns is also supported, making it easy to trim specific lines or sections.
-* **Background and window**: add background and window frames to produce presentation-ready SVGs for documentation, blogs, social media, etc.
-* **CI friendly**: With features like replay and timeout, it can generate both static and animated SVGs in CI environments, minimizing discrepancies between code and images.
-* **Windows support**: works on Windows, macOS and Linux.
+* [**No dependencies**](#install): no additional software or libraries required. available as npm, dotnet tool and static binary.
+* [**Video mode**](#animated-svg): save command execution animations as SVG. great for documentation and blog posts.
+* [**Crop**](#static-svg-with-crop): trim specific parts of the output. Crop based on text patterns is also supported, making it easy to trim specific lines or sections.
+* [**Background and window**](#window-chrome): add background and window frames to produce presentation-ready SVGs for documentation, blogs, social media, etc.
+* [**CI friendly**](#github-actions): with features like replay and timeout, it can generate both static and animated SVGs in CI environments, minimizing discrepancies between code and images.
+* [**Windows support**](#supported-platforms): works on Windows, macOS and Linux.
 
 ## Overview
 
@@ -24,7 +24,6 @@ The simplest way to use it is to just put the command you want to run after `con
 
 ```bash
 console2svg console2svg
-
 ```
 
 ![console2svg console2svg](./assets/cmd.svg)
@@ -52,7 +51,6 @@ console2svg -v -c -d macos -- copilot --banner
 ## Install
 [![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) [![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest)
  
-
 You can install it as a global tool using the dotnet or npm package manager.
 
 ```sh
@@ -242,6 +240,8 @@ By using this feature, you can generate an SVG that records terminal operations 
 console2svg -v -c -d macos --replay ./replay.json -- bash
 ```
 
+![console2svg -v -c -d macos --replay ./replay.json -- bash](./assets/cmd-bash-vim.svg)
+
 The replay file is in a simple JSON format. If you make a mistake in the input, you can directly edit this file (or of course, you can ask AI to fix it for you).
 
 <details>
@@ -278,6 +278,24 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
 
 </details>
 
+
+## Window chrome
+
+`-d` option allows you to specify the style of the window frame. 
+
+| Image                                                                   | Style         | Description |
+|-------------------------------------------------------------------------|---------------|----|
+| <img src="./assets/window/none.svg" width="400" alt="none">             | `none`        | no window frame |
+| <img src="./assets/window/macos.svg" width="400" alt="macos">           | `macos`       | macOS style window frame (default if `-d` is specified without a value) |
+| <img src="./assets/window/macos-pc.svg" width="400" alt="macos-pc">     | `macos-pc`    | macOS style window frame with background and shadow |
+| <img src="./assets/window/windows.svg" width="400" alt="windows">       | `windows`     | Windows style window frame |
+| <img src="./assets/window/windows-pc.svg" width="400" alt="windows-pc"> | `windows-pc`  | Windows style window frame with background and shadow |
+
+## Supported platforms
+
+* Windows 10 and later (required `ConPTY`)
+* Unix-like systems (Linux, macOS, etc.)
+
 ## Options
 ### Major options
 
@@ -290,13 +308,3 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
 * `--background`: background color or image for the output SVG
 * `--verbose`: enable verbose logging
 * `--crop-*`: crop the output by specified pixels, characters, or text patterns
-
-### Window chrome
-
-`-d` option allows you to specify the style of the window frame. 
-
-* `none`: no window frame (default)
-* `macos`: macOS style window frame (default if `-d` is specified without a value)
-* `macos-pc`: macOS style window frame with background and shadow
-* `windows`: Windows style window frame
-* `windows-pc`: Windows style window frame with background and shadow

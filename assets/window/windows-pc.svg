@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 904 260" role="img" aria-label="console2svg output">
+<style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}.bg{shape-rendering:crispEdges;}</style>
+<defs>
+<linearGradient id="desktop-bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a2535"/><stop offset="100%" stop-color="#253345"/></linearGradient>
+</defs>
+<rect width="904" height="260" fill="url(#desktop-bg)"/>
+<rect x="26" y="26" width="858" height="214" fill="black" fill-opacity="0.25"/>
+<rect x="20.5" y="20.5" width="857" height="213" fill="#1c1c1c" stroke="#3a3a3a"/>
+<rect x="21" y="21" width="856" height="34" fill="#1c1c1c"/>
+<path d="M 28,55 L 28,31 Q 28,26 33,26 L 183,26 Q 188,26 188,31 L 188,55 Z" fill="#0c0c0c"/>
+<polyline points="36,35.5 40,39.5 36,43.5" fill="none" stroke="#cccccc" stroke-width="1.2" stroke-linejoin="round"/>
+<line x1="43" y1="44" x2="49" y2="44" stroke="#cccccc" stroke-width="1.2"/>
+<line x1="172.5" y1="36" x2="179.5" y2="43" stroke="#888888" stroke-width="1.1"/>
+<line x1="179.5" y1="36" x2="172.5" y2="43" stroke="#888888" stroke-width="1.1"/>
+<line x1="199" y1="39.5" x2="209" y2="39.5" stroke="#888888" stroke-width="1.2"/>
+<line x1="204" y1="34.5" x2="204" y2="44.5" stroke="#888888" stroke-width="1.2"/>
+<line x1="224" y1="29" x2="224" y2="46" stroke="#4a4a4a" stroke-width="1"/>
+<polyline points="236,37.5 240,41.5 244,37.5" fill="none" stroke="#888888" stroke-width="1.2" stroke-linejoin="round"/>
+<line x1="758" y1="39.5" x2="768" y2="39.5" stroke="#cccccc" stroke-width="1.2"/>
+<rect x="804" y="34.5" width="10" height="10" fill="none" stroke="#cccccc" stroke-width="1.2"/>
+<line x1="850" y1="34.5" x2="860" y2="44.5" stroke="#cccccc" stroke-width="1.3"/>
+<line x1="860" y1="34.5" x2="850" y2="44.5" stroke="#cccccc" stroke-width="1.3"/>
+<rect x="29" y="63" width="840" height="18" fill="#0c0c0c"/>
+<text class="crt" x="29" y="77" fill="#d4d4d4">$ dotnet --version</text>
+<g transform="translate(29 81)">
+<rect width="840" height="144" fill="#0c0c0c"/>
+<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">10.0.100</text>
+</g>
+</svg>

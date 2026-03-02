@@ -64,7 +64,7 @@ internal static class Program
             $"Verbose={options.Verbose} VerboseLogPath={options.VerboseLogPath ?? "(default)"} Args={string.Join(' ', args)}"
         );
         logger.ZLogDebug(
-            $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} Window={options.Window} Padding={options.Padding} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""}"
+            $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} Window={options.Window} Padding={options.Padding} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""} NoColorEnv={options.NoColorEnv}"
         );
         logger.ZLogDebug(
             $"Environment: COLUMNS={Environment.GetEnvironmentVariable("COLUMNS") ?? ""} ROWS={Environment.GetEnvironmentVariable("ROWS") ?? ""} TERM={Environment.GetEnvironmentVariable("TERM") ?? ""} COLORTERM={Environment.GetEnvironmentVariable("COLORTERM") ?? ""} TERM_PROGRAM={Environment.GetEnvironmentVariable("TERM_PROGRAM") ?? ""} TERM_PROGRAM_VERSION={Environment.GetEnvironmentVariable("TERM_PROGRAM_VERSION") ?? ""} LANG={Environment.GetEnvironmentVariable("LANG") ?? ""} LC_ALL={Environment.GetEnvironmentVariable("LC_ALL") ?? ""} LC_CTYPE={Environment.GetEnvironmentVariable("LC_CTYPE") ?? ""}"
@@ -185,7 +185,8 @@ internal static class Program
                     loggerFactory.CreateLogger("ConsoleToSvg.PtyRecorder"),
                     forwardToConsole: true,
                     replaySavePath: options.ReplaySavePath,
-                    replayPath: options.ReplayPath
+                    replayPath: options.ReplayPath,
+                    noColorEnv: options.NoColorEnv
                 )
                 .ConfigureAwait(false);
         }

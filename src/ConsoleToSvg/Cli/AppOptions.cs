@@ -44,6 +44,8 @@ public sealed class AppOptions
 
     public string? ReplayPath { get; set; }
 
+    public bool NoColorEnv { get; set; }
+
     public string? Font { get; set; }
 
     public double? FontSize { get; set; } = null;

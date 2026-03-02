@@ -273,6 +273,22 @@ public sealed class OptionParserTests
     }
 
     [Test]
+    public void NoColorEnvFlagEnablesNoColorEnv()
+    {
+        var ok = OptionParser.TryParse(new[] { "--no-colorenv" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.NoColorEnv.ShouldBeTrue();
+    }
+
+    [Test]
+    public void NoColorEnvDefaultIsFalse()
+    {
+        var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.NoColorEnv.ShouldBeFalse();
+    }
+
+    [Test]
     public void FpsOptionParsed()
     {
         var ok = OptionParser.TryParse(new[] { "--fps", "24" }, out var options, out _, out _);

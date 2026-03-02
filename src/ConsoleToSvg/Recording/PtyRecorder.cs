@@ -22,7 +22,8 @@ public static class PtyRecorder
         ILogger? logger = null,
         bool forwardToConsole = true,
         string? replaySavePath = null,
-        string? replayPath = null
+        string? replayPath = null,
+        bool noColorEnv = false
     )
     {
         logger ??= NullLogger.Instance;
@@ -37,7 +38,8 @@ public static class PtyRecorder
                     logger,
                     forwardToConsole,
                     replaySavePath,
-                    replayPath
+                    replayPath,
+                    noColorEnv
                 )
                 .ConfigureAwait(false);
         }
@@ -71,11 +73,12 @@ public static class PtyRecorder
         ILogger logger,
         bool forwardToConsole,
         string? replaySavePath,
-        string? replayPath
+        string? replayPath,
+        bool noColorEnv
     )
     {
         var disableInputEcho = forwardToConsole && string.IsNullOrWhiteSpace(replayPath);
-        var options = BuildOptions(command, width, height, disableInputEcho);
+        var options = BuildOptions(command, width, height, disableInputEcho, !noColorEnv);
         logger.ZLogDebug(
             $"Spawning PTY process. App={options.App} Args={string.Join(' ', options.Args ?? [])} Cwd={options.Cwd} Cols={options.Cols} Rows={options.Rows}"
         );
@@ -770,7 +773,8 @@ public static class PtyRecorder
         string command,
         int width,
         int height,
-        bool disableInputEcho
+        bool disableInputEcho,
+        bool applyColorEnv
     )
     {
         var env = new Dictionary<string, string>();
@@ -785,10 +789,17 @@ public static class PtyRecorder
         env["COLUMNS"] = width.ToString(System.Globalization.CultureInfo.InvariantCulture);
         env["LINES"] = height.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
-        // Ensure TERM is set to a value that supports color and cursor control.
-        // On headless CI runners (ubuntu-latest, etc.), TERM is often unset or "dumb",
-        // which prevents programs like vim from rendering characters in the PTY.
-        env["TERM"] = "xterm-256color";
+        if (applyColorEnv)
+        {
+            // Ensure color-capable settings even on CI runners where TERM is unset/dumb,
+            env["TERM"] = "xterm-256color";
+            env["COLORTERM"] = "truecolor";
+            env["FORCE_COLOR"] = "3";
+            // and remove CI to avoid apps switching to no-color mode.
+            // for example: chalk(Node.js) checks CI to disable colors on CI environments:
+            // see: https://github.com/chalk/chalk/blob/aa06bb5ac3f14df9fda8cfb54274dfc165ddfdef/source/vendor/supports-color/index.js#L114
+            env.Remove("CI");
+        }
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {

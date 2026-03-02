@@ -11,16 +11,18 @@ namespace ConsoleToSvg.Svg;
 public static class ChromeLoader
 {
     private static readonly string[] BuiltinNames =
-        ["macos", "macos-pc", "transparent", "windows", "windows-pc"];
+        ["macos", "transparent", "windows"];
 
     /// <summary>
     /// Loads a <see cref="ChromeDefinition"/> from a built-in name or a file path.
     /// Returns <c>null</c> for <c>"none"</c>, <c>null</c>, or empty input.
     /// </summary>
     /// <param name="value">
-    /// A built-in style name (<c>macos</c>, <c>windows</c>, <c>macos-pc</c>, <c>windows-pc</c>, <c>transparent</c>),
+    /// A built-in style name (<c>macos</c>, <c>windows</c>, <c>transparent</c>),
+    /// a built-in name with the <c>-pc</c> suffix to enable desktop mode (<c>macos-pc</c>, <c>windows-pc</c>),
     /// a path to a custom <c>.json</c> chrome definition file,
     /// or <c>"none"</c> / empty to disable chrome.
+    /// Any built-in style name followed by <c>-pc</c> loads the base style with <see cref="ChromeDefinition.IsDesktop"/> set to <c>true</c>.
     /// </param>
     public static ChromeDefinition? Load(string? value)
     {
@@ -32,13 +34,21 @@ public static class ChromeLoader
             return null;
         }
 
+        var isPcMode = value.EndsWith("-pc", StringComparison.OrdinalIgnoreCase);
+        var baseName = isPcMode ? value.Substring(0, value.Length - 3) : value;
+
         var builtinName = Array.Find(
             BuiltinNames,
-            name => string.Equals(value, name, StringComparison.OrdinalIgnoreCase)
+            name => string.Equals(baseName, name, StringComparison.OrdinalIgnoreCase)
         );
         if (builtinName is not null)
         {
-            return LoadBuiltin(builtinName);
+            var chrome = LoadBuiltin(builtinName);
+            if (isPcMode)
+            {
+                chrome.IsDesktop = true;
+            }
+            return chrome;
         }
 
         return LoadFromFile(value);

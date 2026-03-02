@@ -377,7 +377,7 @@ public sealed class SvgRendererTests
             }
         );
 
-        // Desktop background 窶・now uses a gradient
+        // Desktop background - now uses a gradient
         svg.ShouldContain("linearGradient");
         svg.ShouldContain("#1a1d2e"); // gradient start
         svg.ShouldContain("#252840"); // gradient end
@@ -404,7 +404,7 @@ public sealed class SvgRendererTests
             }
         );
 
-        // Desktop background 窶・now uses a gradient
+        // Desktop background - now uses a gradient
         svg.ShouldContain("linearGradient");
         svg.ShouldContain("#1a2535"); // gradient start
         svg.ShouldContain("#253345"); // gradient end
@@ -412,8 +412,8 @@ public sealed class SvgRendererTests
         svg.ShouldContain("fill-opacity=\"0.25\"");
         // Windows Terminal style: control buttons as vector lines/rects
         svg.ShouldContain("stroke=\"#cccccc\""); // icon stroke color
-        svg.ShouldContain("fill=\"none\" stroke=\"#cccccc\""); // maximize 笆｡ rect
-        svg.ShouldContain("stroke-width=\"1.3\""); // close ﾃ・lines
+        svg.ShouldContain("fill=\"none\" stroke=\"#cccccc\""); // maximize rect
+        svg.ShouldContain("stroke-width=\"1.3\""); // close lines
         // Active tab shape present
         svg.ShouldContain("fill=\"#333\"");
     }

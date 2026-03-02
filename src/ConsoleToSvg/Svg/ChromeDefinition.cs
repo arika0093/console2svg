@@ -79,6 +79,14 @@ public sealed class ChromeDefinition
     public string SvgTemplate { get; set; } = string.Empty;
 
     /// <summary>
+    /// SVG fragment template used instead of <see cref="SvgTemplate"/> when <see cref="IsDesktop"/> is true.
+    /// Typically includes a drop shadow rect before the base chrome elements.
+    /// Falls back to <see cref="SvgTemplate"/> when empty.
+    /// </summary>
+    [JsonPropertyName("desktopSvgTemplate")]
+    public string? DesktopSvgTemplate { get; set; }
+
+    /// <summary>
     /// Renders the chrome SVG by substituting template variables.
     /// </summary>
     internal string Render(
@@ -91,13 +99,17 @@ public sealed class ChromeDefinition
         string themeBackground
     )
     {
-        if (string.IsNullOrEmpty(SvgTemplate))
+        var template =
+            IsDesktop && !string.IsNullOrEmpty(DesktopSvgTemplate)
+                ? DesktopSvgTemplate
+                : SvgTemplate;
+
+        if (string.IsNullOrEmpty(template))
         {
             return string.Empty;
         }
 
-        var sb = new StringBuilder(SvgTemplate.Length + 256);
-        var template = SvgTemplate;
+        var sb = new StringBuilder(template.Length + 256);
         var i = 0;
 
         while (i < template.Length)

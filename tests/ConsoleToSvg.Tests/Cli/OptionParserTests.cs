@@ -754,7 +754,7 @@ public sealed class OptionParserTests
     [Test]
     public void PcModeWithMacosWindowUsesMacosPc()
     {
-        // When --pcmode is set with --window macos, FromAppOptions should use macos-pc chrome.
+        // When --pcmode is set with --window macos, FromAppOptions should produce a desktop chrome.
         var ok = OptionParser.TryParse(
             new[] { "--window", "macos", "--pcmode" },
             out var options,
@@ -766,7 +766,7 @@ public sealed class OptionParserTests
         options.Window.ShouldBe("macos");
         // SvgRenderOptions.FromAppOptions resolves the effective window name
         var svgOptions = SvgRenderOptions.FromAppOptions(options!);
-        // The chrome should have IsDesktop = true (from macos-pc.json)
+        // The chrome should have IsDesktop = true (macos + --pcmode -> macos-pc path)
         svgOptions.Chrome.ShouldNotBeNull();
         svgOptions.Chrome!.IsDesktop.ShouldBeTrue();
     }
@@ -800,5 +800,22 @@ public sealed class OptionParserTests
         var svgOptions = SvgRenderOptions.FromAppOptions(options!);
         svgOptions.Chrome.ShouldNotBeNull();
         svgOptions.Chrome!.DesktopPadding.ShouldBe(40d);
+    }
+
+    [Test]
+    public void PcModeWorksForTransparentStyle()
+    {
+        // --pcmode should work with any built-in style, not just macos/windows
+        var ok = OptionParser.TryParse(
+            new[] { "--window", "transparent", "--pcmode" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        var svgOptions = SvgRenderOptions.FromAppOptions(options!);
+        // transparent-pc resolves to transparent base with IsDesktop=true
+        svgOptions.Chrome.ShouldNotBeNull();
+        svgOptions.Chrome!.IsDesktop.ShouldBeTrue();
     }
 }

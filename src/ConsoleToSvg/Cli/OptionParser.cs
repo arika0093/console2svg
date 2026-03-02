@@ -21,10 +21,7 @@ public static class OptionParser
                 -h, --height <int>        Terminal height in rows (default: auto).
                 -v                        Output animated SVG (alias for --mode video).
                 -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc, transparent.
-                --pcmode                  Enable PC (desktop) mode for the selected window style.
-                --pc-padding <px>         Override outer desktop padding in PC mode (default: 20).
                 --background <color> [color]  Background color, gradient, or image path.
-                --backcolor <color>       Override the terminal's own background color.
                 --crop-top/bottom/left/right  Crop by px, ch, or text pattern.
                 --forecolor <color>      Override default foreground color.
                 --adjust <value>         SVG text lengthAdjust (default: spacing).
@@ -67,10 +64,11 @@ public static class OptionParser
             Options (Appearance):
                 -d, --window [none|macos|windows|macos-pc|windows-pc|transparent|path/to/chrome.json]
                                           Terminal window chrome style (default: none, or macos if specified without a value).
-                                          Built-in styles: none, macos, windows, macos-pc, windows-pc, transparent.
+                                          Built-in styles: none, macos, windows, transparent.
+                                          Any built-in style can be suffixed with -pc to enable desktop (floating window) mode.
                                           Custom: provide a path to a .json chrome definition file.
                 --pcmode                  Enable PC (desktop) mode for the selected window style.
-                                          Equivalent to appending -pc to the window style (e.g. macos → macos-pc).
+                                          Appends -pc to any window style that does not already end in -pc.
                 --pc-padding <px>         Override the outer desktop padding in PC mode (default: 20).
                 --opacity <0-1>           Background fill opacity (default: 1).
                 --theme <dark|light>      Color theme (default: dark).

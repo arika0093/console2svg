@@ -38,7 +38,7 @@ public sealed class SvgRenderOptions
 
     public string LengthAdjust { get; set; } = "spacing";
 
-    /// <summary>背景指定: null=デフォルト、1要素=単色または画像パス、2要素=グラデーション</summary>
+    /// <summary>Background specification: null = default, 1 element = solid color or image path, 2 elements = gradient.</summary>
     public string[]? Background { get; set; }
 
     /// <summary>Override the terminal's own background color. null = use theme default.</summary>
@@ -46,16 +46,9 @@ public sealed class SvgRenderOptions
 
     public static SvgRenderOptions FromAppOptions(AppOptions appOptions)
     {
-        // Resolve effective window name: --pcmode appends -pc to known base styles
+        // Resolve effective window name: --pcmode appends -pc to any base style that doesn't already have it
         var windowName = appOptions.Window;
-        if (
-            appOptions.PcMode
-            && !windowName.EndsWith("-pc", StringComparison.OrdinalIgnoreCase)
-            && (
-                string.Equals(windowName, "macos", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(windowName, "windows", StringComparison.OrdinalIgnoreCase)
-            )
-        )
+        if (appOptions.PcMode && !windowName.EndsWith("-pc", StringComparison.OrdinalIgnoreCase))
         {
             windowName = windowName + "-pc";
         }

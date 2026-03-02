@@ -215,16 +215,16 @@ console2svg -c -d -v -- sl
 ![console2svg -c -d -v -- sl](./assets/cmd-sl.svg)
 
 You can specify the `--timeout` option to output SVG after a certain time has elapsed.
-This is useful for converting commands that do not terminate, such as `nyancat`, into SVG.
+This is useful for converting commands that do not terminate, such as `htop`, into SVG.
 
 There is also a `--sleep` option to specify the stop time after playback. This allows you to display the last frame for a specified time after the command execution is finished (2 seconds by default).
 
 ```sh
-# apt install nyancat
-console2svg -w 120 -h 28 -c -d -v --timeout 3 --sleep 0 -- nyancat
+# apt install htop
+console2svg -w 120 -h 20 -c -d -v --timeout 8 --sleep 0 -- htop -d 10
 ```
 
-![console2svg -w 120 -h 28 -c -d -v --timeout 3 --sleep 0 -- nyancat](./assets/cmd-nyancat.svg)
+![console2svg -w 120 -h 20 -c -d -v --timeout 8 --sleep 0 -- htop -d 10](./assets/cmd-htop.svg)
 
 ### Replay input
 You can also save the command execution record and later regenerate the SVG based on that record. 

@@ -8,9 +8,9 @@ console2svg -o ./assets/cmd-crop-word.svg --verbose ./logs/cmd-crop-word.log  --
 console2svg -o ./assets/cmd-bg1.svg       --verbose ./logs/cmd-bg1.log        -h 10 -c -d macos-pc --background "#003060" --opacity 0.8  -- dotnet --version
 console2svg -o ./assets/cmd-bg2.svg       --verbose ./logs/cmd-bg2.log        -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.8  -- dotnet --version
 console2svg -o ./assets/cmd-bg3.svg       --verbose ./logs/cmd-bg3.log        -h 10 -c -d macos-pc --background ./assets/bg.png --opacity 0.8   -- dotnet --version
-# required: sudo apt install -y sl nyancat
+# required: sudo apt install -y sl htop
 console2svg -o ./assets/cmd-sl.svg        --verbose ./logs/cmd-sl.log         -w 120 -h 16 -c -d -v  -- sl
-console2svg -o ./assets/cmd-nyancat.svg   --verbose ./logs/cmd-nyancat.log    -w 120 -h 28 -c -d -v --timeout 3 --sleep 0  -- nyancat
+console2svg -o ./assets/cmd-htop.svg      --verbose ./logs/cmd-htop.log       -w 120 -h 20 -c -d -v --timeout 8 --sleep 0 -- htop -d 10
 # --- video ---
 # required: sudo apt install -y vim
 console2svg -o ./assets/cmd-bash-vim.svg  --verbose ./logs/cmd-bash-vim.log   -v -d --replay ./assets/cmd-bash-vim-replay.json -- bash

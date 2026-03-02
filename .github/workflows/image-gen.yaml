@@ -33,7 +33,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo npm install -g oh-my-logo
-          sudo apt-get install -y sl nyancat vim
+          sudo apt-get install -y sl htop vim
 
       - name: Generate images
         run: bash scripts/image-gen.sh

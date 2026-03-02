@@ -114,15 +114,14 @@ jobs:
 <details>
 <summary>CI environment variables override</summary>
 
-> [!NOTE]
-> Some libraries (for example [chalk](https://www.npmjs.com/package/chalk)) detect CI environments and automatically disable color output. However, when generating SVGs you always want color enabled. Therefore, console2svg automatically sets and removes the following environment variables by default:
-> * `TERM=xterm-256color`: set to enable color support.
-> * `COLORTERM=truecolor`: enable TrueColor output.
-> * `FORCE_COLOR=3`: same; `3` indicates TrueColor.
-> * `CI` (deleted): removed because some libraries disable color when they detect a CI environment.
-> * `TF_BUILD` (deleted): removed for the same reason (used by Azure Pipelines).
->
-> To disable this behavior, use the `-no-colorenv` and `--no-delete-envs` options.
+Some libraries (for example [chalk](https://www.npmjs.com/package/chalk)) detect CI environments and automatically disable color output. However, when generating SVGs you always want color enabled. Therefore, console2svg automatically sets and removes the following environment variables by default:
+* `TERM=xterm-256color`: set to enable color support.
+* `COLORTERM=truecolor`: enable TrueColor output.
+* `FORCE_COLOR=3`: same; `3` indicates TrueColor.
+* `CI` (deleted): removed because some libraries disable color when they detect a CI environment.
+* `TF_BUILD` (deleted): removed for the same reason (used by Azure Pipelines).
+
+To disable this behavior, use the `-no-colorenv` and `--no-delete-envs` options.
 
 </details>
 

@@ -15,6 +15,10 @@ namespace ConsoleToSvg.Recording;
 
 public static class PtyRecorder
 {
+    // This sequence disables various mouse tracking modes in the terminal, which can be left enabled by some applications and cause issues with input forwarding (e.g. mouse clicks not working in Vim). It's safe to send this on every recording stop, even if the child process has already exited or doesn't support these modes.
+    private const string DisableMouseTrackingSequence =
+        "\u001b[?9l\u001b[?1000l\u001b[?1002l\u001b[?1003l\u001b[?1004l\u001b[?1005l\u001b[?1006l\u001b[?1015l\u001b[?1016l";
+
     // remove some CI environments to avoid apps switching to no-color mode.
     // for example: chalk(Node.js) checks "CI" to disable colors on CI environments:
     // see: https://github.com/chalk/chalk/blob/aa06bb5ac3f14df9fda8cfb54274dfc165ddfdef/source/vendor/supports-color/index.js#L114
@@ -110,9 +114,12 @@ public static class PtyRecorder
                 ? ConsoleInputMode.TryEnableRaw(logger)
                 : null;
 
-        var connection = await NativePty
-            .SpawnAsync(options, cancellationToken)
-            .ConfigureAwait(false);
+        try
+        {
+
+            var connection = await NativePty
+                .SpawnAsync(options, cancellationToken)
+                .ConfigureAwait(false);
         logger.ZLogDebug($"PTY process spawned.");
         var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
         Stream? inputForward;
@@ -311,6 +318,11 @@ public static class PtyRecorder
         }
 
         return session;
+        }
+        finally
+        {
+            TryDisableTerminalMouseTracking(forwardToConsole, logger);
+        }
     }
 
     private static async Task<RecordingSession> RecordWithProcessFallbackAsync(
@@ -359,6 +371,9 @@ public static class PtyRecorder
                 // Ignore cancellation kill failures.
             }
         });
+
+        try
+        {
 
         var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
         Stream? inputForward;
@@ -490,6 +505,11 @@ public static class PtyRecorder
         }
 
         return session;
+        }
+        finally
+        {
+            TryDisableTerminalMouseTracking(forwardToConsole, logger);
+        }
     }
 
     private static bool IsExpectedPtyEof(IOException exception)
@@ -743,6 +763,32 @@ public static class PtyRecorder
         {
             logger.ZLogDebug(ex, $"Standard output is unavailable. Output forwarding is disabled.");
             return null;
+        }
+    }
+
+    private static void TryDisableTerminalMouseTracking(bool forwardToConsole, ILogger logger)
+    {
+        if (!forwardToConsole || Console.IsOutputRedirected)
+        {
+            return;
+        }
+
+        try
+        {
+            var output = TryOpenStandardOutput(logger);
+            if (output is null)
+            {
+                return;
+            }
+
+            var bytes = Encoding.ASCII.GetBytes(DisableMouseTrackingSequence);
+            output.Write(bytes, 0, bytes.Length);
+            output.Flush();
+            logger.ZLogDebug($"Sent terminal mouse tracking reset sequence.");
+        }
+        catch (Exception ex)
+        {
+            logger.ZLogDebug(ex, $"Failed to send terminal mouse tracking reset sequence.");
         }
     }
 

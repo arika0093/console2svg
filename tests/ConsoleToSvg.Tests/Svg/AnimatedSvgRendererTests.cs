@@ -213,6 +213,85 @@ public sealed class AnimatedSvgRendererTests
         lastKeyframeBlock.ShouldNotContain("100%{opacity:0;}");
     }
 
+    [Test]
+    public void RenderAnimatedSvgDeduplicatesIdenticalFrames()
+    {
+        // A looping animation: the terminal returns to the same visual state, so the
+        // repeated state should share one <defs> entry instead of duplicating SVG content.
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "A");                    // state: "A"
+        session.AddEvent(0.5, "\r\x1b[2J\x1b[H");      // state: blank screen
+        session.AddEvent(1.0, "A");                     // state: "A" again — identical to first
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        // Unique frame content is stored in <defs>
+        svg.ShouldContain("<defs>");
+        svg.ShouldContain("id=\"fd-");
+
+        // All animation frames reference content via <use>
+        svg.ShouldContain("<use href=\"#fd-");
+        svg.ShouldContain("id=\"frame-0\"");
+        svg.ShouldContain("id=\"frame-1\"");
+        svg.ShouldContain("id=\"frame-2\"");
+
+        // Only 2 unique visual states → only 2 fd- defs entries
+        CountOccurrences(svg, "id=\"fd-").ShouldBe(2);
+    }
+
+    [Test]
+    public void RenderAnimatedSvgDeduplicatedSvgSmallerWhenFramesRepeat()
+    {
+        // Build a session where content cycles between two states many times.
+        // With deduplication, all repeated frames share defs → smaller output.
+        var session = new RecordingSession(width: 40, height: 10);
+        for (var cycle = 0; cycle < 10; cycle++)
+        {
+            // Clear screen + cursor home before each state so each cycle produces the same visual output
+            session.AddEvent(cycle * 0.2, "\x1b[2J\x1b[H\x1b[32mHello World\x1b[m");
+            session.AddEvent(cycle * 0.2 + 0.1, "\x1b[2J\x1b[H\x1b[31mGoodbye\x1b[m");
+        }
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        // Only 2 unique visual states regardless of how many times they repeat
+        CountOccurrences(svg, "id=\"fd-").ShouldBe(2);
+
+        // All animation frames use <use> elements (no <g class="frame"> outside defs)
+        svg.ShouldContain("<use href=\"#fd-");
+    }
+
+    [Test]
+    public void RenderAnimatedSvgColorOnlyChangesAreRateLimited()
+    {
+        // Simulate cmatrix-like output: 30 rapid color-changing frames over 1 second (30fps input).
+        // With a 12fps target, the output should keep at most ~12 frames, NOT all 30.
+        // Before the ReduceFrames fix, color-changing frames bypassed the FPS limit entirely.
+        var session = new RecordingSession(width: 8, height: 2);
+        for (var i = 0; i < 30; i++)
+        {
+            // Each event changes color and content at 30fps (every ~33ms)
+            var color = (i % 2 == 0) ? "\x1b[32m" : "\x1b[33m";
+            session.AddEvent(i * (1.0 / 30), $"\x1b[2J\x1b[H{color}{i}");
+        }
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", VideoFps = 12 }
+        );
+
+        // At 12fps over ~1 second, at most 12 + 2 (first + last) frames should be kept.
+        // The old code kept ALL 30 frames because every frame had a color change.
+        var frameCount = CountOccurrences(svg, "id=\"frame-");
+        frameCount.ShouldBeLessThan(20);
+    }
+
     private static int CountOccurrences(string text, string token)
     {
         var count = 0;

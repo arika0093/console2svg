@@ -30,6 +30,26 @@ public static class AnimatedSvgRenderer
 
         var reducedFrames = ReduceFrames(frames, options.VideoFps);
 
+        // Build a dedup map: visual-hash → index of the first reduced frame with that hash.
+        // Frames that are visually identical (e.g. in a looping animation) will share a single
+        // <defs> entry and be referenced via <use>, dramatically reducing file size.
+        var hashToDefsFrameIndex = new System.Collections.Generic.Dictionary<ulong, int>();
+        var frameToDefsFrameIndex = new int[reducedFrames.Count];
+        var uniqueFrameIndices = new System.Collections.Generic.List<int>(reducedFrames.Count);
+
+        for (var i = 0; i < reducedFrames.Count; i++)
+        {
+            var hash = BuildVisualSignature(reducedFrames[i].Buffer);
+            if (!hashToDefsFrameIndex.TryGetValue(hash, out var defsIdx))
+            {
+                defsIdx = uniqueFrameIndices.Count;
+                hashToDefsFrameIndex[hash] = defsIdx;
+                uniqueFrameIndices.Add(i);
+            }
+
+            frameToDefsFrameIndex[i] = defsIdx;
+        }
+
         var commandHeaderRows = string.IsNullOrEmpty(options.CommandHeader) ? 0 : 1;
         var context = SvgDocumentBuilder.CreateContext(
             reducedFrames[0].Buffer,
@@ -63,16 +83,24 @@ public static class AnimatedSvgRenderer
             opacity: options.Opacity,
             background: options.Background
         );
+
+        // Render each unique frame once in <defs>, then reference via <use>.
+        SvgDocumentBuilder.AppendFrameDefs(
+            sb,
+            reducedFrames,
+            uniqueFrameIndices,
+            context,
+            theme,
+            opacity: options.Opacity
+        );
         for (var i = 0; i < reducedFrames.Count; i++)
         {
-            SvgDocumentBuilder.AppendFrameGroup(
+            var defsFrameIndex = uniqueFrameIndices[frameToDefsFrameIndex[i]];
+            SvgDocumentBuilder.AppendFrameUse(
                 sb,
-                reducedFrames[i].Buffer,
-                context,
-                theme,
-                id: $"frame-{i}",
-                @class: $"frame frame-{i}",
-                opacity: options.Opacity
+                defsId: $"fd-{defsFrameIndex}",
+                frameId: $"frame-{i}",
+                frameClass: $"frame frame-{i}"
             );
         }
 
@@ -94,29 +122,16 @@ public static class AnimatedSvgRenderer
         var reduced = new System.Collections.Generic.List<TerminalFrame>(frames.Count);
         reduced.Add(frames[0]);
         var lastKeptTime = frames[0].Time;
-        var lastKeptColorSignature = BuildColorSignature(frames[0].Buffer);
         var lastKeptVisualSignature = BuildVisualSignature(frames[0].Buffer);
         TerminalFrame? pendingFrame = null;
 
         for (var i = 1; i < frames.Count - 1; i++)
         {
             var frame = frames[i];
-            var colorSignature = BuildColorSignature(frame.Buffer);
             var visualSignature = BuildVisualSignature(frame.Buffer);
-            var colorChanged = colorSignature != lastKeptColorSignature;
             var visualChanged = visualSignature != lastKeptVisualSignature;
             if (!visualChanged && frame.Time - lastKeptTime < minimumInterval)
             {
-                continue;
-            }
-
-            if (colorChanged)
-            {
-                reduced.Add(frame);
-                lastKeptTime = frame.Time;
-                lastKeptColorSignature = colorSignature;
-                lastKeptVisualSignature = visualSignature;
-                pendingFrame = null;
                 continue;
             }
 
@@ -124,7 +139,6 @@ public static class AnimatedSvgRenderer
             {
                 reduced.Add(frame);
                 lastKeptTime = frame.Time;
-                lastKeptColorSignature = colorSignature;
                 lastKeptVisualSignature = visualSignature;
                 pendingFrame = null;
             }
@@ -146,33 +160,6 @@ public static class AnimatedSvgRenderer
         }
 
         return reduced;
-    }
-
-    private static ulong BuildColorSignature(ScreenBuffer buffer)
-    {
-        const ulong fnvOffset = 1469598103934665603UL;
-
-        var signature = fnvOffset;
-        for (var row = 0; row < buffer.Height; row++)
-        {
-            for (var col = 0; col < buffer.Width; col++)
-            {
-                var cell = buffer.GetCell(row, col);
-                if (cell.IsWideContinuation)
-                {
-                    continue;
-                }
-
-                var effectiveFg = cell.Reversed ? cell.Background : cell.Foreground;
-                var effectiveBg = cell.Reversed ? cell.Foreground : cell.Background;
-                signature = HashString(signature, effectiveFg);
-                signature = HashString(signature, effectiveBg);
-                signature = HashBool(signature, cell.Bold);
-                signature = HashBool(signature, cell.Faint);
-            }
-        }
-
-        return signature;
     }
 
     private static ulong BuildVisualSignature(ScreenBuffer buffer)

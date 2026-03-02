@@ -712,6 +712,57 @@ internal static class SvgDocumentBuilder
         sb.Append("</svg>");
     }
 
+    /// <summary>
+    /// Renders unique frame contents into a &lt;defs&gt; block so they can be referenced
+    /// by &lt;use&gt; elements emitted by <see cref="AppendFrameUse"/>. Each unique frame is stored
+    /// as <c>&lt;g id="fd-{frameIndex}"&gt;</c> with no animation class.
+    /// </summary>
+    public static void AppendFrameDefs(
+        StringBuilder sb,
+        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
+        System.Collections.Generic.IReadOnlyList<int> uniqueFrameIndices,
+        Context context,
+        Theme theme,
+        double opacity = 1d
+    )
+    {
+        sb.Append("<defs>\n");
+        foreach (var fi in uniqueFrameIndices)
+        {
+            AppendFrameGroup(
+                sb,
+                frames[fi].Buffer,
+                context,
+                theme,
+                id: $"fd-{fi}",
+                @class: null,
+                opacity: opacity
+            );
+        }
+
+        sb.Append("</defs>\n");
+    }
+
+    /// <summary>
+    /// Emits a &lt;use&gt; element that references a unique frame stored in &lt;defs&gt; by
+    /// <see cref="AppendFrameDefs"/>. The element carries the per-frame animation CSS class.
+    /// </summary>
+    public static void AppendFrameUse(
+        StringBuilder sb,
+        string defsId,
+        string frameId,
+        string frameClass
+    )
+    {
+        sb.Append("<use href=\"#");
+        sb.Append(EscapeAttribute(defsId));
+        sb.Append("\" id=\"");
+        sb.Append(EscapeAttribute(frameId));
+        sb.Append("\" class=\"");
+        sb.Append(EscapeAttribute(frameClass));
+        sb.Append("\"/>\n");
+    }
+
     public static void AppendFrameGroup(
         StringBuilder sb,
         ScreenBuffer buffer,

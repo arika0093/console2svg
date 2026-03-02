@@ -1,3 +1,4 @@
+using System;
 using ConsoleToSvg.Cli;
 
 namespace ConsoleToSvg.Svg;
@@ -40,9 +41,31 @@ public sealed class SvgRenderOptions
     /// <summary>背景指定: null=デフォルト、1要素=単色または画像パス、2要素=グラデーション</summary>
     public string[]? Background { get; set; }
 
+    /// <summary>Override the terminal's own background color. null = use theme default.</summary>
+    public string? BackColor { get; set; }
+
     public static SvgRenderOptions FromAppOptions(AppOptions appOptions)
     {
-        var chrome = ChromeLoader.Load(appOptions.Window);
+        // Resolve effective window name: --pcmode appends -pc to known base styles
+        var windowName = appOptions.Window;
+        if (
+            appOptions.PcMode
+            && !windowName.EndsWith("-pc", StringComparison.OrdinalIgnoreCase)
+            && (
+                string.Equals(windowName, "macos", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(windowName, "windows", StringComparison.OrdinalIgnoreCase)
+            )
+        )
+        {
+            windowName = windowName + "-pc";
+        }
+
+        var chrome = ChromeLoader.Load(windowName);
+        if (chrome != null && appOptions.PcPadding.HasValue)
+        {
+            chrome.DesktopPadding = appOptions.PcPadding.Value;
+        }
+
         var effectivePadding = appOptions.Padding ?? (chrome != null ? 8d : 2d);
         var prompt = string.IsNullOrWhiteSpace(appOptions.Prompt) ? "$" : appOptions.Prompt;
         string? commandHeader = null;
@@ -79,6 +102,7 @@ public sealed class SvgRenderOptions
             ForeColor = appOptions.ForeColor,
             LengthAdjust = appOptions.LengthAdjust,
             Background = appOptions.Background.Count > 0 ? appOptions.Background.ToArray() : null,
+            BackColor = appOptions.BackColor,
         };
     }
 }

@@ -389,7 +389,7 @@ internal static class SvgDocumentBuilder
         sb.Append("</style>\n");
 
         AppendDefs(sb, context, chrome, background);
-        AppendBackground(sb, context, chrome, background);
+        AppendBackground(sb, context, theme, chrome, background);
         AppendGroupOpen(sb, opacity);
         AppendChrome(sb, context, theme, chrome);
         AppendClientBackground(sb, context, theme, chrome);
@@ -435,13 +435,14 @@ internal static class SvgDocumentBuilder
     private static void AppendBackground(
         StringBuilder sb,
         Context context,
+        Theme theme,
         ChromeDefinition? chrome,
         string[]? background = null
     )
     {
         if (chrome?.IsDesktop == true)
         {
-            // Desktop background only — shadow + chrome go in AppendChrome (inside the single opacity group)
+            // Desktop background only  Eshadow + chrome go in AppendChrome (inside the single opacity group)
             sb.Append("<rect width=\"");
             sb.Append(Format(context.CanvasWidth));
             sb.Append("\" height=\"");
@@ -452,11 +453,11 @@ internal static class SvgDocumentBuilder
         }
         else
         {
-            AppendCanvasBackground(sb, context, chrome, background);
+            AppendCanvasBackground(sb, context, theme, chrome, background);
         }
     }
 
-    /// <summary>Renders chrome elements via the ChromeDefinition template. No opacity wrapper — caller owns the outer g.</summary>
+    /// <summary>Renders chrome elements via the ChromeDefinition template. No opacity wrapper  Ecaller owns the outer g.</summary>
     private static void AppendChrome(
         StringBuilder sb,
         Context context,
@@ -513,16 +514,18 @@ internal static class SvgDocumentBuilder
         ChromeDefinition? chrome
     )
     {
-        if (chrome == null)
-        {
-            return;
-        }
-
         double left,
             top,
             right,
             bottom;
-        if (chrome.IsDesktop)
+        if (chrome == null)
+        {
+            left = 0d;
+            top = 0d;
+            right = 0d;
+            bottom = 0d;
+        }
+        else if (chrome.IsDesktop)
         {
             left = chrome.DesktopPadding + chrome.PaddingLeft;
             top = chrome.DesktopPadding + chrome.PaddingTop;
@@ -560,11 +563,12 @@ internal static class SvgDocumentBuilder
     /// <summary>
     /// For non-desktop chrome styles (or no chrome), renders the canvas-level background rect.
     /// When no explicit background is given, the rect is omitted for non-None styles
-    /// (the chrome window rect provides fill) and for None style (transparent canvas).
+    /// (the chrome window rect provides fill) and uses the terminal background for None style.
     /// </summary>
     private static void AppendCanvasBackground(
         StringBuilder sb,
         Context context,
+        Theme theme,
         ChromeDefinition? chrome,
         string[]? background
     )
@@ -580,7 +584,7 @@ internal static class SvgDocumentBuilder
             fill = "url(#desktop-bg)"; // gradient / image
         else if (chrome != null)
             fill = null; // chrome window rect provides the background fill
-        // else no chrome and no --background: omit rect → transparent canvas
+        // else no chrome and no --background: omit rect ・transparent canvas
 
         if (fill == null)
             return;
@@ -622,7 +626,7 @@ internal static class SvgDocumentBuilder
     {
         if (background is { Length: 1 } && !IsImagePath(background[0]))
             return background[0]; // solid user color
-        // gradient (2 colors), image, or default → reference defs
+        // gradient (2 colors), image, or default ↁEreference defs
         return "url(#desktop-bg)";
     }
 
@@ -639,7 +643,7 @@ internal static class SvgDocumentBuilder
         // Determine if <defs> are needed
         bool needsDefs;
         if (background is { Length: 1 } && !IsImagePath(background[0]))
-            needsDefs = false; // solid color — no defs needed
+            needsDefs = false; // solid color  Eno defs needed
         else if (background is { Length: >= 2 })
             needsDefs = true; // user gradient
         else if (background is { Length: 1 } && IsImagePath(background[0]))
@@ -662,7 +666,7 @@ internal static class SvgDocumentBuilder
         }
         else
         {
-            // Default gradient from chrome definition — subtle diagonal
+            // Default gradient from chrome definition  Esubtle diagonal
             var c1 = chrome?.DesktopGradientFrom ?? "#1a1d2e";
             var c2 = chrome?.DesktopGradientTo ?? "#252840";
             AppendLinearGradientDef(sb, "desktop-bg", c1, c2);
@@ -1098,95 +1102,95 @@ internal static class SvgDocumentBuilder
                 break; // ▀ Upper half
             case 0x2581:
                 R(x, y + h * 7d / 8, w, h / 8d);
-                break; // ▁ Lower 1/8
+                break; // ▁ELower 1/8
             case 0x2582:
                 R(x, y + h * 3d / 4, w, h / 4d);
-                break; // ▂ Lower 1/4
+                break; // ▁ELower 1/4
             case 0x2583:
                 R(x, y + h * 5d / 8, w, h * 3d / 8);
-                break; // ▃ Lower 3/8
+                break; // ▁ELower 3/8
             case 0x2584:
                 R(x, y + hh, w, hh);
-                break; // ▄ Lower half
+                break; // ▁ELower half
             case 0x2585:
                 R(x, y + h * 3d / 8, w, h * 5d / 8);
-                break; // ▅ Lower 5/8
+                break; // ▁ELower 5/8
             case 0x2586:
                 R(x, y + h / 4d, w, h * 3d / 4);
-                break; // ▆ Lower 3/4
+                break; // ▁ELower 3/4
             case 0x2587:
                 R(x, y + h / 8d, w, h * 7d / 8);
-                break; // ▇ Lower 7/8
+                break; // ▁ELower 7/8
             case 0x2588:
                 R(x, y, w, h);
-                break; // █ Full block
+                break; // ▁EFull block
             case 0x2589:
                 R(x, y, w * 7d / 8, h);
-                break; // ▉ Left 7/8
+                break; // ▁ELeft 7/8
             case 0x258A:
                 R(x, y, w * 3d / 4, h);
-                break; // ▊ Left 3/4
+                break; // ▁ELeft 3/4
             case 0x258B:
                 R(x, y, w * 5d / 8, h);
-                break; // ▋ Left 5/8
+                break; // ▁ELeft 5/8
             case 0x258C:
                 R(x, y, hw, h);
-                break; // ▌ Left half
+                break; // ▁ELeft half
             case 0x258D:
                 R(x, y, w * 3d / 8, h);
-                break; // ▍ Left 3/8
+                break; // ▁ELeft 3/8
             case 0x258E:
                 R(x, y, w / 4d, h);
-                break; // ▎ Left 1/4
+                break; // ▁ELeft 1/4
             case 0x258F:
                 R(x, y, w / 8d, h);
-                break; // ▏ Left 1/8
+                break; // ▁ELeft 1/8
             case 0x2590:
                 R(x + hw, y, hw, h);
-                break; // ▐ Right half
-            // 0x2591–0x2593: shade chars handled by font (IsBlockElement returns false)
+                break; // ▁ERight half
+            // 0x2591 Ex2593: shade chars handled by font (IsBlockElement returns false)
             case 0x2594:
                 R(x, y, w, h / 8d);
-                break; // ▔ Upper 1/8
+                break; // ▁EUpper 1/8
             case 0x2595:
                 R(x + w * 7d / 8, y, w / 8d, h);
-                break; // ▕ Right 1/8
+                break; // ▁ERight 1/8
             case 0x2596:
                 R(x, y + hh, hw, hh);
-                break; // ▖ Quad lower-left
+                break; // ▁EQuad lower-left
             case 0x2597:
                 R(x + hw, y + hh, hw, hh);
-                break; // ▗ Quad lower-right
+                break; // ▁EQuad lower-right
             case 0x2598:
                 R(x, y, hw, hh);
-                break; // ▘ Quad upper-left
+                break; // ▁EQuad upper-left
             case 0x2599:
                 R(x, y, hw, hh);
                 R(x, y + hh, w, hh);
-                break; // ▙
+                break; // ▁E
             case 0x259A:
                 R(x, y, hw, hh);
                 R(x + hw, y + hh, hw, hh);
-                break; // ▚
+                break; // ▁E
             case 0x259B:
                 R(x, y, w, hh);
                 R(x, y + hh, hw, hh);
-                break; // ▛
+                break; // ▁E
             case 0x259C:
                 R(x, y, w, hh);
                 R(x + hw, y + hh, hw, hh);
-                break; // ▜
+                break; // ▁E
             case 0x259D:
                 R(x + hw, y, hw, hh);
-                break; // ▝ Quad upper-right
+                break; // ▁EQuad upper-right
             case 0x259E:
                 R(x + hw, y, hw, hh);
                 R(x, y + hh, hw, hh);
-                break; // ▞
+                break; // ▁E
             case 0x259F:
                 R(x + hw, y, hw, hh);
                 R(x, y + hh, w, hh);
-                break; // ▟
+                break; // ▁E
         }
 
         void R(double rx, double ry, double rw, double rh)

@@ -23,8 +23,7 @@ public static class PtyRecorder
         ILogger? logger = null,
         bool forwardToConsole = true,
         string? replaySavePath = null,
-        string? replayPath = null,
-        bool noColorEnv = false
+        string? replayPath = null
     )
     {
         logger ??= NullLogger.Instance;
@@ -39,8 +38,7 @@ public static class PtyRecorder
                     logger,
                     forwardToConsole,
                     replaySavePath,
-                    replayPath,
-                    noColorEnv
+                    replayPath
                 )
                 .ConfigureAwait(false);
         }
@@ -74,12 +72,11 @@ public static class PtyRecorder
         ILogger logger,
         bool forwardToConsole,
         string? replaySavePath,
-        string? replayPath,
-        bool noColorEnv
+        string? replayPath
     )
     {
         var disableInputEcho = forwardToConsole && string.IsNullOrWhiteSpace(replayPath);
-        var options = BuildOptions(logger, command, width, height, disableInputEcho, !noColorEnv);
+        var options = BuildOptions(logger, command, width, height, disableInputEcho);
         logger.ZLogDebug(
             $"Spawning PTY process. App={options.App} Args={string.Join(' ', options.Args ?? [])} Cwd={options.Cwd} Cols={options.Cols} Rows={options.Rows}"
         );
@@ -775,8 +772,7 @@ public static class PtyRecorder
         string command,
         int width,
         int height,
-        bool disableInputEcho,
-        bool applyColorEnv
+        bool disableInputEcho
     )
     {
         var env = new Dictionary<string, string>();
@@ -792,20 +788,6 @@ public static class PtyRecorder
         logger.ZLogDebug($"Setting PTY size environment variables: COLUMNS={width} LINES={height}");
         env["COLUMNS"] = width.ToString(System.Globalization.CultureInfo.InvariantCulture);
         env["LINES"] = height.ToString(System.Globalization.CultureInfo.InvariantCulture);
-
-        if (applyColorEnv)
-        {
-            logger.ZLogDebug($"Applying color environment overrides for PTY process.");
-            // Ensure color-capable settings even on CI runners where TERM is unset/dumb,
-            env["TERM"] = "xterm-256color";
-            env["COLORTERM"] = "truecolor";
-            env["FORCE_COLOR"] = "3";
-            // remove some CI environments to avoid apps switching to no-color mode.
-            // for example: chalk(Node.js) checks "CI" to disable colors on CI environments:
-            // see: https://github.com/chalk/chalk/blob/aa06bb5ac3f14df9fda8cfb54274dfc165ddfdef/source/vendor/supports-color/index.js#L114
-            env.Remove("CI");
-            env.Remove("TF_BUILD");
-        }
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {

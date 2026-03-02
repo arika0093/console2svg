@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -19,10 +20,6 @@ internal static class Program
 
     public static async Task<int> Main(string[] args)
     {
-        // Ensure DOTNET_EnableWriteXorExecute=0 is set to prevent potential issues with memory protection on some platforms,
-        // especially when using features that involve dynamic code generation or execution.
-        ForceSetEnvDisableWriteXorExecute();
-
         var parseResult = OptionParser.TryParse(
             args,
             out var options,
@@ -66,6 +63,7 @@ internal static class Program
         logger.ZLogDebug(
             $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} Window={options.Window} Padding={options.Padding} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""} NoColorEnv={options.NoColorEnv}"
         );
+        using var environmentScope = ApplyProcessEnvironmentOverrides(options, logger);
         
         var canceledByCtrlC = false;
         using var cancellationTokenSource = new CancellationTokenSource();
@@ -182,8 +180,7 @@ internal static class Program
                     loggerFactory.CreateLogger("ConsoleToSvg.PtyRecorder"),
                     forwardToConsole: true,
                     replaySavePath: options.ReplaySavePath,
-                    replayPath: options.ReplayPath,
-                    noColorEnv: options.NoColorEnv
+                    replayPath: options.ReplayPath
                 )
                 .ConfigureAwait(false);
         }
@@ -191,7 +188,14 @@ internal static class Program
         if (!Console.IsInputRedirected)
         {
             throw new InvalidOperationException(
-                "No input source. Use --command, --in, or pipe stdout into console2svg."
+                """
+                No input source specified.
+                Usage: 
+                  console2svg "your-command with args" [options]
+                  console2svg [options] -- your-command with args 
+                  your-command with args | console2svg [options]
+                For more details, see --help.
+                """
             );
         }
 
@@ -290,15 +294,96 @@ internal static class Program
         }
     }
 
-    private static void ForceSetEnvDisableWriteXorExecute()
+    private static IDisposable ApplyProcessEnvironmentOverrides(AppOptions options, ILogger logger)
     {
-        try
+        var scope = new EnvironmentVariableScope(logger);
+
+        // Ensure DOTNET_EnableWriteXorExecute=0 is set to prevent potential issues with
+        // memory protection on some platforms, especially when dynamic code is involved.
+        scope.Set("DOTNET_EnableWriteXorExecute", "0");
+
+        if (!string.IsNullOrWhiteSpace(options.Command) && !options.NoColorEnv)
         {
-            Environment.SetEnvironmentVariable("DOTNET_EnableWriteXorExecute", "0");
+            logger.ZLogDebug($"Applying color-related environment overrides.");
+            // Ensure color-capable settings even on CI runners where TERM is unset/dumb.
+            scope.Set("TERM", "xterm-256color");
+            scope.Set("COLORTERM", "truecolor");
+            scope.Set("FORCE_COLOR", "3");
+            // remove some CI environments to avoid apps switching to no-color mode.
+            // for example: chalk(Node.js) checks "CI" to disable colors on CI environments:
+            // see: https://github.com/chalk/chalk/blob/aa06bb5ac3f14df9fda8cfb54274dfc165ddfdef/source/vendor/supports-color/index.js#L114
+            scope.Remove("CI");
+            scope.Remove("TF_BUILD");
         }
-        catch
+
+        return scope;
+    }
+
+    private sealed class EnvironmentVariableScope : IDisposable
+    {
+        private readonly ILogger _logger;
+        private readonly Dictionary<string, (bool Exists, string? Value)> _originalValues =
+            new(StringComparer.Ordinal);
+        private readonly List<string> _appliedKeys = [];
+        private bool _disposed;
+
+        public EnvironmentVariableScope(ILogger logger)
         {
-            // Ignore any exceptions when setting the environment variable
+            _logger = logger;
+        }
+
+        public void Set(string key, string value)
+        {
+            Apply(key, value);
+        }
+
+        public void Remove(string key)
+        {
+            Apply(key, null);
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            for (var i = _appliedKeys.Count - 1; i >= 0; i--)
+            {
+                var key = _appliedKeys[i];
+                var original = _originalValues[key];
+                try
+                {
+                    Environment.SetEnvironmentVariable(key, original.Exists ? original.Value : null);
+                }
+                catch (Exception ex)
+                {
+                    _logger.ZLogDebug(ex, $"Failed to restore environment variable: {key}");
+                }
+            }
+
+            _disposed = true;
+            _logger.ZLogDebug($"Restored temporary environment variable overrides.");
+        }
+
+        private void Apply(string key, string? value)
+        {
+            if (!_originalValues.ContainsKey(key))
+            {
+                var original = Environment.GetEnvironmentVariable(key);
+                _originalValues[key] = (original is not null, original);
+                _appliedKeys.Add(key);
+            }
+
+            try
+            {
+                Environment.SetEnvironmentVariable(key, value);
+            }
+            catch (Exception ex)
+            {
+                _logger.ZLogDebug(ex, $"Failed to update environment variable: {key}");
+            }
         }
     }
 }

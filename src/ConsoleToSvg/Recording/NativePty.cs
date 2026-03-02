@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -571,15 +572,6 @@ internal static class NativePtyUnix
             );
         }
 
-        var environment = new Dictionary<string, string>();
-        if (options.Environment is not null)
-        {
-            foreach (var pair in options.Environment)
-            {
-                environment[pair.Key] = pair.Value;
-            }
-        }
-
         var ptyOptions = new PtyOptions
         {
             Name = options.Name ?? "console2svg",
@@ -589,8 +581,8 @@ internal static class NativePtyUnix
                 ? Environment.CurrentDirectory
                 : options.Cwd,
             App = options.App,
-            CommandLine = options.Args ?? Array.Empty<string>(),
-            Environment = environment,
+            CommandLine = options.Args ?? [],
+            Environment = options.Environment?.ToDictionary(kv => kv.Key, kv => kv.Value) ?? [],
         };
 
         var pty = await PtyProvider.SpawnAsync(ptyOptions, cancellationToken).ConfigureAwait(false);

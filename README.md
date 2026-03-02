@@ -191,10 +191,10 @@ There is also a `--sleep` option to specify the stop time after playback. This a
 
 ```sh
 # apt install nyancat
-console2svg -w 120 -h 20 -c -d -v --timeout 8 --sleep 0 -- nyancat -d 10
+console2svg -w 160 -h 32 -c -d -v --timeout 8 --sleep 0 -- nyancat -d 10
 ```
 
-![console2svg -w 120 -h 20 -c -d -v --timeout 8 --sleep 0 -- nyancat -d 10](./assets/cmd-nyancat.svg)
+![console2svg -w 160 -h 32 -c -d -v --timeout 8 --sleep 0 -- nyancat -d 10](./assets/cmd-nyancat.svg)
 
 ### Replay input
 You can also save the command execution record and later regenerate the SVG based on that record. 
@@ -209,10 +209,10 @@ Then, generate the SVG based on the saved key input.
 By using this feature, you can generate an SVG that records terminal operations as shown below.
 
 ```sh
-console2svg -v -c -d macos --replay ./replay.json -- bash
+console2svg -w 80 -h 20 -v -c -d macos --replay ./replay.json -- bash
 ```
 
-![console2svg -v -c -d macos --replay ./replay.json -- bash](./assets/cmd-bash-vim.svg)
+![console2svg -w 80 -h 20 -v -c -d macos --replay ./replay.json -- bash](./assets/cmd-bash-vim.svg)
 
 The replay file is in a simple JSON format. If you make a mistake in the input, you can directly edit this file (or of course, you can ask AI to fix it for you).
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -78,7 +79,7 @@ public static class PtyRecorder
     )
     {
         var disableInputEcho = forwardToConsole && string.IsNullOrWhiteSpace(replayPath);
-        var options = BuildOptions(command, width, height, disableInputEcho, !noColorEnv);
+        var options = BuildOptions(logger, command, width, height, disableInputEcho, !noColorEnv);
         logger.ZLogDebug(
             $"Spawning PTY process. App={options.App} Args={string.Join(' ', options.Args ?? [])} Cwd={options.Cwd} Cols={options.Cols} Rows={options.Rows}"
         );
@@ -770,6 +771,7 @@ public static class PtyRecorder
     }
 
     private static NativePtyOptions BuildOptions(
+        ILogger logger,
         string command,
         int width,
         int height,
@@ -783,22 +785,26 @@ public static class PtyRecorder
             if (entry.Key is string key && entry.Value is string value)
             {
                 env[key] = value;
+                logger.ZLogDebug($"Inherited environment variable: {key}={value}");
             }
         }
 
+        logger.ZLogDebug($"Setting PTY size environment variables: COLUMNS={width} LINES={height}");
         env["COLUMNS"] = width.ToString(System.Globalization.CultureInfo.InvariantCulture);
         env["LINES"] = height.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
         if (applyColorEnv)
         {
+            logger.ZLogDebug($"Applying color environment overrides for PTY process.");
             // Ensure color-capable settings even on CI runners where TERM is unset/dumb,
             env["TERM"] = "xterm-256color";
             env["COLORTERM"] = "truecolor";
             env["FORCE_COLOR"] = "3";
-            // and remove CI to avoid apps switching to no-color mode.
-            // for example: chalk(Node.js) checks CI to disable colors on CI environments:
+            // remove some CI environments to avoid apps switching to no-color mode.
+            // for example: chalk(Node.js) checks "CI" to disable colors on CI environments:
             // see: https://github.com/chalk/chalk/blob/aa06bb5ac3f14df9fda8cfb54274dfc165ddfdef/source/vendor/supports-color/index.js#L114
             env.Remove("CI");
+            env.Remove("TF_BUILD");
         }
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

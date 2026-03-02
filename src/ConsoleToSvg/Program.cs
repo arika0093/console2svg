@@ -66,10 +66,7 @@ internal static class Program
         logger.ZLogDebug(
             $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} Window={options.Window} Padding={options.Padding} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""} NoColorEnv={options.NoColorEnv}"
         );
-        logger.ZLogDebug(
-            $"Environment: COLUMNS={Environment.GetEnvironmentVariable("COLUMNS") ?? ""} ROWS={Environment.GetEnvironmentVariable("ROWS") ?? ""} TERM={Environment.GetEnvironmentVariable("TERM") ?? ""} COLORTERM={Environment.GetEnvironmentVariable("COLORTERM") ?? ""} TERM_PROGRAM={Environment.GetEnvironmentVariable("TERM_PROGRAM") ?? ""} TERM_PROGRAM_VERSION={Environment.GetEnvironmentVariable("TERM_PROGRAM_VERSION") ?? ""} LANG={Environment.GetEnvironmentVariable("LANG") ?? ""} LC_ALL={Environment.GetEnvironmentVariable("LC_ALL") ?? ""} LC_CTYPE={Environment.GetEnvironmentVariable("LC_CTYPE") ?? ""}"
-        );
-
+        
         var canceledByCtrlC = false;
         using var cancellationTokenSource = new CancellationTokenSource();
         Console.CancelKeyPress += (_, eventArgs) =>

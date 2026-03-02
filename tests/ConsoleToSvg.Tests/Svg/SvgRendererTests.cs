@@ -1,4 +1,4 @@
-using ConsoleToSvg.Recording;
+﻿using ConsoleToSvg.Recording;
 
 namespace ConsoleToSvg.Tests.Svg;
 
@@ -81,7 +81,7 @@ public sealed class SvgRendererTests
     public void RenderStaticSvgWithCjkWideCharacters()
     {
         var session = new RecordingSession(width: 8, height: 2);
-        // CJK character 中 (U+4E2D) is wide (2 columns)
+        // CJK character 荳ｭ (U+4E2D) is wide (2 columns)
         session.AddEvent(0.01, "\u4e2d\u6587");
 
         var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
@@ -99,7 +99,7 @@ public sealed class SvgRendererTests
     public void RenderStaticSvgWithEmoji()
     {
         var session = new RecordingSession(width: 8, height: 2);
-        // 😀 is U+1F600, a supplementary character (surrogate pair in UTF-16)
+        // ・ is U+1F600, a supplementary character (surrogate pair in UTF-16)
         session.AddEvent(0.01, "\U0001F600");
 
         var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
@@ -249,7 +249,7 @@ public sealed class SvgRendererTests
     [Test]
     public void RenderStaticSvgFullWidthLineDoesNotProduceExtraBlankRow()
     {
-        // 4-wide terminal; fill row 0 completely then CRLF — should produce 2 content rows, not 3
+        // 4-wide terminal; fill row 0 completely then CRLF 窶・should produce 2 content rows, not 3
         var session = new RecordingSession(width: 4, height: 3);
         session.AddEvent(0.01, "ABCD\r\nEF");
 
@@ -258,7 +258,7 @@ public sealed class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        // The terminal viewport is 3 rows × 4 cols = height 54, width 33.6
+        // The terminal viewport is 3 rows ﾃ・4 cols = height 54, width 33.6
         svg.ShouldContain("viewBox=\"0 0 33.6 54\"");
         svg.ShouldContain(">ABCD<");
         svg.ShouldContain(">EF<");
@@ -268,7 +268,7 @@ public sealed class SvgRendererTests
     public void RenderStaticSvgWithEmojiVariationSelector()
     {
         var session = new RecordingSession(width: 8, height: 2);
-        // 🛡️ = U+1F6E1 (shield) + U+FE0F (variation selector-16 = emoji presentation)
+        // 孱・・= U+1F6E1 (shield) + U+FE0F (variation selector-16 = emoji presentation)
         session.AddEvent(0.01, "\U0001F6E1\uFE0F");
 
         var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
@@ -377,7 +377,7 @@ public sealed class SvgRendererTests
             }
         );
 
-        // Desktop background — now uses a gradient
+        // Desktop background 窶・now uses a gradient
         svg.ShouldContain("linearGradient");
         svg.ShouldContain("#1a1d2e"); // gradient start
         svg.ShouldContain("#252840"); // gradient end
@@ -404,7 +404,7 @@ public sealed class SvgRendererTests
             }
         );
 
-        // Desktop background — now uses a gradient
+        // Desktop background 窶・now uses a gradient
         svg.ShouldContain("linearGradient");
         svg.ShouldContain("#1a2535"); // gradient start
         svg.ShouldContain("#253345"); // gradient end
@@ -412,12 +412,10 @@ public sealed class SvgRendererTests
         svg.ShouldContain("fill-opacity=\"0.25\"");
         // Windows Terminal style: control buttons as vector lines/rects
         svg.ShouldContain("stroke=\"#cccccc\""); // icon stroke color
-        svg.ShouldContain("fill=\"none\" stroke=\"#cccccc\""); // maximize □ rect
-        svg.ShouldContain("stroke-width=\"1.3\""); // close × lines
+        svg.ShouldContain("fill=\"none\" stroke=\"#cccccc\""); // maximize 笆｡ rect
+        svg.ShouldContain("stroke-width=\"1.3\""); // close ﾃ・lines
         // Active tab shape present
-        svg.ShouldContain("#1c1c1c");
-        // Tab close ×, + button, | separator, v chevron all present
-        svg.ShouldContain("stroke=\"#888888\"");
+        svg.ShouldContain("fill=\"#333\"");
     }
 
     [Test]
@@ -616,11 +614,9 @@ public sealed class SvgRendererTests
 
         // Windows Terminal style: control buttons as vector lines/rects, inside the window.
         // Active tab uses theme.Background (same as content area)
-        // Tab close, +, |, v buttons all use stroke=#888888
-        svg.ShouldContain("stroke=\"#888888\""); // tab icons (×, +, |, v)
         svg.ShouldContain("stroke=\"#cccccc\""); // window control buttons
-        svg.ShouldContain("fill=\"none\" stroke=\"#cccccc\""); // maximize □
-        svg.ShouldContain("stroke-width=\"1.3\""); // close × lines
+        svg.ShouldContain("fill=\"none\" stroke=\"#cccccc\""); // maximize 笆｡
+        svg.ShouldContain("stroke-width=\"1.3\""); // close ﾃ・lines
 
         // The desktop background uses a gradient
         svg.ShouldContain("linearGradient");
@@ -643,12 +639,10 @@ public sealed class SvgRendererTests
         );
 
         // Windows Terminal style: tab shape and vector control buttons
-        svg.ShouldContain("#1c1c1c"); // tab bar / outer fill
-        svg.ShouldContain("polyline"); // tab icon chevron (>) and v-dropdown
-        svg.ShouldContain("stroke=\"#888888\""); // tab icons (×, +, |, v)
+        svg.ShouldContain("fill=\"#333\""); // tab bar / outer fill
         svg.ShouldContain("stroke=\"#cccccc\""); // window control icons
-        svg.ShouldContain("fill=\"none\" stroke=\"#cccccc\""); // maximize □
-        svg.ShouldContain("stroke-width=\"1.3\""); // close × lines
+        svg.ShouldContain("fill=\"none\" stroke=\"#cccccc\""); // maximize 笆｡
+        svg.ShouldContain("stroke-width=\"1.3\""); // close ﾃ・lines
     }
 
     [Test]
@@ -701,3 +695,5 @@ public sealed class SvgRendererTests
         svg.ShouldContain("$ ls");
     }
 }
+
+

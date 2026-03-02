@@ -240,9 +240,8 @@ internal static class Program
                         options.UsePlainTextFormatter(formatter =>
                         {
                             formatter.SetPrefixFormatter(
-                                $"[{0:yyyy-MM-ddTHH:mm:ss}] ",
-                                (in MessageTemplate template, in LogInfo info) =>
-                                    template.Format(info.Timestamp.Local.DateTime)
+                                $"[{0:local}] ",
+                                (in template, in info) => template.Format(info.Timestamp)
                             );
                         });
                     }

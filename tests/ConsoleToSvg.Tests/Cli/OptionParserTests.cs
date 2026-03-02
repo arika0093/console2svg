@@ -289,6 +289,22 @@ public sealed class OptionParserTests
     }
 
     [Test]
+    public void NoDeleteEnvsFlagEnablesNoDeleteEnvs()
+    {
+        var ok = OptionParser.TryParse(new[] { "--no-delete-envs" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.NoDeleteEnvs.ShouldBeTrue();
+    }
+
+    [Test]
+    public void NoDeleteEnvsDefaultIsFalse()
+    {
+        var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.NoDeleteEnvs.ShouldBeFalse();
+    }
+
+    [Test]
     public void FpsOptionParsed()
     {
         var ok = OptionParser.TryParse(new[] { "--fps", "24" }, out var options, out _, out _);

@@ -52,7 +52,8 @@ public static class OptionParser
                 --verbose [path]          Enable verbose logging; write to path (default: console2svg.log).
                 --version                 Show version and exit.
                 --timeout <sec>           Stop recording after specified seconds (e.g. 5, 0.5).
-                --no-colorenv             Disable PTY color environment overrides (TERM/COLORTERM/FORCE_COLOR and CI removal).
+                --no-colorenv             Disable PTY color environment overrides (TERM/COLORTERM/FORCE_COLOR).
+                --no-delete-envs          Keep CI/TF_BUILD in shell execution environment.
 
             Options (Appearance):
                 -d, --window [none|macos|windows|macos-pc|windows-pc|path/to/chrome.json]
@@ -236,6 +237,7 @@ public static class OptionParser
             && !string.Equals(name, "-v", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--verbose", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--no-colorenv", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--no-delete-envs", StringComparison.OrdinalIgnoreCase)
             // -d/--window is optional-value; handled separately in the main loop
             && !string.Equals(name, "-d", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase);
@@ -401,6 +403,9 @@ public static class OptionParser
                 return true;
             case "--no-colorenv":
                 options.NoColorEnv = true;
+                return true;
+            case "--no-delete-envs":
+                options.NoDeleteEnvs = true;
                 return true;
             case "--fps":
                 if (!TryParseDouble(value, "--fps", out var fps, out error))

@@ -61,7 +61,7 @@ internal static class Program
             $"Verbose={options.Verbose} VerboseLogPath={options.VerboseLogPath ?? "(default)"} Args={string.Join(' ', args)}"
         );
         logger.ZLogDebug(
-            $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} Window={options.Window} Padding={options.Padding} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""} NoColorEnv={options.NoColorEnv}"
+            $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} Window={options.Window} Padding={options.Padding} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""} NoColorEnv={options.NoColorEnv} NoDeleteEnvs={options.NoDeleteEnvs}"
         );
         using var environmentScope = ApplyProcessEnvironmentOverrides(options, logger);
         
@@ -179,6 +179,7 @@ internal static class Program
                     cancellationToken,
                     loggerFactory.CreateLogger("ConsoleToSvg.PtyRecorder"),
                     forwardToConsole: true,
+                    noDeleteEnvs: options.NoDeleteEnvs,
                     replaySavePath: options.ReplaySavePath,
                     replayPath: options.ReplayPath
                 )
@@ -309,38 +310,19 @@ internal static class Program
             scope.Set("TERM", "xterm-256color");
             scope.Set("COLORTERM", "truecolor");
             scope.Set("FORCE_COLOR", "3");
-            // remove some CI environments to avoid apps switching to no-color mode.
-            // for example: chalk(Node.js) checks "CI" to disable colors on CI environments:
-            // see: https://github.com/chalk/chalk/blob/aa06bb5ac3f14df9fda8cfb54274dfc165ddfdef/source/vendor/supports-color/index.js#L114
-            scope.Remove("CI");
-            scope.Remove("TF_BUILD");
         }
 
         return scope;
     }
 
-    private sealed class EnvironmentVariableScope : IDisposable
+    private sealed class EnvironmentVariableScope(ILogger logger) : IDisposable
     {
-        private readonly ILogger _logger;
         private readonly Dictionary<string, (bool Exists, string? Value)> _originalValues =
             new(StringComparer.Ordinal);
         private readonly List<string> _appliedKeys = [];
         private bool _disposed;
 
-        public EnvironmentVariableScope(ILogger logger)
-        {
-            _logger = logger;
-        }
-
-        public void Set(string key, string value)
-        {
-            Apply(key, value);
-        }
-
-        public void Remove(string key)
-        {
-            Apply(key, null);
-        }
+        public void Set(string key, string value) => Apply(key, value);
 
         public void Dispose()
         {
@@ -359,12 +341,12 @@ internal static class Program
                 }
                 catch (Exception ex)
                 {
-                    _logger.ZLogDebug(ex, $"Failed to restore environment variable: {key}");
+                    logger.ZLogDebug(ex, $"Failed to restore environment variable: {key}");
                 }
             }
 
             _disposed = true;
-            _logger.ZLogDebug($"Restored temporary environment variable overrides.");
+            logger.ZLogDebug($"Restored temporary environment variable overrides.");
         }
 
         private void Apply(string key, string? value)
@@ -382,7 +364,7 @@ internal static class Program
             }
             catch (Exception ex)
             {
-                _logger.ZLogDebug(ex, $"Failed to update environment variable: {key}");
+                logger.ZLogDebug(ex, $"Failed to update environment variable: {key}");
             }
         }
     }

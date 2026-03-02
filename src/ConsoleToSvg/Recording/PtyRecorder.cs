@@ -15,6 +15,11 @@ namespace ConsoleToSvg.Recording;
 
 public static class PtyRecorder
 {
+    // remove some CI environments to avoid apps switching to no-color mode.
+    // for example: chalk(Node.js) checks "CI" to disable colors on CI environments:
+    // see: https://github.com/chalk/chalk/blob/aa06bb5ac3f14df9fda8cfb54274dfc165ddfdef/source/vendor/supports-color/index.js#L114
+    private static readonly string[] ShellDeletedEnvironmentKeys = ["CI", "TF_BUILD"];
+
     public static async Task<RecordingSession> RecordAsync(
         string command,
         int width,
@@ -22,6 +27,7 @@ public static class PtyRecorder
         CancellationToken cancellationToken,
         ILogger? logger = null,
         bool forwardToConsole = true,
+        bool noDeleteEnvs = false,
         string? replaySavePath = null,
         string? replayPath = null
     )
@@ -37,6 +43,7 @@ public static class PtyRecorder
                     cancellationToken,
                     logger,
                     forwardToConsole,
+                    noDeleteEnvs,
                     replaySavePath,
                     replayPath
                 )
@@ -57,6 +64,7 @@ public static class PtyRecorder
                     cancellationToken,
                     logger,
                     forwardToConsole,
+                    noDeleteEnvs,
                     replaySavePath,
                     replayPath
                 )
@@ -71,12 +79,20 @@ public static class PtyRecorder
         CancellationToken cancellationToken,
         ILogger logger,
         bool forwardToConsole,
+        bool noDeleteEnvs,
         string? replaySavePath,
         string? replayPath
     )
     {
         var disableInputEcho = forwardToConsole && string.IsNullOrWhiteSpace(replayPath);
-        var options = BuildOptions(logger, command, width, height, disableInputEcho);
+        var options = BuildOptions(
+            logger,
+            command,
+            width,
+            height,
+            disableInputEcho,
+            noDeleteEnvs
+        );
         logger.ZLogDebug(
             $"Spawning PTY process. App={options.App} Args={string.Join(' ', options.Args ?? [])} Cwd={options.Cwd} Cols={options.Cols} Rows={options.Rows}"
         );
@@ -304,6 +320,7 @@ public static class PtyRecorder
         CancellationToken cancellationToken,
         ILogger logger,
         bool forwardToConsole,
+        bool noDeleteEnvs,
         string? replaySavePath,
         string? replayPath
     )
@@ -319,7 +336,7 @@ public static class PtyRecorder
                 ? ConsoleInputMode.TryEnableRaw(logger)
                 : null;
 
-        var startInfo = BuildFallbackProcessStartInfo(command);
+        var startInfo = BuildFallbackProcessStartInfo(command, noDeleteEnvs);
         logger.ZLogDebug(
             $"Using process fallback. FileName={startInfo.FileName} Arguments={startInfo.Arguments} Cwd={startInfo.WorkingDirectory}"
         );
@@ -772,7 +789,8 @@ public static class PtyRecorder
         string command,
         int width,
         int height,
-        bool disableInputEcho
+        bool disableInputEcho,
+        bool noDeleteEnvs
     )
     {
         var env = new Dictionary<string, string>();
@@ -788,6 +806,7 @@ public static class PtyRecorder
         logger.ZLogDebug($"Setting PTY size environment variables: COLUMNS={width} LINES={height}");
         env["COLUMNS"] = width.ToString(System.Globalization.CultureInfo.InvariantCulture);
         env["LINES"] = height.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var shellCommand = BuildShellCommand(command, noDeleteEnvs);
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
@@ -798,7 +817,7 @@ public static class PtyRecorder
                 Rows = height,
                 Cwd = Environment.CurrentDirectory,
                 App = "cmd.exe",
-                Args = ["/d", "/c", command],
+                Args = ["/d", "/c", shellCommand],
                 Environment = env,
                 DisableInputEcho = false,
             };
@@ -811,20 +830,22 @@ public static class PtyRecorder
             Rows = height,
             Cwd = Environment.CurrentDirectory,
             App = "/bin/sh",
-            Args = ["-lc", command],
+            Args = ["-c", shellCommand],
             Environment = env,
             DisableInputEcho = disableInputEcho,
         };
     }
 
-    private static ProcessStartInfo BuildFallbackProcessStartInfo(string command)
+    private static ProcessStartInfo BuildFallbackProcessStartInfo(string command, bool noDeleteEnvs)
     {
+        var shellCommand = BuildShellCommand(command, noDeleteEnvs);
+
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             return new ProcessStartInfo
             {
                 FileName = "cmd.exe",
-                Arguments = "/d /c " + command + " 2>&1",
+                Arguments = "/d /c " + shellCommand + " 2>&1",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardInput = true,
@@ -838,7 +859,9 @@ public static class PtyRecorder
         {
             FileName = "/bin/sh",
             Arguments =
-                "-lc \"" + command.Replace("\"", "\\\"", StringComparison.Ordinal) + " 2>&1\"",
+                "-c \""
+                + (shellCommand + " 2>&1").Replace("\"", "\\\"", StringComparison.Ordinal)
+                + "\"",
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardInput = true,
@@ -846,6 +869,25 @@ public static class PtyRecorder
             CreateNoWindow = true,
             WorkingDirectory = Environment.CurrentDirectory,
         };
+    }
+
+    private static string BuildShellCommand(string command, bool noDeleteEnvs)
+    {
+        if (noDeleteEnvs)
+        {
+            return command;
+        }
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            var clears = string.Join(
+                " && ",
+                ShellDeletedEnvironmentKeys.Select(key => $"set \"{key}=\"")
+            );
+            return clears + " && " + command;
+        }
+
+        return "unset " + string.Join(' ', ShellDeletedEnvironmentKeys) + "; " + command;
     }
 
     private sealed class ConsoleInputMode : IDisposable

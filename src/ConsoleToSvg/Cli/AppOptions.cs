@@ -46,6 +46,8 @@ public sealed class AppOptions
 
     public bool NoColorEnv { get; set; }
 
+    public bool NoDeleteEnvs { get; set; }
+
     public string? Font { get; set; }
 
     public double? FontSize { get; set; } = null;

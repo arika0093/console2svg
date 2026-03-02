@@ -19,6 +19,6 @@
 <text class="crt" x="9" y="57" fill="#d4d4d4">$ dotnet --version</text>
 <g transform="translate(9 61)">
 <rect width="336" height="72" fill="#0c0c0c"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">10.0.100</text>
+<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">10.0.103</text>
 </g>
 </svg>

@@ -173,34 +173,6 @@ The result will look like this.
 
 ![console2svg --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -- dotnet --info](./assets/cmd-crop-word.svg)
 
-
-### Background and opacity
-
-You can set the background color or image of the output SVG, and adjust the opacity of the background fill.
-
-```sh
-console2svg -h 10 -c -d macos-pc --background "#003060" --opacity 0.8 -- dotnet --version
-```
-
-![console2svg -h 10 -c -d macos-pc --background "#003060" --opacity 0.8 -- dotnet --version](./assets/cmd-bg1.svg)
-
-You can also set a gradient background.
-
-```sh
-console2svg -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.8 -- dotnet --version
-```
-
-![console2svg -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.8 -- dotnet --version](./assets/cmd-bg2.svg)
-
-Image background is also supported.
-
-```sh
-console2svg -h 10 -c -d macos-pc --background image.png --opacity 0.8  -- dotnet --version
-```
-
-![console2svg -h 10 -c -d macos-pc --background image.png --opacity 0.8  -- dotnet --version](./assets/cmd-bg3.svg)
-
-
 ### Animated SVG
 
 use `-m video` or `-v` to capture the animation of the command execution and save it as an SVG.
@@ -278,8 +250,46 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
 
 </details>
 
+## Appearance options
+### Background and opacity
 
-## Window chrome
+You can set the background color or image of the output SVG, and adjust the opacity of the background fill.
+
+```sh
+console2svg -h 10 -c -d macos-pc --background "#003060" --opacity 0.8 -- dotnet --version
+```
+
+![console2svg -h 10 -c -d macos-pc --background "#003060" --opacity 0.8 -- dotnet --version](./assets/cmd-bg1.svg)
+
+You can also set a gradient background.
+
+```sh
+console2svg -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.8 -- dotnet --version
+```
+
+![console2svg -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.8 -- dotnet --version](./assets/cmd-bg2.svg)
+
+Image background is also supported.
+
+```sh
+console2svg -h 10 -c -d macos-pc --background image.png --opacity 0.8  -- dotnet --version
+```
+
+![console2svg -h 10 -c -d macos-pc --background image.png --opacity 0.8  -- dotnet --version](./assets/cmd-bg3.svg)
+
+### Terminal Appearance
+
+You can customize the appearance with various options. 
+For example, in the following example, the prompt (the string displayed at the beginning) is changed to `[HELLO!] $`, the command header is changed to `my-custom-header`, and the text color is changed to `#00f040`.
+
+```sh
+console2svg -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" -- echo "hi"
+```
+
+![console2svg -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" -- echo "hi"](./assets/cmd-term-custom.svg)
+
+
+### Window chrome
 
 `-d` option allows you to specify the style of the window frame. 
 

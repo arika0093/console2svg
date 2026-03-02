@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 858 214" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 354 142" role="img" aria-label="console2svg output">
 <style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}.bg{shape-rendering:crispEdges;}</style>
-<rect x="0.5" y="0.5" width="857" height="213" fill="#1c1c1c" stroke="#3a3a3a"/>
-<rect x="1" y="1" width="856" height="34" fill="#1c1c1c"/>
+<rect x="0.5" y="0.5" width="353" height="141" fill="#1c1c1c" stroke="#3a3a3a"/>
+<rect x="1" y="1" width="352" height="34" fill="#1c1c1c"/>
 <path d="M 8,35 L 8,11 Q 8,6 13,6 L 163,6 Q 168,6 168,11 L 168,35 Z" fill="#0c0c0c"/>
 <polyline points="16,15.5 20,19.5 16,23.5" fill="none" stroke="#cccccc" stroke-width="1.2" stroke-linejoin="round"/>
 <line x1="23" y1="24" x2="29" y2="24" stroke="#cccccc" stroke-width="1.2"/>
@@ -11,14 +11,14 @@
 <line x1="184" y1="14.5" x2="184" y2="24.5" stroke="#888888" stroke-width="1.2"/>
 <line x1="204" y1="9" x2="204" y2="26" stroke="#4a4a4a" stroke-width="1"/>
 <polyline points="216,17.5 220,21.5 224,17.5" fill="none" stroke="#888888" stroke-width="1.2" stroke-linejoin="round"/>
-<line x1="738" y1="19.5" x2="748" y2="19.5" stroke="#cccccc" stroke-width="1.2"/>
-<rect x="784" y="14.5" width="10" height="10" fill="none" stroke="#cccccc" stroke-width="1.2"/>
-<line x1="830" y1="14.5" x2="840" y2="24.5" stroke="#cccccc" stroke-width="1.3"/>
-<line x1="840" y1="14.5" x2="830" y2="24.5" stroke="#cccccc" stroke-width="1.3"/>
-<rect x="9" y="43" width="840" height="18" fill="#0c0c0c"/>
+<line x1="234" y1="19.5" x2="244" y2="19.5" stroke="#cccccc" stroke-width="1.2"/>
+<rect x="280" y="14.5" width="10" height="10" fill="none" stroke="#cccccc" stroke-width="1.2"/>
+<line x1="326" y1="14.5" x2="336" y2="24.5" stroke="#cccccc" stroke-width="1.3"/>
+<line x1="336" y1="14.5" x2="326" y2="24.5" stroke="#cccccc" stroke-width="1.3"/>
+<rect x="9" y="43" width="336" height="18" fill="#0c0c0c"/>
 <text class="crt" x="9" y="57" fill="#d4d4d4">$ dotnet --version</text>
 <g transform="translate(9 61)">
-<rect width="840" height="144" fill="#0c0c0c"/>
+<rect width="336" height="72" fill="#0c0c0c"/>
 <text class="crt" x="0" y="14" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacingAndGlyphs">10.0.100</text>
 </g>
 </svg>

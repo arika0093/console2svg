@@ -58,6 +58,13 @@ public sealed class ChromeDefinition
     public string? ThemeBackgroundOverride { get; set; }
 
     /// <summary>
+    /// Corner radius for the client background rect inside the chrome.
+    /// 0 = square corners.
+    /// </summary>
+    [JsonPropertyName("clientCornerRadius")]
+    public double ClientCornerRadius { get; set; }
+
+    /// <summary>
     /// SVG fragment template for the chrome elements.
     /// Supports template variables with optional arithmetic offset:
     ///   {winX}, {winY}       — top-left corner of the window area

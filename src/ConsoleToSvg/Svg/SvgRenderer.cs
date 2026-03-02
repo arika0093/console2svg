@@ -559,6 +559,13 @@ internal static class SvgDocumentBuilder
         sb.Append(Format(width));
         sb.Append("\" height=\"");
         sb.Append(Format(height));
+        if (chrome is { ClientCornerRadius: > 0 })
+        {
+            sb.Append("\" rx=\"");
+            sb.Append(Format(chrome.ClientCornerRadius));
+            sb.Append("\" ry=\"");
+            sb.Append(Format(chrome.ClientCornerRadius));
+        }
         sb.Append("\" fill=\"");
         sb.Append(theme.Background);
         sb.Append("\"/>\n");

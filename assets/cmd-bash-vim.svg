@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 690 405" role="img" aria-label="console2svg output">
-<style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}.bg{shape-rendering:crispEdges;}.frame{opacity:0;}@keyframes k0{0%,0.562%{opacity:0;}0.563%,18.728%{opacity:1;}18.729%,100%{opacity:0;}}.frame-0{animation:k0 12.245s linear infinite;}@keyframes k1{0%,18.727%{opacity:0;}18.728%,19.595%{opacity:1;}19.596%,100%{opacity:0;}}.frame-1{animation:k1 12.245s linear infinite;}@keyframes k2{0%,19.594%{opacity:0;}19.595%,20.634%{opacity:1;}20.635%,100%{opacity:0;}}.frame-2{animation:k2 12.245s linear infinite;}@keyframes k3{0%,20.633%{opacity:0;}20.634%,23.34%{opacity:1;}23.341%,100%{opacity:0;}}.frame-3{animation:k3 12.245s linear infinite;}@keyframes k4{0%,23.339%{opacity:0;}23.34%,27.228%{opacity:1;}27.229%,100%{opacity:0;}}.frame-4{animation:k4 12.245s linear infinite;}@keyframes k5{0%,27.227%{opacity:0;}27.228%,35.576%{opacity:1;}35.577%,100%{opacity:0;}}.frame-5{animation:k5 12.245s linear infinite;}@keyframes k6{0%,35.575%{opacity:0;}35.576%,43.732%{opacity:1;}43.733%,100%{opacity:0;}}.frame-6{animation:k6 12.245s linear infinite;}@keyframes k7{0%,43.731%{opacity:0;}43.732%,44.466%{opacity:1;}44.467%,100%{opacity:0;}}.frame-7{animation:k7 12.245s linear infinite;}@keyframes k8{0%,44.465%{opacity:0;}44.466%,45.505%{opacity:1;}45.506%,100%{opacity:0;}}.frame-8{animation:k8 12.245s linear infinite;}@keyframes k9{0%,45.504%{opacity:0;}45.505%,46.682%{opacity:1;}46.683%,100%{opacity:0;}}.frame-9{animation:k9 12.245s linear infinite;}@keyframes k10{0%,46.681%{opacity:0;}46.682%,48.073%{opacity:1;}48.074%,100%{opacity:0;}}.frame-10{animation:k10 12.245s linear infinite;}@keyframes k11{0%,48.072%{opacity:0;}48.073%,53.221%{opacity:1;}53.222%,100%{opacity:0;}}.frame-11{animation:k11 12.245s linear infinite;}@keyframes k12{0%,53.22%{opacity:0;}53.221%,61.453%{opacity:1;}61.454%,100%{opacity:0;}}.frame-12{animation:k12 12.245s linear infinite;}@keyframes k13{0%,61.452%{opacity:0;}61.453%,62.271%{opacity:1;}62.272%,100%{opacity:0;}}.frame-13{animation:k13 12.245s linear infinite;}@keyframes k14{0%,62.27%{opacity:0;}62.271%,67.252%{opacity:1;}67.253%,100%{opacity:0;}}.frame-14{animation:k14 12.245s linear infinite;}@keyframes k15{0%,67.251%{opacity:0;}67.252%,68.406%{opacity:1;}68.407%,100%{opacity:0;}}.frame-15{animation:k15 12.245s linear infinite;}@keyframes k16{0%,68.405%{opacity:0;}68.406%,71.224%{opacity:1;}71.225%,100%{opacity:0;}}.frame-16{animation:k16 12.245s linear infinite;}@keyframes k17{0%,71.223%{opacity:0;}71.224%,74.861%{opacity:1;}74.862%,100%{opacity:0;}}.frame-17{animation:k17 12.245s linear infinite;}@keyframes k18{0%,74.86%{opacity:0;}74.861%,75.079%{opacity:1;}75.08%,100%{opacity:0;}}.frame-18{animation:k18 12.245s linear infinite;}@keyframes k19{0%,75.078%{opacity:0;}75.079%,83.667%{opacity:1;}83.668%,100%{opacity:0;}}.frame-19{animation:k19 12.245s linear infinite;}@keyframes k20{0%,83.666%{opacity:0;}83.667%,100%{opacity:1;}}.frame-20{animation:k20 12.245s linear infinite;}</style>
+<style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}.bg{shape-rendering:crispEdges;}.frame{opacity:0;}@keyframes k0{0%,0.612%{opacity:0;}0.613%,20.078%{opacity:1;}20.079%,100%{opacity:0;}}.frame-0{animation:k0 12.952s linear infinite;}@keyframes k1{0%,20.077%{opacity:0;}20.078%,20.898%{opacity:1;}20.899%,100%{opacity:0;}}.frame-1{animation:k1 12.952s linear infinite;}@keyframes k2{0%,20.897%{opacity:0;}20.898%,21.88%{opacity:1;}21.881%,100%{opacity:0;}}.frame-2{animation:k2 12.952s linear infinite;}@keyframes k3{0%,21.879%{opacity:0;}21.88%,24.438%{opacity:1;}24.439%,100%{opacity:0;}}.frame-3{animation:k3 12.952s linear infinite;}@keyframes k4{0%,24.437%{opacity:0;}24.438%,31.266%{opacity:1;}31.267%,100%{opacity:0;}}.frame-4{animation:k4 12.952s linear infinite;}@keyframes k5{0%,31.265%{opacity:0;}31.266%,39.094%{opacity:1;}39.095%,100%{opacity:0;}}.frame-5{animation:k5 12.952s linear infinite;}@keyframes k6{0%,39.093%{opacity:0;}39.094%,46.806%{opacity:1;}46.807%,100%{opacity:0;}}.frame-6{animation:k6 12.952s linear infinite;}@keyframes k7{0%,46.805%{opacity:0;}46.806%,47.5%{opacity:1;}47.501%,100%{opacity:0;}}.frame-7{animation:k7 12.952s linear infinite;}@keyframes k8{0%,47.499%{opacity:0;}47.5%,48.481%{opacity:1;}48.482%,100%{opacity:0;}}.frame-8{animation:k8 12.952s linear infinite;}@keyframes k9{0%,48.48%{opacity:0;}48.481%,49.588%{opacity:1;}49.589%,100%{opacity:0;}}.frame-9{animation:k9 12.952s linear infinite;}@keyframes k10{0%,49.587%{opacity:0;}49.588%,50.91%{opacity:1;}50.911%,100%{opacity:0;}}.frame-10{animation:k10 12.952s linear infinite;}@keyframes k11{0%,50.909%{opacity:0;}50.91%,55.777%{opacity:1;}55.778%,100%{opacity:0;}}.frame-11{animation:k11 12.952s linear infinite;}@keyframes k12{0%,55.776%{opacity:0;}55.777%,63.559%{opacity:1;}63.56%,100%{opacity:0;}}.frame-12{animation:k12 12.952s linear infinite;}@keyframes k13{0%,63.558%{opacity:0;}63.559%,64.333%{opacity:1;}64.334%,100%{opacity:0;}}.frame-13{animation:k13 12.952s linear infinite;}@keyframes k14{0%,64.332%{opacity:0;}64.333%,69.034%{opacity:1;}69.035%,100%{opacity:0;}}.frame-14{animation:k14 12.952s linear infinite;}@keyframes k15{0%,69.033%{opacity:0;}69.034%,70.131%{opacity:1;}70.132%,100%{opacity:0;}}.frame-15{animation:k15 12.952s linear infinite;}@keyframes k16{0%,70.13%{opacity:0;}70.131%,72.796%{opacity:1;}72.797%,100%{opacity:0;}}.frame-16{animation:k16 12.952s linear infinite;}@keyframes k17{0%,72.795%{opacity:0;}72.796%,76.226%{opacity:1;}76.227%,100%{opacity:0;}}.frame-17{animation:k17 12.952s linear infinite;}@keyframes k18{0%,76.225%{opacity:0;}76.226%,84.558%{opacity:1;}84.559%,100%{opacity:0;}}.frame-18{animation:k18 12.952s linear infinite;}@keyframes k19{0%,84.557%{opacity:0;}84.558%,84.559%{opacity:1;}84.56%,100%{opacity:0;}}.frame-19{animation:k19 12.952s linear infinite;}@keyframes k20{0%,84.558%{opacity:0;}84.559%,100%{opacity:1;}}.frame-20{animation:k20 12.952s linear infinite;}</style>
 <rect x="0.5" y="0.5" rx="10" ry="10" width="689" height="404" fill="#1f1f1f" stroke="#3a3a3a"/>
 <rect x="1" y="1" rx="9" ry="9" width="688" height="27" fill="#2c2c2c"/>
 <circle cx="14" cy="14" r="5" fill="#ff5f57"/>
@@ -9,6 +9,10 @@
 <defs>
 <g id="fd-0" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmnay03</text>
+<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
+<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
+<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 </g>
 <g id="fd-1" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
@@ -41,6 +45,9 @@
 <text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 <text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
+</g>
+<g id="fd-5" transform="translate(9 36)">
+<rect width="672" height="360" fill="#1e1e1e"/>
 </g>
 <g id="fd-6" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
@@ -75,16 +82,14 @@
 <text class="crt" x="403.2" y="158" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacing">distributable</text>
 <text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="210" y="194" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">Become</text>
-<text class="crt" x="268.8" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">a</text>
-<text class="crt" x="285.6" y="194" fill="#d4d4d4" textLength="84" lengthAdjust="spacing">registered</text>
-<text class="crt" x="378" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">Vim</text>
-<text class="crt" x="411.6" y="194" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">user!</text>
+<text class="crt" x="235.2" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Sponsor</text>
+<text class="crt" x="302.4" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">Vim</text>
+<text class="crt" x="336" y="194" fill="#d4d4d4" textLength="100.8" lengthAdjust="spacing">development!</text>
 <text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="142.8" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
 <text class="crt" x="193.2" y="212" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">register</text>
-<text class="crt" x="310.8" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
+<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">sponsor</text>
+<text class="crt" x="302.4" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
 <text class="crt" x="394.8" y="212" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
 <text class="crt" x="428.4" y="212" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">information</text>
 <text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
@@ -450,7 +455,7 @@
 <use href="#fd-2" id="frame-2" class="frame frame-2"/>
 <use href="#fd-3" id="frame-3" class="frame frame-3"/>
 <use href="#fd-4" id="frame-4" class="frame frame-4"/>
-<use href="#fd-0" id="frame-5" class="frame frame-5"/>
+<use href="#fd-5" id="frame-5" class="frame frame-5"/>
 <use href="#fd-6" id="frame-6" class="frame frame-6"/>
 <use href="#fd-7" id="frame-7" class="frame frame-7"/>
 <use href="#fd-8" id="frame-8" class="frame frame-8"/>

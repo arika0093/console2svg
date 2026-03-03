@@ -20,6 +20,10 @@ public static class AnimatedSvgRenderer
         {
             theme = theme.WithBackground(bgOverride);
         }
+        if (!string.IsNullOrWhiteSpace(options.BackColor))
+        {
+            theme = theme.WithBackground(options.BackColor);
+        }
         if (!string.IsNullOrWhiteSpace(options.ForeColor))
         {
             theme = theme.WithForeground(options.ForeColor);

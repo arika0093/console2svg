@@ -79,4 +79,13 @@ public sealed class AppOptions
     public System.Collections.Generic.List<string> Background { get; set; } = [];
 
     public double? Timeout { get; set; } = null;
+
+    /// <summary>Enable PC (desktop) mode for the selected window style.</summary>
+    public bool PcMode { get; set; }
+
+    /// <summary>Override the desktop padding value when PC mode is active.</summary>
+    public double? PcPadding { get; set; }
+
+    /// <summary>Override the terminal's own background color (e.g. "#0c0c0c").</summary>
+    public string? BackColor { get; set; }
 }

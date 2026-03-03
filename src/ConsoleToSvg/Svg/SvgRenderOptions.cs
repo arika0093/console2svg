@@ -1,3 +1,4 @@
+using System;
 using ConsoleToSvg.Cli;
 
 namespace ConsoleToSvg.Svg;
@@ -37,12 +38,36 @@ public sealed class SvgRenderOptions
 
     public string LengthAdjust { get; set; } = "spacing";
 
-    /// <summary>背景指定: null=デフォルト、1要素=単色または画像パス、2要素=グラデーション</summary>
+    /// <summary>Background specification: null = default, 1 element = solid color or image path, 2 elements = gradient.</summary>
     public string[]? Background { get; set; }
+
+    /// <summary>Override the terminal's own background color. null = use theme default.</summary>
+    public string? BackColor { get; set; }
+
+    private static readonly char[] PathChars = ['/', '\\', '.'];
 
     public static SvgRenderOptions FromAppOptions(AppOptions appOptions)
     {
-        var chrome = ChromeLoader.Load(appOptions.Window);
+        // Resolve effective window name: --pcmode appends -pc to any builtin style that doesn't already have it.
+        // Skip suffixing for "none", empty values, and file paths (contain path separators or dots).
+        var windowName = appOptions.Window;
+        if (
+            appOptions.PcMode
+            && !string.IsNullOrWhiteSpace(windowName)
+            && !string.Equals(windowName, "none", StringComparison.OrdinalIgnoreCase)
+            && !windowName.EndsWith("-pc", StringComparison.OrdinalIgnoreCase)
+            && windowName.IndexOfAny(PathChars) < 0
+        )
+        {
+            windowName = windowName + "-pc";
+        }
+
+        var chrome = ChromeLoader.Load(windowName);
+        if (chrome != null && appOptions.PcPadding.HasValue)
+        {
+            chrome.DesktopPadding = appOptions.PcPadding.Value;
+        }
+
         var effectivePadding = appOptions.Padding ?? (chrome != null ? 8d : 2d);
         var prompt = string.IsNullOrWhiteSpace(appOptions.Prompt) ? "$" : appOptions.Prompt;
         string? commandHeader = null;
@@ -79,6 +104,7 @@ public sealed class SvgRenderOptions
             ForeColor = appOptions.ForeColor,
             LengthAdjust = appOptions.LengthAdjust,
             Background = appOptions.Background.Count > 0 ? appOptions.Background.ToArray() : null,
+            BackColor = appOptions.BackColor,
         };
     }
 }

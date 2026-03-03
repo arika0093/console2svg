@@ -64,11 +64,17 @@ public static class OptionParser
             Options (Appearance):
                 -d, --window [none|macos|windows|macos-pc|windows-pc|transparent|path/to/chrome.json]
                                           Terminal window chrome style (default: none, or macos if specified without a value).
-                                          Built-in styles: none, macos, windows, macos-pc, windows-pc, transparent.
+                                          Built-in styles: none, macos, windows, transparent.
+                                          Any built-in style can be suffixed with -pc to enable desktop (floating window) mode.
                                           Custom: provide a path to a .json chrome definition file.
+                --pcmode                  Enable PC (desktop) mode for the selected window style.
+                                          Appends -pc to any window style that does not already end in -pc.
+                --pc-padding <px>         Override the outer desktop padding in PC mode (default: 20).
                 --opacity <0-1>           Background fill opacity (default: 1).
                 --theme <dark|light>      Color theme (default: dark).
                 --forecolor <color>     Override default foreground color.
+                --backcolor <color>       Override the terminal's own background color.
+                                          Unlike --background, this affects the terminal interior rather than the outer canvas.
                 --padding <px>            Outer padding in pixels (default: 2, or 8 when window is set).
                 --adjust <value>        SVG text lengthAdjust (default: spacing).
                 --background <color|path> [color]
@@ -248,7 +254,8 @@ public static class OptionParser
             && !string.Equals(name, "--no-delete-envs", StringComparison.OrdinalIgnoreCase)
             // -d/--window is optional-value; handled separately in the main loop
             && !string.Equals(name, "-d", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase);
+            && !string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--pcmode", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsVerboseLogPathValue(string token) =>
@@ -550,6 +557,26 @@ public static class OptionParser
                 }
 
                 options.Prompt = value;
+                return true;
+            case "--pcmode":
+                options.PcMode = true;
+                return true;
+            case "--pc-padding":
+                if (!TryParseDouble(value, "--pc-padding", out var pcPadding, out error))
+                {
+                    return false;
+                }
+
+                options.PcPadding = pcPadding;
+                return true;
+            case "--backcolor":
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    error = "--backcolor requires a value.";
+                    return false;
+                }
+
+                options.BackColor = value;
                 return true;
             default:
                 error = $"Unknown option: {name}";

@@ -1,4 +1,5 @@
 using ConsoleToSvg.Cli;
+using ConsoleToSvg.Svg;
 
 namespace ConsoleToSvg.Tests.Cli;
 
@@ -682,5 +683,139 @@ public sealed class OptionParserTests
         ok.ShouldBeTrue();
         options!.ReplayPath.ShouldBeNull();
         options.ReplaySavePath.ShouldBeNull();
+    }
+
+    [Test]
+    public void PcModeFlagSetsPcMode()
+    {
+        var ok = OptionParser.TryParse(new[] { "--pcmode" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.PcMode.ShouldBeTrue();
+    }
+
+    [Test]
+    public void PcModeDefaultIsFalse()
+    {
+        var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.PcMode.ShouldBeFalse();
+    }
+
+    [Test]
+    public void PcPaddingOptionParsed()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--pc-padding", "30" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.PcPadding.ShouldBe(30d);
+    }
+
+    [Test]
+    public void PcPaddingDefaultIsNull()
+    {
+        var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.PcPadding.ShouldBeNull();
+    }
+
+    [Test]
+    public void BackColorOptionParsed()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--backcolor", "#0c0c0c" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.BackColor.ShouldBe("#0c0c0c");
+    }
+
+    [Test]
+    public void BackColorDefaultIsNull()
+    {
+        var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.BackColor.ShouldBeNull();
+    }
+
+    [Test]
+    public void BackColorRequiresValue()
+    {
+        var ok = OptionParser.TryParse(new[] { "--backcolor" }, out _, out var error, out _);
+        ok.ShouldBeFalse();
+        error.ShouldNotBeNull();
+    }
+
+    [Test]
+    public void PcModeWithMacosWindowUsesMacosPc()
+    {
+        // When --pcmode is set with --window macos, FromAppOptions should produce a desktop chrome.
+        var ok = OptionParser.TryParse(
+            new[] { "--window", "macos", "--pcmode" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.PcMode.ShouldBeTrue();
+        options.Window.ShouldBe("macos");
+        // SvgRenderOptions.FromAppOptions resolves the effective window name
+        var svgOptions = SvgRenderOptions.FromAppOptions(options!);
+        // The chrome should have IsDesktop = true (macos + --pcmode -> macos-pc path)
+        svgOptions.Chrome.ShouldNotBeNull();
+        svgOptions.Chrome!.IsDesktop.ShouldBeTrue();
+    }
+
+    [Test]
+    public void PcModeDoesNotDoubleAppendPcSuffix()
+    {
+        // When --pcmode is set with --window macos-pc, should not become macos-pc-pc
+        var ok = OptionParser.TryParse(
+            new[] { "--window", "macos-pc", "--pcmode" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        var svgOptions = SvgRenderOptions.FromAppOptions(options!);
+        svgOptions.Chrome.ShouldNotBeNull();
+        svgOptions.Chrome!.IsDesktop.ShouldBeTrue();
+    }
+
+    [Test]
+    public void PcPaddingOverridesDesktopPadding()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--window", "macos-pc", "--pc-padding", "40" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        var svgOptions = SvgRenderOptions.FromAppOptions(options!);
+        svgOptions.Chrome.ShouldNotBeNull();
+        svgOptions.Chrome!.DesktopPadding.ShouldBe(40d);
+    }
+
+    [Test]
+    public void PcModeWorksForTransparentStyle()
+    {
+        // --pcmode should work with any built-in style, not just macos/windows
+        var ok = OptionParser.TryParse(
+            new[] { "--window", "transparent", "--pcmode" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        var svgOptions = SvgRenderOptions.FromAppOptions(options!);
+        // transparent-pc resolves to transparent base with IsDesktop=true
+        svgOptions.Chrome.ShouldNotBeNull();
+        svgOptions.Chrome!.IsDesktop.ShouldBeTrue();
     }
 }

@@ -256,26 +256,26 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
 You can set the background color or image of the output SVG, and adjust the opacity of the background fill.
 
 ```sh
-console2svg -h 10 -c -d macos-pc --background "#003060" --opacity 0.8 -- dotnet --version
+console2svg -h 10 -c -d macos-pc --background "#003060" --opacity 0.85 -- dotnet --version
 ```
 
-![console2svg -h 10 -c -d macos-pc --background "#003060" --opacity 0.8 -- dotnet --version](./assets/cmd-bg1.svg)
+![console2svg -h 10 -c -d macos-pc --background "#003060" --opacity 0.85 -- dotnet --version](./assets/cmd-bg1.svg)
 
 You can also set a gradient background.
 
 ```sh
-console2svg -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.8 -- dotnet --version
+console2svg -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.85 -- dotnet --version
 ```
 
-![console2svg -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.8 -- dotnet --version](./assets/cmd-bg2.svg)
+![console2svg -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.85 -- dotnet --version](./assets/cmd-bg2.svg)
 
 Image background is also supported.
 
 ```sh
-console2svg -h 10 -c -d macos-pc --background image.png --opacity 0.8  -- dotnet --version
+console2svg -h 10 -c -d macos-pc --background image.png --opacity 0.85  -- dotnet --version
 ```
 
-![console2svg -h 10 -c -d macos-pc --background image.png --opacity 0.8  -- dotnet --version](./assets/cmd-bg3.svg)
+![console2svg -h 10 -c -d macos-pc --background image.png --opacity 0.85  -- dotnet --version](./assets/cmd-bg3.svg)
 
 ### Terminal Appearance
 

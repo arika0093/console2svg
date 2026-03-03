@@ -219,7 +219,7 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
 <details>
 <summary>Replay file format</summary>
 
-```jsonc
+```json5
 // replay.json
 {
   "version": "1",

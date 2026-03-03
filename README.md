@@ -280,13 +280,14 @@ console2svg -h 10 -c -d macos-pc --background image.png --opacity 0.8  -- dotnet
 ### Terminal Appearance
 
 You can customize the appearance with various options. 
-For example, in the following example, the prompt (the string displayed at the beginning) is changed to `[HELLO!] $`, the command header is changed to `my-custom-header`, and the text color is changed to `#00f040`.
+For example, in the following example, the prompt (the string displayed at the beginning) is changed to `[HELLO!] $`,
+the command header is changed to `my-custom-header`, and the text color is changed to `#00f040`.
 
 ```sh
-console2svg -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" -- echo "hi"
+console2svg -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" --backcolor "#042515" -- echo "hi"
 ```
 
-![console2svg -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" -- echo "hi"](./assets/cmd-term-custom.svg)
+![console2svg -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" --backcolor "#042515" -- echo "hi"](./assets/cmd-term-custom.svg)
 
 
 ### Window chrome
@@ -298,9 +299,16 @@ console2svg -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "
 | <img src="./assets/window/none.svg" width="400" alt="none">                | `none`        | no window frame |
 | <img src="./assets/window/transparent.svg" width="400" alt="transparent">  | `transparent` | transparent background (text-only output) |
 | <img src="./assets/window/macos.svg" width="400" alt="macos">              | `macos`       | macOS style window frame |
-| <img src="./assets/window/macos-pc.svg" width="400" alt="macos-pc">        | `macos-pc`    | macOS style window frame with background and shadow |
-| <img src="./assets/window/windows.svg" width="400" alt="windows">          | `windows`     | Windows style window frame |
-| <img src="./assets/window/windows-pc.svg" width="400" alt="windows-pc">    | `windows-pc`  | Windows style window frame with background and shadow |
+| <img src="./assets/window/windows.svg" width="400" alt="windows">          | `windows`     | Windows Terminal style window frame |
+
+
+`*-pc` styles are designed for use with a background, and include padding and shadows to create a "window" effect. You can also customize the padding with the `--pc-padding` option.
+
+| Image                                                                      | Style(`-d`)   |
+|----------------------------------------------------------------------------|---------------|
+| <img src="./assets/window/macos-pc.svg" width="400" alt="macos-pc">        | `macos-pc`    |
+| <img src="./assets/window/windows-pc.svg" width="400" alt="windows-pc">    | `windows-pc`  |
+
 
 ## Supported platforms
 

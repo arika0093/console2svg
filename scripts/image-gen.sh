@@ -5,7 +5,7 @@ console2svg -o ./assets/cmd-hero-grad.svg   --verbose ./logs/cmd-hero-grad.log  
 console2svg -o ./assets/cmd.svg             --verbose ./logs/cmd.log              console2svg 
 console2svg -o ./assets/cmd-window.svg      --verbose ./logs/cmd-window.log       -w 120 -c -d macos-pc  -- console2svg
 console2svg -o ./assets/cmd-crop-word.svg   --verbose ./logs/cmd-crop-word.log    --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -- dotnet --info
-console2svg -o ./assets/cmd-term-custom.svg --verbose ./logs/cmd-term-custom.log  -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" -- echo "hi"
+console2svg -o ./assets/cmd-term-custom.svg --verbose ./logs/cmd-term-custom.log  -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" --backcolor "#042515" -- echo "hi"
 ## background
 console2svg -o ./assets/cmd-bg1.svg       --verbose ./logs/cmd-bg1.log        -h 10 -c -d macos-pc --background "#003060" --opacity 0.8  -- dotnet --version
 console2svg -o ./assets/cmd-bg2.svg       --verbose ./logs/cmd-bg2.log        -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.8  -- dotnet --version

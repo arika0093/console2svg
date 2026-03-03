@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 844 454" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 856 466" role="img" aria-label="console2svg output">
 <style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}.bg{shape-rendering:crispEdges;}</style>
-<rect x="0" y="0" width="844" height="454" fill="#1e1e1e"/>
-<g transform="translate(2 2)">
+<rect x="0" y="0" width="856" height="466" fill="#1e1e1e"/>
+<g transform="translate(8 8)">
 <rect width="840" height="450" fill="#1e1e1e"/>
 <text class="crt" x="0" y="14" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">console2svg</text>
 <text class="crt" x="100.8" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">-</text>

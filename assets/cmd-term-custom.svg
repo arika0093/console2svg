@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 844 94" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 856 106" role="img" aria-label="console2svg output">
 <style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}.bg{shape-rendering:crispEdges;}</style>
-<rect x="0" y="0" width="844" height="94" fill="#042515"/>
-<rect x="2" y="2" width="840" height="18" fill="#042515"/>
-<text class="crt" x="2" y="16" fill="#00f040">[HELLO!] $ my-custom-header</text>
-<g transform="translate(2 20)">
+<rect x="0" y="0" width="856" height="106" fill="#042515"/>
+<rect x="8" y="8" width="840" height="18" fill="#042515"/>
+<text class="crt" x="8" y="22" fill="#00f040">[HELLO!] $ my-custom-header</text>
+<g transform="translate(8 26)">
 <rect width="840" height="72" fill="#042515"/>
 <text class="crt" x="0" y="14" fill="#00f040" textLength="16.8" lengthAdjust="spacing">hi</text>
 </g>

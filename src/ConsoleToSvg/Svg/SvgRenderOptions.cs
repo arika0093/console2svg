@@ -44,11 +44,20 @@ public sealed class SvgRenderOptions
     /// <summary>Override the terminal's own background color. null = use theme default.</summary>
     public string? BackColor { get; set; }
 
+    private static readonly char[] PathChars = ['/', '\\', '.'];
+
     public static SvgRenderOptions FromAppOptions(AppOptions appOptions)
     {
-        // Resolve effective window name: --pcmode appends -pc to any base style that doesn't already have it
+        // Resolve effective window name: --pcmode appends -pc to any builtin style that doesn't already have it.
+        // Skip suffixing for "none", empty values, and file paths (contain path separators or dots).
         var windowName = appOptions.Window;
-        if (appOptions.PcMode && !windowName.EndsWith("-pc", StringComparison.OrdinalIgnoreCase))
+        if (
+            appOptions.PcMode
+            && !string.IsNullOrWhiteSpace(windowName)
+            && !string.Equals(windowName, "none", StringComparison.OrdinalIgnoreCase)
+            && !windowName.EndsWith("-pc", StringComparison.OrdinalIgnoreCase)
+            && windowName.IndexOfAny(PathChars) < 0
+        )
         {
             windowName = windowName + "-pc";
         }

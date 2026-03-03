@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 690 405" role="img" aria-label="console2svg output">
-<style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}.bg{shape-rendering:crispEdges;}.frame{opacity:0;}@keyframes k0{0%,0.295%{opacity:0;}0.296%,13.886%{opacity:1;}13.887%,100%{opacity:0;}}.frame-0{animation:k0 14.803s linear infinite;}@keyframes k1{0%,13.885%{opacity:0;}13.886%,14.549%{opacity:1;}14.55%,100%{opacity:0;}}.frame-1{animation:k1 14.803s linear infinite;}@keyframes k2{0%,14.548%{opacity:0;}14.549%,15.706%{opacity:1;}15.707%,100%{opacity:0;}}.frame-2{animation:k2 14.803s linear infinite;}@keyframes k3{0%,15.705%{opacity:0;}15.706%,18.045%{opacity:1;}18.046%,100%{opacity:0;}}.frame-3{animation:k3 14.803s linear infinite;}@keyframes k4{0%,18.044%{opacity:0;}18.045%,22.329%{opacity:1;}22.33%,100%{opacity:0;}}.frame-4{animation:k4 14.803s linear infinite;}@keyframes k5{0%,22.328%{opacity:0;}22.329%,33.342%{opacity:1;}33.343%,100%{opacity:0;}}.frame-5{animation:k5 14.803s linear infinite;}@keyframes k6{0%,33.341%{opacity:0;}33.342%,40.49%{opacity:1;}40.491%,100%{opacity:0;}}.frame-6{animation:k6 14.803s linear infinite;}@keyframes k7{0%,40.489%{opacity:0;}40.49%,41.14%{opacity:1;}41.141%,100%{opacity:0;}}.frame-7{animation:k7 14.803s linear infinite;}@keyframes k8{0%,41.139%{opacity:0;}41.14%,43.012%{opacity:1;}43.013%,100%{opacity:0;}}.frame-8{animation:k8 14.803s linear infinite;}@keyframes k9{0%,43.011%{opacity:0;}43.012%,43.98%{opacity:1;}43.981%,100%{opacity:0;}}.frame-9{animation:k9 14.803s linear infinite;}@keyframes k10{0%,43.979%{opacity:0;}43.98%,45.096%{opacity:1;}45.097%,100%{opacity:0;}}.frame-10{animation:k10 14.803s linear infinite;}@keyframes k11{0%,45.095%{opacity:0;}45.096%,51.684%{opacity:1;}51.685%,100%{opacity:0;}}.frame-11{animation:k11 14.803s linear infinite;}@keyframes k12{0%,51.683%{opacity:0;}51.684%,59.048%{opacity:1;}59.049%,100%{opacity:0;}}.frame-12{animation:k12 14.803s linear infinite;}@keyframes k13{0%,59.047%{opacity:0;}59.048%,59.726%{opacity:1;}59.727%,100%{opacity:0;}}.frame-13{animation:k13 14.803s linear infinite;}@keyframes k14{0%,59.725%{opacity:0;}59.726%,67.027%{opacity:1;}67.028%,100%{opacity:0;}}.frame-14{animation:k14 14.803s linear infinite;}@keyframes k15{0%,67.026%{opacity:0;}67.027%,67.738%{opacity:1;}67.739%,100%{opacity:0;}}.frame-15{animation:k15 14.803s linear infinite;}@keyframes k16{0%,67.737%{opacity:0;}67.738%,69.969%{opacity:1;}69.97%,100%{opacity:0;}}.frame-16{animation:k16 14.803s linear infinite;}@keyframes k17{0%,69.968%{opacity:0;}69.969%,77.023%{opacity:1;}77.024%,100%{opacity:0;}}.frame-17{animation:k17 14.803s linear infinite;}@keyframes k18{0%,77.022%{opacity:0;}77.023%,86.489%{opacity:1;}86.49%,100%{opacity:0;}}.frame-18{animation:k18 14.803s linear infinite;}@keyframes k19{0%,86.488%{opacity:0;}86.489%,86.489%{opacity:1;}86.49%,100%{opacity:0;}}.frame-19{animation:k19 14.803s linear infinite;}@keyframes k20{0%,86.488%{opacity:0;}86.489%,86.489%{opacity:1;}86.49%,100%{opacity:0;}}.frame-20{animation:k20 14.803s linear infinite;}@keyframes k21{0%,86.488%{opacity:0;}86.489%,100%{opacity:1;}}.frame-21{animation:k21 14.803s linear infinite;}</style>
+<style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}.bg{shape-rendering:crispEdges;}.frame{opacity:0;}@keyframes k0{0%,3.475%{opacity:0;}3.476%,13.884%{opacity:1;}13.885%,100%{opacity:0;}}.frame-0{animation:k0 14.803s linear infinite;}@keyframes k1{0%,13.883%{opacity:0;}13.884%,14.548%{opacity:1;}14.549%,100%{opacity:0;}}.frame-1{animation:k1 14.803s linear infinite;}@keyframes k2{0%,14.547%{opacity:0;}14.548%,15.705%{opacity:1;}15.706%,100%{opacity:0;}}.frame-2{animation:k2 14.803s linear infinite;}@keyframes k3{0%,15.704%{opacity:0;}15.705%,18.043%{opacity:1;}18.044%,100%{opacity:0;}}.frame-3{animation:k3 14.803s linear infinite;}@keyframes k4{0%,18.042%{opacity:0;}18.043%,24.331%{opacity:1;}24.332%,100%{opacity:0;}}.frame-4{animation:k4 14.803s linear infinite;}@keyframes k5{0%,24.33%{opacity:0;}24.331%,33.34%{opacity:1;}33.341%,100%{opacity:0;}}.frame-5{animation:k5 14.803s linear infinite;}@keyframes k6{0%,33.339%{opacity:0;}33.34%,40.486%{opacity:1;}40.487%,100%{opacity:0;}}.frame-6{animation:k6 14.803s linear infinite;}@keyframes k7{0%,40.485%{opacity:0;}40.486%,41.141%{opacity:1;}41.142%,100%{opacity:0;}}.frame-7{animation:k7 14.803s linear infinite;}@keyframes k8{0%,41.14%{opacity:0;}41.141%,43.014%{opacity:1;}43.015%,100%{opacity:0;}}.frame-8{animation:k8 14.803s linear infinite;}@keyframes k9{0%,43.013%{opacity:0;}43.014%,43.982%{opacity:1;}43.983%,100%{opacity:0;}}.frame-9{animation:k9 14.803s linear infinite;}@keyframes k10{0%,43.981%{opacity:0;}43.982%,45.098%{opacity:1;}45.099%,100%{opacity:0;}}.frame-10{animation:k10 14.803s linear infinite;}@keyframes k11{0%,45.097%{opacity:0;}45.098%,51.68%{opacity:1;}51.681%,100%{opacity:0;}}.frame-11{animation:k11 14.803s linear infinite;}@keyframes k12{0%,51.679%{opacity:0;}51.68%,59.043%{opacity:1;}59.044%,100%{opacity:0;}}.frame-12{animation:k12 14.803s linear infinite;}@keyframes k13{0%,59.042%{opacity:0;}59.043%,59.72%{opacity:1;}59.721%,100%{opacity:0;}}.frame-13{animation:k13 14.803s linear infinite;}@keyframes k14{0%,59.719%{opacity:0;}59.72%,67.028%{opacity:1;}67.029%,100%{opacity:0;}}.frame-14{animation:k14 14.803s linear infinite;}@keyframes k15{0%,67.027%{opacity:0;}67.028%,67.739%{opacity:1;}67.74%,100%{opacity:0;}}.frame-15{animation:k15 14.803s linear infinite;}@keyframes k16{0%,67.738%{opacity:0;}67.739%,69.963%{opacity:1;}69.964%,100%{opacity:0;}}.frame-16{animation:k16 14.803s linear infinite;}@keyframes k17{0%,69.962%{opacity:0;}69.963%,77.024%{opacity:1;}77.025%,100%{opacity:0;}}.frame-17{animation:k17 14.803s linear infinite;}@keyframes k18{0%,77.023%{opacity:0;}77.024%,86.489%{opacity:1;}86.49%,100%{opacity:0;}}.frame-18{animation:k18 14.803s linear infinite;}@keyframes k19{0%,86.488%{opacity:0;}86.489%,86.489%{opacity:1;}86.49%,100%{opacity:0;}}.frame-19{animation:k19 14.803s linear infinite;}@keyframes k20{0%,86.488%{opacity:0;}86.489%,100%{opacity:1;}}.frame-20{animation:k20 14.803s linear infinite;}</style>
 <rect x="0.5" y="0.5" rx="10" ry="10" width="689" height="404" fill="#1f1f1f" stroke="#3a3a3a"/>
 <rect x="1" y="1" rx="9" ry="9" width="688" height="27" fill="#2c2c2c"/>
 <circle cx="14" cy="14" r="5" fill="#ff5f57"/>
@@ -9,10 +9,6 @@
 <defs>
 <g id="fd-0" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmnay03</text>
-<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 </g>
 <g id="fd-1" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
@@ -45,9 +41,6 @@
 <text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 <text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
-</g>
-<g id="fd-5" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
 </g>
 <g id="fd-6" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
@@ -449,18 +442,6 @@
 <text class="crt" x="168" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="32" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
-</g>
-<g id="fd-21" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmnay03</text>
-<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
-<text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
-<text class="crt" x="0" y="32" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmnay03</text>
-<text class="crt" x="168" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="32" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 <text class="crt" x="0" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">exit</text>
 </g>
 </defs>
@@ -469,7 +450,7 @@
 <use href="#fd-2" id="frame-2" class="frame frame-2"/>
 <use href="#fd-3" id="frame-3" class="frame frame-3"/>
 <use href="#fd-4" id="frame-4" class="frame frame-4"/>
-<use href="#fd-5" id="frame-5" class="frame frame-5"/>
+<use href="#fd-0" id="frame-5" class="frame frame-5"/>
 <use href="#fd-6" id="frame-6" class="frame frame-6"/>
 <use href="#fd-7" id="frame-7" class="frame frame-7"/>
 <use href="#fd-8" id="frame-8" class="frame frame-8"/>
@@ -485,5 +466,4 @@
 <use href="#fd-18" id="frame-18" class="frame frame-18"/>
 <use href="#fd-19" id="frame-19" class="frame frame-19"/>
 <use href="#fd-20" id="frame-20" class="frame frame-20"/>
-<use href="#fd-21" id="frame-21" class="frame frame-21"/>
 </svg>

@@ -608,7 +608,7 @@ public sealed class SvgRendererTests
             {
                 Theme = "dark",
                 Chrome = ConsoleToSvg.Svg.ChromeLoader.Load("windows-pc"),
-                Padding = 2,
+                Padding = 8,
             }
         );
 

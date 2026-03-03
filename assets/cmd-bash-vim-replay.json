@@ -1,71 +1,71 @@
 {
   "version": "1",
   "appVersion": "0.5.0.1+fe21276d6f",
-  "createdAt": "2026-03-03T12:12:34.2972054+00:00",
-  "totalDuration": 13.0297985,
+  "createdAt": "2026-03-03T15:31:43.2026202+00:00",
+  "totalDuration": 18.0861131,
   "replay": [
     {
-      "time": 2.0537275,
+      "time": 2.8646967,
       "key": "v",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.097876,
+      "tick": 0.1049361,
       "key": "i",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1717001,
+      "tick": 0.1349283,
       "key": "m",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.3458616,
+      "tick": 0.3385967,
       "key": "Enter",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 2.2644835,
+      "tick": 2.6542997,
       "key": "i",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 1.0569215,
+      "tick": 2.2914243,
       "key": "h",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0976044,
+      "tick": 0.0481289,
       "key": "e",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.2772797,
+      "tick": 0.1119166,
       "key": "l",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1431049,
+      "tick": 0.1503149,
       "key": "l",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1652617,
+      "tick": 0.1583367,
       "key": "o",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.9747027,
+      "tick": 0.9979696,
       "key": "!",
       "modifiers": [
         "shift"
@@ -73,25 +73,25 @@
       "type": "keydown"
     },
     {
-      "tick": 1.0650581,
+      "tick": 0.9794869,
       "key": "Escape",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 1.2070046,
+      "tick": 1.6375095,
       "key": ":",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1049319,
+      "tick": 0.1646468,
       "key": "q",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.3300043,
+      "tick": 0.2400277,
       "key": "!",
       "modifiers": [
         "shift"
@@ -99,13 +99,13 @@
       "type": "keydown"
     },
     {
-      "tick": 1.0448403,
+      "tick": 2.1973773,
       "key": "Enter",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 1.4010904,
+      "tick": 1.9751215,
       "key": "d",
       "modifiers": [
         "ctrl"

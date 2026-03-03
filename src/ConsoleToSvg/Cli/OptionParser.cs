@@ -75,7 +75,7 @@ public static class OptionParser
                 --forecolor <color>     Override default foreground color.
                 --backcolor <color>       Override the terminal's own background color.
                                           Unlike --background, this affects the terminal interior rather than the outer canvas.
-                --padding <px>            Outer padding in pixels (default: 2, or 8 when window is set).
+                --padding <px>            Outer padding in pixels (default: 8).
                 --adjust <value>        SVG text lengthAdjust (default: spacing).
                 --background <color|path> [color]
                     Desktop background. Accepts:

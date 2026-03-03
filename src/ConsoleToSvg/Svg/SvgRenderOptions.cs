@@ -68,7 +68,7 @@ public sealed class SvgRenderOptions
             chrome.DesktopPadding = appOptions.PcPadding.Value;
         }
 
-        var effectivePadding = appOptions.Padding ?? (chrome != null ? 8d : 2d);
+        var effectivePadding = appOptions.Padding ?? 8d;
         var prompt = string.IsNullOrWhiteSpace(appOptions.Prompt) ? "$" : appOptions.Prompt;
         string? commandHeader = null;
         if (!string.IsNullOrWhiteSpace(appOptions.Header))

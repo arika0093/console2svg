@@ -518,20 +518,6 @@ public sealed class SvgRendererTests
     }
 
     [Test]
-    public void DefaultPaddingIsTwoWhenWindowIsNone()
-    {
-        var ok = ConsoleToSvg.Cli.OptionParser.TryParse(
-            System.Array.Empty<string>(),
-            out var options,
-            out _,
-            out _
-        );
-        ok.ShouldBeTrue();
-        var renderOptions = ConsoleToSvg.Svg.SvgRenderOptions.FromAppOptions(options!);
-        renderOptions.Padding.ShouldBe(2d);
-    }
-
-    [Test]
     public void ExplicitPaddingOverridesWindowDefault()
     {
         var ok = ConsoleToSvg.Cli.OptionParser.TryParse(

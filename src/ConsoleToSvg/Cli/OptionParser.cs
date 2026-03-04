@@ -23,10 +23,10 @@ public static class OptionParser
                 -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc, transparent.
                 --background <color> [color]  Background color, gradient, or image path.
                 --crop-top/bottom/left/right  Crop by px, ch, or text pattern.
-                --forecolor <color>      Override default foreground color.
-                --adjust <value>         SVG text lengthAdjust (default: spacing).
-                --header <text>          Override command header text.
-                --prompt <text>          Override prompt prefix for -c (default: $ or # when root).
+                --forecolor <color>       Override default foreground color.
+                --adjust <value>          SVG text lengthAdjust (default: spacing).
+                --header <text>           Override command header text.
+                --prompt <text>           Override prompt prefix for -c (default: $ or # when root).
                 --verbose [path]          Enable verbose logging (log to path, default: console2svg.log).
 
             For full option list, see --help.
@@ -48,18 +48,14 @@ public static class OptionParser
                 -v                        is alias for --mode video.
                 -w, --width <int>         Terminal width in characters (default: 100).
                 -h, --height <int>        Terminal height in rows (default: auto).
-                --font <family>           CSS font-family for SVG text.
-                --fontsize <px>           Font size in pixels (default: 14).
                 --in <path>               Read existing asciicast file.
                 --save-cast <path>        Save captured output as asciicast file.
-                --help                    Show help.
                 --verbose [path]          Enable verbose logging; write to path (default: console2svg.log).
+                --help                    Show help.
                 --version                 Show version and exit.
                 --timeout <sec>           Stop recording after specified seconds (e.g. 5, 0.5).
                 --no-colorenv             Disable PTY color environment overrides (TERM/COLORTERM/FORCE_COLOR).
                 --no-delete-envs          Keep CI/TF_BUILD in shell execution environment.
-                --header <text>          Override command header text (shown even without -c).
-                --prompt <text>          Prompt prefix for -c (default: $ or # when root).
 
             Options (Appearance):
                 -d, --window [none|macos|windows|macos-pc|windows-pc|transparent|path/to/chrome.json]
@@ -72,19 +68,21 @@ public static class OptionParser
                 --pc-padding <px>         Override the outer desktop padding in PC mode (default: 20).
                 --opacity <0-1>           Background fill opacity (default: 1).
                 --theme <dark|light>      Color theme (default: dark).
-                --forecolor <color>     Override default foreground color.
+                --header <text>           Override command header text (shown even without -c).
+                --prompt <text>           Prompt prefix for -c (default: $ or # when root).
+                --forecolor <color>       Override default foreground color.
                 --backcolor <color>       Override the terminal's own background color.
                                           Unlike --background, this affects the terminal interior rather than the outer canvas.
                 --padding <px>            Outer padding in pixels (default: 8).
-                --adjust <value>        SVG text lengthAdjust (default: spacing).
-                --background <color|path> [color]
-                    Desktop background. Accepts:
-                        Solid color  : --background "#rrggbb"
-                        Gradient     : --background "#from" "#to"
-                                       --background "#from:#to"
-                                       --background "#from" --background "#to"
-                        Image        : --background path/to/image.png
-                    Colors: #hex, rgb(), hsl(), oklch(), named colors.
+                --adjust <value>          SVG text lengthAdjust (default: spacing).
+                --background <color|path> [color] Desktop background. Accepts:
+                    Solid color  : --background "#rrggbb"
+                    Gradient     : --background "#from" "#to"
+                                   --background "#from:#to"
+                                   --background "#from" --background "#to"
+                    Image        : --background path/to/image.png
+                --font <family>           CSS font-family for SVG text.
+                --fontsize <px>           Font size in pixels (default: 14).
 
             Options (Image mode):
                 --frame <int>             Frame index for image mode.

@@ -1,6 +1,6 @@
 # --- image ---
 # required: sudo npm install -g oh-my-logo
-console2svg -o ./assets/cmd-hero.svg        --verbose ./logs/cmd-hero.log         -c -d macos-pc -h 10 --opacity 0.95 --background ./assets/image1.png  -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
+console2svg -o ./assets/cmd-hero.svg        --verbose ./logs/cmd-hero.log         -c -d macos-pc -h 10 --opacity 0.95 --background ./assets/image1.png -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
 console2svg -o ./assets/cmd-hero-grad.svg   --verbose ./logs/cmd-hero-grad.log    -c -d macos-pc -h 10 --opacity 0.95 --background "#30a0d0" "#0060c0" -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
 console2svg -o ./assets/cmd.svg             --verbose ./logs/cmd.log              console2svg 
 console2svg -o ./assets/cmd-window.svg      --verbose ./logs/cmd-window.log       -w 120 -c -d macos-pc  -- console2svg

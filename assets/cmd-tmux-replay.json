@@ -1,191 +1,179 @@
 {
   "version": "1",
-  "appVersion": "0.5.1.2+b8cf69b38d",
-  "createdAt": "2026-03-04T04:32:27.6414302+00:00",
-  "totalDuration": 24.6022236,
+  "appVersion": "0.5.1.7+f0ec95ece2",
+  "createdAt": "2026-03-04T08:28:25.999555+00:00",
+  "totalDuration": 15.82704524,
   "replay": [
     {
-      "tick": 2.5727195,
+      "time": 1,
       "key": "e",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0737479,
+      "tick": 0.05,
       "key": "c",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0810688,
+      "tick": 0.05,
       "key": "h",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0822705,
+      "tick": 0.05,
       "key": "o",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0798508,
+      "tick": 0.05,
       "key": " ",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.2472821,
+      "tick": 0.05,
       "key": "\"",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.3742566,
+      "tick": 0.05,
       "key": "h",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0840879,
+      "tick": 0.05,
       "key": "e",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0862618,
+      "tick": 0.05,
       "key": "l",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1628113,
+      "tick": 0.05,
       "key": "l",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.204936,
+      "tick": 0.05,
       "key": "o",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.6330043,
+      "tick": 0.05,
       "key": "\"",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.3030695,
+      "tick": 0.05,
       "key": "Enter",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.8798866,
+      "tick": 0.5,
       "key": "e",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0886683,
+      "tick": 0.05,
       "key": "c",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1615284,
-      "key": " ",
-      "modifiers": [],
-      "type": "keydown"
-    },
-    {
-      "tick": 0.4355881,
-      "key": "Backspace",
-      "modifiers": [],
-      "type": "keydown"
-    },
-    {
-      "tick": 0.2726638,
+      "tick": 0.05,
       "key": "h",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0826142,
+      "tick": 0.05,
       "key": "o",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0806834,
+      "tick": 0.05,
       "key": " ",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.3283623,
+      "tick": 0.05,
       "key": "\"",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.7005694,
+      "tick": 0.05,
       "key": "g",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1949009,
+      "tick": 0.05,
       "key": "o",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0848632,
+      "tick": 0.05,
       "key": "o",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0798013,
+      "tick": 0.05,
       "key": "d",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.5384485,
+      "tick": 0.05,
       "key": "b",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1682259,
+      "tick": 0.05,
       "key": "y",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.417748,
+      "tick": 0.05,
       "key": "e",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.4445661,
+      "tick": 0.05,
       "key": "\"",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.2686659,
+      "tick": 0.05,
       "key": "Enter",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 1.6262856,
+      "tick": 0.5,
       "key": "b",
       "modifiers": [
         "ctrl"
@@ -193,235 +181,367 @@
       "type": "keydown"
     },
     {
-      "tick": 0.2274978,
+      "tick": 0.1,
       "key": "c",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 2.4851651,
+      "tick": 1,
       "key": "t",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0812987,
+      "tick": 0.05,
       "key": "m",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1654584,
+      "tick": 0.05,
       "key": "u",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1645087,
+      "tick": 0.05,
       "key": "x",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0814297,
+      "tick": 0.05,
       "key": " ",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.2470366,
+      "tick": 0.05,
       "key": "c",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.08278,
+      "tick": 0.05,
       "key": "a",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.351389,
+      "tick": 0.05,
       "key": "p",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0851897,
+      "tick": 0.05,
       "key": "t",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1654064,
+      "tick": 0.05,
       "key": "u",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0870043,
+      "tick": 0.05,
       "key": "r",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0828695,
+      "tick": 0.05,
       "key": "e",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0836977,
+      "tick": 0.05,
       "key": "-",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.2406249,
+      "tick": 0.05,
       "key": "p",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0814817,
+      "tick": 0.05,
       "key": "a",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1615231,
+      "tick": 0.05,
       "key": "n",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0804267,
+      "tick": 0.05,
       "key": "e",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0819846,
+      "tick": 0.05,
       "key": " ",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.6181836,
+      "tick": 0.05,
       "key": "-",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0888259,
+      "tick": 0.05,
       "key": "p",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.4386466,
+      "tick": 0.05,
       "key": "e",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0829404,
+      "tick": 0.05,
       "key": " ",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1671645,
+      "tick": 0.05,
       "key": "-",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1646898,
+      "tick": 0.05,
       "key": "t",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1162369,
+      "tick": 0.05,
       "key": " ",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.3820544,
+      "tick": 0.05,
       "key": ":",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.3655829,
+      "tick": 0.05,
       "key": "0",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0896125,
+      "tick": 0.05,
       "key": " ",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.1892865,
+      "tick": 0.05,
       "key": "|",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0753567,
+      "tick": 0.05,
       "key": " ",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.2513544,
+      "tick": 0.05,
       "key": "c",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0879495,
+      "tick": 0.05,
       "key": "o",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0052675,
+      "tick": 0.05,
       "key": "n",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.161393,
+      "tick": 0.05,
       "key": "s",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.0876567,
-      "key": "o",
-      "modifiers": [],
-      "type": "keydown"
-    },
-    {
-      "tick": 0.2476335,
+      "tick": 0.05,
       "key": "Tab",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 0.7752577,
+      "tick": 0.05,
+      "key": "-",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "o",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": " ",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": ".",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "/",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "a",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "s",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "s",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "e",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "Tab",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "c",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "m",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "d",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "-",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "t",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "m",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "u",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "x",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "-",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "c",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "a",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "p",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "Tab",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
       "key": "Enter",
       "modifiers": [],
       "type": "keydown"
     },
     {
-      "tick": 1.6869793,
+      "tick": 1,
       "key": "d",
       "modifiers": [
         "ctrl"
@@ -429,7 +549,7 @@
       "type": "keydown"
     },
     {
-      "tick": 1.2112332,
+      "tick": 1,
       "key": "d",
       "modifiers": [
         "ctrl"

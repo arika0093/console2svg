@@ -341,6 +341,8 @@ tmux capture-pane -pe -t :0 | console2svg -h 12 -o capture-$(date +%s).svg
 <details>
 <summary>Recording and replaying tmux usage</summary>
 
+With the power of `console2svg`, even self-explanatory videos can of course be converted to SVG :)
+
 ![](./assets/cmd-tmux-replay.svg)
 
 </details>

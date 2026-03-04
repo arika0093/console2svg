@@ -258,33 +258,48 @@ public static class AnimatedSvgRenderer
             return frames;
         }
 
-        var lastIndex = frames.Count - 1;
-        var lastEvent = session.Events[lastIndex].Data;
-        if (!ContainsAlternateScreenLeave(lastEvent))
-        {
-            return frames;
-        }
-
-        if (!IsBlankFrame(frames[lastIndex].Buffer))
-        {
-            return frames;
-        }
-
-        for (var i = 0; i < lastIndex; i++)
+        var lastNonBlankIndex = -1;
+        for (var i = frames.Count - 1; i >= 0; i--)
         {
             if (!IsBlankFrame(frames[i].Buffer))
             {
-                var trimmed = new System.Collections.Generic.List<TerminalFrame>(lastIndex);
-                for (var keep = 0; keep < lastIndex; keep++)
-                {
-                    trimmed.Add(frames[keep]);
-                }
-
-                return trimmed;
+                lastNonBlankIndex = i;
+                break;
             }
         }
 
-        return frames;
+        if (lastNonBlankIndex < 0 || lastNonBlankIndex == frames.Count - 1)
+        {
+            return frames;
+        }
+
+        if (!HasTrailingBlankIndicators(session, lastNonBlankIndex + 1))
+        {
+            return frames;
+        }
+
+        var trimmed = new System.Collections.Generic.List<TerminalFrame>(lastNonBlankIndex + 1);
+        for (var keep = 0; keep <= lastNonBlankIndex; keep++)
+        {
+            trimmed.Add(frames[keep]);
+        }
+
+        return trimmed;
+    }
+
+    private static bool HasTrailingBlankIndicators(RecordingSession session, int startIndex)
+    {
+        var start = Math.Max(0, startIndex);
+        for (var i = start; i < session.Events.Count; i++)
+        {
+            var data = session.Events[i].Data;
+            if (ContainsAlternateScreenLeave(data) || ContainsLikelyScreenClear(data))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static bool ContainsAlternateScreenLeave(string data)
@@ -297,6 +312,20 @@ public static class AnimatedSvgRenderer
         return data.Contains("\u001b[?1049l", StringComparison.Ordinal)
             || data.Contains("\u001b[?47l", StringComparison.Ordinal)
             || data.Contains("\u001b[?1047l", StringComparison.Ordinal);
+    }
+
+    private static bool ContainsLikelyScreenClear(string data)
+    {
+        if (string.IsNullOrEmpty(data))
+        {
+            return false;
+        }
+
+        return data.Contains("\u001b[J", StringComparison.Ordinal)
+            || data.Contains("\u001b[2J", StringComparison.Ordinal)
+            || data.Contains("\u001b[3J", StringComparison.Ordinal)
+            || data.Contains("\u001b[H", StringComparison.Ordinal)
+            || data.Contains("\u001b[;H", StringComparison.Ordinal);
     }
 
     private static bool IsBlankFrame(ScreenBuffer buffer)

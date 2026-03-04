@@ -84,32 +84,48 @@ public static class SvgRenderer
             return lastIndex;
         }
 
-        var lastEvent = session.Events[lastIndex].Data;
-        if (!ContainsAlternateScreenLeave(lastEvent))
-        {
-            return lastIndex;
-        }
-
         var frames = probeEmulator.ReplayFrames(session);
         if (frames.Count != session.Events.Count)
         {
             return lastIndex;
         }
 
-        if (!IsBlankFrame(frames[lastIndex].Buffer))
+        var lastNonBlankIndex = -1;
+        for (var i = frames.Count - 1; i >= 0; i--)
+        {
+            if (!IsBlankFrame(frames[i].Buffer))
+            {
+                lastNonBlankIndex = i;
+                break;
+            }
+        }
+
+        if (lastNonBlankIndex < 0 || lastNonBlankIndex == lastIndex)
         {
             return lastIndex;
         }
 
-        for (var i = 0; i < lastIndex; i++)
+        if (!HasTrailingBlankIndicators(session, lastNonBlankIndex + 1))
         {
-            if (!IsBlankFrame(frames[i].Buffer))
+            return lastIndex;
+        }
+
+        return lastNonBlankIndex;
+    }
+
+    private static bool HasTrailingBlankIndicators(RecordingSession session, int startIndex)
+    {
+        var start = Math.Max(0, startIndex);
+        for (var i = start; i < session.Events.Count; i++)
+        {
+            var data = session.Events[i].Data;
+            if (ContainsAlternateScreenLeave(data) || ContainsLikelyScreenClear(data))
             {
-                return lastIndex - 1;
+                return true;
             }
         }
 
-        return lastIndex;
+        return false;
     }
 
     private static bool ContainsAlternateScreenLeave(string data)
@@ -122,6 +138,20 @@ public static class SvgRenderer
         return data.Contains("\u001b[?1049l", StringComparison.Ordinal)
             || data.Contains("\u001b[?47l", StringComparison.Ordinal)
             || data.Contains("\u001b[?1047l", StringComparison.Ordinal);
+    }
+
+    private static bool ContainsLikelyScreenClear(string data)
+    {
+        if (string.IsNullOrEmpty(data))
+        {
+            return false;
+        }
+
+        return data.Contains("\u001b[J", StringComparison.Ordinal)
+            || data.Contains("\u001b[2J", StringComparison.Ordinal)
+            || data.Contains("\u001b[3J", StringComparison.Ordinal)
+            || data.Contains("\u001b[H", StringComparison.Ordinal)
+            || data.Contains("\u001b[;H", StringComparison.Ordinal);
     }
 
     private static bool IsBlankFrame(ScreenBuffer buffer)

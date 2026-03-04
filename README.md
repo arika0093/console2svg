@@ -338,7 +338,7 @@ After completing the command execution you want to record, open a new window wit
 tmux capture-pane -pe -t :0 | console2svg -h 12 -o capture-$(date +%s).svg
 ```
 
-![tmux capture-pane -pe -t :0 | console2svg -h 12](./assets/cmd-tmux-capture.svg)
+![tmux capture-pane -pe -t :0 | console2svg -h 12](./assets/cmd-tmux-cap.svg)
 
 Then repeat the workflow: press `ctrl+b p` to return to the original window, work on your commands, press `ctrl+b n` to switch to the SVG capture pane, and run the `console2svg` command. This allows you to progressively save the command execution process as SVG images.
 

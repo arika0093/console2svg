@@ -18,7 +18,7 @@ console2svg -o ./assets/window/windows.svg     -d windows     -w 40 -h 4 -c -- d
 console2svg -o ./assets/window/windows-pc.svg  -d windows-pc  -w 40 -h 4 -c -- dotnet --version
 console2svg -o ./assets/window/transparent.svg -d transparent -w 40 -h 4 -c -- dotnet --version
 # --- video ---
-# required: sudo apt install -y sl nyancat vim
+# required: sudo apt install -y sl nyancat vim tmux
 console2svg -o ./assets/cmd-sl.svg        --verbose ./logs/cmd-sl.log         -w 120 -h 16 -c -d -v -- sl
 console2svg -o ./assets/cmd-nyancat.svg   --verbose ./logs/cmd-nyancat.log    -w 160 -h 32 -c -d -v --timeout 5 --sleep 0 -- nyancat
 console2svg -o ./assets/cmd-bash-vim.svg  --verbose ./logs/cmd-bash-vim.log   -w 80 -h 20 -v -d --replay ./assets/cmd-bash-vim-replay.json -- bash

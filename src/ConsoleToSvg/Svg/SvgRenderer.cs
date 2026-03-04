@@ -501,18 +501,29 @@ internal static class SvgDocumentBuilder
         var effectiveFont = string.IsNullOrWhiteSpace(font)
             ? DefaultFontFamily
             : EscapeAttribute(font);
-        sb.Append("<style>");
-        sb.Append(".crt{font-family:");
+        sb.Append("<style>\n");
+        sb.Append(".crt {\n");
+        sb.Append("  font-family: ");
         sb.Append(effectiveFont);
-        sb.Append(';');
-        sb.Append("font-size:");
+        sb.Append(";\n");
+        sb.Append("  font-size: ");
         sb.Append(Format(context.FontSize));
-        sb.Append("px;}");
-        sb.Append("text{dominant-baseline:alphabetic;}");
-        sb.Append(".bg{shape-rendering:crispEdges;}");
+        sb.Append("px;\n");
+        sb.Append("}\n");
+        sb.Append("text {\n");
+        sb.Append("  dominant-baseline: alphabetic;\n");
+        sb.Append("}\n");
+        sb.Append(".bg {\n");
+        sb.Append("  shape-rendering: crispEdges;\n");
+        sb.Append("}\n");
         if (!string.IsNullOrWhiteSpace(additionalCss))
         {
+            sb.Append('\n');
             sb.Append(additionalCss);
+            if (!additionalCss.EndsWith('\n'))
+            {
+                sb.Append('\n');
+            }
         }
 
         sb.Append("</style>\n");

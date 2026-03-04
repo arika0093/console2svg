@@ -46,9 +46,8 @@ public sealed class AnimatedSvgRendererTests
         var lastKeyframeIndex = svg.LastIndexOf("@keyframes k", StringComparison.Ordinal);
         lastKeyframeIndex.ShouldBeGreaterThanOrEqualTo(0);
         var lastKeyframeBlock = svg.Substring(lastKeyframeIndex);
-        // Last frame should have opacity:1 at end (100%), not followed by opacity:0
-        lastKeyframeBlock.ShouldContain("100%{opacity:1;}");
-        lastKeyframeBlock.ShouldNotContain("100%{opacity:0;}");
+        // Last frame should not emit the fade-out rule (", 100% { opacity: 0; }")
+        lastKeyframeBlock.ShouldNotContain("%, 100% {");
     }
 
     [Test]
@@ -66,7 +65,7 @@ public sealed class AnimatedSvgRendererTests
         svg.ShouldContain("@keyframes k0");
         var keyframeStart = svg.IndexOf("@keyframes k0", StringComparison.Ordinal);
         var keyframeBlock = svg.Substring(keyframeStart);
-        keyframeBlock.ShouldNotContain("100%{opacity:0;}");
+        keyframeBlock.ShouldNotContain("%, 100% {");
     }
 
     [Test]
@@ -185,7 +184,8 @@ public sealed class AnimatedSvgRendererTests
         var lastKeyframeIndex = svg.LastIndexOf("@keyframes k", StringComparison.Ordinal);
         lastKeyframeIndex.ShouldBeGreaterThanOrEqualTo(0);
         var lastKeyframeBlock = svg.Substring(lastKeyframeIndex);
-        lastKeyframeBlock.ShouldContain("100%{opacity:0;}");
+        lastKeyframeBlock.ShouldContain("%, 100% {");
+        lastKeyframeBlock.ShouldContain("opacity: 0;");
     }
 
     [Test]
@@ -209,8 +209,7 @@ public sealed class AnimatedSvgRendererTests
         var lastKeyframeIndex = svg.LastIndexOf("@keyframes k", StringComparison.Ordinal);
         lastKeyframeIndex.ShouldBeGreaterThanOrEqualTo(0);
         var lastKeyframeBlock = svg.Substring(lastKeyframeIndex);
-        lastKeyframeBlock.ShouldContain("100%{opacity:1;}");
-        lastKeyframeBlock.ShouldNotContain("100%{opacity:0;}");
+        lastKeyframeBlock.ShouldNotContain("%, 100% {");
     }
 
     [Test]
@@ -348,6 +347,23 @@ public sealed class AnimatedSvgRendererTests
         var svgB = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(sessionB, options);
 
         svgA.ShouldBe(svgB);
+    }
+
+    [Test]
+    public void RenderAnimatedSvgUsesReadableMultilineStyleBlock()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "A");
+        session.AddEvent(0.2, "B");
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain("<style>\n");
+        svg.ShouldContain("@keyframes k0 {\n");
+        svg.ShouldContain(".frame {\n");
     }
 
     private static int CountOccurrences(string text, string token)

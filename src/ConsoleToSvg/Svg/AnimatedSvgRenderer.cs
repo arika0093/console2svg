@@ -403,7 +403,9 @@ public static class AnimatedSvgRenderer
     )
     {
         var sb = new StringBuilder();
-        sb.Append(".frame{opacity:0;}");
+        sb.AppendLine(".frame {");
+        sb.AppendLine("  opacity: 0;");
+        sb.AppendLine("}");
 
         for (var i = 0; i < frames.Count; i++)
         {
@@ -425,31 +427,39 @@ public static class AnimatedSvgRenderer
 
             sb.Append("@keyframes k");
             sb.Append(i.ToString(CultureInfo.InvariantCulture));
-            sb.Append('{');
-            sb.Append("0%,");
+            sb.AppendLine(" {");
+            sb.Append("  0%, ");
             sb.Append(Format(fadeInPoint));
-            sb.Append("%{opacity:0;}");
+            sb.AppendLine("% {");
+            sb.AppendLine("    opacity: 0;");
+            sb.AppendLine("  }");
+            sb.Append("  ");
             sb.Append(Format(start));
-            sb.Append("%,");
+            sb.Append("%, ");
             sb.Append(Format(end));
-            sb.Append("%{opacity:1;}");
+            sb.AppendLine("% {");
+            sb.AppendLine("    opacity: 1;");
+            sb.AppendLine("  }");
             if (!isLast || fadeOut > 0d)
             {
+                sb.Append("  ");
                 sb.Append(Format(fadeOutPoint));
-                sb.Append("%,100%{opacity:0;}");
+                sb.AppendLine("%, 100% {");
+                sb.AppendLine("    opacity: 0;");
+                sb.AppendLine("  }");
             }
 
-            sb.Append('}');
+            sb.AppendLine("}");
 
             sb.Append(".frame-");
             sb.Append(i.ToString(CultureInfo.InvariantCulture));
-            sb.Append("{animation:k");
+            sb.Append(" { animation:k");
             sb.Append(i.ToString(CultureInfo.InvariantCulture));
             sb.Append(' ');
             sb.Append(Format(totalDuration));
             sb.Append("s linear ");
             sb.Append(loop ? "infinite;" : "forwards;");
-            sb.Append('}');
+            sb.AppendLine(" }");
         }
 
         return sb.ToString();

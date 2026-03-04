@@ -309,6 +309,44 @@ console2svg -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "
 | <img src="./assets/window/macos-pc.svg" width="400" alt="macos-pc">        | `macos-pc`    |
 | <img src="./assets/window/windows-pc.svg" width="400" alt="windows-pc">    | `windows-pc`  |
 
+## Tips
+### Using with `tmux`
+By combining with `tmux`, you can save the step-by-step execution process of commands as SVG images.
+
+First, open tmux. If it's not installed, install it using `apt install tmux` or `brew install tmux`, etc.
+
+```sh
+tmux
+```
+
+Execute commands in the default window (`:0`).
+
+```bash
+$ echo "say hello"
+$ echo "say goodbye"
+```
+
+After completing the command execution you want to record, open a new window with `ctrl+b c`. Then, run `tmux capture-pane | console2svg` to save the content of the original window as SVG.
+
+```sh
+# tmux options:
+#   -p: print the captured content to stdout
+#   -e: include escape sequences (for colors, etc.)
+#   -t :0: target the first pane (you can specify other panes as needed)
+# console2svg options:
+#   -h 12: set the height of the output SVG to 12 lines (adjust as needed)
+tmux capture-pane -pe -t :0 | console2svg -h 12 -o capture-$(date +%s).svg
+```
+
+![tmux capture-pane -pe -t :0 | console2svg -h 12](./assets/cmd-tmux-capture.svg)
+
+Then repeat the workflow: press `ctrl+b p` to return to the original window, work on your commands, press `ctrl+b n` to switch to the SVG capture pane, and run the `console2svg` command. This allows you to progressively save the command execution process as SVG images.
+
+Of course, you can also save all lines (useful for evidence). In that case, specify the `-S -` option on the tmux side to capture the entire screen.
+
+```sh
+tmux capture-pane -pe -S - -t :0 | console2svg -o full-capture-$(date +%s).svg
+```
 
 ## Supported platforms
 

@@ -6,8 +6,8 @@ namespace ConsoleToSvg.Cli;
 public static class OptionParser
 {
     public static string ShortHelpText =>
-        """
-            console2svg - Convert terminal output to SVG
+        $"""
+            console2svg - Convert terminal output to SVG [Ver: {ThisAssembly.AssemblyInformationalVersion}]
 
             Usage:
                 my-command | console2svg [options]
@@ -15,11 +15,11 @@ public static class OptionParser
                 console2svg [options] -- my-command with args
 
             Major options:
-                -c, --with-command        Prepend the command line to the output.
                 -o, --out <path>          Output SVG path (default: output.svg).
-                -w, --width <int>         Terminal width in characters (default: 100).
+                -w, --width <int>         Terminal width in characters (default: auto[pipe], 100[pty]).
                 -h, --height <int>        Terminal height in rows (default: auto).
                 -v                        Output animated SVG (alias for --mode video).
+                -c, --with-command        Prepend the command line to the output.
                 -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc, transparent.
                 --background <color> [color]  Background color, gradient, or image path.
                 --crop-top/bottom/left/right  Crop by px, ch, or text pattern.
@@ -33,8 +33,8 @@ public static class OptionParser
             """;
 
     public static string HelpText =>
-        """
-            console2svg - Convert terminal output to SVG
+        $"""
+            console2svg - Convert terminal output to SVG [Ver: {ThisAssembly.AssemblyInformationalVersion}]
 
             Usage:
                 my-command | console2svg [options]
@@ -42,11 +42,10 @@ public static class OptionParser
                 console2svg [options] -- my-command with args
 
             Options (Common):
-                -c, --with-command        Prepend the command line to the output as if typed in a terminal.
                 -o, --out <path>          Output SVG path (default: output.svg).
                 -m, --mode <image|video>  Output mode (default: image).
                 -v                        is alias for --mode video.
-                -w, --width <int>         Terminal width in characters (default: 100).
+                -w, --width <int>         Terminal width in characters (default: auto[pipe], 100[pty]).
                 -h, --height <int>        Terminal height in rows (default: auto).
                 --in <path>               Read existing asciicast file.
                 --save-cast <path>        Save captured output as asciicast file.
@@ -58,6 +57,9 @@ public static class OptionParser
                 --no-delete-envs          Keep CI/TF_BUILD in shell execution environment.
 
             Options (Appearance):
+                -c, --with-command        Prepend the command line to the output as if typed in a terminal.
+                --header <text>           Override command header text (shown even without -c).
+                --prompt <text>           Prompt prefix for -c (default: $ or # when root).
                 -d, --window [none|macos|windows|macos-pc|windows-pc|transparent|path/to/chrome.json]
                                           Terminal window chrome style (default: none, or macos if specified without a value).
                                           Built-in styles: none, macos, windows, transparent.
@@ -68,8 +70,6 @@ public static class OptionParser
                 --pc-padding <px>         Override the outer desktop padding in PC mode (default: 20).
                 --opacity <0-1>           Background fill opacity (default: 1).
                 --theme <dark|light>      Color theme (default: dark).
-                --header <text>           Override command header text (shown even without -c).
-                --prompt <text>           Prompt prefix for -c (default: $ or # when root).
                 --forecolor <color>       Override default foreground color.
                 --backcolor <color>       Override the terminal's own background color.
                                           Unlike --background, this affects the terminal interior rather than the outer canvas.

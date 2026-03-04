@@ -692,6 +692,42 @@ public sealed class InputReplayFileTests
     }
 
     [Test]
+    public void ParseInputTextOscResponseIsFiltered()
+    {
+        // OSC response: ESC]10;rgb:e6e6/eded/f3f3 ST(ESC\)
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText("a\x1b]10;rgb:e6e6/eded/f3f3\x1b\\b", 0.0)
+        );
+        events.Count.ShouldBe(2);
+        events[0].Key.ShouldBe("a");
+        events[1].Key.ShouldBe("b");
+    }
+
+    [Test]
+    public void ParseInputTextDcsResponseIsFiltered()
+    {
+        // DCS response: ESC P ... ST(ESC\)
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText("x\x1bP>|xterm.js(6.1.0-beta.109)\x1b\\y", 0.0)
+        );
+        events.Count.ShouldBe(2);
+        events[0].Key.ShouldBe("x");
+        events[1].Key.ShouldBe("y");
+    }
+
+    [Test]
+    public void ParseInputTextOscWithBelTerminatorIsFiltered()
+    {
+        // OSC may terminate with BEL instead of ST.
+        var events = new List<InputEvent>(
+            InputReplayFile.ParseInputText("m\x1b]11;rgb:0101/0404/0909\x07n", 0.0)
+        );
+        events.Count.ShouldBe(2);
+        events[0].Key.ShouldBe("m");
+        events[1].Key.ShouldBe("n");
+    }
+
+    [Test]
     public void ParseInputTextLonePrivatePrefixCsiIsFiltered()
     {
         // ESC[<0;35;1M — xterm mouse event with '<' private prefix — should be filtered.
@@ -858,6 +894,24 @@ public sealed class InputReplayFileTests
         var (events, remainder) = InputReplayFile.ParseInputTextPartial("x\x1b[?", 1.0);
         events.Count.ShouldBe(1); // x
         remainder.ShouldBe("\x1b[?");
+    }
+
+    [Test]
+    public void ParseInputTextPartialOscPrefixAtEnd()
+    {
+        // ESC] at end → incomplete OSC
+        var (events, remainder) = InputReplayFile.ParseInputTextPartial("x\x1b]", 1.0);
+        events.Count.ShouldBe(1); // x
+        remainder.ShouldBe("\x1b]");
+    }
+
+    [Test]
+    public void ParseInputTextPartialDcsPrefixAtEnd()
+    {
+        // ESCP at end → incomplete DCS
+        var (events, remainder) = InputReplayFile.ParseInputTextPartial("x\x1bP", 1.0);
+        events.Count.ShouldBe(1); // x
+        remainder.ShouldBe("\x1bP");
     }
 
     // ── Win32-input-mode VK=0 VT-passthrough tests ─────────────────────────

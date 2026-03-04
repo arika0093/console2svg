@@ -130,6 +130,19 @@ public static class InputReplayFile
                     continue;
                 }
                 char next = text[i + 1];
+                if (next == ']' || next == 'P' || next == '_' || next == '^' || next == 'X')
+                {
+                    // OSC / DCS / APC / PM / SOS control strings are terminal protocol
+                    // traffic, not user key input. Skip them entirely.
+                    // OSC may end with BEL or ST (ESC \); the others use ST.
+                    bool allowBelTerminator = next == ']';
+                    int controlLen = TryGetEscControlStringLength(text, i, allowBelTerminator);
+                    if (controlLen > 0)
+                    {
+                        i += controlLen;
+                        continue;
+                    }
+                }
                 if (next == '[')
                 {
                     // Some terminals (e.g. copilot CLI) send VT escape sequences
@@ -340,8 +353,55 @@ public static class InputReplayFile
         if (next == 'O')
             return pos + 2 < text.Length;
 
+        // OSC / DCS / APC / PM / SOS control strings.
+        if (next == ']' || next == 'P' || next == '_' || next == '^' || next == 'X')
+        {
+            bool allowBelTerminator = next == ']';
+            return TryGetEscControlStringLength(text, pos, allowBelTerminator) > 0;
+        }
+
         // ESC + any other char = Alt+key → complete (2 bytes consumed)
         return true;
+    }
+
+    /// <summary>
+    /// Try to parse an ESC-prefixed control string sequence and return its total
+    /// length in chars (including ESC and terminator) when complete.
+    /// Returns 0 when incomplete or not a recognized control-string introducer.
+    /// </summary>
+    private static int TryGetEscControlStringLength(string text, int start, bool allowBelTerminator)
+    {
+        if (start + 1 >= text.Length || text[start] != '\x1b')
+            return 0;
+
+        char kind = text[start + 1];
+        if (kind != ']' && kind != 'P' && kind != '_' && kind != '^' && kind != 'X')
+            return 0;
+
+        int i = start + 2;
+        while (i < text.Length)
+        {
+            char c = text[i];
+
+            // ST terminator: ESC \
+            if (c == '\x1b')
+            {
+                if (i + 1 < text.Length && text[i + 1] == '\\')
+                    return i - start + 2;
+
+                // Any other ESC is part of payload/next sequence; continue scanning.
+                i++;
+                continue;
+            }
+
+            // OSC also allows BEL terminator.
+            if (allowBelTerminator && c == '\x07')
+                return i - start + 1;
+
+            i++;
+        }
+
+        return 0;
     }
 
     /// <summary>Convert a structured <see cref="InputEvent"/> back to the VT bytes for the PTY.</summary>

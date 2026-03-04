@@ -176,7 +176,8 @@ public static class AnimatedSvgRenderer
         for (var i = 0; i < frames.Count; i++)
         {
             var rawTime = Math.Max(0d, frames[i].Time);
-            var quantizedTime = Math.Round(rawTime / interval, MidpointRounding.AwayFromZero) * interval;
+            var quantizedTime =
+                Math.Round(rawTime / interval, MidpointRounding.AwayFromZero) * interval;
             if (i > 0 && quantizedTime < lastTime)
             {
                 quantizedTime = lastTime;

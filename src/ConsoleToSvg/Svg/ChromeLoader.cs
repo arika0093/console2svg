@@ -10,8 +10,7 @@ namespace ConsoleToSvg.Svg;
 /// </summary>
 public static class ChromeLoader
 {
-    private static readonly string[] BuiltinNames =
-        ["macos", "transparent", "windows"];
+    private static readonly string[] BuiltinNames = ["macos", "transparent", "windows"];
 
     /// <summary>
     /// Loads a <see cref="ChromeDefinition"/> from a built-in name or a file path.

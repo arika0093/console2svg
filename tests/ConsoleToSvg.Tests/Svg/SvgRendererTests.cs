@@ -731,5 +731,3 @@ public sealed class SvgRendererTests
         svg.ShouldContain("$ ls");
     }
 }
-
-

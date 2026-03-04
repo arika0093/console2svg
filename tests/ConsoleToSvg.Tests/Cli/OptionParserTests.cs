@@ -403,12 +403,7 @@ public sealed class OptionParserTests
     [Test]
     public void PromptOptionParsed()
     {
-        var ok = OptionParser.TryParse(
-            new[] { "--prompt", "#" },
-            out var options,
-            out _,
-            out _
-        );
+        var ok = OptionParser.TryParse(new[] { "--prompt", "#" }, out var options, out _, out _);
         ok.ShouldBeTrue();
         options!.Prompt.ShouldBe("#");
     }
@@ -541,7 +536,12 @@ public sealed class OptionParserTests
     [Test]
     public void InvalidAdjustReturnsError()
     {
-        var ok = OptionParser.TryParse(new[] { "--adjust", "invalid" }, out _, out var error, out _);
+        var ok = OptionParser.TryParse(
+            new[] { "--adjust", "invalid" },
+            out _,
+            out var error,
+            out _
+        );
         ok.ShouldBeFalse();
         error.ShouldBe("--adjust must be spacing or spacingAndGlyphs.");
     }

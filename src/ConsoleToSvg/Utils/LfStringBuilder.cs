@@ -7,9 +7,7 @@ internal sealed class LfStringBuilder
     private readonly StringBuilder _builder;
 
     public LfStringBuilder()
-        : this(0)
-    {
-    }
+        : this(0) { }
 
     public LfStringBuilder(int capacity)
     {

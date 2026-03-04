@@ -72,7 +72,11 @@ internal static class SvgRenderShared
                 }
 
                 if (
-                    !string.Equals(cell.Foreground, buffer.DefaultStyle.Foreground, StringComparison.Ordinal)
+                    !string.Equals(
+                        cell.Foreground,
+                        buffer.DefaultStyle.Foreground,
+                        StringComparison.Ordinal
+                    )
                     || !string.Equals(
                         cell.Background,
                         buffer.DefaultStyle.Background,

@@ -218,9 +218,9 @@ public sealed class AnimatedSvgRendererTests
         // A looping animation: the terminal returns to the same visual state, so the
         // repeated state should share one <defs> entry instead of duplicating SVG content.
         var session = new RecordingSession(width: 8, height: 2);
-        session.AddEvent(0.01, "A");                    // state: "A"
-        session.AddEvent(0.5, "\r\x1b[2J\x1b[H");      // state: blank screen
-        session.AddEvent(1.0, "A");                     // state: "A" again — identical to first
+        session.AddEvent(0.01, "A"); // state: "A"
+        session.AddEvent(0.5, "\r\x1b[2J\x1b[H"); // state: blank screen
+        session.AddEvent(1.0, "A"); // state: "A" again — identical to first
 
         var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
             session,

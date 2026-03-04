@@ -454,6 +454,35 @@ public sealed class OptionParserTests
     }
 
     [Test]
+    public void VideoTimingDefaultIsDeterministic()
+    {
+        var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.VideoTiming.ShouldBe(VideoTimingMode.Deterministic);
+    }
+
+    [Test]
+    public void VideoTimingRealtimeParsed()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--timing", "realtime" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.VideoTiming.ShouldBe(VideoTimingMode.Realtime);
+    }
+
+    [Test]
+    public void InvalidVideoTimingReturnsError()
+    {
+        var ok = OptionParser.TryParse(new[] { "--timing", "foo" }, out _, out var error, out _);
+        ok.ShouldBeFalse();
+        error.ShouldBe("--timing must be deterministic or realtime.");
+    }
+
+    [Test]
     public void InvalidSleepReturnsError()
     {
         var ok = OptionParser.TryParse(new[] { "--sleep", "-1" }, out _, out var error, out _);
@@ -817,5 +846,20 @@ public sealed class OptionParserTests
         // transparent-pc resolves to transparent base with IsDesktop=true
         svgOptions.Chrome.ShouldNotBeNull();
         svgOptions.Chrome!.IsDesktop.ShouldBeTrue();
+    }
+
+    [Test]
+    public void SvgRenderOptionsCarriesVideoTiming()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--timing", "realtime" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+
+        var renderOptions = SvgRenderOptions.FromAppOptions(options!);
+        renderOptions.VideoTiming.ShouldBe(VideoTimingMode.Realtime);
     }
 }

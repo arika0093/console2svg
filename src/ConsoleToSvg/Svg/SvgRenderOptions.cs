@@ -28,6 +28,8 @@ public sealed class SvgRenderOptions
 
     public double VideoFadeOut { get; set; } = 0d;
 
+    public VideoTimingMode VideoTiming { get; set; } = VideoTimingMode.Deterministic;
+
     public double Opacity { get; set; } = 1d;
 
     public int? HeightRows { get; set; }
@@ -96,6 +98,7 @@ public sealed class SvgRenderOptions
             Padding = effectivePadding,
             Loop = appOptions.Loop,
             VideoFps = appOptions.VideoFps,
+            VideoTiming = appOptions.VideoTiming,
             VideoSleep = appOptions.VideoSleep,
             VideoFadeOut = appOptions.VideoFadeOut,
             HeightRows = appOptions.Height,

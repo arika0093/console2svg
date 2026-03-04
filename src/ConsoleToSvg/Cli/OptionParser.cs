@@ -94,6 +94,10 @@ public static class OptionParser
             Options (Video mode):
                 --no-loop                 Disable loop for animated SVG playback in video mode (default: loop).
                 --fps <value>             Max FPS for animated SVG frame sampling (default: 12).
+                --timing <deterministic|realtime>
+                                          Video timing mode (default: deterministic).
+                                          deterministic: normalize frame times to reduce output diffs.
+                                          realtime: preserve measured event timing as-is.
                 --sleep <sec>             Wait time after execution completes in video mode (default: 2).
                 --fadeout <sec>           Fade-out duration at end of video (default: 0).
                 --replay-save <path>      Save keyboard input to a replay file during command execution.
@@ -442,6 +446,21 @@ public static class OptionParser
 
                 options.VideoFps = fps;
                 return true;
+            case "--timing":
+                if (string.Equals(value, "deterministic", StringComparison.OrdinalIgnoreCase))
+                {
+                    options.VideoTiming = VideoTimingMode.Deterministic;
+                    return true;
+                }
+
+                if (string.Equals(value, "realtime", StringComparison.OrdinalIgnoreCase))
+                {
+                    options.VideoTiming = VideoTimingMode.Realtime;
+                    return true;
+                }
+
+                error = "--timing must be deterministic or realtime.";
+                return false;
             case "--sleep":
                 if (!TryParseDouble(value, "--sleep", out var sleep, out error))
                 {

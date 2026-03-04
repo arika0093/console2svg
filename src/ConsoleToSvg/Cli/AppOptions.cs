@@ -6,6 +6,12 @@ public enum OutputMode
     Video,
 }
 
+public enum VideoTimingMode
+{
+    Deterministic,
+    Realtime,
+}
+
 public sealed class AppOptions
 {
     public bool Verbose { get; set; }
@@ -65,6 +71,8 @@ public sealed class AppOptions
     public double VideoSleep { get; set; } = 2d;
 
     public double VideoFadeOut { get; set; } = 0d;
+
+    public VideoTimingMode VideoTiming { get; set; } = VideoTimingMode.Deterministic;
 
     public double Opacity { get; set; } = 1d;
 

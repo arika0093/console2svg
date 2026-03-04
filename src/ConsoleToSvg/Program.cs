@@ -66,7 +66,7 @@ internal static class Program
             $"Verbose={options.Verbose} VerboseLogPath={options.VerboseLogPath ?? "(default)"} Args={string.Join(' ', args)}"
         );
         logger.ZLogDebug(
-            $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} ForeColor={options.ForeColor ?? ""} Window={options.Window} Padding={options.Padding} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""} LengthAdjust={options.LengthAdjust} Prompt={options.Prompt} Header={options.Header ?? ""} NoColorEnv={options.NoColorEnv} NoDeleteEnvs={options.NoDeleteEnvs}"
+            $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} ForeColor={options.ForeColor ?? ""} Window={options.Window} Padding={options.Padding} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""} LengthAdjust={options.LengthAdjust} Prompt={options.Prompt} Header={options.Header ?? ""} NoColorEnv={options.NoColorEnv} NoDeleteEnvs={options.NoDeleteEnvs} VideoTiming={options.VideoTiming}"
         );
         using var environmentScope = ApplyProcessEnvironmentOverrides(options, logger);
 

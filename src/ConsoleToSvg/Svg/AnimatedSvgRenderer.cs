@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Text;
+using ConsoleToSvg.Cli;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
 
@@ -31,6 +32,7 @@ public static class AnimatedSvgRenderer
         var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
         var frames = emulator.ReplayFrames(session);
         frames = TrimTrailingAltScreenRestoreFrame(frames, session);
+        frames = NormalizeTiming(frames, options.VideoFps, options.VideoTiming);
 
         if (frames.Count == 0)
         {
@@ -170,6 +172,37 @@ public static class AnimatedSvgRenderer
         }
 
         return reduced;
+    }
+
+    private static System.Collections.Generic.IReadOnlyList<TerminalFrame> NormalizeTiming(
+        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
+        double maxFps,
+        VideoTimingMode timingMode
+    )
+    {
+        if (frames.Count == 0 || timingMode == VideoTimingMode.Realtime || maxFps <= 0)
+        {
+            return frames;
+        }
+
+        var interval = 1d / maxFps;
+        var normalized = new System.Collections.Generic.List<TerminalFrame>(frames.Count);
+        var lastTime = 0d;
+
+        for (var i = 0; i < frames.Count; i++)
+        {
+            var rawTime = Math.Max(0d, frames[i].Time);
+            var quantizedTime = Math.Round(rawTime / interval, MidpointRounding.AwayFromZero) * interval;
+            if (i > 0 && quantizedTime < lastTime)
+            {
+                quantizedTime = lastTime;
+            }
+
+            normalized.Add(new TerminalFrame(quantizedTime, frames[i].Buffer));
+            lastTime = quantizedTime;
+        }
+
+        return normalized;
     }
 
     private static ulong BuildVisualSignature(ScreenBuffer buffer)

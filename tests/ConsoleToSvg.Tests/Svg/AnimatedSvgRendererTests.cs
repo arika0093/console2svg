@@ -324,6 +324,32 @@ public sealed class AnimatedSvgRendererTests
         svg.ShouldNotContain("id=\"frame-1\"");
     }
 
+    [Test]
+    public void RenderAnimatedSvgDeterministicTimingSuppressesSmallJitterDiffs()
+    {
+        var sessionA = new RecordingSession(width: 8, height: 2);
+        sessionA.AddEvent(0.100, "A");
+        sessionA.AddEvent(0.201, "B");
+        sessionA.AddEvent(0.302, "C");
+
+        var sessionB = new RecordingSession(width: 8, height: 2);
+        sessionB.AddEvent(0.099, "A");
+        sessionB.AddEvent(0.199, "B");
+        sessionB.AddEvent(0.304, "C");
+
+        var options = new ConsoleToSvg.Svg.SvgRenderOptions
+        {
+            Theme = "dark",
+            VideoFps = 12,
+            VideoTiming = ConsoleToSvg.Cli.VideoTimingMode.Deterministic,
+        };
+
+        var svgA = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(sessionA, options);
+        var svgB = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(sessionB, options);
+
+        svgA.ShouldBe(svgB);
+    }
+
     private static int CountOccurrences(string text, string token)
     {
         var count = 0;

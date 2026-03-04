@@ -403,9 +403,9 @@ public static class AnimatedSvgRenderer
     )
     {
         var sb = new StringBuilder();
-        sb.AppendLine(".frame {");
-        sb.AppendLine("  opacity: 0;");
-        sb.AppendLine("}");
+        sb.Append(".frame {\n");
+        sb.Append("  opacity: 0;\n");
+        sb.Append("}\n");
 
         for (var i = 0; i < frames.Count; i++)
         {
@@ -427,29 +427,47 @@ public static class AnimatedSvgRenderer
 
             sb.Append("@keyframes k");
             sb.Append(i.ToString(CultureInfo.InvariantCulture));
-            sb.AppendLine(" {");
+            sb.Append(" {\n");
             sb.Append("  0%, ");
             sb.Append(Format(fadeInPoint));
-            sb.AppendLine("% {");
-            sb.AppendLine("    opacity: 0;");
-            sb.AppendLine("  }");
-            sb.Append("  ");
-            sb.Append(Format(start));
-            sb.Append("%, ");
-            sb.Append(Format(end));
-            sb.AppendLine("% {");
-            sb.AppendLine("    opacity: 1;");
-            sb.AppendLine("  }");
-            if (!isLast || fadeOut > 0d)
+            sb.Append("% {\n");
+            sb.Append("    opacity: 0;\n");
+            sb.Append("  }\n");
+
+            if (isLast && fadeOut <= 0d)
             {
                 sb.Append("  ");
-                sb.Append(Format(fadeOutPoint));
-                sb.AppendLine("%, 100% {");
-                sb.AppendLine("    opacity: 0;");
-                sb.AppendLine("  }");
+                sb.Append(Format(start));
+                sb.Append("% {\n");
+                sb.Append("    opacity: 1;\n");
+                sb.Append("  }\n");
+                if (start < 100d)
+                {
+                    sb.Append("  100% {\n");
+                    sb.Append("    opacity: 1;\n");
+                    sb.Append("  }\n");
+                }
+            }
+            else
+            {
+                sb.Append("  ");
+                sb.Append(Format(start));
+                sb.Append("%, ");
+                sb.Append(Format(end));
+                sb.Append("% {\n");
+                sb.Append("    opacity: 1;\n");
+                sb.Append("  }\n");
+                if (!isLast || fadeOut > 0d)
+                {
+                    sb.Append("  ");
+                    sb.Append(Format(fadeOutPoint));
+                    sb.Append("%, 100% {\n");
+                    sb.Append("    opacity: 0;\n");
+                    sb.Append("  }\n");
+                }
             }
 
-            sb.AppendLine("}");
+            sb.Append("}\n");
 
             sb.Append(".frame-");
             sb.Append(i.ToString(CultureInfo.InvariantCulture));
@@ -459,7 +477,7 @@ public static class AnimatedSvgRenderer
             sb.Append(Format(totalDuration));
             sb.Append("s linear ");
             sb.Append(loop ? "infinite;" : "forwards;");
-            sb.AppendLine(" }");
+            sb.Append(" }\n");
         }
 
         return sb.ToString();

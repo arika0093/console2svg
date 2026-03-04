@@ -1,5 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 904 289" role="img" aria-label="console2svg output">
-<style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}.bg{shape-rendering:crispEdges;}</style>
+<style>
+.crt {
+  font-family: ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;
+  font-size: 14px;
+}
+text {
+  dominant-baseline: alphabetic;
+}
+.bg {
+  shape-rendering: crispEdges;
+}
+</style>
 <rect width="904" height="289" fill="#003060"/>
 <g opacity="0.85">
 <rect x="26" y="26" rx="10" ry="10" width="858" height="243" fill="black" fill-opacity="0.3"/>

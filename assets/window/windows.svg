@@ -1,5 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 354 142" role="img" aria-label="console2svg output">
-<style>.crt{font-family:ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;font-size:14px;}text{dominant-baseline:alphabetic;}.bg{shape-rendering:crispEdges;}</style>
+<style>
+.crt {
+  font-family: ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;
+  font-size: 14px;
+}
+text {
+  dominant-baseline: alphabetic;
+}
+.bg {
+  shape-rendering: crispEdges;
+}
+</style>
 <rect x="0.5" y="0.5" width="353" height="141" fill="#333" stroke="#333"/>
 <rect x="1" y="1" width="352" height="34" fill="#333"/>
 <path d="M 8,35 L 8,11 Q 8,6 13,6 L 163,6 Q 168,6 168,11 L 168,35 Z" fill="#0c0c0c"/>

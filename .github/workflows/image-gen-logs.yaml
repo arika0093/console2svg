@@ -30,13 +30,13 @@ jobs:
         run: bash scripts/image-gen.sh
 
       - name: Generated images upload
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: generate-svg-images
           path: assets/
 
       - name: Log Artifacts upload
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: generate-svg-logs
           path: logs/

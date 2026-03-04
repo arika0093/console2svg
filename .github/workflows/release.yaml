@@ -44,7 +44,7 @@ jobs:
         run: dotnet pack --no-build -c Release --output ./nuget-artifacts
 
       - name: Upload NuGet artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nuget-packages
           path: ./nuget-artifacts/*.nupkg
@@ -84,7 +84,7 @@ jobs:
             -o ./native-publish/${{ matrix.rid }}
 
       - name: Upload native binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: native-${{ matrix.rid }}
           path: ./native-publish/${{ matrix.rid }}/console2svg*

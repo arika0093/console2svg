@@ -1,9 +1,9 @@
 using System;
 using System.Globalization;
-using System.Text;
 using ConsoleToSvg.Cli;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
+using ConsoleToSvg.Utils;
 
 namespace ConsoleToSvg.Svg;
 
@@ -16,19 +16,7 @@ public static class AnimatedSvgRenderer
             return SvgRenderer.Render(session, options);
         }
 
-        var theme = Theme.Resolve(options.Theme);
-        if (options.Chrome?.ThemeBackgroundOverride is string bgOverride)
-        {
-            theme = theme.WithBackground(bgOverride);
-        }
-        if (!string.IsNullOrWhiteSpace(options.BackColor))
-        {
-            theme = theme.WithBackground(options.BackColor);
-        }
-        if (!string.IsNullOrWhiteSpace(options.ForeColor))
-        {
-            theme = theme.WithForeground(options.ForeColor);
-        }
+        var theme = SvgRenderShared.ResolveTheme(options);
         var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
         var frames = emulator.ReplayFrames(session);
         frames = TrimTrailingAltScreenRestoreFrame(frames, session);
@@ -62,15 +50,11 @@ public static class AnimatedSvgRenderer
         }
 
         var commandHeaderRows = string.IsNullOrEmpty(options.CommandHeader) ? 0 : 1;
-        var context = SvgDocumentBuilder.CreateContext(
+        var context = SvgRenderShared.CreateContext(
             reducedFrames[0].Buffer,
-            options.Crop,
+            options,
             includeScrollback: false,
-            options.Chrome,
-            options.Padding,
-            heightRows: null,
-            commandHeaderRows,
-            options.FontSize
+            commandHeaderRows
         );
         var lastFrameTime = Math.Max(0.05d, reducedFrames[reducedFrames.Count - 1].Time);
         var totalDuration = lastFrameTime + options.VideoSleep + options.VideoFadeOut;
@@ -82,9 +66,9 @@ public static class AnimatedSvgRenderer
             options.Loop
         );
 
-        var sb = new StringBuilder(128 * 1024);
+        var sb = new LfStringBuilder(128 * 1024);
         SvgDocumentBuilder.BeginSvg(
-            sb,
+            sb.Inner,
             context,
             theme,
             css,
@@ -97,7 +81,7 @@ public static class AnimatedSvgRenderer
 
         // Render each unique frame once in <defs>, then reference via <use>.
         SvgDocumentBuilder.AppendFrameDefs(
-            sb,
+            sb.Inner,
             reducedFrames,
             uniqueFrameIndices,
             context,
@@ -109,14 +93,14 @@ public static class AnimatedSvgRenderer
         {
             var defsFrameIndex = uniqueFrameIndices[frameToDefsFrameIndex[i]];
             SvgDocumentBuilder.AppendFrameUse(
-                sb,
+                sb.Inner,
                 defsId: $"fd-{defsFrameIndex}",
                 frameId: $"frame-{i}",
                 frameClass: $"frame frame-{i}"
             );
         }
 
-        SvgDocumentBuilder.EndSvg(sb, options.Opacity);
+        SvgDocumentBuilder.EndSvg(sb.Inner, options.Opacity);
         return sb.ToString();
     }
 
@@ -294,7 +278,7 @@ public static class AnimatedSvgRenderer
         var lastNonBlankIndex = -1;
         for (var i = frames.Count - 1; i >= 0; i--)
         {
-            if (!IsBlankFrame(frames[i].Buffer))
+            if (!SvgRenderShared.IsBlankFrame(frames[i].Buffer))
             {
                 lastNonBlankIndex = i;
                 break;
@@ -306,7 +290,7 @@ public static class AnimatedSvgRenderer
             return frames;
         }
 
-        if (!HasTrailingBlankIndicators(session, lastNonBlankIndex + 1))
+        if (!SvgRenderShared.HasTrailingBlankIndicators(session, lastNonBlankIndex + 1))
         {
             return frames;
         }
@@ -320,80 +304,7 @@ public static class AnimatedSvgRenderer
         return trimmed;
     }
 
-    private static bool HasTrailingBlankIndicators(RecordingSession session, int startIndex)
-    {
-        var start = Math.Max(0, startIndex);
-        for (var i = start; i < session.Events.Count; i++)
-        {
-            var data = session.Events[i].Data;
-            if (ContainsAlternateScreenLeave(data) || ContainsLikelyScreenClear(data))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static bool ContainsAlternateScreenLeave(string data)
-    {
-        if (string.IsNullOrEmpty(data))
-        {
-            return false;
-        }
-
-        return data.Contains("\u001b[?1049l", StringComparison.Ordinal)
-            || data.Contains("\u001b[?47l", StringComparison.Ordinal)
-            || data.Contains("\u001b[?1047l", StringComparison.Ordinal);
-    }
-
-    private static bool ContainsLikelyScreenClear(string data)
-    {
-        if (string.IsNullOrEmpty(data))
-        {
-            return false;
-        }
-
-        return data.Contains("\u001b[J", StringComparison.Ordinal)
-            || data.Contains("\u001b[2J", StringComparison.Ordinal)
-            || data.Contains("\u001b[3J", StringComparison.Ordinal)
-            || data.Contains("\u001b[H", StringComparison.Ordinal)
-            || data.Contains("\u001b[;H", StringComparison.Ordinal);
-    }
-
-    private static bool IsBlankFrame(ScreenBuffer buffer)
-    {
-        for (var row = 0; row < buffer.Height; row++)
-        {
-            for (var col = 0; col < buffer.Width; col++)
-            {
-                var cell = buffer.GetCell(row, col);
-                if (cell.Text != " " || cell.IsWide || cell.IsWideContinuation)
-                {
-                    return false;
-                }
-
-                if (
-                    !string.Equals(cell.Foreground, buffer.DefaultStyle.Foreground, StringComparison.Ordinal)
-                    || !string.Equals(
-                        cell.Background,
-                        buffer.DefaultStyle.Background,
-                        StringComparison.Ordinal
-                    )
-                    || cell.Bold
-                    || cell.Italic
-                    || cell.Underline
-                    || cell.Reversed
-                    || cell.Faint
-                )
-                {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
+    // Blank/trailing-frame detection moved to SvgRenderShared.
 
     private static string BuildAnimationCss(
         System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
@@ -402,10 +313,10 @@ public static class AnimatedSvgRenderer
         bool loop
     )
     {
-        var sb = new StringBuilder();
-        sb.Append(".frame {\n");
-        sb.Append("  opacity: 0;\n");
-        sb.Append("}\n");
+        var sb = new LfStringBuilder();
+        sb.AppendLine(".frame {");
+        sb.AppendLine("  opacity: 0;");
+        sb.AppendLine("}");
 
         for (var i = 0; i < frames.Count; i++)
         {
@@ -427,25 +338,25 @@ public static class AnimatedSvgRenderer
 
             sb.Append("@keyframes k");
             sb.Append(i.ToString(CultureInfo.InvariantCulture));
-            sb.Append(" {\n");
+            sb.AppendLine(" {");
             sb.Append("  0%, ");
             sb.Append(Format(fadeInPoint));
-            sb.Append("% {\n");
-            sb.Append("    opacity: 0;\n");
-            sb.Append("  }\n");
+            sb.AppendLine("% {");
+            sb.AppendLine("    opacity: 0;");
+            sb.AppendLine("  }");
 
             if (isLast && fadeOut <= 0d)
             {
                 sb.Append("  ");
                 sb.Append(Format(start));
-                sb.Append("% {\n");
-                sb.Append("    opacity: 1;\n");
-                sb.Append("  }\n");
+                sb.AppendLine("% {");
+                sb.AppendLine("    opacity: 1;");
+                sb.AppendLine("  }");
                 if (start < 100d)
                 {
-                    sb.Append("  100% {\n");
-                    sb.Append("    opacity: 1;\n");
-                    sb.Append("  }\n");
+                    sb.AppendLine("  100% {");
+                    sb.AppendLine("    opacity: 1;");
+                    sb.AppendLine("  }");
                 }
             }
             else
@@ -454,20 +365,20 @@ public static class AnimatedSvgRenderer
                 sb.Append(Format(start));
                 sb.Append("%, ");
                 sb.Append(Format(end));
-                sb.Append("% {\n");
-                sb.Append("    opacity: 1;\n");
-                sb.Append("  }\n");
+                sb.AppendLine("% {");
+                sb.AppendLine("    opacity: 1;");
+                sb.AppendLine("  }");
                 if (!isLast || fadeOut > 0d)
                 {
                     sb.Append("  ");
                     sb.Append(Format(fadeOutPoint));
-                    sb.Append("%, 100% {\n");
-                    sb.Append("    opacity: 0;\n");
-                    sb.Append("  }\n");
+                    sb.AppendLine("%, 100% {");
+                    sb.AppendLine("    opacity: 0;");
+                    sb.AppendLine("  }");
                 }
             }
 
-            sb.Append("}\n");
+            sb.AppendLine("}");
 
             sb.Append(".frame-");
             sb.Append(i.ToString(CultureInfo.InvariantCulture));
@@ -477,7 +388,7 @@ public static class AnimatedSvgRenderer
             sb.Append(Format(totalDuration));
             sb.Append("s linear ");
             sb.Append(loop ? "infinite;" : "forwards;");
-            sb.Append(" }\n");
+            sb.AppendLine(" }");
         }
 
         return sb.ToString();

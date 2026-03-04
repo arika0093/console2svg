@@ -24,7 +24,12 @@ public static class SvgRenderer
             theme = theme.WithForeground(options.ForeColor);
         }
         var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
-        var targetFrame = options.Frame ?? (session.Events.Count - 1);
+        var targetFrame =
+            options.Frame
+            ?? ResolveDefaultTargetFrame(
+                session,
+                new TerminalEmulator(session.Header.width, session.Header.height, theme)
+            );
         if (targetFrame >= 0)
         {
             emulator.Replay(session, targetFrame);
@@ -66,6 +71,91 @@ public static class SvgRenderer
         );
         SvgDocumentBuilder.EndSvg(sb, options.Opacity);
         return sb.ToString();
+    }
+
+    private static int ResolveDefaultTargetFrame(
+        RecordingSession session,
+        TerminalEmulator probeEmulator
+    )
+    {
+        var lastIndex = session.Events.Count - 1;
+        if (lastIndex <= 0)
+        {
+            return lastIndex;
+        }
+
+        var lastEvent = session.Events[lastIndex].Data;
+        if (!ContainsAlternateScreenLeave(lastEvent))
+        {
+            return lastIndex;
+        }
+
+        var frames = probeEmulator.ReplayFrames(session);
+        if (frames.Count != session.Events.Count)
+        {
+            return lastIndex;
+        }
+
+        if (!IsBlankFrame(frames[lastIndex].Buffer))
+        {
+            return lastIndex;
+        }
+
+        for (var i = 0; i < lastIndex; i++)
+        {
+            if (!IsBlankFrame(frames[i].Buffer))
+            {
+                return lastIndex - 1;
+            }
+        }
+
+        return lastIndex;
+    }
+
+    private static bool ContainsAlternateScreenLeave(string data)
+    {
+        if (string.IsNullOrEmpty(data))
+        {
+            return false;
+        }
+
+        return data.Contains("\u001b[?1049l", StringComparison.Ordinal)
+            || data.Contains("\u001b[?47l", StringComparison.Ordinal)
+            || data.Contains("\u001b[?1047l", StringComparison.Ordinal);
+    }
+
+    private static bool IsBlankFrame(ScreenBuffer buffer)
+    {
+        for (var row = 0; row < buffer.Height; row++)
+        {
+            for (var col = 0; col < buffer.Width; col++)
+            {
+                var cell = buffer.GetCell(row, col);
+                if (cell.Text != " " || cell.IsWide || cell.IsWideContinuation)
+                {
+                    return false;
+                }
+
+                if (
+                    !string.Equals(cell.Foreground, buffer.DefaultStyle.Foreground, StringComparison.Ordinal)
+                    || !string.Equals(
+                        cell.Background,
+                        buffer.DefaultStyle.Background,
+                        StringComparison.Ordinal
+                    )
+                    || cell.Bold
+                    || cell.Italic
+                    || cell.Underline
+                    || cell.Reversed
+                    || cell.Faint
+                )
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }
 

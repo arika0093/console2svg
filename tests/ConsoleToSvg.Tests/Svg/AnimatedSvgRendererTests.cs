@@ -292,6 +292,22 @@ public sealed class AnimatedSvgRendererTests
         frameCount.ShouldBeLessThan(20);
     }
 
+    [Test]
+    public void RenderAnimatedSvgDropsTrailingBlankFrameFromAlternateScreenLeave()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.1, "\u001b[?1049hHELLO");
+        session.AddEvent(0.2, "\u001b[?1049l");
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain("id=\"frame-0\"");
+        svg.ShouldNotContain("id=\"frame-1\"");
+    }
+
     private static int CountOccurrences(string text, string token)
     {
         var count = 0;

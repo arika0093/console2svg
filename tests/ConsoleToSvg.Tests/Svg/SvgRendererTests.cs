@@ -341,6 +341,31 @@ public sealed class SvgRendererTests
     }
 
     [Test]
+    public void RenderStaticSvgDropsTrailingBlankFrameFromAlternateScreenLeave()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.1, "\u001b[?1049hHELLO");
+        session.AddEvent(0.2, "\u001b[?1049l");
+
+        var defaultSvg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+        var previousFrameSvg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", Frame = 0 }
+        );
+        var lastFrameSvg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", Frame = 1 }
+        );
+
+        defaultSvg.ShouldContain("HELLO");
+        defaultSvg.ShouldBe(previousFrameSvg);
+        defaultSvg.ShouldNotBe(lastFrameSvg);
+    }
+
+    [Test]
     public void RenderStaticSvgWithMacosWindowRendersTrafficLights()
     {
         var session = new RecordingSession(width: 8, height: 2);

@@ -30,6 +30,7 @@ public static class AnimatedSvgRenderer
         }
         var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
         var frames = emulator.ReplayFrames(session);
+        frames = TrimTrailingAltScreenRestoreFrame(frames, session);
 
         if (frames.Count == 0)
         {
@@ -245,6 +246,91 @@ public static class AnimatedSvgRenderer
         }
 
         return signature;
+    }
+
+    private static System.Collections.Generic.IReadOnlyList<TerminalFrame> TrimTrailingAltScreenRestoreFrame(
+        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
+        RecordingSession session
+    )
+    {
+        if (frames.Count <= 1 || session.Events.Count != frames.Count)
+        {
+            return frames;
+        }
+
+        var lastIndex = frames.Count - 1;
+        var lastEvent = session.Events[lastIndex].Data;
+        if (!ContainsAlternateScreenLeave(lastEvent))
+        {
+            return frames;
+        }
+
+        if (!IsBlankFrame(frames[lastIndex].Buffer))
+        {
+            return frames;
+        }
+
+        for (var i = 0; i < lastIndex; i++)
+        {
+            if (!IsBlankFrame(frames[i].Buffer))
+            {
+                var trimmed = new System.Collections.Generic.List<TerminalFrame>(lastIndex);
+                for (var keep = 0; keep < lastIndex; keep++)
+                {
+                    trimmed.Add(frames[keep]);
+                }
+
+                return trimmed;
+            }
+        }
+
+        return frames;
+    }
+
+    private static bool ContainsAlternateScreenLeave(string data)
+    {
+        if (string.IsNullOrEmpty(data))
+        {
+            return false;
+        }
+
+        return data.Contains("\u001b[?1049l", StringComparison.Ordinal)
+            || data.Contains("\u001b[?47l", StringComparison.Ordinal)
+            || data.Contains("\u001b[?1047l", StringComparison.Ordinal);
+    }
+
+    private static bool IsBlankFrame(ScreenBuffer buffer)
+    {
+        for (var row = 0; row < buffer.Height; row++)
+        {
+            for (var col = 0; col < buffer.Width; col++)
+            {
+                var cell = buffer.GetCell(row, col);
+                if (cell.Text != " " || cell.IsWide || cell.IsWideContinuation)
+                {
+                    return false;
+                }
+
+                if (
+                    !string.Equals(cell.Foreground, buffer.DefaultStyle.Foreground, StringComparison.Ordinal)
+                    || !string.Equals(
+                        cell.Background,
+                        buffer.DefaultStyle.Background,
+                        StringComparison.Ordinal
+                    )
+                    || cell.Bold
+                    || cell.Italic
+                    || cell.Underline
+                    || cell.Reversed
+                    || cell.Faint
+                )
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     private static string BuildAnimationCss(

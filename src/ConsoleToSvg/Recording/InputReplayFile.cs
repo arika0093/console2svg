@@ -300,12 +300,13 @@ public static class InputReplayFile
         double time
     )
     {
-        // Find the last ESC in the text; if it starts an incomplete sequence, split there.
-        int lastEsc = text.LastIndexOf('\x1b');
-        if (lastEsc >= 0 && !IsCompleteEscSequenceAt(text, lastEsc))
+        // If the tail contains an incomplete ESC sequence, split from that
+        // sequence start so protocol bytes are not misinterpreted as Alt+chars.
+        int incompleteStart = FindFirstIncompleteEscSequenceStart(text);
+        if (incompleteStart >= 0)
         {
-            var head = lastEsc > 0 ? text.Substring(0, lastEsc) : "";
-            var remainder = text.Substring(lastEsc);
+            var head = incompleteStart > 0 ? text.Substring(0, incompleteStart) : "";
+            var remainder = text.Substring(incompleteStart);
             var events = new List<InputEvent>(ParseInputText(head, time));
             return (events, remainder);
         }
@@ -314,54 +315,92 @@ public static class InputReplayFile
     }
 
     /// <summary>
-    /// Returns true if the ESC sequence starting at <paramref name="pos"/> is complete
-    /// (has all required bytes including the final byte).
+    /// Returns the index of the first ESC that starts an incomplete terminal
+    /// sequence in <paramref name="text"/>, or -1 when all ESC sequences are complete.
     /// </summary>
-    private static bool IsCompleteEscSequenceAt(string text, int pos)
+    private static int FindFirstIncompleteEscSequenceStart(string text)
     {
-        if (pos >= text.Length || text[pos] != '\x1b')
-            return true;
-
-        // Lone ESC at end
-        if (pos + 1 >= text.Length)
-            return false;
-
-        char next = text[pos + 1];
-
-        // ESC ESC → complete (two consecutive ESCs)
-        if (next == '\x1b')
-            return true;
-
-        // CSI: ESC[
-        if (next == '[')
+        int i = 0;
+        while (i < text.Length)
         {
-            int i = pos + 2;
-            // Private parameter prefix: ?, >, <, =
-            if (i < text.Length && text[i] >= '<' && text[i] <= '?')
+            if (text[i] != '\x1b')
+            {
                 i++;
-            // Parameter bytes: digits and semicolons
-            while (i < text.Length && (text[i] == ';' || (text[i] >= '0' && text[i] <= '9')))
-                i++;
-            // Intermediate bytes: 0x20-0x2F
-            while (i < text.Length && text[i] >= 0x20 && text[i] <= 0x2F)
-                i++;
-            // Must have a final byte
-            return i < text.Length;
+                continue;
+            }
+
+            if (i + 1 >= text.Length)
+                return i;
+
+            char next = text[i + 1];
+
+            // CSI
+            if (next == '[')
+            {
+                int csiLen = TryGetCsiSequenceLength(text, i);
+                if (csiLen == 0)
+                    return i;
+                i += csiLen;
+                continue;
+            }
+
+            // SS3
+            if (next == 'O')
+            {
+                if (i + 2 >= text.Length)
+                    return i;
+                i += 3;
+                continue;
+            }
+
+            // OSC / DCS / APC / PM / SOS control strings
+            if (next == ']' || next == 'P' || next == '_' || next == '^' || next == 'X')
+            {
+                bool allowBelTerminator = next == ']';
+                int controlLen = TryGetEscControlStringLength(text, i, allowBelTerminator);
+                if (controlLen == 0)
+                    return i;
+                i += controlLen;
+                continue;
+            }
+
+            // ESC ESC: first ESC is complete; second ESC is handled in next iteration.
+            if (next == '\x1b')
+            {
+                i += 1;
+                continue;
+            }
+
+            // ESC + char (Alt+key) complete in 2 chars.
+            i += 2;
         }
 
-        // SS3: ESC O
-        if (next == 'O')
-            return pos + 2 < text.Length;
+        return -1;
+    }
 
-        // OSC / DCS / APC / PM / SOS control strings.
-        if (next == ']' || next == 'P' || next == '_' || next == '^' || next == 'X')
-        {
-            bool allowBelTerminator = next == ']';
-            return TryGetEscControlStringLength(text, pos, allowBelTerminator) > 0;
-        }
+    private static int TryGetCsiSequenceLength(string text, int start)
+    {
+        if (start + 1 >= text.Length || text[start] != '\x1b' || text[start + 1] != '[')
+            return 0;
 
-        // ESC + any other char = Alt+key → complete (2 bytes consumed)
-        return true;
+        int i = start + 2;
+
+        // Private parameter prefix: ?, >, <, =
+        if (i < text.Length && text[i] >= '<' && text[i] <= '?')
+            i++;
+
+        // Parameter bytes: digits and semicolons
+        while (i < text.Length && (text[i] == ';' || (text[i] >= '0' && text[i] <= '9')))
+            i++;
+
+        // Intermediate bytes: 0x20-0x2F
+        while (i < text.Length && text[i] >= 0x20 && text[i] <= 0x2F)
+            i++;
+
+        if (i >= text.Length)
+            return 0;
+
+        return i - start + 1;
     }
 
     /// <summary>

@@ -914,6 +914,25 @@ public sealed class InputReplayFileTests
         remainder.ShouldBe("\x1bP");
     }
 
+    [Test]
+    public void ParseInputTextPartialDcsSplitAtStEscCarriesFromDcsStart()
+    {
+        // Chunk split right before ST final '\\':
+        // first chunk ends with ESC (start of ST), second chunk starts with '\\'.
+        // Remainder must start at ESCP, not that trailing ESC, otherwise Alt+P garbage appears.
+        var chunk1 = "a\x1bP>|xterm.js(6.1.0-beta.109)\x1b";
+        var (events1, rem1) = InputReplayFile.ParseInputTextPartial(chunk1, 1.0);
+        events1.Count.ShouldBe(1);
+        events1[0].Key.ShouldBe("a");
+        rem1.ShouldBe("\x1bP>|xterm.js(6.1.0-beta.109)\x1b");
+
+        var chunk2 = rem1 + "\\b";
+        var (events2, rem2) = InputReplayFile.ParseInputTextPartial(chunk2, 1.1);
+        events2.Count.ShouldBe(1);
+        events2[0].Key.ShouldBe("b");
+        rem2.ShouldBe("");
+    }
+
     // ── Win32-input-mode VK=0 VT-passthrough tests ─────────────────────────
     //
     // Some terminals (e.g. copilot CLI) send VT escape sequences through

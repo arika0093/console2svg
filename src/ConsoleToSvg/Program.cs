@@ -171,8 +171,8 @@ internal static class Program
 
         if (!string.IsNullOrWhiteSpace(options.Command))
         {
-            var ptyWidth = options.Width ?? DefaultWidth;
-            var ptyHeight = options.Height ?? DefaultHeight;
+            var ptyWidth = ResolveSize(options.Width, options.WidthAdjust, TryGetConsoleWidth, DefaultWidth);
+            var ptyHeight = ResolveSize(options.Height, options.HeightAdjust, TryGetConsoleHeight, DefaultHeight);
             logger.ZLogDebug(
                 $"Input source: PTY command. Command={options.Command} Width={ptyWidth} Height={ptyHeight}"
             );
@@ -289,6 +289,21 @@ internal static class Program
         {
             return null;
         }
+    }
+
+    private static int ResolveSize(
+        int? explicitValue,
+        bool adjust,
+        Func<int?> detectTerminalSize,
+        int defaultValue
+    )
+    {
+        if (explicitValue.HasValue)
+        {
+            return explicitValue.Value;
+        }
+
+        return adjust ? detectTerminalSize() ?? defaultValue : defaultValue;
     }
 
     private static void EnsureDirectory(string outputPath)

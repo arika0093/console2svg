@@ -1,16 +1,58 @@
 name: Setup console2svg
-description: Downloads the matching version of the console2svg binary and adds it to PATH
+description: Installs console2svg by downloading a release binary or building from source (develop), then adds it to PATH
 
 inputs:
   version:
-    description: 'Version to install (e.g. 0.4.3). Defaults to the latest release.'
+    description: 'Version to install (e.g. 0.4.3, latest, develop). Defaults to the latest release.'
     required: false
     default: 'latest'
 
 runs:
   using: composite
   steps:
+    - name: Setup .NET SDK (develop)
+      if: ${{ inputs.version == 'develop' }}
+      uses: actions/setup-dotnet@v4
+
+    - name: Build and install console2svg from source (develop)
+      if: ${{ inputs.version == 'develop' }}
+      shell: bash
+      run: |
+        case "${{ runner.os }}" in
+          Linux)   RID="linux-x64" ; EXT="" ;;
+          Windows) RID="win-x64"   ; EXT=".exe" ;;
+          macOS)   RID="osx-x64"   ; EXT="" ;;
+          *)
+            echo "Unsupported OS: ${{ runner.os }}"
+            exit 1
+            ;;
+        esac
+
+        INSTALL_DIR="${{ runner.tool_cache }}/console2svg/develop/x64"
+        mkdir -p "$INSTALL_DIR"
+
+        dotnet publish "${{ github.action_path }}/src/ConsoleToSvg/ConsoleToSvg.csproj" \
+          -c Release \
+          -r "$RID" \
+          -p:PublishAot=true \
+          -p:SelfContained=true \
+          -o "$INSTALL_DIR"
+
+        if [ -f "$INSTALL_DIR/ConsoleToSvg${EXT}" ]; then
+          cp "$INSTALL_DIR/ConsoleToSvg${EXT}" "$INSTALL_DIR/console2svg${EXT}"
+        elif [ -f "$INSTALL_DIR/console2svg${EXT}" ]; then
+          :
+        else
+          echo "Published binary not found in $INSTALL_DIR"
+          ls -la "$INSTALL_DIR"
+          exit 1
+        fi
+
+        [ -z "${EXT}" ] && chmod +x "$INSTALL_DIR/console2svg"
+        echo "$INSTALL_DIR" >> "$GITHUB_PATH"
+
     - name: Download and install console2svg
+      if: ${{ inputs.version != 'develop' }}
       shell: bash
       run: |
         VERSION="${{ inputs.version }}"

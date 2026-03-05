@@ -20,6 +20,8 @@ jobs:
 
       - name: Setup console2svg
         uses: ./
+        with:
+          version: 'develop'
 
       - name: Install dependencies
         run: |

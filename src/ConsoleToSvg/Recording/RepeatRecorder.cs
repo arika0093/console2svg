@@ -120,14 +120,16 @@ public static class RepeatRecorder
         using var process = new Process { StartInfo = startInfo };
         process.Start();
 
-        // Register to kill the process if the token is cancelled while it is running.
+        // Register to kill the entire process tree if the token is cancelled while it is running.
+        // Killing only the shell process can leave descendant processes alive and keep the stdout
+        // pipe open, which would cause ReadToEndAsync to hang indefinitely.
         using var registration = cancellationToken.Register(() =>
         {
             try
             {
                 if (!process.HasExited)
                 {
-                    process.Kill();
+                    process.Kill(entireProcessTree: true);
                 }
             }
             catch

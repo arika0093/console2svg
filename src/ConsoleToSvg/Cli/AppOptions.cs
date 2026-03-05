@@ -4,6 +4,7 @@ public enum OutputMode
 {
     Image,
     Video,
+    Repeat,
 }
 
 public enum VideoTimingMode

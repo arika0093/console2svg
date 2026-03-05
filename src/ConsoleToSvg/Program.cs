@@ -112,7 +112,7 @@ internal static class Program
             var renderOptions = SvgRenderOptions.FromAppOptions(options);
             logger.ZLogDebug($"Rendering SVG. Mode={options.Mode}");
             var svg =
-                options.Mode == OutputMode.Video
+                options.Mode is OutputMode.Video or OutputMode.Repeat
                     ? AnimatedSvgRenderer.Render(session, renderOptions)
                     : SvgRenderer.Render(session, renderOptions);
             logger.ZLogDebug($"Rendering completed. SvgLength={svg.Length}");
@@ -173,6 +173,24 @@ internal static class Program
         {
             var ptyWidth = ResolveSize(options.Width, options.WidthAdjust, TryGetConsoleWidth, DefaultWidth);
             var ptyHeight = ResolveSize(options.Height, options.HeightAdjust, TryGetConsoleHeight, DefaultHeight);
+
+            if (options.Mode == OutputMode.Repeat)
+            {
+                logger.ZLogDebug(
+                    $"Input source: repeat command. Command={options.Command} Width={ptyWidth} Height={ptyHeight} Fps={options.VideoFps}"
+                );
+                return await RepeatRecorder
+                    .RecordAsync(
+                        options.Command!,
+                        ptyWidth,
+                        ptyHeight,
+                        options.VideoFps,
+                        cancellationToken,
+                        loggerFactory.CreateLogger("ConsoleToSvg.RepeatRecorder"),
+                        noDeleteEnvs: options.NoDeleteEnvs
+                    )
+                    .ConfigureAwait(false);
+            }
             logger.ZLogDebug(
                 $"Input source: PTY command. Command={options.Command} Width={ptyWidth} Height={ptyHeight}"
             );

@@ -906,4 +906,52 @@ public sealed class OptionParserTests
         var renderOptions = SvgRenderOptions.FromAppOptions(options!);
         renderOptions.VideoTiming.ShouldBe(VideoTimingMode.Realtime);
     }
+
+    [Test]
+    public void RepeatModeParsedFromLongFlag()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "-m", "repeat", "--", "echo", "hello" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.Mode.ShouldBe(OutputMode.Repeat);
+        options.Command.ShouldBe("echo hello");
+    }
+
+    [Test]
+    public void RepeatModeParsedCaseInsensitive()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--mode", "REPEAT", "--", "echo", "hi" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.Mode.ShouldBe(OutputMode.Repeat);
+    }
+
+    [Test]
+    public void RepeatModeWithoutCommandReturnsError()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--mode", "repeat" },
+            out _,
+            out var error,
+            out _
+        );
+        ok.ShouldBeFalse();
+        error.ShouldBe("--mode repeat requires a command to be specified.");
+    }
+
+    [Test]
+    public void InvalidModeReturnsUpdatedError()
+    {
+        var ok = OptionParser.TryParse(new[] { "--mode", "unknown" }, out _, out var error, out _);
+        ok.ShouldBeFalse();
+        error.ShouldBe("--mode must be image, video, or repeat.");
+    }
 }

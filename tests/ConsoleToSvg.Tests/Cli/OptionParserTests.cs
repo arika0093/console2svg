@@ -182,6 +182,50 @@ public sealed class OptionParserTests
     }
 
     [Test]
+    public void WidthAdjustParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "--width", "adjust" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.WidthAdjust.ShouldBeTrue();
+        options.Width.ShouldBeNull();
+    }
+
+    [Test]
+    public void HeightAdjustParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "--height", "adjust" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.HeightAdjust.ShouldBeTrue();
+        options.Height.ShouldBeNull();
+    }
+
+    [Test]
+    public void WidthAdjustShortFlagParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "-w", "adjust" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.WidthAdjust.ShouldBeTrue();
+        options.Width.ShouldBeNull();
+    }
+
+    [Test]
+    public void HeightAdjustShortFlagParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "-h", "adjust" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.HeightAdjust.ShouldBeTrue();
+        options.Height.ShouldBeNull();
+    }
+
+    [Test]
+    public void WidthAdjustCaseInsensitive()
+    {
+        var ok = OptionParser.TryParse(new[] { "--width", "ADJUST" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.WidthAdjust.ShouldBeTrue();
+    }
+
+    [Test]
     public void MultiplePositionalArgsReturnsError()
     {
         var ok = OptionParser.TryParse(new[] { "cmd1", "cmd2" }, out _, out var error, out _);

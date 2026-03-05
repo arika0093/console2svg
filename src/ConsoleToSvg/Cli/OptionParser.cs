@@ -16,8 +16,8 @@ public static class OptionParser
 
             Major options:
                 -o, --out <path>          Output SVG path (default: output.svg).
-                -w, --width <int>         Terminal width in characters (default: auto[pipe], 100[pty]).
-                -h, --height <int>        Terminal height in rows (default: auto).
+                -w, --width <int|adjust>  Terminal width in characters (default: auto[pipe], 100[pty]).
+                -h, --height <int|adjust> Terminal height in rows (default: auto).
                 -v                        Output animated SVG (alias for --mode video).
                 -c, --with-command        Prepend the command line to the output.
                 -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc, transparent.
@@ -45,8 +45,10 @@ public static class OptionParser
                 -o, --out <path>          Output SVG path (default: output.svg).
                 -m, --mode <image|video|repeat>  Output mode (default: image).
                 -v                        is alias for --mode video.
-                -w, --width <int>         Terminal width in characters (default: auto[pipe], 100[pty]).
-                -h, --height <int>        Terminal height in rows (default: auto).
+                -w, --width <int|adjust>  Terminal width in characters (default: auto[pipe], 100[pty]).
+                                          Specify "adjust" to use the current terminal width.
+                -h, --height <int|adjust> Terminal height in rows (default: auto).
+                                          Specify "adjust" to use the current terminal height.
                 --in <path>               Read existing asciicast file.
                 --save-cast <path>        Save captured output as asciicast file.
                 --verbose [path]          Enable verbose logging; write to path (default: console2svg.log).
@@ -380,6 +382,12 @@ public static class OptionParser
                 return false;
             case "-w":
             case "--width":
+                if (string.Equals(value, "adjust", StringComparison.OrdinalIgnoreCase))
+                {
+                    options.WidthAdjust = true;
+                    return true;
+                }
+
                 if (!TryParseInt(value, "--width", out var width, out error))
                 {
                     return false;
@@ -389,6 +397,12 @@ public static class OptionParser
                 return true;
             case "-h":
             case "--height":
+                if (string.Equals(value, "adjust", StringComparison.OrdinalIgnoreCase))
+                {
+                    options.HeightAdjust = true;
+                    return true;
+                }
+
                 if (!TryParseInt(value, "--height", out var height, out error))
                 {
                     return false;

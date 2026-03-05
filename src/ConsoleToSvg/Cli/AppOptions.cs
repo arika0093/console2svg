@@ -31,7 +31,11 @@ public sealed class AppOptions
 
     public int? Width { get; set; } = null;
 
+    public bool WidthAdjust { get; set; }
+
     public int? Height { get; set; } = null;
+
+    public bool HeightAdjust { get; set; }
 
     public int? Frame { get; set; }
 

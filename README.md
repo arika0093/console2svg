@@ -196,8 +196,6 @@ console2svg -w 160 -h 32 -c -d -v --timeout 5 --sleep 0 -- nyancat -d 10
 
 ![console2svg -w 160 -h 32 -c -d -v --timeout 5 --sleep 0 -- nyancat -d 10](./assets/cmd-nyancat.svg)
 
-By default, video timing uses deterministic normalization (`--timing deterministic`) to reduce commit diffs across repeated runs with the same command flow. If you want to preserve measured runtime lag exactly, switch to `--timing realtime`.
-
 ### Replay input
 You can also save the command execution record and later regenerate the SVG based on that record. 
 To save the record, use the `--replay-save` option to save the command execution.
@@ -343,7 +341,7 @@ tmux capture-pane -pe -t :0 | console2svg -h 12 -o capture-$(date +%s).svg
 <details>
 <summary>Recording and replaying tmux usage</summary>
 
-With the power of `console2svg`, even self-explanatory videos can of course be converted to SVG :)
+With the power of `console2svg`, you can even record and explain how to use `console2svg` itself :)
 
 ![](./assets/cmd-tmux-replay.svg)
 

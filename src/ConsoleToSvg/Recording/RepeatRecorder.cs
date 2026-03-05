@@ -73,7 +73,8 @@ public static class RepeatRecorder
             // Each frame: clear the screen then apply the captured content so that
             // consecutive frames start from a clean slate.
             var normalizedOutput = NormalizeLineEndings(output);
-            var frameData = ClearScreenSequence + normalizedOutput;
+            var eolCompletedOutput = EnsureEraseToEndOfLine(normalizedOutput);
+            var frameData = ClearScreenSequence + eolCompletedOutput;
             session.AddEvent(frameStart, frameData);
             logger.ZLogDebug(
                 $"Repeat iteration={iteration} outputChars={output.Length} frameDataChars={frameData.Length}"
@@ -170,6 +171,43 @@ public static class RepeatRecorder
 
             sb.Append(ch);
             previousWasCarriageReturn = ch == '\r';
+        }
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Inserts <c>ESC[K</c> (erase to end of line) before each line break.
+    /// Snapshot commands like <c>tmux capture-pane -pe</c> often trim trailing spaces,
+    /// which drops right-edge background cells. Adding EL reconstructs line tails using
+    /// the current SGR state for each captured line.
+    /// </summary>
+    private static string EnsureEraseToEndOfLine(string text)
+    {
+        if (text.Length == 0)
+        {
+            return text;
+        }
+
+        var sb = new StringBuilder(text.Length + 64);
+        for (var i = 0; i < text.Length; i++)
+        {
+            var ch = text[i];
+            if (ch == '\r' && i + 1 < text.Length && text[i + 1] == '\n')
+            {
+                sb.Append("\x1b[K");
+                sb.Append("\r\n");
+                i++;
+                continue;
+            }
+
+            sb.Append(ch);
+        }
+
+        // Also complete the final line when output doesn't end with CRLF.
+        if (!(text.EndsWith("\r\n", StringComparison.Ordinal)))
+        {
+            sb.Append("\x1b[K");
         }
 
         return sb.ToString();

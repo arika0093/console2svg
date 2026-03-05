@@ -90,6 +90,33 @@ public sealed class RepeatRecorderTests
     }
 
     [Test]
+    public async Task RecordAsync_FillsLineTailWhenOutputOmitsTrailingSpaces()
+    {
+        using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(450));
+
+        var session = await RepeatRecorder.RecordAsync(
+            // Emit a colored short line without trailing spaces.
+            "printf '\\033[44mA\\n'",
+            width: 10,
+            height: 3,
+            fps: 4,
+            cts.Token
+        );
+
+        session.Events.Count.ShouldBeGreaterThanOrEqualTo(1);
+
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(10, 3, theme);
+        emulator.Replay(session, frameIndex: session.Events.Count - 1);
+
+        // Blue background should extend to EOL on the first row.
+        for (var col = 1; col < 10; col++)
+        {
+            emulator.Buffer.GetCell(0, col).Background.ShouldBe("#2472c8");
+        }
+    }
+
+    [Test]
     public async Task RecordAsync_ImmediateCancellationReturnsEmptySession()
     {
         using var cts = new CancellationTokenSource();

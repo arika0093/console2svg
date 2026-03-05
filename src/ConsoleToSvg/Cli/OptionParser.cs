@@ -43,7 +43,7 @@ public static class OptionParser
 
             Options (Common):
                 -o, --out <path>          Output SVG path (default: output.svg).
-                -m, --mode <image|video>  Output mode (default: image).
+                -m, --mode <image|video|repeat>  Output mode (default: image).
                 -v                        is alias for --mode video.
                 -w, --width <int>         Terminal width in characters (default: auto[pipe], 100[pty]).
                 -h, --height <int>        Terminal height in rows (default: auto).
@@ -102,6 +102,14 @@ public static class OptionParser
                 --fadeout <sec>           Fade-out duration at end of video (default: 0).
                 --replay-save <path>      Save keyboard input to a replay file during command execution.
                 --replay <path>           Replay keyboard input from a file instead of reading from the console.
+
+            Options (Repeat mode):
+                --no-loop                 Disable loop for animated SVG playback (default: loop).
+                --fps <value>             Frames per second for command re-execution (default: 12).
+                                          The command is re-executed every 1/fps seconds.
+                --sleep <sec>             Wait time after the last frame in the animation (default: 2).
+                --fadeout <sec>           Fade-out duration at end of animation (default: 0).
+                --timeout <sec>           Stop recording after specified seconds (recommended for repeat mode).
             """;
 
     public static bool TryParse(
@@ -362,7 +370,13 @@ public static class OptionParser
                     return true;
                 }
 
-                error = "--mode must be image or video.";
+                if (string.Equals(value, "repeat", StringComparison.OrdinalIgnoreCase))
+                {
+                    options.Mode = OutputMode.Repeat;
+                    return true;
+                }
+
+                error = "--mode must be image, video, or repeat.";
                 return false;
             case "-w":
             case "--width":
@@ -774,6 +788,15 @@ public static class OptionParser
         )
         {
             error = "--timeout must be greater than 0.";
+            return false;
+        }
+
+        if (
+            options.Mode == OutputMode.Repeat
+            && string.IsNullOrWhiteSpace(options.Command)
+        )
+        {
+            error = "--mode repeat requires a command to be specified.";
             return false;
         }
 

@@ -29,8 +29,8 @@ public sealed class RepeatRecorderTests
     [Test]
     public async Task RecordAsync_FrameDataStartsWithClearScreen()
     {
-        // ESC[2J ESC[H
-        const string ClearScreen = "\x1b[2J\x1b[H";
+        // ESC[0m ESC[2J ESC[H
+        const string ClearScreen = "\x1b[0m\x1b[2J\x1b[H";
         using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(400));
 
         var session = await RepeatRecorder.RecordAsync(

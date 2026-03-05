@@ -21,8 +21,9 @@ namespace ConsoleToSvg.Recording;
 /// </summary>
 public static class RepeatRecorder
 {
-    // ESC[2J = clear entire screen; ESC[H = move cursor to top-left.
-    private const string ClearScreenSequence = "\x1b[2J\x1b[H";
+    // ESC[0m = reset SGR style; ESC[2J = clear entire screen; ESC[H = move cursor to top-left.
+    // Resetting style first prevents clear from inheriting the previous frame's background color.
+    private const string ClearScreenSequence = "\x1b[0m\x1b[2J\x1b[H";
 
     // Remove some CI environment variables to avoid apps switching to no-colour mode.
     private static readonly string[] ShellDeletedEnvironmentKeys = ["CI", "TF_BUILD"];

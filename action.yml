@@ -18,17 +18,20 @@ runs:
       if: ${{ inputs.version == 'develop' }}
       shell: bash
       run: |
-        case "${{ runner.os }}" in
-          Linux)   RID="linux-x64" ; EXT="" ;;
-          Windows) RID="win-x64"   ; EXT=".exe" ;;
-          macOS)   RID="osx-x64"   ; EXT="" ;;
+        case "${{ runner.os }}/${{ runner.arch }}" in
+          Linux/X64)     RID="linux-x64"   ; EXT="" ;;
+          Linux/ARM64)   RID="linux-arm64" ; EXT="" ;;
+          Windows/X64)   RID="win-x64"     ; EXT=".exe" ;;
+          Windows/ARM64) RID="win-arm64"   ; EXT=".exe" ;;
+          macOS/X64)     RID="osx-x64"     ; EXT="" ;;
+          macOS/ARM64)   RID="osx-arm64"   ; EXT="" ;;
           *)
-            echo "Unsupported OS: ${{ runner.os }}"
+            echo "Unsupported OS/arch: ${{ runner.os }}/${{ runner.arch }}"
             exit 1
             ;;
         esac
 
-        INSTALL_DIR="${{ runner.tool_cache }}/console2svg/develop/x64"
+        INSTALL_DIR="${{ runner.tool_cache }}/console2svg/develop/${{ runner.arch }}"
         mkdir -p "$INSTALL_DIR"
 
         export NBGV_GitEngine=Disabled
@@ -58,12 +61,15 @@ runs:
       run: |
         VERSION="${{ inputs.version }}"
 
-        case "${{ runner.os }}" in
-          Linux)   RID="linux-x64" ; EXT="" ;;
-          Windows) RID="win-x64"   ; EXT=".exe" ;;
-          macOS)   RID="osx-x64"   ; EXT="" ;;
+        case "${{ runner.os }}/${{ runner.arch }}" in
+          Linux/X64)     RID="linux-x64"   ; EXT="" ;;
+          Linux/ARM64)   RID="linux-arm64" ; EXT="" ;;
+          Windows/X64)   RID="win-x64"     ; EXT=".exe" ;;
+          Windows/ARM64) RID="win-arm64"   ; EXT=".exe" ;;
+          macOS/X64)     RID="osx-x64"     ; EXT="" ;;
+          macOS/ARM64)   RID="osx-arm64"   ; EXT="" ;;
           *)
-            echo "Unsupported OS: ${{ runner.os }}"
+            echo "Unsupported OS/arch: ${{ runner.os }}/${{ runner.arch }}"
             exit 1
             ;;
         esac
@@ -75,7 +81,7 @@ runs:
           URL="https://github.com/arika0093/console2svg/releases/download/v${VERSION}/${FILE}"
         fi
 
-        INSTALL_DIR="${{ runner.tool_cache }}/console2svg/${VERSION}/x64"
+        INSTALL_DIR="${{ runner.tool_cache }}/console2svg/${VERSION}/${{ runner.arch }}"
         mkdir -p "$INSTALL_DIR"
 
         echo "Downloading ${URL} ..."

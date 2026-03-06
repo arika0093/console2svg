@@ -40,7 +40,7 @@ public static class PtyRecorder
         logger.ZLogDebug($"Start PTY recording. Command={command} Width={width} Height={height}");
 
         const int MaxPtyStartupRetries = 3;
-        const int PtyStartupTimeoutMs = 5000;
+        const int PtyStartupTimeoutMs = 1000;
 
         for (var attempt = 1; attempt <= MaxPtyStartupRetries; attempt++)
         {

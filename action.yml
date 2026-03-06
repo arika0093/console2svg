@@ -31,12 +31,12 @@ runs:
         INSTALL_DIR="${{ runner.tool_cache }}/console2svg/develop/x64"
         mkdir -p "$INSTALL_DIR"
 
+        export NBGV_GitEngine=Disabled
         dotnet publish "${{ github.action_path }}/src/ConsoleToSvg/ConsoleToSvg.csproj" \
           -c Release \
           -r "$RID" \
           -p:PublishAot=true \
           -p:SelfContained=true \
-          -p:DisableNerdbankGitVersioning=true \
           -o "$INSTALL_DIR"
 
         if [ -f "$INSTALL_DIR/ConsoleToSvg${EXT}" ]; then

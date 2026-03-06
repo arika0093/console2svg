@@ -38,42 +38,81 @@ public static class PtyRecorder
     {
         logger ??= NullLogger.Instance;
         logger.ZLogDebug($"Start PTY recording. Command={command} Width={width} Height={height}");
-        try
+
+        const int MaxPtyStartupRetries = 3;
+        const int PtyStartupTimeoutMs = 5000;
+
+        for (var attempt = 1; attempt <= MaxPtyStartupRetries; attempt++)
         {
-            return await RecordWithPtyAsync(
-                    command,
-                    width,
-                    height,
-                    cancellationToken,
-                    logger,
-                    forwardToConsole,
-                    noDeleteEnvs,
-                    replaySavePath,
-                    replayPath
+            try
+            {
+                return await RecordWithPtyAsync(
+                        command,
+                        width,
+                        height,
+                        cancellationToken,
+                        logger,
+                        forwardToConsole,
+                        noDeleteEnvs,
+                        replaySavePath,
+                        replayPath,
+                        startupTimeoutMs: PtyStartupTimeoutMs
+                    )
+                    .ConfigureAwait(false);
+            }
+            catch (PtyStartupHangException ex)
+            {
+                if (attempt < MaxPtyStartupRetries)
+                {
+                    logger.ZLogDebug(
+                        $"PTY startup hang detected (attempt {attempt}/{MaxPtyStartupRetries}). Retrying in 500ms..."
+                    );
+                    await Task.Delay(500, cancellationToken).ConfigureAwait(false);
+                    continue;
+                }
+
+                logger.ZLogDebug(
+                    ex,
+                    $"PTY startup hang after {attempt} attempt(s). Falling back to process execution."
+                );
+                return await RecordWithProcessFallbackAsync(
+                        command,
+                        width,
+                        height,
+                        cancellationToken,
+                        logger,
+                        forwardToConsole,
+                        noDeleteEnvs,
+                        replaySavePath,
+                        replayPath
+                    )
+                    .ConfigureAwait(false);
+            }
+            catch (Exception ex)
+                when (ex is DllNotFoundException
+                    || ex is TypeInitializationException
+                    || ex is EntryPointNotFoundException
+                    || ex is BadImageFormatException
                 )
-                .ConfigureAwait(false);
+            {
+                logger.ZLogDebug(ex, $"PTY backend unavailable. Falling back to process execution.");
+                return await RecordWithProcessFallbackAsync(
+                        command,
+                        width,
+                        height,
+                        cancellationToken,
+                        logger,
+                        forwardToConsole,
+                        noDeleteEnvs,
+                        replaySavePath,
+                        replayPath
+                    )
+                    .ConfigureAwait(false);
+            }
         }
-        catch (Exception ex)
-            when (ex is DllNotFoundException
-                || ex is TypeInitializationException
-                || ex is EntryPointNotFoundException
-                || ex is BadImageFormatException
-            )
-        {
-            logger.ZLogDebug(ex, $"PTY backend unavailable. Falling back to process execution.");
-            return await RecordWithProcessFallbackAsync(
-                    command,
-                    width,
-                    height,
-                    cancellationToken,
-                    logger,
-                    forwardToConsole,
-                    noDeleteEnvs,
-                    replaySavePath,
-                    replayPath
-                )
-                .ConfigureAwait(false);
-        }
+
+        // Unreachable: the loop always exits via return or continue before exceeding MaxPtyStartupRetries.
+        throw new InvalidOperationException("Unreachable code path in RecordAsync.");
     }
 
     private static async Task<RecordingSession> RecordWithPtyAsync(
@@ -85,7 +124,8 @@ public static class PtyRecorder
         bool forwardToConsole,
         bool noDeleteEnvs,
         string? replaySavePath,
-        string? replayPath
+        string? replayPath,
+        int? startupTimeoutMs = null
     )
     {
         var disableInputEcho = forwardToConsole && string.IsNullOrWhiteSpace(replayPath);
@@ -96,6 +136,7 @@ public static class PtyRecorder
         var session = new RecordingSession(width, height);
         var stopwatch = Stopwatch.StartNew();
         var canceled = false;
+        var startupHang = false;
         using var readCancellation = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken
         );
@@ -205,6 +246,17 @@ public static class PtyRecorder
                         canceled = true;
                         break;
                     }
+
+                    if (
+                        startupTimeoutMs.HasValue
+                        && session.Events.Count == 0
+                        && stopwatch.ElapsedMilliseconds > startupTimeoutMs.Value
+                    )
+                    {
+                        startupHang = true;
+                        canceled = true;
+                        break;
+                    }
                 }
             }
             catch
@@ -226,6 +278,10 @@ public static class PtyRecorder
                 if (eofReached)
                 {
                     msg = "PTY output stream ended. Finalizing recording.";
+                }
+                else if (startupHang)
+                {
+                    msg = $"PTY startup timeout ({startupTimeoutMs!.Value}ms): no output received. Finalizing recording.";
                 }
                 else if (canceled)
                 {
@@ -306,6 +362,13 @@ public static class PtyRecorder
             {
                 throw new TimeoutException(
                     $"Replay did not complete within the expected duration ({exceededDurationFinal:F1}s + 1s timeout)."
+                );
+            }
+
+            if (startupHang)
+            {
+                throw new PtyStartupHangException(
+                    $"PTY process did not produce any output within {startupTimeoutMs!.Value}ms of starting."
                 );
             }
 
@@ -1127,3 +1190,7 @@ public static class PtyRecorder
         private static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
     }
 }
+
+// Exception type for PTY startup hang detection.
+public sealed class PtyStartupHangException(string message) : Exception(message) { }
+

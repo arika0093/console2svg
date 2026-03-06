@@ -13,7 +13,12 @@ const version = pkg.version;
 const platform = process.platform;
 const arch = process.arch;
 
-if (arch !== 'x64') {
+const archSuffix =
+  arch === 'x64' ? 'x64' :
+  arch === 'arm64' ? 'arm64' :
+  null;
+
+if (!archSuffix) {
   console.error(`console2svg: unsupported architecture: ${arch}`);
   console.error('Use the .NET tool or build from source for this platform.');
   process.exit(1);
@@ -21,11 +26,11 @@ if (arch !== 'x64') {
 
 let rid;
 if (platform === 'win32') {
-  rid = 'win-x64';
+  rid = `win-${archSuffix}`;
 } else if (platform === 'linux') {
-  rid = 'linux-x64';
+  rid = `linux-${archSuffix}`;
 } else if (platform === 'darwin') {
-  rid = 'osx-x64';
+  rid = `osx-${archSuffix}`;
 } else {
   console.error(`console2svg: unsupported platform: ${platform}`);
   console.error('Use the .NET tool or build from source for this platform.');

@@ -15,10 +15,10 @@ text {
   opacity: 0;
 }
 @keyframes k0 {
-  0%, 2.438% {
+  0%, 0.487% {
     opacity: 0;
   }
-  2.439%, 16.585% {
+  0.488%, 16.585% {
     opacity: 1;
   }
   16.586%, 100% {
@@ -54,19 +54,19 @@ text {
   0%, 19.999% {
     opacity: 0;
   }
-  20%, 27.317% {
+  20%, 24.39% {
     opacity: 1;
   }
-  27.318%, 100% {
+  24.391%, 100% {
     opacity: 0;
   }
 }
 .frame-3 { animation:k3 17.083s linear infinite; }
 @keyframes k4 {
-  0%, 27.316% {
+  0%, 24.389% {
     opacity: 0;
   }
-  27.317%, 35.61% {
+  24.39%, 35.61% {
     opacity: 1;
   }
   35.611%, 100% {
@@ -210,19 +210,19 @@ text {
   0%, 88.292% {
     opacity: 0;
   }
-  88.293%, 100% {
+  88.293%, 88.78% {
     opacity: 1;
   }
-  100%, 100% {
+  88.781%, 100% {
     opacity: 0;
   }
 }
 .frame-16 { animation:k16 17.083s linear infinite; }
 @keyframes k17 {
-  0%, 99.999% {
+  0%, 88.779% {
     opacity: 0;
   }
-  100%, 100% {
+  88.78%, 100% {
     opacity: 1;
   }
   100%, 100% {
@@ -234,11 +234,23 @@ text {
   0%, 99.999% {
     opacity: 0;
   }
+  100%, 100% {
+    opacity: 1;
+  }
+  100%, 100% {
+    opacity: 0;
+  }
+}
+.frame-18 { animation:k18 17.083s linear infinite; }
+@keyframes k19 {
+  0%, 99.999% {
+    opacity: 0;
+  }
   100% {
     opacity: 1;
   }
 }
-.frame-18 { animation:k18 17.083s linear infinite; }
+.frame-19 { animation:k19 17.083s linear infinite; }
 </style>
 <rect x="0.5" y="0.5" rx="10" ry="10" width="689" height="404" fill="#1f1f1f" stroke="#3a3a3a"/>
 <rect x="1" y="1" rx="9" ry="9" width="688" height="27" fill="#2c2c2c"/>
@@ -536,8 +548,6 @@ text {
 <text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="520.8" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">1,6</text>
-<text class="crt" x="638.4" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">All</text>
 </g>
 <g id="fd-13" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
@@ -656,6 +666,18 @@ text {
 <text class="crt" x="168" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="32" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
+</g>
+<g id="fd-19" transform="translate(9 36)">
+<rect width="672" height="360" fill="#1e1e1e"/>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm0kj6c</text>
+<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
+<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
+<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
+<text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
+<text class="crt" x="0" y="32" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm0kj6c</text>
+<text class="crt" x="168" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
+<text class="crt" x="176.4" y="32" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
+<text class="crt" x="428.4" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 <text class="crt" x="0" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">exit</text>
 </g>
 </defs>
@@ -678,4 +700,5 @@ text {
 <use href="#fd-16" id="frame-16" class="frame frame-16"/>
 <use href="#fd-17" id="frame-17" class="frame frame-17"/>
 <use href="#fd-18" id="frame-18" class="frame frame-18"/>
+<use href="#fd-19" id="frame-19" class="frame frame-19"/>
 </svg>

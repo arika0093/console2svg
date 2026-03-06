@@ -15,10 +15,10 @@ text {
   opacity: 0;
 }
 @keyframes k0 {
-  0%, 0.487% {
+  0%, 2.438% {
     opacity: 0;
   }
-  0.488%, 16.585% {
+  2.439%, 16.585% {
     opacity: 1;
   }
   16.586%, 100% {
@@ -54,19 +54,19 @@ text {
   0%, 19.999% {
     opacity: 0;
   }
-  20%, 26.341% {
+  20%, 27.317% {
     opacity: 1;
   }
-  26.342%, 100% {
+  27.318%, 100% {
     opacity: 0;
   }
 }
 .frame-3 { animation:k3 17.083s linear infinite; }
 @keyframes k4 {
-  0%, 26.34% {
+  0%, 27.316% {
     opacity: 0;
   }
-  26.341%, 35.61% {
+  27.317%, 35.61% {
     opacity: 1;
   }
   35.611%, 100% {
@@ -314,16 +314,16 @@ text {
 <text class="crt" x="403.2" y="158" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacing">distributable</text>
 <text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="210" y="194" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">Become</text>
-<text class="crt" x="268.8" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">a</text>
-<text class="crt" x="285.6" y="194" fill="#d4d4d4" textLength="84" lengthAdjust="spacing">registered</text>
-<text class="crt" x="378" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">Vim</text>
-<text class="crt" x="411.6" y="194" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">user!</text>
+<text class="crt" x="210" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">Help</text>
+<text class="crt" x="252" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">poor</text>
+<text class="crt" x="294" y="194" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">children</text>
+<text class="crt" x="369.6" y="194" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">in</text>
+<text class="crt" x="394.8" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Uganda!</text>
 <text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="142.8" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
 <text class="crt" x="193.2" y="212" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">register</text>
-<text class="crt" x="310.8" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
+<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">iccf</text>
+<text class="crt" x="277.2" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
 <text class="crt" x="394.8" y="212" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
 <text class="crt" x="428.4" y="212" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">information</text>
 <text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
@@ -536,6 +536,8 @@ text {
 <text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
+<text class="crt" x="520.8" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">1,6</text>
+<text class="crt" x="638.4" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">All</text>
 </g>
 <g id="fd-13" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>

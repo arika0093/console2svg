@@ -16,6 +16,7 @@ public static class OptionParser
 
             Major options:
                 -o, --out <path>          Output SVG path (default: output.svg).
+                                          --stdout to write to stdout instead of a file.
                 -w, --width <int|adjust>  Terminal width in characters (default: auto[pipe], 100[pty]).
                 -h, --height <int|adjust> Terminal height in rows (default: auto).
                 -v                        Output animated SVG (alias for --mode video).
@@ -43,6 +44,8 @@ public static class OptionParser
 
             Options (Common):
                 -o, --out <path>          Output SVG path (default: output.svg).
+                --stdout                  Write SVG to stdout instead of a file.
+                                          PTY output forwarding is suppressed so the pipe receives only SVG.
                 -m, --mode <image|video|repeat>  Output mode (default: image).
                 -v                        is alias for --mode video.
                 -w, --width <int|adjust>  Terminal width in characters (default: auto[pipe], 100[pty]).
@@ -267,7 +270,8 @@ public static class OptionParser
             // -d/--window is optional-value; handled separately in the main loop
             && !string.Equals(name, "-d", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--pcmode", StringComparison.OrdinalIgnoreCase);
+            && !string.Equals(name, "--pcmode", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--stdout", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsVerboseLogPathValue(string token) =>
@@ -605,6 +609,9 @@ public static class OptionParser
                 return true;
             case "--pcmode":
                 options.PcMode = true;
+                return true;
+            case "--stdout":
+                options.StdOut = true;
                 return true;
             case "--pc-padding":
                 if (!TryParseDouble(value, "--pc-padding", out var pcPadding, out error))

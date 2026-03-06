@@ -86,6 +86,22 @@ internal static class Program
             logger.ZLogDebug($"Timeout set: {options.Timeout.Value} seconds.");
         }
 
+        if (options.StdOut)
+        {
+            // Redirect Console.Out → stderr before recording so that any third-party library
+            // debug messages written via Console.Write/WriteLine (e.g. Quick.PtyNet's
+            // "Waiting on {pid}" / "Wait succeeded" from its ChildWatcherThreadProc)
+            // are sent to stderr instead of polluting the SVG output pipe.
+            var stderrWriter = new StreamWriter(
+                Console.OpenStandardError(),
+                new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+                bufferSize: 4096,
+                leaveOpen: true
+            ) { AutoFlush = true };
+            Console.SetOut(stderrWriter);
+            logger.ZLogDebug($"Console.Out redirected to stderr for --stdout mode.");
+        }
+
         try
         {
             var session = await LoadOrRecordAsync(
@@ -117,26 +133,43 @@ internal static class Program
                     : SvgRenderer.Render(session, renderOptions);
             logger.ZLogDebug($"Rendering completed. SvgLength={svg.Length}");
 
-            EnsureDirectory(options.OutputPath);
-            logger.ZLogDebug($"Writing output file: {options.OutputPath}");
-            await File.WriteAllTextAsync(
-                    options.OutputPath,
-                    svg,
-                    new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
-                    outputToken
-                )
-                .ConfigureAwait(false);
-            logger.ZLogDebug($"Output file written: {options.OutputPath}");
+            if (options.StdOut)
+            {
+                logger.ZLogDebug($"Writing SVG to stdout.");
+                await using var stdoutWriter = new StreamWriter(
+                    Console.OpenStandardOutput(),
+                    new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
+                );
+                await stdoutWriter.WriteAsync(svg).ConfigureAwait(false);
+                logger.ZLogDebug($"SVG written to stdout.");
+            }
+            else
+            {
+                EnsureDirectory(options.OutputPath);
+                logger.ZLogDebug($"Writing output file: {options.OutputPath}");
+                await File.WriteAllTextAsync(
+                        options.OutputPath,
+                        svg,
+                        new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+                        outputToken
+                    )
+                    .ConfigureAwait(false);
+                logger.ZLogDebug($"Output file written: {options.OutputPath}");
+            }
 
             if (wasCanceled)
             {
                 var cause = GetCancellationCause(options, canceledByCtrlC);
                 logger.ZLogDebug($"Recording stopped. Cause={cause}");
-                await Console.Error.WriteLineAsync($"Generated (partial): {options.OutputPath}");
+                await Console.Error.WriteLineAsync(
+                    options.StdOut ? "Generated (partial): (stdout)" : $"Generated (partial): {options.OutputPath}"
+                );
                 return 0;
             }
 
-            await Console.Error.WriteLineAsync($"Generated: {options.OutputPath}");
+            await Console.Error.WriteLineAsync(
+                options.StdOut ? "Generated: (stdout)" : $"Generated: {options.OutputPath}"
+            );
             return 0;
         }
         catch (OperationCanceledException)
@@ -201,7 +234,7 @@ internal static class Program
                     ptyHeight,
                     cancellationToken,
                     loggerFactory.CreateLogger("ConsoleToSvg.PtyRecorder"),
-                    forwardToConsole: true,
+                    forwardToConsole: !options.StdOut,
                     noDeleteEnvs: options.NoDeleteEnvs,
                     replaySavePath: options.ReplaySavePath,
                     replayPath: options.ReplayPath

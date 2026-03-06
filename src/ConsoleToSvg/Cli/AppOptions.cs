@@ -101,4 +101,7 @@ public sealed class AppOptions
 
     /// <summary>Override the terminal's own background color (e.g. "#0c0c0c").</summary>
     public string? BackColor { get; set; }
+
+    /// <summary>Write SVG output to stdout instead of a file. PTY forwarding is suppressed.</summary>
+    public bool StdOut { get; set; }
 }

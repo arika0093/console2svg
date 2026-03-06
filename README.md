@@ -1,7 +1,10 @@
 # console2svg
 Easily convert terminal output into SVG images. truecolor, animation, cropping and many appearance options are supported.
 
-[![console2svg hero image with oh-my-logo](./assets/cmd-hero.svg)](https://raw.githubusercontent.com/arika0093/console2svg/refs/heads/main/assets/cmd-hero.svg)
+![console2svg hero image with oh-my-logo](./assets/cmd-hero.svg)
+
+> Of course, this hero image is [generated](https://github.com/arika0093/console2svg/blob/main/scripts/image-gen.sh#L2-L3) using console2svg itself.
+
 
 * [Why console2svg?](#why-console2svg)
 * [Overview](#overview)

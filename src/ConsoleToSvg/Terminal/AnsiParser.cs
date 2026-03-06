@@ -1,4 +1,3 @@
-#pragma warning disable S127
 using System;
 using System.Collections.Generic;
 using System.Globalization;

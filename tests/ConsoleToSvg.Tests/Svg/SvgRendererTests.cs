@@ -431,8 +431,8 @@ public sealed class SvgRendererTests
         svg.ShouldContain("linearGradient");
         svg.ShouldContain("#1a1d2e"); // gradient start
         svg.ShouldContain("#252840"); // gradient end
-        // Shadow (black with opacity)
-        svg.ShouldContain("fill-opacity=\"0.3\"");
+        // No drop shadow
+        svg.ShouldNotContain("fill-opacity=\"0.3\"");
         svg.ShouldContain("#ff5f57");
         svg.ShouldContain("#febc2e");
         svg.ShouldContain("#28c840");

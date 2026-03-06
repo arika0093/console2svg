@@ -33,7 +33,7 @@ text {
 <text class="crt" x="319.2" y="14" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">to</text>
 <text class="crt" x="344.4" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">SVG</text>
 <text class="crt" x="378" y="14" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">[Ver:</text>
-<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="159.6" lengthAdjust="spacing">0.6.1.0+0b5cf80398]</text>
+<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="159.6" lengthAdjust="spacing">0.6.2.0+53de277c23]</text>
 <text class="crt" x="0" y="50" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">Usage:</text>
 <text class="crt" x="33.6" y="68" fill="#d4d4d4" textLength="84" lengthAdjust="spacing">my-command</text>
 <text class="crt" x="126" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">|</text>

@@ -54,19 +54,19 @@ text {
   0%, 19.999% {
     opacity: 0;
   }
-  20%, 24.39% {
+  20%, 25.854% {
     opacity: 1;
   }
-  24.391%, 100% {
+  25.855%, 100% {
     opacity: 0;
   }
 }
 .frame-3 { animation:k3 17.083s linear infinite; }
 @keyframes k4 {
-  0%, 24.389% {
+  0%, 25.853% {
     opacity: 0;
   }
-  24.39%, 35.61% {
+  25.854%, 35.61% {
     opacity: 1;
   }
   35.611%, 100% {
@@ -210,19 +210,19 @@ text {
   0%, 88.292% {
     opacity: 0;
   }
-  88.293%, 88.78% {
+  88.293%, 100% {
     opacity: 1;
   }
-  88.781%, 100% {
+  100%, 100% {
     opacity: 0;
   }
 }
 .frame-16 { animation:k16 17.083s linear infinite; }
 @keyframes k17 {
-  0%, 88.779% {
+  0%, 99.999% {
     opacity: 0;
   }
-  88.78%, 100% {
+  100%, 100% {
     opacity: 1;
   }
   100%, 100% {
@@ -234,23 +234,11 @@ text {
   0%, 99.999% {
     opacity: 0;
   }
-  100%, 100% {
-    opacity: 1;
-  }
-  100%, 100% {
-    opacity: 0;
-  }
-}
-.frame-18 { animation:k18 17.083s linear infinite; }
-@keyframes k19 {
-  0%, 99.999% {
-    opacity: 0;
-  }
   100% {
     opacity: 1;
   }
 }
-.frame-19 { animation:k19 17.083s linear infinite; }
+.frame-18 { animation:k18 17.083s linear infinite; }
 </style>
 <rect x="0.5" y="0.5" rx="10" ry="10" width="689" height="404" fill="#1f1f1f" stroke="#3a3a3a"/>
 <rect x="1" y="1" rx="9" ry="9" width="688" height="27" fill="#2c2c2c"/>
@@ -261,10 +249,6 @@ text {
 <defs>
 <g id="fd-0" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm0kj6c</text>
-<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 </g>
 <g id="fd-1" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
@@ -289,9 +273,6 @@ text {
 <text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 <text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
-</g>
-<g id="fd-4" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
 </g>
 <g id="fd-5" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
@@ -666,18 +647,6 @@ text {
 <text class="crt" x="168" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="32" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
-</g>
-<g id="fd-19" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm0kj6c</text>
-<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
-<text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
-<text class="crt" x="0" y="32" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm0kj6c</text>
-<text class="crt" x="168" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="32" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 <text class="crt" x="0" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">exit</text>
 </g>
 </defs>
@@ -685,7 +654,7 @@ text {
 <use href="#fd-1" id="frame-1" class="frame frame-1"/>
 <use href="#fd-2" id="frame-2" class="frame frame-2"/>
 <use href="#fd-3" id="frame-3" class="frame frame-3"/>
-<use href="#fd-4" id="frame-4" class="frame frame-4"/>
+<use href="#fd-0" id="frame-4" class="frame frame-4"/>
 <use href="#fd-5" id="frame-5" class="frame frame-5"/>
 <use href="#fd-6" id="frame-6" class="frame frame-6"/>
 <use href="#fd-7" id="frame-7" class="frame frame-7"/>
@@ -700,5 +669,4 @@ text {
 <use href="#fd-16" id="frame-16" class="frame frame-16"/>
 <use href="#fd-17" id="frame-17" class="frame frame-17"/>
 <use href="#fd-18" id="frame-18" class="frame frame-18"/>
-<use href="#fd-19" id="frame-19" class="frame frame-19"/>
 </svg>

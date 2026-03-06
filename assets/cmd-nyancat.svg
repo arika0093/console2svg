@@ -354,15 +354,27 @@ text {
   0%, 63.635% {
     opacity: 0;
   }
-  63.636%, 68.182% {
+  63.636%, 66.667% {
+    opacity: 1;
+  }
+  66.668%, 100% {
+    opacity: 0;
+  }
+}
+.frame-28 { animation:k28 5.5s linear infinite; }
+@keyframes k29 {
+  0%, 66.666% {
+    opacity: 0;
+  }
+  66.667%, 68.182% {
     opacity: 1;
   }
   68.183%, 100% {
     opacity: 0;
   }
 }
-.frame-28 { animation:k28 5.5s linear infinite; }
-@keyframes k29 {
+.frame-29 { animation:k29 5.5s linear infinite; }
+@keyframes k30 {
   0%, 68.181% {
     opacity: 0;
   }
@@ -373,8 +385,8 @@ text {
     opacity: 0;
   }
 }
-.frame-29 { animation:k29 5.5s linear infinite; }
-@keyframes k30 {
+.frame-30 { animation:k30 5.5s linear infinite; }
+@keyframes k31 {
   0%, 71.211% {
     opacity: 0;
   }
@@ -385,8 +397,8 @@ text {
     opacity: 0;
   }
 }
-.frame-30 { animation:k30 5.5s linear infinite; }
-@keyframes k31 {
+.frame-31 { animation:k31 5.5s linear infinite; }
+@keyframes k32 {
   0%, 72.726% {
     opacity: 0;
   }
@@ -397,8 +409,8 @@ text {
     opacity: 0;
   }
 }
-.frame-31 { animation:k31 5.5s linear infinite; }
-@keyframes k32 {
+.frame-32 { animation:k32 5.5s linear infinite; }
+@keyframes k33 {
   0%, 75.757% {
     opacity: 0;
   }
@@ -409,8 +421,8 @@ text {
     opacity: 0;
   }
 }
-.frame-32 { animation:k32 5.5s linear infinite; }
-@keyframes k33 {
+.frame-33 { animation:k33 5.5s linear infinite; }
+@keyframes k34 {
   0%, 77.272% {
     opacity: 0;
   }
@@ -421,8 +433,8 @@ text {
     opacity: 0;
   }
 }
-.frame-33 { animation:k33 5.5s linear infinite; }
-@keyframes k34 {
+.frame-34 { animation:k34 5.5s linear infinite; }
+@keyframes k35 {
   0%, 80.302% {
     opacity: 0;
   }
@@ -433,8 +445,8 @@ text {
     opacity: 0;
   }
 }
-.frame-34 { animation:k34 5.5s linear infinite; }
-@keyframes k35 {
+.frame-35 { animation:k35 5.5s linear infinite; }
+@keyframes k36 {
   0%, 81.817% {
     opacity: 0;
   }
@@ -445,8 +457,8 @@ text {
     opacity: 0;
   }
 }
-.frame-35 { animation:k35 5.5s linear infinite; }
-@keyframes k36 {
+.frame-36 { animation:k36 5.5s linear infinite; }
+@keyframes k37 {
   0%, 86.363% {
     opacity: 0;
   }
@@ -457,24 +469,12 @@ text {
     opacity: 0;
   }
 }
-.frame-36 { animation:k36 5.5s linear infinite; }
-@keyframes k37 {
+.frame-37 { animation:k37 5.5s linear infinite; }
+@keyframes k38 {
   0%, 89.393% {
     opacity: 0;
   }
   89.394%, 90.909% {
-    opacity: 1;
-  }
-  90.91%, 100% {
-    opacity: 0;
-  }
-}
-.frame-37 { animation:k37 5.5s linear infinite; }
-@keyframes k38 {
-  0%, 90.908% {
-    opacity: 0;
-  }
-  90.909%, 90.909% {
     opacity: 1;
   }
   90.91%, 100% {
@@ -486,6 +486,30 @@ text {
   0%, 90.908% {
     opacity: 0;
   }
+  90.909%, 90.909% {
+    opacity: 1;
+  }
+  90.91%, 100% {
+    opacity: 0;
+  }
+}
+.frame-39 { animation:k39 5.5s linear infinite; }
+@keyframes k40 {
+  0%, 90.908% {
+    opacity: 0;
+  }
+  90.909%, 90.909% {
+    opacity: 1;
+  }
+  90.91%, 100% {
+    opacity: 0;
+  }
+}
+.frame-40 { animation:k40 5.5s linear infinite; }
+@keyframes k41 {
+  0%, 90.908% {
+    opacity: 0;
+  }
   90.909% {
     opacity: 1;
   }
@@ -493,7 +517,7 @@ text {
     opacity: 1;
   }
 }
-.frame-39 { animation:k39 5.5s linear infinite; }
+.frame-41 { animation:k41 5.5s linear infinite; }
 </style>
 <rect x="0.5" y="0.5" rx="10" ry="10" width="1361" height="638" fill="#1f1f1f" stroke="#3a3a3a"/>
 <rect x="1" y="1" rx="9" ry="9" width="1360" height="27" fill="#2c2c2c"/>
@@ -514,9 +538,7 @@ text {
 <rect class="bg" x="0" y="0" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="18" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="36" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="54" width="151.2" height="18" fill="#00005F"/>
-<rect class="bg" x="151.2" y="54" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="168" y="54" width="1176" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="72" width="134.4" height="18" fill="#00005F"/>
 <rect class="bg" x="134.4" y="72" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="151.2" y="72" width="16.8" height="18" fill="#00005F"/>
@@ -786,33 +808,39 @@ text {
 <rect class="bg" x="1192.8" y="72" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="1209.6" y="72" width="134.4" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="108" width="1192.8" height="18" fill="#00005F"/>
-<rect class="bg" x="1192.8" y="108" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1209.6" y="108" width="134.4" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="126" width="1192.8" height="18" fill="#00005F"/>
-<rect class="bg" x="1192.8" y="126" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1209.6" y="126" width="134.4" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="144" width="50.4" height="18" fill="#00005F"/>
-<rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#FF0000"/>
-<rect class="bg" x="168" y="144" width="117.6" height="18" fill="#00005F"/>
-<rect class="bg" x="285.6" y="144" width="134.4" height="18" fill="#FF0000"/>
-<rect class="bg" x="420" y="144" width="134.4" height="18" fill="#00005F"/>
-<rect class="bg" x="554.4" y="144" width="252" height="18" fill="#000000"/>
-<rect class="bg" x="806.4" y="144" width="537.6" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="162" width="537.6" height="18" fill="#FF0000"/>
-<rect class="bg" x="537.6" y="162" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="554.4" y="162" width="252" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="806.4" y="162" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="823.2" y="162" width="520.8" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="180" width="50.4" height="18" fill="#FF0000"/>
-<rect class="bg" x="50.4" y="180" width="117.6" height="18" fill="#FFAF00"/>
-<rect class="bg" x="168" y="180" width="117.6" height="18" fill="#FF0000"/>
-<rect class="bg" x="285.6" y="180" width="134.4" height="18" fill="#FFAF00"/>
-<rect class="bg" x="420" y="180" width="100.8" height="18" fill="#FF0000"/>
+<rect class="bg" x="0" y="108" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="126" width="554.4" height="18" fill="#00005F"/>
+<rect class="bg" x="554.4" y="126" width="252" height="18" fill="#000000"/>
+<rect class="bg" x="806.4" y="126" width="537.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="144" width="50.4" height="18" fill="#FF0000"/>
+<rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#00005F"/>
+<rect class="bg" x="168" y="144" width="134.4" height="18" fill="#FF0000"/>
+<rect class="bg" x="302.4" y="144" width="134.4" height="18" fill="#00005F"/>
+<rect class="bg" x="436.8" y="144" width="100.8" height="18" fill="#FF0000"/>
+<rect class="bg" x="537.6" y="144" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="554.4" y="144" width="252" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="806.4" y="144" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="823.2" y="144" width="520.8" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="162" width="520.8" height="18" fill="#FF0000"/>
+<rect class="bg" x="520.8" y="162" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="162" width="50.4" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="588" y="162" width="184.8" height="18" fill="#D787AF"/>
+<rect class="bg" x="772.8" y="162" width="50.4" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="823.2" y="162" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="840" y="162" width="504" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="180" width="50.4" height="18" fill="#FFAF00"/>
+<rect class="bg" x="50.4" y="180" width="117.6" height="18" fill="#FF0000"/>
+<rect class="bg" x="168" y="180" width="134.4" height="18" fill="#FFAF00"/>
+<rect class="bg" x="302.4" y="180" width="134.4" height="18" fill="#FF0000"/>
+<rect class="bg" x="436.8" y="180" width="84" height="18" fill="#FFAF00"/>
 <rect class="bg" x="520.8" y="180" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="537.6" y="180" width="50.4" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="588" y="180" width="184.8" height="18" fill="#D787AF"/>
-<rect class="bg" x="772.8" y="180" width="50.4" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="537.6" y="180" width="33.6" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="571.2" y="180" width="84" height="18" fill="#D787AF"/>
+<rect class="bg" x="655.2" y="180" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="672" y="180" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="705.6" y="180" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="722.4" y="180" width="67.2" height="18" fill="#D787AF"/>
+<rect class="bg" x="789.6" y="180" width="33.6" height="18" fill="#FFFFD7"/>
 <rect class="bg" x="823.2" y="180" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="840" y="180" width="504" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="198" width="520.8" height="18" fill="#FFAF00"/>
@@ -1028,15 +1056,17 @@ text {
 <rect class="bg" x="0" y="18" width="1075.2" height="18" fill="#00005F"/>
 <rect class="bg" x="1075.2" y="18" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="1092" y="18" width="252" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="36" width="1192.8" height="18" fill="#00005F"/>
-<rect class="bg" x="1192.8" y="36" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1209.6" y="36" width="134.4" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="36" width="1041.6" height="18" fill="#00005F"/>
+<rect class="bg" x="1041.6" y="36" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1058.4" y="36" width="50.4" height="18" fill="#00005F"/>
+<rect class="bg" x="1108.8" y="36" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1125.6" y="36" width="218.4" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="1142.4" height="18" fill="#00005F"/>
-<rect class="bg" x="1142.4" y="72" width="33.6" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1176" y="72" width="16.8" height="18" fill="#00005F"/>
-<rect class="bg" x="1192.8" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1209.6" y="72" width="134.4" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="1024.8" height="18" fill="#00005F"/>
+<rect class="bg" x="1024.8" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1041.6" y="72" width="84" height="18" fill="#00005F"/>
+<rect class="bg" x="1125.6" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1142.4" y="72" width="201.6" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="108" width="1192.8" height="18" fill="#00005F"/>
 <rect class="bg" x="1192.8" y="108" width="16.8" height="18" fill="#FFFFFF"/>
@@ -1288,11 +1318,9 @@ text {
 <rect class="bg" x="0" y="18" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="36" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="907.2" height="18" fill="#00005F"/>
-<rect class="bg" x="907.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="924" y="72" width="67.2" height="18" fill="#00005F"/>
-<rect class="bg" x="991.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1008" y="72" width="336" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="856.8" height="18" fill="#00005F"/>
+<rect class="bg" x="856.8" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="873.6" y="72" width="470.4" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="108" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="126" width="957.6" height="18" fill="#00005F"/>
@@ -1527,7 +1555,7 @@ text {
 <text class="crt" x="579.6" y="572" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">have</text>
 <text class="crt" x="621.6" y="572" fill="#FFFFFF" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">nyaned</text>
 <text class="crt" x="680.4" y="572" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">for</text>
-<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">0</text>
+<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">1</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
 <g id="fd-5" transform="translate(9 54)">
@@ -1535,7 +1563,9 @@ text {
 <rect class="bg" x="0" y="0" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="18" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="36" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="54" width="789.6" height="18" fill="#00005F"/>
+<rect class="bg" x="789.6" y="54" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="806.4" y="54" width="537.6" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="72" width="856.8" height="18" fill="#00005F"/>
 <rect class="bg" x="856.8" y="72" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="873.6" y="72" width="470.4" height="18" fill="#00005F"/>
@@ -1786,7 +1816,7 @@ text {
 <text class="crt" x="579.6" y="572" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">have</text>
 <text class="crt" x="621.6" y="572" fill="#FFFFFF" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">nyaned</text>
 <text class="crt" x="680.4" y="572" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">for</text>
-<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">0</text>
+<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">1</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
 <g id="fd-6" transform="translate(9 54)">
@@ -1804,12 +1834,10 @@ text {
 <rect class="bg" x="705.6" y="72" width="16.8" height="18" fill="#00005F"/>
 <rect class="bg" x="722.4" y="72" width="33.6" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="756" y="72" width="588" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="90" width="705.6" height="18" fill="#00005F"/>
-<rect class="bg" x="705.6" y="90" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="722.4" y="90" width="621.6" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="108" width="705.6" height="18" fill="#00005F"/>
-<rect class="bg" x="705.6" y="108" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="722.4" y="108" width="621.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="90" width="789.6" height="18" fill="#00005F"/>
+<rect class="bg" x="789.6" y="90" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="806.4" y="90" width="537.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="108" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="126" width="554.4" height="18" fill="#00005F"/>
 <rect class="bg" x="554.4" y="126" width="252" height="18" fill="#000000"/>
 <rect class="bg" x="806.4" y="126" width="537.6" height="18" fill="#00005F"/>
@@ -2062,7 +2090,7 @@ text {
 <text class="crt" x="579.6" y="572" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">have</text>
 <text class="crt" x="621.6" y="572" fill="#FFFFFF" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">nyaned</text>
 <text class="crt" x="680.4" y="572" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">for</text>
-<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">0</text>
+<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">1</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
 <g id="fd-7" transform="translate(9 54)">
@@ -2081,33 +2109,41 @@ text {
 <rect class="bg" x="588" y="72" width="50.4" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="638.4" y="72" width="705.6" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="108" width="588" height="18" fill="#00005F"/>
-<rect class="bg" x="588" y="108" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="604.8" y="108" width="739.2" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="126" width="588" height="18" fill="#00005F"/>
-<rect class="bg" x="588" y="126" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="604.8" y="126" width="739.2" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="144" width="50.4" height="18" fill="#FF0000"/>
-<rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#00005F"/>
-<rect class="bg" x="168" y="144" width="134.4" height="18" fill="#FF0000"/>
-<rect class="bg" x="302.4" y="144" width="134.4" height="18" fill="#00005F"/>
-<rect class="bg" x="436.8" y="144" width="117.6" height="18" fill="#FF0000"/>
-<rect class="bg" x="554.4" y="144" width="252" height="18" fill="#000000"/>
-<rect class="bg" x="806.4" y="144" width="537.6" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="162" width="537.6" height="18" fill="#FF0000"/>
-<rect class="bg" x="537.6" y="162" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="554.4" y="162" width="252" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="806.4" y="162" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="823.2" y="162" width="520.8" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="180" width="50.4" height="18" fill="#FFAF00"/>
-<rect class="bg" x="50.4" y="180" width="117.6" height="18" fill="#FF0000"/>
-<rect class="bg" x="168" y="180" width="134.4" height="18" fill="#FFAF00"/>
-<rect class="bg" x="302.4" y="180" width="134.4" height="18" fill="#FF0000"/>
-<rect class="bg" x="436.8" y="180" width="84" height="18" fill="#FFAF00"/>
+<rect class="bg" x="0" y="108" width="705.6" height="18" fill="#00005F"/>
+<rect class="bg" x="705.6" y="108" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="722.4" y="108" width="621.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="126" width="554.4" height="18" fill="#00005F"/>
+<rect class="bg" x="554.4" y="126" width="252" height="18" fill="#000000"/>
+<rect class="bg" x="806.4" y="126" width="537.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="144" width="50.4" height="18" fill="#00005F"/>
+<rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#FF0000"/>
+<rect class="bg" x="168" y="144" width="117.6" height="18" fill="#00005F"/>
+<rect class="bg" x="285.6" y="144" width="134.4" height="18" fill="#FF0000"/>
+<rect class="bg" x="420" y="144" width="117.6" height="18" fill="#00005F"/>
+<rect class="bg" x="537.6" y="144" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="554.4" y="144" width="252" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="806.4" y="144" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="823.2" y="144" width="520.8" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="162" width="520.8" height="18" fill="#FF0000"/>
+<rect class="bg" x="520.8" y="162" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="162" width="50.4" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="588" y="162" width="184.8" height="18" fill="#D787AF"/>
+<rect class="bg" x="772.8" y="162" width="50.4" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="823.2" y="162" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="840" y="162" width="504" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="180" width="50.4" height="18" fill="#FF0000"/>
+<rect class="bg" x="50.4" y="180" width="117.6" height="18" fill="#FFAF00"/>
+<rect class="bg" x="168" y="180" width="117.6" height="18" fill="#FF0000"/>
+<rect class="bg" x="285.6" y="180" width="134.4" height="18" fill="#FFAF00"/>
+<rect class="bg" x="420" y="180" width="100.8" height="18" fill="#FF0000"/>
 <rect class="bg" x="520.8" y="180" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="537.6" y="180" width="50.4" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="588" y="180" width="184.8" height="18" fill="#D787AF"/>
-<rect class="bg" x="772.8" y="180" width="50.4" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="537.6" y="180" width="33.6" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="571.2" y="180" width="84" height="18" fill="#D787AF"/>
+<rect class="bg" x="655.2" y="180" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="672" y="180" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="705.6" y="180" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="722.4" y="180" width="67.2" height="18" fill="#D787AF"/>
+<rect class="bg" x="789.6" y="180" width="33.6" height="18" fill="#FFFFD7"/>
 <rect class="bg" x="823.2" y="180" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="840" y="180" width="504" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="198" width="520.8" height="18" fill="#FFAF00"/>
@@ -2342,11 +2378,11 @@ text {
 <rect class="bg" x="0" y="126" width="302.4" height="18" fill="#00005F"/>
 <rect class="bg" x="302.4" y="126" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="319.2" y="126" width="1024.8" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="144" width="50.4" height="18" fill="#00005F"/>
-<rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#FF0000"/>
-<rect class="bg" x="168" y="144" width="117.6" height="18" fill="#00005F"/>
-<rect class="bg" x="285.6" y="144" width="134.4" height="18" fill="#FF0000"/>
-<rect class="bg" x="420" y="144" width="134.4" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="144" width="50.4" height="18" fill="#FF0000"/>
+<rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#00005F"/>
+<rect class="bg" x="168" y="144" width="134.4" height="18" fill="#FF0000"/>
+<rect class="bg" x="302.4" y="144" width="134.4" height="18" fill="#00005F"/>
+<rect class="bg" x="436.8" y="144" width="117.6" height="18" fill="#FF0000"/>
 <rect class="bg" x="554.4" y="144" width="252" height="18" fill="#000000"/>
 <rect class="bg" x="806.4" y="144" width="537.6" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="162" width="537.6" height="18" fill="#FF0000"/>
@@ -2844,14 +2880,8 @@ text {
 <rect class="bg" x="0" y="18" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="36" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="134.4" height="18" fill="#00005F"/>
-<rect class="bg" x="134.4" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="151.2" y="72" width="16.8" height="18" fill="#00005F"/>
-<rect class="bg" x="168" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="184.8" y="72" width="1159.2" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="90" width="151.2" height="18" fill="#00005F"/>
-<rect class="bg" x="151.2" y="90" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="168" y="90" width="1176" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="108" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="126" width="554.4" height="18" fill="#00005F"/>
 <rect class="bg" x="554.4" y="126" width="252" height="18" fill="#000000"/>
@@ -3103,11 +3133,19 @@ text {
 <rect class="bg" x="0" y="18" width="1192.8" height="18" fill="#00005F"/>
 <rect class="bg" x="1192.8" y="18" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="1209.6" y="18" width="134.4" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="36" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="36" width="1192.8" height="18" fill="#00005F"/>
+<rect class="bg" x="1192.8" y="36" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1209.6" y="36" width="134.4" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="1142.4" height="18" fill="#00005F"/>
+<rect class="bg" x="1142.4" y="72" width="33.6" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1176" y="72" width="16.8" height="18" fill="#00005F"/>
+<rect class="bg" x="1192.8" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1209.6" y="72" width="134.4" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="108" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="108" width="1192.8" height="18" fill="#00005F"/>
+<rect class="bg" x="1192.8" y="108" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1209.6" y="108" width="134.4" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="126" width="554.4" height="18" fill="#00005F"/>
 <rect class="bg" x="554.4" y="126" width="252" height="18" fill="#000000"/>
 <rect class="bg" x="806.4" y="126" width="537.6" height="18" fill="#00005F"/>
@@ -3355,26 +3393,18 @@ text {
 <rect class="bg" x="0" y="18" width="957.6" height="18" fill="#00005F"/>
 <rect class="bg" x="957.6" y="18" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="974.4" y="18" width="369.6" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="36" width="1041.6" height="18" fill="#00005F"/>
-<rect class="bg" x="1041.6" y="36" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1058.4" y="36" width="50.4" height="18" fill="#00005F"/>
-<rect class="bg" x="1108.8" y="36" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1125.6" y="36" width="218.4" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="36" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="1024.8" height="18" fill="#00005F"/>
-<rect class="bg" x="1024.8" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1041.6" y="72" width="84" height="18" fill="#00005F"/>
-<rect class="bg" x="1125.6" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1142.4" y="72" width="201.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="907.2" height="18" fill="#00005F"/>
+<rect class="bg" x="907.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="924" y="72" width="67.2" height="18" fill="#00005F"/>
+<rect class="bg" x="991.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1008" y="72" width="336" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="108" width="1041.6" height="18" fill="#00005F"/>
-<rect class="bg" x="1041.6" y="108" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1058.4" y="108" width="50.4" height="18" fill="#00005F"/>
-<rect class="bg" x="1108.8" y="108" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1125.6" y="108" width="218.4" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="126" width="1075.2" height="18" fill="#00005F"/>
-<rect class="bg" x="1075.2" y="126" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1092" y="126" width="252" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="108" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="126" width="957.6" height="18" fill="#00005F"/>
+<rect class="bg" x="957.6" y="126" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="974.4" y="126" width="369.6" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="144" width="50.4" height="18" fill="#00005F"/>
 <rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#FF0000"/>
 <rect class="bg" x="168" y="144" width="117.6" height="18" fill="#00005F"/>
@@ -3610,7 +3640,7 @@ text {
 <text class="crt" x="579.6" y="572" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">have</text>
 <text class="crt" x="621.6" y="572" fill="#FFFFFF" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">nyaned</text>
 <text class="crt" x="680.4" y="572" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">for</text>
-<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">1</text>
+<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">2</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
 <g id="fd-13" transform="translate(9 54)">
@@ -3856,14 +3886,16 @@ text {
 <text class="crt" x="579.6" y="572" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">have</text>
 <text class="crt" x="621.6" y="572" fill="#FFFFFF" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">nyaned</text>
 <text class="crt" x="680.4" y="572" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">for</text>
-<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">1</text>
+<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">2</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
 <g id="fd-14" transform="translate(9 54)">
 <rect width="1344" height="576" fill="#1e1e1e"/>
 <rect class="bg" x="0" y="0" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="18" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="36" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="36" width="705.6" height="18" fill="#00005F"/>
+<rect class="bg" x="705.6" y="36" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="722.4" y="36" width="621.6" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="789.6" height="18" fill="#00005F"/>
 <rect class="bg" x="789.6" y="54" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="806.4" y="54" width="537.6" height="18" fill="#00005F"/>
@@ -4141,15 +4173,15 @@ text {
 <rect class="bg" x="470.4" y="36" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="487.2" y="36" width="856.8" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="537.6" height="18" fill="#00005F"/>
-<rect class="bg" x="537.6" y="72" width="33.6" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="571.2" y="72" width="16.8" height="18" fill="#00005F"/>
-<rect class="bg" x="588" y="72" width="50.4" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="638.4" y="72" width="705.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="403.2" height="18" fill="#00005F"/>
+<rect class="bg" x="403.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="420" y="72" width="67.2" height="18" fill="#00005F"/>
+<rect class="bg" x="487.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="504" y="72" width="840" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="108" width="588" height="18" fill="#00005F"/>
-<rect class="bg" x="588" y="108" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="604.8" y="108" width="739.2" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="108" width="470.4" height="18" fill="#00005F"/>
+<rect class="bg" x="470.4" y="108" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="487.2" y="108" width="856.8" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="126" width="588" height="18" fill="#00005F"/>
 <rect class="bg" x="588" y="126" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="604.8" y="126" width="739.2" height="18" fill="#00005F"/>
@@ -4389,7 +4421,9 @@ text {
 <rect class="bg" x="0" y="18" width="302.4" height="18" fill="#00005F"/>
 <rect class="bg" x="302.4" y="18" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="319.2" y="18" width="1024.8" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="36" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="36" width="470.4" height="18" fill="#00005F"/>
+<rect class="bg" x="470.4" y="36" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="487.2" y="36" width="856.8" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="72" width="403.2" height="18" fill="#00005F"/>
 <rect class="bg" x="403.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
@@ -4652,11 +4686,17 @@ text {
 <rect class="bg" x="0" y="0" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="18" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="36" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="218.4" height="18" fill="#00005F"/>
-<rect class="bg" x="218.4" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="235.2" y="72" width="1108.8" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="54" width="151.2" height="18" fill="#00005F"/>
+<rect class="bg" x="151.2" y="54" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="168" y="54" width="1176" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="134.4" height="18" fill="#00005F"/>
+<rect class="bg" x="134.4" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="151.2" y="72" width="16.8" height="18" fill="#00005F"/>
+<rect class="bg" x="168" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="184.8" y="72" width="1159.2" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="90" width="151.2" height="18" fill="#00005F"/>
+<rect class="bg" x="151.2" y="90" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="168" y="90" width="1176" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="108" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="126" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="144" width="50.4" height="18" fill="#00005F"/>
@@ -4908,14 +4948,8 @@ text {
 <rect class="bg" x="0" y="18" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="36" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="134.4" height="18" fill="#00005F"/>
-<rect class="bg" x="134.4" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="151.2" y="72" width="16.8" height="18" fill="#00005F"/>
-<rect class="bg" x="168" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="184.8" y="72" width="1159.2" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="90" width="151.2" height="18" fill="#00005F"/>
-<rect class="bg" x="151.2" y="90" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="168" y="90" width="1176" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="108" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="126" width="554.4" height="18" fill="#00005F"/>
 <rect class="bg" x="554.4" y="126" width="252" height="18" fill="#000000"/>
@@ -5173,20 +5207,18 @@ text {
 <rect class="bg" x="1108.8" y="36" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="1125.6" y="36" width="218.4" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="1024.8" height="18" fill="#00005F"/>
-<rect class="bg" x="1024.8" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1041.6" y="72" width="84" height="18" fill="#00005F"/>
-<rect class="bg" x="1125.6" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1142.4" y="72" width="201.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="1142.4" height="18" fill="#00005F"/>
+<rect class="bg" x="1142.4" y="72" width="33.6" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1176" y="72" width="16.8" height="18" fill="#00005F"/>
+<rect class="bg" x="1192.8" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1209.6" y="72" width="134.4" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="108" width="1041.6" height="18" fill="#00005F"/>
-<rect class="bg" x="1041.6" y="108" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1058.4" y="108" width="50.4" height="18" fill="#00005F"/>
-<rect class="bg" x="1108.8" y="108" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1125.6" y="108" width="218.4" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="126" width="1075.2" height="18" fill="#00005F"/>
-<rect class="bg" x="1075.2" y="126" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1092" y="126" width="252" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="108" width="1192.8" height="18" fill="#00005F"/>
+<rect class="bg" x="1192.8" y="108" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1209.6" y="108" width="134.4" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="126" width="1192.8" height="18" fill="#00005F"/>
+<rect class="bg" x="1192.8" y="126" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1209.6" y="126" width="134.4" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="144" width="50.4" height="18" fill="#00005F"/>
 <rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#FF0000"/>
 <rect class="bg" x="168" y="144" width="117.6" height="18" fill="#00005F"/>
@@ -5422,7 +5454,7 @@ text {
 <text class="crt" x="579.6" y="572" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">have</text>
 <text class="crt" x="621.6" y="572" fill="#FFFFFF" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">nyaned</text>
 <text class="crt" x="680.4" y="572" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">for</text>
-<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">2</text>
+<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">3</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
 <g id="fd-20" transform="translate(9 54)">
@@ -5433,11 +5465,11 @@ text {
 <rect class="bg" x="974.4" y="18" width="369.6" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="36" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="907.2" height="18" fill="#00005F"/>
-<rect class="bg" x="907.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="924" y="72" width="67.2" height="18" fill="#00005F"/>
-<rect class="bg" x="991.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1008" y="72" width="336" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="1024.8" height="18" fill="#00005F"/>
+<rect class="bg" x="1024.8" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1041.6" y="72" width="84" height="18" fill="#00005F"/>
+<rect class="bg" x="1125.6" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1142.4" y="72" width="201.6" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="108" width="1041.6" height="18" fill="#00005F"/>
 <rect class="bg" x="1041.6" y="108" width="16.8" height="18" fill="#FFFFFF"/>
@@ -5682,7 +5714,7 @@ text {
 <text class="crt" x="579.6" y="572" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">have</text>
 <text class="crt" x="621.6" y="572" fill="#FFFFFF" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">nyaned</text>
 <text class="crt" x="680.4" y="572" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">for</text>
-<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">2</text>
+<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">3</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
 <g id="fd-21" transform="translate(9 54)">
@@ -5930,7 +5962,7 @@ text {
 <text class="crt" x="579.6" y="572" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">have</text>
 <text class="crt" x="621.6" y="572" fill="#FFFFFF" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">nyaned</text>
 <text class="crt" x="680.4" y="572" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">for</text>
-<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">2</text>
+<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">3</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
 <g id="fd-22" transform="translate(9 54)">
@@ -6202,11 +6234,11 @@ text {
 <rect class="bg" x="588" y="36" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="604.8" y="36" width="739.2" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="672" height="18" fill="#00005F"/>
-<rect class="bg" x="672" y="72" width="33.6" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="705.6" y="72" width="16.8" height="18" fill="#00005F"/>
-<rect class="bg" x="722.4" y="72" width="33.6" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="756" y="72" width="588" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="537.6" height="18" fill="#00005F"/>
+<rect class="bg" x="537.6" y="72" width="33.6" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="571.2" y="72" width="16.8" height="18" fill="#00005F"/>
+<rect class="bg" x="588" y="72" width="50.4" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="638.4" y="72" width="705.6" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="90" width="705.6" height="18" fill="#00005F"/>
 <rect class="bg" x="705.6" y="90" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="722.4" y="90" width="621.6" height="18" fill="#00005F"/>
@@ -6471,18 +6503,18 @@ text {
 <rect class="bg" x="470.4" y="36" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="487.2" y="36" width="856.8" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="403.2" height="18" fill="#00005F"/>
-<rect class="bg" x="403.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="420" y="72" width="67.2" height="18" fill="#00005F"/>
-<rect class="bg" x="487.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="504" y="72" width="840" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="537.6" height="18" fill="#00005F"/>
+<rect class="bg" x="537.6" y="72" width="33.6" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="571.2" y="72" width="16.8" height="18" fill="#00005F"/>
+<rect class="bg" x="588" y="72" width="50.4" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="638.4" y="72" width="705.6" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="108" width="470.4" height="18" fill="#00005F"/>
-<rect class="bg" x="470.4" y="108" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="487.2" y="108" width="856.8" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="126" width="436.8" height="18" fill="#00005F"/>
-<rect class="bg" x="436.8" y="126" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="453.6" y="126" width="890.4" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="108" width="588" height="18" fill="#00005F"/>
+<rect class="bg" x="588" y="108" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="604.8" y="108" width="739.2" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="126" width="588" height="18" fill="#00005F"/>
+<rect class="bg" x="588" y="126" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="604.8" y="126" width="739.2" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="144" width="50.4" height="18" fill="#FF0000"/>
 <rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#00005F"/>
 <rect class="bg" x="168" y="144" width="134.4" height="18" fill="#FF0000"/>
@@ -6970,7 +7002,9 @@ text {
 <rect class="bg" x="0" y="0" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="18" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="36" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="54" width="151.2" height="18" fill="#00005F"/>
+<rect class="bg" x="151.2" y="54" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="168" y="54" width="1176" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="72" width="218.4" height="18" fill="#00005F"/>
 <rect class="bg" x="218.4" y="72" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="235.2" y="72" width="1108.8" height="18" fill="#00005F"/>
@@ -7230,21 +7264,25 @@ text {
 <rect class="bg" x="1192.8" y="36" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="1209.6" y="36" width="134.4" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="1142.4" height="18" fill="#00005F"/>
+<rect class="bg" x="1142.4" y="72" width="33.6" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1176" y="72" width="16.8" height="18" fill="#00005F"/>
+<rect class="bg" x="1192.8" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1209.6" y="72" width="134.4" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="108" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="126" width="554.4" height="18" fill="#00005F"/>
-<rect class="bg" x="554.4" y="126" width="252" height="18" fill="#000000"/>
-<rect class="bg" x="806.4" y="126" width="537.6" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="144" width="50.4" height="18" fill="#FF0000"/>
-<rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#00005F"/>
-<rect class="bg" x="168" y="144" width="134.4" height="18" fill="#FF0000"/>
-<rect class="bg" x="302.4" y="144" width="134.4" height="18" fill="#00005F"/>
-<rect class="bg" x="436.8" y="144" width="100.8" height="18" fill="#FF0000"/>
-<rect class="bg" x="537.6" y="144" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="554.4" y="144" width="252" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="806.4" y="144" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="823.2" y="144" width="520.8" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="108" width="1192.8" height="18" fill="#00005F"/>
+<rect class="bg" x="1192.8" y="108" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1209.6" y="108" width="134.4" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="126" width="1192.8" height="18" fill="#00005F"/>
+<rect class="bg" x="1192.8" y="126" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1209.6" y="126" width="134.4" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="144" width="50.4" height="18" fill="#00005F"/>
+<rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#FF0000"/>
+<rect class="bg" x="168" y="144" width="117.6" height="18" fill="#00005F"/>
+<rect class="bg" x="285.6" y="144" width="134.4" height="18" fill="#FF0000"/>
+<rect class="bg" x="420" y="144" width="134.4" height="18" fill="#00005F"/>
+<rect class="bg" x="554.4" y="144" width="252" height="18" fill="#000000"/>
+<rect class="bg" x="806.4" y="144" width="537.6" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="162" width="520.8" height="18" fill="#FF0000"/>
 <rect class="bg" x="520.8" y="162" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="537.6" y="162" width="50.4" height="18" fill="#FFFFD7"/>
@@ -7471,7 +7509,7 @@ text {
 <text class="crt" x="579.6" y="572" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">have</text>
 <text class="crt" x="621.6" y="572" fill="#FFFFFF" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">nyaned</text>
 <text class="crt" x="680.4" y="572" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">for</text>
-<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">3</text>
+<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">4</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
 <g id="fd-28" transform="translate(9 54)">
@@ -7733,21 +7771,281 @@ text {
 <text class="crt" x="579.6" y="572" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">have</text>
 <text class="crt" x="621.6" y="572" fill="#FFFFFF" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">nyaned</text>
 <text class="crt" x="680.4" y="572" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">for</text>
-<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">3</text>
+<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">4</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
 <g id="fd-29" transform="translate(9 54)">
 <rect width="1344" height="576" fill="#1e1e1e"/>
 <rect class="bg" x="0" y="0" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="18" width="957.6" height="18" fill="#00005F"/>
+<rect class="bg" x="957.6" y="18" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="974.4" y="18" width="369.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="36" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="907.2" height="18" fill="#00005F"/>
+<rect class="bg" x="907.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="924" y="72" width="67.2" height="18" fill="#00005F"/>
+<rect class="bg" x="991.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1008" y="72" width="336" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="108" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="126" width="1075.2" height="18" fill="#00005F"/>
+<rect class="bg" x="1075.2" y="126" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1092" y="126" width="252" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="144" width="50.4" height="18" fill="#00005F"/>
+<rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#FF0000"/>
+<rect class="bg" x="168" y="144" width="117.6" height="18" fill="#00005F"/>
+<rect class="bg" x="285.6" y="144" width="134.4" height="18" fill="#FF0000"/>
+<rect class="bg" x="420" y="144" width="134.4" height="18" fill="#00005F"/>
+<rect class="bg" x="554.4" y="144" width="252" height="18" fill="#000000"/>
+<rect class="bg" x="806.4" y="144" width="537.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="162" width="537.6" height="18" fill="#FF0000"/>
+<rect class="bg" x="537.6" y="162" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="554.4" y="162" width="252" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="806.4" y="162" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="823.2" y="162" width="520.8" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="180" width="50.4" height="18" fill="#FF0000"/>
+<rect class="bg" x="50.4" y="180" width="117.6" height="18" fill="#FFAF00"/>
+<rect class="bg" x="168" y="180" width="117.6" height="18" fill="#FF0000"/>
+<rect class="bg" x="285.6" y="180" width="134.4" height="18" fill="#FFAF00"/>
+<rect class="bg" x="420" y="180" width="100.8" height="18" fill="#FF0000"/>
+<rect class="bg" x="520.8" y="180" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="180" width="50.4" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="588" y="180" width="184.8" height="18" fill="#D787AF"/>
+<rect class="bg" x="772.8" y="180" width="50.4" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="823.2" y="180" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="840" y="180" width="504" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="198" width="520.8" height="18" fill="#FFAF00"/>
+<rect class="bg" x="520.8" y="198" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="198" width="33.6" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="571.2" y="198" width="84" height="18" fill="#D787AF"/>
+<rect class="bg" x="655.2" y="198" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="672" y="198" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="705.6" y="198" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="722.4" y="198" width="67.2" height="18" fill="#D787AF"/>
+<rect class="bg" x="789.6" y="198" width="33.6" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="823.2" y="198" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="840" y="198" width="504" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="216" width="520.8" height="18" fill="#FFAF00"/>
+<rect class="bg" x="520.8" y="216" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="216" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="554.4" y="216" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="588" y="216" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="604.8" y="216" width="117.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="722.4" y="216" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="756" y="216" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="772.8" y="216" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="806.4" y="216" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="823.2" y="216" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="840" y="216" width="33.6" height="18" fill="#00005F"/>
+<rect class="bg" x="873.6" y="216" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="907.2" y="216" width="436.8" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="234" width="50.4" height="18" fill="#FFAF00"/>
+<rect class="bg" x="50.4" y="234" width="117.6" height="18" fill="#FFFF00"/>
+<rect class="bg" x="168" y="234" width="117.6" height="18" fill="#FFAF00"/>
+<rect class="bg" x="285.6" y="234" width="134.4" height="18" fill="#FFFF00"/>
+<rect class="bg" x="420" y="234" width="100.8" height="18" fill="#FFAF00"/>
+<rect class="bg" x="520.8" y="234" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="234" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="554.4" y="234" width="151.2" height="18" fill="#D787AF"/>
+<rect class="bg" x="705.6" y="234" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="722.4" y="234" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="756" y="234" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="772.8" y="234" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="806.4" y="234" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="823.2" y="234" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="840" y="234" width="16.8" height="18" fill="#00005F"/>
+<rect class="bg" x="856.8" y="234" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="873.6" y="234" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="907.2" y="234" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="924" y="234" width="420" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="252" width="520.8" height="18" fill="#FFFF00"/>
+<rect class="bg" x="520.8" y="252" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="252" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="554.4" y="252" width="84" height="18" fill="#D787AF"/>
+<rect class="bg" x="638.4" y="252" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="655.2" y="252" width="50.4" height="18" fill="#D787AF"/>
+<rect class="bg" x="705.6" y="252" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="722.4" y="252" width="50.4" height="18" fill="#585858"/>
+<rect class="bg" x="772.8" y="252" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="806.4" y="252" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="823.2" y="252" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="856.8" y="252" width="50.4" height="18" fill="#585858"/>
+<rect class="bg" x="907.2" y="252" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="924" y="252" width="420" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="270" width="520.8" height="18" fill="#FFFF00"/>
+<rect class="bg" x="520.8" y="270" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="270" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="554.4" y="270" width="151.2" height="18" fill="#D787AF"/>
+<rect class="bg" x="705.6" y="270" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="722.4" y="270" width="50.4" height="18" fill="#585858"/>
+<rect class="bg" x="772.8" y="270" width="67.2" height="18" fill="#000000"/>
+<rect class="bg" x="840" y="270" width="67.2" height="18" fill="#585858"/>
+<rect class="bg" x="907.2" y="270" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="924" y="270" width="420" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="288" width="50.4" height="18" fill="#FFFF00"/>
+<rect class="bg" x="50.4" y="288" width="117.6" height="18" fill="#87FF00"/>
+<rect class="bg" x="168" y="288" width="117.6" height="18" fill="#FFFF00"/>
+<rect class="bg" x="285.6" y="288" width="134.4" height="18" fill="#87FF00"/>
+<rect class="bg" x="420" y="288" width="100.8" height="18" fill="#FFFF00"/>
+<rect class="bg" x="520.8" y="288" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="288" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="554.4" y="288" width="151.2" height="18" fill="#D787AF"/>
+<rect class="bg" x="705.6" y="288" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="722.4" y="288" width="184.8" height="18" fill="#585858"/>
+<rect class="bg" x="907.2" y="288" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="924" y="288" width="420" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="306" width="487.2" height="18" fill="#87FF00"/>
+<rect class="bg" x="487.2" y="306" width="50.4" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="306" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="554.4" y="306" width="100.8" height="18" fill="#D787AF"/>
+<rect class="bg" x="655.2" y="306" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="672" y="306" width="16.8" height="18" fill="#D787AF"/>
+<rect class="bg" x="688.8" y="306" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="705.6" y="306" width="218.4" height="18" fill="#585858"/>
+<rect class="bg" x="924" y="306" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="940.8" y="306" width="403.2" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="324" width="453.6" height="18" fill="#87FF00"/>
+<rect class="bg" x="453.6" y="324" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="487.2" y="324" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="520.8" y="324" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="324" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="554.4" y="324" width="16.8" height="18" fill="#D787AF"/>
+<rect class="bg" x="571.2" y="324" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="588" y="324" width="100.8" height="18" fill="#D787AF"/>
+<rect class="bg" x="688.8" y="324" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="705.6" y="324" width="50.4" height="18" fill="#585858"/>
+<rect class="bg" x="756" y="324" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="772.8" y="324" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="789.6" y="324" width="67.2" height="18" fill="#585858"/>
+<rect class="bg" x="856.8" y="324" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="873.6" y="324" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="890.4" y="324" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="924" y="324" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="940.8" y="324" width="403.2" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="342" width="50.4" height="18" fill="#87FF00"/>
+<rect class="bg" x="50.4" y="342" width="117.6" height="18" fill="#0087FF"/>
+<rect class="bg" x="168" y="342" width="117.6" height="18" fill="#87FF00"/>
+<rect class="bg" x="285.6" y="342" width="134.4" height="18" fill="#0087FF"/>
+<rect class="bg" x="420" y="342" width="33.6" height="18" fill="#87FF00"/>
+<rect class="bg" x="453.6" y="342" width="67.2" height="18" fill="#585858"/>
+<rect class="bg" x="520.8" y="342" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="342" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="554.4" y="342" width="134.4" height="18" fill="#D787AF"/>
+<rect class="bg" x="688.8" y="342" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="705.6" y="342" width="50.4" height="18" fill="#585858"/>
+<rect class="bg" x="756" y="342" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="789.6" y="342" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="823.2" y="342" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="840" y="342" width="16.8" height="18" fill="#585858"/>
+<rect class="bg" x="856.8" y="342" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="890.4" y="342" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="924" y="342" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="940.8" y="342" width="403.2" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="360" width="436.8" height="18" fill="#0087FF"/>
+<rect class="bg" x="436.8" y="360" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="453.6" y="360" width="16.8" height="18" fill="#585858"/>
+<rect class="bg" x="470.4" y="360" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="487.2" y="360" width="33.6" height="18" fill="#0087FF"/>
+<rect class="bg" x="520.8" y="360" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="360" width="33.6" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="571.2" y="360" width="50.4" height="18" fill="#D787AF"/>
+<rect class="bg" x="621.6" y="360" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="638.4" y="360" width="50.4" height="18" fill="#D787AF"/>
+<rect class="bg" x="688.8" y="360" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="705.6" y="360" width="16.8" height="18" fill="#585858"/>
+<rect class="bg" x="722.4" y="360" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="756" y="360" width="134.4" height="18" fill="#585858"/>
+<rect class="bg" x="890.4" y="360" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="924" y="360" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="940.8" y="360" width="403.2" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="378" width="50.4" height="18" fill="#0087FF"/>
+<rect class="bg" x="50.4" y="378" width="117.6" height="18" fill="#0000AF"/>
+<rect class="bg" x="168" y="378" width="117.6" height="18" fill="#0087FF"/>
+<rect class="bg" x="285.6" y="378" width="134.4" height="18" fill="#0000AF"/>
+<rect class="bg" x="420" y="378" width="33.6" height="18" fill="#0087FF"/>
+<rect class="bg" x="453.6" y="378" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="470.4" y="378" width="50.4" height="18" fill="#0087FF"/>
+<rect class="bg" x="520.8" y="378" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="378" width="50.4" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="588" y="378" width="117.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="705.6" y="378" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="722.4" y="378" width="50.4" height="18" fill="#585858"/>
+<rect class="bg" x="772.8" y="378" width="100.8" height="18" fill="#000000"/>
+<rect class="bg" x="873.6" y="378" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="907.2" y="378" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="924" y="378" width="420" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="396" width="520.8" height="18" fill="#0000AF"/>
+<rect class="bg" x="520.8" y="396" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="554.4" y="396" width="168" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="722.4" y="396" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="739.2" y="396" width="151.2" height="18" fill="#585858"/>
+<rect class="bg" x="890.4" y="396" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="907.2" y="396" width="436.8" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="414" width="504" height="18" fill="#0000AF"/>
+<rect class="bg" x="504" y="414" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="520.8" y="414" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="554.4" y="414" width="336" height="18" fill="#000000"/>
+<rect class="bg" x="890.4" y="414" width="453.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="432" width="50.4" height="18" fill="#0000AF"/>
+<rect class="bg" x="50.4" y="432" width="117.6" height="18" fill="#00005F"/>
+<rect class="bg" x="168" y="432" width="117.6" height="18" fill="#0000AF"/>
+<rect class="bg" x="285.6" y="432" width="134.4" height="18" fill="#00005F"/>
+<rect class="bg" x="420" y="432" width="84" height="18" fill="#0000AF"/>
+<rect class="bg" x="504" y="432" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="520.8" y="432" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="554.4" y="432" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="571.2" y="432" width="16.8" height="18" fill="#00005F"/>
+<rect class="bg" x="588" y="432" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="604.8" y="432" width="16.8" height="18" fill="#585858"/>
+<rect class="bg" x="621.6" y="432" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="638.4" y="432" width="100.8" height="18" fill="#00005F"/>
+<rect class="bg" x="739.2" y="432" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="756" y="432" width="16.8" height="18" fill="#585858"/>
+<rect class="bg" x="772.8" y="432" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="789.6" y="432" width="16.8" height="18" fill="#00005F"/>
+<rect class="bg" x="806.4" y="432" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="823.2" y="432" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="856.8" y="432" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="873.6" y="432" width="470.4" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="450" width="504" height="18" fill="#00005F"/>
+<rect class="bg" x="504" y="450" width="50.4" height="18" fill="#000000"/>
+<rect class="bg" x="554.4" y="450" width="50.4" height="18" fill="#00005F"/>
+<rect class="bg" x="604.8" y="450" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="638.4" y="450" width="117.6" height="18" fill="#00005F"/>
+<rect class="bg" x="756" y="450" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="789.6" y="450" width="33.6" height="18" fill="#00005F"/>
+<rect class="bg" x="823.2" y="450" width="50.4" height="18" fill="#000000"/>
+<rect class="bg" x="873.6" y="450" width="470.4" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="468" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="486" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="504" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="522" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="540" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="558" width="1344" height="18" fill="#00005F"/>
+<text class="crt" x="546" y="572" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">You</text>
+<text class="crt" x="579.6" y="572" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">have</text>
+<text class="crt" x="621.6" y="572" fill="#FFFFFF" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">nyaned</text>
+<text class="crt" x="680.4" y="572" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">for</text>
+<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">4</text>
+<text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
+</g>
+<g id="fd-30" transform="translate(9 54)">
+<rect width="1344" height="576" fill="#1e1e1e"/>
+<rect class="bg" x="0" y="0" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="18" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="36" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="856.8" height="18" fill="#00005F"/>
-<rect class="bg" x="856.8" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="873.6" y="72" width="470.4" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="907.2" height="18" fill="#00005F"/>
+<rect class="bg" x="907.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="924" y="72" width="67.2" height="18" fill="#00005F"/>
+<rect class="bg" x="991.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1008" y="72" width="336" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="108" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="126" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="126" width="957.6" height="18" fill="#00005F"/>
+<rect class="bg" x="957.6" y="126" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="974.4" y="126" width="369.6" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="144" width="50.4" height="18" fill="#FF0000"/>
 <rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#00005F"/>
 <rect class="bg" x="168" y="144" width="134.4" height="18" fill="#FF0000"/>
@@ -7977,28 +8275,30 @@ text {
 <text class="crt" x="579.6" y="572" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">have</text>
 <text class="crt" x="621.6" y="572" fill="#FFFFFF" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">nyaned</text>
 <text class="crt" x="680.4" y="572" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">for</text>
-<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">3</text>
+<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">4</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
-<g id="fd-30" transform="translate(9 54)">
+<g id="fd-31" transform="translate(9 54)">
 <rect width="1344" height="576" fill="#1e1e1e"/>
 <rect class="bg" x="0" y="0" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="18" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="36" width="705.6" height="18" fill="#00005F"/>
 <rect class="bg" x="705.6" y="36" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="722.4" y="36" width="621.6" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="54" width="789.6" height="18" fill="#00005F"/>
-<rect class="bg" x="789.6" y="54" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="806.4" y="54" width="537.6" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="772.8" height="18" fill="#00005F"/>
-<rect class="bg" x="772.8" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="789.6" y="72" width="16.8" height="18" fill="#00005F"/>
-<rect class="bg" x="806.4" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="823.2" y="72" width="520.8" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="90" width="789.6" height="18" fill="#00005F"/>
-<rect class="bg" x="789.6" y="90" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="806.4" y="90" width="537.6" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="108" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="54" width="705.6" height="18" fill="#00005F"/>
+<rect class="bg" x="705.6" y="54" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="722.4" y="54" width="621.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="672" height="18" fill="#00005F"/>
+<rect class="bg" x="672" y="72" width="33.6" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="705.6" y="72" width="16.8" height="18" fill="#00005F"/>
+<rect class="bg" x="722.4" y="72" width="33.6" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="756" y="72" width="588" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="90" width="705.6" height="18" fill="#00005F"/>
+<rect class="bg" x="705.6" y="90" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="722.4" y="90" width="621.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="108" width="705.6" height="18" fill="#00005F"/>
+<rect class="bg" x="705.6" y="108" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="722.4" y="108" width="621.6" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="126" width="554.4" height="18" fill="#00005F"/>
 <rect class="bg" x="554.4" y="126" width="252" height="18" fill="#000000"/>
 <rect class="bg" x="806.4" y="126" width="537.6" height="18" fill="#00005F"/>
@@ -8254,7 +8554,7 @@ text {
 <text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">4</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
-<g id="fd-31" transform="translate(9 54)">
+<g id="fd-32" transform="translate(9 54)">
 <rect width="1344" height="576" fill="#1e1e1e"/>
 <rect class="bg" x="0" y="0" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="18" width="588" height="18" fill="#00005F"/>
@@ -8264,15 +8564,17 @@ text {
 <rect class="bg" x="588" y="36" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="604.8" y="36" width="739.2" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="537.6" height="18" fill="#00005F"/>
-<rect class="bg" x="537.6" y="72" width="33.6" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="571.2" y="72" width="16.8" height="18" fill="#00005F"/>
-<rect class="bg" x="588" y="72" width="50.4" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="638.4" y="72" width="705.6" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="108" width="588" height="18" fill="#00005F"/>
-<rect class="bg" x="588" y="108" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="604.8" y="108" width="739.2" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="672" height="18" fill="#00005F"/>
+<rect class="bg" x="672" y="72" width="33.6" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="705.6" y="72" width="16.8" height="18" fill="#00005F"/>
+<rect class="bg" x="722.4" y="72" width="33.6" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="756" y="72" width="588" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="90" width="705.6" height="18" fill="#00005F"/>
+<rect class="bg" x="705.6" y="90" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="722.4" y="90" width="621.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="108" width="705.6" height="18" fill="#00005F"/>
+<rect class="bg" x="705.6" y="108" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="722.4" y="108" width="621.6" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="126" width="554.4" height="18" fill="#00005F"/>
 <rect class="bg" x="554.4" y="126" width="252" height="18" fill="#000000"/>
 <rect class="bg" x="806.4" y="126" width="537.6" height="18" fill="#00005F"/>
@@ -8521,7 +8823,7 @@ text {
 <text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">4</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
-<g id="fd-32" transform="translate(9 54)">
+<g id="fd-33" transform="translate(9 54)">
 <rect width="1344" height="576" fill="#1e1e1e"/>
 <rect class="bg" x="0" y="0" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="18" width="302.4" height="18" fill="#00005F"/>
@@ -8529,13 +8831,15 @@ text {
 <rect class="bg" x="319.2" y="18" width="1024.8" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="36" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="252" height="18" fill="#00005F"/>
-<rect class="bg" x="252" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="268.8" y="72" width="84" height="18" fill="#00005F"/>
-<rect class="bg" x="352.8" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="369.6" y="72" width="974.4" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="403.2" height="18" fill="#00005F"/>
+<rect class="bg" x="403.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="420" y="72" width="67.2" height="18" fill="#00005F"/>
+<rect class="bg" x="487.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="504" y="72" width="840" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="108" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="108" width="470.4" height="18" fill="#00005F"/>
+<rect class="bg" x="470.4" y="108" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="487.2" y="108" width="856.8" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="126" width="436.8" height="18" fill="#00005F"/>
 <rect class="bg" x="436.8" y="126" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="453.6" y="126" width="890.4" height="18" fill="#00005F"/>
@@ -8783,7 +9087,7 @@ text {
 <text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">4</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
-<g id="fd-33" transform="translate(9 54)">
+<g id="fd-34" transform="translate(9 54)">
 <rect width="1344" height="576" fill="#1e1e1e"/>
 <rect class="bg" x="0" y="0" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="18" width="1344" height="18" fill="#00005F"/>
@@ -9035,14 +9339,20 @@ text {
 <text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">4</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
-<g id="fd-34" transform="translate(9 54)">
+<g id="fd-35" transform="translate(9 54)">
 <rect width="1344" height="576" fill="#1e1e1e"/>
 <rect class="bg" x="0" y="0" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="18" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="36" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="134.4" height="18" fill="#00005F"/>
+<rect class="bg" x="134.4" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="151.2" y="72" width="16.8" height="18" fill="#00005F"/>
+<rect class="bg" x="168" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="184.8" y="72" width="1159.2" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="90" width="151.2" height="18" fill="#00005F"/>
+<rect class="bg" x="151.2" y="90" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="168" y="90" width="1176" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="108" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="126" width="554.4" height="18" fill="#00005F"/>
 <rect class="bg" x="554.4" y="126" width="252" height="18" fill="#000000"/>
@@ -9285,10 +9595,10 @@ text {
 <text class="crt" x="579.6" y="572" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">have</text>
 <text class="crt" x="621.6" y="572" fill="#FFFFFF" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">nyaned</text>
 <text class="crt" x="680.4" y="572" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">for</text>
-<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">4</text>
+<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">5</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
-<g id="fd-35" transform="translate(9 54)">
+<g id="fd-36" transform="translate(9 54)">
 <rect width="1344" height="576" fill="#1e1e1e"/>
 <rect class="bg" x="0" y="0" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="18" width="1192.8" height="18" fill="#00005F"/>
@@ -9304,115 +9614,127 @@ text {
 <rect class="bg" x="1192.8" y="72" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="1209.6" y="72" width="134.4" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="108" width="1192.8" height="18" fill="#00005F"/>
-<rect class="bg" x="1192.8" y="108" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1209.6" y="108" width="134.4" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="126" width="1192.8" height="18" fill="#00005F"/>
-<rect class="bg" x="1192.8" y="126" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1209.6" y="126" width="134.4" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="144" width="50.4" height="18" fill="#00005F"/>
-<rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#FF0000"/>
-<rect class="bg" x="168" y="144" width="117.6" height="18" fill="#00005F"/>
-<rect class="bg" x="285.6" y="144" width="134.4" height="18" fill="#FF0000"/>
-<rect class="bg" x="420" y="144" width="134.4" height="18" fill="#00005F"/>
-<rect class="bg" x="554.4" y="144" width="252" height="18" fill="#000000"/>
-<rect class="bg" x="806.4" y="144" width="537.6" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="162" width="537.6" height="18" fill="#FF0000"/>
-<rect class="bg" x="537.6" y="162" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="554.4" y="162" width="252" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="806.4" y="162" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="823.2" y="162" width="520.8" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="180" width="50.4" height="18" fill="#FF0000"/>
-<rect class="bg" x="50.4" y="180" width="117.6" height="18" fill="#FFAF00"/>
-<rect class="bg" x="168" y="180" width="117.6" height="18" fill="#FF0000"/>
-<rect class="bg" x="285.6" y="180" width="134.4" height="18" fill="#FFAF00"/>
-<rect class="bg" x="420" y="180" width="100.8" height="18" fill="#FF0000"/>
+<rect class="bg" x="0" y="108" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="126" width="554.4" height="18" fill="#00005F"/>
+<rect class="bg" x="554.4" y="126" width="252" height="18" fill="#000000"/>
+<rect class="bg" x="806.4" y="126" width="537.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="144" width="50.4" height="18" fill="#FF0000"/>
+<rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#00005F"/>
+<rect class="bg" x="168" y="144" width="134.4" height="18" fill="#FF0000"/>
+<rect class="bg" x="302.4" y="144" width="134.4" height="18" fill="#00005F"/>
+<rect class="bg" x="436.8" y="144" width="100.8" height="18" fill="#FF0000"/>
+<rect class="bg" x="537.6" y="144" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="554.4" y="144" width="252" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="806.4" y="144" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="823.2" y="144" width="520.8" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="162" width="520.8" height="18" fill="#FF0000"/>
+<rect class="bg" x="520.8" y="162" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="162" width="50.4" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="588" y="162" width="184.8" height="18" fill="#D787AF"/>
+<rect class="bg" x="772.8" y="162" width="50.4" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="823.2" y="162" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="840" y="162" width="504" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="180" width="50.4" height="18" fill="#FFAF00"/>
+<rect class="bg" x="50.4" y="180" width="117.6" height="18" fill="#FF0000"/>
+<rect class="bg" x="168" y="180" width="134.4" height="18" fill="#FFAF00"/>
+<rect class="bg" x="302.4" y="180" width="134.4" height="18" fill="#FF0000"/>
+<rect class="bg" x="436.8" y="180" width="84" height="18" fill="#FFAF00"/>
 <rect class="bg" x="520.8" y="180" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="537.6" y="180" width="50.4" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="588" y="180" width="184.8" height="18" fill="#D787AF"/>
-<rect class="bg" x="772.8" y="180" width="50.4" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="537.6" y="180" width="33.6" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="571.2" y="180" width="84" height="18" fill="#D787AF"/>
+<rect class="bg" x="655.2" y="180" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="672" y="180" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="705.6" y="180" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="722.4" y="180" width="67.2" height="18" fill="#D787AF"/>
+<rect class="bg" x="789.6" y="180" width="33.6" height="18" fill="#FFFFD7"/>
 <rect class="bg" x="823.2" y="180" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="840" y="180" width="504" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="198" width="520.8" height="18" fill="#FFAF00"/>
 <rect class="bg" x="520.8" y="198" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="537.6" y="198" width="33.6" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="571.2" y="198" width="84" height="18" fill="#D787AF"/>
-<rect class="bg" x="655.2" y="198" width="16.8" height="18" fill="#D70087"/>
-<rect class="bg" x="672" y="198" width="33.6" height="18" fill="#D787AF"/>
-<rect class="bg" x="705.6" y="198" width="16.8" height="18" fill="#D70087"/>
-<rect class="bg" x="722.4" y="198" width="67.2" height="18" fill="#D787AF"/>
-<rect class="bg" x="789.6" y="198" width="33.6" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="537.6" y="198" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="554.4" y="198" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="588" y="198" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="604.8" y="198" width="117.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="722.4" y="198" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="756" y="198" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="772.8" y="198" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="806.4" y="198" width="16.8" height="18" fill="#FFFFD7"/>
 <rect class="bg" x="823.2" y="198" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="840" y="198" width="504" height="18" fill="#00005F"/>
+<rect class="bg" x="840" y="198" width="33.6" height="18" fill="#00005F"/>
+<rect class="bg" x="873.6" y="198" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="907.2" y="198" width="436.8" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="216" width="520.8" height="18" fill="#FFAF00"/>
 <rect class="bg" x="520.8" y="216" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="537.6" y="216" width="16.8" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="554.4" y="216" width="33.6" height="18" fill="#D787AF"/>
-<rect class="bg" x="588" y="216" width="16.8" height="18" fill="#D70087"/>
-<rect class="bg" x="604.8" y="216" width="117.6" height="18" fill="#D787AF"/>
-<rect class="bg" x="722.4" y="216" width="33.6" height="18" fill="#000000"/>
-<rect class="bg" x="756" y="216" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="554.4" y="216" width="151.2" height="18" fill="#D787AF"/>
+<rect class="bg" x="705.6" y="216" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="722.4" y="216" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="756" y="216" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="772.8" y="216" width="33.6" height="18" fill="#D787AF"/>
 <rect class="bg" x="806.4" y="216" width="16.8" height="18" fill="#FFFFD7"/>
 <rect class="bg" x="823.2" y="216" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="840" y="216" width="33.6" height="18" fill="#00005F"/>
-<rect class="bg" x="873.6" y="216" width="33.6" height="18" fill="#000000"/>
-<rect class="bg" x="907.2" y="216" width="436.8" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="234" width="50.4" height="18" fill="#FFAF00"/>
-<rect class="bg" x="50.4" y="234" width="117.6" height="18" fill="#FFFF00"/>
-<rect class="bg" x="168" y="234" width="117.6" height="18" fill="#FFAF00"/>
-<rect class="bg" x="285.6" y="234" width="134.4" height="18" fill="#FFFF00"/>
-<rect class="bg" x="420" y="234" width="100.8" height="18" fill="#FFAF00"/>
+<rect class="bg" x="840" y="216" width="16.8" height="18" fill="#00005F"/>
+<rect class="bg" x="856.8" y="216" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="873.6" y="216" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="907.2" y="216" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="924" y="216" width="420" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="234" width="50.4" height="18" fill="#FFFF00"/>
+<rect class="bg" x="50.4" y="234" width="117.6" height="18" fill="#FFAF00"/>
+<rect class="bg" x="168" y="234" width="134.4" height="18" fill="#FFFF00"/>
+<rect class="bg" x="302.4" y="234" width="134.4" height="18" fill="#FFAF00"/>
+<rect class="bg" x="436.8" y="234" width="84" height="18" fill="#FFFF00"/>
 <rect class="bg" x="520.8" y="234" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="537.6" y="234" width="16.8" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="554.4" y="234" width="151.2" height="18" fill="#D787AF"/>
+<rect class="bg" x="554.4" y="234" width="84" height="18" fill="#D787AF"/>
+<rect class="bg" x="638.4" y="234" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="655.2" y="234" width="50.4" height="18" fill="#D787AF"/>
 <rect class="bg" x="705.6" y="234" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="722.4" y="234" width="33.6" height="18" fill="#585858"/>
-<rect class="bg" x="756" y="234" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="722.4" y="234" width="50.4" height="18" fill="#585858"/>
 <rect class="bg" x="772.8" y="234" width="33.6" height="18" fill="#D787AF"/>
 <rect class="bg" x="806.4" y="234" width="16.8" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="823.2" y="234" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="840" y="234" width="16.8" height="18" fill="#00005F"/>
-<rect class="bg" x="856.8" y="234" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="873.6" y="234" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="823.2" y="234" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="856.8" y="234" width="50.4" height="18" fill="#585858"/>
 <rect class="bg" x="907.2" y="234" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="924" y="234" width="420" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="252" width="520.8" height="18" fill="#FFFF00"/>
+<rect class="bg" x="0" y="252" width="453.6" height="18" fill="#FFFF00"/>
+<rect class="bg" x="453.6" y="252" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="470.4" y="252" width="50.4" height="18" fill="#FFFF00"/>
 <rect class="bg" x="520.8" y="252" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="537.6" y="252" width="16.8" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="554.4" y="252" width="84" height="18" fill="#D787AF"/>
-<rect class="bg" x="638.4" y="252" width="16.8" height="18" fill="#D70087"/>
-<rect class="bg" x="655.2" y="252" width="50.4" height="18" fill="#D787AF"/>
+<rect class="bg" x="554.4" y="252" width="151.2" height="18" fill="#D787AF"/>
 <rect class="bg" x="705.6" y="252" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="722.4" y="252" width="50.4" height="18" fill="#585858"/>
-<rect class="bg" x="772.8" y="252" width="33.6" height="18" fill="#D787AF"/>
-<rect class="bg" x="806.4" y="252" width="16.8" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="823.2" y="252" width="33.6" height="18" fill="#000000"/>
-<rect class="bg" x="856.8" y="252" width="50.4" height="18" fill="#585858"/>
+<rect class="bg" x="772.8" y="252" width="67.2" height="18" fill="#000000"/>
+<rect class="bg" x="840" y="252" width="67.2" height="18" fill="#585858"/>
 <rect class="bg" x="907.2" y="252" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="924" y="252" width="420" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="270" width="520.8" height="18" fill="#FFFF00"/>
+<rect class="bg" x="0" y="270" width="436.8" height="18" fill="#FFFF00"/>
+<rect class="bg" x="436.8" y="270" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="453.6" y="270" width="16.8" height="18" fill="#585858"/>
+<rect class="bg" x="470.4" y="270" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="487.2" y="270" width="33.6" height="18" fill="#FFFF00"/>
 <rect class="bg" x="520.8" y="270" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="537.6" y="270" width="16.8" height="18" fill="#FFFFD7"/>
 <rect class="bg" x="554.4" y="270" width="151.2" height="18" fill="#D787AF"/>
 <rect class="bg" x="705.6" y="270" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="722.4" y="270" width="50.4" height="18" fill="#585858"/>
-<rect class="bg" x="772.8" y="270" width="67.2" height="18" fill="#000000"/>
-<rect class="bg" x="840" y="270" width="67.2" height="18" fill="#585858"/>
+<rect class="bg" x="722.4" y="270" width="184.8" height="18" fill="#585858"/>
 <rect class="bg" x="907.2" y="270" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="924" y="270" width="420" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="288" width="50.4" height="18" fill="#FFFF00"/>
-<rect class="bg" x="50.4" y="288" width="117.6" height="18" fill="#87FF00"/>
-<rect class="bg" x="168" y="288" width="117.6" height="18" fill="#FFFF00"/>
-<rect class="bg" x="285.6" y="288" width="134.4" height="18" fill="#87FF00"/>
-<rect class="bg" x="420" y="288" width="100.8" height="18" fill="#FFFF00"/>
-<rect class="bg" x="520.8" y="288" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="0" y="288" width="50.4" height="18" fill="#87FF00"/>
+<rect class="bg" x="50.4" y="288" width="117.6" height="18" fill="#FFFF00"/>
+<rect class="bg" x="168" y="288" width="134.4" height="18" fill="#87FF00"/>
+<rect class="bg" x="302.4" y="288" width="134.4" height="18" fill="#FFFF00"/>
+<rect class="bg" x="436.8" y="288" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="453.6" y="288" width="16.8" height="18" fill="#585858"/>
+<rect class="bg" x="470.4" y="288" width="67.2" height="18" fill="#000000"/>
 <rect class="bg" x="537.6" y="288" width="16.8" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="554.4" y="288" width="151.2" height="18" fill="#D787AF"/>
-<rect class="bg" x="705.6" y="288" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="722.4" y="288" width="184.8" height="18" fill="#585858"/>
-<rect class="bg" x="907.2" y="288" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="924" y="288" width="420" height="18" fill="#00005F"/>
+<rect class="bg" x="554.4" y="288" width="100.8" height="18" fill="#D787AF"/>
+<rect class="bg" x="655.2" y="288" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="672" y="288" width="16.8" height="18" fill="#D787AF"/>
+<rect class="bg" x="688.8" y="288" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="705.6" y="288" width="218.4" height="18" fill="#585858"/>
+<rect class="bg" x="924" y="288" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="940.8" y="288" width="403.2" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="306" width="453.6" height="18" fill="#87FF00"/>
 <rect class="bg" x="453.6" y="306" width="67.2" height="18" fill="#585858"/>
 <rect class="bg" x="520.8" y="306" width="16.8" height="18" fill="#000000"/>
@@ -9531,10 +9853,10 @@ text {
 <text class="crt" x="579.6" y="572" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">have</text>
 <text class="crt" x="621.6" y="572" fill="#FFFFFF" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">nyaned</text>
 <text class="crt" x="680.4" y="572" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">for</text>
-<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">4</text>
+<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">5</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
-<g id="fd-36" transform="translate(9 54)">
+<g id="fd-37" transform="translate(9 54)">
 <rect width="1344" height="576" fill="#1e1e1e"/>
 <rect class="bg" x="0" y="0" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="18" width="957.6" height="18" fill="#00005F"/>
@@ -9542,20 +9864,16 @@ text {
 <rect class="bg" x="974.4" y="18" width="369.6" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="36" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="54" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="72" width="1024.8" height="18" fill="#00005F"/>
-<rect class="bg" x="1024.8" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1041.6" y="72" width="84" height="18" fill="#00005F"/>
-<rect class="bg" x="1125.6" y="72" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1142.4" y="72" width="201.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="907.2" height="18" fill="#00005F"/>
+<rect class="bg" x="907.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="924" y="72" width="67.2" height="18" fill="#00005F"/>
+<rect class="bg" x="991.2" y="72" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1008" y="72" width="336" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="90" width="1344" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="108" width="1041.6" height="18" fill="#00005F"/>
-<rect class="bg" x="1041.6" y="108" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1058.4" y="108" width="50.4" height="18" fill="#00005F"/>
-<rect class="bg" x="1108.8" y="108" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1125.6" y="108" width="218.4" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="126" width="1075.2" height="18" fill="#00005F"/>
-<rect class="bg" x="1075.2" y="126" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="1092" y="126" width="252" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="108" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="126" width="957.6" height="18" fill="#00005F"/>
+<rect class="bg" x="957.6" y="126" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="974.4" y="126" width="369.6" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="144" width="50.4" height="18" fill="#00005F"/>
 <rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#FF0000"/>
 <rect class="bg" x="168" y="144" width="117.6" height="18" fill="#00005F"/>
@@ -9791,10 +10109,10 @@ text {
 <text class="crt" x="579.6" y="572" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">have</text>
 <text class="crt" x="621.6" y="572" fill="#FFFFFF" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">nyaned</text>
 <text class="crt" x="680.4" y="572" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">for</text>
-<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">4</text>
+<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">5</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
-<g id="fd-37" transform="translate(9 54)">
+<g id="fd-38" transform="translate(9 54)">
 <rect width="1344" height="576" fill="#1e1e1e"/>
 <rect class="bg" x="0" y="0" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="18" width="1344" height="18" fill="#00005F"/>
@@ -9814,48 +10132,38 @@ text {
 <rect class="bg" x="0" y="126" width="554.4" height="18" fill="#00005F"/>
 <rect class="bg" x="554.4" y="126" width="252" height="18" fill="#000000"/>
 <rect class="bg" x="806.4" y="126" width="537.6" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="144" width="50.4" height="18" fill="#00005F"/>
-<rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#FF0000"/>
-<rect class="bg" x="168" y="144" width="117.6" height="18" fill="#00005F"/>
-<rect class="bg" x="285.6" y="144" width="134.4" height="18" fill="#FF0000"/>
-<rect class="bg" x="420" y="144" width="117.6" height="18" fill="#00005F"/>
-<rect class="bg" x="537.6" y="144" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="554.4" y="144" width="252" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="806.4" y="144" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="823.2" y="144" width="520.8" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="162" width="520.8" height="18" fill="#FF0000"/>
-<rect class="bg" x="520.8" y="162" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="537.6" y="162" width="50.4" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="588" y="162" width="184.8" height="18" fill="#D787AF"/>
-<rect class="bg" x="772.8" y="162" width="50.4" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="823.2" y="162" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="840" y="162" width="504" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="180" width="50.4" height="18" fill="#FF0000"/>
-<rect class="bg" x="50.4" y="180" width="117.6" height="18" fill="#FFAF00"/>
-<rect class="bg" x="168" y="180" width="117.6" height="18" fill="#FF0000"/>
-<rect class="bg" x="285.6" y="180" width="134.4" height="18" fill="#FFAF00"/>
-<rect class="bg" x="420" y="180" width="100.8" height="18" fill="#FF0000"/>
+<rect class="bg" x="0" y="144" width="50.4" height="18" fill="#FF0000"/>
+<rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#00005F"/>
+<rect class="bg" x="168" y="144" width="134.4" height="18" fill="#FF0000"/>
+<rect class="bg" x="302.4" y="144" width="134.4" height="18" fill="#00005F"/>
+<rect class="bg" x="436.8" y="144" width="117.6" height="18" fill="#FF0000"/>
+<rect class="bg" x="554.4" y="144" width="252" height="18" fill="#000000"/>
+<rect class="bg" x="806.4" y="144" width="537.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="162" width="537.6" height="18" fill="#FF0000"/>
+<rect class="bg" x="537.6" y="162" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="554.4" y="162" width="252" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="806.4" y="162" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="823.2" y="162" width="520.8" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="180" width="50.4" height="18" fill="#FFAF00"/>
+<rect class="bg" x="50.4" y="180" width="117.6" height="18" fill="#FF0000"/>
+<rect class="bg" x="168" y="180" width="134.4" height="18" fill="#FFAF00"/>
+<rect class="bg" x="302.4" y="180" width="134.4" height="18" fill="#FF0000"/>
+<rect class="bg" x="436.8" y="180" width="84" height="18" fill="#FFAF00"/>
 <rect class="bg" x="520.8" y="180" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="537.6" y="180" width="33.6" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="571.2" y="180" width="84" height="18" fill="#D787AF"/>
-<rect class="bg" x="655.2" y="180" width="16.8" height="18" fill="#D70087"/>
-<rect class="bg" x="672" y="180" width="33.6" height="18" fill="#D787AF"/>
-<rect class="bg" x="705.6" y="180" width="16.8" height="18" fill="#D70087"/>
-<rect class="bg" x="722.4" y="180" width="67.2" height="18" fill="#D787AF"/>
-<rect class="bg" x="789.6" y="180" width="33.6" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="537.6" y="180" width="50.4" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="588" y="180" width="184.8" height="18" fill="#D787AF"/>
+<rect class="bg" x="772.8" y="180" width="50.4" height="18" fill="#FFFFD7"/>
 <rect class="bg" x="823.2" y="180" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="840" y="180" width="504" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="198" width="520.8" height="18" fill="#FFAF00"/>
 <rect class="bg" x="520.8" y="198" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="537.6" y="198" width="16.8" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="554.4" y="198" width="33.6" height="18" fill="#D787AF"/>
-<rect class="bg" x="588" y="198" width="16.8" height="18" fill="#D70087"/>
-<rect class="bg" x="604.8" y="198" width="100.8" height="18" fill="#D787AF"/>
+<rect class="bg" x="537.6" y="198" width="33.6" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="571.2" y="198" width="84" height="18" fill="#D787AF"/>
+<rect class="bg" x="655.2" y="198" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="672" y="198" width="33.6" height="18" fill="#D787AF"/>
 <rect class="bg" x="705.6" y="198" width="33.6" height="18" fill="#000000"/>
-<rect class="bg" x="739.2" y="198" width="16.8" height="18" fill="#D787AF"/>
-<rect class="bg" x="756" y="198" width="16.8" height="18" fill="#D70087"/>
-<rect class="bg" x="772.8" y="198" width="33.6" height="18" fill="#D787AF"/>
-<rect class="bg" x="806.4" y="198" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="739.2" y="198" width="50.4" height="18" fill="#D787AF"/>
+<rect class="bg" x="789.6" y="198" width="33.6" height="18" fill="#FFFFD7"/>
 <rect class="bg" x="823.2" y="198" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="840" y="198" width="16.8" height="18" fill="#00005F"/>
 <rect class="bg" x="856.8" y="198" width="33.6" height="18" fill="#000000"/>
@@ -10071,7 +10379,7 @@ text {
 <text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">5</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
-<g id="fd-38" transform="translate(9 54)">
+<g id="fd-39" transform="translate(9 54)">
 <rect width="1344" height="576" fill="#1e1e1e"/>
 <rect class="bg" x="0" y="0" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="18" width="1344" height="18" fill="#00005F"/>
@@ -10089,9 +10397,7 @@ text {
 <rect class="bg" x="0" y="90" width="705.6" height="18" fill="#00005F"/>
 <rect class="bg" x="705.6" y="90" width="16.8" height="18" fill="#FFFFFF"/>
 <rect class="bg" x="722.4" y="90" width="621.6" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="108" width="705.6" height="18" fill="#00005F"/>
-<rect class="bg" x="705.6" y="108" width="16.8" height="18" fill="#FFFFFF"/>
-<rect class="bg" x="722.4" y="108" width="621.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="108" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="126" width="554.4" height="18" fill="#00005F"/>
 <rect class="bg" x="554.4" y="126" width="252" height="18" fill="#000000"/>
 <rect class="bg" x="806.4" y="126" width="537.6" height="18" fill="#00005F"/>
@@ -10131,60 +10437,63 @@ text {
 <rect class="bg" x="537.6" y="198" width="16.8" height="18" fill="#FFFFD7"/>
 <rect class="bg" x="554.4" y="198" width="33.6" height="18" fill="#D787AF"/>
 <rect class="bg" x="588" y="198" width="16.8" height="18" fill="#D70087"/>
-<rect class="bg" x="604.8" y="198" width="117.6" height="18" fill="#D787AF"/>
-<rect class="bg" x="722.4" y="198" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="604.8" y="198" width="100.8" height="18" fill="#D787AF"/>
+<rect class="bg" x="705.6" y="198" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="739.2" y="198" width="16.8" height="18" fill="#D787AF"/>
 <rect class="bg" x="756" y="198" width="16.8" height="18" fill="#D70087"/>
 <rect class="bg" x="772.8" y="198" width="33.6" height="18" fill="#D787AF"/>
 <rect class="bg" x="806.4" y="198" width="16.8" height="18" fill="#FFFFD7"/>
 <rect class="bg" x="823.2" y="198" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="840" y="198" width="33.6" height="18" fill="#00005F"/>
-<rect class="bg" x="873.6" y="198" width="33.6" height="18" fill="#000000"/>
-<rect class="bg" x="907.2" y="198" width="436.8" height="18" fill="#00005F"/>
+<rect class="bg" x="840" y="198" width="16.8" height="18" fill="#00005F"/>
+<rect class="bg" x="856.8" y="198" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="890.4" y="198" width="453.6" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="216" width="520.8" height="18" fill="#FFAF00"/>
 <rect class="bg" x="520.8" y="216" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="537.6" y="216" width="16.8" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="554.4" y="216" width="151.2" height="18" fill="#D787AF"/>
-<rect class="bg" x="705.6" y="216" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="722.4" y="216" width="33.6" height="18" fill="#585858"/>
-<rect class="bg" x="756" y="216" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="772.8" y="216" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="554.4" y="216" width="134.4" height="18" fill="#D787AF"/>
+<rect class="bg" x="688.8" y="216" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="705.6" y="216" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="739.2" y="216" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="756" y="216" width="50.4" height="18" fill="#D787AF"/>
 <rect class="bg" x="806.4" y="216" width="16.8" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="823.2" y="216" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="840" y="216" width="16.8" height="18" fill="#00005F"/>
-<rect class="bg" x="856.8" y="216" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="873.6" y="216" width="33.6" height="18" fill="#585858"/>
-<rect class="bg" x="907.2" y="216" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="924" y="216" width="420" height="18" fill="#00005F"/>
+<rect class="bg" x="823.2" y="216" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="856.8" y="216" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="890.4" y="216" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="907.2" y="216" width="436.8" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="234" width="50.4" height="18" fill="#FFAF00"/>
 <rect class="bg" x="50.4" y="234" width="117.6" height="18" fill="#FFFF00"/>
 <rect class="bg" x="168" y="234" width="117.6" height="18" fill="#FFAF00"/>
 <rect class="bg" x="285.6" y="234" width="134.4" height="18" fill="#FFFF00"/>
-<rect class="bg" x="420" y="234" width="100.8" height="18" fill="#FFAF00"/>
+<rect class="bg" x="420" y="234" width="16.8" height="18" fill="#FFAF00"/>
+<rect class="bg" x="436.8" y="234" width="50.4" height="18" fill="#000000"/>
+<rect class="bg" x="487.2" y="234" width="33.6" height="18" fill="#FFAF00"/>
 <rect class="bg" x="520.8" y="234" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="537.6" y="234" width="16.8" height="18" fill="#FFFFD7"/>
 <rect class="bg" x="554.4" y="234" width="84" height="18" fill="#D787AF"/>
 <rect class="bg" x="638.4" y="234" width="16.8" height="18" fill="#D70087"/>
-<rect class="bg" x="655.2" y="234" width="50.4" height="18" fill="#D787AF"/>
-<rect class="bg" x="705.6" y="234" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="722.4" y="234" width="50.4" height="18" fill="#585858"/>
-<rect class="bg" x="772.8" y="234" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="655.2" y="234" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="688.8" y="234" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="705.6" y="234" width="50.4" height="18" fill="#585858"/>
+<rect class="bg" x="756" y="234" width="50.4" height="18" fill="#D787AF"/>
 <rect class="bg" x="806.4" y="234" width="16.8" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="823.2" y="234" width="33.6" height="18" fill="#000000"/>
-<rect class="bg" x="856.8" y="234" width="50.4" height="18" fill="#585858"/>
-<rect class="bg" x="907.2" y="234" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="924" y="234" width="420" height="18" fill="#00005F"/>
-<rect class="bg" x="0" y="252" width="453.6" height="18" fill="#FFFF00"/>
-<rect class="bg" x="453.6" y="252" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="470.4" y="252" width="50.4" height="18" fill="#FFFF00"/>
+<rect class="bg" x="823.2" y="234" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="840" y="234" width="50.4" height="18" fill="#585858"/>
+<rect class="bg" x="890.4" y="234" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="907.2" y="234" width="436.8" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="252" width="436.8" height="18" fill="#FFFF00"/>
+<rect class="bg" x="436.8" y="252" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="453.6" y="252" width="16.8" height="18" fill="#585858"/>
+<rect class="bg" x="470.4" y="252" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="504" y="252" width="16.8" height="18" fill="#FFFF00"/>
 <rect class="bg" x="520.8" y="252" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="537.6" y="252" width="16.8" height="18" fill="#FFFFD7"/>
-<rect class="bg" x="554.4" y="252" width="151.2" height="18" fill="#D787AF"/>
-<rect class="bg" x="705.6" y="252" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="722.4" y="252" width="50.4" height="18" fill="#585858"/>
-<rect class="bg" x="772.8" y="252" width="67.2" height="18" fill="#000000"/>
-<rect class="bg" x="840" y="252" width="67.2" height="18" fill="#585858"/>
-<rect class="bg" x="907.2" y="252" width="16.8" height="18" fill="#000000"/>
-<rect class="bg" x="924" y="252" width="420" height="18" fill="#00005F"/>
+<rect class="bg" x="554.4" y="252" width="134.4" height="18" fill="#D787AF"/>
+<rect class="bg" x="688.8" y="252" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="705.6" y="252" width="50.4" height="18" fill="#585858"/>
+<rect class="bg" x="756" y="252" width="67.2" height="18" fill="#000000"/>
+<rect class="bg" x="823.2" y="252" width="67.2" height="18" fill="#585858"/>
+<rect class="bg" x="890.4" y="252" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="907.2" y="252" width="436.8" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="270" width="436.8" height="18" fill="#FFFF00"/>
 <rect class="bg" x="436.8" y="270" width="16.8" height="18" fill="#000000"/>
 <rect class="bg" x="453.6" y="270" width="33.6" height="18" fill="#585858"/>
@@ -10344,7 +10653,276 @@ text {
 <text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">5</text>
 <text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
 </g>
-<g id="fd-39" transform="translate(9 54)">
+<g id="fd-40" transform="translate(9 54)">
+<rect width="1344" height="576" fill="#1e1e1e"/>
+<rect class="bg" x="0" y="0" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="18" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="36" width="705.6" height="18" fill="#00005F"/>
+<rect class="bg" x="705.6" y="36" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="722.4" y="36" width="621.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="54" width="705.6" height="18" fill="#00005F"/>
+<rect class="bg" x="705.6" y="54" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="722.4" y="54" width="621.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="72" width="672" height="18" fill="#00005F"/>
+<rect class="bg" x="672" y="72" width="33.6" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="705.6" y="72" width="16.8" height="18" fill="#00005F"/>
+<rect class="bg" x="722.4" y="72" width="33.6" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="756" y="72" width="588" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="90" width="705.6" height="18" fill="#00005F"/>
+<rect class="bg" x="705.6" y="90" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="722.4" y="90" width="621.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="108" width="705.6" height="18" fill="#00005F"/>
+<rect class="bg" x="705.6" y="108" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="722.4" y="108" width="621.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="126" width="554.4" height="18" fill="#00005F"/>
+<rect class="bg" x="554.4" y="126" width="252" height="18" fill="#000000"/>
+<rect class="bg" x="806.4" y="126" width="537.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="144" width="50.4" height="18" fill="#00005F"/>
+<rect class="bg" x="50.4" y="144" width="117.6" height="18" fill="#FF0000"/>
+<rect class="bg" x="168" y="144" width="117.6" height="18" fill="#00005F"/>
+<rect class="bg" x="285.6" y="144" width="134.4" height="18" fill="#FF0000"/>
+<rect class="bg" x="420" y="144" width="117.6" height="18" fill="#00005F"/>
+<rect class="bg" x="537.6" y="144" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="554.4" y="144" width="252" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="806.4" y="144" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="823.2" y="144" width="520.8" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="162" width="520.8" height="18" fill="#FF0000"/>
+<rect class="bg" x="520.8" y="162" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="162" width="50.4" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="588" y="162" width="184.8" height="18" fill="#D787AF"/>
+<rect class="bg" x="772.8" y="162" width="50.4" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="823.2" y="162" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="840" y="162" width="504" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="180" width="50.4" height="18" fill="#FF0000"/>
+<rect class="bg" x="50.4" y="180" width="117.6" height="18" fill="#FFAF00"/>
+<rect class="bg" x="168" y="180" width="117.6" height="18" fill="#FF0000"/>
+<rect class="bg" x="285.6" y="180" width="134.4" height="18" fill="#FFAF00"/>
+<rect class="bg" x="420" y="180" width="100.8" height="18" fill="#FF0000"/>
+<rect class="bg" x="520.8" y="180" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="180" width="33.6" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="571.2" y="180" width="84" height="18" fill="#D787AF"/>
+<rect class="bg" x="655.2" y="180" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="672" y="180" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="705.6" y="180" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="722.4" y="180" width="67.2" height="18" fill="#D787AF"/>
+<rect class="bg" x="789.6" y="180" width="33.6" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="823.2" y="180" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="840" y="180" width="504" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="198" width="520.8" height="18" fill="#FFAF00"/>
+<rect class="bg" x="520.8" y="198" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="198" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="554.4" y="198" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="588" y="198" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="604.8" y="198" width="117.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="722.4" y="198" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="756" y="198" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="772.8" y="198" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="806.4" y="198" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="823.2" y="198" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="840" y="198" width="33.6" height="18" fill="#00005F"/>
+<rect class="bg" x="873.6" y="198" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="907.2" y="198" width="436.8" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="216" width="520.8" height="18" fill="#FFAF00"/>
+<rect class="bg" x="520.8" y="216" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="216" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="554.4" y="216" width="151.2" height="18" fill="#D787AF"/>
+<rect class="bg" x="705.6" y="216" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="722.4" y="216" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="756" y="216" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="772.8" y="216" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="806.4" y="216" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="823.2" y="216" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="840" y="216" width="16.8" height="18" fill="#00005F"/>
+<rect class="bg" x="856.8" y="216" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="873.6" y="216" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="907.2" y="216" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="924" y="216" width="420" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="234" width="50.4" height="18" fill="#FFAF00"/>
+<rect class="bg" x="50.4" y="234" width="117.6" height="18" fill="#FFFF00"/>
+<rect class="bg" x="168" y="234" width="117.6" height="18" fill="#FFAF00"/>
+<rect class="bg" x="285.6" y="234" width="134.4" height="18" fill="#FFFF00"/>
+<rect class="bg" x="420" y="234" width="100.8" height="18" fill="#FFAF00"/>
+<rect class="bg" x="520.8" y="234" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="234" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="554.4" y="234" width="84" height="18" fill="#D787AF"/>
+<rect class="bg" x="638.4" y="234" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="655.2" y="234" width="50.4" height="18" fill="#D787AF"/>
+<rect class="bg" x="705.6" y="234" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="722.4" y="234" width="50.4" height="18" fill="#585858"/>
+<rect class="bg" x="772.8" y="234" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="806.4" y="234" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="823.2" y="234" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="856.8" y="234" width="50.4" height="18" fill="#585858"/>
+<rect class="bg" x="907.2" y="234" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="924" y="234" width="420" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="252" width="453.6" height="18" fill="#FFFF00"/>
+<rect class="bg" x="453.6" y="252" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="470.4" y="252" width="50.4" height="18" fill="#FFFF00"/>
+<rect class="bg" x="520.8" y="252" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="252" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="554.4" y="252" width="151.2" height="18" fill="#D787AF"/>
+<rect class="bg" x="705.6" y="252" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="722.4" y="252" width="50.4" height="18" fill="#585858"/>
+<rect class="bg" x="772.8" y="252" width="67.2" height="18" fill="#000000"/>
+<rect class="bg" x="840" y="252" width="67.2" height="18" fill="#585858"/>
+<rect class="bg" x="907.2" y="252" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="924" y="252" width="420" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="270" width="436.8" height="18" fill="#FFFF00"/>
+<rect class="bg" x="436.8" y="270" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="453.6" y="270" width="16.8" height="18" fill="#585858"/>
+<rect class="bg" x="470.4" y="270" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="487.2" y="270" width="33.6" height="18" fill="#FFFF00"/>
+<rect class="bg" x="520.8" y="270" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="270" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="554.4" y="270" width="151.2" height="18" fill="#D787AF"/>
+<rect class="bg" x="705.6" y="270" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="722.4" y="270" width="184.8" height="18" fill="#585858"/>
+<rect class="bg" x="907.2" y="270" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="924" y="270" width="420" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="288" width="50.4" height="18" fill="#FFFF00"/>
+<rect class="bg" x="50.4" y="288" width="117.6" height="18" fill="#87FF00"/>
+<rect class="bg" x="168" y="288" width="117.6" height="18" fill="#FFFF00"/>
+<rect class="bg" x="285.6" y="288" width="134.4" height="18" fill="#87FF00"/>
+<rect class="bg" x="420" y="288" width="16.8" height="18" fill="#FFFF00"/>
+<rect class="bg" x="436.8" y="288" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="453.6" y="288" width="16.8" height="18" fill="#585858"/>
+<rect class="bg" x="470.4" y="288" width="67.2" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="288" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="554.4" y="288" width="100.8" height="18" fill="#D787AF"/>
+<rect class="bg" x="655.2" y="288" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="672" y="288" width="16.8" height="18" fill="#D787AF"/>
+<rect class="bg" x="688.8" y="288" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="705.6" y="288" width="218.4" height="18" fill="#585858"/>
+<rect class="bg" x="924" y="288" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="940.8" y="288" width="403.2" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="306" width="453.6" height="18" fill="#87FF00"/>
+<rect class="bg" x="453.6" y="306" width="67.2" height="18" fill="#585858"/>
+<rect class="bg" x="520.8" y="306" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="306" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="554.4" y="306" width="16.8" height="18" fill="#D787AF"/>
+<rect class="bg" x="571.2" y="306" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="588" y="306" width="100.8" height="18" fill="#D787AF"/>
+<rect class="bg" x="688.8" y="306" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="705.6" y="306" width="50.4" height="18" fill="#585858"/>
+<rect class="bg" x="756" y="306" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="772.8" y="306" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="789.6" y="306" width="67.2" height="18" fill="#585858"/>
+<rect class="bg" x="856.8" y="306" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="873.6" y="306" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="890.4" y="306" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="924" y="306" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="940.8" y="306" width="403.2" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="324" width="453.6" height="18" fill="#87FF00"/>
+<rect class="bg" x="453.6" y="324" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="487.2" y="324" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="520.8" y="324" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="324" width="16.8" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="554.4" y="324" width="134.4" height="18" fill="#D787AF"/>
+<rect class="bg" x="688.8" y="324" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="705.6" y="324" width="50.4" height="18" fill="#585858"/>
+<rect class="bg" x="756" y="324" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="789.6" y="324" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="823.2" y="324" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="840" y="324" width="16.8" height="18" fill="#585858"/>
+<rect class="bg" x="856.8" y="324" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="890.4" y="324" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="924" y="324" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="940.8" y="324" width="403.2" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="342" width="50.4" height="18" fill="#87FF00"/>
+<rect class="bg" x="50.4" y="342" width="117.6" height="18" fill="#0087FF"/>
+<rect class="bg" x="168" y="342" width="117.6" height="18" fill="#87FF00"/>
+<rect class="bg" x="285.6" y="342" width="134.4" height="18" fill="#0087FF"/>
+<rect class="bg" x="420" y="342" width="67.2" height="18" fill="#87FF00"/>
+<rect class="bg" x="487.2" y="342" width="50.4" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="342" width="33.6" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="571.2" y="342" width="50.4" height="18" fill="#D787AF"/>
+<rect class="bg" x="621.6" y="342" width="16.8" height="18" fill="#D70087"/>
+<rect class="bg" x="638.4" y="342" width="50.4" height="18" fill="#D787AF"/>
+<rect class="bg" x="688.8" y="342" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="705.6" y="342" width="16.8" height="18" fill="#585858"/>
+<rect class="bg" x="722.4" y="342" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="756" y="342" width="134.4" height="18" fill="#585858"/>
+<rect class="bg" x="890.4" y="342" width="33.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="924" y="342" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="940.8" y="342" width="403.2" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="360" width="520.8" height="18" fill="#0087FF"/>
+<rect class="bg" x="520.8" y="360" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="537.6" y="360" width="50.4" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="588" y="360" width="117.6" height="18" fill="#D787AF"/>
+<rect class="bg" x="705.6" y="360" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="722.4" y="360" width="50.4" height="18" fill="#585858"/>
+<rect class="bg" x="772.8" y="360" width="100.8" height="18" fill="#000000"/>
+<rect class="bg" x="873.6" y="360" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="907.2" y="360" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="924" y="360" width="420" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="378" width="50.4" height="18" fill="#0087FF"/>
+<rect class="bg" x="50.4" y="378" width="117.6" height="18" fill="#0000AF"/>
+<rect class="bg" x="168" y="378" width="117.6" height="18" fill="#0087FF"/>
+<rect class="bg" x="285.6" y="378" width="134.4" height="18" fill="#0000AF"/>
+<rect class="bg" x="420" y="378" width="100.8" height="18" fill="#0087FF"/>
+<rect class="bg" x="520.8" y="378" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="554.4" y="378" width="168" height="18" fill="#FFFFD7"/>
+<rect class="bg" x="722.4" y="378" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="739.2" y="378" width="151.2" height="18" fill="#585858"/>
+<rect class="bg" x="890.4" y="378" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="907.2" y="378" width="50.4" height="18" fill="#00005F"/>
+<rect class="bg" x="957.6" y="378" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="974.4" y="378" width="369.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="396" width="504" height="18" fill="#0000AF"/>
+<rect class="bg" x="504" y="396" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="520.8" y="396" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="554.4" y="396" width="336" height="18" fill="#000000"/>
+<rect class="bg" x="890.4" y="396" width="453.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="414" width="504" height="18" fill="#0000AF"/>
+<rect class="bg" x="504" y="414" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="520.8" y="414" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="554.4" y="414" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="571.2" y="414" width="16.8" height="18" fill="#00005F"/>
+<rect class="bg" x="588" y="414" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="604.8" y="414" width="16.8" height="18" fill="#585858"/>
+<rect class="bg" x="621.6" y="414" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="638.4" y="414" width="100.8" height="18" fill="#00005F"/>
+<rect class="bg" x="739.2" y="414" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="772.8" y="414" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="789.6" y="414" width="16.8" height="18" fill="#00005F"/>
+<rect class="bg" x="806.4" y="414" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="823.2" y="414" width="33.6" height="18" fill="#585858"/>
+<rect class="bg" x="856.8" y="414" width="16.8" height="18" fill="#000000"/>
+<rect class="bg" x="873.6" y="414" width="470.4" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="432" width="50.4" height="18" fill="#0000AF"/>
+<rect class="bg" x="50.4" y="432" width="117.6" height="18" fill="#00005F"/>
+<rect class="bg" x="168" y="432" width="117.6" height="18" fill="#0000AF"/>
+<rect class="bg" x="285.6" y="432" width="134.4" height="18" fill="#00005F"/>
+<rect class="bg" x="420" y="432" width="84" height="18" fill="#0000AF"/>
+<rect class="bg" x="504" y="432" width="50.4" height="18" fill="#000000"/>
+<rect class="bg" x="554.4" y="432" width="50.4" height="18" fill="#00005F"/>
+<rect class="bg" x="604.8" y="432" width="33.6" height="18" fill="#000000"/>
+<rect class="bg" x="638.4" y="432" width="100.8" height="18" fill="#00005F"/>
+<rect class="bg" x="739.2" y="432" width="50.4" height="18" fill="#000000"/>
+<rect class="bg" x="789.6" y="432" width="33.6" height="18" fill="#00005F"/>
+<rect class="bg" x="823.2" y="432" width="50.4" height="18" fill="#000000"/>
+<rect class="bg" x="873.6" y="432" width="33.6" height="18" fill="#00005F"/>
+<rect class="bg" x="907.2" y="432" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="924" y="432" width="67.2" height="18" fill="#00005F"/>
+<rect class="bg" x="991.2" y="432" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="1008" y="432" width="336" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="450" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="468" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="486" width="957.6" height="18" fill="#00005F"/>
+<rect class="bg" x="957.6" y="486" width="16.8" height="18" fill="#FFFFFF"/>
+<rect class="bg" x="974.4" y="486" width="369.6" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="504" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="522" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="540" width="1344" height="18" fill="#00005F"/>
+<rect class="bg" x="0" y="558" width="1344" height="18" fill="#00005F"/>
+<text class="crt" x="546" y="572" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">You</text>
+<text class="crt" x="579.6" y="572" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">have</text>
+<text class="crt" x="621.6" y="572" fill="#FFFFFF" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">nyaned</text>
+<text class="crt" x="680.4" y="572" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">for</text>
+<text class="crt" x="714" y="572" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">5</text>
+<text class="crt" x="730.8" y="572" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">seconds!</text>
+</g>
+<g id="fd-41" transform="translate(9 54)">
 <rect width="1344" height="576" fill="#1e1e1e"/>
 <rect class="bg" x="0" y="0" width="1344" height="18" fill="#00005F"/>
 <rect class="bg" x="0" y="18" width="1344" height="18" fill="#00005F"/>
@@ -10654,4 +11232,6 @@ text {
 <use href="#fd-37" id="frame-37" class="frame frame-37"/>
 <use href="#fd-38" id="frame-38" class="frame frame-38"/>
 <use href="#fd-39" id="frame-39" class="frame frame-39"/>
+<use href="#fd-40" id="frame-40" class="frame frame-40"/>
+<use href="#fd-41" id="frame-41" class="frame frame-41"/>
 </svg>

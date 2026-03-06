@@ -15,233 +15,230 @@ text {
   opacity: 0;
 }
 @keyframes k0 {
-  0%, 0.436% {
+  0%, 0.487% {
     opacity: 0;
   }
-  0.437%, 14.847% {
+  0.488%, 16.585% {
     opacity: 1;
   }
-  14.848%, 100% {
+  16.586%, 100% {
     opacity: 0;
   }
 }
-.frame-0 { animation:k0 19.083s linear infinite; }
+.frame-0 { animation:k0 17.083s linear infinite; }
 @keyframes k1 {
-  0%, 14.846% {
+  0%, 16.584% {
     opacity: 0;
   }
-  14.847%, 15.721% {
+  16.585%, 17.561% {
     opacity: 1;
   }
-  15.722%, 100% {
+  17.562%, 100% {
     opacity: 0;
   }
 }
-.frame-1 { animation:k1 19.083s linear infinite; }
+.frame-1 { animation:k1 17.083s linear infinite; }
 @keyframes k2 {
-  0%, 15.72% {
+  0%, 17.56% {
     opacity: 0;
   }
-  15.721%, 17.904% {
+  17.561%, 20% {
     opacity: 1;
   }
-  17.905%, 100% {
+  20.001%, 100% {
     opacity: 0;
   }
 }
-.frame-2 { animation:k2 19.083s linear infinite; }
+.frame-2 { animation:k2 17.083s linear infinite; }
 @keyframes k3 {
-  0%, 17.903% {
+  0%, 19.999% {
     opacity: 0;
   }
-  17.904%, 21.834% {
+  20%, 26.341% {
     opacity: 1;
   }
-  21.835%, 100% {
+  26.342%, 100% {
     opacity: 0;
   }
 }
-.frame-3 { animation:k3 19.083s linear infinite; }
+.frame-3 { animation:k3 17.083s linear infinite; }
 @keyframes k4 {
-  0%, 21.833% {
+  0%, 26.34% {
     opacity: 0;
   }
-  21.834%, 31.878% {
+  26.341%, 35.61% {
     opacity: 1;
   }
-  31.879%, 100% {
+  35.611%, 100% {
     opacity: 0;
   }
 }
-.frame-4 { animation:k4 19.083s linear infinite; }
+.frame-4 { animation:k4 17.083s linear infinite; }
 @keyframes k5 {
-  0%, 31.877% {
+  0%, 35.609% {
     opacity: 0;
   }
-  31.878%, 44.105% {
+  35.61%, 49.268% {
     opacity: 1;
   }
-  44.106%, 100% {
+  49.269%, 100% {
     opacity: 0;
   }
 }
-.frame-5 { animation:k5 19.083s linear infinite; }
+.frame-5 { animation:k5 17.083s linear infinite; }
 @keyframes k6 {
-  0%, 44.104% {
+  0%, 49.267% {
     opacity: 0;
   }
-  44.105%, 44.978% {
+  49.268%, 50.244% {
     opacity: 1;
   }
-  44.979%, 100% {
+  50.245%, 100% {
     opacity: 0;
   }
 }
-.frame-6 { animation:k6 19.083s linear infinite; }
+.frame-6 { animation:k6 17.083s linear infinite; }
 @keyframes k7 {
-  0%, 44.977% {
+  0%, 50.243% {
     opacity: 0;
   }
-  44.978%, 45.415% {
+  50.244%, 50.732% {
     opacity: 1;
   }
-  45.416%, 100% {
+  50.733%, 100% {
     opacity: 0;
   }
 }
-.frame-7 { animation:k7 19.083s linear infinite; }
+.frame-7 { animation:k7 17.083s linear infinite; }
 @keyframes k8 {
-  0%, 45.414% {
+  0%, 50.731% {
     opacity: 0;
   }
-  45.415%, 46.288% {
+  50.732%, 51.707% {
     opacity: 1;
   }
-  46.289%, 100% {
+  51.708%, 100% {
     opacity: 0;
   }
 }
-.frame-8 { animation:k8 19.083s linear infinite; }
+.frame-8 { animation:k8 17.083s linear infinite; }
 @keyframes k9 {
-  0%, 46.287% {
+  0%, 51.706% {
     opacity: 0;
   }
-  46.288%, 51.528% {
+  51.707%, 57.561% {
     opacity: 1;
   }
-  51.529%, 100% {
+  57.562%, 100% {
     opacity: 0;
   }
 }
-.frame-9 { animation:k9 19.083s linear infinite; }
+.frame-9 { animation:k9 17.083s linear infinite; }
 @keyframes k10 {
-  0%, 51.527% {
+  0%, 57.56% {
     opacity: 0;
   }
-  51.528%, 56.769% {
+  57.561%, 63.415% {
     opacity: 1;
   }
-  56.77%, 100% {
+  63.416%, 100% {
     opacity: 0;
   }
 }
-.frame-10 { animation:k10 19.083s linear infinite; }
+.frame-10 { animation:k10 17.083s linear infinite; }
 @keyframes k11 {
-  0%, 56.768% {
+  0%, 63.414% {
     opacity: 0;
   }
-  56.769%, 57.642% {
+  63.415%, 64.39% {
     opacity: 1;
   }
-  57.643%, 100% {
+  64.391%, 100% {
     opacity: 0;
   }
 }
-.frame-11 { animation:k11 19.083s linear infinite; }
+.frame-11 { animation:k11 17.083s linear infinite; }
 @keyframes k12 {
-  0%, 57.641% {
+  0%, 64.389% {
     opacity: 0;
   }
-  57.642%, 65.502% {
+  64.39%, 73.171% {
     opacity: 1;
   }
-  65.503%, 100% {
+  73.172%, 100% {
     opacity: 0;
   }
 }
-.frame-12 { animation:k12 19.083s linear infinite; }
+.frame-12 { animation:k12 17.083s linear infinite; }
 @keyframes k13 {
-  0%, 65.501% {
+  0%, 73.17% {
     opacity: 0;
   }
-  65.502%, 66.376% {
+  73.171%, 74.146% {
     opacity: 1;
   }
-  66.377%, 100% {
+  74.147%, 100% {
     opacity: 0;
   }
 }
-.frame-13 { animation:k13 19.083s linear infinite; }
+.frame-13 { animation:k13 17.083s linear infinite; }
 @keyframes k14 {
-  0%, 66.375% {
+  0%, 74.145% {
     opacity: 0;
   }
-  66.376%, 67.686% {
+  74.146%, 75.61% {
     opacity: 1;
   }
-  67.687%, 100% {
+  75.611%, 100% {
     opacity: 0;
   }
 }
-.frame-14 { animation:k14 19.083s linear infinite; }
+.frame-14 { animation:k14 17.083s linear infinite; }
 @keyframes k15 {
-  0%, 67.685% {
+  0%, 75.609% {
     opacity: 0;
   }
-  67.686%, 79.039% {
+  75.61%, 88.293% {
     opacity: 1;
   }
-  79.04%, 100% {
+  88.294%, 100% {
     opacity: 0;
   }
 }
-.frame-15 { animation:k15 19.083s linear infinite; }
+.frame-15 { animation:k15 17.083s linear infinite; }
 @keyframes k16 {
-  0%, 79.038% {
+  0%, 88.292% {
     opacity: 0;
   }
-  79.039%, 89.52% {
+  88.293%, 100% {
     opacity: 1;
   }
-  89.521%, 100% {
+  100%, 100% {
     opacity: 0;
   }
 }
-.frame-16 { animation:k16 19.083s linear infinite; }
+.frame-16 { animation:k16 17.083s linear infinite; }
 @keyframes k17 {
-  0%, 89.519% {
+  0%, 99.999% {
     opacity: 0;
   }
-  89.52%, 89.52% {
+  100%, 100% {
     opacity: 1;
   }
-  89.521%, 100% {
+  100%, 100% {
     opacity: 0;
   }
 }
-.frame-17 { animation:k17 19.083s linear infinite; }
+.frame-17 { animation:k17 17.083s linear infinite; }
 @keyframes k18 {
-  0%, 89.519% {
+  0%, 99.999% {
     opacity: 0;
-  }
-  89.52% {
-    opacity: 1;
   }
   100% {
     opacity: 1;
   }
 }
-.frame-18 { animation:k18 19.083s linear infinite; }
+.frame-18 { animation:k18 17.083s linear infinite; }
 </style>
 <rect x="0.5" y="0.5" rx="10" ry="10" width="689" height="404" fill="#1f1f1f" stroke="#3a3a3a"/>
 <rect x="1" y="1" rx="9" ry="9" width="688" height="27" fill="#2c2c2c"/>

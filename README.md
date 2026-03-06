@@ -398,11 +398,11 @@ magick -version
 console2svg --stdout -- your-command | magick - output.png
 ```
 
-
 ## Supported platforms
 
 * Windows 10 and later (required `ConPTY`)
-* Unix-like systems (Linux, macOS, etc.)
+* Linux (tested on Ubuntu 24.04, but should work on other distributions as well)
+* macOS (ver 0.6.2 and later support macOS(arm64) natively)
 
 ## Options
 ### Major options

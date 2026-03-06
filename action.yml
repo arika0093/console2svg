@@ -36,6 +36,7 @@ runs:
           -r "$RID" \
           -p:PublishAot=true \
           -p:SelfContained=true \
+          -p:DisableNerdbankGitVersioning=true \
           -o "$INSTALL_DIR"
 
         if [ -f "$INSTALL_DIR/ConsoleToSvg${EXT}" ]; then

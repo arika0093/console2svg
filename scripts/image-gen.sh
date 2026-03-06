@@ -17,6 +17,10 @@ console2svg -o ./assets/window/macos-pc.svg    -d macos-pc    -w 40 -h 4 -c -- d
 console2svg -o ./assets/window/windows.svg     -d windows     -w 40 -h 4 -c -- dotnet --version
 console2svg -o ./assets/window/windows-pc.svg  -d windows-pc  -w 40 -h 4 -c -- dotnet --version
 console2svg -o ./assets/window/transparent.svg -d transparent -w 40 -h 4 -c -- dotnet --version
+# --- convert to png ---
+# required: sudo apt install -y librsvg2-bin
+rsvg-convert ./assets/cmd-hero.svg -o ./assets/png/cmd-hero.png -w 1920
+rsvg-convert ./assets/cmd-bg3.svg -o ./assets/png/cmd-bg3.png -w 1920
 # --- video ---
 # required: sudo apt install -y sl nyancat vim tmux
 console2svg -o ./assets/cmd-sl.svg            --verbose ./logs/cmd-sl.log           -w 120 -h 16 -c -d -v -- sl

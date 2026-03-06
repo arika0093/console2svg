@@ -368,6 +368,37 @@ Of course, you can also save all lines (useful for evidence). In that case, spec
 tmux capture-pane -pe -S - -t :0 | console2svg -o full-capture-$(date +%s).svg
 ```
 
+### Converting to other formats
+
+By combining with various commands, you can also convert to PNG or other formats. 
+One of the easy-to-use tools is [rsvg-convert](https://gitlab.gnome.org/GNOME/librsvg/). It only converts to PNG format, but it's easy to use.
+
+```bash
+apt install librsvg2-bin
+
+# use --stdout to write SVG to stdout, then pipe to rsvg-convert to convert to PNG
+console2svg --stdout -- your-command | rsvg-convert -o output.png
+
+# Pipe mode also works
+your-command | console2svg --stdout | rsvg-convert -o output.png
+```
+
+[ImageMagick](https://imagemagick.org/) can also be used. It supports formats other than PNG, but it may take a little effort to install.
+
+```bash
+# apt version may be outdated, so it's better to install from the official site
+# install v7 or later (v6 may have issues with SVG conversion)
+sudo curl -sSL https://imagemagick.org/archive/binaries/magick -o /usr/local/bin/magick
+sudo chmod +x /usr/local/bin/magick
+
+# check version
+magick -version
+
+# convert SVG to PNG
+console2svg --stdout -- your-command | magick - output.png
+```
+
+
 ## Supported platforms
 
 * Windows 10 and later (required `ConPTY`)

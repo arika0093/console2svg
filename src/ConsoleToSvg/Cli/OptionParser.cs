@@ -96,25 +96,17 @@ public static class OptionParser
                 --crop-right <value>      Crop right by px or ch.
                 --crop-left <value>       Crop left by px or ch.
 
-            Options (Video mode):
+            Options (Video/Repeat mode):
                 --no-loop                 Disable loop for animated SVG playback in video mode (default: loop).
                 --fps <value>             Max FPS for animated SVG frame sampling (default: 12).
+                --sleep <sec>             Wait time after execution completes in video mode (default: 0).
+                --fadeout <sec>           Fade-out duration at end of video (default: 0).
+
+            Options (Video mode):
                 --timing <deterministic|realtime>
                                           Video timing mode (default: deterministic).
                                           deterministic: normalize frame times to reduce output diffs.
                                           realtime: preserve measured event timing as-is.
-                --sleep <sec>             Wait time after execution completes in video mode (default: 2).
-                --fadeout <sec>           Fade-out duration at end of video (default: 0).
-                --replay-save <path>      Save keyboard input to a replay file during command execution.
-                --replay <path>           Replay keyboard input from a file instead of reading from the console.
-
-            Options (Repeat mode):
-                --no-loop                 Disable loop for animated SVG playback (default: loop).
-                --fps <value>             Frames per second for command re-execution (default: 12).
-                                          The command is re-executed every 1/fps seconds.
-                --sleep <sec>             Wait time after the last frame in the animation (default: 2).
-                --fadeout <sec>           Fade-out duration at end of animation (default: 0).
-                --timeout <sec>           Stop recording after specified seconds (recommended for repeat mode).
             """;
 
     public static bool TryParse(

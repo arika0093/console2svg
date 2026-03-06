@@ -469,11 +469,11 @@ public sealed class OptionParserTests
     }
 
     [Test]
-    public void SleepDefaultIsTwo()
+    public void SleepDefaultIsZeri()
     {
         var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
         ok.ShouldBeTrue();
-        options!.VideoSleep.ShouldBe(2d);
+        options!.VideoSleep.ShouldBe(0d);
     }
 
     [Test]

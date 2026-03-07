@@ -28,6 +28,7 @@ public static class AnimatedSvgRenderer
         }
 
         var reducedFrames = ReduceFrames(frames, options.VideoFps);
+        reducedFrames = SpreadCollapsedFrameTimes(reducedFrames, options.VideoFps);
 
         // Build a dedup map: visual-hash → index of the first reduced frame with that hash.
         // Frames that are visually identical (e.g. in a looping animation) will share a single
@@ -57,7 +58,12 @@ public static class AnimatedSvgRenderer
             commandHeaderRows
         );
         var lastFrameTime = Math.Max(0.05d, reducedFrames[reducedFrames.Count - 1].Time);
-        var totalDuration = lastFrameTime + options.VideoSleep + options.VideoFadeOut;
+        var finalFrameHold = GetFinalFrameHoldDuration(
+            options.VideoSleep,
+            options.VideoFadeOut,
+            options.VideoFps
+        );
+        var totalDuration = lastFrameTime + finalFrameHold + options.VideoFadeOut;
 
         var css = BuildAnimationCss(
             reducedFrames,
@@ -217,6 +223,103 @@ public static class AnimatedSvgRenderer
         return normalized;
     }
 
+    private static System.Collections.Generic.IReadOnlyList<TerminalFrame> SpreadCollapsedFrameTimes(
+        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
+        double maxFps
+    )
+    {
+        if (frames.Count <= 1)
+        {
+            return frames;
+        }
+
+        System.Collections.Generic.List<TerminalFrame>? adjusted = null;
+        for (var runStart = 0; runStart < frames.Count; )
+        {
+            var runEnd = runStart;
+            while (
+                runEnd + 1 < frames.Count
+                && HaveSameTime(frames[runEnd + 1].Time, frames[runStart].Time)
+            )
+            {
+                runEnd++;
+            }
+
+            if (runEnd == runStart)
+            {
+                if (adjusted != null)
+                {
+                    adjusted.Add(frames[runStart]);
+                }
+
+                runStart++;
+                continue;
+            }
+
+            adjusted ??= new System.Collections.Generic.List<TerminalFrame>(frames.Count);
+            if (adjusted.Count == 0)
+            {
+                for (var copyIndex = 0; copyIndex < runStart; copyIndex++)
+                {
+                    adjusted.Add(frames[copyIndex]);
+                }
+            }
+
+            var runCount = runEnd - runStart + 1;
+            if (runStart == 0 && frames[runStart].Time <= 0d)
+            {
+                var upperBound =
+                    runEnd + 1 < frames.Count
+                        ? frames[runEnd + 1].Time
+                        : GetMinimumFrameInterval(maxFps);
+                if (upperBound <= 0d)
+                {
+                    upperBound = GetMinimumFrameInterval(maxFps);
+                }
+
+                var step = upperBound / runCount;
+                for (var offset = 0; offset < runCount; offset++)
+                {
+                    adjusted.Add(new TerminalFrame(step * offset, frames[runStart + offset].Buffer));
+                }
+            }
+            else
+            {
+                var lowerBound = runStart > 0 ? adjusted[runStart - 1].Time : 0d;
+                var upperBound = frames[runStart].Time;
+                var step = (upperBound - lowerBound) / runCount;
+                if (step <= 0d)
+                {
+                    step = GetMinimumFrameInterval(maxFps) / runCount;
+                }
+
+                for (var offset = 0; offset < runCount; offset++)
+                {
+                    adjusted.Add(
+                        new TerminalFrame(
+                            lowerBound + (step * (offset + 1)),
+                            frames[runStart + offset].Buffer
+                        )
+                    );
+                }
+            }
+
+            runStart = runEnd + 1;
+        }
+
+        return adjusted ?? frames;
+    }
+
+    private static double GetFinalFrameHoldDuration(double videoSleep, double fadeOut, double maxFps)
+    {
+        if (videoSleep > 0d || fadeOut > 0d)
+        {
+            return videoSleep;
+        }
+
+        return GetMinimumFrameInterval(maxFps);
+    }
+
     private static ulong BuildVisualSignature(ScreenBuffer buffer)
     {
         const ulong fnvOffset = 1469598103934665603UL;
@@ -353,7 +456,7 @@ public static class AnimatedSvgRenderer
             double end;
             if (isLast)
             {
-                // Last frame visible until (lastFrameTime + sleep) which is totalDuration - fadeOut
+                // Last frame visible until the final hold period ends, which is totalDuration - fadeOut.
                 end = Percentage(totalDuration - fadeOut, totalDuration);
             }
             else
@@ -430,6 +533,16 @@ public static class AnimatedSvgRenderer
         }
 
         return Math.Max(0, Math.Min(100, value / total * 100));
+    }
+
+    private static bool HaveSameTime(double left, double right)
+    {
+        return Math.Abs(left - right) <= 1e-9;
+    }
+
+    private static double GetMinimumFrameInterval(double maxFps)
+    {
+        return maxFps > 0d ? 1d / maxFps : 0.05d;
     }
 
     private static string Format(double value)

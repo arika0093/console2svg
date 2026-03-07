@@ -1,4 +1,6 @@
 using System;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using ConsoleToSvg.Recording;
 
 namespace ConsoleToSvg.Tests.Svg;
@@ -210,6 +212,56 @@ public sealed class AnimatedSvgRendererTests
         lastKeyframeIndex.ShouldBeGreaterThanOrEqualTo(0);
         var lastKeyframeBlock = svg.Substring(lastKeyframeIndex);
         lastKeyframeBlock.ShouldNotContain("%, 100% {");
+    }
+
+    [Test]
+    public void RenderAnimatedSvgWithZeroSleepStartsLastFrameBeforeAnimationEnd()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.10, "A");
+        session.AddEvent(0.20, "B");
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                Loop = true,
+                VideoSleep = 0,
+                VideoFadeOut = 0,
+            }
+        );
+
+        GetFirstOpacityOnePercentage(GetKeyframeBlock(svg, 1)).ShouldBeLessThan(100d);
+    }
+
+    [Test]
+    public void RenderAnimatedSvgSpreadsCollapsedTailFrameTimes()
+    {
+        var session = new RecordingSession(width: 16, height: 2);
+        session.AddEvent(0.10, "\u001b[2J\u001b[HA");
+        session.AddEvent(0.20, "\u001b[2J\u001b[HB");
+        session.AddEvent(0.20, "\u001b[2J\u001b[HC");
+        session.AddEvent(0.20, "\u001b[2J\u001b[HD");
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                Loop = true,
+                VideoSleep = 0,
+                VideoFadeOut = 0,
+            }
+        );
+
+        var frame1Start = GetFirstOpacityOnePercentage(GetKeyframeBlock(svg, 1));
+        var frame2Start = GetFirstOpacityOnePercentage(GetKeyframeBlock(svg, 2));
+        var frame3Start = GetFirstOpacityOnePercentage(GetKeyframeBlock(svg, 3));
+
+        frame1Start.ShouldBeLessThan(frame2Start);
+        frame2Start.ShouldBeLessThan(frame3Start);
+        frame3Start.ShouldBeLessThan(100d);
     }
 
     [Test]
@@ -431,5 +483,35 @@ public sealed class AnimatedSvgRendererTests
             count++;
             index += token.Length;
         }
+    }
+
+    private static string GetKeyframeBlock(string svg, int frameIndex)
+    {
+        var token = $"@keyframes k{frameIndex} {{";
+        var start = svg.IndexOf(token, StringComparison.Ordinal);
+        start.ShouldBeGreaterThanOrEqualTo(0);
+
+        var next = svg.IndexOf(
+            $"@keyframes k{frameIndex + 1} {{",
+            start + token.Length,
+            StringComparison.Ordinal
+        );
+        if (next < 0)
+        {
+            next = svg.IndexOf("</style>", start, StringComparison.Ordinal);
+        }
+
+        next.ShouldBeGreaterThan(start);
+        return svg.Substring(start, next - start);
+    }
+
+    private static double GetFirstOpacityOnePercentage(string keyframeBlock)
+    {
+        var match = Regex.Match(
+            keyframeBlock,
+            @"(?m)^\s*(?<percent>\d+(?:\.\d+)?)%(?:,\s*\d+(?:\.\d+)?%)?\s*\{\s*\r?\n\s*opacity:\s*1;"
+        );
+        match.Success.ShouldBeTrue();
+        return double.Parse(match.Groups["percent"].Value, CultureInfo.InvariantCulture);
     }
 }

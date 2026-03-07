@@ -161,8 +161,10 @@ public sealed class AnimatedSvgRendererTests
         );
 
         // With sleep=2, the animation duration should be ~3s vs ~1s without sleep
-        withSleepSvg.ShouldContain("3s linear");
-        noSleepSvg.ShouldNotContain("3s linear");
+        var noSleepDuration = GetFirstAnimationDurationSeconds(noSleepSvg);
+        var withSleepDuration = GetFirstAnimationDurationSeconds(withSleepSvg);
+        withSleepDuration.ShouldBeGreaterThan(noSleepDuration + 1.5d);
+        withSleepDuration.ShouldBeLessThan(noSleepDuration + 2.5d);
     }
 
     [Test]
@@ -513,5 +515,16 @@ public sealed class AnimatedSvgRendererTests
         );
         match.Success.ShouldBeTrue();
         return double.Parse(match.Groups["percent"].Value, CultureInfo.InvariantCulture);
+    }
+
+    private static double GetFirstAnimationDurationSeconds(string svg)
+    {
+        var match = Regex.Match(
+            svg,
+            @"animation:k\d+\s+(?<seconds>\d+(?:\.\d+)?)s\s+linear",
+            RegexOptions.IgnoreCase
+        );
+        match.Success.ShouldBeTrue();
+        return double.Parse(match.Groups["seconds"].Value, CultureInfo.InvariantCulture);
     }
 }

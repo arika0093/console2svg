@@ -120,28 +120,55 @@ public static class AnimatedSvgRenderer
         var lastKeptTime = frames[0].Time;
         var lastKeptVisualSignature = BuildVisualSignature(frames[0].Buffer);
         TerminalFrame? pendingFrame = null;
+        var pendingVisualSignature = 0UL;
 
         for (var i = 1; i < frames.Count - 1; i++)
         {
             var frame = frames[i];
             var visualSignature = BuildVisualSignature(frame.Buffer);
             var visualChanged = visualSignature != lastKeptVisualSignature;
-            if (!visualChanged && frame.Time - lastKeptTime < minimumInterval)
+            var elapsed = frame.Time - lastKeptTime;
+
+            if (elapsed < minimumInterval)
             {
+                if (visualChanged && pendingFrame is null)
+                {
+                    // Keep the first visual change in the throttled window so it is not
+                    // delayed until the next sampling boundary.
+                    pendingFrame = frame;
+                    pendingVisualSignature = visualSignature;
+                }
                 continue;
             }
 
-            if (frame.Time - lastKeptTime >= minimumInterval)
+            if (pendingFrame is not null)
             {
-                reduced.Add(frame);
-                lastKeptTime = frame.Time;
-                lastKeptVisualSignature = visualSignature;
+                reduced.Add(pendingFrame);
+                lastKeptTime = pendingFrame.Time;
+                lastKeptVisualSignature = pendingVisualSignature;
                 pendingFrame = null;
+
+                visualChanged = visualSignature != lastKeptVisualSignature;
+                elapsed = frame.Time - lastKeptTime;
+                if (elapsed < minimumInterval)
+                {
+                    if (visualChanged)
+                    {
+                        pendingFrame = frame;
+                        pendingVisualSignature = visualSignature;
+                    }
+                    continue;
+                }
+
+                if (!visualChanged)
+                {
+                    continue;
+                }
             }
-            else if (visualChanged)
-            {
-                pendingFrame = frame;
-            }
+
+            reduced.Add(frame);
+            lastKeptTime = frame.Time;
+            lastKeptVisualSignature = visualSignature;
         }
 
         if (pendingFrame is not null && !ReferenceEquals(reduced[reduced.Count - 1], pendingFrame))

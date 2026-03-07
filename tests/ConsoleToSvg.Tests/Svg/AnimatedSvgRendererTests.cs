@@ -324,6 +324,56 @@ public sealed class AnimatedSvgRendererTests
     }
 
     [Test]
+    public void RenderAnimatedSvgKeepsPendingVisualChangeBeforeLaterBoundary()
+    {
+        var session = new RecordingSession(width: 20, height: 2);
+        session.AddEvent(0.00, "\u001b[2J\u001b[HBASE-A");
+        session.AddEvent(1.00, "\u001b[2J\u001b[HBASE-B");
+        session.AddEvent(1.02, "\u001b[2J\u001b[HMID-C");
+        session.AddEvent(1.04, "\u001b[2J\u001b[HMID-D");
+        session.AddEvent(2.00, "\u001b[2J\u001b[HSHELL-E");
+        session.AddEvent(3.00, "\u001b[2J\u001b[HEXIT-F");
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                VideoFps = 1,
+                VideoTiming = ConsoleToSvg.Cli.VideoTimingMode.Realtime,
+            }
+        );
+
+        svg.ShouldContain(">MID-C<");
+        svg.ShouldContain(">SHELL-E<");
+        svg.ShouldContain(">EXIT-F<");
+    }
+
+    [Test]
+    public void RenderAnimatedSvgPreservesFirstStateBeforeQuickFinalExit()
+    {
+        var session = new RecordingSession(width: 30, height: 3);
+        session.AddEvent(0.00, "\u001b[2J\u001b[HVIM-Q");
+        session.AddEvent(1.00, "\u001b[2J\u001b[HAFTER-Q");
+        session.AddEvent(1.01, "\u001b[2J\u001b[HSHELL-PROMPT");
+        session.AddEvent(1.02, "\u001b[2J\u001b[HLOGOUT-TEXT");
+        session.AddEvent(2.00, "\u001b[2J\u001b[HEXIT-END");
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                VideoFps = 1,
+                VideoTiming = ConsoleToSvg.Cli.VideoTimingMode.Realtime,
+            }
+        );
+
+        svg.ShouldContain(">SHELL-PROMPT<");
+        svg.ShouldContain(">EXIT-END<");
+    }
+
+    [Test]
     public void RenderAnimatedSvgDeterministicTimingSuppressesSmallJitterDiffs()
     {
         var sessionA = new RecordingSession(width: 8, height: 2);

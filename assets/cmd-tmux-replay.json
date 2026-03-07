@@ -392,7 +392,49 @@
     },
     {
       "tick": 0.05,
-      "key": "Tab",
+      "key": "o",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "l",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "e",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "2",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "s",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "v",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": "g",
+      "modifiers": [],
+      "type": "keydown"
+    },
+    {
+      "tick": 0.05,
+      "key": " ",
       "modifiers": [],
       "type": "keydown"
     },

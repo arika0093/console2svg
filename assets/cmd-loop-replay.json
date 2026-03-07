@@ -2,7 +2,7 @@
   "version": "1",
   "appVersion": "0.3.0.1+1b9fc65751",
   "createdAt": "2026-03-01T02:01:18.4139609+00:00",
-  "totalDuration": 11.404151,
+  "totalDuration": 10.404151,
   "replay": [
     {
       "time": 5.0846566,
@@ -57,25 +57,7 @@
       "type": "keydown"
     },
     {
-      "tick": 0.8629487,
-      "key": "ArrowDown",
-      "modifiers": [],
-      "type": "keydown"
-    },
-    {
-      "tick": 0.4823481,
-      "key": "ArrowUp",
-      "modifiers": [],
-      "type": "keydown"
-    },
-    {
-      "tick": 0.4623101,
-      "key": "Enter",
-      "modifiers": [],
-      "type": "keydown"
-    },
-    {
-      "tick": 1.0494015,
+      "tick": 1.2494015,
       "key": "c",
       "modifiers": [
         "ctrl"

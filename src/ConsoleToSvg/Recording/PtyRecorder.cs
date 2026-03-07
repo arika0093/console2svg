@@ -147,6 +147,7 @@ public static class PtyRecorder
             forwardToConsole && string.IsNullOrWhiteSpace(replayPath)
                 ? ConsoleInputMode.TryEnableRaw(logger)
                 : null;
+        using var utf8OutputScope = TryUseUtf8ConsoleOutputEncoding(forwardToConsole, logger);
 
         try
         {
@@ -154,7 +155,9 @@ public static class PtyRecorder
                 .SpawnAsync(options, cancellationToken)
                 .ConfigureAwait(false);
             logger.ZLogDebug($"PTY process spawned.");
-            var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
+            var outputForwardWriter = forwardToConsole ? TryOpenStandardOutputWriter(logger) : null;
+            var outputForward =
+                outputForwardWriter is null && forwardToConsole ? TryOpenStandardOutput(logger) : null;
             Stream? inputForward;
             InputReplayData? replayData = null;
             if (!string.IsNullOrWhiteSpace(replayPath))
@@ -198,7 +201,9 @@ public static class PtyRecorder
                 stopwatch,
                 readCancellation.Token,
                 logger,
-                outputForward
+                outputForward,
+                outputForwardWriter,
+                Encoding.UTF8
             );
             var inputTask = inputForward is not null
                 ? PumpInputAsync(
@@ -402,6 +407,7 @@ public static class PtyRecorder
             forwardToConsole && string.IsNullOrWhiteSpace(replayPath)
                 ? ConsoleInputMode.TryEnableRaw(logger)
                 : null;
+        using var utf8OutputScope = TryUseUtf8ConsoleOutputEncoding(forwardToConsole, logger);
 
         var startInfo = BuildFallbackProcessStartInfo(command, noDeleteEnvs);
         logger.ZLogDebug(
@@ -429,7 +435,9 @@ public static class PtyRecorder
 
         try
         {
-            var outputForward = forwardToConsole ? TryOpenStandardOutput(logger) : null;
+            var outputForwardWriter = forwardToConsole ? TryOpenStandardOutputWriter(logger) : null;
+            var outputForward =
+                outputForwardWriter is null && forwardToConsole ? TryOpenStandardOutput(logger) : null;
             Stream? inputForward;
             InputReplayData? replayData = null;
             if (!string.IsNullOrWhiteSpace(replayPath))
@@ -501,6 +509,7 @@ public static class PtyRecorder
             });
 
             var replayTimedOut = false;
+            var outputEncoding = GetFallbackProcessOutputEncoding(logger);
             try
             {
                 await ReadOutputAsync(
@@ -509,7 +518,9 @@ public static class PtyRecorder
                         stopwatch,
                         replayTimeoutCts?.Token ?? CancellationToken.None,
                         logger,
-                        outputForward
+                        outputForward,
+                        outputForwardWriter,
+                        outputEncoding
                     )
                     .ConfigureAwait(false);
             }
@@ -577,18 +588,81 @@ public static class PtyRecorder
         return exception.Message.Contains("Input/output error", StringComparison.OrdinalIgnoreCase);
     }
 
+    private static IDisposable? TryUseUtf8ConsoleOutputEncoding(
+        bool forwardToConsole,
+        ILogger logger
+    )
+    {
+        if (
+            !forwardToConsole
+            || !RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            || Console.IsOutputRedirected
+        )
+        {
+            return null;
+        }
+
+        try
+        {
+            var original = Console.OutputEncoding;
+            if (original.CodePage == Encoding.UTF8.CodePage)
+            {
+                return null;
+            }
+
+            var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+            Console.OutputEncoding = utf8;
+            logger.ZLogDebug(
+                $"Temporarily set console output encoding to UTF-8 for forwarding. PreviousCodePage={original.CodePage}"
+            );
+            return new ConsoleOutputEncodingScope(original, logger);
+        }
+        catch (Exception ex)
+        {
+            logger.ZLogDebug(
+                ex,
+                $"Failed to set console output encoding to UTF-8. Forwarding will use the current code page."
+            );
+            return null;
+        }
+    }
+
+    // The cmd.exe fallback writes redirected stdout using the active Windows console code page.
+    private static Encoding GetFallbackProcessOutputEncoding(ILogger logger)
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return Encoding.UTF8;
+        }
+
+        try
+        {
+            return Console.OutputEncoding;
+        }
+        catch (Exception ex)
+        {
+            logger.ZLogDebug(
+                ex,
+                $"Console output encoding is unavailable. Falling back to UTF-8 for process output decoding."
+            );
+            return Encoding.UTF8;
+        }
+    }
+
     private static async Task ReadOutputAsync(
         Stream readerStream,
         RecordingSession session,
         Stopwatch stopwatch,
         CancellationToken cancellationToken,
         ILogger logger,
-        Stream? forwardOutput
+        Stream? forwardOutput,
+        TextWriter? forwardOutputWriter,
+        Encoding outputEncoding
     )
     {
         var bytes = new byte[4096];
         var chars = new char[8192];
-        var decoder = Encoding.UTF8.GetDecoder();
+        var decoder = outputEncoding.GetDecoder();
 
         while (true)
         {
@@ -611,14 +685,14 @@ public static class PtyRecorder
                 break;
             }
 
+            var charCount = decoder.GetChars(bytes, 0, count, chars, 0, flush: false);
             if (forwardOutput is not null)
             {
+                // Keep forwarded output byte-exact so VT/ANSI escape sequences are not altered.
                 try
                 {
-                    await forwardOutput
-                        .WriteAsync(bytes, 0, count, cancellationToken)
+                    await WriteForwardOutputAsync(forwardOutput, bytes, count, cancellationToken)
                         .ConfigureAwait(false);
-                    await forwardOutput.FlushAsync(cancellationToken).ConfigureAwait(false);
                 }
                 catch
                 {
@@ -626,7 +700,20 @@ public static class PtyRecorder
                 }
             }
 
-            var charCount = decoder.GetChars(bytes, 0, count, chars, 0, flush: false);
+            if (forwardOutputWriter is not null && charCount > 0)
+            {
+                try
+                {
+                    await forwardOutputWriter
+                        .WriteAsync(chars.AsMemory(0, charCount), cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Ignore forwarding write failures; recording should continue.
+                }
+            }
+
             if (charCount <= 0)
             {
                 logger.ZLogDebug($"Read chunk bytes={count}, no chars decoded yet.");
@@ -643,11 +730,75 @@ public static class PtyRecorder
         var trailingCount = decoder.GetChars([], 0, 0, chars, 0, flush: true);
         if (trailingCount > 0)
         {
+            if (forwardOutputWriter is not null)
+            {
+                try
+                {
+                    await forwardOutputWriter
+                        .WriteAsync(chars.AsMemory(0, trailingCount), cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Ignore forwarding write failures; recording should continue.
+                }
+            }
+
             var trailing = new string(chars, 0, trailingCount);
             session.AddEvent(stopwatch.Elapsed.TotalSeconds, trailing);
             logger.ZLogDebug(
                 $"Captured trailing decoded chars={trailingCount} preview={ToPreview(trailing)}"
             );
+        }
+    }
+
+    private static async Task WriteForwardOutputAsync(
+        Stream forwardOutput,
+        byte[] bytes,
+        int byteCount,
+        CancellationToken cancellationToken
+    )
+    {
+        if (byteCount <= 0)
+        {
+            return;
+        }
+
+        await forwardOutput.WriteAsync(bytes, 0, byteCount, cancellationToken).ConfigureAwait(false);
+        await forwardOutput.FlushAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    private sealed class ConsoleOutputEncodingScope : IDisposable
+    {
+        private readonly Encoding _originalEncoding;
+        private readonly ILogger _logger;
+        private bool _disposed;
+
+        public ConsoleOutputEncodingScope(Encoding originalEncoding, ILogger logger)
+        {
+            _originalEncoding = originalEncoding;
+            _logger = logger;
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+            try
+            {
+                Console.OutputEncoding = _originalEncoding;
+                _logger.ZLogDebug(
+                    $"Restored console output encoding. CodePage={_originalEncoding.CodePage}"
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.ZLogDebug(ex, $"Failed to restore console output encoding.");
+            }
         }
     }
 
@@ -804,6 +955,27 @@ public static class PtyRecorder
         catch (Exception ex)
         {
             logger.ZLogDebug(ex, $"/dev/tty is unavailable. Falling back to standard input.");
+            return null;
+        }
+    }
+
+    private static TextWriter? TryOpenStandardOutputWriter(ILogger logger)
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || Console.IsOutputRedirected)
+        {
+            return null;
+        }
+
+        try
+        {
+            return Console.Out;
+        }
+        catch (Exception ex)
+        {
+            logger.ZLogDebug(
+                ex,
+                $"Text output is unavailable. Falling back to stream output forwarding."
+            );
             return null;
         }
     }

@@ -78,43 +78,43 @@ text {
   0%, 19.902% {
     opacity: 0;
   }
-  19.903%, 22.573% {
+  19.903%, 21.845% {
     opacity: 1;
   }
-  22.574%, 100% {
+  21.846%, 100% {
     opacity: 0;
   }
 }
 .frame-5 { animation:k5 17.167s linear infinite; }
 @keyframes k6 {
-  0%, 22.572% {
+  0%, 21.844% {
     opacity: 0;
   }
-  22.573%, 25.243% {
+  21.845%, 23.786% {
     opacity: 1;
   }
-  25.244%, 100% {
+  23.787%, 100% {
     opacity: 0;
   }
 }
 .frame-6 { animation:k6 17.167s linear infinite; }
 @keyframes k7 {
-  0%, 25.242% {
+  0%, 23.785% {
     opacity: 0;
   }
-  25.243%, 30.34% {
+  23.786%, 29.612% {
     opacity: 1;
   }
-  30.341%, 100% {
+  29.613%, 100% {
     opacity: 0;
   }
 }
 .frame-7 { animation:k7 17.167s linear infinite; }
 @keyframes k8 {
-  0%, 30.339% {
+  0%, 29.611% {
     opacity: 0;
   }
-  30.34%, 35.437% {
+  29.612%, 35.437% {
     opacity: 1;
   }
   35.438%, 100% {
@@ -306,31 +306,31 @@ text {
   0%, 87.863% {
     opacity: 0;
   }
-  87.864%, 88.35% {
+  87.864%, 91.748% {
     opacity: 1;
   }
-  88.351%, 100% {
+  91.749%, 100% {
     opacity: 0;
   }
 }
 .frame-24 { animation:k24 17.167s linear infinite; }
 @keyframes k25 {
-  0%, 88.349% {
+  0%, 91.747% {
     opacity: 0;
   }
-  88.35%, 93.932% {
+  91.748%, 95.631% {
     opacity: 1;
   }
-  93.933%, 100% {
+  95.632%, 100% {
     opacity: 0;
   }
 }
 .frame-25 { animation:k25 17.167s linear infinite; }
 @keyframes k26 {
-  0%, 93.931% {
+  0%, 95.63% {
     opacity: 0;
   }
-  93.932%, 99.515% {
+  95.631%, 99.515% {
     opacity: 1;
   }
   99.516%, 100% {
@@ -977,6 +977,18 @@ text {
 <text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">:q!</text>
 </g>
+<g id="fd-24" transform="translate(9 36)">
+<rect width="672" height="360" fill="#1e1e1e"/>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm0kj6c</text>
+<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
+<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
+<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
+<text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
+<text class="crt" x="0" y="32" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm0kj6c</text>
+<text class="crt" x="168" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
+<text class="crt" x="176.4" y="32" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
+<text class="crt" x="428.4" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
+</g>
 <g id="fd-25" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
 <text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm0kj6c</text>
@@ -1000,6 +1012,7 @@ text {
 <text class="crt" x="168" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="32" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
+<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">exit</text>
 </g>
 <g id="fd-27" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
@@ -1039,7 +1052,7 @@ text {
 <use href="#fd-21" id="frame-21" class="frame frame-21"/>
 <use href="#fd-22" id="frame-22" class="frame frame-22"/>
 <use href="#fd-23" id="frame-23" class="frame frame-23"/>
-<use href="#fd-5" id="frame-24" class="frame frame-24"/>
+<use href="#fd-24" id="frame-24" class="frame frame-24"/>
 <use href="#fd-25" id="frame-25" class="frame frame-25"/>
 <use href="#fd-26" id="frame-26" class="frame frame-26"/>
 <use href="#fd-27" id="frame-27" class="frame frame-27"/>

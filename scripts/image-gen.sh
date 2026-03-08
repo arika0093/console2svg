@@ -24,7 +24,7 @@ rsvg-convert ./assets/cmd-bg3.svg -o ./assets/png/cmd-bg3.png -w 1920
 # --- video ---
 # required: sudo apt install -y sl nyancat vim tmux
 console2svg -o ./assets/cmd-sl.svg            --verbose ./logs/cmd-sl.log           -w 120 -h 16 -c -d -v -- sl
-console2svg -o ./assets/cmd-nyancat.svg       --verbose ./logs/cmd-nyancat.log      -w 160 -h 32 -c -d -v --timeout 5 --sleep 0.5 -- nyancat
+console2svg -o ./assets/cmd-nyancat.svg       --verbose ./logs/cmd-nyancat.log      -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat
 console2svg -o ./assets/cmd-bash-vim.svg      --verbose ./logs/cmd-bash-vim.log     -w 80 -h 20 -v -d --replay ./assets/cmd-bash-vim-replay.json -- bash
 # required: sudo apt install -y tmux
 # console2svg -o ./assets/cmd-tmux-replay.svg   --verbose ./logs/cmd-tmux-replay.log  -w 80 -h 14 -v --replay ./assets/cmd-tmux-replay.json -- tmux

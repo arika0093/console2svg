@@ -101,6 +101,7 @@ public static class OptionParser
                 --fps <value>             Max FPS for animated SVG frame sampling (default: 12).
                 --sleep <sec>             Wait time after execution completes in video mode (default: 0).
                 --fadeout <sec>           Fade-out duration at end of video (default: 0).
+                --coalesce-ms <ms>        Coalesce output chunks within the given gap (default: 0=disabled).
 
             Options (Video mode):
                 --timing <deterministic|realtime>
@@ -501,6 +502,14 @@ public static class OptionParser
 
                 options.VideoFadeOut = fadeout;
                 return true;
+            case "--coalesce-ms":
+                if (!TryParseDouble(value, "--coalesce-ms", out var coalesceMs, out error))
+                {
+                    return false;
+                }
+
+                options.OutputCoalesceMs = coalesceMs;
+                return true;
             case "--opacity":
                 if (!TryParseDouble(value, "--opacity", out var opacity, out error))
                 {
@@ -758,6 +767,16 @@ public static class OptionParser
         )
         {
             error = "--fadeout must be a non-negative number.";
+            return false;
+        }
+
+        if (
+            double.IsNaN(options.OutputCoalesceMs)
+            || double.IsInfinity(options.OutputCoalesceMs)
+            || options.OutputCoalesceMs < 0
+        )
+        {
+            error = "--coalesce-ms must be a non-negative number.";
             return false;
         }
 

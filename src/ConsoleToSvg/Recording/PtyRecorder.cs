@@ -33,7 +33,8 @@ public static class PtyRecorder
         bool forwardToConsole = true,
         bool noDeleteEnvs = false,
         string? replaySavePath = null,
-        string? replayPath = null
+        string? replayPath = null,
+        double outputCoalesceMs = 0d
     )
     {
         logger ??= NullLogger.Instance;
@@ -46,19 +47,20 @@ public static class PtyRecorder
         {
             try
             {
-                return await RecordWithPtyAsync(
-                        command,
-                        width,
-                        height,
-                        cancellationToken,
-                        logger,
-                        forwardToConsole,
-                        noDeleteEnvs,
-                        replaySavePath,
-                        replayPath,
-                        startupTimeoutMs: PtyStartupTimeoutMs
-                    )
-                    .ConfigureAwait(false);
+                    return await RecordWithPtyAsync(
+                            command,
+                            width,
+                            height,
+                            cancellationToken,
+                            logger,
+                            forwardToConsole,
+                            noDeleteEnvs,
+                            replaySavePath,
+                            replayPath,
+                            outputCoalesceMs,
+                            startupTimeoutMs: PtyStartupTimeoutMs
+                        )
+                        .ConfigureAwait(false);
             }
             catch (PtyStartupHangException ex)
             {
@@ -84,7 +86,8 @@ public static class PtyRecorder
                         forwardToConsole,
                         noDeleteEnvs,
                         replaySavePath,
-                        replayPath
+                        replayPath,
+                        outputCoalesceMs
                     )
                     .ConfigureAwait(false);
             }
@@ -105,7 +108,8 @@ public static class PtyRecorder
                         forwardToConsole,
                         noDeleteEnvs,
                         replaySavePath,
-                        replayPath
+                        replayPath,
+                        outputCoalesceMs
                     )
                     .ConfigureAwait(false);
             }
@@ -125,6 +129,7 @@ public static class PtyRecorder
         bool noDeleteEnvs,
         string? replaySavePath,
         string? replayPath,
+        double outputCoalesceMs,
         int? startupTimeoutMs = null
     )
     {
@@ -203,7 +208,8 @@ public static class PtyRecorder
                 logger,
                 outputForward,
                 outputForwardWriter,
-                Encoding.UTF8
+                Encoding.UTF8,
+                outputCoalesceMs
             );
             var inputTask = inputForward is not null
                 ? PumpInputAsync(
@@ -394,7 +400,8 @@ public static class PtyRecorder
         bool forwardToConsole,
         bool noDeleteEnvs,
         string? replaySavePath,
-        string? replayPath
+        string? replayPath,
+        double outputCoalesceMs
     )
     {
         var session = new RecordingSession(width, height);
@@ -520,7 +527,8 @@ public static class PtyRecorder
                         logger,
                         outputForward,
                         outputForwardWriter,
-                        outputEncoding
+                        outputEncoding,
+                        outputCoalesceMs
                     )
                     .ConfigureAwait(false);
             }
@@ -657,74 +665,126 @@ public static class PtyRecorder
         ILogger logger,
         Stream? forwardOutput,
         TextWriter? forwardOutputWriter,
-        Encoding outputEncoding
+        Encoding outputEncoding,
+        double outputCoalesceMs
     )
     {
         var bytes = new byte[4096];
         var chars = new char[8192];
         var decoder = outputEncoding.GetDecoder();
+        var pendingText = outputCoalesceMs > 0d ? new StringBuilder(4096) : null;
+        var pendingLastTime = 0d;
+        var coalesceWindowSeconds = outputCoalesceMs > 0d ? outputCoalesceMs / 1000d : 0d;
 
-        while (true)
+        void FlushPending()
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            int count;
-            try
+            if (pendingText is null || pendingText.Length == 0)
             {
-                count = await readerStream
-                    .ReadAsync(bytes, 0, bytes.Length, cancellationToken)
-                    .ConfigureAwait(false);
-            }
-            catch (ObjectDisposedException)
-            {
-                logger.ZLogDebug($"Read stream disposed; treating as EOF.");
-                break;
-            }
-            if (count <= 0)
-            {
-                logger.ZLogDebug($"Read stream completed (EOF).");
-                break;
+                return;
             }
 
-            var charCount = decoder.GetChars(bytes, 0, count, chars, 0, flush: false);
-            if (forwardOutput is not null)
-            {
-                // Keep forwarded output byte-exact so VT/ANSI escape sequences are not altered.
-                try
-                {
-                    await WriteForwardOutputAsync(forwardOutput, bytes, count, cancellationToken)
-                        .ConfigureAwait(false);
-                }
-                catch
-                {
-                    // Ignore forwarding write failures; recording should continue.
-                }
-            }
-
-            if (forwardOutputWriter is not null && charCount > 0)
-            {
-                try
-                {
-                    await forwardOutputWriter
-                        .WriteAsync(chars.AsMemory(0, charCount), cancellationToken)
-                        .ConfigureAwait(false);
-                }
-                catch
-                {
-                    // Ignore forwarding write failures; recording should continue.
-                }
-            }
-
-            if (charCount <= 0)
-            {
-                logger.ZLogDebug($"Read chunk bytes={count}, no chars decoded yet.");
-                continue;
-            }
-
-            var text = new string(chars, 0, charCount);
-            session.AddEvent(stopwatch.Elapsed.TotalSeconds, text);
+            var text = pendingText.ToString();
+            pendingText.Clear();
+            session.AddEvent(pendingLastTime, text);
             logger.ZLogDebug(
-                $"Captured chunk bytes={count} chars={charCount} elapsedMs={stopwatch.ElapsedMilliseconds} preview={ToPreview(text)}"
+                $"Captured coalesced chars={text.Length} elapsedMs={(long)(pendingLastTime * 1000)} preview={ToPreview(text)}"
             );
+        }
+
+        void AppendCapturedText(string text, double elapsedSeconds, int byteCount)
+        {
+            if (pendingText is null)
+            {
+                session.AddEvent(elapsedSeconds, text);
+                logger.ZLogDebug(
+                    $"Captured chunk bytes={byteCount} chars={text.Length} elapsedMs={stopwatch.ElapsedMilliseconds} preview={ToPreview(text)}"
+                );
+                return;
+            }
+
+            if (pendingText.Length == 0)
+            {
+                pendingLastTime = elapsedSeconds;
+                pendingText.Append(text);
+                return;
+            }
+
+            var gap = elapsedSeconds - pendingLastTime;
+            if (gap > coalesceWindowSeconds)
+            {
+                FlushPending();
+            }
+
+            pendingLastTime = elapsedSeconds;
+            pendingText.Append(text);
+        }
+
+        try
+        {
+            while (true)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                int count;
+                try
+                {
+                    count = await readerStream
+                        .ReadAsync(bytes, 0, bytes.Length, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                catch (ObjectDisposedException)
+                {
+                    logger.ZLogDebug($"Read stream disposed; treating as EOF.");
+                    break;
+                }
+                if (count <= 0)
+                {
+                    logger.ZLogDebug($"Read stream completed (EOF).");
+                    break;
+                }
+
+                var charCount = decoder.GetChars(bytes, 0, count, chars, 0, flush: false);
+                if (forwardOutput is not null)
+                {
+                    // Keep forwarded output byte-exact so VT/ANSI escape sequences are not altered.
+                    try
+                    {
+                        await WriteForwardOutputAsync(forwardOutput, bytes, count, cancellationToken)
+                            .ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        // Ignore forwarding write failures; recording should continue.
+                    }
+                }
+
+                if (forwardOutputWriter is not null && charCount > 0)
+                {
+                    try
+                    {
+                        await forwardOutputWriter
+                            .WriteAsync(chars.AsMemory(0, charCount), cancellationToken)
+                            .ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        // Ignore forwarding write failures; recording should continue.
+                    }
+                }
+
+                if (charCount <= 0)
+                {
+                    logger.ZLogDebug($"Read chunk bytes={count}, no chars decoded yet.");
+                    continue;
+                }
+
+                var text = new string(chars, 0, charCount);
+                AppendCapturedText(text, stopwatch.Elapsed.TotalSeconds, count);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            FlushPending();
+            throw;
         }
 
         var trailingCount = decoder.GetChars([], 0, 0, chars, 0, flush: true);
@@ -745,11 +805,10 @@ public static class PtyRecorder
             }
 
             var trailing = new string(chars, 0, trailingCount);
-            session.AddEvent(stopwatch.Elapsed.TotalSeconds, trailing);
-            logger.ZLogDebug(
-                $"Captured trailing decoded chars={trailingCount} preview={ToPreview(trailing)}"
-            );
+            AppendCapturedText(trailing, stopwatch.Elapsed.TotalSeconds, trailingCount);
         }
+
+        FlushPending();
     }
 
     private static async Task WriteForwardOutputAsync(

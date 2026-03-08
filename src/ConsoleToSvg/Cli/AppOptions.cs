@@ -79,6 +79,8 @@ public sealed class AppOptions
 
     public VideoTimingMode VideoTiming { get; set; } = VideoTimingMode.Deterministic;
 
+    public double OutputCoalesceMs { get; set; } = 0d;
+
     public double Opacity { get; set; } = 1d;
 
     public bool WithCommand { get; set; }

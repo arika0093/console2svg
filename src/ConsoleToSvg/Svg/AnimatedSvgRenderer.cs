@@ -137,10 +137,11 @@ public static class AnimatedSvgRenderer
 
             if (elapsed < minimumInterval)
             {
-                if (visualChanged && pendingFrame is null)
+                if (visualChanged)
                 {
-                    // Keep the first visual change in the throttled window so it is not
-                    // delayed until the next sampling boundary.
+                    // Keep the latest visual change in the throttled window so that
+                    // multi-chunk updates (e.g., line-by-line drawing) settle to the
+                    // most complete frame available within the interval.
                     pendingFrame = frame;
                     pendingVisualSignature = visualSignature;
                 }

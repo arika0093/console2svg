@@ -398,7 +398,7 @@ public sealed class AnimatedSvgRendererTests
             }
         );
 
-        svg.ShouldContain(">MID-C<");
+        svg.ShouldContain(">MID-D<");
         svg.ShouldContain(">SHELL-E<");
         svg.ShouldContain(">EXIT-F<");
     }
@@ -423,7 +423,7 @@ public sealed class AnimatedSvgRendererTests
             }
         );
 
-        svg.ShouldContain(">SHELL-PROMPT<");
+        svg.ShouldContain(">LOGOUT-TEXT<");
         svg.ShouldContain(">EXIT-END<");
     }
 

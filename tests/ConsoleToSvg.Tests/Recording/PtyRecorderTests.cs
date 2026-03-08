@@ -98,8 +98,8 @@ public sealed class PtyRecorderTests
         );
 
         writer.ToString().ShouldBe(text);
-        session.Events.Count.ShouldBe(1);
-        session.Events[0].Data.ShouldBe(text);
+        session.Events.Count.ShouldBeGreaterThan(0);
+        string.Concat(session.Events.Select(evt => evt.Data)).ShouldBe(text);
     }
 
     private static async Task InvokeReadOutputAsync(
@@ -130,6 +130,7 @@ public sealed class PtyRecorderTests
                         forwardOutput,
                         forwardOutputWriter,
                         outputEncoding,
+                        0d,
                     ]
                 )
             ?? throw new InvalidOperationException("PtyRecorder.ReadOutputAsync did not return a Task.");

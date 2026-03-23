@@ -18,6 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.semver }}
+      package-version: ${{ steps.version.outputs.package_version }}
+      package-iteration: ${{ steps.version.outputs.package_iteration }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -32,7 +34,30 @@ jobs:
 
       - name: Export version
         id: version
-        run: echo "semver=${{ steps.nbgv.outputs.SemVer2 }}" >> "$GITHUB_OUTPUT"
+        shell: bash
+        run: |
+          semver='${{ steps.nbgv.outputs.SemVer2 }}'
+          package_version="${semver%%[-+]*}"
+          package_iteration=1
+
+          if [[ "$semver" == *-* ]]; then
+            prerelease="${semver#"$package_version"-}"
+            prerelease="${prerelease%%+*}"
+            prerelease="${prerelease//[^0-9A-Za-z.]/.}"
+            package_iteration="0.${prerelease}"
+          fi
+
+          if [[ "$semver" == *+* ]]; then
+            metadata="${semver#*+}"
+            metadata="${metadata//[^0-9A-Za-z.]/.}"
+            package_iteration="${package_iteration}.${metadata}"
+          fi
+
+          {
+            echo "semver=$semver"
+            echo "package_version=$package_version"
+            echo "package_iteration=$package_iteration"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Restore dependencies
         run: dotnet restore --locked-mode
@@ -128,6 +153,48 @@ jobs:
             if [ -f "$src" ]; then
               cp "$src" "$dst"
             fi
+          done
+
+      - name: Install Linux packaging tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm
+          sudo gem install --no-document fpm
+
+      - name: Build Linux packages
+        shell: bash
+        run: |
+          for rid in linux-x64 linux-arm64; do
+            case "$rid" in
+              linux-x64)
+                asset_arch=x64
+                deb_arch=amd64
+                rpm_arch=x86_64
+                ;;
+              linux-arm64)
+                asset_arch=arm64
+                deb_arch=arm64
+                rpm_arch=aarch64
+                ;;
+            esac
+
+            src="./native-artifacts/native-${rid}/console2svg"
+            if [ ! -f "$src" ]; then
+              continue
+            fi
+
+            common_args=(
+              -s dir
+              -n console2svg
+              -v "${{ needs.build-nupkg.outputs.package-version }}"
+              --iteration "${{ needs.build-nupkg.outputs.package-iteration }}"
+              --license Apache-2.0
+              --url "https://github.com/${{ github.repository }}"
+              --description "Convert terminal output to SVG images."
+            )
+
+            fpm "${common_args[@]}" -t deb -a "$deb_arch" -p "./release-upload/console2svg.${asset_arch}.deb" "$src=/usr/local/bin/console2svg"
+            fpm "${common_args[@]}" -t rpm -a "$rpm_arch" -p "./release-upload/console2svg.${asset_arch}.rpm" "$src=/usr/local/bin/console2svg"
           done
 
       - name: Create GitHub Release

@@ -15,22 +15,22 @@ text {
   opacity: 0;
 }
 @keyframes k0 {
-  0%, 0% {
+  0%, 0.242% {
     opacity: 0;
   }
-  0%, 8.252% {
+  0.243%, 0.485% {
     opacity: 1;
   }
-  8.253%, 100% {
+  0.486%, 100% {
     opacity: 0;
   }
 }
 .frame-0 { animation:k0 17.167s linear infinite; }
 @keyframes k1 {
-  0%, 8.251% {
+  0%, 0.484% {
     opacity: 0;
   }
-  8.252%, 16.505% {
+  0.485%, 16.505% {
     opacity: 1;
   }
   16.506%, 100% {
@@ -78,43 +78,43 @@ text {
   0%, 19.902% {
     opacity: 0;
   }
-  19.903%, 21.845% {
+  19.903%, 22.816% {
     opacity: 1;
   }
-  21.846%, 100% {
+  22.817%, 100% {
     opacity: 0;
   }
 }
 .frame-5 { animation:k5 17.167s linear infinite; }
 @keyframes k6 {
-  0%, 21.844% {
+  0%, 22.815% {
     opacity: 0;
   }
-  21.845%, 23.786% {
+  22.816%, 25.728% {
     opacity: 1;
   }
-  23.787%, 100% {
+  25.729%, 100% {
     opacity: 0;
   }
 }
 .frame-6 { animation:k6 17.167s linear infinite; }
 @keyframes k7 {
-  0%, 23.785% {
+  0%, 25.727% {
     opacity: 0;
   }
-  23.786%, 29.612% {
+  25.728%, 30.583% {
     opacity: 1;
   }
-  29.613%, 100% {
+  30.584%, 100% {
     opacity: 0;
   }
 }
 .frame-7 { animation:k7 17.167s linear infinite; }
 @keyframes k8 {
-  0%, 29.611% {
+  0%, 30.582% {
     opacity: 0;
   }
-  29.612%, 35.437% {
+  30.583%, 35.437% {
     opacity: 1;
   }
   35.438%, 100% {
@@ -234,27 +234,15 @@ text {
   0%, 64.077% {
     opacity: 0;
   }
-  64.078%, 68.447% {
-    opacity: 1;
-  }
-  68.448%, 100% {
-    opacity: 0;
-  }
-}
-.frame-18 { animation:k18 17.167s linear infinite; }
-@keyframes k19 {
-  0%, 68.446% {
-    opacity: 0;
-  }
-  68.447%, 72.816% {
+  64.078%, 72.816% {
     opacity: 1;
   }
   72.817%, 100% {
     opacity: 0;
   }
 }
-.frame-19 { animation:k19 17.167s linear infinite; }
-@keyframes k20 {
+.frame-18 { animation:k18 17.167s linear infinite; }
+@keyframes k19 {
   0%, 72.815% {
     opacity: 0;
   }
@@ -265,8 +253,8 @@ text {
     opacity: 0;
   }
 }
-.frame-20 { animation:k20 17.167s linear infinite; }
-@keyframes k21 {
+.frame-19 { animation:k19 17.167s linear infinite; }
+@keyframes k20 {
   0%, 73.785% {
     opacity: 0;
   }
@@ -277,8 +265,8 @@ text {
     opacity: 0;
   }
 }
-.frame-21 { animation:k21 17.167s linear infinite; }
-@keyframes k22 {
+.frame-20 { animation:k20 17.167s linear infinite; }
+@keyframes k21 {
   0%, 75.242% {
     opacity: 0;
   }
@@ -289,8 +277,8 @@ text {
     opacity: 0;
   }
 }
-.frame-22 { animation:k22 17.167s linear infinite; }
-@keyframes k23 {
+.frame-21 { animation:k21 17.167s linear infinite; }
+@keyframes k22 {
   0%, 81.552% {
     opacity: 0;
   }
@@ -301,24 +289,36 @@ text {
     opacity: 0;
   }
 }
-.frame-23 { animation:k23 17.167s linear infinite; }
-@keyframes k24 {
+.frame-22 { animation:k22 17.167s linear infinite; }
+@keyframes k23 {
   0%, 87.863% {
     opacity: 0;
   }
-  87.864%, 93.689% {
+  87.864%, 88.35% {
     opacity: 1;
   }
-  93.69%, 100% {
+  88.351%, 100% {
+    opacity: 0;
+  }
+}
+.frame-23 { animation:k23 17.167s linear infinite; }
+@keyframes k24 {
+  0%, 88.349% {
+    opacity: 0;
+  }
+  88.35%, 93.932% {
+    opacity: 1;
+  }
+  93.933%, 100% {
     opacity: 0;
   }
 }
 .frame-24 { animation:k24 17.167s linear infinite; }
 @keyframes k25 {
-  0%, 93.688% {
+  0%, 93.931% {
     opacity: 0;
   }
-  93.689%, 99.515% {
+  93.932%, 99.515% {
     opacity: 1;
   }
   99.516%, 100% {
@@ -421,16 +421,14 @@ text {
 <text class="crt" x="403.2" y="158" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacing">distributable</text>
 <text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="210" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">Help</text>
-<text class="crt" x="252" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">poor</text>
-<text class="crt" x="294" y="194" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">children</text>
-<text class="crt" x="369.6" y="194" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">in</text>
-<text class="crt" x="394.8" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Uganda!</text>
+<text class="crt" x="235.2" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Sponsor</text>
+<text class="crt" x="302.4" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">Vim</text>
+<text class="crt" x="336" y="194" fill="#d4d4d4" textLength="100.8" lengthAdjust="spacing">development!</text>
 <text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="142.8" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
 <text class="crt" x="193.2" y="212" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">iccf</text>
-<text class="crt" x="277.2" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
+<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">sponsor</text>
+<text class="crt" x="302.4" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
 <text class="crt" x="394.8" y="212" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
 <text class="crt" x="428.4" y="212" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">information</text>
 <text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
@@ -496,16 +494,14 @@ text {
 <text class="crt" x="403.2" y="158" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacing">distributable</text>
 <text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="210" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">Help</text>
-<text class="crt" x="252" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">poor</text>
-<text class="crt" x="294" y="194" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">children</text>
-<text class="crt" x="369.6" y="194" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">in</text>
-<text class="crt" x="394.8" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Uganda!</text>
+<text class="crt" x="235.2" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Sponsor</text>
+<text class="crt" x="302.4" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">Vim</text>
+<text class="crt" x="336" y="194" fill="#d4d4d4" textLength="100.8" lengthAdjust="spacing">development!</text>
 <text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="142.8" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
 <text class="crt" x="193.2" y="212" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">iccf</text>
-<text class="crt" x="277.2" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
+<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">sponsor</text>
+<text class="crt" x="302.4" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
 <text class="crt" x="394.8" y="212" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
 <text class="crt" x="428.4" y="212" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">information</text>
 <text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
@@ -572,16 +568,14 @@ text {
 <text class="crt" x="403.2" y="158" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacing">distributable</text>
 <text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="210" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">Help</text>
-<text class="crt" x="252" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">poor</text>
-<text class="crt" x="294" y="194" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">children</text>
-<text class="crt" x="369.6" y="194" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">in</text>
-<text class="crt" x="394.8" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Uganda!</text>
+<text class="crt" x="235.2" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Sponsor</text>
+<text class="crt" x="302.4" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">Vim</text>
+<text class="crt" x="336" y="194" fill="#d4d4d4" textLength="100.8" lengthAdjust="spacing">development!</text>
 <text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="142.8" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
 <text class="crt" x="193.2" y="212" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">iccf</text>
-<text class="crt" x="277.2" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
+<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">sponsor</text>
+<text class="crt" x="302.4" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
 <text class="crt" x="394.8" y="212" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
 <text class="crt" x="428.4" y="212" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">information</text>
 <text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
@@ -869,9 +863,7 @@ text {
 <text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="436.8" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="520.8" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">1,6</text>
-<text class="crt" x="638.4" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">All</text>
+<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 </g>
 <g id="fd-20" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
@@ -894,7 +886,7 @@ text {
 <text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
+<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">:q</text>
 </g>
 <g id="fd-21" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
@@ -917,32 +909,9 @@ text {
 <text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">:q</text>
-</g>
-<g id="fd-22" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">hello!</text>
-<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">:q!</text>
 </g>
-<g id="fd-23" transform="translate(9 36)">
+<g id="fd-22" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
 <text class="crt" x="0" y="14" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">hello!</text>
 <text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
@@ -1026,7 +995,7 @@ text {
 <use href="#fd-20" id="frame-20" class="frame frame-20"/>
 <use href="#fd-21" id="frame-21" class="frame frame-21"/>
 <use href="#fd-22" id="frame-22" class="frame frame-22"/>
-<use href="#fd-23" id="frame-23" class="frame frame-23"/>
+<use href="#fd-5" id="frame-23" class="frame frame-23"/>
 <use href="#fd-24" id="frame-24" class="frame frame-24"/>
 <use href="#fd-25" id="frame-25" class="frame frame-25"/>
 <use href="#fd-26" id="frame-26" class="frame frame-26"/>

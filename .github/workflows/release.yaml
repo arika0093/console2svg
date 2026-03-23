@@ -44,12 +44,18 @@ jobs:
             prerelease="${semver#"$package_version"-}"
             prerelease="${prerelease%%+*}"
             prerelease="${prerelease//[^0-9A-Za-z.]/.}"
+            prerelease="$(tr -s '.' <<< "$prerelease")"
+            prerelease="${prerelease#.}"
+            prerelease="${prerelease%.}"
             package_iteration="0.${prerelease}"
           fi
 
           if [[ "$semver" == *+* ]]; then
             metadata="${semver#*+}"
             metadata="${metadata//[^0-9A-Za-z.]/.}"
+            metadata="$(tr -s '.' <<< "$metadata")"
+            metadata="${metadata#.}"
+            metadata="${metadata%.}"
             package_iteration="${package_iteration}.${metadata}"
           fi
 

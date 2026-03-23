@@ -23,7 +23,7 @@ text {
 <text class="crt" x="29" y="70" fill="#d4d4d4">$ dotnet --version</text>
 <g transform="translate(29 74)">
 <rect width="840" height="180" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">10.0.103</text>
+<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">10.0.201</text>
 </g>
 </g>
 </svg>

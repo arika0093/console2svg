@@ -189,6 +189,8 @@ jobs:
               continue
             fi
 
+            chmod 755 "$src"
+
             common_args=(
               -s dir
               -n console2svg

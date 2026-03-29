@@ -157,6 +157,12 @@ internal static class Program
                 logger.ZLogDebug($"Output file written: {options.OutputPath}");
             }
 
+            if (!string.IsNullOrWhiteSpace(options.SaveFramesDir))
+            {
+                await SaveFramesAsync(session, renderOptions, options.SaveFramesDir!, logger, outputToken)
+                    .ConfigureAwait(false);
+            }
+
             if (wasCanceled)
             {
                 var cause = GetCancellationCause(options, canceledByCtrlC);
@@ -365,6 +371,46 @@ internal static class Program
         {
             Directory.CreateDirectory(directory);
         }
+    }
+
+    private static async Task SaveFramesAsync(
+        RecordingSession session,
+        SvgRenderOptions baseOptions,
+        string directory,
+        ILogger logger,
+        CancellationToken cancellationToken
+    )
+    {
+        Directory.CreateDirectory(directory);
+        var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+        var eventCount = session.Events.Count;
+        var savedCount = 0;
+        string? previousSvg = null;
+
+        logger.ZLogDebug($"Saving individual frames to {directory}. Events={eventCount}");
+
+        for (var i = 0; i < eventCount; i++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            baseOptions.Frame = i;
+            var frameSvg = SvgRenderer.Render(session, baseOptions);
+
+            if (frameSvg == previousSvg)
+            {
+                continue;
+            }
+
+            previousSvg = frameSvg;
+            var framePath = Path.Combine(directory, $"frame-{savedCount:D4}.svg");
+            await File.WriteAllTextAsync(framePath, frameSvg, utf8, cancellationToken)
+                .ConfigureAwait(false);
+            savedCount++;
+        }
+
+        baseOptions.Frame = null;
+        logger.ZLogDebug($"Saved {savedCount} unique frames (of {eventCount} events) to {directory}");
+        await Console.Error.WriteLineAsync($"Saved {savedCount} frames to {directory}");
     }
 
     private static string GetDefaultPrompt()

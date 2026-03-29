@@ -91,6 +91,7 @@ public static class OptionParser
 
             Options (Image mode):
                 --frame <int>             Frame index for image mode.
+                --save-frames <dir>       Save each visual frame as a separate static SVG in the given directory.
                 --crop-top <value>        Crop top by px, ch, or text pattern (e.g. 10px, 2ch, sometext, summary:-3).
                 --crop-bottom <value>     Crop bottom by px, ch, or text pattern.
                 --crop-right <value>      Crop right by px or ch.
@@ -630,6 +631,15 @@ public static class OptionParser
                 }
 
                 options.BackColor = value;
+                return true;
+            case "--save-frames":
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    error = "--save-frames requires a directory path.";
+                    return false;
+                }
+
+                options.SaveFramesDir = value;
                 return true;
             default:
                 error = $"Unknown option: {name}";

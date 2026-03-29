@@ -954,4 +954,33 @@ public sealed class OptionParserTests
         ok.ShouldBeFalse();
         error.ShouldBe("--mode must be image, video, or repeat.");
     }
+
+    [Test]
+    public void SaveFramesOptionParsed()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--save-frames", "frames-out" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.SaveFramesDir.ShouldBe("frames-out");
+    }
+
+    [Test]
+    public void SaveFramesDefaultIsNull()
+    {
+        var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.SaveFramesDir.ShouldBeNull();
+    }
+
+    [Test]
+    public void SaveFramesRequiresValue()
+    {
+        var ok = OptionParser.TryParse(new[] { "--save-frames" }, out _, out var error, out _);
+        ok.ShouldBeFalse();
+        error.ShouldNotBeNull();
+    }
 }

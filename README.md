@@ -72,6 +72,10 @@ npm install -g console2svg
 It is also available as a standalone binary that you can download from the releases page and add to your PATH.
 
 ```sh
+# ubuntu
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg.amd64.deb -o console2svg.deb
+dpkg -i console2svg.deb
+
 # linux
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-linux-x64 -o console2svg
 mv -f console2svg /usr/local/bin/
@@ -204,6 +208,13 @@ console2svg -w 160 -h 32 -c -d -v --timeout 5 --sleep 0.5 -- nyancat -d 10
 ```
 
 ![console2svg -w 160 -h 32 -c -d -v --timeout 5 --sleep 0.5 -- nyancat -d 10](./assets/cmd-nyancat.svg)
+
+You can also write sequential SVG files starting with `frame-0000.svg` to a specific folder. This is useful for cherry-picking your favorite frames or converting them into a video using software like ffmpeg.
+
+```sh
+# apt install cmatrix
+console2svg -c -d -v --timeout 5 --save-frames ./frames/save/dir -- cmatrix
+```
 
 ### Replay input
 You can also save the command execution record and later regenerate the SVG based on that record. 

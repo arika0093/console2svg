@@ -106,4 +106,7 @@ public sealed class AppOptions
 
     /// <summary>Write SVG output to stdout instead of a file. PTY forwarding is suppressed.</summary>
     public bool StdOut { get; set; }
+
+    /// <summary>Directory path to save individual static SVG frames (one per visual frame).</summary>
+    public string? SaveFramesDir { get; set; }
 }

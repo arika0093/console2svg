@@ -431,7 +431,7 @@ ffmpeg -framerate 30 -i ./frames-dir/frame-%04d.svg -c:v libx264 output_video.mp
 
 The generated video will look like this.
 
-[generated-video-example](./assets/cmd-matrix-video.mp4)
+![generated-video-example](./assets/cmd-matrix-video.mp4)
 
 ## Supported platforms
 

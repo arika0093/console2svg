@@ -35,5 +35,5 @@ console2svg -o ./assets/cmd-bash-vim.svg      --verbose ./logs/cmd-bash-vim.log 
 # required: sudo apt install -y ffmpeg cmatrix
 console2svg -w 120 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 --save-frames ./frames-dir -- cmatrix -ab
 ## force
-ffmpeg -y -framerate 30 -i ./frames-dir/frame-%04d.svg -c:v libx264 - ./assets/cmd-matrix-video.mp4
+ffmpeg -y -framerate 30 -i ./frames-dir/frame-%04d.svg -c:v libx264 ./assets/cmd-matrix-video.mp4
 rm -rf ./frames-dir ./output.svg

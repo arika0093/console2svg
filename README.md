@@ -13,7 +13,6 @@ Easily convert terminal output into SVG images. truecolor, animation, cropping a
 * [Appearance options](#appearance-options)
 
 ## Why console2svg?
-
 Console screenshots in raster formats (PNG, etc.) often make text look blurry. console2svg converts console output into vector SVG images so you can save your terminal as a crisp, scalable image.
 
 For example, let's open [this image](https://raw.githubusercontent.com/arika0093/console2svg/refs/heads/main/assets/cmd-hero-grad.svg) in your browser and zoom in — the text remains sharp at any scale 👀
@@ -429,9 +428,10 @@ console2svg -c -d macos-pc -v --timeout 5 --fps 30 --save-frames ./frames-dir --
 ffmpeg -framerate 30 -i ./frames-dir/frame-%04d.svg -c:v libx264 output_video.mp4
 ```
 
-The generated video will look like this.
+The [generated video](./assets/cmd-matrix-video.mp4) will look like this.
 
-![generated-video-example](./assets/cmd-matrix-video.mp4)
+https://github.com/user-attachments/assets/49060b64-d524-44bb-92b9-ccb44de93a9c
+
 
 ## Supported platforms
 

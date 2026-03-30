@@ -416,10 +416,10 @@ To convert to video, first save the sequential SVG files using the `--save-frame
 
 ```bash
 # install required tools if you haven't already
-sudo apt install ffmpeg librsvg2-bin
+sudo apt install ffmpeg
 # 1. Save sequential SVG files
 # specify --save-frames and --fps to save each frame as an SVG file in the specified directory
-console2svg -c -d macos-pc -v --timeout 5 --fps 30 --save-frames ./frames-dir -- cmatrix -ab
+console2svg -c -d macos-pc -v --timeout 5 --fps 30 --save-frames ./frames-dir -- your-command
 # 2. Convert SVG frames to video using ffmpeg
 ffmpeg -framerate 30 -i ./frames-dir/frame-%04d.png -c:v libx264 output_video.mp4
 ```

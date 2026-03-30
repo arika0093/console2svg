@@ -424,6 +424,10 @@ console2svg -c -d macos-pc -v --timeout 5 --fps 30 --save-frames ./frames-dir --
 ffmpeg -framerate 30 -i ./frames-dir/frame-%04d.png -c:v libx264 output_video.mp4
 ```
 
+The generated video will look like this.
+
+[generated-video-example](./assets/cmd-matrix-video.mp4)
+
 ## Supported platforms
 
 * Windows 10 and later (required `ConPTY`)

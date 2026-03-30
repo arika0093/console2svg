@@ -30,3 +30,10 @@ console2svg -o ./assets/cmd-bash-vim.svg      --verbose ./logs/cmd-bash-vim.log 
 # console2svg -o ./assets/cmd-tmux-replay.svg   --verbose ./logs/cmd-tmux-replay.log  -w 80 -h 14 -v --replay ./assets/cmd-tmux-replay.json -- tmux
 # required: sudo npm install -g @github/copilot
 # console2svg -o ./assets/cmd-loop.svg          --verbose ./logs/cmd-loop.log         -v -c -d  --replay ./assets/cmd-loop-replay.json -- copilot --banner
+
+# --- video (mp4) ---
+# required: sudo apt install -y ffmpeg cmatrix
+console2svg -w 120 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 --save-frames ./frames-dir -- cmatrix -ab
+## force
+ffmpeg -y -framerate 30 -i ./frames-dir/frame-%04d.svg -c:v libx264 - ./assets/cmd-matrix-video.mp4
+rm -rf ./frames-dir ./output.svg

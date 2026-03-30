@@ -421,7 +421,7 @@ sudo apt install ffmpeg
 # specify --save-frames and --fps to save each frame as an SVG file in the specified directory
 console2svg -c -d macos-pc -v --timeout 5 --fps 30 --save-frames ./frames-dir -- your-command
 # 2. Convert SVG frames to video using ffmpeg
-ffmpeg -framerate 30 -i ./frames-dir/frame-%04d.png -c:v libx264 output_video.mp4
+ffmpeg -framerate 30 -i ./frames-dir/frame-%04d.svg -c:v libx264 output_video.mp4
 ```
 
 The generated video will look like this.

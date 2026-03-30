@@ -3,6 +3,8 @@
 exported/
 output.svg
 *.recieved.*
+frames-dir/
+output.mp4
 
 # npm wrapper
 .npmrc

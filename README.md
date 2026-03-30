@@ -209,7 +209,9 @@ console2svg -w 160 -h 32 -c -d -v --timeout 5 --sleep 0.5 -- nyancat -d 10
 
 ![console2svg -w 160 -h 32 -c -d -v --timeout 5 --sleep 0.5 -- nyancat -d 10](./assets/cmd-nyancat.svg)
 
-You can also write sequential SVG files starting with `frame-0000.svg` to a specific folder. This is useful for cherry-picking your favorite frames or converting them into a video using software like ffmpeg.
+You can also write sequential SVG files starting with `frame-0000.svg` to a specific folder.
+This is useful for cherry-picking your favorite frames or converting them into a video using software like ffmpeg. 
+See [Converting to video](#converting-to-video) for details.
 
 ```sh
 # apt install cmatrix
@@ -382,7 +384,7 @@ Of course, you can also save all lines (useful for evidence). In that case, spec
 tmux capture-pane -pe -S - -t :0 | console2svg -o full-capture-$(date +%s).svg
 ```
 
-### Converting to other formats
+### Converting to other image formats
 
 By combining with various commands, you can also convert to PNG or other formats. 
 One of the easy-to-use tools is [rsvg-convert](https://gitlab.gnome.org/GNOME/librsvg/). It only converts to PNG format, but it's easy to use.
@@ -412,7 +414,10 @@ magick -version
 console2svg --stdout -- your-command | magick - output.png
 ```
 
-To convert to video, first save the sequential SVG files using the `--save-frames` option. Then, use [ffmpeg](https://www.ffmpeg.org) to convert these SVG files into a video. Here is an example of the process.
+### Converting to video
+
+To convert to video, first save the sequential SVG files using the `--save-frames` option.
+Then, use [ffmpeg](https://www.ffmpeg.org) to convert these SVG files into a video. Here is an example of the process.
 
 ```bash
 # install required tools if you haven't already

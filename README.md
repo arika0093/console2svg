@@ -213,7 +213,7 @@ You can also write sequential SVG files starting with `frame-0000.svg` to a spec
 
 ```sh
 # apt install cmatrix
-console2svg -c -d -v --timeout 5 --save-frames ./frames/save/dir -- cmatrix
+console2svg -c -d -v --timeout 5 --fps 30 --save-frames ./frames-dir -- cmatrix -ab
 ```
 
 ### Replay input
@@ -410,6 +410,18 @@ magick -version
 
 # convert SVG to PNG
 console2svg --stdout -- your-command | magick - output.png
+```
+
+To convert to video, first save the sequential SVG files using the `--save-frames` option. Then, use [ffmpeg](https://www.ffmpeg.org) to convert these SVG files into a video. Here is an example of the process.
+
+```bash
+# install required tools if you haven't already
+sudo apt install ffmpeg librsvg2-bin
+# 1. Save sequential SVG files
+# specify --save-frames and --fps to save each frame as an SVG file in the specified directory
+console2svg -c -d macos-pc -v --timeout 5 --fps 30 --save-frames ./frames-dir -- cmatrix -ab
+# 2. Convert SVG frames to video using ffmpeg
+ffmpeg -framerate 30 -i ./frames-dir/frame-%04d.png -c:v libx264 output_video.mp4
 ```
 
 ## Supported platforms

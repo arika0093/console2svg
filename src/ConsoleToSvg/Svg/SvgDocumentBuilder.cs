@@ -309,6 +309,11 @@ internal static class SvgDocumentBuilder
     {
         sb.Append("<svg xmlns=\"http://www.w3.org/2000/svg\" ");
         sb.Append("xmlns:xlink=\"http://www.w3.org/1999/xlink\" ");
+        sb.Append("width=\"");
+        sb.Append(Format(context.CanvasWidth));
+        sb.Append("\" height=\"");
+        sb.Append(Format(context.CanvasHeight));
+        sb.Append("\" ");
         sb.Append("viewBox=\"0 0 ");
         sb.Append(Format(context.CanvasWidth));
         sb.Append(' ');

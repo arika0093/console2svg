@@ -286,13 +286,16 @@ public static class PtyRecorder
             // When the process has exited but the read task has not completed,
             // give it time to drain any remaining buffered PTY output before
             // disposing the connection (which closes the reader stream).
+            // 500ms is long enough for the kernel PTY buffer to flush in
+            // practice but short enough to avoid noticeable UI lag.
+            const int DrainTimeoutMs = 500;
             if (processExited && !eofReached && !canceled)
             {
                 logger.ZLogDebug($"PTY process exited. Draining remaining output...");
                 try
                 {
                     var completed = await Task
-                        .WhenAny(readTask, Task.Delay(500, cancellationToken))
+                        .WhenAny(readTask, Task.Delay(DrainTimeoutMs, cancellationToken))
                         .ConfigureAwait(false);
                     if (completed == readTask)
                     {

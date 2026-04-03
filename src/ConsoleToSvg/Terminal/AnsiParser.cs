@@ -6,6 +6,8 @@ namespace ConsoleToSvg.Terminal;
 
 public sealed class AnsiParser
 {
+    private const int MissingParameter = int.MinValue;
+
     private readonly ScreenBuffer _buffer;
     private readonly Theme _theme;
     private TextStyle _style;
@@ -399,7 +401,7 @@ public sealed class AnsiParser
 
         for (var i = 0; i < parameters.Count; i++)
         {
-            var code = parameters[i];
+            var code = GetParameter(parameters, i, 0);
             switch (code)
             {
                 case 0:
@@ -458,10 +460,10 @@ public sealed class AnsiParser
                     else if ((code == 38 || code == 48) && i + 1 < parameters.Count)
                     {
                         var isForeground = code == 38;
-                        var mode = parameters[i + 1];
+                        var mode = GetParameter(parameters, i + 1, 0);
                         if (mode == 5 && i + 2 < parameters.Count)
                         {
-                            var color = FromAnsi256(parameters[i + 2]);
+                            var color = FromAnsi256(GetParameter(parameters, i + 2, 0));
                             _style = isForeground
                                 ? _style with
                                 {
@@ -473,11 +475,22 @@ public sealed class AnsiParser
                                 };
                             i += 2;
                         }
-                        else if (mode == 2 && i + 4 < parameters.Count)
+                        else if (mode == 2)
                         {
-                            var r = Clamp(parameters[i + 2], 0, 255);
-                            var g = Clamp(parameters[i + 3], 0, 255);
-                            var b = Clamp(parameters[i + 4], 0, 255);
+                            var rgbStart = i + 2;
+                            if (rgbStart < parameters.Count && parameters[rgbStart] == MissingParameter)
+                            {
+                                rgbStart++;
+                            }
+
+                            if (rgbStart + 2 >= parameters.Count)
+                            {
+                                break;
+                            }
+
+                            var r = Clamp(GetParameter(parameters, rgbStart, 0), 0, 255);
+                            var g = Clamp(GetParameter(parameters, rgbStart + 1, 0), 0, 255);
+                            var b = Clamp(GetParameter(parameters, rgbStart + 2, 0), 0, 255);
                             var color = $"#{r:X2}{g:X2}{b:X2}";
                             _style = isForeground
                                 ? _style with
@@ -488,7 +501,7 @@ public sealed class AnsiParser
                                 {
                                     Background = color,
                                 };
-                            i += 4;
+                            i = rgbStart + 2;
                         }
                     }
 
@@ -537,7 +550,7 @@ public sealed class AnsiParser
         {
             if (string.IsNullOrWhiteSpace(part))
             {
-                result.Add(0);
+                result.Add(MissingParameter);
                 continue;
             }
 
@@ -554,7 +567,7 @@ public sealed class AnsiParser
             }
             else
             {
-                result.Add(0);
+                result.Add(MissingParameter);
             }
         }
 
@@ -568,7 +581,8 @@ public sealed class AnsiParser
             return defaultValue;
         }
 
-        return parameters[index];
+        var parameter = parameters[index];
+        return parameter == MissingParameter ? defaultValue : parameter;
     }
 
     private static int Clamp(int value, int min, int max)

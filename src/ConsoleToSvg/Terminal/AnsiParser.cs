@@ -531,7 +531,8 @@ public sealed class AnsiParser
             return result;
         }
 
-        var split = parameterText.Split(';');
+        var separators = new[] { ';', ':' };
+        var split = parameterText.Split(separators);
         foreach (var part in split)
         {
             if (string.IsNullOrWhiteSpace(part))

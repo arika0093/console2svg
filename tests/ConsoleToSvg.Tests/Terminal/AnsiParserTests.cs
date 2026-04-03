@@ -205,6 +205,63 @@ public sealed class AnsiParserTests
     }
 
     [Test]
+    public void ColonDelimitedAnsi256ColorForegroundApplied()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        // Colon-delimited variant (ISO 8613-6): 38:5:196
+        emulator.Process("\u001b[38:5:196mA\u001b[0m");
+
+        var cell = emulator.Buffer.GetCell(0, 0);
+        cell.Text.ShouldBe("A");
+        cell.Foreground.ShouldBe("#FF0000");
+    }
+
+    [Test]
+    public void ColonDelimitedTrueColorForegroundApplied()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        // Colon-delimited variant (ISO 8613-6): 38:2:R:G:B
+        emulator.Process("\u001b[38:2:255:128:0mA\u001b[0m");
+
+        var cell = emulator.Buffer.GetCell(0, 0);
+        cell.Text.ShouldBe("A");
+        cell.Foreground.ShouldBe("#FF8000");
+    }
+
+    [Test]
+    public void ColonDelimitedTrueColorBackgroundApplied()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        // Colon-delimited background: 48:2:R:G:B
+        emulator.Process("\u001b[48:2:0:128:255mA\u001b[0m");
+
+        var cell = emulator.Buffer.GetCell(0, 0);
+        cell.Text.ShouldBe("A");
+        cell.Background.ShouldBe("#0080FF");
+    }
+
+    [Test]
+    public void MixedSemicolonAndColonSgrParsedCorrectly()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        // Bold (1) via semicolon, then colon-delimited foreground color
+        emulator.Process("\u001b[1;38:5:196mA\u001b[0m");
+
+        var cell = emulator.Buffer.GetCell(0, 0);
+        cell.Text.ShouldBe("A");
+        cell.Bold.ShouldBeTrue();
+        cell.Foreground.ShouldBe("#FF0000");
+    }
+
+    [Test]
     public void VariationSelectorAppendedToPreviousCell()
     {
         var theme = Theme.Resolve("dark");

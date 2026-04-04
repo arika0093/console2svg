@@ -19,7 +19,7 @@ For example, let's open [this image](https://raw.githubusercontent.com/arika0093
 
 There are similar tools, but console2svg stands out for:
 
-* [**No dependencies**](#install): no additional software or libraries required. available as npm, dotnet tool and static binary.
+* [**No dependencies for SVG**](#install): plain SVG output has no extra dependencies. raster/video conversion can use bundled `resvg` and external `ffmpeg`.
 * [**Video mode**](#animated-svg): save command execution animations as SVG. great for documentation and blog posts.
 * [**Crop**](#static-svg-with-crop): trim specific parts of the output. Crop based on text patterns is also supported, making it easy to trim specific lines or sections.
 * [**Background and window**](#window-chrome): add background and window frames to produce presentation-ready SVGs for documentation, blogs, social media, etc.
@@ -69,6 +69,7 @@ npm install -g console2svg
 ```
 
 It is also available as a standalone binary that you can download from the releases page and add to your PATH.
+GitHub Releases also include minimal bundles that ship `console2svg` with a matching `resvg` sidecar for supported platforms.
 
 ```sh
 # ubuntu
@@ -385,8 +386,19 @@ tmux capture-pane -pe -S - -t :0 | console2svg -o full-capture-$(date +%s).svg
 
 ### Converting to other image formats
 
-By combining with various commands, you can also convert to PNG or other formats. 
-One of the easy-to-use tools is [rsvg-convert](https://gitlab.gnome.org/GNOME/librsvg/). It only converts to PNG format, but it's easy to use.
+`console2svg` can convert based on the output extension.
+For raster output it uses [`resvg`](https://github.com/linebender/resvg), and for formats such as mp4/gif/webp/jpeg it uses `ffmpeg` after rasterization.
+
+```bash
+# png via resvg
+console2svg -o output.png -- your-command
+
+# jpeg/webp via resvg + ffmpeg
+console2svg -o output.jpg -- your-command
+console2svg -o output.webp -- your-command
+```
+
+You can still combine with other tools manually if you prefer. One of the easy-to-use tools is [rsvg-convert](https://gitlab.gnome.org/GNOME/librsvg/). It only converts to PNG format, but it's easy to use.
 
 ```bash
 apt install librsvg2-bin
@@ -415,8 +427,13 @@ console2svg --stdout -- your-command | magick - output.png
 
 ### Converting to video
 
-To convert to video, first save the sequential SVG files using the `--save-frames` option.
-Then, use [ffmpeg](https://www.ffmpeg.org) to convert these SVG files into a video. Here is an example of the process.
+To convert to video directly, specify a video or animated image output extension. `console2svg` will render SVG frames, rasterize them with `resvg`, and invoke [ffmpeg](https://www.ffmpeg.org).
+
+```bash
+console2svg -c -d macos-pc -v --timeout 5 --fps 30 -o output_video.mp4 -- your-command
+```
+
+If you want to inspect or reuse the intermediate SVG frames, you can still save them explicitly:
 
 ```bash
 # install required tools if you haven't already

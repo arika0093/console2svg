@@ -12,6 +12,7 @@ permissions:
 
 env:
   DOTNET_VERSION: '10.0.x'
+  RESVG_VERSION: '0.47.0'
 
 jobs:
   build-nupkg:
@@ -120,11 +121,19 @@ jobs:
             -p:WarningLevel=0 \
             -o ./native-publish/${{ matrix.rid }}
 
+      - name: Download resvg sidecar
+        shell: bash
+        run: |
+          bash scripts/download-resvg.sh \
+            "${{ matrix.rid }}" \
+            "./native-publish/${{ matrix.rid }}" \
+            "${{ env.RESVG_VERSION }}"
+
       - name: Upload native binary
         uses: actions/upload-artifact@v7
         with:
           name: native-${{ matrix.rid }}
-          path: ./native-publish/${{ matrix.rid }}/console2svg*
+          path: ./native-publish/${{ matrix.rid }}/*
 
   release-github:
     needs: [build-nupkg, build-aot]
@@ -159,6 +168,26 @@ jobs:
             if [ -f "$src" ]; then
               cp "$src" "$dst"
             fi
+
+            resvg_src=""
+            resvg_dst=""
+            if [[ -f "$dir/resvg.exe" ]]; then
+              resvg_src="$dir/resvg.exe"
+              resvg_dst="./release-upload/resvg-${rid}.exe"
+            elif [[ -f "$dir/resvg" ]]; then
+              resvg_src="$dir/resvg"
+              resvg_dst="./release-upload/resvg-${rid}"
+            fi
+
+            if [[ -n "$resvg_src" ]]; then
+              cp "$resvg_src" "$resvg_dst"
+              bundle_dir="$(mktemp -d)"
+              cp "$src" "$bundle_dir/"
+              cp "$resvg_src" "$bundle_dir/"
+              (cd "$bundle_dir" && zip -q -r "../console2svg-${rid}.zip" .)
+              mv "$(dirname "$bundle_dir")/console2svg-${rid}.zip" "./release-upload/console2svg-${rid}.zip"
+              rm -rf "$bundle_dir"
+            fi
           done
 
       - name: Install Linux packaging tools
@@ -185,11 +214,15 @@ jobs:
             esac
 
             src="./native-artifacts/native-${rid}/console2svg"
+            resvg="./native-artifacts/native-${rid}/resvg"
             if [ ! -f "$src" ]; then
               continue
             fi
 
             chmod 755 "$src"
+            if [ -f "$resvg" ]; then
+              chmod 755 "$resvg"
+            fi
 
             common_args=(
               -s dir
@@ -201,8 +234,13 @@ jobs:
               --description "Convert terminal output to SVG images."
             )
 
-            fpm "${common_args[@]}" -t deb -a "$deb_arch" -p "./release-upload/console2svg.${asset_arch}.deb" "$src=/usr/local/bin/console2svg"
-            fpm "${common_args[@]}" -t rpm -a "$rpm_arch" -p "./release-upload/console2svg.${asset_arch}.rpm" "$src=/usr/local/bin/console2svg"
+            package_inputs=("$src=/usr/local/bin/console2svg")
+            if [ -f "$resvg" ]; then
+              package_inputs+=("$resvg=/usr/local/bin/resvg")
+            fi
+
+            fpm "${common_args[@]}" -t deb -a "$deb_arch" -p "./release-upload/console2svg.${asset_arch}.deb" "${package_inputs[@]}"
+            fpm "${common_args[@]}" -t rpm -a "$rpm_arch" -p "./release-upload/console2svg.${asset_arch}.rpm" "${package_inputs[@]}"
           done
 
       - name: Create GitHub Release

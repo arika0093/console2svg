@@ -53,6 +53,7 @@ runs:
         fi
 
         [ -z "${EXT}" ] && chmod +x "$INSTALL_DIR/console2svg"
+        bash "${{ github.action_path }}/scripts/download-resvg.sh" "$RID" "$INSTALL_DIR" latest
         echo "$INSTALL_DIR" >> "$GITHUB_PATH"
 
     - name: Download and install console2svg
@@ -87,5 +88,32 @@ runs:
         echo "Downloading ${URL} ..."
         curl -fsSL -L -o "${INSTALL_DIR}/console2svg${EXT}" "${URL}"
         [ -z "${EXT}" ] && chmod +x "${INSTALL_DIR}/console2svg"
+        case "${RID}" in
+          linux-x64|osx-x64|osx-arm64)
+            RESVG_EXT=""
+            ;;
+          win-x64)
+            RESVG_EXT=".exe"
+            ;;
+          *)
+            RESVG_EXT=""
+            ;;
+        esac
+
+        if [ -n "${RESVG_EXT}" ] || [ "${RID}" = "linux-x64" ] || [ "${RID}" = "osx-x64" ] || [ "${RID}" = "osx-arm64" ]; then
+          RESVG_FILE="resvg-${RID}${RESVG_EXT}"
+          if [ "$VERSION" = "latest" ]; then
+            RESVG_URL="https://github.com/arika0093/console2svg/releases/latest/download/${RESVG_FILE}"
+          else
+            RESVG_URL="https://github.com/arika0093/console2svg/releases/download/v${VERSION}/${RESVG_FILE}"
+          fi
+
+          echo "Downloading ${RESVG_URL} ..."
+          if curl -fsSL -L -o "${INSTALL_DIR}/resvg${RESVG_EXT}" "${RESVG_URL}"; then
+            [ -z "${RESVG_EXT}" ] && chmod +x "${INSTALL_DIR}/resvg"
+          else
+            echo "resvg sidecar is not available for ${RID}; continuing without it."
+          fi
+        fi
 
         echo "${INSTALL_DIR}" >> "$GITHUB_PATH"

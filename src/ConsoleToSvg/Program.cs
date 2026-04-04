@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ConsoleToSvg.Cli;
+using ConsoleToSvg.Conversion;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;
 using Microsoft.Extensions.Logging;
@@ -125,43 +126,7 @@ internal static class Program
                 logger.ZLogDebug($"Saved asciicast to {options.SaveCastPath}");
             }
 
-            var renderOptions = SvgRenderOptions.FromAppOptions(options);
-            logger.ZLogDebug($"Rendering SVG. Mode={options.Mode}");
-            var svg =
-                options.Mode is OutputMode.Video or OutputMode.Repeat
-                    ? AnimatedSvgRenderer.Render(session, renderOptions)
-                    : SvgRenderer.Render(session, renderOptions);
-            logger.ZLogDebug($"Rendering completed. SvgLength={svg.Length}");
-
-            if (options.StdOut)
-            {
-                logger.ZLogDebug($"Writing SVG to stdout.");
-                await using var stdoutWriter = new StreamWriter(
-                    Console.OpenStandardOutput(),
-                    new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
-                );
-                await stdoutWriter.WriteAsync(svg).ConfigureAwait(false);
-                logger.ZLogDebug($"SVG written to stdout.");
-            }
-            else
-            {
-                EnsureDirectory(options.OutputPath);
-                logger.ZLogDebug($"Writing output file: {options.OutputPath}");
-                await File.WriteAllTextAsync(
-                        options.OutputPath,
-                        svg,
-                        new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
-                        outputToken
-                    )
-                    .ConfigureAwait(false);
-                logger.ZLogDebug($"Output file written: {options.OutputPath}");
-            }
-
-            if (!string.IsNullOrWhiteSpace(options.SaveFramesDir))
-            {
-                await SaveFramesAsync(session, renderOptions, options.SaveFramesDir!, options.VideoFps, logger, outputToken)
-                    .ConfigureAwait(false);
-            }
+            await OutputEmitter.EmitAsync(session, options, logger, outputToken).ConfigureAwait(false);
 
             if (wasCanceled)
             {
@@ -362,93 +327,6 @@ internal static class Program
         }
 
         return adjust ? detectTerminalSize() ?? defaultValue : defaultValue;
-    }
-
-    private static void EnsureDirectory(string outputPath)
-    {
-        var directory = Path.GetDirectoryName(Path.GetFullPath(outputPath));
-        if (!string.IsNullOrWhiteSpace(directory))
-        {
-            Directory.CreateDirectory(directory);
-        }
-    }
-
-    private static async Task SaveFramesAsync(
-        RecordingSession session,
-        SvgRenderOptions baseOptions,
-        string directory,
-        double fps,
-        ILogger logger,
-        CancellationToken cancellationToken
-    )
-    {
-        Directory.CreateDirectory(directory);
-        var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
-        var eventCount = session.Events.Count;
-        logger.ZLogDebug($"Saving individual frames to {directory}. Events={eventCount} Fps={fps}");
-
-        if (fps > 0 && eventCount > 0)
-        {
-            // Sample frames at exactly fps intervals so frame count = floor(totalTime * fps) + 1
-            var totalTime = session.Events[eventCount - 1].Time;
-            var totalFrames = (int)Math.Floor(totalTime * fps) + 1;
-            var interval = 1.0 / fps;
-
-            for (var f = 0; f < totalFrames; f++)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                var t = f * interval;
-                // Find the last event index at or before time t
-                var eventIndex = -1;
-                for (var i = 0; i < eventCount; i++)
-                {
-                    if (session.Events[i].Time <= t + 1e-9)
-                        eventIndex = i;
-                    else
-                        break;
-                }
-
-                baseOptions.Frame = eventIndex >= 0 ? eventIndex : 0;
-                var frameSvg = SvgRenderer.Render(session, baseOptions);
-                var framePath = Path.Combine(directory, $"frame-{f:D4}.svg");
-                await File.WriteAllTextAsync(framePath, frameSvg, utf8, cancellationToken)
-                    .ConfigureAwait(false);
-            }
-
-            baseOptions.Frame = null;
-            logger.ZLogDebug($"Saved {totalFrames} frames to {directory}");
-            await Console.Error.WriteLineAsync($"Saved {totalFrames} frames to {directory}");
-        }
-        else
-        {
-            // No fps specified: save one file per unique visual state
-            var savedCount = 0;
-            string? previousSvg = null;
-
-            for (var i = 0; i < eventCount; i++)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                baseOptions.Frame = i;
-                var frameSvg = SvgRenderer.Render(session, baseOptions);
-
-                if (frameSvg == previousSvg)
-                {
-                    continue;
-                }
-
-                previousSvg = frameSvg;
-                var framePath = Path.Combine(directory, $"frame-{savedCount:D4}.svg");
-                await File.WriteAllTextAsync(framePath, frameSvg, utf8, cancellationToken)
-                    .ConfigureAwait(false);
-                savedCount++;
-            }
-
-            baseOptions.Frame = null;
-            logger.ZLogDebug($"Saved {savedCount} unique frames (of {eventCount} events) to {directory}");
-            await Console.Error.WriteLineAsync($"Saved {savedCount} frames to {directory}");
-        }
     }
 
     private static string GetDefaultPrompt()

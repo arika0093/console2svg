@@ -39,18 +39,36 @@ if (platform === 'win32') {
 
 const isWin = platform === 'win32';
 const ext = isWin ? '.exe' : '';
-const fileName = `console2svg-${rid}${ext}`;
-const url = `https://github.com/arika0093/console2svg/releases/download/v${version}/${fileName}`;
 
 const distDir = path.join(__dirname, '..', 'dist');
-const destPath = path.join(distDir, `console2svg${ext}`);
-const tempPath = `${destPath}.tmp`;
-
-if (fs.existsSync(destPath)) {
-  process.exit(0);
-}
-
 fs.mkdirSync(distDir, { recursive: true });
+
+const downloads = [
+  {
+    fileName: `console2svg-${rid}${ext}`,
+    destPath: path.join(distDir, `console2svg${ext}`)
+  }
+];
+
+const resvgFileName = (() => {
+  if (rid === 'linux-x64' || rid === 'osx-x64' || rid === 'osx-arm64') {
+    return `resvg-${rid}`;
+  }
+
+  if (rid === 'win-x64') {
+    return 'resvg-win-x64.exe';
+  }
+
+  return null;
+})();
+
+if (resvgFileName) {
+  downloads.push({
+    fileName: resvgFileName,
+    destPath: path.join(distDir, `resvg${isWin ? '.exe' : ''}`),
+    optional: true
+  });
+}
 
 function fail(message, err) {
   if (err) {
@@ -61,68 +79,92 @@ function fail(message, err) {
   process.exit(1);
 }
 
-function download(downloadUrl, redirects) {
-  if (redirects > 5) {
-    fail('console2svg: too many redirects while downloading.');
-  }
-
-  const proxy = getProxyForUrl(downloadUrl);
-  const agent = proxy ? new HttpsProxyAgent(proxy) : undefined;
-  const url = new URL(downloadUrl);
-
-  const request = https.get(
-    {
-      hostname: url.hostname,
-      path: url.pathname + url.search,
-      protocol: url.protocol,
-      port: url.port,
-      agent,
-      headers: {
-        'User-Agent': 'console2svg-npm-wrapper',
-        Accept: 'application/octet-stream'
-      }
-    },
-    (res) => {
-      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        res.resume();
-        download(res.headers.location, redirects + 1);
-        return;
-      }
-
-      if (res.statusCode !== 200) {
-        res.resume();
-        fail(`console2svg: download failed (${res.statusCode}) from ${downloadUrl}`);
-      }
-
-      const file = fs.createWriteStream(tempPath);
-      res.pipe(file);
-      file.on('finish', () => {
-        file.close(() => {
-          try {
-            fs.renameSync(tempPath, destPath);
-            if (!isWin) {
-              fs.chmodSync(destPath, 0o755);
-            }
-            process.exit(0);
-          } catch (err) {
-            fail('console2svg: failed to finalize download.', err);
-          }
-        });
-      });
-      file.on('error', (err) => {
-        try {
-          fs.unlinkSync(tempPath);
-        } catch {
-          // ignore
-        }
-        fail('console2svg: write failed.', err);
-      });
+function download(downloadUrl, destPath, redirects) {
+  return new Promise((resolve, reject) => {
+    if (redirects > 5) {
+      reject(new Error('console2svg: too many redirects while downloading.'));
+      return;
     }
-  );
 
-  request.on('error', (err) => {
-    fail('console2svg: request failed.', err);
+    const proxy = getProxyForUrl(downloadUrl);
+    const agent = proxy ? new HttpsProxyAgent(proxy) : undefined;
+    const url = new URL(downloadUrl);
+    const tempPath = `${destPath}.tmp`;
+
+    const request = https.get(
+      {
+        hostname: url.hostname,
+        path: url.pathname + url.search,
+        protocol: url.protocol,
+        port: url.port,
+        agent,
+        headers: {
+          'User-Agent': 'console2svg-npm-wrapper',
+          Accept: 'application/octet-stream'
+        }
+      },
+      (res) => {
+        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+          res.resume();
+          download(res.headers.location, destPath, redirects + 1).then(resolve, reject);
+          return;
+        }
+
+        if (res.statusCode !== 200) {
+          res.resume();
+          reject(new Error(`console2svg: download failed (${res.statusCode}) from ${downloadUrl}`));
+          return;
+        }
+
+        const file = fs.createWriteStream(tempPath);
+        res.pipe(file);
+        file.on('finish', () => {
+          file.close(() => {
+            try {
+              fs.renameSync(tempPath, destPath);
+              if (!destPath.endsWith('.exe')) {
+                fs.chmodSync(destPath, 0o755);
+              }
+              resolve();
+            } catch (err) {
+              reject(err);
+            }
+          });
+        });
+        file.on('error', (err) => {
+          try {
+            fs.unlinkSync(tempPath);
+          } catch {
+            // ignore
+          }
+          reject(err);
+        });
+      }
+    );
+
+    request.on('error', reject);
   });
 }
 
-download(url, 0);
+(async () => {
+  for (const item of downloads) {
+    if (fs.existsSync(item.destPath)) {
+      continue;
+    }
+
+    const url = `https://github.com/arika0093/console2svg/releases/download/v${version}/${item.fileName}`;
+    try {
+      await download(url, item.destPath, 0);
+    } catch (err) {
+      if (item.optional) {
+        console.warn(`console2svg: optional sidecar download skipped: ${item.fileName}`);
+        continue;
+      }
+
+      fail('console2svg: request failed.', err);
+    }
+  }
+})().then(
+  () => process.exit(0),
+  (err) => fail('console2svg: installation failed.', err)
+);

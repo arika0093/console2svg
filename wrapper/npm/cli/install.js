@@ -125,6 +125,8 @@ if (isWin) {
   const zipUrl = `https://github.com/arika0093/console2svg/releases/download/v${version}/${zipFileName}`;
 
   download(zipUrl, 0, (tempZipPath) => {
+    // Escape single quotes in paths for PowerShell single-quoted string literals.
+    const psEscape = (p) => p.replace(/'/g, "''");
     // Extract the zip into distDir using PowerShell
     const result = spawnSync(
       'powershell',
@@ -132,7 +134,7 @@ if (isWin) {
         '-NoProfile',
         '-NonInteractive',
         '-Command',
-        `Expand-Archive -LiteralPath '${tempZipPath}' -DestinationPath '${distDir}' -Force`
+        `Expand-Archive -LiteralPath '${psEscape(tempZipPath)}' -DestinationPath '${psEscape(distDir)}' -Force`
       ],
       { stdio: 'inherit' }
     );

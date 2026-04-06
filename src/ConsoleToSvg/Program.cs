@@ -165,9 +165,10 @@ internal static class Program
                         .ConfigureAwait(false);
                     logger.ZLogDebug($"Output file written: {options.OutputPath}");
                 }
-                else if (IsVideoFormat(outputExt))
+                else if (IsVideoFormat(outputExt) && options.Mode != OutputMode.Image)
                 {
-                    // Video format: save frames to a temp dir, then invoke ffmpeg
+                    // Video format: save frames to a temp dir, then invoke ffmpeg.
+                    // When --mode image is explicitly specified, fall through to the static-image path below.
                     var tempDir = Path.Combine(
                         Path.GetTempPath(),
                         $"c2s-{Guid.NewGuid():N}"
@@ -175,7 +176,7 @@ internal static class Program
                     try
                     {
                         logger.ZLogDebug($"Video output: saving frames to temp dir {tempDir}");
-                        await SaveFramesAsync(
+                        var frameCount = await SaveFramesAsync(
                                 session,
                                 renderOptions,
                                 tempDir,
@@ -184,6 +185,23 @@ internal static class Program
                                 outputToken
                             )
                             .ConfigureAwait(false);
+
+                        // Guard against empty recordings: ensure at least one frame exists
+                        // so ffmpeg receives valid input (e.g. commands that exit without output).
+                        if (frameCount == 0)
+                        {
+                            var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+                            var fallbackSvg = SvgRenderer.Render(session, renderOptions);
+                            await File.WriteAllTextAsync(
+                                    Path.Combine(tempDir, "frame-0000.svg"),
+                                    fallbackSvg,
+                                    utf8,
+                                    outputToken
+                                )
+                                .ConfigureAwait(false);
+                            logger.ZLogDebug($"Empty recording: wrote single fallback frame to {tempDir}");
+                        }
+
                         EnsureDirectory(options.OutputPath);
                         await RunFfmpegVideoAsync(
                                 tempDir,
@@ -589,7 +607,8 @@ internal static class Program
             .ConfigureAwait(false);
     }
 
-    private static async Task SaveFramesAsync(
+    /// <returns>The number of frame files written to <paramref name="directory"/>.</returns>
+    private static async Task<int> SaveFramesAsync(
         RecordingSession session,
         SvgRenderOptions baseOptions,
         string directory,
@@ -635,6 +654,7 @@ internal static class Program
             baseOptions.Frame = null;
             logger.ZLogDebug($"Saved {totalFrames} frames to {directory}");
             await Console.Error.WriteLineAsync($"Saved {totalFrames} frames to {directory}");
+            return totalFrames;
         }
         else
         {
@@ -664,6 +684,7 @@ internal static class Program
             baseOptions.Frame = null;
             logger.ZLogDebug($"Saved {savedCount} unique frames (of {eventCount} events) to {directory}");
             await Console.Error.WriteLineAsync($"Saved {savedCount} frames to {directory}");
+            return savedCount;
         }
     }
 

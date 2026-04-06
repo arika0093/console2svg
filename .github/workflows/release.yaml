@@ -160,7 +160,7 @@ jobs:
           PACKAGE_VERSION: ${{ needs.build-nupkg.outputs.package-version }}
           PACKAGE_ITERATION: ${{ needs.build-nupkg.outputs.package-iteration }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-        run: ./scripts/release/build-release-assets.sh
+        run: ./scripts/release-action/build-release-assets.sh
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

@@ -104,8 +104,12 @@ function download(downloadUrl, redirects, onFinish) {
         });
       });
       file.on('error', (err) => {
-        try { fs.unlinkSync(tempPath); } catch { /* ignore */ }
-        fail('console2svg: write failed.', err);
+        try {
+            fs.unlinkSync(tempPath);
+          } catch {
+            // ignore
+          }
+          fail('console2svg: write failed.', err);
       });
     }
   );

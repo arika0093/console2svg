@@ -469,6 +469,8 @@ internal static class Program
     }
 
     // Video file extensions that are handled by the frame-sequence → ffmpeg path.
+    // GIF is included here because the primary use-case for terminal recordings is
+    // an animated GIF; users who want a static GIF can specify --mode image separately.
     private static readonly HashSet<string> VideoExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
         "mp4", "webm", "avi", "mov", "mkv", "ogv", "flv", "ts", "wmv", "m4v", "gif",
@@ -524,7 +526,9 @@ internal static class Program
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                $"Failed to start ffmpeg. Please ensure ffmpeg is installed and available in PATH.\n{ex.Message}",
+                $"Failed to start ffmpeg. Please ensure ffmpeg is installed "
+                + "(bundled with the application or available in PATH).\n"
+                + ex.Message,
                 ex
             );
         }

@@ -1156,15 +1156,6 @@ public static class PtyRecorder
     )
     {
         var env = new Dictionary<string, string>();
-        foreach (System.Collections.DictionaryEntry entry in Environment.GetEnvironmentVariables())
-        {
-            if (entry.Key is string key && entry.Value is string value)
-            {
-                env[key] = value;
-                logger.ZLogDebug($"Inherited environment variable: {key}={value}");
-            }
-        }
-
         logger.ZLogDebug($"Setting PTY size environment variables: COLUMNS={width} LINES={height}");
         env["COLUMNS"] = width.ToString(System.Globalization.CultureInfo.InvariantCulture);
         env["LINES"] = height.ToString(System.Globalization.CultureInfo.InvariantCulture);

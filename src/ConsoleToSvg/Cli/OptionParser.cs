@@ -341,6 +341,7 @@ public static class OptionParser
         {
             case "-v":
                 options.Mode = OutputMode.Video;
+                options.IsModeExplicit = true;
                 return true;
             case "--verbose":
                 options.Verbose = true;
@@ -365,18 +366,21 @@ public static class OptionParser
                 if (string.Equals(value, "image", StringComparison.OrdinalIgnoreCase))
                 {
                     options.Mode = OutputMode.Image;
+                    options.IsModeExplicit = true;
                     return true;
                 }
 
                 if (string.Equals(value, "video", StringComparison.OrdinalIgnoreCase))
                 {
                     options.Mode = OutputMode.Video;
+                    options.IsModeExplicit = true;
                     return true;
                 }
 
                 if (string.Equals(value, "repeat", StringComparison.OrdinalIgnoreCase))
                 {
                     options.Mode = OutputMode.Repeat;
+                    options.IsModeExplicit = true;
                     return true;
                 }
 

@@ -29,6 +29,9 @@ public sealed class AppOptions
 
     public OutputMode Mode { get; set; } = OutputMode.Image;
 
+    /// <summary>True when --mode (or -v) was explicitly supplied on the command line.</summary>
+    public bool IsModeExplicit { get; set; }
+
     public int? Width { get; set; } = null;
 
     public bool WidthAdjust { get; set; }

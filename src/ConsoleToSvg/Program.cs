@@ -165,105 +165,118 @@ internal static class Program
                         .ConfigureAwait(false);
                     logger.ZLogDebug($"Output file written: {options.OutputPath}");
                 }
-                else if (IsVideoFormat(outputExt) && options.Mode != OutputMode.Image)
+                else
                 {
-                    // Video format: save frames to a temp dir, then invoke ffmpeg.
-                    // When --mode image is explicitly specified, fall through to the static-image path below.
-                    var tempDir = Path.Combine(
-                        Path.GetTempPath(),
-                        $"c2s-{Guid.NewGuid():N}"
-                    );
-                    try
-                    {
-                        logger.ZLogDebug($"Video output: saving frames to temp dir {tempDir}");
-                        var frameCount = await SaveFramesAsync(
-                                session,
-                                renderOptions,
-                                tempDir,
-                                options.VideoFps,
-                                logger,
-                                outputToken
-                            )
-                            .ConfigureAwait(false);
+                    // Route based on explicit --mode if given, otherwise infer from output extension.
+                    // Explicit --mode image overrides video extensions (e.g. static GIF with --frame).
+                    // No explicit mode: video extensions → frame-sequence path, others → ffmpeg image.
+                    var useVideoPath =
+                        options.IsModeExplicit
+                            ? options.Mode is OutputMode.Video or OutputMode.Repeat
+                            : IsVideoFormat(outputExt);
 
-                        // Guard against empty recordings: ensure at least one frame exists
-                        // so ffmpeg receives valid input (e.g. commands that exit without output).
-                        if (frameCount == 0)
+                    if (useVideoPath)
+                    {
+                        // Video format: save frames to a temp dir, then invoke ffmpeg.
+                        var tempDir = Path.Combine(
+                            Path.GetTempPath(),
+                            $"c2s-{Guid.NewGuid():N}"
+                        );
+                        try
                         {
-                            var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
-                            var fallbackSvg = SvgRenderer.Render(session, renderOptions);
-                            await File.WriteAllTextAsync(
-                                    Path.Combine(tempDir, "frame-0000.svg"),
-                                    fallbackSvg,
-                                    utf8,
+                            logger.ZLogDebug($"Video output: saving frames to temp dir {tempDir}");
+                            var frameCount = await SaveFramesAsync(
+                                    session,
+                                    renderOptions,
+                                    tempDir,
+                                    options.VideoFps,
+                                    logger,
                                     outputToken
                                 )
                                 .ConfigureAwait(false);
-                            logger.ZLogDebug($"Empty recording: wrote single fallback frame to {tempDir}");
-                        }
 
-                        EnsureDirectory(options.OutputPath);
-                        await RunFfmpegVideoAsync(
-                                tempDir,
-                                options.VideoFps,
-                                options.OutputPath,
-                                logger,
-                                outputToken
-                            )
-                            .ConfigureAwait(false);
-                    }
-                    finally
-                    {
-                        if (Directory.Exists(tempDir))
-                        {
-                            try
+                            // Guard against empty recordings: ensure at least one frame exists
+                            // so ffmpeg receives valid input (e.g. commands that exit without output).
+                            if (frameCount == 0)
                             {
-                                Directory.Delete(tempDir, recursive: true);
+                                var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+                                var fallbackSvg = SvgRenderer.Render(session, renderOptions);
+                                await File.WriteAllTextAsync(
+                                        Path.Combine(tempDir, "frame-0000.svg"),
+                                        fallbackSvg,
+                                        utf8,
+                                        outputToken
+                                    )
+                                    .ConfigureAwait(false);
+                                logger.ZLogDebug($"Empty recording: wrote single fallback frame to {tempDir}");
                             }
-                            catch (Exception ex)
+
+                            EnsureDirectory(options.OutputPath);
+                            await RunFfmpegVideoAsync(
+                                    tempDir,
+                                    options.VideoFps,
+                                    options.OutputPath,
+                                    logger,
+                                    outputToken
+                                )
+                                .ConfigureAwait(false);
+                        }
+                        finally
+                        {
+                            if (Directory.Exists(tempDir))
                             {
-                                logger.ZLogDebug(ex, $"Failed to delete temp dir {tempDir}: {ex.Message}");
+                                try
+                                {
+                                    Directory.Delete(tempDir, recursive: true);
+                                }
+                                catch (Exception ex)
+                                {
+                                    logger.ZLogDebug(ex, $"Failed to delete temp dir {tempDir}: {ex.Message}");
+                                }
                             }
                         }
                     }
-                }
-                else
-                {
-                    // Other format (png, jpg, …): write a temp SVG then invoke ffmpeg
-                    var tempSvg = Path.Combine(
-                        Path.GetTempPath(),
-                        $"c2s-{Guid.NewGuid():N}.svg"
-                    );
-                    try
+                    else
                     {
-                        logger.ZLogDebug($"Image output: writing temp SVG to {tempSvg}");
-                        await File.WriteAllTextAsync(
-                                tempSvg,
-                                svg,
-                                new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
-                                outputToken
-                            )
-                            .ConfigureAwait(false);
-                        EnsureDirectory(options.OutputPath);
-                        await RunFfmpegImageAsync(
-                                tempSvg,
-                                options.OutputPath,
-                                logger,
-                                outputToken
-                            )
-                            .ConfigureAwait(false);
-                    }
-                    finally
-                    {
-                        if (File.Exists(tempSvg))
+                        // Raster image (png, jpg, …): render a static SVG then convert via ffmpeg.
+                        // Always use the static renderer regardless of --mode, so the output reflects
+                        // the last terminal frame by default (or the --frame index if specified).
+                        var staticSvg = SvgRenderer.Render(session, renderOptions);
+                        var tempSvg = Path.Combine(
+                            Path.GetTempPath(),
+                            $"c2s-{Guid.NewGuid():N}.svg"
+                        );
+                        try
                         {
-                            try
+                            logger.ZLogDebug($"Image output: writing temp SVG to {tempSvg}");
+                            await File.WriteAllTextAsync(
+                                    tempSvg,
+                                    staticSvg,
+                                    new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+                                    outputToken
+                                )
+                                .ConfigureAwait(false);
+                            EnsureDirectory(options.OutputPath);
+                            await RunFfmpegImageAsync(
+                                    tempSvg,
+                                    options.OutputPath,
+                                    logger,
+                                    outputToken
+                                )
+                                .ConfigureAwait(false);
+                        }
+                        finally
+                        {
+                            if (File.Exists(tempSvg))
                             {
-                                File.Delete(tempSvg);
-                            }
-                            catch (Exception ex)
-                            {
-                                logger.ZLogDebug(ex, $"Failed to delete temp SVG {tempSvg}: {ex.Message}");
+                                try
+                                {
+                                    File.Delete(tempSvg);
+                                }
+                                catch (Exception ex)
+                                {
+                                    logger.ZLogDebug(ex, $"Failed to delete temp SVG {tempSvg}: {ex.Message}");
+                                }
                             }
                         }
                     }

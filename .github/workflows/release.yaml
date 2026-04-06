@@ -250,7 +250,7 @@ jobs:
             cp "${top_dir}LICENSE.txt" "$bundle_dir/ffmpeg-LICENSE.txt"
 
             zip_name="./release-upload/console2svg-${rid}-ffmpeg.zip"
-            (cd "$bundle_dir" && zip -q -r "../../${zip_name#./}" .)
+            zip -q -r "$zip_name" "$bundle_dir"
             echo "Created $zip_name"
           done
 

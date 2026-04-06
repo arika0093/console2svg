@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="690" height="405" viewBox="0 0 690 405" role="img" aria-label="console2svg output">
 <style>
 .crt {
-  font-family: ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;
+  font-family: ui-monospace,"JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,monospace;
   font-size: 14px;
 }
 text {
@@ -15,10 +15,10 @@ text {
   opacity: 0;
 }
 @keyframes k0 {
-  0%, 0.97% {
+  0%, 0.484% {
     opacity: 0;
   }
-  0.971%, 16.505% {
+  0.485%, 16.505% {
     opacity: 1;
   }
   16.506%, 100% {
@@ -336,14 +336,14 @@ text {
 <defs>
 <g id="fd-0" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmrg6be</text>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm727z3</text>
 <text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 </g>
 <g id="fd-1" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmrg6be</text>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm727z3</text>
 <text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
@@ -351,7 +351,7 @@ text {
 </g>
 <g id="fd-2" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmrg6be</text>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm727z3</text>
 <text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
@@ -359,7 +359,7 @@ text {
 </g>
 <g id="fd-3" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmrg6be</text>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm727z3</text>
 <text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
@@ -367,7 +367,7 @@ text {
 </g>
 <g id="fd-4" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmrg6be</text>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm727z3</text>
 <text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
@@ -409,14 +409,16 @@ text {
 <text class="crt" x="403.2" y="158" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacing">distributable</text>
 <text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="235.2" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Sponsor</text>
-<text class="crt" x="302.4" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">Vim</text>
-<text class="crt" x="336" y="194" fill="#d4d4d4" textLength="100.8" lengthAdjust="spacing">development!</text>
+<text class="crt" x="210" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">Help</text>
+<text class="crt" x="252" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">poor</text>
+<text class="crt" x="294" y="194" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">children</text>
+<text class="crt" x="369.6" y="194" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">in</text>
+<text class="crt" x="394.8" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Uganda!</text>
 <text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="142.8" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
 <text class="crt" x="193.2" y="212" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">sponsor</text>
-<text class="crt" x="302.4" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
+<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">iccf</text>
+<text class="crt" x="277.2" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
 <text class="crt" x="394.8" y="212" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
 <text class="crt" x="428.4" y="212" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">information</text>
 <text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
@@ -482,14 +484,16 @@ text {
 <text class="crt" x="403.2" y="158" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacing">distributable</text>
 <text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="235.2" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Sponsor</text>
-<text class="crt" x="302.4" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">Vim</text>
-<text class="crt" x="336" y="194" fill="#d4d4d4" textLength="100.8" lengthAdjust="spacing">development!</text>
+<text class="crt" x="210" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">Help</text>
+<text class="crt" x="252" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">poor</text>
+<text class="crt" x="294" y="194" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">children</text>
+<text class="crt" x="369.6" y="194" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">in</text>
+<text class="crt" x="394.8" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Uganda!</text>
 <text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="142.8" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
 <text class="crt" x="193.2" y="212" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">sponsor</text>
-<text class="crt" x="302.4" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
+<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">iccf</text>
+<text class="crt" x="277.2" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
 <text class="crt" x="394.8" y="212" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
 <text class="crt" x="428.4" y="212" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">information</text>
 <text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
@@ -556,14 +560,16 @@ text {
 <text class="crt" x="403.2" y="158" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacing">distributable</text>
 <text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="235.2" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Sponsor</text>
-<text class="crt" x="302.4" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">Vim</text>
-<text class="crt" x="336" y="194" fill="#d4d4d4" textLength="100.8" lengthAdjust="spacing">development!</text>
+<text class="crt" x="210" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">Help</text>
+<text class="crt" x="252" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">poor</text>
+<text class="crt" x="294" y="194" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">children</text>
+<text class="crt" x="369.6" y="194" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">in</text>
+<text class="crt" x="394.8" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Uganda!</text>
 <text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="142.8" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
 <text class="crt" x="193.2" y="212" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">sponsor</text>
-<text class="crt" x="302.4" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
+<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">iccf</text>
+<text class="crt" x="277.2" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
 <text class="crt" x="394.8" y="212" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
 <text class="crt" x="428.4" y="212" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">information</text>
 <text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
@@ -949,36 +955,36 @@ text {
 </g>
 <g id="fd-23" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmrg6be</text>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm727z3</text>
 <text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 <text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
-<text class="crt" x="0" y="32" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmrg6be</text>
+<text class="crt" x="0" y="32" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm727z3</text>
 <text class="crt" x="168" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="32" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 </g>
 <g id="fd-24" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmrg6be</text>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm727z3</text>
 <text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 <text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
-<text class="crt" x="0" y="32" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmrg6be</text>
+<text class="crt" x="0" y="32" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm727z3</text>
 <text class="crt" x="168" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="32" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 </g>
 <g id="fd-25" transform="translate(9 36)">
 <rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmrg6be</text>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm727z3</text>
 <text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 <text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
-<text class="crt" x="0" y="32" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmrg6be</text>
+<text class="crt" x="0" y="32" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm727z3</text>
 <text class="crt" x="168" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="32" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>

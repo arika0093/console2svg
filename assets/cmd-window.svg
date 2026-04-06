@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1066" height="553" viewBox="0 0 1066 553" role="img" aria-label="console2svg output">
 <style>
 .crt {
-  font-family: ui-monospace,"Cascadia Mono","Segoe UI Mono","SFMono-Regular",Menlo,monospace;
+  font-family: ui-monospace,"JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,monospace;
   font-size: 14px;
 }
 text {
@@ -33,7 +33,7 @@ text {
 <text class="crt" x="319.2" y="14" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">to</text>
 <text class="crt" x="344.4" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">SVG</text>
 <text class="crt" x="378" y="14" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">[Ver:</text>
-<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="159.6" lengthAdjust="spacing">0.6.5.0+aa8a97e423]</text>
+<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="159.6" lengthAdjust="spacing">0.6.5.3+d15bb4d6c6]</text>
 <text class="crt" x="0" y="50" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">Usage:</text>
 <text class="crt" x="33.6" y="68" fill="#d4d4d4" textLength="84" lengthAdjust="spacing">my-command</text>
 <text class="crt" x="126" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">|</text>
@@ -55,19 +55,18 @@ text {
 <text class="crt" x="67.2" y="158" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">--out</text>
 <text class="crt" x="117.6" y="158" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">&lt;path&gt;</text>
 <text class="crt" x="252" y="158" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">Output</text>
-<text class="crt" x="310.8" y="158" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">SVG</text>
-<text class="crt" x="344.4" y="158" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">path</text>
-<text class="crt" x="386.4" y="158" fill="#d4d4d4" textLength="75.6" lengthAdjust="spacing">(default:</text>
-<text class="crt" x="470.4" y="158" fill="#d4d4d4" textLength="100.8" lengthAdjust="spacing">output.svg).</text>
-<text class="crt" x="252" y="176" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">--stdout</text>
-<text class="crt" x="327.6" y="176" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">to</text>
-<text class="crt" x="352.8" y="176" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">write</text>
-<text class="crt" x="403.2" y="176" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">to</text>
-<text class="crt" x="428.4" y="176" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">stdout</text>
-<text class="crt" x="487.2" y="176" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">instead</text>
-<text class="crt" x="554.4" y="176" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">of</text>
-<text class="crt" x="579.6" y="176" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">a</text>
-<text class="crt" x="596.4" y="176" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">file.</text>
+<text class="crt" x="310.8" y="158" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">file</text>
+<text class="crt" x="352.8" y="158" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">path</text>
+<text class="crt" x="394.8" y="158" fill="#d4d4d4" textLength="75.6" lengthAdjust="spacing">(default:</text>
+<text class="crt" x="478.8" y="158" fill="#d4d4d4" textLength="100.8" lengthAdjust="spacing">output.svg).</text>
+<text class="crt" x="252" y="176" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Non-SVG</text>
+<text class="crt" x="319.2" y="176" fill="#d4d4d4" textLength="84" lengthAdjust="spacing">extensions</text>
+<text class="crt" x="411.6" y="176" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">trigger</text>
+<text class="crt" x="478.8" y="176" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">ffmpeg</text>
+<text class="crt" x="537.6" y="176" fill="#d4d4d4" textLength="84" lengthAdjust="spacing">conversion</text>
+<text class="crt" x="630" y="176" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">(e.g.</text>
+<text class="crt" x="680.4" y="176" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">output.png,</text>
+<text class="crt" x="781.2" y="176" fill="#d4d4d4" textLength="100.8" lengthAdjust="spacing">output.mp4).</text>
 <text class="crt" x="33.6" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">-w,</text>
 <text class="crt" x="67.2" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">--width</text>
 <text class="crt" x="134.4" y="194" fill="#d4d4d4" textLength="100.8" lengthAdjust="spacing">&lt;int|adjust&gt;</text>

@@ -80,8 +80,12 @@ curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/cons
 mv -f console2svg /usr/local/bin/
 chmod +x /usr/local/bin/console2svg
 
-# windows (cmd)
+# windows (binary only)
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64.exe -o console2svg.exe
+# windows (with ffmpeg)
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip -o console2svg-win-x64-ffmpeg.zip
+unzip console2svg-win-x64-ffmpeg.zip -d console2svg
+cd console2svg
 ```
 
 ### GitHub Actions
@@ -210,7 +214,6 @@ console2svg -w 160 -h 32 -c -d -v --timeout 5 --sleep 0.5 -- nyancat -d 10
 
 You can also write sequential SVG files starting with `frame-0000.svg` to a specific folder.
 This is useful for cherry-picking your favorite frames or converting them into a video using software like ffmpeg. 
-See [Converting to video](#converting-to-video) for details.
 
 ```sh
 # apt install cmatrix
@@ -270,6 +273,29 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
 ```
 
 </details>
+
+### Convert to other formats
+
+In v0.7 and later, you can specify the output format based on the file extension specified with `-o output.mp4`.
+
+First, install `ffmpeg`. On Linux/macOS, you can easily install it using a package manager. On Windows, it's a bit more involved, so you can use the bundled version of ffmpeg ([x64](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip), [arm64](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-arm64-ffmpeg.zip)).
+
+```bash
+# ubuntu
+sudo apt install ffmpeg
+# macos
+brew install ffmpeg
+# windows 
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip -o console2svg-win-x64-ffmpeg.zip
+unzip console2svg-win-x64-ffmpeg.zip -d console2svg
+cd console2svg
+```
+
+Then, you can specify the output file with the desired extension. For example, to convert to MP4 video:
+
+```bash
+console2svg -c -d macos --timeout 5 --fps 30 --output output.mp4 -- some-command
+```
 
 ## Appearance options
 ### Background and opacity
@@ -382,56 +408,6 @@ Of course, you can also save all lines (useful for evidence). In that case, spec
 ```sh
 tmux capture-pane -pe -S - -t :0 | console2svg -o full-capture-$(date +%s).svg
 ```
-
-### Converting to other image formats
-
-By combining with various commands, you can also convert to PNG or other formats. 
-One of the easy-to-use tools is [rsvg-convert](https://gitlab.gnome.org/GNOME/librsvg/). It only converts to PNG format, but it's easy to use.
-
-```bash
-apt install librsvg2-bin
-
-# use --stdout to write SVG to stdout, then pipe to rsvg-convert to convert to PNG
-console2svg --stdout -- your-command | rsvg-convert -o output.png
-
-# Pipe mode also works
-your-command | console2svg --stdout | rsvg-convert -o output.png
-```
-
-[ImageMagick](https://imagemagick.org/) can also be used. It supports formats other than PNG, but it may take a little effort to install.
-
-```bash
-# apt version may be outdated, so it's better to install from the official site
-# install v7 or later (v6 may have issues with SVG conversion)
-sudo curl -sSL https://imagemagick.org/archive/binaries/magick -o /usr/local/bin/magick
-sudo chmod +x /usr/local/bin/magick
-
-# check version
-magick -version
-
-# convert SVG to PNG
-console2svg --stdout -- your-command | magick - output.png
-```
-
-### Converting to video
-
-To convert to video, first save the sequential SVG files using the `--save-frames` option.
-Then, use [ffmpeg](https://www.ffmpeg.org) to convert these SVG files into a video. Here is an example of the process.
-
-```bash
-# install required tools if you haven't already
-sudo apt install ffmpeg
-# 1. Save sequential SVG files
-# specify --save-frames and --fps to save each frame as an SVG file in the specified directory
-console2svg -c -d macos-pc -v --timeout 5 --fps 30 --save-frames ./frames-dir -- your-command
-# 2. Convert SVG frames to video using ffmpeg
-ffmpeg -framerate 30 -i ./frames-dir/frame-%04d.svg -c:v libx264 output_video.mp4
-```
-
-The [generated video](./assets/cmd-matrix-video.mp4) will look like this.
-
-https://github.com/user-attachments/assets/49060b64-d524-44bb-92b9-ccb44de93a9c
-
 
 ## Supported platforms
 

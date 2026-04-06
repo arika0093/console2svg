@@ -833,4 +833,56 @@ public sealed class SvgRendererTests
         // Content is still present
         svg.ShouldContain(">Hi<");
     }
+
+    [Test]
+    public void RenderWithImageBackgroundUsesViewBoxBoundsForCoverCenterLayout()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "Hi");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                SizeWidth = 200d,
+                SizeHeight = 200d,
+                Background = new[] { "background.png" },
+            }
+        );
+
+        svg.ShouldContain("viewBox=\"0 -15.6 67.2 67.2\"");
+        svg.ShouldContain(
+            "<pattern id=\"desktop-bg\" patternUnits=\"userSpaceOnUse\" patternContentUnits=\"userSpaceOnUse\" x=\"0\" y=\"-15.6\" width=\"67.2\" height=\"67.2\">"
+        );
+        svg.ShouldContain(
+            "<image href=\"background.png\" x=\"0\" y=\"0\" width=\"67.2\" height=\"67.2\" preserveAspectRatio=\"xMidYMid slice\"/>"
+        );
+    }
+
+    [Test]
+    public void RenderWithImageBackgroundDoesNotDoubleApplyHorizontalViewBoxOffset()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "Hi");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                SizeWidth = 200d,
+                SizeHeight = 100d,
+                Background = new[] { "background.png" },
+            }
+        );
+
+        svg.ShouldContain("viewBox=\"-2.4 0 72 36\"");
+        svg.ShouldContain(
+            "<pattern id=\"desktop-bg\" patternUnits=\"userSpaceOnUse\" patternContentUnits=\"userSpaceOnUse\" x=\"-2.4\" y=\"0\" width=\"72\" height=\"36\">"
+        );
+        svg.ShouldContain(
+            "<image href=\"background.png\" x=\"0\" y=\"0\" width=\"72\" height=\"36\" preserveAspectRatio=\"xMidYMid slice\"/>"
+        );
+    }
 }

@@ -832,6 +832,12 @@ public static class OptionParser
             sizeHeight = ph;
         }
 
+        if (sizeWidth is null && sizeHeight is null)
+        {
+            error = "--size must specify at least one numeric dimension.";
+            return false;
+        }
+
         return true;
     }
 

@@ -741,7 +741,7 @@ internal static class SvgDocumentBuilder
 
         if (background is { Length: 1 } && IsImagePath(background[0]))
         {
-            AppendImagePatternDef(sb, background[0], context.CanvasWidth, context.CanvasHeight);
+            AppendImagePatternDef(sb, background[0], context);
         }
         else if (background is { Length: >= 2 })
         {
@@ -777,12 +777,7 @@ internal static class SvgDocumentBuilder
         sb.Append("</linearGradient>\n");
     }
 
-    private static void AppendImagePatternDef(
-        StringBuilder sb,
-        string imagePath,
-        double width,
-        double height
-    )
+    private static void AppendImagePatternDef(StringBuilder sb, string imagePath, Context context)
     {
         string href;
         var mimeType = GetImageMimeType(imagePath);
@@ -803,17 +798,27 @@ internal static class SvgDocumentBuilder
             href = imagePath; // fallback: use as-is
         }
 
-        sb.Append("<pattern id=\"desktop-bg\" patternUnits=\"userSpaceOnUse\" width=\"");
-        sb.Append(Format(width));
+        sb.Append(
+            "<pattern id=\"desktop-bg\" patternUnits=\"userSpaceOnUse\" patternContentUnits=\"userSpaceOnUse\" x=\""
+        );
+        sb.Append(Format(context.ViewBoxX));
+        sb.Append("\" y=\"");
+        sb.Append(Format(context.ViewBoxY));
+        sb.Append("\" width=\"");
+        sb.Append(Format(context.ViewBoxWidth));
         sb.Append("\" height=\"");
-        sb.Append(Format(height));
+        sb.Append(Format(context.ViewBoxHeight));
         sb.Append("\">");
         sb.Append("<image href=\"");
         sb.Append(EscapeAttribute(href));
+        sb.Append("\" x=\"");
+        sb.Append("0");
+        sb.Append("\" y=\"");
+        sb.Append("0");
         sb.Append("\" width=\"");
-        sb.Append(Format(width));
+        sb.Append(Format(context.ViewBoxWidth));
         sb.Append("\" height=\"");
-        sb.Append(Format(height));
+        sb.Append(Format(context.ViewBoxHeight));
         sb.Append("\" preserveAspectRatio=\"xMidYMid slice\"/>");
         sb.Append("</pattern>\n");
     }

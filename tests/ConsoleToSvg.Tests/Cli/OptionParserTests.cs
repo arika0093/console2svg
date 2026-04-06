@@ -1108,6 +1108,17 @@ public sealed class OptionParserTests
     }
 
     [Test]
+    public void SizeWithoutNumericDimensionsReturnsError()
+    {
+        foreach (var value in new[] { "x", "x*", "*x", "*x*" })
+        {
+            var ok = OptionParser.TryParse(new[] { "--size", value }, out _, out var error, out _);
+            ok.ShouldBeFalse();
+            error.ShouldBe("--size must specify at least one numeric dimension.");
+        }
+    }
+
+    [Test]
     public void SizePassedThroughToSvgRenderOptions()
     {
         var ok = OptionParser.TryParse(new[] { "--size", "1000x500" }, out var options, out _, out _);

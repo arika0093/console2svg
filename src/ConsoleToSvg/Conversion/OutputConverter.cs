@@ -52,13 +52,13 @@ internal static class OutputConverter
     internal static string GetExecutableFileName(string toolName, bool isWindows) =>
         isWindows ? $"{toolName}.exe" : toolName;
 
-    // Prefer bundled tools first, then the current working directory, then PATH.
+    // Prefer bundled tools first, then PATH. The current working directory is intentionally
+    // excluded to avoid accidentally (or maliciously) executing a binary dropped into the CWD.
     internal static string? TryResolveExecutable(string toolName)
         => TryResolveExecutable(
             toolName,
             RuntimeInformation.IsOSPlatform(OSPlatform.Windows),
             Environment.ProcessPath,
-            Environment.CurrentDirectory,
             Environment.GetEnvironmentVariable("PATH")
         );
 
@@ -66,7 +66,6 @@ internal static class OutputConverter
         string toolName,
         bool isWindows,
         string? processPath,
-        string? currentDirectory,
         string? pathEnvironment
     )
     {
@@ -76,12 +75,6 @@ internal static class OutputConverter
         if (bundled is not null)
         {
             return bundled;
-        }
-
-        var fromCurrentDirectory = TryResolveDirectoryExecutable(fileName, currentDirectory);
-        if (fromCurrentDirectory is not null)
-        {
-            return fromCurrentDirectory;
         }
 
         if (string.IsNullOrWhiteSpace(pathEnvironment))
@@ -344,9 +337,29 @@ internal static class OutputConverter
         }
     }
 
-    // Keep the user-facing failure terse; the search order is deterministic from the code path above.
-    private static string BuildUnavailableToolsMessage(string outputPath) =>
-        $"Cannot generate {outputPath} because ffmpeg and resvg cannot be used for this conversion.";
+    private const string FfmpegInstallHint =
+        "Install ffmpeg with SVG input support (librsvg-enabled build), or install both resvg and ffmpeg.";
+
+    // Describe the required toolchain for the requested output format so the user knows what to install.
+    private static string BuildUnavailableToolsMessage(string outputPath)
+    {
+        var extension = Path.GetExtension(outputPath)?.ToLowerInvariant();
+        var extLabel = extension?.TrimStart('.').ToUpperInvariant() ?? string.Empty;
+
+        return extension switch
+        {
+            ".png" =>
+                $"Cannot generate {outputPath} because PNG output requires either resvg or ffmpeg with SVG input support (librsvg-enabled build), and neither is available.",
+            ".jpg" or ".jpeg" =>
+                $"Cannot generate {outputPath} because JPEG output requires ffmpeg. {FfmpegInstallHint}",
+            ".bmp" or ".gif" or ".webp" =>
+                $"Cannot generate {outputPath} because {extLabel} output requires ffmpeg. {FfmpegInstallHint}",
+            ".mp4" or ".mov" or ".webm" or ".mkv" or ".avi" =>
+                $"Cannot generate {outputPath} because video output requires ffmpeg. {FfmpegInstallHint}",
+            _ =>
+                $"Cannot generate {outputPath} because the required conversion toolchain is unavailable for the requested output format.",
+        };
+    }
 
     private static Task RunResvgAsync(
         string resvg,

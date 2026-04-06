@@ -51,8 +51,7 @@ function fail(message, err) {
   process.exit(1);
 }
 
-function resetDistDir() {
-  fs.rmSync(distDir, { recursive: true, force: true });
+function ensureDistDir() {
   fs.mkdirSync(distDir, { recursive: true });
 }
 
@@ -116,10 +115,15 @@ function download(downloadUrl, tempPath, redirects, onFinish) {
   });
 }
 
-resetDistDir();
+ensureDistDir();
+
+if (fs.existsSync(destPath)) {
+  // Binary already installed; skip the download.
+  process.exit(0);
+}
 
 if (isWin) {
-  // On Windows: download the ffmpeg bundle zip (console2svg.exe + resvg.exe + ffmpeg.exe + DLLs)
+  // On Windows: download the ffmpeg bundle zip (console2svg.exe + resvg.exe + ffmpeg.exe)
   const zipFileName = `console2svg-${rid}-ffmpeg.zip`;
   const zipUrl = `https://github.com/arika0093/console2svg/releases/download/v${version}/${zipFileName}`;
   const tempZipPath = path.join(distDir, `${zipFileName}.tmp`);

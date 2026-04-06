@@ -33,7 +33,6 @@ public sealed class OutputConverterTests
                 "resvg",
                 isWindows: false,
                 processPath: Path.Combine(appDir, "console2svg"),
-                currentDirectory: null,
                 pathEnvironment: pathDir
             );
 
@@ -46,7 +45,7 @@ public sealed class OutputConverterTests
     }
 
     [Test]
-    public void TryResolveExecutable_ChecksCurrentDirectoryBeforePath()
+    public void TryResolveExecutable_IgnoresCurrentDirectoryAndChecksPath()
     {
         var tempRoot = CreateTempDirectory();
         try
@@ -56,6 +55,7 @@ public sealed class OutputConverterTests
             Directory.CreateDirectory(currentDir);
             Directory.CreateDirectory(pathDir);
 
+            // A binary in the current working directory should not be picked up (security risk).
             var fromCurrentDirectory = Path.Combine(currentDir, "ffmpeg.exe");
             var onPath = Path.Combine(pathDir, "ffmpeg.exe");
             File.WriteAllText(fromCurrentDirectory, string.Empty);
@@ -65,11 +65,10 @@ public sealed class OutputConverterTests
                 "ffmpeg",
                 isWindows: true,
                 processPath: null,
-                currentDirectory: currentDir,
                 pathEnvironment: pathDir
             );
 
-            resolved.ShouldBe(fromCurrentDirectory);
+            resolved.ShouldBe(onPath);
         }
         finally
         {

@@ -1,5 +1,5 @@
 name: Setup console2svg
-description: Installs console2svg by downloading a release binary or building from source (develop), then adds it to PATH
+description: Installs console2svg by downloading a release bundle or building from source (develop), then adds it to PATH
 
 inputs:
   version:
@@ -62,30 +62,53 @@ runs:
         VERSION="${{ inputs.version }}"
 
         case "${{ runner.os }}/${{ runner.arch }}" in
-          Linux/X64)     RID="linux-x64"   ; EXT="" ;;
-          Linux/ARM64)   RID="linux-arm64" ; EXT="" ;;
-          Windows/X64)   RID="win-x64"     ; EXT=".exe" ;;
-          Windows/ARM64) RID="win-arm64"   ; EXT=".exe" ;;
-          macOS/X64)     RID="osx-x64"     ; EXT="" ;;
-          macOS/ARM64)   RID="osx-arm64"   ; EXT="" ;;
+          Linux/X64)     RID="linux-x64"   ; EXT=""     ; ARCHIVE_EXT=".tar.gz" ;;
+          Linux/ARM64)   RID="linux-arm64" ; EXT=""     ; ARCHIVE_EXT=".tar.gz" ;;
+          Windows/X64)   RID="win-x64"     ; EXT=".exe" ; ARCHIVE_EXT=".zip" ;;
+          Windows/ARM64) RID="win-arm64"   ; EXT=".exe" ; ARCHIVE_EXT=".zip" ;;
+          macOS/X64)     RID="osx-x64"     ; EXT=""     ; ARCHIVE_EXT=".tar.gz" ;;
+          macOS/ARM64)   RID="osx-arm64"   ; EXT=""     ; ARCHIVE_EXT=".tar.gz" ;;
           *)
             echo "Unsupported OS/arch: ${{ runner.os }}/${{ runner.arch }}"
             exit 1
             ;;
         esac
 
-        FILE="console2svg-${RID}${EXT}"
+        ARCHIVE_FILE="console2svg-${RID}${ARCHIVE_EXT}"
+        LEGACY_FILE="console2svg-${RID}${EXT}"
         if [ "$VERSION" = "latest" ]; then
-          URL="https://github.com/arika0093/console2svg/releases/latest/download/${FILE}"
+          BASE_URL="https://github.com/arika0093/console2svg/releases/latest/download"
         else
-          URL="https://github.com/arika0093/console2svg/releases/download/v${VERSION}/${FILE}"
+          BASE_URL="https://github.com/arika0093/console2svg/releases/download/v${VERSION}"
         fi
 
         INSTALL_DIR="${{ runner.tool_cache }}/console2svg/${VERSION}/${{ runner.arch }}"
         mkdir -p "$INSTALL_DIR"
 
-        echo "Downloading ${URL} ..."
-        curl -fsSL -L -o "${INSTALL_DIR}/console2svg${EXT}" "${URL}"
+        ARCHIVE_URL="${BASE_URL}/${ARCHIVE_FILE}"
+        LEGACY_URL="${BASE_URL}/${LEGACY_FILE}"
+        ARCHIVE_PATH="${INSTALL_DIR}/${ARCHIVE_FILE}"
+
+        echo "Downloading ${ARCHIVE_URL} ..."
+        if curl -fsSL -L -o "${ARCHIVE_PATH}" "${ARCHIVE_URL}"; then
+          if [ "${ARCHIVE_EXT}" = ".zip" ]; then
+            tar -xf "${ARCHIVE_PATH}" -C "${INSTALL_DIR}"
+          else
+            tar -xzf "${ARCHIVE_PATH}" -C "${INSTALL_DIR}"
+          fi
+          rm -f "${ARCHIVE_PATH}"
+        else
+          echo "Archive asset not found, falling back to legacy single-binary asset."
+          curl -fsSL -L -o "${INSTALL_DIR}/console2svg${EXT}" "${LEGACY_URL}"
+        fi
+
+        if [ ! -f "${INSTALL_DIR}/console2svg${EXT}" ]; then
+          echo "Installed console2svg binary not found in ${INSTALL_DIR}"
+          ls -la "${INSTALL_DIR}"
+          exit 1
+        fi
+
         [ -z "${EXT}" ] && chmod +x "${INSTALL_DIR}/console2svg"
+        [ -f "${INSTALL_DIR}/resvg" ] && chmod +x "${INSTALL_DIR}/resvg"
 
         echo "${INSTALL_DIR}" >> "$GITHUB_PATH"

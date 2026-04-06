@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -8,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ConsoleToSvg.Cli;
+using ConsoleToSvg.Conversion;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;
 using Microsoft.Extensions.Logging;
@@ -173,7 +173,7 @@ internal static class Program
                     var useVideoPath =
                         options.IsModeExplicit
                             ? options.Mode is OutputMode.Video or OutputMode.Repeat
-                            : IsVideoFormat(outputExt);
+                            : OutputConverter.IsVideoFormat(outputExt);
 
                     if (useVideoPath)
                     {
@@ -212,7 +212,7 @@ internal static class Program
                             }
 
                             EnsureDirectory(options.OutputPath);
-                            await RunFfmpegVideoAsync(
+                            await OutputConverter.ConvertSvgFramesToVideoAsync(
                                     tempDir,
                                     options.VideoFps,
                                     options.OutputPath,
@@ -257,7 +257,7 @@ internal static class Program
                                 )
                                 .ConfigureAwait(false);
                             EnsureDirectory(options.OutputPath);
-                            await RunFfmpegImageAsync(
+                            await OutputConverter.ConvertSvgToRasterAsync(
                                     tempSvg,
                                     options.OutputPath,
                                     logger,
@@ -497,127 +497,6 @@ internal static class Program
         {
             Directory.CreateDirectory(directory);
         }
-    }
-
-    // Video file extensions that are handled by the frame-sequence → ffmpeg path.
-    // GIF is included here because the primary use-case for terminal recordings is
-    // an animated GIF; users who want a static GIF can specify --mode image separately.
-    private static readonly HashSet<string> VideoExtensions = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "mp4", "webm", "avi", "mov", "mkv", "ogv", "flv", "ts", "wmv", "m4v", "gif",
-    };
-
-    private static bool IsVideoFormat(string extension) => VideoExtensions.Contains(extension);
-
-    /// <summary>
-    /// Finds the ffmpeg executable to use for format conversion.
-    /// Preference order: binary next to this executable (bundled), then PATH.
-    /// </summary>
-    private static string FindFfmpegExecutable()
-    {
-        var exeName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "ffmpeg.exe" : "ffmpeg";
-
-        // 1. Check next to this binary (covers the bundled Windows distribution and npm dist/ layout)
-        var exeDir = Path.GetDirectoryName(Environment.ProcessPath ?? string.Empty);
-        if (!string.IsNullOrEmpty(exeDir))
-        {
-            var bundled = Path.Combine(exeDir, exeName);
-            if (File.Exists(bundled))
-            {
-                return bundled;
-            }
-        }
-
-        // 2. Rely on PATH
-        return exeName;
-    }
-
-    /// <summary>Runs ffmpeg with the given arguments and throws if the process exits non-zero.</summary>
-    private static async Task RunFfmpegAsync(
-        string[] args,
-        ILogger logger,
-        CancellationToken cancellationToken
-    )
-    {
-        var ffmpeg = FindFfmpegExecutable();
-        logger.ZLogDebug($"Running ffmpeg: {ffmpeg} {string.Join(' ', args)}");
-
-        using var process = new Process();
-        process.StartInfo.FileName = ffmpeg;
-        process.StartInfo.UseShellExecute = false;
-        foreach (var arg in args)
-        {
-            process.StartInfo.ArgumentList.Add(arg);
-        }
-
-        try
-        {
-            process.Start();
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException(
-                $"Failed to start ffmpeg. Please ensure ffmpeg is installed "
-                + "(bundled with the application or available in PATH).\n"
-                + ex.Message,
-                ex
-            );
-        }
-
-        using var killOnCancel = cancellationToken.Register(() =>
-        {
-            try { process.Kill(entireProcessTree: true); }
-            catch { /* process may have already exited */ }
-        });
-
-        await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
-
-        if (process.ExitCode != 0)
-        {
-            throw new InvalidOperationException(
-                $"ffmpeg exited with code {process.ExitCode}. "
-                + "Ensure ffmpeg supports the requested output format."
-            );
-        }
-
-        logger.ZLogDebug($"ffmpeg completed successfully.");
-    }
-
-    /// <summary>Converts a directory of frame-NNNN.svg files into a video using ffmpeg.</summary>
-    private static async Task RunFfmpegVideoAsync(
-        string framesDir,
-        double fps,
-        string outputPath,
-        ILogger logger,
-        CancellationToken cancellationToken
-    )
-    {
-        var framePattern = Path.Combine(framesDir, "frame-%04d.svg");
-        var fpsStr = fps.ToString(CultureInfo.InvariantCulture);
-        await RunFfmpegAsync(
-                ["-y", "-framerate", fpsStr, "-i", framePattern, outputPath],
-                logger,
-                cancellationToken
-            )
-            .ConfigureAwait(false);
-    }
-
-    /// <summary>Converts a single SVG file to an image format using ffmpeg.</summary>
-    private static async Task RunFfmpegImageAsync(
-        string svgPath,
-        string outputPath,
-        ILogger logger,
-        CancellationToken cancellationToken
-    )
-    {
-        await RunFfmpegAsync(
-                // -frames:v 1 -update 1 ensure a single frame is written without
-                // the "image sequence pattern" warning from ffmpeg.
-                ["-y", "-i", svgPath, "-frames:v", "1", "-update", "1", outputPath],
-                logger,
-                cancellationToken
-            )
-            .ConfigureAwait(false);
     }
 
     /// <returns>The number of frame files written to <paramref name="directory"/>.</returns>

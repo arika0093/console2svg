@@ -19,7 +19,6 @@ For example, let's open [this image](https://raw.githubusercontent.com/arika0093
 
 There are similar tools, but console2svg stands out for:
 
-* [**No dependencies**](#install): no additional software or libraries required. available as npm, dotnet tool and static binary.
 * [**Video mode**](#animated-svg): save command execution animations as SVG. great for documentation and blog posts.
 * [**Crop**](#static-svg-with-crop): trim specific parts of the output. Crop based on text patterns is also supported, making it easy to trim specific lines or sections.
 * [**Background and window**](#window-chrome): add background and window frames to produce presentation-ready SVGs for documentation, blogs, social media, etc.
@@ -68,23 +67,26 @@ dotnet tool install -g ConsoleToSvg
 npm install -g console2svg
 ```
 
-It is also available as a standalone binary that you can download from the releases page and add to your PATH.
+It is also available as standalone archives on the releases page.
+Matching archives bundle `resvg` when the upstream release provides a compatible binary, so you can usually extract the files into a directory on your `PATH`.
 
 ```sh
-# ubuntu
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg.amd64.deb -o console2svg.deb
-dpkg -i console2svg.deb
+# ubuntu package
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg.x64.deb -o console2svg.deb
+sudo dpkg -i console2svg.deb
 
-# linux
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-linux-x64 -o console2svg
-mv -f console2svg /usr/local/bin/
-chmod +x /usr/local/bin/console2svg
+# linux/macOS bundle
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-linux-x64.tar.gz -o console2svg-linux-x64.tar.gz
+sudo tar -xzf console2svg-linux-x64.tar.gz -C /usr/local/bin
 
-# windows (binary only)
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64.exe -o console2svg.exe
+# windows bundle
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64.zip -o console2svg-win-x64.zip
+mkdir -p console2svg
+tar -xf console2svg-win-x64.zip -C console2svg
+
 # windows (with ffmpeg)
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip -o console2svg-win-x64-ffmpeg.zip
-unzip console2svg-win-x64-ffmpeg.zip -d console2svg
+tar -xf console2svg-win-x64-ffmpeg.zip -C console2svg
 cd console2svg
 ```
 
@@ -278,9 +280,10 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
 
 In v0.7 and later, you can specify the output format based on the file extension specified with `-o output.mp4`.
 
-First, install `ffmpeg`.  
+`console2svg` uses `resvg` for PNG rendering when available. The release archives and npm package bundle it where the upstream `resvg` release provides a compatible binary.
+For JPEG/WebP/video outputs, install `ffmpeg`.  
 On Linux/macOS, you can easily install it using a package manager.  
-On Windows, it's a bit more involved, so you can use the bundled version of ffmpeg ([x64](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip), [arm64](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-arm64-ffmpeg.zip)).
+On Windows, it's a bit more involved, so you can use the bundled version of ffmpeg (which also includes `resvg`) ([x64](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip), [arm64](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-arm64-ffmpeg.zip)).
 
 ```bash
 # ubuntu
@@ -289,7 +292,8 @@ sudo apt install ffmpeg
 brew install ffmpeg
 # windows 
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip -o console2svg-win-x64-ffmpeg.zip
-unzip console2svg-win-x64-ffmpeg.zip
+mkdir -p console2svg
+tar -xf console2svg-win-x64-ffmpeg.zip -C console2svg
 cd console2svg
 ```
 

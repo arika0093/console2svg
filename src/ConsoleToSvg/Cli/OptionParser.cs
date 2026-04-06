@@ -16,7 +16,8 @@ public static class OptionParser
 
             Major options:
                 -o, --out <path>          Output file path (default: output.svg).
-                                          Non-SVG extensions trigger ffmpeg conversion (e.g. output.png, output.mp4).
+                                          Non-SVG extensions trigger image/video conversion
+                                          (e.g. output.png, output.mp4).
                 -w, --width <int|adjust>  Terminal width in characters (default: auto[pipe], 100[pty]).
                 -h, --height <int|adjust> Terminal height in rows (default: auto).
                 -v                        Output animated SVG (alias for --mode video).
@@ -46,8 +47,9 @@ public static class OptionParser
                 -o, --out <path>          Output file path (default: output.svg).
                                           Extension determines format:
                                             .svg          – SVG output (default, no external tools required).
-                                            .png/.jpg/…   – Raster image via ffmpeg (ffmpeg must be installed).
-                                            .mp4/.webm/…  – Video via ffmpeg using frame sequences (ffmpeg must be installed).
+                                            .png          – Raster image via resvg (bundled in release archives or via PATH).
+                                            .jpg/.webp/…  – Raster image via resvg + ffmpeg.
+                                            .mp4/.webm/…  – Video via frame sequences; prefers resvg + ffmpeg.
                 --stdout                  Write SVG to stdout instead of a file.
                                           PTY output forwarding is suppressed so the pipe receives only SVG.
                 -m, --mode <image|video|repeat>  Output mode (default: image).

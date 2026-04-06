@@ -42,12 +42,6 @@ const isWin = platform === 'win32';
 const distDir = path.join(__dirname, '..', 'dist');
 const destPath = path.join(distDir, `console2svg${isWin ? '.exe' : ''}`);
 
-if (fs.existsSync(destPath)) {
-  process.exit(0);
-}
-
-fs.mkdirSync(distDir, { recursive: true });
-
 function fail(message, err) {
   if (err) {
     console.error(message, err.message || err);
@@ -57,7 +51,12 @@ function fail(message, err) {
   process.exit(1);
 }
 
-function download(downloadUrl, redirects, onFinish) {
+function resetDistDir() {
+  fs.rmSync(distDir, { recursive: true, force: true });
+  fs.mkdirSync(distDir, { recursive: true });
+}
+
+function download(downloadUrl, tempPath, redirects, onFinish) {
   if (redirects > 5) {
     fail('console2svg: too many redirects while downloading.');
   }
@@ -65,8 +64,6 @@ function download(downloadUrl, redirects, onFinish) {
   const proxy = getProxyForUrl(downloadUrl);
   const agent = proxy ? new HttpsProxyAgent(proxy) : undefined;
   const urlObj = new URL(downloadUrl);
-
-  const tempPath = `${destPath}.tmp`;
 
   const request = https.get(
     {
@@ -83,7 +80,7 @@ function download(downloadUrl, redirects, onFinish) {
     (res) => {
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
         res.resume();
-        download(res.headers.location, redirects + 1, onFinish);
+        download(res.headers.location, tempPath, redirects + 1, onFinish);
         return;
       }
 
@@ -105,11 +102,11 @@ function download(downloadUrl, redirects, onFinish) {
       });
       file.on('error', (err) => {
         try {
-            fs.unlinkSync(tempPath);
-          } catch {
-            // ignore
-          }
-          fail('console2svg: write failed.', err);
+          fs.unlinkSync(tempPath);
+        } catch {
+          // ignore
+        }
+        fail('console2svg: write failed.', err);
       });
     }
   );
@@ -119,12 +116,15 @@ function download(downloadUrl, redirects, onFinish) {
   });
 }
 
+resetDistDir();
+
 if (isWin) {
-  // On Windows: download the ffmpeg bundle zip (console2svg.exe + ffmpeg.exe + DLLs)
+  // On Windows: download the ffmpeg bundle zip (console2svg.exe + resvg.exe + ffmpeg.exe + DLLs)
   const zipFileName = `console2svg-${rid}-ffmpeg.zip`;
   const zipUrl = `https://github.com/arika0093/console2svg/releases/download/v${version}/${zipFileName}`;
+  const tempZipPath = path.join(distDir, `${zipFileName}.tmp`);
 
-  download(zipUrl, 0, (tempZipPath) => {
+  download(zipUrl, tempZipPath, 0, (downloadedZipPath) => {
     // Escape single quotes in paths for PowerShell single-quoted string literals.
     const psEscape = (p) => p.replace(/'/g, "''");
     // Extract the zip into distDir using PowerShell
@@ -134,12 +134,12 @@ if (isWin) {
         '-NoProfile',
         '-NonInteractive',
         '-Command',
-        `Expand-Archive -LiteralPath '${psEscape(tempZipPath)}' -DestinationPath '${psEscape(distDir)}' -Force`
+        `Expand-Archive -LiteralPath '${psEscape(downloadedZipPath)}' -DestinationPath '${psEscape(distDir)}' -Force`
       ],
       { stdio: 'inherit' }
     );
 
-    try { fs.unlinkSync(tempZipPath); } catch { /* ignore */ }
+    try { fs.unlinkSync(downloadedZipPath); } catch { /* ignore */ }
 
     if (result.status !== 0) {
       fail('console2svg: failed to extract zip bundle.');
@@ -152,14 +152,33 @@ if (isWin) {
     process.exit(0);
   });
 } else {
-  // On Linux/macOS: download the single binary
-  const fileName = `console2svg-${rid}`;
-  const url = `https://github.com/arika0093/console2svg/releases/download/v${version}/${fileName}`;
+  // On Linux/macOS: download the release tarball bundle (console2svg + resvg)
+  const archiveFileName = `console2svg-${rid}.tar.gz`;
+  const url = `https://github.com/arika0093/console2svg/releases/download/v${version}/${archiveFileName}`;
+  const tempArchivePath = path.join(distDir, `${archiveFileName}.tmp`);
 
-  download(url, 0, (tempPath) => {
-    fs.renameSync(tempPath, destPath);
+  download(url, tempArchivePath, 0, (downloadedArchivePath) => {
+    const result = spawnSync(
+      'tar',
+      ['-xzf', downloadedArchivePath, '-C', distDir],
+      { stdio: 'inherit' }
+    );
+
+    try { fs.unlinkSync(downloadedArchivePath); } catch { /* ignore */ }
+
+    if (result.status !== 0) {
+      fail('console2svg: failed to extract tar.gz bundle.');
+    }
+
+    if (!fs.existsSync(destPath)) {
+      fail('console2svg: console2svg not found after extraction.');
+    }
+
     fs.chmodSync(destPath, 0o755);
+    const resvgPath = path.join(distDir, 'resvg');
+    if (fs.existsSync(resvgPath)) {
+      fs.chmodSync(resvgPath, 0o755);
+    }
     process.exit(0);
   });
 }
-

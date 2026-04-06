@@ -60,6 +60,23 @@ internal static class SvgDocumentBuilder
         public double CellHeight { get; set; }
 
         public double BaselineOffset { get; set; }
+
+        // Output SVG dimensions (may differ from CanvasWidth/CanvasHeight when --size is used)
+        public double OutputWidth { get; set; }
+
+        public double OutputHeight { get; set; }
+
+        // ViewBox origin (negative when canvas is smaller than the target output size)
+        public double ViewBoxX { get; set; }
+
+        public double ViewBoxY { get; set; }
+
+        public double ViewBoxWidth { get; set; }
+
+        public double ViewBoxHeight { get; set; }
+
+        /// <summary>True when the viewBox origin is offset (i.e. output is larger than the natural canvas).</summary>
+        public bool HasViewBoxOffset { get; set; }
     }
 
     public static Context CreateContext(
@@ -70,7 +87,9 @@ internal static class SvgDocumentBuilder
         double padding = 0d,
         int? heightRows = null,
         int commandHeaderRows = 0,
-        double fontSize = 14d
+        double fontSize = 14d,
+        double? sizeWidth = null,
+        double? sizeHeight = null
     )
     {
         // Derive font metrics from fontSize
@@ -198,6 +217,71 @@ internal static class SvgDocumentBuilder
             + viewHeight
             + normalizedPadding;
 
+        var naturalCanvasWidth = Math.Max(1d, canvasWidth);
+        var naturalCanvasHeight = Math.Max(1d, canvasHeight);
+
+        // Compute output SVG dimensions and viewBox based on --size constraints.
+        double outputWidth;
+        double outputHeight;
+        double viewBoxX;
+        double viewBoxY;
+        double viewBoxWidth;
+        double viewBoxHeight;
+
+        if (sizeWidth.HasValue && sizeHeight.HasValue)
+        {
+            // Both specified: scale to fit within the target, then center with extended background.
+            var scale = Math.Min(
+                sizeWidth.Value / naturalCanvasWidth,
+                sizeHeight.Value / naturalCanvasHeight
+            );
+            var scaledW = naturalCanvasWidth * scale;
+            var scaledH = naturalCanvasHeight * scale;
+            var marginX = (sizeWidth.Value - scaledW) / 2d;
+            var marginY = (sizeHeight.Value - scaledH) / 2d;
+            // Express the margins in viewBox coordinate space (where 1 unit = naturalCanvas / output * scale)
+            var vOffX = Math.Max(0d, marginX / scale);
+            var vOffY = Math.Max(0d, marginY / scale);
+            outputWidth = sizeWidth.Value;
+            outputHeight = sizeHeight.Value;
+            viewBoxX = vOffX > 0d ? -vOffX : 0d;
+            viewBoxY = vOffY > 0d ? -vOffY : 0d;
+            viewBoxWidth = sizeWidth.Value / scale;
+            viewBoxHeight = sizeHeight.Value / scale;
+        }
+        else if (sizeWidth.HasValue)
+        {
+            // Width only: scale proportionally.
+            var scale = sizeWidth.Value / naturalCanvasWidth;
+            outputWidth = sizeWidth.Value;
+            outputHeight = naturalCanvasHeight * scale;
+            viewBoxX = 0d;
+            viewBoxY = 0d;
+            viewBoxWidth = naturalCanvasWidth;
+            viewBoxHeight = naturalCanvasHeight;
+        }
+        else if (sizeHeight.HasValue)
+        {
+            // Height only: scale proportionally.
+            var scale = sizeHeight.Value / naturalCanvasHeight;
+            outputWidth = naturalCanvasWidth * scale;
+            outputHeight = sizeHeight.Value;
+            viewBoxX = 0d;
+            viewBoxY = 0d;
+            viewBoxWidth = naturalCanvasWidth;
+            viewBoxHeight = naturalCanvasHeight;
+        }
+        else
+        {
+            // No size constraint: output equals natural canvas.
+            outputWidth = naturalCanvasWidth;
+            outputHeight = naturalCanvasHeight;
+            viewBoxX = 0d;
+            viewBoxY = 0d;
+            viewBoxWidth = naturalCanvasWidth;
+            viewBoxHeight = naturalCanvasHeight;
+        }
+
         return new Context
         {
             StartRow = startRow,
@@ -212,8 +296,8 @@ internal static class SvgDocumentBuilder
             PixelCropLeft = pxLeft,
             ViewWidth = viewWidth,
             ViewHeight = viewHeight,
-            CanvasWidth = Math.Max(1d, canvasWidth),
-            CanvasHeight = Math.Max(1d, canvasHeight),
+            CanvasWidth = naturalCanvasWidth,
+            CanvasHeight = naturalCanvasHeight,
             ContentOffsetX = contentOffsetX,
             ContentOffsetY = contentOffsetY,
             HeaderRows = commandHeaderRows,
@@ -223,6 +307,13 @@ internal static class SvgDocumentBuilder
             CellWidth = cellWidth,
             CellHeight = cellHeight,
             BaselineOffset = baselineOffset,
+            OutputWidth = outputWidth,
+            OutputHeight = outputHeight,
+            ViewBoxX = viewBoxX,
+            ViewBoxY = viewBoxY,
+            ViewBoxWidth = viewBoxWidth,
+            ViewBoxHeight = viewBoxHeight,
+            HasViewBoxOffset = viewBoxX < 0d || viewBoxY < 0d,
         };
     }
 
@@ -311,14 +402,18 @@ internal static class SvgDocumentBuilder
         sb.Append("<svg xmlns=\"http://www.w3.org/2000/svg\" ");
         sb.Append("xmlns:xlink=\"http://www.w3.org/1999/xlink\" ");
         sb.Append("width=\"");
-        sb.Append(Format(context.CanvasWidth));
+        sb.Append(Format(context.OutputWidth));
         sb.Append("\" height=\"");
-        sb.Append(Format(context.CanvasHeight));
+        sb.Append(Format(context.OutputHeight));
         sb.Append("\" ");
-        sb.Append("viewBox=\"0 0 ");
-        sb.Append(Format(context.CanvasWidth));
+        sb.Append("viewBox=\"");
+        sb.Append(Format(context.ViewBoxX));
         sb.Append(' ');
-        sb.Append(Format(context.CanvasHeight));
+        sb.Append(Format(context.ViewBoxY));
+        sb.Append(' ');
+        sb.Append(Format(context.ViewBoxWidth));
+        sb.Append(' ');
+        sb.Append(Format(context.ViewBoxHeight));
         sb.Append("\" role=\"img\" aria-label=\"console2svg output\">\n");
 
         var effectiveFont = string.IsNullOrWhiteSpace(font)
@@ -405,10 +500,20 @@ internal static class SvgDocumentBuilder
         if (chrome?.IsDesktop == true)
         {
             // Desktop background only  Eshadow + chrome go in AppendChrome (inside the single opacity group)
-            sb.Append("<rect width=\"");
-            sb.Append(Format(context.CanvasWidth));
+            sb.Append("<rect ");
+            if (context.HasViewBoxOffset)
+            {
+                sb.Append("x=\"");
+                sb.Append(Format(context.ViewBoxX));
+                sb.Append("\" y=\"");
+                sb.Append(Format(context.ViewBoxY));
+                sb.Append("\" ");
+            }
+
+            sb.Append("width=\"");
+            sb.Append(Format(context.ViewBoxWidth));
             sb.Append("\" height=\"");
-            sb.Append(Format(context.CanvasHeight));
+            sb.Append(Format(context.ViewBoxHeight));
             sb.Append("\" fill=\"");
             sb.Append(GetDesktopBgFill(background));
             sb.Append("\"/>\n");
@@ -557,10 +662,20 @@ internal static class SvgDocumentBuilder
         if (fill == null)
             return;
 
-        sb.Append("<rect width=\"");
-        sb.Append(Format(context.CanvasWidth));
+        sb.Append("<rect ");
+        if (context.HasViewBoxOffset)
+        {
+            sb.Append("x=\"");
+            sb.Append(Format(context.ViewBoxX));
+            sb.Append("\" y=\"");
+            sb.Append(Format(context.ViewBoxY));
+            sb.Append("\" ");
+        }
+
+        sb.Append("width=\"");
+        sb.Append(Format(context.ViewBoxWidth));
         sb.Append("\" height=\"");
-        sb.Append(Format(context.CanvasHeight));
+        sb.Append(Format(context.ViewBoxHeight));
         sb.Append("\" fill=\"");
         sb.Append(fill);
         sb.Append("\"/>\n"); // always fully opaque
@@ -626,7 +741,7 @@ internal static class SvgDocumentBuilder
 
         if (background is { Length: 1 } && IsImagePath(background[0]))
         {
-            AppendImagePatternDef(sb, background[0], context.CanvasWidth, context.CanvasHeight);
+            AppendImagePatternDef(sb, background[0], context);
         }
         else if (background is { Length: >= 2 })
         {
@@ -662,12 +777,7 @@ internal static class SvgDocumentBuilder
         sb.Append("</linearGradient>\n");
     }
 
-    private static void AppendImagePatternDef(
-        StringBuilder sb,
-        string imagePath,
-        double width,
-        double height
-    )
+    private static void AppendImagePatternDef(StringBuilder sb, string imagePath, Context context)
     {
         string href;
         var mimeType = GetImageMimeType(imagePath);
@@ -688,17 +798,27 @@ internal static class SvgDocumentBuilder
             href = imagePath; // fallback: use as-is
         }
 
-        sb.Append("<pattern id=\"desktop-bg\" patternUnits=\"userSpaceOnUse\" width=\"");
-        sb.Append(Format(width));
+        sb.Append(
+            "<pattern id=\"desktop-bg\" patternUnits=\"userSpaceOnUse\" patternContentUnits=\"userSpaceOnUse\" x=\""
+        );
+        sb.Append(Format(context.ViewBoxX));
+        sb.Append("\" y=\"");
+        sb.Append(Format(context.ViewBoxY));
+        sb.Append("\" width=\"");
+        sb.Append(Format(context.ViewBoxWidth));
         sb.Append("\" height=\"");
-        sb.Append(Format(height));
+        sb.Append(Format(context.ViewBoxHeight));
         sb.Append("\">");
         sb.Append("<image href=\"");
         sb.Append(EscapeAttribute(href));
+        sb.Append("\" x=\"");
+        sb.Append("0");
+        sb.Append("\" y=\"");
+        sb.Append("0");
         sb.Append("\" width=\"");
-        sb.Append(Format(width));
+        sb.Append(Format(context.ViewBoxWidth));
         sb.Append("\" height=\"");
-        sb.Append(Format(height));
+        sb.Append(Format(context.ViewBoxHeight));
         sb.Append("\" preserveAspectRatio=\"xMidYMid slice\"/>");
         sb.Append("</pattern>\n");
     }

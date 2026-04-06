@@ -112,4 +112,10 @@ public sealed class AppOptions
 
     /// <summary>Directory path to save individual static SVG frames (one per visual frame).</summary>
     public string? SaveFramesDir { get; set; }
+
+    /// <summary>Target output image width in pixels. null = auto (derived from content).</summary>
+    public double? SizeWidth { get; set; }
+
+    /// <summary>Target output image height in pixels. null = auto (derived from content).</summary>
+    public double? SizeHeight { get; set; }
 }

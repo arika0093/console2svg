@@ -280,10 +280,8 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
 
 In v0.7 and later, you can specify the output format based on the file extension specified with `-o output.mp4`.
 
-`console2svg` uses `resvg` for PNG rendering when available. The release archives and npm package bundle it where the upstream `resvg` release provides a compatible binary.
-For JPEG/WebP/video outputs, install `ffmpeg`.  
-On Linux/macOS, you can easily install it using a package manager.  
-On Windows, it's a bit more involved, so you can use the bundled version of ffmpeg (which also includes `resvg`) ([x64](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip), [arm64](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-arm64-ffmpeg.zip)).
+`console2svg` first checks whether the detected `ffmpeg` build advertises `--enable-librsvg`.
+If it does, `ffmpeg` is used directly for SVG input. Otherwise, `resvg` is used when available.
 
 ```bash
 # ubuntu
@@ -301,6 +299,16 @@ Then, you can specify the output file with the desired extension. For example, t
 
 ```bash
 console2svg -c -d macos --timeout 5 --fps 30 --output output.mp4 -- some-command
+```
+
+`console2svg` first checks if the detected `ffmpeg` build advertises `--enable-librsvg`. If it does, it uses `ffmpeg` directly for various conversions.
+If not, it first uses `resvg` to render SVG to PNG, and then uses `ffmpeg` to convert PNG to JPG/MP4/WebM, etc.
+
+```
+# if ffmpeg has librsvg
+console output -> [ffmpeg] -> png/jpg/mp4/webm/...
+# otherwise
+console output -> [resvg] -> png -> [ffmpeg] -> jpg/mp4/webm/...
 ```
 
 ## Appearance options

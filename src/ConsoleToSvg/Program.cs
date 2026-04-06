@@ -533,6 +533,12 @@ internal static class Program
             );
         }
 
+        using var killOnCancel = cancellationToken.Register(() =>
+        {
+            try { process.Kill(entireProcessTree: true); }
+            catch { /* process may have already exited */ }
+        });
+
         await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
 
         if (process.ExitCode != 0)

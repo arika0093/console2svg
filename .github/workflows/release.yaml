@@ -227,26 +227,27 @@ jobs:
 
             # Download and extract the ffmpeg bundle
             ffmpeg_zip="./ffmpeg-${rid}.zip"
-            curl -fsSL -o "$ffmpeg_zip" "$ffmpeg_zip_url" || { echo "Failed to download ffmpeg for $rid, skipping."; continue; }
+            curl -fsSL -o "$ffmpeg_zip" "$ffmpeg_zip_url"
 
             ffmpeg_dir="./ffmpeg-extract-${rid}"
             mkdir -p "$ffmpeg_dir"
             unzip -q "$ffmpeg_zip" -d "$ffmpeg_dir"
 
-            # The BtbN zip contains a top-level directory; find ffmpeg.exe inside it
-            ffmpeg_exe=$(find "$ffmpeg_dir" -name "ffmpeg.exe" | head -1)
-            if [ -z "$ffmpeg_exe" ]; then
-              echo "ffmpeg.exe not found in $ffmpeg_zip, skipping $rid."
-              continue
+            # The BtbN zip contains a top-level directory with a bin/ subdirectory
+            top_dir=$(ls -d "$ffmpeg_dir"/*/ | head -1)
+            ffmpeg_bin_dir="${top_dir}bin"
+            if [ ! -f "$ffmpeg_bin_dir/ffmpeg.exe" ]; then
+              echo "ffmpeg.exe not found at $ffmpeg_bin_dir/ffmpeg.exe."
+              exit 1
             fi
-            ffmpeg_bin_dir=$(dirname "$ffmpeg_exe")
 
-            # Build the bundle zip: console2svg.exe + ffmpeg binaries (exe + dlls)
+            # Build the bundle zip: console2svg.exe + ffmpeg binaries (exe + dlls) + LICENSE
             bundle_dir="./bundle-${rid}"
             mkdir -p "$bundle_dir"
             cp "$src" "$bundle_dir/console2svg.exe"
-            cp "$ffmpeg_bin_dir"/*.exe "$bundle_dir/" 2>/dev/null || true
-            cp "$ffmpeg_bin_dir"/*.dll "$bundle_dir/" 2>/dev/null || true
+            cp "$ffmpeg_bin_dir"/*.exe "$bundle_dir/"
+            cp "$ffmpeg_bin_dir"/*.dll "$bundle_dir/"
+            cp "${top_dir}LICENSE" "$bundle_dir/ffmpeg-LICENSE"
 
             zip_name="./release-upload/console2svg-${rid}-ffmpeg.zip"
             (cd "$bundle_dir" && zip -q -r "../../${zip_name#./}" .)

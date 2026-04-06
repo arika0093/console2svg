@@ -33,6 +33,7 @@ public sealed class OutputConverterTests
                 "resvg",
                 isWindows: false,
                 processPath: Path.Combine(appDir, "console2svg"),
+                currentDirectory: null,
                 pathEnvironment: pathDir
             );
 
@@ -45,25 +46,30 @@ public sealed class OutputConverterTests
     }
 
     [Test]
-    public void TryResolveExecutable_FallsBackToPath()
+    public void TryResolveExecutable_ChecksCurrentDirectoryBeforePath()
     {
         var tempRoot = CreateTempDirectory();
         try
         {
+            var currentDir = Path.Combine(tempRoot, "cwd");
             var pathDir = Path.Combine(tempRoot, "path");
+            Directory.CreateDirectory(currentDir);
             Directory.CreateDirectory(pathDir);
 
+            var fromCurrentDirectory = Path.Combine(currentDir, "ffmpeg.exe");
             var onPath = Path.Combine(pathDir, "ffmpeg.exe");
+            File.WriteAllText(fromCurrentDirectory, string.Empty);
             File.WriteAllText(onPath, string.Empty);
 
             var resolved = OutputConverter.TryResolveExecutable(
                 "ffmpeg",
                 isWindows: true,
                 processPath: null,
+                currentDirectory: currentDir,
                 pathEnvironment: pathDir
             );
 
-            resolved.ShouldBe(onPath);
+            resolved.ShouldBe(fromCurrentDirectory);
         }
         finally
         {
@@ -74,21 +80,45 @@ public sealed class OutputConverterTests
     [Test]
     public void GetRasterConversionStrategy_SelectsExpectedPipelines()
     {
-        OutputConverter.GetRasterConversionStrategy("output.png", resvgAvailable: true)
+        OutputConverter.GetRasterConversionStrategy(
+                "output.png",
+                ffmpegSupportsSvgInput: true,
+                resvgAvailable: true
+            )
+            .ShouldBe(RasterConversionStrategy.DirectSvgWithFfmpeg);
+        OutputConverter.GetRasterConversionStrategy(
+                "output.png",
+                ffmpegSupportsSvgInput: false,
+                resvgAvailable: true
+            )
             .ShouldBe(RasterConversionStrategy.ResvgPngOnly);
-        OutputConverter.GetRasterConversionStrategy("output.jpg", resvgAvailable: true)
+        OutputConverter.GetRasterConversionStrategy(
+                "output.jpg",
+                ffmpegSupportsSvgInput: false,
+                resvgAvailable: true
+            )
             .ShouldBe(RasterConversionStrategy.ResvgThenFfmpeg);
-        OutputConverter.GetRasterConversionStrategy("output.png", resvgAvailable: false)
-            .ShouldBe(RasterConversionStrategy.DirectSvgWithFfmpeg);
-        OutputConverter.GetRasterConversionStrategy("output.gif", resvgAvailable: false)
-            .ShouldBe(RasterConversionStrategy.DirectSvgWithFfmpeg);
+        OutputConverter.GetRasterConversionStrategy(
+                "output.gif",
+                ffmpegSupportsSvgInput: false,
+                resvgAvailable: false
+            )
+            .ShouldBeNull();
     }
 
     [Test]
     public void GetVideoFrameExtension_UsesPngWhenResvgIsAvailable()
     {
-        OutputConverter.GetVideoFrameExtension(resvgAvailable: true).ShouldBe("png");
-        OutputConverter.GetVideoFrameExtension(resvgAvailable: false).ShouldBe("svg");
+        OutputConverter.GetVideoFrameExtension(useResvg: true).ShouldBe("png");
+        OutputConverter.GetVideoFrameExtension(useResvg: false).ShouldBe("svg");
+    }
+
+    [Test]
+    public void HelpOutputEnablesLibrsvg_DetectsBuildFlag()
+    {
+        OutputConverter.HelpOutputEnablesLibrsvg("configuration: --enable-gpl --enable-librsvg")
+            .ShouldBeTrue();
+        OutputConverter.HelpOutputEnablesLibrsvg("configuration: --enable-gpl").ShouldBeFalse();
     }
 
     private static string CreateTempDirectory()

@@ -205,6 +205,54 @@ jobs:
             fpm "${common_args[@]}" -t rpm -a "$rpm_arch" -p "./release-upload/console2svg.${asset_arch}.rpm" "$src=/usr/local/bin/console2svg"
           done
 
+      - name: Build Windows ffmpeg zip bundles
+        shell: bash
+        run: |
+          sudo apt-get install -y unzip
+
+          for rid in win-x64 win-arm64; do
+            case "$rid" in
+              win-x64)
+                ffmpeg_zip_url="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-lgpl-shared.zip"
+                ;;
+              win-arm64)
+                ffmpeg_zip_url="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-winarm64-lgpl-shared.zip"
+                ;;
+            esac
+
+            src="./native-artifacts/native-${rid}/console2svg.exe"
+            if [ ! -f "$src" ]; then
+              continue
+            fi
+
+            # Download and extract the ffmpeg bundle
+            ffmpeg_zip="./ffmpeg-${rid}.zip"
+            curl -fsSL -o "$ffmpeg_zip" "$ffmpeg_zip_url" || { echo "Failed to download ffmpeg for $rid, skipping."; continue; }
+
+            ffmpeg_dir="./ffmpeg-extract-${rid}"
+            mkdir -p "$ffmpeg_dir"
+            unzip -q "$ffmpeg_zip" -d "$ffmpeg_dir"
+
+            # The BtbN zip contains a top-level directory; find ffmpeg.exe inside it
+            ffmpeg_exe=$(find "$ffmpeg_dir" -name "ffmpeg.exe" | head -1)
+            if [ -z "$ffmpeg_exe" ]; then
+              echo "ffmpeg.exe not found in $ffmpeg_zip, skipping $rid."
+              continue
+            fi
+            ffmpeg_bin_dir=$(dirname "$ffmpeg_exe")
+
+            # Build the bundle zip: console2svg.exe + ffmpeg binaries (exe + dlls)
+            bundle_dir="./bundle-${rid}"
+            mkdir -p "$bundle_dir"
+            cp "$src" "$bundle_dir/console2svg.exe"
+            cp "$ffmpeg_bin_dir"/*.exe "$bundle_dir/" 2>/dev/null || true
+            cp "$ffmpeg_bin_dir"/*.dll "$bundle_dir/" 2>/dev/null || true
+
+            zip_name="./release-upload/console2svg-${rid}-ffmpeg.zip"
+            (cd "$bundle_dir" && zip -q -r "../../${zip_name#./}" .)
+            echo "Created $zip_name"
+          done
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:

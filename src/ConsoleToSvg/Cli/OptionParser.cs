@@ -15,8 +15,8 @@ public static class OptionParser
                 console2svg [options] -- my-command with args
 
             Major options:
-                -o, --out <path>          Output SVG path (default: output.svg).
-                                          --stdout to write to stdout instead of a file.
+                -o, --out <path>          Output file path (default: output.svg).
+                                          Non-SVG extensions trigger ffmpeg conversion (e.g. output.png, output.mp4).
                 -w, --width <int|adjust>  Terminal width in characters (default: auto[pipe], 100[pty]).
                 -h, --height <int|adjust> Terminal height in rows (default: auto).
                 -v                        Output animated SVG (alias for --mode video).
@@ -43,7 +43,11 @@ public static class OptionParser
                 console2svg [options] -- my-command with args
 
             Options (Common):
-                -o, --out <path>          Output SVG path (default: output.svg).
+                -o, --out <path>          Output file path (default: output.svg).
+                                          Extension determines format:
+                                            .svg          – SVG output (default, no external tools required).
+                                            .png/.jpg/…   – Raster image via ffmpeg (ffmpeg must be installed).
+                                            .mp4/.webm/…  – Video via ffmpeg using frame sequences (ffmpeg must be installed).
                 --stdout                  Write SVG to stdout instead of a file.
                                           PTY output forwarding is suppressed so the pipe receives only SVG.
                 -m, --mode <image|video|repeat>  Output mode (default: image).

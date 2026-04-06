@@ -983,4 +983,36 @@ public sealed class OptionParserTests
         ok.ShouldBeFalse();
         error.ShouldNotBeNull();
     }
+
+    [Test]
+    public void OutputPathDefaultIsSvg()
+    {
+        var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.OutputPath.ShouldBe("output.svg");
+    }
+
+    [Test]
+    public void OutputPathPngParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "-o", "output.png" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.OutputPath.ShouldBe("output.png");
+    }
+
+    [Test]
+    public void OutputPathMp4Parsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "--out", "output.mp4" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.OutputPath.ShouldBe("output.mp4");
+    }
+
+    [Test]
+    public void OutputPathWebmParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "-o", "output.webm" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.OutputPath.ShouldBe("output.webm");
+    }
 }

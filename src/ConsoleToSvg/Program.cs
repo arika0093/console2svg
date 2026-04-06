@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -145,16 +147,140 @@ internal static class Program
             }
             else
             {
-                EnsureDirectory(options.OutputPath);
-                logger.ZLogDebug($"Writing output file: {options.OutputPath}");
-                await File.WriteAllTextAsync(
-                        options.OutputPath,
-                        svg,
-                        new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
-                        outputToken
-                    )
-                    .ConfigureAwait(false);
-                logger.ZLogDebug($"Output file written: {options.OutputPath}");
+                var outputExt = Path.GetExtension(options.OutputPath)
+                    .TrimStart('.')
+                    .ToLowerInvariant();
+
+                if (string.IsNullOrEmpty(outputExt) || outputExt == "svg")
+                {
+                    // SVG output – existing behaviour
+                    EnsureDirectory(options.OutputPath);
+                    logger.ZLogDebug($"Writing output file: {options.OutputPath}");
+                    await File.WriteAllTextAsync(
+                            options.OutputPath,
+                            svg,
+                            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+                            outputToken
+                        )
+                        .ConfigureAwait(false);
+                    logger.ZLogDebug($"Output file written: {options.OutputPath}");
+                }
+                else
+                {
+                    // Route based on explicit --mode if given, otherwise infer from output extension.
+                    // Explicit --mode image overrides video extensions (e.g. static GIF with --frame).
+                    // No explicit mode: video extensions → frame-sequence path, others → ffmpeg image.
+                    var useVideoPath =
+                        options.IsModeExplicit
+                            ? options.Mode is OutputMode.Video or OutputMode.Repeat
+                            : IsVideoFormat(outputExt);
+
+                    if (useVideoPath)
+                    {
+                        // Video format: save frames to a temp dir, then invoke ffmpeg.
+                        var tempDir = Path.Combine(
+                            Path.GetTempPath(),
+                            $"c2s-{Guid.NewGuid():N}"
+                        );
+                        try
+                        {
+                            logger.ZLogDebug($"Video output: saving frames to temp dir {tempDir}");
+                            var frameCount = await SaveFramesAsync(
+                                    session,
+                                    renderOptions,
+                                    tempDir,
+                                    options.VideoFps,
+                                    logger,
+                                    outputToken
+                                )
+                                .ConfigureAwait(false);
+
+                            // Guard against empty recordings: ensure at least one frame exists
+                            // so ffmpeg receives valid input (e.g. commands that exit without output).
+                            if (frameCount == 0)
+                            {
+                                var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+                                var fallbackSvg = SvgRenderer.Render(session, renderOptions);
+                                await File.WriteAllTextAsync(
+                                        Path.Combine(tempDir, "frame-0000.svg"),
+                                        fallbackSvg,
+                                        utf8,
+                                        outputToken
+                                    )
+                                    .ConfigureAwait(false);
+                                logger.ZLogDebug($"Empty recording: wrote single fallback frame to {tempDir}");
+                            }
+
+                            EnsureDirectory(options.OutputPath);
+                            await RunFfmpegVideoAsync(
+                                    tempDir,
+                                    options.VideoFps,
+                                    options.OutputPath,
+                                    logger,
+                                    outputToken
+                                )
+                                .ConfigureAwait(false);
+                        }
+                        finally
+                        {
+                            if (Directory.Exists(tempDir))
+                            {
+                                try
+                                {
+                                    Directory.Delete(tempDir, recursive: true);
+                                }
+                                catch (Exception ex)
+                                {
+                                    logger.ZLogDebug(ex, $"Failed to delete temp dir {tempDir}: {ex.Message}");
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Raster image (png, jpg, …): render a static SVG then convert via ffmpeg.
+                        // Always use the static renderer regardless of --mode, so the output reflects
+                        // the last terminal frame by default (or the --frame index if specified).
+                        var staticSvg = SvgRenderer.Render(session, renderOptions);
+                        var tempSvg = Path.Combine(
+                            Path.GetTempPath(),
+                            $"c2s-{Guid.NewGuid():N}.svg"
+                        );
+                        try
+                        {
+                            logger.ZLogDebug($"Image output: writing temp SVG to {tempSvg}");
+                            await File.WriteAllTextAsync(
+                                    tempSvg,
+                                    staticSvg,
+                                    new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+                                    outputToken
+                                )
+                                .ConfigureAwait(false);
+                            EnsureDirectory(options.OutputPath);
+                            await RunFfmpegImageAsync(
+                                    tempSvg,
+                                    options.OutputPath,
+                                    logger,
+                                    outputToken
+                                )
+                                .ConfigureAwait(false);
+                        }
+                        finally
+                        {
+                            if (File.Exists(tempSvg))
+                            {
+                                try
+                                {
+                                    File.Delete(tempSvg);
+                                }
+                                catch (Exception ex)
+                                {
+                                    logger.ZLogDebug(ex, $"Failed to delete temp SVG {tempSvg}: {ex.Message}");
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(options.SaveFramesDir))
@@ -373,7 +499,129 @@ internal static class Program
         }
     }
 
-    private static async Task SaveFramesAsync(
+    // Video file extensions that are handled by the frame-sequence → ffmpeg path.
+    // GIF is included here because the primary use-case for terminal recordings is
+    // an animated GIF; users who want a static GIF can specify --mode image separately.
+    private static readonly HashSet<string> VideoExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "mp4", "webm", "avi", "mov", "mkv", "ogv", "flv", "ts", "wmv", "m4v", "gif",
+    };
+
+    private static bool IsVideoFormat(string extension) => VideoExtensions.Contains(extension);
+
+    /// <summary>
+    /// Finds the ffmpeg executable to use for format conversion.
+    /// Preference order: binary next to this executable (bundled), then PATH.
+    /// </summary>
+    private static string FindFfmpegExecutable()
+    {
+        var exeName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "ffmpeg.exe" : "ffmpeg";
+
+        // 1. Check next to this binary (covers the bundled Windows distribution and npm dist/ layout)
+        var exeDir = Path.GetDirectoryName(Environment.ProcessPath ?? string.Empty);
+        if (!string.IsNullOrEmpty(exeDir))
+        {
+            var bundled = Path.Combine(exeDir, exeName);
+            if (File.Exists(bundled))
+            {
+                return bundled;
+            }
+        }
+
+        // 2. Rely on PATH
+        return exeName;
+    }
+
+    /// <summary>Runs ffmpeg with the given arguments and throws if the process exits non-zero.</summary>
+    private static async Task RunFfmpegAsync(
+        string[] args,
+        ILogger logger,
+        CancellationToken cancellationToken
+    )
+    {
+        var ffmpeg = FindFfmpegExecutable();
+        logger.ZLogDebug($"Running ffmpeg: {ffmpeg} {string.Join(' ', args)}");
+
+        using var process = new Process();
+        process.StartInfo.FileName = ffmpeg;
+        process.StartInfo.UseShellExecute = false;
+        foreach (var arg in args)
+        {
+            process.StartInfo.ArgumentList.Add(arg);
+        }
+
+        try
+        {
+            process.Start();
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException(
+                $"Failed to start ffmpeg. Please ensure ffmpeg is installed "
+                + "(bundled with the application or available in PATH).\n"
+                + ex.Message,
+                ex
+            );
+        }
+
+        using var killOnCancel = cancellationToken.Register(() =>
+        {
+            try { process.Kill(entireProcessTree: true); }
+            catch { /* process may have already exited */ }
+        });
+
+        await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
+
+        if (process.ExitCode != 0)
+        {
+            throw new InvalidOperationException(
+                $"ffmpeg exited with code {process.ExitCode}. "
+                + "Ensure ffmpeg supports the requested output format."
+            );
+        }
+
+        logger.ZLogDebug($"ffmpeg completed successfully.");
+    }
+
+    /// <summary>Converts a directory of frame-NNNN.svg files into a video using ffmpeg.</summary>
+    private static async Task RunFfmpegVideoAsync(
+        string framesDir,
+        double fps,
+        string outputPath,
+        ILogger logger,
+        CancellationToken cancellationToken
+    )
+    {
+        var framePattern = Path.Combine(framesDir, "frame-%04d.svg");
+        var fpsStr = fps.ToString(CultureInfo.InvariantCulture);
+        await RunFfmpegAsync(
+                ["-y", "-framerate", fpsStr, "-i", framePattern, outputPath],
+                logger,
+                cancellationToken
+            )
+            .ConfigureAwait(false);
+    }
+
+    /// <summary>Converts a single SVG file to an image format using ffmpeg.</summary>
+    private static async Task RunFfmpegImageAsync(
+        string svgPath,
+        string outputPath,
+        ILogger logger,
+        CancellationToken cancellationToken
+    )
+    {
+        await RunFfmpegAsync(
+                // -frames:v 1 -update 1 ensure a single frame is written without
+                // the "image sequence pattern" warning from ffmpeg.
+                ["-y", "-i", svgPath, "-frames:v", "1", "-update", "1", outputPath],
+                logger,
+                cancellationToken
+            )
+            .ConfigureAwait(false);
+    }
+
+    /// <returns>The number of frame files written to <paramref name="directory"/>.</returns>
+    private static async Task<int> SaveFramesAsync(
         RecordingSession session,
         SvgRenderOptions baseOptions,
         string directory,
@@ -419,6 +667,7 @@ internal static class Program
             baseOptions.Frame = null;
             logger.ZLogDebug($"Saved {totalFrames} frames to {directory}");
             await Console.Error.WriteLineAsync($"Saved {totalFrames} frames to {directory}");
+            return totalFrames;
         }
         else
         {
@@ -448,6 +697,7 @@ internal static class Program
             baseOptions.Frame = null;
             logger.ZLogDebug($"Saved {savedCount} unique frames (of {eventCount} events) to {directory}");
             await Console.Error.WriteLineAsync($"Saved {savedCount} frames to {directory}");
+            return savedCount;
         }
     }
 

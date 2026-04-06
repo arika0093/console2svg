@@ -46,6 +46,12 @@ public sealed class SvgRenderOptions
     /// <summary>Override the terminal's own background color. null = use theme default.</summary>
     public string? BackColor { get; set; }
 
+    /// <summary>Target output image width in pixels. null = auto (derived from content).</summary>
+    public double? SizeWidth { get; set; }
+
+    /// <summary>Target output image height in pixels. null = auto (derived from content).</summary>
+    public double? SizeHeight { get; set; }
+
     private static readonly char[] PathChars = ['/', '\\', '.'];
 
     public static SvgRenderOptions FromAppOptions(AppOptions appOptions)
@@ -108,6 +114,8 @@ public sealed class SvgRenderOptions
             LengthAdjust = appOptions.LengthAdjust,
             Background = appOptions.Background.Count > 0 ? appOptions.Background.ToArray() : null,
             BackColor = appOptions.BackColor,
+            SizeWidth = appOptions.SizeWidth,
+            SizeHeight = appOptions.SizeHeight,
         };
     }
 }

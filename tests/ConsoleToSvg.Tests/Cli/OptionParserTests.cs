@@ -1015,4 +1015,105 @@ public sealed class OptionParserTests
         ok.ShouldBeTrue();
         options!.OutputPath.ShouldBe("output.webm");
     }
+
+    [Test]
+    public void SizeWidthOnlyParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "--size", "800" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.SizeWidth.ShouldBe(800d);
+        options.SizeHeight.ShouldBeNull();
+    }
+
+    [Test]
+    public void SizeWidthOnlyWithAsteriskParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "--size", "800x*" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.SizeWidth.ShouldBe(800d);
+        options.SizeHeight.ShouldBeNull();
+    }
+
+    [Test]
+    public void SizeHeightOnlyWithAsteriskParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "--size", "*x600" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.SizeWidth.ShouldBeNull();
+        options.SizeHeight.ShouldBe(600d);
+    }
+
+    [Test]
+    public void SizeBothDimensionsParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "--size", "800x600" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.SizeWidth.ShouldBe(800d);
+        options.SizeHeight.ShouldBe(600d);
+    }
+
+    [Test]
+    public void SizeBothDimensionsWithDecimalsParsed()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--size", "1920x1080" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.SizeWidth.ShouldBe(1920d);
+        options.SizeHeight.ShouldBe(1080d);
+    }
+
+    [Test]
+    public void SizeDefaultIsNull()
+    {
+        var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.SizeWidth.ShouldBeNull();
+        options.SizeHeight.ShouldBeNull();
+    }
+
+    [Test]
+    public void SizeInvalidWidthReturnsError()
+    {
+        var ok = OptionParser.TryParse(new[] { "--size", "abcx600" }, out _, out var error, out _);
+        ok.ShouldBeFalse();
+        error.ShouldNotBeNull();
+    }
+
+    [Test]
+    public void SizeInvalidHeightReturnsError()
+    {
+        var ok = OptionParser.TryParse(new[] { "--size", "800xabc" }, out _, out var error, out _);
+        ok.ShouldBeFalse();
+        error.ShouldNotBeNull();
+    }
+
+    [Test]
+    public void SizeZeroWidthReturnsError()
+    {
+        var ok = OptionParser.TryParse(new[] { "--size", "0x600" }, out _, out var error, out _);
+        ok.ShouldBeFalse();
+        error.ShouldBe("--size width must be greater than 0.");
+    }
+
+    [Test]
+    public void SizeZeroHeightReturnsError()
+    {
+        var ok = OptionParser.TryParse(new[] { "--size", "800x0" }, out _, out var error, out _);
+        ok.ShouldBeFalse();
+        error.ShouldBe("--size height must be greater than 0.");
+    }
+
+    [Test]
+    public void SizePassedThroughToSvgRenderOptions()
+    {
+        var ok = OptionParser.TryParse(new[] { "--size", "1000x500" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        var renderOptions = SvgRenderOptions.FromAppOptions(options!);
+        renderOptions.SizeWidth.ShouldBe(1000d);
+        renderOptions.SizeHeight.ShouldBe(500d);
+    }
 }

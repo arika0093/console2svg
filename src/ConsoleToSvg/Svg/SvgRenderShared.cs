@@ -40,7 +40,9 @@ internal static class SvgRenderShared
             options.Padding,
             options.HeightRows,
             commandHeaderRows,
-            options.FontSize
+            options.FontSize,
+            options.SizeWidth,
+            options.SizeHeight
         );
     }
 

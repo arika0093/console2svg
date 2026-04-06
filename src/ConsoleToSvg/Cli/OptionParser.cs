@@ -95,6 +95,11 @@ public static class OptionParser
 
             Options (Image mode):
                 --frame <int>             Frame index for image mode.
+                --size <WxH>              Output image pixel dimensions. Formats:
+                                            800         – width only (height scaled proportionally).
+                                            800x*       – width only (height scaled proportionally).
+                                            *x600       – height only (width scaled proportionally).
+                                            800x600     – both; content is centered, background extended.
                 --save-frames <dir>       Save each visual frame as a separate static SVG in the given directory.
                 --crop-top <value>        Crop top by px, ch, or text pattern (e.g. 10px, 2ch, sometext, summary:-3).
                 --crop-bottom <value>     Crop bottom by px, ch, or text pattern.
@@ -269,8 +274,7 @@ public static class OptionParser
             && !string.Equals(name, "-d", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--pcmode", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--stdout", StringComparison.OrdinalIgnoreCase);
-    }
+            && !string.Equals(name, "--stdout", StringComparison.OrdinalIgnoreCase);    }
 
     private static bool IsVerboseLogPathValue(string token) =>
         !token.StartsWith("-", StringComparison.Ordinal)
@@ -649,6 +653,15 @@ public static class OptionParser
 
                 options.SaveFramesDir = value;
                 return true;
+            case "--size":
+                if (!TryParseSize(value, out var sizeWidth, out var sizeHeight, out error))
+                {
+                    return false;
+                }
+
+                options.SizeWidth = sizeWidth;
+                options.SizeHeight = sizeHeight;
+                return true;
             default:
                 error = $"Unknown option: {name}";
                 return false;
@@ -712,6 +725,92 @@ public static class OptionParser
         {
             error = $"{option} must be a number.";
             return false;
+        }
+
+        return true;
+    }
+
+    private static bool TryParseSize(
+        string? value,
+        out double? sizeWidth,
+        out double? sizeHeight,
+        out string? error
+    )
+    {
+        sizeWidth = null;
+        sizeHeight = null;
+        error = null;
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            error = "--size requires a value.";
+            return false;
+        }
+
+        var xIdx = value.IndexOf('x', StringComparison.OrdinalIgnoreCase);
+        if (xIdx < 0)
+        {
+            // Width only: --size 800
+            if (
+                !double.TryParse(
+                    value,
+                    NumberStyles.Float,
+                    CultureInfo.InvariantCulture,
+                    out var w
+                )
+            )
+            {
+                error = "--size value must be a positive number or WIDTHxHEIGHT format.";
+                return false;
+            }
+
+            sizeWidth = w;
+            return true;
+        }
+
+        var wPart = value.Substring(0, xIdx);
+        var hPart = value.Substring(xIdx + 1);
+
+        if (
+            !string.IsNullOrEmpty(wPart)
+            && !string.Equals(wPart, "*", StringComparison.Ordinal)
+        )
+        {
+            if (
+                !double.TryParse(
+                    wPart,
+                    NumberStyles.Float,
+                    CultureInfo.InvariantCulture,
+                    out var pw
+                )
+            )
+            {
+                error = "--size width component must be a positive number or *.";
+                return false;
+            }
+
+            sizeWidth = pw;
+        }
+
+        if (
+            !string.IsNullOrEmpty(hPart)
+            && !string.Equals(hPart, "*", StringComparison.Ordinal)
+        )
+        {
+            if (
+                !double.TryParse(
+                    hPart,
+                    NumberStyles.Float,
+                    CultureInfo.InvariantCulture,
+                    out var ph
+                )
+            )
+            {
+                error = "--size height component must be a positive number or *.";
+                return false;
+            }
+
+            sizeHeight = ph;
         }
 
         return true;
@@ -825,6 +924,32 @@ public static class OptionParser
         )
         {
             error = "--fontsize must be greater than 0.";
+            return false;
+        }
+
+        if (
+            options.SizeWidth.HasValue
+            && (
+                double.IsNaN(options.SizeWidth.Value)
+                || double.IsInfinity(options.SizeWidth.Value)
+                || options.SizeWidth.Value <= 0
+            )
+        )
+        {
+            error = "--size width must be greater than 0.";
+            return false;
+        }
+
+        if (
+            options.SizeHeight.HasValue
+            && (
+                double.IsNaN(options.SizeHeight.Value)
+                || double.IsInfinity(options.SizeHeight.Value)
+                || options.SizeHeight.Value <= 0
+            )
+        )
+        {
+            error = "--size height must be greater than 0.";
             return false;
         }
 

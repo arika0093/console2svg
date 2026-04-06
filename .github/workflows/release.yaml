@@ -247,7 +247,7 @@ jobs:
             cp "$src" "$bundle_dir/console2svg.exe"
             cp "$ffmpeg_bin_dir"/*.exe "$bundle_dir/"
             cp "$ffmpeg_bin_dir"/*.dll "$bundle_dir/"
-            cp "${top_dir}LICENSE" "$bundle_dir/ffmpeg-LICENSE"
+            cp "${top_dir}LICENSE.txt" "$bundle_dir/ffmpeg-LICENSE.txt"
 
             zip_name="./release-upload/console2svg-${rid}-ffmpeg.zip"
             (cd "$bundle_dir" && zip -q -r "../../${zip_name#./}" .)

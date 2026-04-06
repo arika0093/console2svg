@@ -278,7 +278,9 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
 
 In v0.7 and later, you can specify the output format based on the file extension specified with `-o output.mp4`.
 
-First, install `ffmpeg`. On Linux/macOS, you can easily install it using a package manager. On Windows, it's a bit more involved, so you can use the bundled version of ffmpeg ([x64](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip), [arm64](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-arm64-ffmpeg.zip)).
+First, install `ffmpeg`.  
+On Linux/macOS, you can easily install it using a package manager.  
+On Windows, it's a bit more involved, so you can use the bundled version of ffmpeg ([x64](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip), [arm64](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-arm64-ffmpeg.zip)).
 
 ```bash
 # ubuntu
@@ -287,7 +289,7 @@ sudo apt install ffmpeg
 brew install ffmpeg
 # windows 
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip -o console2svg-win-x64-ffmpeg.zip
-unzip console2svg-win-x64-ffmpeg.zip -d console2svg
+unzip console2svg-win-x64-ffmpeg.zip
 cd console2svg
 ```
 

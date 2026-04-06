@@ -242,7 +242,7 @@ jobs:
             fi
 
             # Build the bundle zip: console2svg.exe + ffmpeg binaries (exe + dlls) + LICENSE
-            bundle_dir="./bundle-${rid}"
+            bundle_dir="./console2svg-${rid}-ffmpeg"
             mkdir -p "$bundle_dir"
             cp "$src" "$bundle_dir/console2svg.exe"
             cp "$ffmpeg_bin_dir"/*.exe "$bundle_dir/"

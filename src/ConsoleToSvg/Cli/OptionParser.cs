@@ -274,7 +274,8 @@ public static class OptionParser
             && !string.Equals(name, "-d", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--pcmode", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--stdout", StringComparison.OrdinalIgnoreCase);    }
+            && !string.Equals(name, "--stdout", StringComparison.OrdinalIgnoreCase);
+    }
 
     private static bool IsVerboseLogPathValue(string token) =>
         !token.StartsWith("-", StringComparison.Ordinal)
@@ -764,6 +765,12 @@ public static class OptionParser
                 return false;
             }
 
+            if (w <= 0)
+            {
+                error = "--size width must be greater than 0.";
+                return false;
+            }
+
             sizeWidth = w;
             return true;
         }
@@ -789,6 +796,12 @@ public static class OptionParser
                 return false;
             }
 
+            if (pw <= 0)
+            {
+                error = "--size width must be greater than 0.";
+                return false;
+            }
+
             sizeWidth = pw;
         }
 
@@ -807,6 +820,12 @@ public static class OptionParser
             )
             {
                 error = "--size height component must be a positive number or *.";
+                return false;
+            }
+
+            if (ph <= 0)
+            {
+                error = "--size height must be greater than 0.";
                 return false;
             }
 

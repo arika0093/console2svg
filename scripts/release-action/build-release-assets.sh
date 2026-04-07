@@ -94,6 +94,52 @@ stage_native_runtime_if_available() {
   cp "$runtime_src" "$staging_dir/$runtime_name"
 }
 
+ffmpeg_bundle_url_for_windows_rid() {
+  local rid="$1"
+
+  case "$rid" in
+    win-x64)
+      printf '%s' "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-lgpl.zip"
+      ;;
+    win-arm64)
+      printf '%s' "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-winarm64-lgpl.zip"
+      ;;
+    *)
+      echo "Unsupported Windows RID for ffmpeg bundle: $rid" >&2
+      exit 1
+      ;;
+  esac
+}
+
+stage_windows_ffmpeg() {
+  local rid="$1"
+  local staging_dir="$2"
+  local ffmpeg_zip_url temp_root ffmpeg_zip ffmpeg_extract top_dir ffmpeg_bin_dir
+
+  ffmpeg_zip_url="$(ffmpeg_bundle_url_for_windows_rid "$rid")"
+  temp_root="$(mktemp -d)"
+  ffmpeg_zip="${temp_root}/ffmpeg.zip"
+  ffmpeg_extract="${temp_root}/ffmpeg"
+
+  curl -fsSL -o "$ffmpeg_zip" "$ffmpeg_zip_url"
+  unzip -q "$ffmpeg_zip" -d "$ffmpeg_extract"
+
+  top_dir="$(find "$ffmpeg_extract" -mindepth 1 -maxdepth 1 -type d | sort | head -n 1)"
+  if [[ -z "$top_dir" ]]; then
+    echo "Unable to determine extracted ffmpeg directory for $rid" >&2
+    exit 1
+  fi
+
+  ffmpeg_bin_dir="${top_dir}/bin"
+  require_file "${ffmpeg_bin_dir}/ffmpeg.exe"
+  require_file "${top_dir}/LICENSE.txt"
+
+  cp "${ffmpeg_bin_dir}/ffmpeg.exe" "$staging_dir/ffmpeg.exe"
+  cp "${top_dir}/LICENSE.txt" "$staging_dir/ffmpeg-LICENSE.txt"
+
+  rm -rf "$temp_root"
+}
+
 create_standard_bundle() {
   local rid="$1"
   local console_src archive_ext archive_path bundle_dir
@@ -111,7 +157,11 @@ create_standard_bundle() {
   fi
 
   if ! stage_native_runtime_if_available "$rid" "$bundle_dir"; then
-    echo "No ResvgSharp native runtime asset for $rid; bundle will contain console2svg only."
+    echo "No ResvgSharp native runtime asset for $rid; bundle will omit the native runtime sidecar."
+  fi
+
+  if [[ "$rid" == win-* ]]; then
+    stage_windows_ffmpeg "$rid" "$bundle_dir"
   fi
 
   if [[ "$archive_ext" == ".zip" ]]; then
@@ -185,66 +235,6 @@ build_linux_package() {
   echo "Created Linux packages for $rid"
 }
 
-build_windows_ffmpeg_bundle() {
-  local rid="$1"
-  local console_src runtime_src ffmpeg_zip_url temp_root ffmpeg_zip ffmpeg_extract
-  local top_dir ffmpeg_bin_dir bundle_dir archive_path
-
-  console_src="$(console_binary_path "$rid")"
-  require_file "$console_src"
-
-  if ! runtime_src="$(native_runtime_path "$rid")"; then
-    echo "No ResvgSharp native runtime asset for $rid; skipping Windows ffmpeg bundle."
-    return 0
-  fi
-
-  case "$rid" in
-    win-x64)
-      ffmpeg_zip_url="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-lgpl.zip"
-      ;;
-    win-arm64)
-      ffmpeg_zip_url="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-winarm64-lgpl.zip"
-      ;;
-    *)
-      echo "Unsupported Windows RID for ffmpeg bundle: $rid" >&2
-      exit 1
-      ;;
-  esac
-
-  archive_path="${release_upload_dir}/console2svg-${rid}-ffmpeg.zip"
-  temp_root="$(mktemp -d)"
-  ffmpeg_zip="${temp_root}/ffmpeg.zip"
-  ffmpeg_extract="${temp_root}/ffmpeg"
-  bundle_dir="${temp_root}/bundle"
-
-  curl -fsSL -o "$ffmpeg_zip" "$ffmpeg_zip_url"
-  unzip -q "$ffmpeg_zip" -d "$ffmpeg_extract"
-
-  top_dir="$(find "$ffmpeg_extract" -mindepth 1 -maxdepth 1 -type d | sort | head -n 1)"
-  if [[ -z "$top_dir" ]]; then
-    echo "Unable to determine extracted ffmpeg directory for $rid" >&2
-    exit 1
-  fi
-
-  ffmpeg_bin_dir="${top_dir}/bin"
-  require_file "${ffmpeg_bin_dir}/ffmpeg.exe"
-  require_file "${top_dir}/LICENSE.txt"
-
-  mkdir -p "$bundle_dir"
-  cp "$console_src" "$bundle_dir/console2svg.exe"
-  cp "$runtime_src" "$bundle_dir/resvg_wrapper.dll"
-  cp "${ffmpeg_bin_dir}/ffmpeg.exe" "$bundle_dir/ffmpeg.exe"
-  cp "${top_dir}/LICENSE.txt" "$bundle_dir/ffmpeg-LICENSE.txt"
-
-  (
-    cd "$bundle_dir"
-    zip -q -r "$archive_path" .
-  )
-
-  rm -rf "$temp_root"
-  echo "Created Windows ffmpeg bundle: $archive_path"
-}
-
 for rid in linux-x64 linux-arm64 win-x64 win-arm64 osx-x64 osx-arm64; do
   if [[ -f "$(console_binary_path "$rid")" ]]; then
     create_standard_bundle "$rid"
@@ -254,11 +244,5 @@ done
 for rid in linux-x64 linux-arm64; do
   if [[ -f "$(console_binary_path "$rid")" ]]; then
     build_linux_package "$rid"
-  fi
-done
-
-for rid in win-x64 win-arm64; do
-  if [[ -f "$(console_binary_path "$rid")" ]]; then
-    build_windows_ffmpeg_bundle "$rid"
   fi
 done

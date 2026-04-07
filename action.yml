@@ -90,11 +90,6 @@ runs:
         mkdir -p "$INSTALL_DIR"
 
         BUNDLE="console2svg-${RID}${ARCHIVE_EXT}"
-        FALLBACK_BUNDLE=""
-        if [ "${{ runner.os }}" = "Windows" ] && [ "${{ runner.arch }}" = "X64" ]; then
-          BUNDLE="console2svg-${RID}-ffmpeg.zip"
-          FALLBACK_BUNDLE="console2svg-${RID}.zip"
-        fi
 
         download_bundle() {
           local bundle_name="$1"
@@ -118,30 +113,26 @@ runs:
         }
 
         if ! download_bundle "$BUNDLE"; then
-          if [ -n "$FALLBACK_BUNDLE" ] && download_bundle "$FALLBACK_BUNDLE"; then
-            :
-          else
-            FILE="console2svg-${RID}${EXT}"
-            URL="${RELEASE_BASE_URL}/${FILE}"
+          FILE="console2svg-${RID}${EXT}"
+          URL="${RELEASE_BASE_URL}/${FILE}"
 
-            echo "Falling back to legacy asset layout..."
-            echo "Downloading ${URL} ..."
-            curl -fsSL -L -o "${INSTALL_DIR}/console2svg${EXT}" "${URL}"
+          echo "Falling back to legacy asset layout..."
+          echo "Downloading ${URL} ..."
+          curl -fsSL -L -o "${INSTALL_DIR}/console2svg${EXT}" "${URL}"
 
-            case "$RID" in
-              linux-*)
-                curl -fsSL -L -o "${INSTALL_DIR}/libresvg_wrapper.so" "${RELEASE_BASE_URL}/libresvg_wrapper-${RID}.so"
-                ;;
-              osx-*)
-                curl -fsSL -L -o "${INSTALL_DIR}/libresvg_wrapper.dylib" "${RELEASE_BASE_URL}/libresvg_wrapper-${RID}.dylib"
-                ;;
-              win-*)
-                if curl -fsSL -L -o "${INSTALL_DIR}/resvg_wrapper.dll" "${RELEASE_BASE_URL}/resvg_wrapper-${RID}.dll"; then
-                  :
-                fi
-                ;;
-            esac
-          fi
+          case "$RID" in
+            linux-*)
+              curl -fsSL -L -o "${INSTALL_DIR}/libresvg_wrapper.so" "${RELEASE_BASE_URL}/libresvg_wrapper-${RID}.so"
+              ;;
+            osx-*)
+              curl -fsSL -L -o "${INSTALL_DIR}/libresvg_wrapper.dylib" "${RELEASE_BASE_URL}/libresvg_wrapper-${RID}.dylib"
+              ;;
+            win-*)
+              if curl -fsSL -L -o "${INSTALL_DIR}/resvg_wrapper.dll" "${RELEASE_BASE_URL}/resvg_wrapper-${RID}.dll"; then
+                :
+              fi
+              ;;
+          esac
         fi
 
         [ -z "${EXT}" ] && chmod +x "${INSTALL_DIR}/console2svg"

@@ -19,7 +19,6 @@ For example, let's open [this image](https://raw.githubusercontent.com/arika0093
 
 There are similar tools, but console2svg stands out for:
 
-* [**Flexible output pipeline**](#convert-to-other-formats): SVG is always first-class, PNG is rendered with built-in `ResvgSharp`, and other raster/video formats use `ffmpeg` directly when possible.
 * [**Video mode**](#animated-svg): save command execution animations as SVG. great for documentation and blog posts.
 * [**Crop**](#static-svg-with-crop): trim specific parts of the output. Crop based on text patterns is also supported, making it easy to trim specific lines or sections.
 * [**Background and window**](#window-chrome): add background and window frames to produce presentation-ready SVGs for documentation, blogs, social media, etc.
@@ -59,16 +58,15 @@ console2svg -v -c -d macos -- copilot --banner
 ## Install
 [![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) [![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest)
  
-You can install it as a global tool using the dotnet or npm package manager.
+The easiest way is to run the following command (of course, please check the [content](./install.sh) before running it. It just does what the following sections describe).
 
 ```sh
-# dotnet global tool
-dotnet tool install -g ConsoleToSvg
-# npm global package
-npm install -g console2svg
+curl -fsSL https://raw.githubusercontent.com/arika0093/console2svg/main/install.sh | sh
 ```
 
-It is also available as a standalone bundle that you can download from the releases page and add to your PATH.
+The script installs the appropriate release bundle into `/usr/local/bin` when writable, or `~/.local/bin` otherwise. You can override this with `INSTALL_DIR=/your/path`.
+
+It is available as a standalone bundle that you can download from the releases page and add to your PATH.
 The standard `.tar.gz`/`.zip` bundles include the matching `ResvgSharp` native runtime when that runtime exists for the target platform.
 
 ```sh
@@ -76,37 +74,25 @@ The standard `.tar.gz`/`.zip` bundles include the matching `ResvgSharp` native r
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg.amd64.deb -o console2svg.deb
 dpkg -i console2svg.deb
 
-# linux
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-linux-x64.tar.gz -o console2svg-linux-x64.tar.gz
-tar -xzf console2svg-linux-x64.tar.gz
-mv -f console2svg /usr/local/bin/
-mv -f libresvg_wrapper.so /usr/local/bin/
+# macos
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-osx-arm64.tar.gz -o console2svg-osx-arm64.tar.gz
+tar -xzf console2svg-osx-arm64.tar.gz -C /usr/local/bin --strip-components=1
 chmod +x /usr/local/bin/console2svg
 
-# windows (console2svg + ResvgSharp runtime)
+# windows (console2svg + ffmpeg)
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64.zip -o console2svg-win-x64.zip
 unzip console2svg-win-x64.zip -d console2svg
 cd console2svg
-
-# windows (console2svg + ResvgSharp runtime + ffmpeg)
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip -o console2svg-win-x64-ffmpeg.zip
-unzip console2svg-win-x64-ffmpeg.zip -d console2svg-ffmpeg
-cd console2svg-ffmpeg
 ```
 
-If you build or publish from source, keep the matching `resvg_wrapper` sidecar next to `console2svg` for PNG output and for any fallback path that rasterizes through `ResvgSharp`.
-
-On macOS, the extracted sidecar is `libresvg_wrapper.dylib`.
+You can also install it as a global tool using the dotnet or npm package manager.
 
 ```sh
-# NativeAOT publish output example (linux-x64)
-ls publish/
-# console2svg
-# libresvg_wrapper.so
+# dotnet global tool
+dotnet tool install -g ConsoleToSvg
+# npm global package
+npm install -g console2svg
 ```
-
-> [!NOTE]
-> `ResvgSharp` 1.0.3 currently ships native runtime assets for `linux-x64`, `linux-arm64`, `osx-x64`, `osx-arm64`, and `win-x64`. `win-arm64` native bundles may not include the `resvg_wrapper` runtime.
 
 ### GitHub Actions
 
@@ -305,7 +291,7 @@ In v0.7 and later, you can specify the output format based on the file extension
 
 If you need anything other than PNG, install `ffmpeg`.  
 On Linux/macOS, you can easily install it using a package manager.  
-On Windows, it's a bit more involved, so you can use the [bundled version of ffmpeg(x64)](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip).
+On Windows, `console2svg-win-x64.zip` already includes `ffmpeg.exe`.
 
 ```bash
 # ubuntu
@@ -313,8 +299,8 @@ sudo apt install ffmpeg
 # macos
 brew install ffmpeg
 # windows 
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip -o console2svg-win-x64-ffmpeg.zip
-unzip console2svg-win-x64-ffmpeg.zip
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64.zip -o console2svg-win-x64.zip
+unzip console2svg-win-x64.zip
 cd console2svg
 ```
 

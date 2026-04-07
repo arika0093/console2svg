@@ -253,10 +253,7 @@ function downloadLegacyAssets() {
 }
 
 if (isWin) {
-  const bundleNames = archSuffix === 'x64'
-    ? [`console2svg-${rid}-ffmpeg.zip`, `console2svg-${rid}.zip`]
-    : [`console2svg-${rid}.zip`];
-  downloadBundle(bundleNames, extractZip, downloadLegacyAssets);
+  downloadBundle([`console2svg-${rid}.zip`], extractZip, downloadLegacyAssets);
 } else {
   downloadBundle([`console2svg-${rid}.tar.gz`], extractTarGz, downloadLegacyAssets);
 }

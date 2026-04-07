@@ -34,17 +34,14 @@ case "$uname_s" in
   Linux)
     rid="linux-${arch}"
     archive_ext=".tar.gz"
-    runtime_name="libresvg_wrapper.so"
     ;;
   Darwin)
     rid="osx-${arch}"
     archive_ext=".tar.gz"
-    runtime_name="libresvg_wrapper.dylib"
     ;;
   MINGW*|MSYS*|CYGWIN*)
     rid="win-${arch}"
     archive_ext=".zip"
-    runtime_name="resvg_wrapper.dll"
     ;;
   *)
     echo "install.sh: unsupported platform: $uname_s" >&2
@@ -93,16 +90,14 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 archive_path="${tmpdir}/${archive_name}"
-extract_dir="${tmpdir}/extract"
-mkdir -p "$extract_dir"
 
 echo "Installing ${archive_name} from ${archive_url}"
 curl -fsSL -o "$archive_path" "$archive_url"
 
 if [ "$archive_ext" = ".zip" ]; then
-  unzip -q "$archive_path" -d "$extract_dir"
+  unzip -q -o "$archive_path" -d "$INSTALL_DIR"
 else
-  tar -xzf "$archive_path" -C "$extract_dir"
+  tar -xzf "$archive_path" -C "$INSTALL_DIR"
 fi
 
 binary_name="console2svg"
@@ -110,25 +105,12 @@ if [ "$archive_ext" = ".zip" ]; then
   binary_name="${binary_name}.exe"
 fi
 
-if [ ! -f "${extract_dir}/${binary_name}" ]; then
+if [ ! -f "${INSTALL_DIR}/${binary_name}" ]; then
   echo "install.sh: expected ${binary_name} in ${archive_name}" >&2
   exit 1
 fi
 
-cp -f "${extract_dir}/${binary_name}" "${INSTALL_DIR}/${binary_name}"
-
-if [ -f "${extract_dir}/${runtime_name}" ]; then
-  cp -f "${extract_dir}/${runtime_name}" "${INSTALL_DIR}/${runtime_name}"
-fi
-
-if [ "$archive_ext" = ".zip" ]; then
-  if [ -f "${extract_dir}/ffmpeg.exe" ]; then
-    cp -f "${extract_dir}/ffmpeg.exe" "${INSTALL_DIR}/ffmpeg.exe"
-  fi
-  if [ -f "${extract_dir}/ffmpeg-LICENSE.txt" ]; then
-    cp -f "${extract_dir}/ffmpeg-LICENSE.txt" "${INSTALL_DIR}/ffmpeg-LICENSE.txt"
-  fi
-else
+if [ "$archive_ext" != ".zip" ]; then
   chmod 755 "${INSTALL_DIR}/${binary_name}"
 fi
 

@@ -64,7 +64,7 @@ The easiest way is to run the following command (of course, please check the [co
 curl -fsSL https://raw.githubusercontent.com/arika0093/console2svg/main/install.sh | sh
 ```
 
-The script installs the appropriate release bundle into `/usr/local/bin` when writable, or `~/.local/bin` otherwise. You can override this with `INSTALL_DIR=/your/path`.
+The script downloads and extracts the appropriate release bundle directly into `/usr/local/bin` when writable, or `~/.local/bin` otherwise. You can override this with `INSTALL_DIR=/your/path`.
 
 It is available as a standalone bundle that you can download from the releases page and add to your PATH.
 The standard `.tar.gz`/`.zip` bundles include the matching `ResvgSharp` native runtime when that runtime exists for the target platform.

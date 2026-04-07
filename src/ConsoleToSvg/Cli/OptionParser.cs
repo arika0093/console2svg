@@ -16,7 +16,8 @@ public static class OptionParser
 
             Major options:
                 -o, --out <path>          Output file path (default: output.svg).
-                                          Non-SVG extensions trigger ffmpeg conversion (e.g. output.png, output.mp4).
+                                          Non-SVG extensions trigger raster/video conversion
+                                          (e.g. output.png via ResvgSharp, output.mp4 via ffmpeg).
                 -w, --width <int|adjust>  Terminal width in characters (default: auto[pipe], 100[pty]).
                 -h, --height <int|adjust> Terminal height in rows (default: auto).
                 -v                        Output animated SVG (alias for --mode video).
@@ -45,9 +46,12 @@ public static class OptionParser
             Options (Common):
                 -o, --out <path>          Output file path (default: output.svg).
                                           Extension determines format:
-                                            .svg          – SVG output (default, no external tools required).
-                                            .png/.jpg/…   – Raster image via ffmpeg (ffmpeg must be installed).
-                                            .mp4/.webm/…  – Video via ffmpeg using frame sequences (ffmpeg must be installed).
+                                             .svg          – SVG output (default, no external tools required).
+                                             .png          – Raster image via built-in ResvgSharp renderer.
+                                             .jpg/.jpeg/…  – Direct ffmpeg SVG conversion when ffmpeg has --enable-librsvg,
+                                                             otherwise ResvgSharp -> PNG -> ffmpeg.
+                                             .mp4/.webm/…  – Video via ffmpeg; uses SVG frames when ffmpeg has --enable-librsvg,
+                                                             otherwise ResvgSharp-rendered PNG frames.
                 --stdout                  Write SVG to stdout instead of a file.
                                           PTY output forwarding is suppressed so the pipe receives only SVG.
                 -m, --mode <image|video|repeat>  Output mode (default: image).

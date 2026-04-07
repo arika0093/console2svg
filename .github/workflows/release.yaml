@@ -124,13 +124,17 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: native-${{ matrix.rid }}
-          path: ./native-publish/${{ matrix.rid }}/console2svg*
+          path: |
+            ./native-publish/${{ matrix.rid }}/console2svg*
+            ./native-publish/${{ matrix.rid }}/*resvg_wrapper*
 
   release-github:
     needs: [build-nupkg, build-aot]
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v6
+
       - name: Download NuGet artifacts
         uses: actions/download-artifact@v8
         with:
@@ -144,115 +148,21 @@ jobs:
           path: ./native-artifacts
           merge-multiple: false
 
-      - name: Collect native binaries
-        shell: bash
-        run: |
-          for dir in ./native-artifacts/native-*/; do
-            rid=$(basename "$dir" | sed 's/^native-//')
-            if [[ "$rid" == win-* ]]; then
-              src="$dir/console2svg.exe"
-              dst="./release-upload/console2svg-${rid}.exe"
-            else
-              src="$dir/console2svg"
-              dst="./release-upload/console2svg-${rid}"
-            fi
-            if [ -f "$src" ]; then
-              cp "$src" "$dst"
-            fi
-          done
-
       - name: Install Linux packaging tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y rpm
+          sudo apt-get install -y rpm unzip zip
           sudo gem install --no-document fpm
 
-      - name: Build Linux packages
+      - name: Build release assets
         shell: bash
-        run: |
-          for rid in linux-x64 linux-arm64; do
-            case "$rid" in
-              linux-x64)
-                asset_arch=x64
-                deb_arch=amd64
-                rpm_arch=x86_64
-                ;;
-              linux-arm64)
-                asset_arch=arm64
-                deb_arch=arm64
-                rpm_arch=aarch64
-                ;;
-            esac
-
-            src="./native-artifacts/native-${rid}/console2svg"
-            if [ ! -f "$src" ]; then
-              continue
-            fi
-
-            chmod 755 "$src"
-
-            common_args=(
-              -s dir
-              -n console2svg
-              -v "${{ needs.build-nupkg.outputs.package-version }}"
-              --iteration "${{ needs.build-nupkg.outputs.package-iteration }}"
-              --license Apache-2.0
-              --url "https://github.com/${{ github.repository }}"
-              --description "Convert terminal output to SVG images."
-            )
-
-            fpm "${common_args[@]}" -t deb -a "$deb_arch" -p "./release-upload/console2svg.${asset_arch}.deb" "$src=/usr/local/bin/console2svg"
-            fpm "${common_args[@]}" -t rpm -a "$rpm_arch" -p "./release-upload/console2svg.${asset_arch}.rpm" "$src=/usr/local/bin/console2svg"
-          done
-
-      - name: Build Windows ffmpeg zip bundles
-        shell: bash
-        run: |
-          sudo apt-get install -y unzip
-
-          for rid in win-x64 win-arm64; do
-            case "$rid" in
-              win-x64)
-                ffmpeg_zip_url="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-lgpl-shared.zip"
-                ;;
-              win-arm64)
-                ffmpeg_zip_url="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-winarm64-lgpl-shared.zip"
-                ;;
-            esac
-
-            src="./native-artifacts/native-${rid}/console2svg.exe"
-            if [ ! -f "$src" ]; then
-              continue
-            fi
-
-            # Download and extract the ffmpeg bundle
-            ffmpeg_zip="./ffmpeg-${rid}.zip"
-            curl -fsSL -o "$ffmpeg_zip" "$ffmpeg_zip_url"
-
-            ffmpeg_dir="./ffmpeg-extract-${rid}"
-            mkdir -p "$ffmpeg_dir"
-            unzip -q "$ffmpeg_zip" -d "$ffmpeg_dir"
-
-            # The BtbN zip contains a top-level directory with a bin/ subdirectory
-            top_dir=$(ls -d "$ffmpeg_dir"/*/ | head -1)
-            ffmpeg_bin_dir="${top_dir}bin"
-            if [ ! -f "$ffmpeg_bin_dir/ffmpeg.exe" ]; then
-              echo "ffmpeg.exe not found at $ffmpeg_bin_dir/ffmpeg.exe."
-              exit 1
-            fi
-
-            # Build the bundle zip: console2svg.exe + ffmpeg binaries (exe + dlls) + LICENSE
-            bundle_dir="./console2svg-${rid}-ffmpeg"
-            mkdir -p "$bundle_dir"
-            cp "$src" "$bundle_dir/console2svg.exe"
-            cp "$ffmpeg_bin_dir"/*.exe "$bundle_dir/"
-            cp "$ffmpeg_bin_dir"/*.dll "$bundle_dir/"
-            cp "${top_dir}LICENSE.txt" "$bundle_dir/ffmpeg-LICENSE.txt"
-
-            zip_name="./release-upload/console2svg-${rid}-ffmpeg.zip"
-            zip -q -r "$zip_name" "$bundle_dir"
-            echo "Created $zip_name"
-          done
+        env:
+          RELEASE_UPLOAD_DIR: ./release-upload
+          NATIVE_ARTIFACTS_DIR: ./native-artifacts
+          PACKAGE_VERSION: ${{ needs.build-nupkg.outputs.package-version }}
+          PACKAGE_ITERATION: ${{ needs.build-nupkg.outputs.package-iteration }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: ./scripts/release-action/build-release-assets.sh
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

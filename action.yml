@@ -74,18 +74,76 @@ runs:
             ;;
         esac
 
-        FILE="console2svg-${RID}${EXT}"
-        if [ "$VERSION" = "latest" ]; then
-          URL="https://github.com/arika0093/console2svg/releases/latest/download/${FILE}"
+        if [ "${{ runner.os }}" = "Windows" ]; then
+          ARCHIVE_EXT=".zip"
         else
-          URL="https://github.com/arika0093/console2svg/releases/download/v${VERSION}/${FILE}"
+          ARCHIVE_EXT=".tar.gz"
+        fi
+
+        if [ "$VERSION" = "latest" ]; then
+          RELEASE_BASE_URL="https://github.com/arika0093/console2svg/releases/latest/download"
+        else
+          RELEASE_BASE_URL="https://github.com/arika0093/console2svg/releases/download/v${VERSION}"
         fi
 
         INSTALL_DIR="${{ runner.tool_cache }}/console2svg/${VERSION}/${{ runner.arch }}"
         mkdir -p "$INSTALL_DIR"
 
-        echo "Downloading ${URL} ..."
-        curl -fsSL -L -o "${INSTALL_DIR}/console2svg${EXT}" "${URL}"
+        BUNDLE="console2svg-${RID}${ARCHIVE_EXT}"
+        FALLBACK_BUNDLE=""
+        if [ "${{ runner.os }}" = "Windows" ] && [ "${{ runner.arch }}" = "X64" ]; then
+          BUNDLE="console2svg-${RID}-ffmpeg.zip"
+          FALLBACK_BUNDLE="console2svg-${RID}.zip"
+        fi
+
+        download_bundle() {
+          local bundle_name="$1"
+          local archive_path="${INSTALL_DIR}/${bundle_name}"
+          local bundle_url="${RELEASE_BASE_URL}/${bundle_name}"
+
+          echo "Downloading ${bundle_url} ..."
+          if ! curl -fsSL -L -o "${archive_path}" "${bundle_url}"; then
+            rm -f "${archive_path}"
+            return 1
+          fi
+
+          if [ "${ARCHIVE_EXT}" = ".zip" ]; then
+            unzip -q -o "${archive_path}" -d "${INSTALL_DIR}"
+          else
+            tar -xzf "${archive_path}" -C "${INSTALL_DIR}"
+          fi
+
+          rm -f "${archive_path}"
+          return 0
+        }
+
+        if ! download_bundle "$BUNDLE"; then
+          if [ -n "$FALLBACK_BUNDLE" ] && download_bundle "$FALLBACK_BUNDLE"; then
+            :
+          else
+            FILE="console2svg-${RID}${EXT}"
+            URL="${RELEASE_BASE_URL}/${FILE}"
+
+            echo "Falling back to legacy asset layout..."
+            echo "Downloading ${URL} ..."
+            curl -fsSL -L -o "${INSTALL_DIR}/console2svg${EXT}" "${URL}"
+
+            case "$RID" in
+              linux-*)
+                curl -fsSL -L -o "${INSTALL_DIR}/libresvg_wrapper.so" "${RELEASE_BASE_URL}/libresvg_wrapper-${RID}.so"
+                ;;
+              osx-*)
+                curl -fsSL -L -o "${INSTALL_DIR}/libresvg_wrapper.dylib" "${RELEASE_BASE_URL}/libresvg_wrapper-${RID}.dylib"
+                ;;
+              win-*)
+                if curl -fsSL -L -o "${INSTALL_DIR}/resvg_wrapper.dll" "${RELEASE_BASE_URL}/resvg_wrapper-${RID}.dll"; then
+                  :
+                fi
+                ;;
+            esac
+          fi
+        fi
+
         [ -z "${EXT}" ] && chmod +x "${INSTALL_DIR}/console2svg"
 
         echo "${INSTALL_DIR}" >> "$GITHUB_PATH"

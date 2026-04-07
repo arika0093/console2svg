@@ -41,8 +41,11 @@ if (platform === 'win32') {
 const isWin = platform === 'win32';
 const distDir = path.join(__dirname, '..', 'dist');
 const destPath = path.join(distDir, `console2svg${isWin ? '.exe' : ''}`);
+const nativeLibPath = isWin
+  ? null
+  : path.join(distDir, platform === 'linux' ? 'libresvg_wrapper.so' : 'libresvg_wrapper.dylib');
 
-if (fs.existsSync(destPath)) {
+if (fs.existsSync(destPath) && (isWin || fs.existsSync(nativeLibPath))) {
   process.exit(0);
 }
 
@@ -57,16 +60,19 @@ function fail(message, err) {
   process.exit(1);
 }
 
-function download(downloadUrl, redirects, onFinish) {
+function download(downloadUrl, tempPath, redirects, onFinish, onFailure) {
   if (redirects > 5) {
-    fail('console2svg: too many redirects while downloading.');
+    const err = new Error('console2svg: too many redirects while downloading.');
+    if (onFailure) {
+      onFailure(err);
+      return;
+    }
+    fail(err.message);
   }
 
   const proxy = getProxyForUrl(downloadUrl);
   const agent = proxy ? new HttpsProxyAgent(proxy) : undefined;
   const urlObj = new URL(downloadUrl);
-
-  const tempPath = `${destPath}.tmp`;
 
   const request = https.get(
     {
@@ -83,13 +89,18 @@ function download(downloadUrl, redirects, onFinish) {
     (res) => {
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
         res.resume();
-        download(res.headers.location, redirects + 1, onFinish);
+        download(res.headers.location, tempPath, redirects + 1, onFinish, onFailure);
         return;
       }
 
       if (res.statusCode !== 200) {
         res.resume();
-        fail(`console2svg: download failed (${res.statusCode}) from ${downloadUrl}`);
+        const err = new Error(`console2svg: download failed (${res.statusCode}) from ${downloadUrl}`);
+        if (onFailure) {
+          onFailure(err);
+          return;
+        }
+        fail(err.message);
       }
 
       const file = fs.createWriteStream(tempPath);
@@ -115,51 +126,137 @@ function download(downloadUrl, redirects, onFinish) {
   );
 
   request.on('error', (err) => {
+    if (onFailure) {
+      onFailure(err);
+      return;
+    }
     fail('console2svg: request failed.', err);
   });
 }
 
-if (isWin) {
-  // On Windows: download the ffmpeg bundle zip (console2svg.exe + ffmpeg.exe + DLLs)
-  const zipFileName = `console2svg-${rid}-ffmpeg.zip`;
-  const zipUrl = `https://github.com/arika0093/console2svg/releases/download/v${version}/${zipFileName}`;
+const releaseBaseUrl = `https://github.com/arika0093/console2svg/releases/download/v${version}`;
 
-  download(zipUrl, 0, (tempZipPath) => {
-    // Escape single quotes in paths for PowerShell single-quoted string literals.
-    const psEscape = (p) => p.replace(/'/g, "''");
-    // Extract the zip into distDir using PowerShell
-    const result = spawnSync(
-      'powershell',
-      [
-        '-NoProfile',
-        '-NonInteractive',
-        '-Command',
-        `Expand-Archive -LiteralPath '${psEscape(tempZipPath)}' -DestinationPath '${psEscape(distDir)}' -Force`
-      ],
-      { stdio: 'inherit' }
-    );
+function extractZip(tempZipPath) {
+  const psEscape = (p) => p.replace(/'/g, "''");
+  const result = spawnSync(
+    'powershell',
+    [
+      '-NoProfile',
+      '-NonInteractive',
+      '-Command',
+      `Expand-Archive -LiteralPath '${psEscape(tempZipPath)}' -DestinationPath '${psEscape(distDir)}' -Force`
+    ],
+    { stdio: 'inherit' }
+  );
 
-    try { fs.unlinkSync(tempZipPath); } catch { /* ignore */ }
+  try { fs.unlinkSync(tempZipPath); } catch { /* ignore */ }
 
-    if (result.status !== 0) {
-      fail('console2svg: failed to extract zip bundle.');
-    }
+  if (result.status !== 0) {
+    fail('console2svg: failed to extract zip bundle.');
+  }
+}
 
-    if (!fs.existsSync(destPath)) {
-      fail('console2svg: console2svg.exe not found after extraction.');
-    }
+function extractTarGz(tempArchivePath) {
+  const result = spawnSync(
+    'tar',
+    ['-xzf', tempArchivePath, '-C', distDir],
+    { stdio: 'inherit' }
+  );
 
-    process.exit(0);
-  });
-} else {
-  // On Linux/macOS: download the single binary
-  const fileName = `console2svg-${rid}`;
-  const url = `https://github.com/arika0093/console2svg/releases/download/v${version}/${fileName}`;
+  try { fs.unlinkSync(tempArchivePath); } catch { /* ignore */ }
 
-  download(url, 0, (tempPath) => {
-    fs.renameSync(tempPath, destPath);
+  if (result.status !== 0) {
+    fail('console2svg: failed to extract tar.gz bundle.');
+  }
+}
+
+function finishBundleInstall() {
+  if (!fs.existsSync(destPath)) {
+    fail(`console2svg: ${path.basename(destPath)} not found after extraction.`);
+  }
+
+  if (!isWin) {
     fs.chmodSync(destPath, 0o755);
-    process.exit(0);
+  }
+
+  process.exit(0);
+}
+
+function downloadBundle(bundleNames, extractArchive, onAllMissing) {
+  const tryNext = (index) => {
+    if (index >= bundleNames.length) {
+      onAllMissing();
+      return;
+    }
+
+    const bundleName = bundleNames[index];
+    const bundleUrl = `${releaseBaseUrl}/${bundleName}`;
+    const tempPath = path.join(distDir, `${bundleName}.tmp`);
+
+    download(
+      bundleUrl,
+      tempPath,
+      0,
+      (downloadedPath) => {
+        extractArchive(downloadedPath);
+        finishBundleInstall();
+      },
+      () => {
+        try { fs.unlinkSync(tempPath); } catch { /* ignore */ }
+        tryNext(index + 1);
+      }
+    );
+  };
+
+  tryNext(0);
+}
+
+function downloadLegacyAssets() {
+  const fileName = `console2svg-${rid}${isWin ? '.exe' : ''}`;
+  const url = `${releaseBaseUrl}/${fileName}`;
+
+  download(url, `${destPath}.tmp`, 0, (tempPath) => {
+    fs.renameSync(tempPath, destPath);
+    if (!isWin) {
+      fs.chmodSync(destPath, 0o755);
+    }
+
+    if (isWin) {
+      const dllName = `resvg_wrapper-${rid}.dll`;
+      download(
+        `${releaseBaseUrl}/${dllName}`,
+        path.join(distDir, `${dllName}.tmp`),
+        0,
+        (tempDllPath) => {
+          fs.renameSync(tempDllPath, path.join(distDir, 'resvg_wrapper.dll'));
+          process.exit(0);
+        },
+        () => process.exit(0)
+      );
+      return;
+    }
+
+    const nativeLibFileName =
+      platform === 'linux'
+        ? `libresvg_wrapper-${rid}.so`
+        : `libresvg_wrapper-${rid}.dylib`;
+    download(
+      `${releaseBaseUrl}/${nativeLibFileName}`,
+      `${nativeLibPath}.tmp`,
+      0,
+      (tempLibPath) => {
+        fs.renameSync(tempLibPath, nativeLibPath);
+        process.exit(0);
+      }
+    );
   });
 }
 
+if (isWin) {
+  const bundleNames = archSuffix === 'x64'
+    ? [`console2svg-${rid}-ffmpeg.zip`, `console2svg-${rid}.zip`]
+    : [`console2svg-${rid}.zip`];
+  downloadBundle(bundleNames, extractZip, downloadLegacyAssets);
+} else {
+  downloadBundle([`console2svg-${rid}.tar.gz`], extractTarGz, downloadLegacyAssets);
+}

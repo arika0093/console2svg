@@ -9,6 +9,17 @@ using ConsoleToSvg.Recording;
 
 namespace ConsoleToSvg.Tests.Raster;
 
+sealed class LinuxOnlyAttribute : SkipAttribute
+{
+    public LinuxOnlyAttribute()
+        : base("Requires Linux-specific ffmpeg shim behavior.")
+    {
+    }
+
+    public override Task<bool> ShouldSkip(TUnit.Core.TestRegisteredContext testContext) =>
+        Task.FromResult(!OperatingSystem.IsLinux());
+}
+
 [SuppressMessage("Interoperability", "CA1416", Justification = "These shell-script-based ffmpeg shim tests run in the Linux test environment.")]
 public sealed class RasterImageOutputTests
 {
@@ -50,6 +61,7 @@ public sealed class RasterImageOutputTests
     }
 
     [Test]
+    [LinuxOnly]
     public async Task JpegOutputUsesDirectSvgWhenFfmpegSupportsLibrsvg()
     {
         var tempDirectory = Directory.CreateTempSubdirectory("console2svg-raster-direct-");
@@ -88,6 +100,7 @@ public sealed class RasterImageOutputTests
     }
 
     [Test]
+    [LinuxOnly]
     public async Task JpegOutputUsesResvgFallbackWhenFfmpegLacksLibrsvg()
     {
         var tempDirectory = Directory.CreateTempSubdirectory("console2svg-raster-fallback-");
@@ -126,6 +139,7 @@ public sealed class RasterImageOutputTests
     }
 
     [Test]
+    [LinuxOnly]
     public async Task VideoOutputUsesSvgFramesWhenFfmpegSupportsLibrsvg()
     {
         var tempDirectory = Directory.CreateTempSubdirectory("console2svg-video-direct-");
@@ -165,6 +179,7 @@ public sealed class RasterImageOutputTests
     }
 
     [Test]
+    [LinuxOnly]
     public async Task VideoOutputUsesPngFramesWhenFfmpegLacksLibrsvg()
     {
         var tempDirectory = Directory.CreateTempSubdirectory("console2svg-video-fallback-");

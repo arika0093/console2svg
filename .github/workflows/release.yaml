@@ -124,9 +124,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: native-${{ matrix.rid }}
-          path: |
-            ./native-publish/${{ matrix.rid }}/console2svg*
-            ./native-publish/${{ matrix.rid }}/*resvg_wrapper*
+          path: ./native-publish/${{ matrix.rid }}/
 
   release-github:
     needs: [build-nupkg, build-aot]

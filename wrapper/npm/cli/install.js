@@ -41,11 +41,13 @@ if (platform === 'win32') {
 const isWin = platform === 'win32';
 const distDir = path.join(__dirname, '..', 'dist');
 const destPath = path.join(distDir, `console2svg${isWin ? '.exe' : ''}`);
-const nativeLibPath = isWin
-  ? null
-  : path.join(distDir, platform === 'linux' ? 'libresvg_wrapper.so' : 'libresvg_wrapper.dylib');
+const nativeLibPath = path.join(
+  distDir,
+  isWin ? 'resvg_wrapper.dll' : platform === 'linux' ? 'libresvg_wrapper.so' : 'libresvg_wrapper.dylib'
+);
+const bundledFfmpegPath = isWin ? path.join(distDir, 'ffmpeg.exe') : null;
 
-if (fs.existsSync(destPath) && (isWin || fs.existsSync(nativeLibPath))) {
+if (fs.existsSync(destPath) && fs.existsSync(nativeLibPath)) {
   process.exit(0);
 }
 
@@ -175,6 +177,14 @@ function finishBundleInstall() {
     fail(`console2svg: ${path.basename(destPath)} not found after extraction.`);
   }
 
+  if (!fs.existsSync(nativeLibPath)) {
+    fail(`console2svg: ${path.basename(nativeLibPath)} not found after extraction.`);
+  }
+
+  if (isWin && !fs.existsSync(bundledFfmpegPath)) {
+    fail('console2svg: ffmpeg.exe not found after extraction.');
+  }
+
   if (!isWin) {
     fs.chmodSync(destPath, 0o755);
   }
@@ -231,7 +241,13 @@ function downloadLegacyAssets() {
           fs.renameSync(tempDllPath, path.join(distDir, 'resvg_wrapper.dll'));
           process.exit(0);
         },
-        () => process.exit(0)
+        () => {
+          console.error(
+            `console2svg: failed to download required Windows sidecar DLL: ${dllName}. ` +
+              'The install cannot complete because PNG output support would be unavailable.'
+          );
+          process.exit(1);
+        }
       );
       return;
     }

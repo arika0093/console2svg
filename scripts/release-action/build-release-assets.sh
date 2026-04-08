@@ -39,59 +39,19 @@ archive_extension_for_rid() {
   fi
 }
 
-native_runtime_name_for_rid() {
+publish_dir_for_rid() {
   local rid="$1"
-
-  case "$rid" in
-    win-*)
-      printf '%s' "resvg_wrapper.dll"
-      ;;
-    linux-*)
-      printf '%s' "libresvg_wrapper.so"
-      ;;
-    osx-*)
-      printf '%s' "libresvg_wrapper.dylib"
-      ;;
-    *)
-      echo "Unsupported RID for native runtime lookup: $rid" >&2
-      exit 1
-      ;;
-  esac
+  local base_dir="${NATIVE_ARTIFACTS_DIR}/native-${rid}"
+  if [[ -d "${base_dir}/${rid}" ]]; then
+    printf '%s' "${base_dir}/${rid}"
+  else
+    printf '%s' "$base_dir"
+  fi
 }
 
 console_binary_path() {
   local rid="$1"
-  printf '%s/native-%s/%s' \
-    "$NATIVE_ARTIFACTS_DIR" \
-    "$rid" \
-    "$(binary_name_for_rid "$rid" console2svg)"
-}
-
-native_runtime_path() {
-  local rid="$1"
-  local runtime_name
-  runtime_name="$(native_runtime_name_for_rid "$rid")"
-
-  local candidate="${NATIVE_ARTIFACTS_DIR}/native-${rid}/${runtime_name}"
-  if [[ -f "$candidate" ]]; then
-    printf '%s' "$candidate"
-    return 0
-  fi
-
-  return 1
-}
-
-stage_native_runtime_if_available() {
-  local rid="$1"
-  local staging_dir="$2"
-  local runtime_src runtime_name
-
-  if ! runtime_src="$(native_runtime_path "$rid")"; then
-    return 1
-  fi
-
-  runtime_name="$(native_runtime_name_for_rid "$rid")"
-  cp "$runtime_src" "$staging_dir/$runtime_name"
+  printf '%s/%s' "$(publish_dir_for_rid "$rid")" "$(binary_name_for_rid "$rid" console2svg)"
 }
 
 ffmpeg_bundle_url_for_windows_rid() {
@@ -142,22 +102,20 @@ stage_windows_ffmpeg() {
 
 create_standard_bundle() {
   local rid="$1"
-  local console_src archive_ext archive_path bundle_dir
+  local publish_dir console_src archive_ext archive_path bundle_dir binary_name
 
+  publish_dir="$(publish_dir_for_rid "$rid")"
   console_src="$(console_binary_path "$rid")"
   require_file "$console_src"
 
   archive_ext="$(archive_extension_for_rid "$rid")"
   archive_path="${release_upload_dir}/console2svg-${rid}${archive_ext}"
   bundle_dir="$(mktemp -d)"
+  binary_name="$(binary_name_for_rid "$rid" console2svg)"
 
-  cp "$console_src" "$bundle_dir/$(binary_name_for_rid "$rid" console2svg)"
+  cp -a "${publish_dir}/." "$bundle_dir/"
   if [[ "$rid" != win-* ]]; then
-    chmod 755 "$bundle_dir/$(binary_name_for_rid "$rid" console2svg)"
-  fi
-
-  if ! stage_native_runtime_if_available "$rid" "$bundle_dir"; then
-    echo "No ResvgSharp native runtime asset for $rid; bundle will omit the native runtime sidecar."
+    chmod 755 "$bundle_dir/$binary_name"
   fi
 
   if [[ "$rid" == win-* ]]; then
@@ -179,9 +137,10 @@ create_standard_bundle() {
 
 build_linux_package() {
   local rid="$1"
-  local console_src runtime_src asset_arch deb_arch rpm_arch
+  local publish_dir console_src asset_arch deb_arch rpm_arch published_file
   local -a common_args package_inputs
 
+  publish_dir="$(publish_dir_for_rid "$rid")"
   console_src="$(console_binary_path "$rid")"
   require_file "$console_src"
 
@@ -212,12 +171,14 @@ build_linux_package() {
     --url "https://github.com/${GITHUB_REPOSITORY}"
     --description "Convert terminal output to SVG images."
   )
-  package_inputs=("$console_src=/usr/local/bin/console2svg")
+  package_inputs=()
+  while IFS= read -r published_file; do
+    package_inputs+=("$published_file=/usr/local/bin/$(basename "$published_file")")
+  done < <(find "$publish_dir" -maxdepth 1 -type f | sort)
 
-  if runtime_src="$(native_runtime_path "$rid")"; then
-    package_inputs+=("$runtime_src=/usr/local/bin/$(native_runtime_name_for_rid "$rid")")
-  else
-    echo "No ResvgSharp native runtime asset for $rid; Linux package will include console2svg only."
+  if [[ "${#package_inputs[@]}" -eq 0 ]]; then
+    echo "No published files found for $rid in $publish_dir" >&2
+    exit 1
   fi
 
   fpm "${common_args[@]}" \

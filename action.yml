@@ -122,10 +122,14 @@ runs:
 
           case "$RID" in
             linux-*)
-              curl -fsSL -L -o "${INSTALL_DIR}/libresvg_wrapper.so" "${RELEASE_BASE_URL}/libresvg_wrapper-${RID}.so"
+              if curl -fsSL -L -o "${INSTALL_DIR}/libresvg_wrapper.so" "${RELEASE_BASE_URL}/libresvg_wrapper-${RID}.so"; then
+                :
+              fi
               ;;
             osx-*)
-              curl -fsSL -L -o "${INSTALL_DIR}/libresvg_wrapper.dylib" "${RELEASE_BASE_URL}/libresvg_wrapper-${RID}.dylib"
+              if curl -fsSL -L -o "${INSTALL_DIR}/libresvg_wrapper.dylib" "${RELEASE_BASE_URL}/libresvg_wrapper-${RID}.dylib"; then
+                :
+              fi
               ;;
             win-*)
               if curl -fsSL -L -o "${INSTALL_DIR}/resvg_wrapper.dll" "${RELEASE_BASE_URL}/resvg_wrapper-${RID}.dll"; then
@@ -133,6 +137,11 @@ runs:
               fi
               ;;
           esac
+        fi
+
+        if [ ! -f "${INSTALL_DIR}/console2svg${EXT}" ]; then
+          echo "console2svg${EXT} was not found after installation."
+          exit 1
         fi
 
         [ -z "${EXT}" ] && chmod +x "${INSTALL_DIR}/console2svg"

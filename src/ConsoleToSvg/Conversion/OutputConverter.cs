@@ -140,6 +140,7 @@ internal static class OutputConverter
                         toolchain.FfmpegPath!,
                         svgPath,
                         outputPath,
+                        resourcesDirectory,
                         logger,
                         cancellationToken,
                         "Ensure ffmpeg supports SVG input or use the ResvgSharp fallback."
@@ -179,6 +180,7 @@ internal static class OutputConverter
                             toolchain.FfmpegPath!,
                             tempPng,
                             outputPath,
+                            workingDirectory: null,
                             logger,
                             cancellationToken
                         )
@@ -220,6 +222,7 @@ internal static class OutputConverter
                     fps,
                     outputPath,
                     GetVideoFrameExtension(ffmpegSupportsSvgInput: true),
+                    resourcesDirectory,
                     logger,
                     cancellationToken,
                     "Ensure ffmpeg supports SVG input or use the ResvgSharp fallback."
@@ -245,6 +248,7 @@ internal static class OutputConverter
                     fps,
                     outputPath,
                     GetVideoFrameExtension(ffmpegSupportsSvgInput: false),
+                    workingDirectory: null,
                     logger,
                     cancellationToken
                 )
@@ -342,6 +346,7 @@ internal static class OutputConverter
         string ffmpeg,
         string inputPath,
         string outputPath,
+        string? workingDirectory,
         ILogger logger,
         CancellationToken cancellationToken,
         string exitFailureMessage = "Ensure ffmpeg supports the requested output format."
@@ -349,6 +354,7 @@ internal static class OutputConverter
         RunFfmpegAsync(
             ffmpeg,
             ["-y", "-i", inputPath, "-frames:v", "1", "-update", "1", outputPath],
+            workingDirectory,
             logger,
             cancellationToken,
             exitFailureMessage
@@ -360,6 +366,7 @@ internal static class OutputConverter
         double fps,
         string outputPath,
         string frameExtension,
+        string? workingDirectory,
         ILogger logger,
         CancellationToken cancellationToken,
         string exitFailureMessage = "Ensure ffmpeg supports the requested output format."
@@ -370,6 +377,7 @@ internal static class OutputConverter
         return RunFfmpegAsync(
             ffmpeg,
             ["-y", "-framerate", fpsValue, "-i", framePattern, outputPath],
+            workingDirectory,
             logger,
             cancellationToken,
             exitFailureMessage
@@ -379,6 +387,7 @@ internal static class OutputConverter
     private static Task RunFfmpegAsync(
         string ffmpeg,
         string[] args,
+        string? workingDirectory,
         ILogger logger,
         CancellationToken cancellationToken,
         string exitFailureMessage
@@ -387,6 +396,7 @@ internal static class OutputConverter
             toolDisplayName: "ffmpeg",
             executablePath: ffmpeg,
             args,
+            workingDirectory,
             logger,
             cancellationToken,
             startFailureMessage:
@@ -488,6 +498,7 @@ internal static class OutputConverter
         string toolDisplayName,
         string executablePath,
         string[] args,
+        string? workingDirectory,
         ILogger logger,
         CancellationToken cancellationToken,
         string startFailureMessage,
@@ -499,6 +510,10 @@ internal static class OutputConverter
         using var process = new Process();
         process.StartInfo.FileName = executablePath;
         process.StartInfo.UseShellExecute = false;
+        if (!string.IsNullOrWhiteSpace(workingDirectory))
+        {
+            process.StartInfo.WorkingDirectory = workingDirectory;
+        }
         foreach (var arg in args)
         {
             process.StartInfo.ArgumentList.Add(arg);

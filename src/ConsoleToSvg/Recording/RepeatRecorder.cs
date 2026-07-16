@@ -223,7 +223,7 @@ public static class RepeatRecorder
         {
             return new ProcessStartInfo
             {
-                FileName = "cmd.exe",
+                FileName = GetWindowsShellPath(),
                 Arguments = "/d /c " + shellCommand + " 2>&1",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
@@ -263,5 +263,11 @@ public static class RepeatRecorder
         }
 
         return "unset " + string.Join(' ', ShellDeletedEnvironmentKeys) + "; " + command;
+    }
+
+    private static string GetWindowsShellPath()
+    {
+        var systemDir = Environment.GetFolderPath(Environment.SpecialFolder.System);
+        return Path.Combine(systemDir, "cmd.exe");
     }
 }

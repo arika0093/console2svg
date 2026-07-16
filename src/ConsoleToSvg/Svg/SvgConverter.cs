@@ -656,9 +656,10 @@ internal static class SvgConverter
             return false;
         }
 
-        var tempDir = Path.GetTempPath();
-        var tempSvg = Path.Combine(tempDir, $"c2s-probe-{Guid.NewGuid():N}.svg");
-        var tempPng = Path.Combine(tempDir, $"c2s-probe-{Guid.NewGuid():N}.png");
+        var tempDir = Path.Combine(Path.GetTempPath(), $"c2s-probe-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(tempDir);
+        var tempSvg = Path.Combine(tempDir, "probe.svg");
+        var tempPng = Path.Combine(tempDir, "probe.png");
 
         try
         {
@@ -690,8 +691,32 @@ internal static class SvgConverter
         }
         finally
         {
-            try { if (File.Exists(tempSvg)) File.Delete(tempSvg); } catch { }
-            try { if (File.Exists(tempPng)) File.Delete(tempPng); } catch { }
+            try
+            {
+                if (File.Exists(tempSvg)) File.Delete(tempSvg);
+            }
+            catch
+            {
+                // Best-effort cleanup; ignore any errors.
+            }
+
+            try
+            {
+                if (File.Exists(tempPng)) File.Delete(tempPng);
+            }
+            catch
+            {
+                // Best-effort cleanup; ignore any errors.
+            }
+
+            try
+            {
+                if (Directory.Exists(tempDir)) Directory.Delete(tempDir);
+            }
+            catch
+            {
+                // Best-effort cleanup; ignore any errors.
+            }
         }
     }
 

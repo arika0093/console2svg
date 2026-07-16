@@ -1,3 +1,6 @@
+using System;
+using ConsoleToSvg.Svg;
+
 namespace ConsoleToSvg.Cli;
 
 public enum OutputMode
@@ -15,7 +18,7 @@ public enum VideoTimingMode
 
 public sealed class AppOptions
 {
-    public bool Verbose { get; set; }
+        public bool Verbose { get; set; }
 
     public string? VerboseLogPath { get; set; }
 
@@ -118,4 +121,10 @@ public sealed class AppOptions
 
     /// <summary>Target output image height in pixels. null = auto (derived from content).</summary>
     public double? SizeHeight { get; set; }
+
+    /// <summary>
+    /// Which SVG → raster converter to use. Default: <see cref="SvgConverterMode.Auto"/>,
+    /// which prefers ffmpeg+librsvg, then rsvg-convert, then ResvgSharp.
+    /// </summary>
+    public SvgConverterMode SvgConverter { get; set; } = SvgConverterMode.Auto;
 }

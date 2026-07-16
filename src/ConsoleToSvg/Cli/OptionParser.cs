@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using ConsoleToSvg.Svg;
 
 namespace ConsoleToSvg.Cli;
 
@@ -118,6 +119,15 @@ public static class OptionParser
                                           Video timing mode (default: deterministic).
                                           deterministic: normalize frame times to reduce output diffs.
                                           realtime: preserve measured event timing as-is.
+
+            Options (Conversion):
+                --svg-converter <auto|ffmpeg|rsvg-convert|resvg>
+                                          SVG → raster converter (default: auto).
+                                          auto: prefer ffmpeg+librsvg, then rsvg-convert, then ResvgSharp.
+                                          ffmpeg: force ffmpeg (requires librsvg input device).
+                                          rsvg-convert: force the rsvg-convert CLI tool (librsvg2-bin / brew install librsvg).
+                                          resvg: force the managed ResvgSharp library.
+                                          When a fallback handles SVG→PNG, ffmpeg is only used for subsequent format conversion.
             """;
 
     public static bool TryParse(
@@ -663,10 +673,58 @@ public static class OptionParser
                 options.SizeWidth = sizeWidth;
                 options.SizeHeight = sizeHeight;
                 return true;
+            case "--svg-converter":
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    error = $"{name} requires a value.";
+                    return false;
+                }
+                if (!TryParseSvgConverterMode(value, out var svgConverter, out error))
+                {
+                    return false;
+                }
+                options.SvgConverter = svgConverter;
+                return true;
             default:
                 error = $"Unknown option: {name}";
                 return false;
         }
+    }
+
+    private static bool TryParseSvgConverterMode(
+        string value,
+        out SvgConverterMode mode,
+        out string? error
+    )
+    {
+        error = null;
+        if (string.Equals(value, "auto", StringComparison.OrdinalIgnoreCase))
+        {
+            mode = SvgConverterMode.Auto;
+            return true;
+        }
+        if (string.Equals(value, "ffmpeg", StringComparison.OrdinalIgnoreCase))
+        {
+            mode = SvgConverterMode.Ffmpeg;
+            return true;
+        }
+        if (
+            string.Equals(value, "rsvg-convert", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(value, "rsvg", StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            mode = SvgConverterMode.RsvgConvert;
+            return true;
+        }
+        if (string.Equals(value, "resvg", StringComparison.OrdinalIgnoreCase))
+        {
+            mode = SvgConverterMode.Resvg;
+            return true;
+        }
+        mode = SvgConverterMode.Auto;
+        error =
+            "--svg-converter must be auto, ffmpeg, rsvg-convert, or resvg.";
+        return false;
     }
 
     private static bool TryParseInt(

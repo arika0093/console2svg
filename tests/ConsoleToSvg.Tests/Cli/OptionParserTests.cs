@@ -1,3 +1,4 @@
+using System;
 using ConsoleToSvg.Cli;
 using ConsoleToSvg.Svg;
 
@@ -79,6 +80,71 @@ public sealed class OptionParserTests
         );
         ok.ShouldBeTrue();
         options!.LengthAdjust.ShouldBe("spacingAndGlyphs");
+    }
+
+    [Test]
+    public void SvgConverterDefaultsToAuto()
+    {
+        var ok = OptionParser.TryParse(
+            Array.Empty<string>(),
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.SvgConverter.ShouldBe(SvgConverterMode.Auto);
+    }
+
+    [Test]
+    public void SvgConverterFfmpegParsed()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--svg-converter", "ffmpeg" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.SvgConverter.ShouldBe(SvgConverterMode.Ffmpeg);
+    }
+
+    [Test]
+    public void SvgConverterRsvgConvertParsed()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--svg-converter", "rsvg-convert" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.SvgConverter.ShouldBe(SvgConverterMode.RsvgConvert);
+    }
+
+    [Test]
+    public void SvgConverterResvgParsed()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--svg-converter", "resvg" },
+            out var options,
+            out _,
+            out _
+        );
+        ok.ShouldBeTrue();
+        options!.SvgConverter.ShouldBe(SvgConverterMode.Resvg);
+    }
+
+    [Test]
+    public void SvgConverterInvalidValueRejected()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--svg-converter", "foobar" },
+            out _,
+            out var error,
+            out _
+        );
+        ok.ShouldBeFalse();
+        error!.ShouldContain("svg-converter");
     }
 
     [Test]

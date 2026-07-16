@@ -68,7 +68,7 @@ internal static class Program
             $"Verbose={options.Verbose} VerboseLogPath={options.VerboseLogPath ?? "(default)"} Args={string.Join(' ', args)}"
         );
         logger.ZLogDebug(
-            $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} ForeColor={options.ForeColor ?? ""} Window={options.Window} Padding={options.Padding} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""} LengthAdjust={options.LengthAdjust} Prompt={options.Prompt} Header={options.Header ?? ""} NoColorEnv={options.NoColorEnv} NoDeleteEnvs={options.NoDeleteEnvs} VideoTiming={options.VideoTiming} CoalesceMs={options.OutputCoalesceMs}"
+            $"Parsed options: Mode={options.Mode} Out={options.OutputPath} In={options.InputCastPath ?? ""} Command={options.Command ?? ""} Width={options.Width} Height={options.Height} Frame={options.Frame} Theme={options.Theme} ForeColor={options.ForeColor ?? ""} Window={options.Window} Padding={options.Padding} SaveCast={options.SaveCastPath ?? ""} Font={options.Font ?? ""} LengthAdjust={options.LengthAdjust} Prompt={options.Prompt} Header={options.Header ?? ""} NoColorEnv={options.NoColorEnv} NoDeleteEnvs={options.NoDeleteEnvs} VideoTiming={options.VideoTiming} CoalesceMs={options.OutputCoalesceMs} SvgConverter={options.SvgConverter}"
         );
         using var environmentScope = ApplyProcessEnvironmentOverrides(options, logger);
 
@@ -175,6 +175,23 @@ internal static class Program
                             ? options.Mode is OutputMode.Video or OutputMode.Repeat
                             : IsVideoFormat(outputExt);
 
+                    // Resolve the SVG → raster converter once. This detects whether
+                    // ffmpeg has librsvg support and falls back to rsvg-convert /
+                    // ResvgSharp as needed. FfmpegPath is still needed for the PNG →
+                    // final-format step in the fallback pipeline, so we resolve it
+                    // unconditionally (it is simply unused when a fallback converter
+                    // produces PNG directly).
+                    var ffmpegPath = FindFfmpegExecutable();
+                    SvgConverter.SetFfmpegPath(ffmpegPath);
+                    var converter = SvgConverter.ResolveConverter(
+                        options.SvgConverter,
+                        ffmpegAvailableOverride: true,
+                        logger
+                    );
+                    logger.ZLogDebug(
+                        $"Resolved converter: {converter} FfmpegPath={ffmpegPath}"
+                    );
+
                     if (useVideoPath)
                     {
                         // Video format: save frames to a temp dir, then invoke ffmpeg.
@@ -212,10 +229,14 @@ internal static class Program
                             }
 
                             EnsureDirectory(options.OutputPath);
-                            await RunFfmpegVideoAsync(
+                            await SvgConverter.ConvertFramesToVideoAsync(
                                     tempDir,
                                     options.VideoFps,
                                     options.OutputPath,
+                                    converter,
+                                    ffmpegPath,
+                                    options.SizeWidth,
+                                    options.SizeHeight,
                                     logger,
                                     outputToken
                                 )
@@ -257,9 +278,13 @@ internal static class Program
                                 )
                                 .ConfigureAwait(false);
                             EnsureDirectory(options.OutputPath);
-                            await RunFfmpegImageAsync(
+                            await SvgConverter.ConvertSvgToImageAsync(
                                     tempSvg,
                                     options.OutputPath,
+                                    converter,
+                                    ffmpegPath,
+                                    options.SizeWidth,
+                                    options.SizeHeight,
                                     logger,
                                     outputToken
                                 )
@@ -530,94 +555,6 @@ internal static class Program
 
         // 2. Rely on PATH
         return exeName;
-    }
-
-    /// <summary>Runs ffmpeg with the given arguments and throws if the process exits non-zero.</summary>
-    private static async Task RunFfmpegAsync(
-        string[] args,
-        ILogger logger,
-        CancellationToken cancellationToken
-    )
-    {
-        var ffmpeg = FindFfmpegExecutable();
-        logger.ZLogDebug($"Running ffmpeg: {ffmpeg} {string.Join(' ', args)}");
-
-        using var process = new Process();
-        process.StartInfo.FileName = ffmpeg;
-        process.StartInfo.UseShellExecute = false;
-        foreach (var arg in args)
-        {
-            process.StartInfo.ArgumentList.Add(arg);
-        }
-
-        try
-        {
-            process.Start();
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException(
-                $"Failed to start ffmpeg. Please ensure ffmpeg is installed "
-                + "(bundled with the application or available in PATH).\n"
-                + ex.Message,
-                ex
-            );
-        }
-
-        using var killOnCancel = cancellationToken.Register(() =>
-        {
-            try { process.Kill(entireProcessTree: true); }
-            catch { /* process may have already exited */ }
-        });
-
-        await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
-
-        if (process.ExitCode != 0)
-        {
-            throw new InvalidOperationException(
-                $"ffmpeg exited with code {process.ExitCode}. "
-                + "Ensure ffmpeg supports the requested output format."
-            );
-        }
-
-        logger.ZLogDebug($"ffmpeg completed successfully.");
-    }
-
-    /// <summary>Converts a directory of frame-NNNN.svg files into a video using ffmpeg.</summary>
-    private static async Task RunFfmpegVideoAsync(
-        string framesDir,
-        double fps,
-        string outputPath,
-        ILogger logger,
-        CancellationToken cancellationToken
-    )
-    {
-        var framePattern = Path.Combine(framesDir, "frame-%04d.svg");
-        var fpsStr = fps.ToString(CultureInfo.InvariantCulture);
-        await RunFfmpegAsync(
-                ["-y", "-framerate", fpsStr, "-i", framePattern, outputPath],
-                logger,
-                cancellationToken
-            )
-            .ConfigureAwait(false);
-    }
-
-    /// <summary>Converts a single SVG file to an image format using ffmpeg.</summary>
-    private static async Task RunFfmpegImageAsync(
-        string svgPath,
-        string outputPath,
-        ILogger logger,
-        CancellationToken cancellationToken
-    )
-    {
-        await RunFfmpegAsync(
-                // -frames:v 1 -update 1 ensure a single frame is written without
-                // the "image sequence pattern" warning from ffmpeg.
-                ["-y", "-i", svgPath, "-frames:v", "1", "-update", "1", outputPath],
-                logger,
-                cancellationToken
-            )
-            .ConfigureAwait(false);
     }
 
     /// <returns>The number of frame files written to <paramref name="directory"/>.</returns>

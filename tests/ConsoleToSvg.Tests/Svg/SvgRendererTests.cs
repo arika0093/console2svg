@@ -20,7 +20,7 @@ public sealed class SvgRendererTests
         );
 
         svg.ShouldContain("<svg");
-        svg.ShouldContain("viewBox=\"0 0 67.2 36\"");
+        svg.ShouldContain("viewBox=\"0 0 67.2 40\"");
         svg.ShouldContain(">Hi<");
     }
 
@@ -39,7 +39,7 @@ public sealed class SvgRendererTests
             }
         );
 
-        svg.ShouldContain("viewBox=\"0 0 58.8 18\"");
+        svg.ShouldContain("viewBox=\"0 0 58.8 20\"");
     }
 
     [Test]
@@ -55,7 +55,7 @@ public sealed class SvgRendererTests
         );
 
         // The SVG should include all 6 rows (4 screen + 2 scrollback)
-        svg.ShouldContain("viewBox=\"0 0 67.2 108\"");
+        svg.ShouldContain("viewBox=\"0 0 67.2 120\"");
         // All six lines should appear in the SVG
         svg.ShouldContain("line1");
         svg.ShouldContain("line6");
@@ -74,7 +74,7 @@ public sealed class SvgRendererTests
         );
 
         // When a specific frame is requested, only the terminal viewport (2 rows) is shown
-        svg.ShouldContain("viewBox=\"0 0 67.2 36\"");
+        svg.ShouldContain("viewBox=\"0 0 67.2 40\"");
     }
 
     [Test]
@@ -164,7 +164,7 @@ public sealed class SvgRendererTests
         );
 
         // Only 2 rows visible: "line1" (row 0) and "---" (row 1)
-        svg.ShouldContain("viewBox=\"0 0 67.2 36\"");
+        svg.ShouldContain("viewBox=\"0 0 67.2 40\"");
         svg.ShouldContain("line1");
         svg.ShouldContain(">---<");
         // "line3" and "line4" should NOT be in the output
@@ -190,7 +190,7 @@ public sealed class SvgRendererTests
         );
 
         // 3 rows visible: "---" (row 1), "keep" (row 2), "more" (row 3)
-        svg.ShouldContain("viewBox=\"0 0 67.2 54\"");
+        svg.ShouldContain("viewBox=\"0 0 67.2 60\"");
         svg.ShouldContain(">---<");
         svg.ShouldContain("keep");
         // "skip" row should NOT be in the output
@@ -258,8 +258,8 @@ public sealed class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        // The terminal viewport is 3 rows ﾃ・4 cols = height 54, width 33.6
-        svg.ShouldContain("viewBox=\"0 0 33.6 54\"");
+        // The terminal viewport is 3 rows ﾃ・4 cols = height 60, width 33.6
+        svg.ShouldContain("viewBox=\"0 0 33.6 60\"");
         svg.ShouldContain(">ABCD<");
         svg.ShouldContain(">EF<");
     }
@@ -337,7 +337,7 @@ public sealed class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", Padding = 2 }
         );
 
-        svg.ShouldContain("viewBox=\"0 0 71.2 40\"");
+        svg.ShouldContain("viewBox=\"0 0 71.2 44\"");
     }
 
     [Test]
@@ -480,8 +480,8 @@ public sealed class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", HeightRows = 3 }
         );
 
-        // Only 3 rows should be visible: height = 3 * 18 = 54, width = 8 * 8.4 = 67.2
-        svg.ShouldContain("viewBox=\"0 0 67.2 54\"");
+        // Only 3 rows should be visible: height = 3 * 20 = 60, width = 8 * 8.4 = 67.2
+        svg.ShouldContain("viewBox=\"0 0 67.2 60\"");
     }
 
     [Test]
@@ -628,8 +628,8 @@ public sealed class SvgRendererTests
             }
         );
 
-        // Canvas height should be at least 4 * 18 = 72 pixels (not reduced by crop)
-        svg.ShouldContain("viewBox=\"0 0 67.2 72\"");
+        // Canvas height should be at least 4 * 20 = 80 pixels (not reduced by crop)
+        svg.ShouldContain("viewBox=\"0 0 67.2 80\"");
     }
 
     [Test]
@@ -747,18 +747,18 @@ public sealed class SvgRendererTests
             }
         );
 
-        // SVG width should be the target; height scales proportionally (2x = 72)
+        // SVG width should be the target; height scales proportionally (2x = 80)
         svg.ShouldContain("width=\"134.4\"");
-        svg.ShouldContain("height=\"72\"");
+        svg.ShouldContain("height=\"80\"");
         // viewBox stays at natural canvas dimensions
-        svg.ShouldContain("viewBox=\"0 0 67.2 36\"");
+        svg.ShouldContain("viewBox=\"0 0 67.2 40\"");
         svg.ShouldContain(">Hi<");
     }
 
     [Test]
     public void RenderWithSizeHeightOnlyScalesProportionally()
     {
-        // Natural canvas: width=67.2, height=36
+        // Natural canvas: width=67.2, height=40
         var session = new RecordingSession(width: 8, height: 2);
         session.AddEvent(0.01, "Hi");
 
@@ -767,21 +767,21 @@ public sealed class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions
             {
                 Theme = "dark",
-                SizeHeight = 72d, // 2x natural height
+                SizeHeight = 80d, // 2x natural height
             }
         );
 
         // SVG height should be the target; width scales proportionally (2x = 134.4)
         svg.ShouldContain("width=\"134.4\"");
-        svg.ShouldContain("height=\"72\"");
+        svg.ShouldContain("height=\"80\"");
         // viewBox stays at natural canvas dimensions
-        svg.ShouldContain("viewBox=\"0 0 67.2 36\"");
+        svg.ShouldContain("viewBox=\"0 0 67.2 40\"");
     }
 
     [Test]
     public void RenderWithSizeBothSameAspectRatioScalesProportionally()
     {
-        // Natural canvas: width=8 cols * 8.4 = 67.2, height=2 rows * 18 = 36 (aspect ratio ~1.867)
+        // Natural canvas: width=8 cols * 8.4 = 67.2, height=2 rows * 20 = 40 (aspect ratio ~1.68)
         var session = new RecordingSession(width: 8, height: 2);
         session.AddEvent(0.01, "Hi");
 
@@ -791,13 +791,13 @@ public sealed class SvgRendererTests
             {
                 Theme = "dark",
                 SizeWidth = 134.4d,
-                SizeHeight = 72d, // same aspect ratio as natural
+                SizeHeight = 80d, // same aspect ratio as natural
             }
         );
 
         // SVG dimensions should match the specified size
         svg.ShouldContain("width=\"134.4\"");
-        svg.ShouldContain("height=\"72\"");
+        svg.ShouldContain("height=\"80\"");
         // viewBox has the natural canvas dimensions (content fills the entire area, no centering needed)
         svg.ShouldContain("viewBox=\"0 0");
         svg.ShouldContain(">Hi<");
@@ -806,12 +806,12 @@ public sealed class SvgRendererTests
     [Test]
     public void RenderWithSizeBothDifferentAspectRatioExtendsBackground()
     {
-        // Natural canvas: width=67.2, height=36; aspect ratio ~1.867
+        // Natural canvas: width=67.2, height=40; aspect ratio ~1.68
         var session = new RecordingSession(width: 8, height: 2);
         session.AddEvent(0.01, "Hi");
 
         // Use 200x200 (1:1 aspect ratio) – content fills width (scale=200/67.2≈2.976),
-        // with top/bottom margins to center the content (scaledH ≈ 107 < 200)
+        // with top/bottom margins to center the content (scaledH ≈ 119 < 200)
         var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
             session,
             new ConsoleToSvg.Svg.SvgRenderOptions
@@ -851,9 +851,9 @@ public sealed class SvgRendererTests
             }
         );
 
-        svg.ShouldContain("viewBox=\"0 -15.6 67.2 67.2\"");
+        svg.ShouldContain("viewBox=\"0 -13.6 67.2 67.2\"");
         svg.ShouldContain(
-            "<pattern id=\"desktop-bg\" patternUnits=\"userSpaceOnUse\" patternContentUnits=\"userSpaceOnUse\" x=\"0\" y=\"-15.6\" width=\"67.2\" height=\"67.2\">"
+            "<pattern id=\"desktop-bg\" patternUnits=\"userSpaceOnUse\" patternContentUnits=\"userSpaceOnUse\" x=\"0\" y=\"-13.6\" width=\"67.2\" height=\"67.2\">"
         );
         svg.ShouldContain(
             "<image href=\"background.png\" x=\"0\" y=\"0\" width=\"67.2\" height=\"67.2\" preserveAspectRatio=\"xMidYMid slice\"/>"
@@ -877,12 +877,12 @@ public sealed class SvgRendererTests
             }
         );
 
-        svg.ShouldContain("viewBox=\"-2.4 0 72 36\"");
+        svg.ShouldContain("viewBox=\"-6.4 0 80 40\"");
         svg.ShouldContain(
-            "<pattern id=\"desktop-bg\" patternUnits=\"userSpaceOnUse\" patternContentUnits=\"userSpaceOnUse\" x=\"-2.4\" y=\"0\" width=\"72\" height=\"36\">"
+            "<pattern id=\"desktop-bg\" patternUnits=\"userSpaceOnUse\" patternContentUnits=\"userSpaceOnUse\" x=\"-6.4\" y=\"0\" width=\"80\" height=\"40\">"
         );
         svg.ShouldContain(
-            "<image href=\"background.png\" x=\"0\" y=\"0\" width=\"72\" height=\"36\" preserveAspectRatio=\"xMidYMid slice\"/>"
+            "<image href=\"background.png\" x=\"0\" y=\"0\" width=\"80\" height=\"40\" preserveAspectRatio=\"xMidYMid slice\"/>"
         );
     }
 }

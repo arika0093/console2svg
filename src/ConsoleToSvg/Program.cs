@@ -182,6 +182,7 @@ internal static class Program
                     // unconditionally (it is simply unused when a fallback converter
                     // produces PNG directly).
                     var ffmpegPath = FindFfmpegExecutable();
+                    SvgConverter.SetFfmpegPath(ffmpegPath);
                     var converter = SvgConverter.ResolveConverter(
                         options.SvgConverter,
                         ffmpegAvailableOverride: true,

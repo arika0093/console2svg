@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="856" height="286" viewBox="0 0 856 286" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="856" height="356" viewBox="0 0 856 356" role="img" aria-label="console2svg output">
 <style>
 .crt {
   font-family: ui-monospace,"JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,monospace;
@@ -11,36 +11,40 @@ text {
   shape-rendering: crispEdges;
 }
 </style>
-<rect x="0" y="0" width="856" height="286" fill="#1e1e1e"/>
+<rect x="0" y="0" width="856" height="356" fill="#1e1e1e"/>
 <g transform="translate(8 8)">
-<rect width="840" height="270" fill="#1e1e1e"/>
+<rect width="840" height="340" fill="#1e1e1e"/>
 <text class="crt" x="0" y="14" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">Host:</text>
-<text class="crt" x="16.8" y="32" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">Version:</text>
-<text class="crt" x="134.4" y="32" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">10.0.5</text>
-<text class="crt" x="16.8" y="50" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacing">Architecture:</text>
-<text class="crt" x="134.4" y="50" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">x64</text>
-<text class="crt" x="16.8" y="68" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Commit:</text>
-<text class="crt" x="134.4" y="68" fill="#d4d4d4" textLength="84" lengthAdjust="spacing">a612c2a105</text>
-<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">.NET</text>
-<text class="crt" x="42" y="104" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">SDKs</text>
-<text class="crt" x="84" y="104" fill="#d4d4d4" textLength="84" lengthAdjust="spacing">installed:</text>
-<text class="crt" x="16.8" y="122" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">8.0.125</text>
-<text class="crt" x="84" y="122" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
-<text class="crt" x="16.8" y="140" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">8.0.206</text>
-<text class="crt" x="84" y="140" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
-<text class="crt" x="16.8" y="158" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">8.0.319</text>
-<text class="crt" x="84" y="158" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
-<text class="crt" x="16.8" y="176" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">8.0.419</text>
-<text class="crt" x="84" y="176" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
-<text class="crt" x="16.8" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">9.0.115</text>
+<text class="crt" x="16.8" y="34" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">Version:</text>
+<text class="crt" x="134.4" y="34" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">10.0.10</text>
+<text class="crt" x="16.8" y="54" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacing">Architecture:</text>
+<text class="crt" x="134.4" y="54" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">x64</text>
+<text class="crt" x="16.8" y="74" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Commit:</text>
+<text class="crt" x="134.4" y="74" fill="#d4d4d4" textLength="84" lengthAdjust="spacing">f7d90799ce</text>
+<text class="crt" x="0" y="114" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">.NET</text>
+<text class="crt" x="42" y="114" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">SDKs</text>
+<text class="crt" x="84" y="114" fill="#d4d4d4" textLength="84" lengthAdjust="spacing">installed:</text>
+<text class="crt" x="16.8" y="134" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">8.0.128</text>
+<text class="crt" x="84" y="134" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
+<text class="crt" x="16.8" y="154" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">8.0.206</text>
+<text class="crt" x="84" y="154" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
+<text class="crt" x="16.8" y="174" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">8.0.319</text>
+<text class="crt" x="84" y="174" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
+<text class="crt" x="16.8" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">8.0.422</text>
 <text class="crt" x="84" y="194" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
-<text class="crt" x="16.8" y="212" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">9.0.205</text>
-<text class="crt" x="84" y="212" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
-<text class="crt" x="16.8" y="230" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">9.0.312</text>
-<text class="crt" x="84" y="230" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
-<text class="crt" x="16.8" y="248" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">10.0.105</text>
-<text class="crt" x="92.4" y="248" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
-<text class="crt" x="16.8" y="266" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">10.0.201</text>
-<text class="crt" x="92.4" y="266" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
+<text class="crt" x="16.8" y="214" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">9.0.118</text>
+<text class="crt" x="84" y="214" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
+<text class="crt" x="16.8" y="234" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">9.0.205</text>
+<text class="crt" x="84" y="234" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
+<text class="crt" x="16.8" y="254" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">9.0.315</text>
+<text class="crt" x="84" y="254" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
+<text class="crt" x="16.8" y="274" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">10.0.109</text>
+<text class="crt" x="92.4" y="274" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
+<text class="crt" x="16.8" y="294" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">10.0.204</text>
+<text class="crt" x="92.4" y="294" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
+<text class="crt" x="16.8" y="314" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">10.0.301</text>
+<text class="crt" x="92.4" y="314" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
+<text class="crt" x="16.8" y="334" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">10.0.302</text>
+<text class="crt" x="92.4" y="334" fill="#d4d4d4" textLength="193.2" lengthAdjust="spacing">[/usr/share/dotnet/sdk]</text>
 </g>
 </svg>

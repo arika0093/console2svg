@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="856" height="106" viewBox="0 0 856 106" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="856" height="116" viewBox="0 0 856 116" role="img" aria-label="console2svg output">
 <style>
 .crt {
   font-family: ui-monospace,"JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,monospace;
@@ -11,11 +11,11 @@ text {
   shape-rendering: crispEdges;
 }
 </style>
-<rect x="0" y="0" width="856" height="106" fill="#042515"/>
-<rect x="8" y="8" width="840" height="18" fill="#042515"/>
+<rect x="0" y="0" width="856" height="116" fill="#042515"/>
+<rect x="8" y="8" width="840" height="20" fill="#042515"/>
 <text class="crt" x="8" y="22" fill="#00f040">[HELLO!] $ my-custom-header</text>
-<g transform="translate(8 26)">
-<rect width="840" height="72" fill="#042515"/>
+<g transform="translate(8 28)">
+<rect width="840" height="80" fill="#042515"/>
 <text class="crt" x="0" y="14" fill="#00f040" textLength="16.8" lengthAdjust="spacing">hi</text>
 </g>
 </svg>

@@ -66,43 +66,43 @@ text {
   0%, 19.902% {
     opacity: 0;
   }
-  19.903%, 23.301% {
+  19.903%, 27.67% {
     opacity: 1;
   }
-  23.302%, 100% {
+  27.671%, 100% {
     opacity: 0;
   }
 }
 .frame-4 { animation:k4 17.167s linear infinite; }
 @keyframes k5 {
-  0%, 23.3% {
+  0%, 27.669% {
     opacity: 0;
   }
-  23.301%, 26.699% {
+  27.67%, 28.155% {
     opacity: 1;
   }
-  26.7%, 100% {
+  28.156%, 100% {
     opacity: 0;
   }
 }
 .frame-5 { animation:k5 17.167s linear infinite; }
 @keyframes k6 {
-  0%, 26.698% {
+  0%, 28.154% {
     opacity: 0;
   }
-  26.699%, 31.068% {
+  28.155%, 31.796% {
     opacity: 1;
   }
-  31.069%, 100% {
+  31.797%, 100% {
     opacity: 0;
   }
 }
 .frame-6 { animation:k6 17.167s linear infinite; }
 @keyframes k7 {
-  0%, 31.067% {
+  0%, 31.795% {
     opacity: 0;
   }
-  31.068%, 35.437% {
+  31.796%, 35.437% {
     opacity: 1;
   }
   35.438%, 100% {
@@ -294,19 +294,19 @@ text {
   0%, 87.863% {
     opacity: 0;
   }
-  87.864%, 93.689% {
+  87.864%, 88.35% {
     opacity: 1;
   }
-  93.69%, 100% {
+  88.351%, 100% {
     opacity: 0;
   }
 }
 .frame-23 { animation:k23 17.167s linear infinite; }
 @keyframes k24 {
-  0%, 93.688% {
+  0%, 88.349% {
     opacity: 0;
   }
-  93.689%, 99.515% {
+  88.35%, 99.515% {
     opacity: 1;
   }
   99.516%, 100% {
@@ -336,14 +336,14 @@ text {
 <defs>
 <g id="fd-0" transform="translate(9 36)">
 <rect width="672" height="400" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm5mmn9</text>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm3jd5f</text>
 <text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 </g>
 <g id="fd-1" transform="translate(9 36)">
 <rect width="672" height="400" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm5mmn9</text>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm3jd5f</text>
 <text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
@@ -351,7 +351,7 @@ text {
 </g>
 <g id="fd-2" transform="translate(9 36)">
 <rect width="672" height="400" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm5mmn9</text>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm3jd5f</text>
 <text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
@@ -359,7 +359,7 @@ text {
 </g>
 <g id="fd-3" transform="translate(9 36)">
 <rect width="672" height="400" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm5mmn9</text>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm3jd5f</text>
 <text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
@@ -367,7 +367,7 @@ text {
 </g>
 <g id="fd-4" transform="translate(9 36)">
 <rect width="672" height="400" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm5mmn9</text>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm3jd5f</text>
 <text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
@@ -953,38 +953,26 @@ text {
 <text class="crt" x="0" y="374" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="394" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">:q!</text>
 </g>
-<g id="fd-23" transform="translate(9 36)">
-<rect width="672" height="400" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm5mmn9</text>
-<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
-<text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
-<text class="crt" x="0" y="34" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm5mmn9</text>
-<text class="crt" x="168" y="34" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="34" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="34" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
-</g>
 <g id="fd-24" transform="translate(9 36)">
 <rect width="672" height="400" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm5mmn9</text>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm3jd5f</text>
 <text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 <text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
-<text class="crt" x="0" y="34" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm5mmn9</text>
+<text class="crt" x="0" y="34" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm3jd5f</text>
 <text class="crt" x="168" y="34" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="34" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="34" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 </g>
 <g id="fd-25" transform="translate(9 36)">
 <rect width="672" height="400" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm5mmn9</text>
+<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm3jd5f</text>
 <text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 <text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
-<text class="crt" x="0" y="34" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm5mmn9</text>
+<text class="crt" x="0" y="34" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervm3jd5f</text>
 <text class="crt" x="168" y="34" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
 <text class="crt" x="176.4" y="34" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
 <text class="crt" x="428.4" y="34" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
@@ -1014,7 +1002,7 @@ text {
 <use href="#fd-20" id="frame-20" class="frame frame-20"/>
 <use href="#fd-21" id="frame-21" class="frame frame-21"/>
 <use href="#fd-22" id="frame-22" class="frame frame-22"/>
-<use href="#fd-23" id="frame-23" class="frame frame-23"/>
+<use href="#fd-4" id="frame-23" class="frame frame-23"/>
 <use href="#fd-24" id="frame-24" class="frame frame-24"/>
 <use href="#fd-25" id="frame-25" class="frame frame-25"/>
 </svg>

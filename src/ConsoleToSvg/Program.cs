@@ -536,16 +536,24 @@ internal static class Program
 
     /// <summary>
     /// Finds the ffmpeg executable to use for format conversion.
-    /// Preference order: binary next to this executable (bundled), then PATH.
+    /// Preference order: bundled ffmpeg/ subdirectory, binary next to this executable (legacy bundled), then PATH.
     /// </summary>
     private static string FindFfmpegExecutable()
     {
         var exeName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "ffmpeg.exe" : "ffmpeg";
 
-        // 1. Check next to this binary (covers the bundled Windows distribution and npm dist/ layout)
         var exeDir = Path.GetDirectoryName(Environment.ProcessPath ?? string.Empty);
         if (!string.IsNullOrEmpty(exeDir))
         {
+            // 1. Bundled ffmpeg in a subdirectory. This keeps ffmpeg off the user's PATH while
+            //    still making it available to console2svg (e.g. WinGet and npm dist/ layouts).
+            var bundledSubDir = Path.Combine(exeDir, "ffmpeg", exeName);
+            if (File.Exists(bundledSubDir))
+            {
+                return bundledSubDir;
+            }
+
+            // 2. Legacy bundled layout: ffmpeg next to this executable.
             var bundled = Path.Combine(exeDir, exeName);
             if (File.Exists(bundled))
             {
@@ -553,7 +561,7 @@ internal static class Program
             }
         }
 
-        // 2. Rely on PATH
+        // 3. Rely on PATH
         return exeName;
     }
 

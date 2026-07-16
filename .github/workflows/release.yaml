@@ -241,16 +241,17 @@ jobs:
               exit 1
             fi
 
-            # Build the bundle zip: console2svg.exe + ffmpeg binaries (exe + dlls) + LICENSE
+            # Build the bundle zip: console2svg.exe + ffmpeg/ subdirectory
             bundle_dir="./console2svg-${rid}-ffmpeg"
-            mkdir -p "$bundle_dir"
+            mkdir -p "$bundle_dir/ffmpeg"
             cp "$src" "$bundle_dir/console2svg.exe"
-            cp "$ffmpeg_bin_dir"/*.exe "$bundle_dir/"
-            cp "$ffmpeg_bin_dir"/*.dll "$bundle_dir/"
-            cp "${top_dir}LICENSE.txt" "$bundle_dir/ffmpeg-LICENSE.txt"
+            cp "$ffmpeg_bin_dir"/*.exe "$bundle_dir/ffmpeg/"
+            cp "$ffmpeg_bin_dir"/*.dll "$bundle_dir/ffmpeg/"
+            cp "${top_dir}LICENSE.txt" "$bundle_dir/ffmpeg/ffmpeg-LICENSE.txt"
 
             zip_name="./release-upload/console2svg-${rid}-ffmpeg.zip"
-            # Create a flat zip so users can extract and run console2svg.exe directly.
+            # Create a zip with console2svg.exe at the root and ffmpeg isolated in a subdirectory.
+            # This keeps ffmpeg off the user's PATH while still allowing console2svg to locate it.
             (cd "$bundle_dir" && zip -q -r "../${zip_name#./}" .)
             echo "Created $zip_name"
           done

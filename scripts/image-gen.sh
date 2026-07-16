@@ -31,6 +31,7 @@ console2svg -o ./assets/cmd-bash-vim.svg      --verbose ./logs/cmd-bash-vim.log 
 # required: sudo npm install -g @github/copilot
 # console2svg -o ./assets/cmd-loop.svg          --verbose ./logs/cmd-loop.log         -v -c -d  --replay ./assets/cmd-loop-replay.json -- copilot --banner
 
-# --- video (mp4) ---
+# --- video ---
 # required: sudo apt install -y ffmpeg cmatrix
-console2svg -o ./assets/cmd-matrix-video.mp4 -w 120 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab
+# console2svg -o ./assets/cmd-matrix-video.mp4 -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab
+console2svg -o ./assets/cmd-matrix-video.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab

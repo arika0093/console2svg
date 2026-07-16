@@ -294,16 +294,16 @@ unzip console2svg-win-x64-ffmpeg.zip
 cd console2svg
 ```
 
-Then, you can specify the output file with the desired extension. For example, to convert an animated command to MP4 video, install `cmatrix` and run:
+Then, you can specify the output file with the desired extension. For example, to convert an animated command to any format, you can use the following command:
 
 ```bash
 # apt install cmatrix
-console2svg -o output.mp4 -w 120 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab
+console2svg -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab
 ```
 
-<video src="./assets/cmd-matrix-video.mp4" autoplay loop muted playsinline width="600"></video>
+![console2svg -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab](./assets/cmd-matrix-video.gif)
 
-You can also output as GIF, WebM, or a static PNG/JPG by changing the extension.
+You can also output as MP4, WebM, or a static PNG/JPG by changing the extension.
 
 ## Appearance options
 ### Background and opacity

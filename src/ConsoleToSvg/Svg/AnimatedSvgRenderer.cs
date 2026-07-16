@@ -30,6 +30,28 @@ public static class AnimatedSvgRenderer
         var reducedFrames = ReduceFrames(frames, options.VideoFps);
         reducedFrames = SpreadCollapsedFrameTimes(reducedFrames, options.VideoFps);
 
+        // Filter frames by time range when --time is specified in video mode.
+        if (options.TimeStart.HasValue || options.TimeEnd.HasValue)
+        {
+            var rangeStart = options.TimeStart ?? double.MinValue;
+            var rangeEnd = options.TimeEnd ?? double.MaxValue;
+            var filtered = new System.Collections.Generic.List<TerminalFrame>(reducedFrames.Count);
+            foreach (var f in reducedFrames)
+            {
+                if (f.Time >= rangeStart - 1e-9 && f.Time <= rangeEnd + 1e-9)
+                {
+                    filtered.Add(f);
+                }
+            }
+
+            if (filtered.Count == 0)
+            {
+                return SvgRenderer.Render(session, options);
+            }
+
+            reducedFrames = filtered;
+        }
+
         // Build a dedup map: visual-hash → index of the first reduced frame with that hash.
         // Frames that are visually identical (e.g. in a looping animation) will share a single
         // <defs> entry and be referenced via <use>, dramatically reducing file size.

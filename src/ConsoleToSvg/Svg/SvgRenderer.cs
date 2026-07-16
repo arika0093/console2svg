@@ -31,7 +31,7 @@ public static class SvgRenderer
         }
 
         var commandHeaderRows = string.IsNullOrEmpty(options.CommandHeader) ? 0 : 1;
-        var includeScrollback = options.Frame == null;
+        var includeScrollback = effectiveFrame == null;
         var context = SvgRenderShared.CreateContext(
             emulator.Buffer,
             options,
@@ -115,7 +115,7 @@ public static class SvgRenderer
         var events = session.Events;
         if (events.Count == 0)
         {
-            return 0;
+            return -1;
         }
 
         if (timeSeconds <= events[0].Time)
@@ -163,8 +163,6 @@ public static class SvgRenderer
             return lo;
         }
 
-        var diffAfter = Math.Abs(events[lo].Time - timeSeconds);
-        var diffBefore = Math.Abs(events[hi].Time - timeSeconds);
-        return diffBefore <= diffAfter ? hi : lo;
+        return hi;
     }
 }

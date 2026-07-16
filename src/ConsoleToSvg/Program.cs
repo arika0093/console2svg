@@ -652,9 +652,13 @@ internal static class Program
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var t = f * interval;
-                if (t < rangeStart - 1e-9 || t > rangeEnd + 1e-9)
+                if (t < rangeStart - 1e-9)
                 {
                     continue;
+                }
+                if (t > rangeEnd + 1e-9)
+                {
+                    break;
                 }
 
                 // Find the last event index at or before time t
@@ -698,7 +702,7 @@ internal static class Program
                 }
                 if (baseOptions.TimeEnd.HasValue && eventTime > baseOptions.TimeEnd.Value + 1e-9)
                 {
-                    continue;
+                    break;
                 }
 
                 baseOptions.Frame = i;

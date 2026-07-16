@@ -42,6 +42,15 @@ public sealed class AppOptions
 
     public int? Frame { get; set; }
 
+    /// <summary>Single time point in seconds (mutually exclusive with --frame).</summary>
+    public double? Time { get; set; }
+
+    /// <summary>Range start in seconds (used with --time 1.5-3.0).</summary>
+    public double? TimeStart { get; set; }
+
+    /// <summary>Range end in seconds (used with --time 1.5-3.0).</summary>
+    public double? TimeEnd { get; set; }
+
     public string CropTop { get; set; } = "0";
 
     public string CropRight { get; set; } = "0";

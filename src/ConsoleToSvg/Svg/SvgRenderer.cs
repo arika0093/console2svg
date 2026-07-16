@@ -1,3 +1,4 @@
+using System;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
 using ConsoleToSvg.Utils;
@@ -10,8 +11,16 @@ public static class SvgRenderer
     {
         var theme = SvgRenderShared.ResolveTheme(options);
         var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
+
+        // If --time is specified, convert to a frame index using binary search.
+        int? effectiveFrame = options.Frame;
+        if (!effectiveFrame.HasValue && options.Time.HasValue)
+        {
+            effectiveFrame = TimeToFrameIndex(session, options.Time.Value);
+        }
+
         var targetFrame =
-            options.Frame
+            effectiveFrame
             ?? ResolveDefaultTargetFrame(
                 session,
                 new TerminalEmulator(session.Header.width, session.Header.height, theme)
@@ -22,7 +31,7 @@ public static class SvgRenderer
         }
 
         var commandHeaderRows = string.IsNullOrEmpty(options.CommandHeader) ? 0 : 1;
-        var includeScrollback = options.Frame == null;
+        var includeScrollback = effectiveFrame == null;
         var context = SvgRenderShared.CreateContext(
             emulator.Buffer,
             options,
@@ -96,4 +105,64 @@ public static class SvgRenderer
     }
 
     // Blank/trailing-frame detection moved to SvgRenderShared.
+
+    /// <summary>
+    /// Finds the index of the event whose timestamp is closest to the requested time.
+    /// Uses binary search for efficiency.
+    /// </summary>
+    public static int TimeToFrameIndex(RecordingSession session, double timeSeconds)
+    {
+        var events = session.Events;
+        if (events.Count == 0)
+        {
+            return -1;
+        }
+
+        if (timeSeconds <= events[0].Time)
+        {
+            return 0;
+        }
+
+        var lastIndex = events.Count - 1;
+        if (timeSeconds >= events[lastIndex].Time)
+        {
+            return lastIndex;
+        }
+
+        // Binary search for the closest event time.
+        var lo = 0;
+        var hi = lastIndex;
+        while (lo <= hi)
+        {
+            var mid = lo + (hi - lo) / 2;
+            var midTime = events[mid].Time;
+            if (Math.Abs(midTime - timeSeconds) < 1e-9)
+            {
+                return mid;
+            }
+
+            if (midTime < timeSeconds)
+            {
+                lo = mid + 1;
+            }
+            else
+            {
+                hi = mid - 1;
+            }
+        }
+
+        // lo points to the first event after the requested time; hi points to the last event before it.
+        // Pick whichever is closer.
+        if (lo >= events.Count)
+        {
+            return hi;
+        }
+
+        if (hi < 0)
+        {
+            return lo;
+        }
+
+        return hi;
+    }
 }

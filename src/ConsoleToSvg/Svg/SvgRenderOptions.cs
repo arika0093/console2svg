@@ -11,6 +11,15 @@ public sealed class SvgRenderOptions
 
     public int? Frame { get; set; }
 
+    /// <summary>Single time point in seconds; converted to frame index internally.</summary>
+    public double? Time { get; set; }
+
+    /// <summary>Range start in seconds for filtering frames in video/save-frames mode.</summary>
+    public double? TimeStart { get; set; }
+
+    /// <summary>Range end in seconds for filtering frames in video/save-frames mode.</summary>
+    public double? TimeEnd { get; set; }
+
     public string? Font { get; set; }
 
     public double FontSize { get; set; } = 14d;
@@ -98,6 +107,9 @@ public sealed class SvgRenderOptions
                 appOptions.CropLeft
             ),
             Frame = appOptions.Frame,
+            Time = appOptions.Time,
+            TimeStart = appOptions.TimeStart,
+            TimeEnd = appOptions.TimeEnd,
             Font = appOptions.Font,
             FontSize = appOptions.FontSize ?? 14d,
             Chrome = chrome,

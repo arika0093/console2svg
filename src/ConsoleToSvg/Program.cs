@@ -642,11 +642,25 @@ internal static class Program
             var totalFrames = (int)Math.Floor(totalTime * fps) + 1;
             var interval = 1.0 / fps;
 
+            // When a time range is specified, skip frames outside [TimeStart, TimeEnd].
+            var rangeStart = baseOptions.TimeStart ?? 0.0;
+            var rangeEnd = baseOptions.TimeEnd ?? totalTime;
+
+            var savedCount = 0;
             for (var f = 0; f < totalFrames; f++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var t = f * interval;
+                if (t < rangeStart - 1e-9)
+                {
+                    continue;
+                }
+                if (t > rangeEnd + 1e-9)
+                {
+                    break;
+                }
+
                 // Find the last event index at or before time t
                 var eventIndex = -1;
                 for (var i = 0; i < eventCount; i++)
@@ -659,15 +673,16 @@ internal static class Program
 
                 baseOptions.Frame = eventIndex >= 0 ? eventIndex : 0;
                 var frameSvg = SvgRenderer.Render(session, baseOptions);
-                var framePath = Path.Combine(directory, $"frame-{f:D4}.svg");
+                var framePath = Path.Combine(directory, $"frame-{savedCount:D4}.svg");
                 await File.WriteAllTextAsync(framePath, frameSvg, utf8, cancellationToken)
                     .ConfigureAwait(false);
+                savedCount++;
             }
 
             baseOptions.Frame = null;
-            logger.ZLogDebug($"Saved {totalFrames} frames to {directory}");
-            await Console.Error.WriteLineAsync($"Saved {totalFrames} frames to {directory}");
-            return totalFrames;
+            logger.ZLogDebug($"Saved {savedCount} frames to {directory}");
+            await Console.Error.WriteLineAsync($"Saved {savedCount} frames to {directory}");
+            return savedCount;
         }
         else
         {
@@ -678,6 +693,17 @@ internal static class Program
             for (var i = 0; i < eventCount; i++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+
+                // Skip frames outside the time range if specified.
+                var eventTime = session.Events[i].Time;
+                if (baseOptions.TimeStart.HasValue && eventTime < baseOptions.TimeStart.Value - 1e-9)
+                {
+                    continue;
+                }
+                if (baseOptions.TimeEnd.HasValue && eventTime > baseOptions.TimeEnd.Value + 1e-9)
+                {
+                    break;
+                }
 
                 baseOptions.Frame = i;
                 var frameSvg = SvgRenderer.Render(session, baseOptions);

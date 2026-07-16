@@ -25,6 +25,7 @@ There are similar tools, but console2svg stands out for:
 * [**Background and window**](#window-chrome): add background and window frames to produce presentation-ready SVGs for documentation, blogs, social media, etc.
 * [**CI friendly**](#github-actions): with features like replay and timeout, it can generate both static and animated SVGs in CI environments, minimizing discrepancies between code and images.
 * [**Windows support**](#supported-platforms): works on Windows, macOS and Linux.
+* [**Support many format**](#convert-to-other-formats): By incorporating `ffmpeg` and `resvg`, it can output not only SVG but also various formats such as PNG, MP4, GIF, etc.
 
 ## Overview
 

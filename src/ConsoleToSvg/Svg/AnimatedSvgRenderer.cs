@@ -36,11 +36,39 @@ public static class AnimatedSvgRenderer
             var rangeStart = options.TimeStart ?? double.MinValue;
             var rangeEnd = options.TimeEnd ?? double.MaxValue;
             var filtered = new System.Collections.Generic.List<TerminalFrame>(reducedFrames.Count);
+
+            // Keep track of the last frame before rangeStart so the clip
+            // starts with the terminal state visible at rangeStart.
+            TerminalFrame? lastBeforeRange = null;
+
             foreach (var f in reducedFrames)
             {
-                if (f.Time >= rangeStart - 1e-9 && f.Time <= rangeEnd + 1e-9)
+                if (f.Time < rangeStart - 1e-9)
+                {
+                    lastBeforeRange = f;
+                }
+                else if (f.Time >= rangeStart - 1e-9 && f.Time <= rangeEnd + 1e-9)
                 {
                     filtered.Add(f);
+                }
+                // Frames after rangeEnd are skipped (times are monotonically increasing)
+            }
+
+            // Prepend the last frame before rangeStart so the clip shows the
+            // correct terminal state at the start of the time window.
+            if (lastBeforeRange is not null)
+            {
+                filtered.Insert(0, lastBeforeRange);
+            }
+
+            // Rebase timestamps so the clip starts at t=0 instead of the
+            // original absolute time (e.g., --time 5-6 → clip from 0 to 1s).
+            if (filtered.Count > 0)
+            {
+                var baseTime = filtered[0].Time;
+                for (var i = 0; i < filtered.Count; i++)
+                {
+                    filtered[i] = new TerminalFrame(filtered[i].Time - baseTime, filtered[i].Buffer);
                 }
             }
 

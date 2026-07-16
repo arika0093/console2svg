@@ -250,7 +250,8 @@ jobs:
             cp "${top_dir}LICENSE.txt" "$bundle_dir/ffmpeg-LICENSE.txt"
 
             zip_name="./release-upload/console2svg-${rid}-ffmpeg.zip"
-            zip -q -r "$zip_name" "$bundle_dir"
+            # Create a flat zip so users can extract and run console2svg.exe directly.
+            (cd "$bundle_dir" && zip -q -r "../${zip_name#./}" .)
             echo "Created $zip_name"
           done
 

@@ -95,6 +95,9 @@ public static class OptionParser
 
             Options (Image mode):
                 --frame <int>             Frame index for image mode.
+                --time <sec>              Time in seconds for image mode (e.g. --time 3.5).
+                                          Alternatively, a range: --time 1.5-3.0 (works with --save-frames and --video).
+                                          Mutually exclusive with --frame.
                 --size <WxH>              Output image pixel dimensions. Formats:
                                             800         – width only (height scaled proportionally).
                                             800x*       – width only (height scaled proportionally).
@@ -428,6 +431,57 @@ public static class OptionParser
                 }
 
                 options.Frame = frame;
+                return true;
+            case "--time":
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    error = "--time requires a value.";
+                    return false;
+                }
+
+                // Range: 1.5-3.0
+                var dashIndex = value.IndexOf('-');
+                if (dashIndex > 0 && dashIndex < value.Length - 1)
+                {
+                    var startPart = value[..dashIndex];
+                    var endPart = value[(dashIndex + 1)..];
+                    if (
+                        !TryParseDouble(startPart, "--time", out var timeStart, out error)
+                        || !TryParseDouble(endPart, "--time", out var timeEnd, out error)
+                    )
+                    {
+                        return false;
+                    }
+
+                    if (timeStart < 0 || timeEnd < 0)
+                    {
+                        error = "--time values must be non-negative.";
+                        return false;
+                    }
+
+                    if (timeEnd < timeStart)
+                    {
+                        error = "--time range end must be greater than or equal to start.";
+                        return false;
+                    }
+
+                    options.TimeStart = timeStart;
+                    options.TimeEnd = timeEnd;
+                    return true;
+                }
+
+                if (!TryParseDouble(value, "--time", out var timeVal, out error))
+                {
+                    return false;
+                }
+
+                if (timeVal < 0)
+                {
+                    error = "--time must be non-negative.";
+                    return false;
+                }
+
+                options.Time = timeVal;
                 return true;
             case "--crop-top":
                 options.CropTop = value ?? "0";
@@ -866,6 +920,26 @@ public static class OptionParser
         if (options.Frame is < 0)
         {
             error = "--frame must be non-negative.";
+            return false;
+        }
+
+        var hasTimeSingle = options.Time.HasValue;
+        var hasTimeRange = options.TimeStart.HasValue || options.TimeEnd.HasValue;
+        if (hasTimeSingle && hasTimeRange)
+        {
+            error = "--time cannot specify both a single value and a range.";
+            return false;
+        }
+
+        if ((hasTimeSingle || hasTimeRange) && options.Frame.HasValue)
+        {
+            error = "--time and --frame are mutually exclusive.";
+            return false;
+        }
+
+        if (hasTimeRange && (!options.TimeStart.HasValue || !options.TimeEnd.HasValue))
+        {
+            error = "--time range requires both start and end (e.g. --time 1.5-3.0).";
             return false;
         }
 

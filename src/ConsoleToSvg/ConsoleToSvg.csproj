@@ -23,6 +23,21 @@
     <!-- Disable dotnet tool packaging for NativeAOT builds -->
     <PackAsTool>false</PackAsTool>
   </PropertyGroup>
+  <ItemGroup Condition="'$(PublishAot)' == 'true'">
+    <!-- NativeAOT binaries need to locate bundled native libraries at runtime.
+         The archive layout is bin/<binary> + lib/<native libs>, so ../lib is
+         searched. The rpm/deb layout is /usr/local/bin/<binary> +
+         /usr/local/lib/console2svg/<native libs>, so ../lib/console2svg is
+         also searched. Windows uses the executable directory directly.
+         Single quotes around the rpath value prevent shell expansion of $ORIGIN
+         during the NativeAOT link step. -->
+    <LinkerArg Include="-Wl,-rpath,'$ORIGIN'" Condition="$([MSBuild]::IsOSPlatform('Linux'))" />
+    <LinkerArg Include="-Wl,-rpath,'$ORIGIN/../lib'" Condition="$([MSBuild]::IsOSPlatform('Linux'))" />
+    <LinkerArg Include="-Wl,-rpath,'$ORIGIN/../lib/console2svg'" Condition="$([MSBuild]::IsOSPlatform('Linux'))" />
+    <LinkerArg Include="-Wl,-rpath,'@loader_path'" Condition="$([MSBuild]::IsOSPlatform('OSX'))" />
+    <LinkerArg Include="-Wl,-rpath,'@loader_path/../lib'" Condition="$([MSBuild]::IsOSPlatform('OSX'))" />
+    <LinkerArg Include="-Wl,-rpath,'@loader_path/../lib/console2svg'" Condition="$([MSBuild]::IsOSPlatform('OSX'))" />
+  </ItemGroup>
   <ItemGroup>
     <RuntimeHostConfigurationOption Include="System.Runtime.EnableWriteXorExecute" Value="false" />
   </ItemGroup>

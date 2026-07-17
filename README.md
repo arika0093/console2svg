@@ -69,7 +69,7 @@ dotnet tool install -g ConsoleToSvg
 npm install -g console2svg
 ```
 
-It is also available as a standalone binary that you can download from the releases page and add to your PATH.
+It is also available as a standalone archive that you can download from the releases page and add to your PATH.
 
 ```sh
 # ubuntu
@@ -77,16 +77,21 @@ curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/cons
 dpkg -i console2svg.deb
 
 # linux
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-linux-x64 -o console2svg
-mv -f console2svg /usr/local/bin/
-chmod +x /usr/local/bin/console2svg
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-linux-x64.tar.gz -o console2svg.tar.gz
+mkdir -p /usr/local/lib/console2svg
+tar -xzf console2svg.tar.gz -C /usr/local/lib/console2svg
+ln -sf /usr/local/lib/console2svg/bin/console2svg /usr/local/bin/console2svg
 
-# windows (binary only)
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64.exe -o console2svg.exe
-# windows (with ffmpeg)
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip -o console2svg-win-x64-ffmpeg.zip
-unzip console2svg-win-x64-ffmpeg.zip -d console2svg
-cd console2svg
+# macos
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-osx-arm64.tar.gz -o console2svg.tar.gz
+mkdir -p /usr/local/lib/console2svg
+tar -xzf console2svg.tar.gz -C /usr/local/lib/console2svg
+ln -sf /usr/local/lib/console2svg/bin/console2svg /usr/local/bin/console2svg
+
+# windows (bundled with ffmpeg)
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64.zip -o console2svg.zip
+unzip console2svg.zip -d console2svg
+# Add console2svg\bin\ to PATH, or use the full path console2svg\bin\console2svg.exe
 ```
 
 ### GitHub Actions
@@ -281,17 +286,14 @@ In v0.7 and later, you can specify the output format based on the file extension
 
 First, install `ffmpeg`.  
 On Linux/macOS, you can easily install it using a package manager.  
-On Windows, it's a bit more involved, so you can use the bundled version of ffmpeg ([x64](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip), [arm64](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-arm64-ffmpeg.zip)).
+On Windows, ffmpeg is bundled in the release archive, so no separate installation is required.
 
 ```bash
 # ubuntu
 sudo apt install ffmpeg
 # macos
 brew install ffmpeg
-# windows 
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip -o console2svg-win-x64-ffmpeg.zip
-unzip console2svg-win-x64-ffmpeg.zip
-cd console2svg
+# windows: ffmpeg is included in console2svg-win-x64.zip
 ```
 
 Then, you can specify the output file with the desired extension. For example, to convert an animated command to any format, you can use the following command:

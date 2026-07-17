@@ -59,49 +59,32 @@ console2svg -v -c -d macos -- copilot --banner
 
 ## Install
 [![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) [![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest)
- 
-You can install it as a global tool using the dotnet or npm package manager.
+
+The easiest way on Linux/macOS is the install script. Windows users can use npm or download the zip.
 
 ```sh
+# Linux / macOS
+curl -sSL https://raw.githubusercontent.com/arika0093/console2svg/main/install.sh | bash
+
 # dotnet global tool
 dotnet tool install -g ConsoleToSvg
-# npm global package
+
+# npm global package (Windows / Linux / macOS)
 npm install -g console2svg
 ```
 
-It is also available as a standalone archive that you can download from the releases page and add to your PATH.
+You can also install from the [release archives](https://github.com/arika0093/console2svg/releases/latest) manually, or use the `.deb` / `.rpm` packages on Linux.
 
 ```sh
 # ubuntu
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg.amd64.deb -o console2svg.deb
 dpkg -i console2svg.deb
 
-# linux
-case "$(uname -m)" in
-  x86_64)  RID="linux-x64" ;;
-  aarch64) RID="linux-arm64" ;;
-esac
-curl -sSL "https://github.com/arika0093/console2svg/releases/latest/download/console2svg-${RID}.tar.gz" -o console2svg.tar.gz
-mkdir -p /usr/local/lib/console2svg
-tar -xzf console2svg.tar.gz -C /usr/local/lib/console2svg
-ln -sf /usr/local/lib/console2svg/console2svg /usr/local/bin/console2svg
-
-# macos
-case "$(uname -m)" in
-  x86_64) RID="osx-x64" ;;
-  arm64)  RID="osx-arm64" ;;
-esac
-curl -sSL "https://github.com/arika0093/console2svg/releases/latest/download/console2svg-${RID}.tar.gz" -o console2svg.tar.gz
-mkdir -p /usr/local/lib/console2svg
-tar -xzf console2svg.tar.gz -C /usr/local/lib/console2svg
-ln -sf /usr/local/lib/console2svg/console2svg /usr/local/bin/console2svg
-
-# windows (bundled with ffmpeg)
-# PowerShell
+# windows (PowerShell, bundled with ffmpeg)
 $arch = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'win-arm64' } else { 'win-x64' }
 Invoke-WebRequest -Uri "https://github.com/arika0093/console2svg/releases/latest/download/console2svg-${arch}.zip" -OutFile console2svg.zip
 Expand-Archive -Path console2svg.zip -DestinationPath console2svg
-# Add console2svg\ to PATH, or use the full path console2svg\console2svg.exe
+# Add console2svg\ to PATH, or use console2svg\console2svg.exe
 ```
 
 ### GitHub Actions

@@ -94,7 +94,7 @@ internal static class SvgDocumentBuilder
     {
         // Derive font metrics from fontSize
         var cellWidth = fontSize * 0.6d;
-        var cellHeight = fontSize * (20d / 14d);
+        var cellHeight = fontSize * (18d / 14d);
         var baselineOffset = fontSize;
 
         var effectiveHeight = includeScrollback ? buffer.TotalHeight : buffer.Height;

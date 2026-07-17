@@ -5,6 +5,8 @@ on:
   push:
     paths:
       - 'version.json'
+    branches:
+      - main
 
 permissions:
   id-token: write

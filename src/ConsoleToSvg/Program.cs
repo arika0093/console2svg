@@ -106,6 +106,36 @@ internal static class Program
 
         try
         {
+            // Pre-check: verify ffmpeg and converter availability BEFORE starting
+            // the recording, so a missing tool surfaces immediately instead of
+            // wasting the recorded session (issue #78). Only raster/video outputs
+            // need conversion tools; pure SVG output (including --stdout) does not.
+            if (!options.StdOut)
+            {
+                var preCheckExt = Path.GetExtension(options.OutputPath)
+                    .TrimStart('.')
+                    .ToLowerInvariant();
+                if (
+                    !string.IsNullOrEmpty(preCheckExt)
+                    && !string.Equals(preCheckExt, "svg", StringComparison.Ordinal)
+                )
+                {
+                    // Resolve ffmpeg and the converter early; the lazy caches survive
+                    // to the post-recording conversion step, so this is not duplicated work.
+                    var preFfmpegPath = FindFfmpegExecutable();
+                    SvgConverter.SetFfmpegPath(preFfmpegPath);
+
+                    SvgConverter.VerifyConversionPipeline(
+                        options.SvgConverter,
+                        RequiresFfmpeg(options, preCheckExt),
+                        logger
+                    );
+                    logger.ZLogDebug(
+                        $"Pre-conversion check passed: converter verified for .{preCheckExt} output."
+                    );
+                }
+            }
+
             var session = await LoadOrRecordAsync(
                     options,
                     loggerFactory,
@@ -185,7 +215,7 @@ internal static class Program
                     SvgConverter.SetFfmpegPath(ffmpegPath);
                     var converter = SvgConverter.ResolveConverter(
                         options.SvgConverter,
-                        ffmpegAvailableOverride: true,
+                        ffmpegAvailableOverride: SvgConverter.IsFfmpegAvailable,
                         logger
                     );
                     logger.ZLogDebug(
@@ -533,6 +563,22 @@ internal static class Program
     };
 
     private static bool IsVideoFormat(string extension) => VideoExtensions.Contains(extension);
+
+    /// <summary>
+    /// Determines whether ffmpeg is required to produce the final output format.
+    /// Video formats always need ffmpeg; PNG can be produced via rsvg-convert or
+    /// ResvgSharp alone; all other raster formats (gif, jpg, webp, etc.) also need ffmpeg.
+    /// If <see cref="AppOptions.IsModeExplicit"/> is set, the explicit mode takes
+    /// precedence over the extension (e.g. <c>--mode image</c> for a static .gif).
+    /// </summary>
+    private static bool RequiresFfmpeg(AppOptions options, string extension)
+    {
+        var useVideoPath = options.IsModeExplicit
+            ? options.Mode is OutputMode.Video or OutputMode.Repeat
+            : IsVideoFormat(extension);
+        var isPngOutput = string.Equals(extension, "png", StringComparison.Ordinal);
+        return useVideoPath || !isPngOutput;
+    }
 
     /// <summary>
     /// Finds the ffmpeg executable to use for format conversion.

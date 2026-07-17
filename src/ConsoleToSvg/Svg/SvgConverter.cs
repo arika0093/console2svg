@@ -201,6 +201,39 @@ internal static class SvgConverter
     }
 
     /// <summary>
+    /// Verifies that all tools required for the requested output format are
+    /// available. Call this before starting a recording so that missing tools
+    /// are reported immediately, without wasting a recording session (issue #78).
+    /// Throws <see cref="InvalidOperationException"/> when a required tool is missing.
+    /// </summary>
+    /// <param name="wanted">User's converter preference (Auto / Ffmpeg / RsvgConvert / Resvg).</param>
+    /// <param name="requiresFfmpeg">True when the output format (video or non-PNG image) needs ffmpeg for the final encode step.</param>
+    /// <param name="logger">Logger for debug messages.</param>
+    public static void VerifyConversionPipeline(
+        SvgConverterMode wanted,
+        bool requiresFfmpeg,
+        ILogger logger)
+    {
+        // ResolveConverter throws when a forced converter is unavailable.
+        var converter = ResolveConverter(wanted, _ffmpegAvailable.Value, logger);
+
+        // ResolvePreConversionConverter throws when ffmpeg can't decode SVG
+        // and no fallback converter (rsvg-convert, ResvgSharp) is available.
+        _ = ResolvePreConversionConverter(converter);
+
+        // For video and non-PNG image output, ffmpeg is required for the final
+        // encoding step (PNG → video / SVG → video when ffmpeg supports SVG).
+        if (requiresFfmpeg && !_ffmpegAvailable.Value)
+        {
+            throw new InvalidOperationException(
+                "ffmpeg is required for the requested output format but was not found. "
+                + "Install ffmpeg (or bundle it next to this executable) and ensure it "
+                + "is on PATH."
+            );
+        }
+    }
+
+    /// <summary>
     /// Converts a single SVG file to a raster image (png/jpg/…).
     /// When a fallback converter is used, SVG → PNG is rendered first, then
     /// ffmpeg (if needed) takes PNG → final format.

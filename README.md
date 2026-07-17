@@ -80,18 +80,18 @@ dpkg -i console2svg.deb
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-linux-x64.tar.gz -o console2svg.tar.gz
 mkdir -p /usr/local/lib/console2svg
 tar -xzf console2svg.tar.gz -C /usr/local/lib/console2svg
-ln -sf /usr/local/lib/console2svg/bin/console2svg /usr/local/bin/console2svg
+ln -sf /usr/local/lib/console2svg/console2svg /usr/local/bin/console2svg
 
 # macos
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-osx-arm64.tar.gz -o console2svg.tar.gz
 mkdir -p /usr/local/lib/console2svg
 tar -xzf console2svg.tar.gz -C /usr/local/lib/console2svg
-ln -sf /usr/local/lib/console2svg/bin/console2svg /usr/local/bin/console2svg
+ln -sf /usr/local/lib/console2svg/console2svg /usr/local/bin/console2svg
 
 # windows (bundled with ffmpeg)
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64.zip -o console2svg.zip
 unzip console2svg.zip -d console2svg
-# Add console2svg\bin\ to PATH, or use the full path console2svg\bin\console2svg.exe
+# Add console2svg\ to PATH, or use the full path console2svg\console2svg.exe
 ```
 
 ### GitHub Actions

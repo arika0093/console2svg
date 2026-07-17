@@ -40,8 +40,7 @@ if (platform === 'win32') {
 
 const isWin = platform === 'win32';
 const distDir = path.join(__dirname, '..', 'dist');
-const binaryDir = path.join(distDir, 'bin');
-const binaryPath = path.join(binaryDir, `console2svg${isWin ? '.exe' : ''}`);
+const binaryPath = path.join(distDir, `console2svg${isWin ? '.exe' : ''}`);
 
 if (fs.existsSync(binaryPath)) {
   process.exit(0);

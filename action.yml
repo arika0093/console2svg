@@ -33,8 +33,7 @@ runs:
 
         INSTALL_DIR="${{ runner.tool_cache }}/console2svg/develop/${{ runner.arch }}"
         rm -rf "$INSTALL_DIR"
-        mkdir -p "$INSTALL_DIR/bin"
-        mkdir -p "$INSTALL_DIR/lib"
+        mkdir -p "$INSTALL_DIR"
         publish_dir="$INSTALL_DIR/publish"
 
         export NBGV_GitEngine=Disabled
@@ -46,35 +45,34 @@ runs:
           -o "$publish_dir"
 
         if [ -f "$publish_dir/ConsoleToSvg${EXT}" ]; then
-          cp "$publish_dir/ConsoleToSvg${EXT}" "$INSTALL_DIR/bin/console2svg${EXT}"
+          cp "$publish_dir/ConsoleToSvg${EXT}" "$INSTALL_DIR/console2svg${EXT}"
         elif [ -f "$publish_dir/console2svg${EXT}" ]; then
-          cp "$publish_dir/console2svg${EXT}" "$INSTALL_DIR/bin/console2svg${EXT}"
+          cp "$publish_dir/console2svg${EXT}" "$INSTALL_DIR/console2svg${EXT}"
         else
           echo "Published binary not found in $publish_dir"
           ls -la "$publish_dir"
           exit 1
         fi
 
+        # Native runtime libraries and child executables must be next to the executable.
         if [ -n "${EXT}" ]; then
-          # Windows: native DLLs and child executables must be next to the executable.
           for f in "$publish_dir"/*.dll; do
-            [ -f "$f" ] && cp "$f" "$INSTALL_DIR/bin/"
+            [ -f "$f" ] && cp "$f" "$INSTALL_DIR/"
           done
           for f in "$publish_dir"/*.exe; do
             [ -f "$f" ] || continue
             [ "$(basename "$f")" = "console2svg${EXT}" ] && continue
-            cp "$f" "$INSTALL_DIR/bin/"
+            cp "$f" "$INSTALL_DIR/"
           done
         else
-          # Linux/macOS: native libraries go in lib/ so the RPATH lookup works.
           for f in "$publish_dir"/*.so "$publish_dir"/*.dylib; do
-            [ -f "$f" ] && cp "$f" "$INSTALL_DIR/lib/"
+            [ -f "$f" ] && cp "$f" "$INSTALL_DIR/"
           done
         fi
 
-        [ -z "${EXT}" ] && chmod +x "$INSTALL_DIR/bin/console2svg"
+        [ -z "${EXT}" ] && chmod +x "$INSTALL_DIR/console2svg"
         rm -rf "$publish_dir"
-        echo "$INSTALL_DIR/bin" >> "$GITHUB_PATH"
+        echo "$INSTALL_DIR" >> "$GITHUB_PATH"
 
     - name: Download and install console2svg
       if: ${{ inputs.version != 'develop' }}
@@ -121,6 +119,6 @@ runs:
         fi
         rm -f "$archive_path"
 
-        [ -z "${EXT}" ] && chmod +x "${INSTALL_DIR}/bin/console2svg"
+        [ -z "${EXT}" ] && chmod +x "${INSTALL_DIR}/console2svg"
 
-        echo "${INSTALL_DIR}/bin" >> "$GITHUB_PATH"
+        echo "$INSTALL_DIR" >> "$GITHUB_PATH"

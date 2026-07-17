@@ -7,7 +7,7 @@ const { spawn } = require('child_process');
 
 const isWin = process.platform === 'win32';
 const ext = isWin ? '.exe' : '';
-const binPath = path.join(__dirname, '..', 'dist', 'bin', `console2svg${ext}`);
+const binPath = path.join(__dirname, '..', 'dist', `console2svg${ext}`);
 
 if (!fs.existsSync(binPath)) {
   console.error('console2svg: binary not found.');

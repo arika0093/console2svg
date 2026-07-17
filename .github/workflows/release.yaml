@@ -155,30 +155,30 @@ jobs:
             rid=$(basename "$dir" | sed 's/^native-//')
             bundle_dir="./bundle-${rid}"
             rm -rf "$bundle_dir"
-            mkdir -p "$bundle_dir/bin"
+            mkdir -p "$bundle_dir"
 
             if [[ "$rid" == win-* ]]; then
-              cp "$dir/console2svg.exe" "$bundle_dir/bin/console2svg.exe"
+              cp "$dir/console2svg.exe" "$bundle_dir/console2svg.exe"
               # Copy native runtime libraries next to the executable (Windows loader).
               for f in "$dir"/*.dll; do
-                [ -f "$f" ] && cp "$f" "$bundle_dir/bin/"
+                [ -f "$f" ] && cp "$f" "$bundle_dir/"
               done
               # Copy child executables such as winpty-agent.exe.
               for f in "$dir"/*.exe; do
                 [ -f "$f" ] || continue
                 [ "$(basename "$f")" = "console2svg.exe" ] && continue
-                cp "$f" "$bundle_dir/bin/"
+                cp "$f" "$bundle_dir/"
               done
             else
-              cp "$dir/console2svg" "$bundle_dir/bin/console2svg"
-              chmod +x "$bundle_dir/bin/console2svg"
-              mkdir -p "$bundle_dir/lib"
+              cp "$dir/console2svg" "$bundle_dir/console2svg"
+              chmod +x "$bundle_dir/console2svg"
+              # Copy native runtime libraries next to the executable.
               for f in "$dir"/*.so "$dir"/*.dylib; do
-                [ -f "$f" ] && cp "$f" "$bundle_dir/lib/"
+                [ -f "$f" ] && cp "$f" "$bundle_dir/"
               done
             fi
 
-            # Windows: bundle ffmpeg inside bin/ffmpeg so console2svg can locate it.
+            # Windows: bundle ffmpeg in a subdirectory so console2svg can locate it.
             case "$rid" in
               win-x64)
                 ffmpeg_zip_url="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-lgpl-shared.zip"
@@ -203,10 +203,10 @@ jobs:
                 echo "ffmpeg.exe not found at $ffmpeg_bin_dir/ffmpeg.exe."
                 exit 1
               fi
-              mkdir -p "$bundle_dir/bin/ffmpeg"
-              cp "$ffmpeg_bin_dir"/*.exe "$bundle_dir/bin/ffmpeg/"
-              cp "$ffmpeg_bin_dir"/*.dll "$bundle_dir/bin/ffmpeg/"
-              cp "${top_dir}LICENSE.txt" "$bundle_dir/bin/ffmpeg/ffmpeg-LICENSE.txt"
+              mkdir -p "$bundle_dir/ffmpeg"
+              cp "$ffmpeg_bin_dir"/*.exe "$bundle_dir/ffmpeg/"
+              cp "$ffmpeg_bin_dir"/*.dll "$bundle_dir/ffmpeg/"
+              cp "${top_dir}LICENSE.txt" "$bundle_dir/ffmpeg/ffmpeg-LICENSE.txt"
             fi
 
             case "$rid" in

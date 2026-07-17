@@ -19,7 +19,7 @@ For example, let's open [this image](https://raw.githubusercontent.com/arika0093
 
 There are similar tools, but console2svg stands out for:
 
-* [**No dependencies**](#install): no additional software or libraries required. available as npm, dotnet tool and static binary.
+* [**No dependencies**](#install): no additional software or libraries required. Everything you need is included.
 * [**Video mode**](#animated-svg): save command execution animations as SVG. great for documentation and blog posts.
 * [**Crop**](#static-svg-with-crop): trim specific parts of the output. Crop based on text patterns is also supported, making it easy to trim specific lines or sections.
 * [**Background and window**](#window-chrome): add background and window frames to produce presentation-ready SVGs for documentation, blogs, social media, etc.
@@ -282,7 +282,7 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
 
 ### Convert to other formats
 
-In v0.7 and later, you can specify the output format based on the file extension specified with `-o output.mp4`.
+In v0.8 and later, you can specify the output format based on the file extension specified with `-o output.mp4`.
 
 First, install `ffmpeg`.  
 On Linux/macOS, you can easily install it using a package manager.  
@@ -306,6 +306,9 @@ console2svg -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 
 ![console2svg -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab](./assets/cmd-matrix-video.gif)
 
 You can also output as MP4, WebM, or a static PNG/JPG by changing the extension.
+
+> [!WARNING]
+> If you downloaded it as a dotnet tool, you need to install `ffmpeg` separately and add it to your PATH.
 
 ## Appearance options
 ### Background and opacity

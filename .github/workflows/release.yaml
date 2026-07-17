@@ -126,7 +126,10 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: native-${{ matrix.rid }}
-          path: ./native-publish/${{ matrix.rid }}/**
+          path: |
+            ./native-publish/${{ matrix.rid }}/**
+            !./native-publish/${{ matrix.rid }}/**/*.dbg
+            !./native-publish/${{ matrix.rid }}/**/*.pdb
 
   release-github:
     needs: [build-nupkg, build-aot]

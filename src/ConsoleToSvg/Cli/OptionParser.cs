@@ -47,8 +47,8 @@ public static class OptionParser
                 -o, --out <path>          Output file path (default: output.svg).
                                           Extension determines format:
                                             .svg          – SVG output (default, no external tools required).
-                                            .png/.jpg/…   – Raster image via ffmpeg (ffmpeg must be installed).
-                                            .mp4/.webm/…  – Video via ffmpeg using frame sequences (ffmpeg must be installed).
+                                            .png          – Raster image via resvg.
+                                            .mp4/.webm/…  – Video using frame sequences via ffmpeg.
                 --stdout                  Write SVG to stdout instead of a file.
                                           PTY output forwarding is suppressed so the pipe receives only SVG.
                 -m, --mode <image|video|repeat>  Output mode (default: image).

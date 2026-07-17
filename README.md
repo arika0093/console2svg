@@ -77,20 +77,30 @@ curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/cons
 dpkg -i console2svg.deb
 
 # linux
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-linux-x64.tar.gz -o console2svg.tar.gz
+case "$(uname -m)" in
+  x86_64)  RID="linux-x64" ;;
+  aarch64) RID="linux-arm64" ;;
+esac
+curl -sSL "https://github.com/arika0093/console2svg/releases/latest/download/console2svg-${RID}.tar.gz" -o console2svg.tar.gz
 mkdir -p /usr/local/lib/console2svg
 tar -xzf console2svg.tar.gz -C /usr/local/lib/console2svg
 ln -sf /usr/local/lib/console2svg/console2svg /usr/local/bin/console2svg
 
 # macos
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-osx-arm64.tar.gz -o console2svg.tar.gz
+case "$(uname -m)" in
+  x86_64) RID="osx-x64" ;;
+  arm64)  RID="osx-arm64" ;;
+esac
+curl -sSL "https://github.com/arika0093/console2svg/releases/latest/download/console2svg-${RID}.tar.gz" -o console2svg.tar.gz
 mkdir -p /usr/local/lib/console2svg
 tar -xzf console2svg.tar.gz -C /usr/local/lib/console2svg
 ln -sf /usr/local/lib/console2svg/console2svg /usr/local/bin/console2svg
 
 # windows (bundled with ffmpeg)
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64.zip -o console2svg.zip
-unzip console2svg.zip -d console2svg
+# PowerShell
+$arch = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'win-arm64' } else { 'win-x64' }
+Invoke-WebRequest -Uri "https://github.com/arika0093/console2svg/releases/latest/download/console2svg-${arch}.zip" -OutFile console2svg.zip
+Expand-Archive -Path console2svg.zip -DestinationPath console2svg
 # Add console2svg\ to PATH, or use the full path console2svg\console2svg.exe
 ```
 

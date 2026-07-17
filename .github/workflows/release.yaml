@@ -179,6 +179,9 @@ jobs:
             fi
 
             # Windows: bundle ffmpeg in a subdirectory so console2svg can locate it.
+            # BtbN publishes FFmpeg-Builds as a rolling 'latest' release, so the
+            # download URL points to the current latest build. There is no stable
+            # immutable URL available; we verify the archive integrity after download.
             case "$rid" in
               win-x64)
                 ffmpeg_zip_url="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-lgpl-shared.zip"
@@ -194,6 +197,15 @@ jobs:
             if [ -n "$ffmpeg_zip_url" ]; then
               ffmpeg_zip="./ffmpeg-${rid}.zip"
               curl -fsSL -o "$ffmpeg_zip" "$ffmpeg_zip_url"
+
+              # Verify zip integrity before extraction. (SHA-256 pinning is not
+              # feasible because BtbN overwrites the 'latest' release assets.)
+              if ! unzip -t "$ffmpeg_zip" >/dev/null; then
+                echo "Downloaded ffmpeg archive is corrupt: $ffmpeg_zip"
+                exit 1
+              fi
+              sha256sum "$ffmpeg_zip"
+
               ffmpeg_extract="./ffmpeg-extract-${rid}"
               mkdir -p "$ffmpeg_extract"
               unzip -q "$ffmpeg_zip" -d "$ffmpeg_extract"

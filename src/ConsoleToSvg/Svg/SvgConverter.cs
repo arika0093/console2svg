@@ -59,6 +59,20 @@ internal static class SvgConverter
     private static readonly Lazy<bool> _ffmpegSupportsSvg = new(CheckFfmpegSvgSupport);
 
     /// <summary>
+    /// True when an ffmpeg binary was discovered (via <see cref="SetFfmpegPath"/>,
+    /// the bundled layout, or PATH). Safe to call before a recording to drive
+    /// the pre-recording tool check (issue #78).
+    /// </summary>
+    public static bool IsFfmpegAvailable => _ffmpegAvailable.Value;
+
+    /// <summary>
+    /// True when ffmpeg can actually decode SVG (librsvg input device enabled).
+    /// Determined by a real SVG→PNG probe so we never rely on <c>-formats</c>
+    /// listing (which can report false positives).
+    /// </summary>
+    public static bool FfmpegSupportsSvg => _ffmpegSupportsSvg.Value;
+
+    /// <summary>
     /// Resolves the converter to use given the user's preference and the
     /// local environment. Throws <see cref="InvalidOperationException"/> when
     /// the forced converter is unavailable.
@@ -146,6 +160,47 @@ internal static class SvgConverter
     }
 
     /// <summary>
+    /// Given a resolved converter mode, returns the converter to use for the
+    /// SVG → raster pre-conversion step. When the resolved converter is
+    /// <see cref="SvgConverterMode.Ffmpeg"/> and ffmpeg can read SVG directly
+    /// (librsvg enabled), returns <see cref="SvgConverterMode.Ffmpeg"/> — no
+    /// pre-conversion is needed. When ffmpeg cannot decode SVG, resolves a
+    /// fallback (rsvg-convert or ResvgSharp) for the SVG → PNG step, then ffmpeg
+    /// ingests PNGs for the final format. Throws when no SVG-capable converter
+    /// is available at all (issue #79).
+    /// </summary>
+    private static SvgConverterMode ResolvePreConversionConverter(SvgConverterMode converter)
+    {
+        if (converter != SvgConverterMode.Ffmpeg)
+        {
+            return converter;
+        }
+
+        // ffmpeg handles SVG directly (librsvg enabled) — no pre-conversion needed.
+        if (_ffmpegSupportsSvg.Value)
+        {
+            return converter;
+        }
+
+        // ffmpeg can't decode SVG; find a fallback for the SVG → PNG step.
+        if (_rsvgConvertAvailable.Value)
+        {
+            return SvgConverterMode.RsvgConvert;
+        }
+        if (_resvgAvailable.Value)
+        {
+            return SvgConverterMode.Resvg;
+        }
+
+        throw new InvalidOperationException(
+            "ffmpeg cannot decode SVG (librsvg input device not enabled) and no fallback "
+            + "converter (rsvg-convert, ResvgSharp) is available. Install librsvg for ffmpeg, "
+            + "rsvg-convert ('librsvg2-bin' on Debian/Ubuntu or 'librsvg' via Homebrew), or "
+            + "use a build with the ResvgSharp native runtime."
+        );
+    }
+
+    /// <summary>
     /// Converts a single SVG file to a raster image (png/jpg/…).
     /// When a fallback converter is used, SVG → PNG is rendered first, then
     /// ffmpeg (if needed) takes PNG → final format.
@@ -166,8 +221,11 @@ internal static class SvgConverter
             .ToLowerInvariant();
         var isPng = string.Equals(outputExt, "png", StringComparison.Ordinal);
 
-        // When ffmpeg (librsvg) handles SVG, just delegate to the legacy path.
-        if (converter == SvgConverterMode.Ffmpeg)
+        // ResolvePreConversionConverter falls back to rsvg-convert/ResvgSharp when
+        // ffmpeg can't decode SVG (issue #79), so we never feed raw SVG to a
+        // ffmpeg build that lacks the librsvg input device.
+        var effectiveConverter = ResolvePreConversionConverter(converter);
+        if (effectiveConverter == SvgConverterMode.Ffmpeg)
         {
             await RunFfmpegAsync(
                     ffmpegPath,
@@ -193,7 +251,7 @@ internal static class SvgConverter
             await ConvertSvgToPngAsync(
                     svgPath,
                     tempPng,
-                    converter,
+                    effectiveConverter,
                     width,
                     height,
                     logger,
@@ -250,7 +308,14 @@ internal static class SvgConverter
     {
         string framePattern;
 
-        if (converter == SvgConverterMode.Ffmpeg)
+        // Resolve the effective SVG → raster converter. When ffmpeg can read
+        // SVG (librsvg enabled), frames are fed directly to ffmpeg. When
+        // ffmpeg can't decode SVG, ResolvePreConversionConverter falls back to
+        // rsvg-convert/ResvgSharp for the SVG → PNG pre-conversion step, then
+        // ffmpeg ingests PNGs for the final video encode (issue #79).
+        var effectiveConverter = ResolvePreConversionConverter(converter);
+
+        if (effectiveConverter == SvgConverterMode.Ffmpeg)
         {
             framePattern = Path.Combine(framesDir, "frame-%04d.svg");
         }
@@ -269,7 +334,7 @@ internal static class SvgConverter
             }
 
             logger.ZLogDebug(
-                $"Pre-converting {svgFiles.Count} SVG frame(s) to PNG via {converter}."
+                $"Pre-converting {svgFiles.Count} SVG frame(s) to PNG via {effectiveConverter}."
             );
 
             var parallelOpts = new ParallelOptions
@@ -292,7 +357,7 @@ internal static class SvgConverter
                         await ConvertSvgToPngAsync(
                                 svgFile,
                                 pngFile,
-                                converter,
+                                effectiveConverter,
                                 width,
                                 height,
                                 logger,

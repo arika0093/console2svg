@@ -19,7 +19,7 @@ For example, let's open [this image](https://raw.githubusercontent.com/arika0093
 
 There are similar tools, but console2svg stands out for:
 
-* [**No dependencies**](#install): no additional software or libraries required. available as npm, dotnet tool and static binary.
+* [**No dependencies**](#install): no additional software or libraries required. Everything you need is included.
 * [**Video mode**](#animated-svg): save command execution animations as SVG. great for documentation and blog posts.
 * [**Crop**](#static-svg-with-crop): trim specific parts of the output. Crop based on text patterns is also supported, making it easy to trim specific lines or sections.
 * [**Background and window**](#window-chrome): add background and window frames to produce presentation-ready SVGs for documentation, blogs, social media, etc.
@@ -59,34 +59,32 @@ console2svg -v -c -d macos -- copilot --banner
 
 ## Install
 [![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) [![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest)
- 
-You can install it as a global tool using the dotnet or npm package manager.
+
+The easiest way on Linux/macOS is the install script. Windows users can use npm or download the zip.
 
 ```sh
+# Linux / macOS
+curl -sSL https://raw.githubusercontent.com/arika0093/console2svg/main/install.sh | bash
+
 # dotnet global tool
 dotnet tool install -g ConsoleToSvg
-# npm global package
+
+# npm global package (Windows / Linux / macOS)
 npm install -g console2svg
 ```
 
-It is also available as a standalone binary that you can download from the releases page and add to your PATH.
+You can also install from the [release archives](https://github.com/arika0093/console2svg/releases/latest) manually, or use the `.deb` / `.rpm` packages on Linux.
 
 ```sh
 # ubuntu
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg.amd64.deb -o console2svg.deb
 dpkg -i console2svg.deb
 
-# linux
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-linux-x64 -o console2svg
-mv -f console2svg /usr/local/bin/
-chmod +x /usr/local/bin/console2svg
-
-# windows (binary only)
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64.exe -o console2svg.exe
-# windows (with ffmpeg)
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip -o console2svg-win-x64-ffmpeg.zip
-unzip console2svg-win-x64-ffmpeg.zip -d console2svg
-cd console2svg
+# windows (PowerShell, bundled with ffmpeg)
+$arch = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'win-arm64' } else { 'win-x64' }
+Invoke-WebRequest -Uri "https://github.com/arika0093/console2svg/releases/latest/download/console2svg-${arch}.zip" -OutFile console2svg.zip
+Expand-Archive -Path console2svg.zip -DestinationPath console2svg
+# Add console2svg\ to PATH, or use console2svg\console2svg.exe
 ```
 
 ### GitHub Actions
@@ -277,21 +275,18 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
 
 ### Convert to other formats
 
-In v0.7 and later, you can specify the output format based on the file extension specified with `-o output.mp4`.
+In v0.8 and later, you can specify the output format based on the file extension specified with `-o output.mp4`.
 
 First, install `ffmpeg`.  
 On Linux/macOS, you can easily install it using a package manager.  
-On Windows, it's a bit more involved, so you can use the bundled version of ffmpeg ([x64](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip), [arm64](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-arm64-ffmpeg.zip)).
+On Windows, ffmpeg is bundled in the release archive, so no separate installation is required.
 
 ```bash
 # ubuntu
 sudo apt install ffmpeg
 # macos
 brew install ffmpeg
-# windows 
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64-ffmpeg.zip -o console2svg-win-x64-ffmpeg.zip
-unzip console2svg-win-x64-ffmpeg.zip
-cd console2svg
+# windows: ffmpeg is included in console2svg-win-x64.zip
 ```
 
 Then, you can specify the output file with the desired extension. For example, to convert an animated command to any format, you can use the following command:
@@ -304,6 +299,9 @@ console2svg -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 
 ![console2svg -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab](./assets/cmd-matrix-video.gif)
 
 You can also output as MP4, WebM, or a static PNG/JPG by changing the extension.
+
+> [!WARNING]
+> If you downloaded it as a dotnet tool, you need to install `ffmpeg` separately and add it to your PATH.
 
 ## Appearance options
 ### Background and opacity

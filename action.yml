@@ -32,7 +32,9 @@ runs:
         esac
 
         INSTALL_DIR="${{ runner.tool_cache }}/console2svg/develop/${{ runner.arch }}"
+        rm -rf "$INSTALL_DIR"
         mkdir -p "$INSTALL_DIR"
+        publish_dir="$INSTALL_DIR/publish"
 
         export NBGV_GitEngine=Disabled
         dotnet publish "${{ github.action_path }}/src/ConsoleToSvg/ConsoleToSvg.csproj" \
@@ -40,19 +42,36 @@ runs:
           -r "$RID" \
           -p:PublishAot=true \
           -p:SelfContained=true \
-          -o "$INSTALL_DIR"
+          -o "$publish_dir"
 
-        if [ -f "$INSTALL_DIR/ConsoleToSvg${EXT}" ]; then
-          cp "$INSTALL_DIR/ConsoleToSvg${EXT}" "$INSTALL_DIR/console2svg${EXT}"
-        elif [ -f "$INSTALL_DIR/console2svg${EXT}" ]; then
-          :
+        if [ -f "$publish_dir/ConsoleToSvg${EXT}" ]; then
+          cp "$publish_dir/ConsoleToSvg${EXT}" "$INSTALL_DIR/console2svg${EXT}"
+        elif [ -f "$publish_dir/console2svg${EXT}" ]; then
+          cp "$publish_dir/console2svg${EXT}" "$INSTALL_DIR/console2svg${EXT}"
         else
-          echo "Published binary not found in $INSTALL_DIR"
-          ls -la "$INSTALL_DIR"
+          echo "Published binary not found in $publish_dir"
+          ls -la "$publish_dir"
           exit 1
         fi
 
+        # Native runtime libraries and child executables must be next to the executable.
+        if [ -n "${EXT}" ]; then
+          for f in "$publish_dir"/*.dll; do
+            [ -f "$f" ] && cp "$f" "$INSTALL_DIR/"
+          done
+          for f in "$publish_dir"/*.exe; do
+            [ -f "$f" ] || continue
+            [ "$(basename "$f")" = "console2svg${EXT}" ] && continue
+            cp "$f" "$INSTALL_DIR/"
+          done
+        else
+          for f in "$publish_dir"/*.so "$publish_dir"/*.dylib; do
+            [ -f "$f" ] && cp "$f" "$INSTALL_DIR/"
+          done
+        fi
+
         [ -z "${EXT}" ] && chmod +x "$INSTALL_DIR/console2svg"
+        rm -rf "$publish_dir"
         echo "$INSTALL_DIR" >> "$GITHUB_PATH"
 
     - name: Download and install console2svg
@@ -74,7 +93,11 @@ runs:
             ;;
         esac
 
-        FILE="console2svg-${RID}${EXT}"
+        if [ -n "${EXT}" ]; then
+          FILE="console2svg-${RID}.zip"
+        else
+          FILE="console2svg-${RID}.tar.gz"
+        fi
         if [ "$VERSION" = "latest" ]; then
           URL="https://github.com/arika0093/console2svg/releases/latest/download/${FILE}"
         else
@@ -82,10 +105,20 @@ runs:
         fi
 
         INSTALL_DIR="${{ runner.tool_cache }}/console2svg/${VERSION}/${{ runner.arch }}"
+        rm -rf "$INSTALL_DIR"
         mkdir -p "$INSTALL_DIR"
+        archive_path="${INSTALL_DIR}/${FILE}"
 
         echo "Downloading ${URL} ..."
-        curl -fsSL -L -o "${INSTALL_DIR}/console2svg${EXT}" "${URL}"
+        curl -fsSL -L -o "$archive_path" "$URL"
+
+        if [ -n "${EXT}" ]; then
+          unzip -q "$archive_path" -d "$INSTALL_DIR"
+        else
+          tar -xzf "$archive_path" -C "$INSTALL_DIR"
+        fi
+        rm -f "$archive_path"
+
         [ -z "${EXT}" ] && chmod +x "${INSTALL_DIR}/console2svg"
 
-        echo "${INSTALL_DIR}" >> "$GITHUB_PATH"
+        echo "$INSTALL_DIR" >> "$GITHUB_PATH"

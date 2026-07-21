@@ -40,9 +40,9 @@ if (platform === 'win32') {
 
 const isWin = platform === 'win32';
 const distDir = path.join(__dirname, '..', 'dist');
-const destPath = path.join(distDir, `console2svg${isWin ? '.exe' : ''}`);
+const binaryPath = path.join(distDir, `console2svg${isWin ? '.exe' : ''}`);
 
-if (fs.existsSync(destPath)) {
+if (fs.existsSync(binaryPath)) {
   process.exit(0);
 }
 
@@ -66,7 +66,8 @@ function download(downloadUrl, redirects, onFinish) {
   const agent = proxy ? new HttpsProxyAgent(proxy) : undefined;
   const urlObj = new URL(downloadUrl);
 
-  const tempPath = `${destPath}.tmp`;
+  const archiveName = isWin ? `console2svg-${rid}.zip` : `console2svg-${rid}.tar.gz`;
+  const tempPath = path.join(distDir, `${archiveName}.tmp`);
 
   const request = https.get(
     {
@@ -105,11 +106,11 @@ function download(downloadUrl, redirects, onFinish) {
       });
       file.on('error', (err) => {
         try {
-            fs.unlinkSync(tempPath);
-          } catch {
-            // ignore
-          }
-          fail('console2svg: write failed.', err);
+          fs.unlinkSync(tempPath);
+        } catch {
+          // ignore
+        }
+        fail('console2svg: write failed.', err);
       });
     }
   );
@@ -119,47 +120,55 @@ function download(downloadUrl, redirects, onFinish) {
   });
 }
 
-if (isWin) {
-  // On Windows: download the ffmpeg bundle zip (console2svg.exe + ffmpeg.exe + DLLs)
-  const zipFileName = `console2svg-${rid}-ffmpeg.zip`;
-  const zipUrl = `https://github.com/arika0093/console2svg/releases/download/v${version}/${zipFileName}`;
+const archiveFileName = isWin
+  ? `console2svg-${rid}.zip`
+  : `console2svg-${rid}.tar.gz`;
+const archiveUrl = `https://github.com/arika0093/console2svg/releases/download/v${version}/${archiveFileName}`;
 
-  download(zipUrl, 0, (tempZipPath) => {
-    // Escape single quotes in paths for PowerShell single-quoted string literals.
+download(archiveUrl, 0, (tempArchivePath) => {
+  if (isWin) {
     const psEscape = (p) => p.replace(/'/g, "''");
-    // Extract the zip into distDir using PowerShell
     const result = spawnSync(
       'powershell',
       [
         '-NoProfile',
         '-NonInteractive',
         '-Command',
-        `Expand-Archive -LiteralPath '${psEscape(tempZipPath)}' -DestinationPath '${psEscape(distDir)}' -Force`
+        `Expand-Archive -LiteralPath '${psEscape(tempArchivePath)}' -DestinationPath '${psEscape(distDir)}' -Force`
       ],
       { stdio: 'inherit' }
     );
 
-    try { fs.unlinkSync(tempZipPath); } catch { /* ignore */ }
+    try { fs.unlinkSync(tempArchivePath); } catch { /* ignore */ }
 
     if (result.status !== 0) {
       fail('console2svg: failed to extract zip bundle.');
     }
+  } else {
+    const result = spawnSync(
+      'tar',
+      ['-xzf', tempArchivePath, '-C', distDir],
+      { stdio: 'inherit' }
+    );
 
-    if (!fs.existsSync(destPath)) {
-      fail('console2svg: console2svg.exe not found after extraction.');
+    try { fs.unlinkSync(tempArchivePath); } catch { /* ignore */ }
+
+    if (result.status !== 0) {
+      fail('console2svg: failed to extract tar.gz bundle.');
     }
 
-    process.exit(0);
-  });
-} else {
-  // On Linux/macOS: download the single binary
-  const fileName = `console2svg-${rid}`;
-  const url = `https://github.com/arika0093/console2svg/releases/download/v${version}/${fileName}`;
+    if (!isWin) {
+      try {
+        fs.chmodSync(binaryPath, 0o755);
+      } catch (err) {
+        fail('console2svg: failed to make binary executable.', err);
+      }
+    }
+  }
 
-  download(url, 0, (tempPath) => {
-    fs.renameSync(tempPath, destPath);
-    fs.chmodSync(destPath, 0o755);
-    process.exit(0);
-  });
-}
+  if (!fs.existsSync(binaryPath)) {
+    fail(`console2svg: expected binary not found at ${binaryPath} after extraction.`);
+  }
 
+  process.exit(0);
+});

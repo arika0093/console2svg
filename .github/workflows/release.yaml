@@ -22,6 +22,7 @@ jobs:
       version: ${{ steps.version.outputs.semver }}
       package-version: ${{ steps.version.outputs.package_version }}
       package-iteration: ${{ steps.version.outputs.package_iteration }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -61,10 +62,16 @@ jobs:
             package_iteration="${package_iteration}.${metadata}"
           fi
 
+          prerelease='false'
+          if [[ "$semver" == *-* ]]; then
+            prerelease='true'
+          fi
+
           {
             echo "semver=$semver"
             echo "package_version=$package_version"
             echo "package_iteration=$package_iteration"
+            echo "prerelease=$prerelease"
           } >> "$GITHUB_OUTPUT"
 
       - name: Restore dependencies
@@ -299,6 +306,7 @@ jobs:
           tag_name: v${{ needs.build-nupkg.outputs.version }}
           name: ${{ needs.build-nupkg.outputs.version }}
           generate_release_notes: true
+          prerelease: ${{ needs.build-nupkg.outputs.prerelease == 'true' }}
           files: ./release-upload/*
 
   release-nuget:
@@ -323,6 +331,7 @@ jobs:
 
   release-npm:
     needs: [build-nupkg, release-github]
+    if: ${{ needs.build-nupkg.outputs.prerelease != 'true' }}
     runs-on: ubuntu-latest
 
     steps:

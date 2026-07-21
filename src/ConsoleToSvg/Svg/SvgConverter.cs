@@ -287,6 +287,7 @@ internal static class SvgConverter
                     effectiveConverter,
                     width,
                     height,
+                    skipSystemFonts: false,
                     logger,
                     cancellationToken
                 )
@@ -393,6 +394,7 @@ internal static class SvgConverter
                                 effectiveConverter,
                                 width,
                                 height,
+                                skipSystemFonts: true,
                                 logger,
                                 ct
                             )
@@ -431,6 +433,7 @@ internal static class SvgConverter
         SvgConverterMode converter,
         double? width,
         double? height,
+        bool skipSystemFonts,
         ILogger logger,
         CancellationToken cancellationToken
     )
@@ -458,6 +461,7 @@ internal static class SvgConverter
                     pngPath,
                     width,
                     height,
+                    skipSystemFonts,
                     logger,
                     cancellationToken
                 )
@@ -546,6 +550,7 @@ internal static class SvgConverter
         string pngPath,
         double? width,
         double? height,
+        bool skipSystemFonts,
         ILogger logger,
         CancellationToken cancellationToken
     )
@@ -568,7 +573,11 @@ internal static class SvgConverter
                     {
                         // Render the entire SVG viewport.
                         ExportAreaPage = true,
+                        // System font scanning dominates conversion time on Windows,
+                        // especially for video mode where it is repeated per frame.
+                        SkipSystemFonts = skipSystemFonts,
                     };
+
                     if (width.HasValue)
                     {
                         options.Width = ToPxInt(width.Value);

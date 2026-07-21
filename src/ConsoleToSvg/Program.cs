@@ -258,6 +258,15 @@ internal static class Program
                                 logger.ZLogDebug($"Empty recording: wrote single fallback frame to {tempDir}");
                             }
 
+                            var fontDir = SvgConverter.FindBundledFontsDirectory();
+                            if (fontDir is null)
+                            {
+                                logger.ZLogDebug($"No bundled fonts directory found; video mode will skip system fonts.");
+                            }
+                            else
+                            {
+                                logger.ZLogDebug($"Using bundled fonts from {fontDir}");
+                            }
                             EnsureDirectory(options.OutputPath);
                             await SvgConverter.ConvertFramesToVideoAsync(
                                     tempDir,
@@ -267,6 +276,7 @@ internal static class Program
                                     ffmpegPath,
                                     options.SizeWidth,
                                     options.SizeHeight,
+                                    fontDir,
                                     logger,
                                     outputToken
                                 )
@@ -308,6 +318,15 @@ internal static class Program
                                 )
                                 .ConfigureAwait(false);
                             EnsureDirectory(options.OutputPath);
+                            var fontDir = SvgConverter.FindBundledFontsDirectory();
+                            if (fontDir is null)
+                            {
+                                logger.ZLogDebug($"No bundled fonts directory found; image mode will use system fonts.");
+                            }
+                            else
+                            {
+                                logger.ZLogDebug($"Using bundled fonts from {fontDir}");
+                            }
                             await SvgConverter.ConvertSvgToImageAsync(
                                     tempSvg,
                                     options.OutputPath,
@@ -315,6 +334,7 @@ internal static class Program
                                     ffmpegPath,
                                     options.SizeWidth,
                                     options.SizeHeight,
+                                    fontDir,
                                     logger,
                                     outputToken
                                 )

@@ -245,6 +245,7 @@ internal static class SvgConverter
         string ffmpegPath,
         double? width,
         double? height,
+        string? fontDir,
         ILogger logger,
         CancellationToken cancellationToken
     )
@@ -287,6 +288,8 @@ internal static class SvgConverter
                     effectiveConverter,
                     width,
                     height,
+                    skipSystemFonts: !string.IsNullOrEmpty(fontDir),
+                    fontDir,
                     logger,
                     cancellationToken
                 )
@@ -335,6 +338,7 @@ internal static class SvgConverter
         string ffmpegPath,
         double? width,
         double? height,
+        string? fontDir,
         ILogger logger,
         CancellationToken cancellationToken
     )
@@ -393,6 +397,8 @@ internal static class SvgConverter
                                 effectiveConverter,
                                 width,
                                 height,
+                                skipSystemFonts: true,
+                                fontDir,
                                 logger,
                                 ct
                             )
@@ -431,6 +437,8 @@ internal static class SvgConverter
         SvgConverterMode converter,
         double? width,
         double? height,
+        bool skipSystemFonts,
+        string? fontDir,
         ILogger logger,
         CancellationToken cancellationToken
     )
@@ -458,6 +466,8 @@ internal static class SvgConverter
                     pngPath,
                     width,
                     height,
+                    skipSystemFonts,
+                    fontDir,
                     logger,
                     cancellationToken
                 )
@@ -546,6 +556,8 @@ internal static class SvgConverter
         string pngPath,
         double? width,
         double? height,
+        bool skipSystemFonts,
+        string? fontDir,
         ILogger logger,
         CancellationToken cancellationToken
     )
@@ -568,6 +580,11 @@ internal static class SvgConverter
                     {
                         // Render the entire SVG viewport.
                         ExportAreaPage = true,
+                        // System font scanning dominates rendering time on Windows,
+                        // so we skip it whenever possible. When bundled fonts are
+                        // available we load them via UseFontDir instead.
+                        SkipSystemFonts = skipSystemFonts,
+                        UseFontDir = fontDir,
                     };
                     if (width.HasValue)
                     {
@@ -868,6 +885,52 @@ internal static class SvgConverter
         }
 
         return string.Empty;
+    }
+
+    /// <summary>
+    /// Finds a bundled <c>fonts/</c> directory next to the executable.
+    /// Returns the directory path when it contains at least one .ttf/.otf file,
+    /// otherwise null. Release archives ship fonts here so ResvgSharp can use
+    /// them without scanning system fonts.
+    /// </summary>
+    public static string? FindBundledFontsDirectory()
+    {
+        var candidates = new List<string>();
+
+        // Native / self-contained executable layout.
+        var exeDir = Path.GetDirectoryName(Environment.ProcessPath ?? string.Empty);
+        if (!string.IsNullOrEmpty(exeDir))
+        {
+            candidates.Add(exeDir);
+        }
+
+        // dotnet run / dll layout: AppContext.BaseDirectory is the location of
+        // the application files and works for both single-file and normal builds.
+        var appBaseDir = AppContext.BaseDirectory;
+        if (!string.IsNullOrEmpty(appBaseDir) && !candidates.Contains(appBaseDir, StringComparer.OrdinalIgnoreCase))
+        {
+            candidates.Add(appBaseDir);
+        }
+
+        foreach (var dir in candidates)
+        {
+            var fontsDir = Path.Combine(dir, "fonts");
+            if (!Directory.Exists(fontsDir))
+            {
+                continue;
+            }
+
+            foreach (var file in Directory.EnumerateFiles(fontsDir, "*.*", SearchOption.TopDirectoryOnly))
+            {
+                var ext = Path.GetExtension(file).ToLowerInvariant();
+                if (ext == ".ttf" || ext == ".otf")
+                {
+                    return fontsDir;
+                }
+            }
+        }
+
+        return null;
     }
 
     private static void EnsureDirectoryFor(string path)

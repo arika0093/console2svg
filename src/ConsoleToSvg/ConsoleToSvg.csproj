@@ -46,6 +46,15 @@
     <EmbeddedResource Include="Themes\windows.json" LogicalName="chrome.windows.json" />
   </ItemGroup>
   <ItemGroup>
+    <!-- Bundled fonts for ResvgSharp rendering. Copied next to the executable
+         so release archives ship them in a fonts/ subdirectory. -->
+    <None Include="..\..\fonts\**\*">
+      <Link>fonts\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Quick.PtyNet" Version="1.0.4" />
     <PackageReference Include="ResvgSharp" Version="1.0.3" />
     <PackageReference Include="ZLogger" Version="2.5.10" />

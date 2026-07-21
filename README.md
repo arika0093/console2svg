@@ -166,6 +166,12 @@ If you want to set a fixed width and height, you can use the `-w` and `-h` optio
 console2svg -w 120 -h 20 -- git log --oneline
 ```
 
+If you want to match the current terminal width, specify `-w adjust`.
+
+```sh
+console2svg -w adjust -h 20 -- git log --oneline
+```
+
 ### Static SVG with crop
 
 You can crop the output by specifying the number of pixels or characters to crop from each side.

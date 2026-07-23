@@ -1,6 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net8.0;net9.0;net10.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <PackAsTool>true</PackAsTool>
     <PackageId>ConsoleToSvg</PackageId>
@@ -15,9 +14,6 @@
 
   <!-- NativeAOT publish settings (activated when PublishAot=true) -->
   <PropertyGroup Condition="'$(PublishAot)' == 'true'">
-    <!-- NativeAOT requires a single TFM; net10.0 is used for releases -->
-    <TargetFramework>net10.0</TargetFramework>
-    <TargetFrameworks></TargetFrameworks>
     <InvariantGlobalization>false</InvariantGlobalization>
     <StripSymbols>true</StripSymbols>
     <!-- Disable dotnet tool packaging for NativeAOT builds -->
@@ -41,13 +37,11 @@
     <RuntimeHostConfigurationOption Include="System.Runtime.EnableWriteXorExecute" Value="false" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Themes\macos.json" LogicalName="chrome.macos.json" />
-    <EmbeddedResource Include="Themes\transparent.json" LogicalName="chrome.transparent.json" />
-    <EmbeddedResource Include="Themes\windows.json" LogicalName="chrome.windows.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Quick.PtyNet" Version="1.0.4" />
-    <PackageReference Include="ResvgSharp" Version="1.0.3" />
+    <ProjectReference Include="..\ConsoleToSvg.Core\ConsoleToSvg.Core.csproj" AdditionalProperties="PublishAot=false" />
+    <ProjectReference Include="..\ConsoleToSvg.Pty\ConsoleToSvg.Pty.csproj" AdditionalProperties="PublishAot=false" />
+    <ProjectReference Include="..\ConsoleToSvg.Record\ConsoleToSvg.Record.csproj" AdditionalProperties="PublishAot=false" />
+    <ProjectReference Include="..\ConsoleToSvg.Resvg\ConsoleToSvg.Resvg.csproj" AdditionalProperties="PublishAot=false" />
     <PackageReference Include="ZLogger" Version="2.5.10" />
   </ItemGroup>
+  <Import Project="..\ConsoleToSvg.Resvg\ConsoleToSvg.Resvg.Native.targets" />
 </Project>

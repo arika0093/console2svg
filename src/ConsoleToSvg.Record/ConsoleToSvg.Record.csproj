@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <PackageId>ConsoleToSvg.Record</PackageId>
+    <PackageDescription>Terminal recording and asciicast APIs for ConsoleToSvg.</PackageDescription>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ConsoleToSvg.Core\ConsoleToSvg.Core.csproj" />
+    <ProjectReference Include="..\ConsoleToSvg.Pty\ConsoleToSvg.Pty.csproj" />
+    <PackageReference Include="ZLogger" Version="2.5.10" />
+  </ItemGroup>
+</Project>

@@ -10,12 +10,6 @@ public enum OutputMode
     Repeat,
 }
 
-public enum VideoTimingMode
-{
-    Deterministic,
-    Realtime,
-}
-
 public sealed class AppOptions
 {
         public bool Verbose { get; set; }
@@ -133,7 +127,7 @@ public sealed class AppOptions
 
     /// <summary>
     /// Which SVG → raster converter to use. Default: <see cref="SvgConverterMode.Auto"/>,
-    /// which prefers ffmpeg+librsvg, then rsvg-convert, then ResvgSharp.
+    /// which prefers ffmpeg+librsvg, then the bundled resvg host.
     /// </summary>
     public SvgConverterMode SvgConverter { get; set; } = SvgConverterMode.Auto;
 }

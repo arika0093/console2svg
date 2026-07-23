@@ -95,16 +95,22 @@ jobs:
         include:
           - os: ubuntu-latest
             rid: linux-x64
+            rust-target: x86_64-unknown-linux-gnu
           - os: ubuntu-24.04-arm
             rid: linux-arm64
+            rust-target: aarch64-unknown-linux-gnu
           - os: windows-latest
             rid: win-x64
+            rust-target: x86_64-pc-windows-msvc
           - os: windows-latest
             rid: win-arm64
+            rust-target: aarch64-pc-windows-msvc
           - os: macos-latest
             rid: osx-x64
+            rust-target: x86_64-apple-darwin
           - os: macos-latest
             rid: osx-arm64
+            rust-target: aarch64-apple-darwin
 
     runs-on: ${{ matrix.os }}
 
@@ -117,6 +123,18 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust-target }}
+
+      - name: Build bundled resvg library
+        shell: bash
+        run: |
+          ./scripts/build-resvg-native.sh \
+            "${{ matrix.rust-target }}" \
+            "./native-build/${{ matrix.rid }}"
+
       - name: Publish NativeAOT
         shell: bash
         run: |
@@ -126,8 +144,10 @@ jobs:
             --self-contained \
             -p:PublishAot=true \
             -p:PublishSingleFile=true \
+            -p:BuildResvgNative=false \
             -p:WarningLevel=0 \
             -o ./native-publish/${{ matrix.rid }}
+          cp ./native-build/${{ matrix.rid }}/* ./native-publish/${{ matrix.rid }}/
 
       - name: Upload native publish output
         uses: actions/upload-artifact@v7
@@ -274,7 +294,7 @@ jobs:
 
             chmod 755 "$src"
 
-            so_src="./native-artifacts/native-${rid}/libresvg_wrapper.so"
+            so_src="./native-artifacts/native-${rid}/libconsole2svg_resvg.so"
             if [ ! -f "$so_src" ]; then
               echo "Native library not found: $so_src"
               exit 1
@@ -292,10 +312,10 @@ jobs:
 
             fpm "${common_args[@]}" -t deb -a "$deb_arch" -p "./release-upload/console2svg.${asset_arch}.deb" \
               "$src=/usr/local/bin/console2svg" \
-              "$so_src=/usr/local/lib/console2svg/libresvg_wrapper.so"
+              "$so_src=/usr/local/lib/console2svg/libconsole2svg_resvg.so"
             fpm "${common_args[@]}" -t rpm -a "$rpm_arch" -p "./release-upload/console2svg.${asset_arch}.rpm" \
               "$src=/usr/local/bin/console2svg" \
-              "$so_src=/usr/local/lib/console2svg/libresvg_wrapper.so"
+              "$so_src=/usr/local/lib/console2svg/libconsole2svg_resvg.so"
           done
 
       # Windows ffmpeg bundling is handled in "Build native archives" above.

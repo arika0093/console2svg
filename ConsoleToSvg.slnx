@@ -6,6 +6,10 @@
   </Configurations>
   <Folder Name="/src/">
     <Project Path="src/ConsoleToSvg/ConsoleToSvg.csproj" />
+    <Project Path="src/ConsoleToSvg.Core/ConsoleToSvg.Core.csproj" />
+    <Project Path="src/ConsoleToSvg.Pty/ConsoleToSvg.Pty.csproj" />
+    <Project Path="src/ConsoleToSvg.Record/ConsoleToSvg.Record.csproj" />
+    <Project Path="src/ConsoleToSvg.Resvg/ConsoleToSvg.Resvg.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/ConsoleToSvg.Tests/ConsoleToSvg.Tests.csproj" />

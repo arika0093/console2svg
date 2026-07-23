@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using ConsoleToSvg.Cli;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
 using ConsoleToSvg.Utils;

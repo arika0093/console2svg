@@ -126,10 +126,10 @@ public static class OptionParser
             Options (Conversion):
                 --svg-converter <auto|ffmpeg|rsvg-convert|resvg>
                                           SVG → raster converter (default: auto).
-                                          auto: prefer ffmpeg+librsvg, then rsvg-convert, then ResvgSharp.
+                                          auto: prefer ffmpeg+librsvg, then the bundled resvg host.
                                           ffmpeg: force ffmpeg (requires librsvg input device).
                                           rsvg-convert: force the rsvg-convert CLI tool (librsvg2-bin / brew install librsvg).
-                                          resvg: force the managed ResvgSharp library.
+                                          resvg: force the bundled resvg renderer.
                                           When a fallback handles SVG→PNG, ffmpeg is only used for subsequent format conversion.
             """;
 

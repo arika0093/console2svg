@@ -394,7 +394,7 @@ public sealed class AnimatedSvgRendererTests
             {
                 Theme = "dark",
                 VideoFps = 1,
-                VideoTiming = ConsoleToSvg.Cli.VideoTimingMode.Realtime,
+                VideoTiming = ConsoleToSvg.Svg.VideoTimingMode.Realtime,
             }
         );
 
@@ -419,7 +419,7 @@ public sealed class AnimatedSvgRendererTests
             {
                 Theme = "dark",
                 VideoFps = 1,
-                VideoTiming = ConsoleToSvg.Cli.VideoTimingMode.Realtime,
+                VideoTiming = ConsoleToSvg.Svg.VideoTimingMode.Realtime,
             }
         );
 
@@ -444,7 +444,7 @@ public sealed class AnimatedSvgRendererTests
         {
             Theme = "dark",
             VideoFps = 12,
-            VideoTiming = ConsoleToSvg.Cli.VideoTimingMode.Deterministic,
+            VideoTiming = ConsoleToSvg.Svg.VideoTimingMode.Deterministic,
         };
 
         var svgA = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(sessionA, options);

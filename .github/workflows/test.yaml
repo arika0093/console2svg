@@ -8,6 +8,10 @@ on:
     paths:
       - '**.csproj'
       - '**.cs'
+      - 'src/ConsoleToSvg.Resvg/native/**'
+      - 'scripts/build-resvg-native.sh'
+      - 'action.yml'
+      - '.github/workflows/release.yaml'
       - '**./Directories.Build.props'
       - '.github/workflows/test.yaml'
 
@@ -42,4 +46,3 @@ jobs:
 
       - name: Run tests
         run: dotnet test --no-build --verbosity normal
-

@@ -157,7 +157,7 @@ internal static class Program
                 logger.ZLogDebug($"Saved asciicast to {options.SaveCastPath}");
             }
 
-            var renderOptions = SvgRenderOptions.FromAppOptions(options);
+            var renderOptions = SvgRenderOptionsFactory.Create(options);
             logger.ZLogDebug($"Rendering SVG. Mode={options.Mode}");
             var svg =
                 options.Mode is OutputMode.Video or OutputMode.Repeat
@@ -207,7 +207,7 @@ internal static class Program
 
                     // Resolve the SVG → raster converter once. This detects whether
                     // ffmpeg has librsvg support and falls back to rsvg-convert /
-                    // ResvgSharp as needed. FfmpegPath is still needed for the PNG →
+                    // bundled resvg as needed. FfmpegPath is still needed for the PNG →
                     // final-format step in the fallback pipeline, so we resolve it
                     // unconditionally (it is simply unused when a fallback converter
                     // produces PNG directly).
@@ -567,7 +567,7 @@ internal static class Program
     /// <summary>
     /// Determines whether ffmpeg is required to produce the final output format.
     /// Video formats always need ffmpeg; PNG can be produced via rsvg-convert or
-    /// ResvgSharp alone; all other raster formats (gif, jpg, webp, etc.) also need ffmpeg.
+    /// bundled resvg alone; all other raster formats (gif, jpg, webp, etc.) also need ffmpeg.
     /// If <see cref="AppOptions.IsModeExplicit"/> is set, the explicit mode takes
     /// precedence over the extension (e.g. <c>--mode image</c> for a static .gif).
     /// </summary>

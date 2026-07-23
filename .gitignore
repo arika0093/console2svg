@@ -1,6 +1,7 @@
 *.db*
 .generated/
-src/ConsoleToSvg.Resvg/native/resvg-wrapper/target/
+src/ConsoleToSvg.Converter/native/resvg-wrapper/target/
+native-assets/
 exported/
 output.svg
 *.recieved.*

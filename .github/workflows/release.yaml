@@ -17,6 +17,7 @@ env:
 
 jobs:
   build-nupkg:
+    needs: build-aot
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.semver }}
@@ -34,6 +35,40 @@ jobs:
 
       - uses: dotnet/nbgv@v0.5
         id: nbgv
+
+      - name: Download native runtime assets
+        uses: actions/download-artifact@v8
+        with:
+          pattern: native-*
+          path: ./native-artifacts
+          merge-multiple: false
+
+      - name: Stage native runtime assets for NuGet
+        shell: bash
+        run: |
+          for rid in linux-x64 linux-arm64; do
+            src="./native-artifacts/native-${rid}/libconsole2svg_resvg.so"
+            dest="./native-assets/${rid}/libconsole2svg_resvg.so"
+            test -f "$src"
+            mkdir -p "$(dirname "$dest")"
+            cp "$src" "$dest"
+          done
+
+          for rid in win-x64 win-arm64; do
+            src="./native-artifacts/native-${rid}/console2svg_resvg.dll"
+            dest="./native-assets/${rid}/console2svg_resvg.dll"
+            test -f "$src"
+            mkdir -p "$(dirname "$dest")"
+            cp "$src" "$dest"
+          done
+
+          for rid in osx-x64 osx-arm64; do
+            src="./native-artifacts/native-${rid}/libconsole2svg_resvg.dylib"
+            dest="./native-assets/${rid}/libconsole2svg_resvg.dylib"
+            test -f "$src"
+            mkdir -p "$(dirname "$dest")"
+            cp "$src" "$dest"
+          done
 
       - name: Export version
         id: version
@@ -78,10 +113,47 @@ jobs:
         run: dotnet restore --locked-mode
 
       - name: Build
-        run: dotnet build --no-restore -c Release
+        run: dotnet build --no-restore -c Release -p:BuildResvgNative=false
 
-      - name: Generate NuGet Package
-        run: dotnet pack --no-build -c Release --output ./nuget-artifacts
+      - name: Pack ConsoleToSvg.Converter
+        run: dotnet pack src/ConsoleToSvg.Converter/ConsoleToSvg.Converter.csproj --no-build -c Release --output ./nuget-artifacts -p:ResvgNativeAssetsDirectory="${{ github.workspace }}/native-assets"
+
+      - name: Restore tool against packaged converter
+        id: converter
+        shell: bash
+        run: |
+          converter_package="$(find ./nuget-artifacts -maxdepth 1 -name 'ConsoleToSvg.Converter.*.nupkg' -printf '%f\n')"
+          converter_version="${converter_package#ConsoleToSvg.Converter.}"
+          converter_version="${converter_version%.nupkg}"
+
+          cat > ./nuget-artifacts/NuGet.Config <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <packageSources>
+              <clear />
+              <add key="local" value="." />
+              <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
+            </packageSources>
+            <packageSourceMapping>
+              <packageSource key="local">
+                <package pattern="ConsoleToSvg.Converter" />
+              </packageSource>
+              <packageSource key="nuget.org">
+                <package pattern="*" />
+              </packageSource>
+            </packageSourceMapping>
+          </configuration>
+          EOF
+
+          dotnet restore src/ConsoleToSvg/ConsoleToSvg.csproj \
+            --force \
+            --configfile "${{ github.workspace }}/nuget-artifacts/NuGet.Config" \
+            -p:UseConverterPackage=true \
+            -p:ConverterPackageVersion="$converter_version"
+          echo "version=$converter_version" >> "$GITHUB_OUTPUT"
+
+      - name: Pack ConsoleToSvg tool
+        run: dotnet pack src/ConsoleToSvg/ConsoleToSvg.csproj --no-build -c Release --output ./nuget-artifacts -p:BuildResvgNative=false -p:UseConverterPackage=true -p:ConverterPackageVersion="${{ steps.converter.outputs.version }}"
 
       - name: Upload NuGet artifacts
         uses: actions/upload-artifact@v7
@@ -346,8 +418,11 @@ jobs:
         with:
           user: arika0093
 
-      - name: Publish NuGet Package
-        run: dotnet nuget push ./nuget-artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+      - name: Publish ConsoleToSvg.Converter Package
+        run: dotnet nuget push ./nuget-artifacts/ConsoleToSvg.Converter.*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+
+      - name: Publish ConsoleToSvg Tool Package
+        run: dotnet nuget push ./nuget-artifacts/ConsoleToSvg.[0-9]*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
 
   release-npm:
     needs: [build-nupkg, release-github]

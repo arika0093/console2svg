@@ -10,7 +10,7 @@ rust_target="$1"
 output_directory="$2"
 repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repository_root"
-manifest="src/ConsoleToSvg.Resvg/native/resvg-wrapper/Cargo.toml"
+manifest="src/ConsoleToSvg.Converter/native/resvg-wrapper/Cargo.toml"
 
 case "$(uname -s)" in
   Darwin) library="libconsole2svg_resvg.dylib" ;;
@@ -20,5 +20,5 @@ esac
 
 cargo build --manifest-path "$manifest" --release --target "$rust_target"
 mkdir -p "$output_directory"
-cp "src/ConsoleToSvg.Resvg/native/resvg-wrapper/target/$rust_target/release/$library" \
+cp "src/ConsoleToSvg.Converter/native/resvg-wrapper/target/$rust_target/release/$library" \
   "$output_directory/$library"

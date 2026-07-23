@@ -15,7 +15,7 @@ namespace ConsoleToSvg.Svg;
 /// <summary>Selection mode for the SVG → raster converter.</summary>
 public enum SvgConverterMode
 {
-    /// <summary>Auto-detect: prefer ffmpeg+librsvg, then the bundled resvg host.</summary>
+    /// <summary>Auto-detect: prefer the bundled resvg host, then ffmpeg+librsvg.</summary>
     Auto,
 
     /// <summary>Force ffmpeg (requires librsvg). Fails if ffmpeg can't read SVG.</summary>
@@ -118,22 +118,19 @@ public static class SvgConverter
             return SvgConverterMode.Resvg;
         }
 
-        // Auto: prefer ffmpeg+librsvg, then the bundled resvg host. The
-        // process-wide font database avoids repeatedly starting rsvg-convert
-        // or rebuilding font metadata for every video frame.
-        // When ffmpeg is present but lacks SVG support, prefer the fallback
-        // converters so that PNG output works (ffmpeg can still be used for
-        // PNG → JPG/MP4 onwards).
-        if (_ffmpegAvailable.Value && _ffmpegSupportsSvg.Value)
-        {
-            logger.ZLogDebug($"Auto-selected ffmpeg (librsvg) for SVG conversion.");
-            return SvgConverterMode.Ffmpeg;
-        }
-
+        // Auto: prefer the bundled host so SVG → PNG never depends on the
+        // installed ffmpeg build. Its process-wide font database is reused
+        // for subsequent frames.
         if (_resvgAvailable.Value)
         {
             logger.ZLogDebug($"Auto-selected bundled resvg for SVG conversion.");
             return SvgConverterMode.Resvg;
+        }
+
+        if (_ffmpegAvailable.Value && _ffmpegSupportsSvg.Value)
+        {
+            logger.ZLogDebug($"Auto-selected ffmpeg (librsvg) for SVG conversion.");
+            return SvgConverterMode.Ffmpeg;
         }
 
         if (_rsvgConvertAvailable.Value)

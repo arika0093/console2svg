@@ -38,6 +38,9 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
       - name: Restore dependencies
         run: dotnet restore 
 

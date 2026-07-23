@@ -1,15 +1,17 @@
 <Project>
   <PropertyGroup>
-    <BuildResvgNative Condition="'$(BuildResvgNative)' == '' and '$(RuntimeIdentifier)' != ''">true</BuildResvgNative>
-    <ResvgNativeRustTarget Condition="'$(RuntimeIdentifier)' == 'linux-x64'">x86_64-unknown-linux-gnu</ResvgNativeRustTarget>
-    <ResvgNativeRustTarget Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">aarch64-unknown-linux-gnu</ResvgNativeRustTarget>
-    <ResvgNativeRustTarget Condition="'$(RuntimeIdentifier)' == 'win-x64'">x86_64-pc-windows-msvc</ResvgNativeRustTarget>
-    <ResvgNativeRustTarget Condition="'$(RuntimeIdentifier)' == 'win-arm64'">aarch64-pc-windows-msvc</ResvgNativeRustTarget>
-    <ResvgNativeRustTarget Condition="'$(RuntimeIdentifier)' == 'osx-x64'">x86_64-apple-darwin</ResvgNativeRustTarget>
-    <ResvgNativeRustTarget Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">aarch64-apple-darwin</ResvgNativeRustTarget>
-    <ResvgNativeLibraryName Condition="'$(RuntimeIdentifier)' == 'win-x64' Or '$(RuntimeIdentifier)' == 'win-arm64'">console2svg_resvg.dll</ResvgNativeLibraryName>
-    <ResvgNativeLibraryName Condition="'$(RuntimeIdentifier)' == 'osx-x64' Or '$(RuntimeIdentifier)' == 'osx-arm64'">libconsole2svg_resvg.dylib</ResvgNativeLibraryName>
-    <ResvgNativeLibraryName Condition="'$(RuntimeIdentifier)' == 'linux-x64' Or '$(RuntimeIdentifier)' == 'linux-arm64'">libconsole2svg_resvg.so</ResvgNativeLibraryName>
+    <ResvgNativeRuntimeIdentifier Condition="'$(RuntimeIdentifier)' != ''">$(RuntimeIdentifier)</ResvgNativeRuntimeIdentifier>
+    <ResvgNativeRuntimeIdentifier Condition="'$(ResvgNativeRuntimeIdentifier)' == ''">$(NETCoreSdkRuntimeIdentifier)</ResvgNativeRuntimeIdentifier>
+    <BuildResvgNative Condition="'$(BuildResvgNative)' == '' and ('$(RuntimeIdentifier)' != '' Or '$(TargetFramework)' == 'net10.0')">true</BuildResvgNative>
+    <ResvgNativeRustTarget Condition="'$(ResvgNativeRuntimeIdentifier)' == 'linux-x64'">x86_64-unknown-linux-gnu</ResvgNativeRustTarget>
+    <ResvgNativeRustTarget Condition="'$(ResvgNativeRuntimeIdentifier)' == 'linux-arm64'">aarch64-unknown-linux-gnu</ResvgNativeRustTarget>
+    <ResvgNativeRustTarget Condition="'$(ResvgNativeRuntimeIdentifier)' == 'win-x64'">x86_64-pc-windows-msvc</ResvgNativeRustTarget>
+    <ResvgNativeRustTarget Condition="'$(ResvgNativeRuntimeIdentifier)' == 'win-arm64'">aarch64-pc-windows-msvc</ResvgNativeRustTarget>
+    <ResvgNativeRustTarget Condition="'$(ResvgNativeRuntimeIdentifier)' == 'osx-x64'">x86_64-apple-darwin</ResvgNativeRustTarget>
+    <ResvgNativeRustTarget Condition="'$(ResvgNativeRuntimeIdentifier)' == 'osx-arm64'">aarch64-apple-darwin</ResvgNativeRustTarget>
+    <ResvgNativeLibraryName Condition="'$(ResvgNativeRuntimeIdentifier)' == 'win-x64' Or '$(ResvgNativeRuntimeIdentifier)' == 'win-arm64'">console2svg_resvg.dll</ResvgNativeLibraryName>
+    <ResvgNativeLibraryName Condition="'$(ResvgNativeRuntimeIdentifier)' == 'osx-x64' Or '$(ResvgNativeRuntimeIdentifier)' == 'osx-arm64'">libconsole2svg_resvg.dylib</ResvgNativeLibraryName>
+    <ResvgNativeLibraryName Condition="'$(ResvgNativeRuntimeIdentifier)' == 'linux-x64' Or '$(ResvgNativeRuntimeIdentifier)' == 'linux-arm64'">libconsole2svg_resvg.so</ResvgNativeLibraryName>
     <ResvgNativeLibraryPath>$(MSBuildThisFileDirectory)native/resvg-wrapper/target/$(ResvgNativeRustTarget)/release/$(ResvgNativeLibraryName)</ResvgNativeLibraryPath>
   </PropertyGroup>
 
@@ -20,7 +22,7 @@
   >
     <Error
       Condition="'$(ResvgNativeRustTarget)' == '' Or '$(ResvgNativeLibraryName)' == ''"
-      Text="No bundled resvg native build is configured for RuntimeIdentifier '$(RuntimeIdentifier)'. Set BuildResvgNative=false to provide the library separately."
+      Text="No bundled resvg native build is configured for RuntimeIdentifier '$(ResvgNativeRuntimeIdentifier)'. Set BuildResvgNative=false to provide the library separately."
     />
     <Exec Command="cargo --version" IgnoreExitCode="true">
       <Output TaskParameter="ExitCode" PropertyName="ResvgCargoExitCode" />

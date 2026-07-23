@@ -127,7 +127,7 @@ public sealed class AppOptions
 
     /// <summary>
     /// Which SVG → raster converter to use. Default: <see cref="SvgConverterMode.Auto"/>,
-    /// which prefers ffmpeg+librsvg, then the bundled resvg host.
+    /// which prefers the bundled resvg host, then ffmpeg+librsvg.
     /// </summary>
     public SvgConverterMode SvgConverter { get; set; } = SvgConverterMode.Auto;
 }

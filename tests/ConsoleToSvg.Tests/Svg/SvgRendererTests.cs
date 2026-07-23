@@ -218,7 +218,7 @@ public sealed class SvgRendererTests
     }
 
     [Test]
-    public void RenderStaticSvgUsesDefaultSystemMonospaceFont()
+    public void RenderStaticSvgUsesDefaultCompatibleMonospaceFont()
     {
         var session = new RecordingSession(width: 8, height: 2);
         session.AddEvent(0.01, "A");
@@ -228,7 +228,7 @@ public sealed class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        svg.ShouldContain("ui-monospace");
+        svg.ShouldContain("DejaVu Sans Mono");
     }
 
     [Test]

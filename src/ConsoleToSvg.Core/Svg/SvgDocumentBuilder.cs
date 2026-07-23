@@ -9,7 +9,7 @@ namespace ConsoleToSvg.Svg;
 internal static class SvgDocumentBuilder
 {
     private const string DefaultFontFamily = $"""
-        ui-monospace,"JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,monospace
+        "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace
         """;
 
     internal sealed class Context

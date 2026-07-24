@@ -116,7 +116,7 @@ jobs:
         run: dotnet build --no-restore -c Release -p:BuildResvgNative=false
 
       - name: Pack ConsoleToSvg.Converter
-        run: dotnet pack src/ConsoleToSvg.Converter/ConsoleToSvg.Converter.csproj --no-build -c Release --output ./nuget-artifacts -p:ResvgNativeAssetsDirectory="${{ github.workspace }}/native-assets"
+        run: dotnet pack src/ConsoleToSvg.Converter/ConsoleToSvg.Converter.csproj --no-build -c Release --output ./nuget-artifacts -p:ResvgNativeAssetsDirectory="$GITHUB_WORKSPACE/native-assets" -p:RequireResvgNativeAssets=true
 
       - name: Restore tool against packaged converter
         id: converter
@@ -153,7 +153,9 @@ jobs:
           echo "version=$converter_version" >> "$GITHUB_OUTPUT"
 
       - name: Pack ConsoleToSvg tool
-        run: dotnet pack src/ConsoleToSvg/ConsoleToSvg.csproj --no-build -c Release --output ./nuget-artifacts -p:BuildResvgNative=false -p:UseConverterPackage=true -p:ConverterPackageVersion="${{ steps.converter.outputs.version }}"
+        env:
+          CONVERTER_VERSION: ${{ steps.converter.outputs.version }}
+        run: dotnet pack src/ConsoleToSvg/ConsoleToSvg.csproj --no-build -c Release --output ./nuget-artifacts -p:BuildResvgNative=false -p:UseConverterPackage=true -p:ConverterPackageVersion="$CONVERTER_VERSION"
 
       - name: Upload NuGet artifacts
         uses: actions/upload-artifact@v7
@@ -419,10 +421,14 @@ jobs:
           user: arika0093
 
       - name: Publish ConsoleToSvg.Converter Package
-        run: dotnet nuget push ./nuget-artifacts/ConsoleToSvg.Converter.*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        run: dotnet nuget push ./nuget-artifacts/ConsoleToSvg.Converter.*.nupkg --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY"
 
       - name: Publish ConsoleToSvg Tool Package
-        run: dotnet nuget push ./nuget-artifacts/ConsoleToSvg.[0-9]*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        run: dotnet nuget push ./nuget-artifacts/ConsoleToSvg.[0-9]*.nupkg --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY"
 
   release-npm:
     needs: [build-nupkg, release-github]

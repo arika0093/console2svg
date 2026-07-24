@@ -5,20 +5,34 @@
     <PackageDescription>SVG raster and video conversion APIs for ConsoleToSvg.</PackageDescription>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
-    <ResvgNativeAssetsDirectory Condition="'$(ResvgNativeAssetsDirectory)' == ''">$(MSBuildThisFileDirectory)native-assets</ResvgNativeAssetsDirectory>
+    <UseStagedResvgNativeAssets Condition="'$(UseStagedResvgNativeAssets)' == '' and '$(ResvgNativeAssetsDirectory)' != ''">true</UseStagedResvgNativeAssets>
+    <UseStagedResvgNativeAssets Condition="'$(UseStagedResvgNativeAssets)' == ''">false</UseStagedResvgNativeAssets>
+    <ResvgNativeAssetsDirectory Condition="'$(ResvgNativeAssetsDirectory)' == ''">$(BaseIntermediateOutputPath)native-assets</ResvgNativeAssetsDirectory>
+    <RequireResvgNativeAssets Condition="'$(RequireResvgNativeAssets)' == ''">false</RequireResvgNativeAssets>
+    <BeforePack>StageLocalResvgNativeAsset;$(BeforePack)</BeforePack>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ZLogger" Version="2.5.10" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(ResvgNativeAssetsDirectory)/linux-x64/libconsole2svg_resvg.so" Pack="true" PackagePath="runtimes/linux-x64/native/" Visible="false" />
-    <None Include="$(ResvgNativeAssetsDirectory)/linux-arm64/libconsole2svg_resvg.so" Pack="true" PackagePath="runtimes/linux-arm64/native/" Visible="false" />
-    <None Include="$(ResvgNativeAssetsDirectory)/win-x64/console2svg_resvg.dll" Pack="true" PackagePath="runtimes/win-x64/native/" Visible="false" />
-    <None Include="$(ResvgNativeAssetsDirectory)/win-arm64/console2svg_resvg.dll" Pack="true" PackagePath="runtimes/win-arm64/native/" Visible="false" />
-    <None Include="$(ResvgNativeAssetsDirectory)/osx-x64/libconsole2svg_resvg.dylib" Pack="true" PackagePath="runtimes/osx-x64/native/" Visible="false" />
-    <None Include="$(ResvgNativeAssetsDirectory)/osx-arm64/libconsole2svg_resvg.dylib" Pack="true" PackagePath="runtimes/osx-arm64/native/" Visible="false" />
+    <None Include="$(ResvgNativeAssetsDirectory)/linux-x64/libconsole2svg_resvg.so" Pack="true" PackagePath="runtimes/linux-x64/native/" Visible="false" Condition="Exists('$(ResvgNativeAssetsDirectory)/linux-x64/libconsole2svg_resvg.so')" />
+    <None Include="$(ResvgNativeAssetsDirectory)/linux-arm64/libconsole2svg_resvg.so" Pack="true" PackagePath="runtimes/linux-arm64/native/" Visible="false" Condition="Exists('$(ResvgNativeAssetsDirectory)/linux-arm64/libconsole2svg_resvg.so')" />
+    <None Include="$(ResvgNativeAssetsDirectory)/win-x64/console2svg_resvg.dll" Pack="true" PackagePath="runtimes/win-x64/native/" Visible="false" Condition="Exists('$(ResvgNativeAssetsDirectory)/win-x64/console2svg_resvg.dll')" />
+    <None Include="$(ResvgNativeAssetsDirectory)/win-arm64/console2svg_resvg.dll" Pack="true" PackagePath="runtimes/win-arm64/native/" Visible="false" Condition="Exists('$(ResvgNativeAssetsDirectory)/win-arm64/console2svg_resvg.dll')" />
+    <None Include="$(ResvgNativeAssetsDirectory)/osx-x64/libconsole2svg_resvg.dylib" Pack="true" PackagePath="runtimes/osx-x64/native/" Visible="false" Condition="Exists('$(ResvgNativeAssetsDirectory)/osx-x64/libconsole2svg_resvg.dylib')" />
+    <None Include="$(ResvgNativeAssetsDirectory)/osx-arm64/libconsole2svg_resvg.dylib" Pack="true" PackagePath="runtimes/osx-arm64/native/" Visible="false" Condition="Exists('$(ResvgNativeAssetsDirectory)/osx-arm64/libconsole2svg_resvg.dylib')" />
   </ItemGroup>
-  <Target Name="ValidateResvgNativeAssets" BeforeTargets="Pack">
+  <Import Project="ConsoleToSvg.Converter.Native.targets" />
+  <Target Name="StageLocalResvgNativeAsset" Condition="'$(UseStagedResvgNativeAssets)' != 'true'">
+    <Exec Command="cargo --version" />
+    <Exec Command="cargo build --manifest-path &quot;$(MSBuildThisFileDirectory)native/resvg-wrapper/Cargo.toml&quot; --release --target $(ResvgNativeRustTarget)" />
+    <MakeDir Directories="$(ResvgNativeAssetsDirectory)/linux-x64;$(ResvgNativeAssetsDirectory)/linux-arm64;$(ResvgNativeAssetsDirectory)/win-x64;$(ResvgNativeAssetsDirectory)/win-arm64;$(ResvgNativeAssetsDirectory)/osx-x64;$(ResvgNativeAssetsDirectory)/osx-arm64" />
+    <Copy SourceFiles="$(ResvgNativeLibraryPath)" DestinationFiles="$(ResvgNativeAssetsDirectory)/$(ResvgNativeRuntimeIdentifier)/$(ResvgNativeLibraryName)" />
+    <ItemGroup>
+      <None Include="$(ResvgNativeAssetsDirectory)/$(ResvgNativeRuntimeIdentifier)/$(ResvgNativeLibraryName)" Pack="true" PackagePath="runtimes/$(ResvgNativeRuntimeIdentifier)/native/" Visible="false" />
+    </ItemGroup>
+  </Target>
+  <Target Name="ValidateResvgNativeAssets" BeforeTargets="Pack" Condition="'$(RequireResvgNativeAssets)' == 'true'">
     <Error Condition="!Exists('$(ResvgNativeAssetsDirectory)/linux-x64/libconsole2svg_resvg.so')" Text="Missing native resvg asset for linux-x64: $(ResvgNativeAssetsDirectory)/linux-x64/libconsole2svg_resvg.so" />
     <Error Condition="!Exists('$(ResvgNativeAssetsDirectory)/linux-arm64/libconsole2svg_resvg.so')" Text="Missing native resvg asset for linux-arm64: $(ResvgNativeAssetsDirectory)/linux-arm64/libconsole2svg_resvg.so" />
     <Error Condition="!Exists('$(ResvgNativeAssetsDirectory)/win-x64/console2svg_resvg.dll')" Text="Missing native resvg asset for win-x64: $(ResvgNativeAssetsDirectory)/win-x64/console2svg_resvg.dll" />

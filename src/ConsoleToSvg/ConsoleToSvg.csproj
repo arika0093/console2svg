@@ -1,6 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net8.0;net9.0;net10.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <PackAsTool>true</PackAsTool>
     <PackageId>ConsoleToSvg</PackageId>
@@ -10,14 +9,11 @@
     <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
     <RollForward>LatestMajor</RollForward>
     <IsAotCompatible>true</IsAotCompatible>
-    <NoWarn>$(NoWarn);AD0001</NoWarn>
+    <NoWarn>$(NoWarn);AD0001;NU5128</NoWarn>
   </PropertyGroup>
 
   <!-- NativeAOT publish settings (activated when PublishAot=true) -->
   <PropertyGroup Condition="'$(PublishAot)' == 'true'">
-    <!-- NativeAOT requires a single TFM; net10.0 is used for releases -->
-    <TargetFramework>net10.0</TargetFramework>
-    <TargetFrameworks></TargetFrameworks>
     <InvariantGlobalization>false</InvariantGlobalization>
     <StripSymbols>true</StripSymbols>
     <!-- Disable dotnet tool packaging for NativeAOT builds -->
@@ -41,13 +37,24 @@
     <RuntimeHostConfigurationOption Include="System.Runtime.EnableWriteXorExecute" Value="false" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Themes\macos.json" LogicalName="chrome.macos.json" />
-    <EmbeddedResource Include="Themes\transparent.json" LogicalName="chrome.transparent.json" />
-    <EmbeddedResource Include="Themes\windows.json" LogicalName="chrome.windows.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Quick.PtyNet" Version="1.0.4" />
-    <PackageReference Include="ResvgSharp" Version="1.0.3" />
+    <ProjectReference Include="..\ConsoleToSvg.Core\ConsoleToSvg.Core.csproj" AdditionalProperties="PublishAot=false">
+      <PrivateAssets Condition="'$(UseConverterPackage)' == 'true'">all</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\ConsoleToSvg.Pty\ConsoleToSvg.Pty.csproj" AdditionalProperties="PublishAot=false">
+      <PrivateAssets Condition="'$(UseConverterPackage)' == 'true'">all</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\ConsoleToSvg.Record\ConsoleToSvg.Record.csproj" AdditionalProperties="PublishAot=false">
+      <PrivateAssets Condition="'$(UseConverterPackage)' == 'true'">all</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\ConsoleToSvg.Converter\ConsoleToSvg.Converter.csproj" AdditionalProperties="PublishAot=false" Condition="'$(UseConverterPackage)' != 'true'" />
+    <PackageReference Include="ConsoleToSvg.Converter" Version="$(ConverterPackageVersion)" Condition="'$(UseConverterPackage)' == 'true'" />
     <PackageReference Include="ZLogger" Version="2.5.10" />
   </ItemGroup>
+  <Import Project="..\ConsoleToSvg.Converter\ConsoleToSvg.Converter.Native.targets" />
+  <!-- PackAsTool normally suppresses dependencies; retain the converter package dependency. -->
+  <Target Name="IncludeConverterPackageDependency" BeforeTargets="_GetFrameworksWithSuppressedDependencies" Condition="'$(UseConverterPackage)' == 'true'">
+    <PropertyGroup>
+      <SuppressDependenciesWhenPacking>false</SuppressDependenciesWhenPacking>
+    </PropertyGroup>
+  </Target>
 </Project>

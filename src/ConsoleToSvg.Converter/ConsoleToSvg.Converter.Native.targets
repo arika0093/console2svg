@@ -1,0 +1,48 @@
+<Project>
+  <PropertyGroup>
+    <ResvgNativeRuntimeIdentifier Condition="'$(RuntimeIdentifier)' != ''">$(RuntimeIdentifier)</ResvgNativeRuntimeIdentifier>
+    <ResvgNativeRuntimeIdentifier Condition="'$(ResvgNativeRuntimeIdentifier)' == ''">$(NETCoreSdkRuntimeIdentifier)</ResvgNativeRuntimeIdentifier>
+    <BuildResvgNative Condition="'$(BuildResvgNative)' == '' and ('$(RuntimeIdentifier)' != '' Or '$(TargetFramework)' == 'net10.0')">true</BuildResvgNative>
+    <ResvgNativeRustTarget Condition="'$(ResvgNativeRuntimeIdentifier)' == 'linux-x64'">x86_64-unknown-linux-gnu</ResvgNativeRustTarget>
+    <ResvgNativeRustTarget Condition="'$(ResvgNativeRuntimeIdentifier)' == 'linux-arm64'">aarch64-unknown-linux-gnu</ResvgNativeRustTarget>
+    <ResvgNativeRustTarget Condition="'$(ResvgNativeRuntimeIdentifier)' == 'win-x64'">x86_64-pc-windows-msvc</ResvgNativeRustTarget>
+    <ResvgNativeRustTarget Condition="'$(ResvgNativeRuntimeIdentifier)' == 'win-arm64'">aarch64-pc-windows-msvc</ResvgNativeRustTarget>
+    <ResvgNativeRustTarget Condition="'$(ResvgNativeRuntimeIdentifier)' == 'osx-x64'">x86_64-apple-darwin</ResvgNativeRustTarget>
+    <ResvgNativeRustTarget Condition="'$(ResvgNativeRuntimeIdentifier)' == 'osx-arm64'">aarch64-apple-darwin</ResvgNativeRustTarget>
+    <ResvgNativeLibraryName Condition="'$(ResvgNativeRuntimeIdentifier)' == 'win-x64' Or '$(ResvgNativeRuntimeIdentifier)' == 'win-arm64'">console2svg_resvg.dll</ResvgNativeLibraryName>
+    <ResvgNativeLibraryName Condition="'$(ResvgNativeRuntimeIdentifier)' == 'osx-x64' Or '$(ResvgNativeRuntimeIdentifier)' == 'osx-arm64'">libconsole2svg_resvg.dylib</ResvgNativeLibraryName>
+    <ResvgNativeLibraryName Condition="'$(ResvgNativeRuntimeIdentifier)' == 'linux-x64' Or '$(ResvgNativeRuntimeIdentifier)' == 'linux-arm64'">libconsole2svg_resvg.so</ResvgNativeLibraryName>
+    <ResvgNativeLibraryPath>$(MSBuildThisFileDirectory)native/resvg-wrapper/target/$(ResvgNativeRustTarget)/release/$(ResvgNativeLibraryName)</ResvgNativeLibraryPath>
+  </PropertyGroup>
+
+  <Target
+    Name="BuildBundledResvgNative"
+    AfterTargets="Build"
+    Condition="'$(BuildResvgNative)' == 'true'"
+  >
+    <Error
+      Condition="'$(ResvgNativeRustTarget)' == '' Or '$(ResvgNativeLibraryName)' == ''"
+      Text="No bundled resvg native build is configured for RuntimeIdentifier '$(ResvgNativeRuntimeIdentifier)'. Set BuildResvgNative=false to provide the library separately."
+    />
+    <Exec Command="cargo --version" IgnoreExitCode="true">
+      <Output TaskParameter="ExitCode" PropertyName="ResvgCargoExitCode" />
+    </Exec>
+    <Error
+      Condition="'$(ResvgCargoExitCode)' != '0'"
+      Text="Building the bundled resvg renderer requires Cargo. Install Rust from https://rustup.rs/ or set BuildResvgNative=false to provide the library separately."
+    />
+    <Exec
+      Command="cargo build --manifest-path &quot;$(MSBuildThisFileDirectory)native/resvg-wrapper/Cargo.toml&quot; --release --target $(ResvgNativeRustTarget)"
+    />
+    <Copy SourceFiles="$(ResvgNativeLibraryPath)" DestinationFolder="$(TargetDir)" />
+  </Target>
+
+  <Target
+    Name="PublishBundledResvgNative"
+    AfterTargets="Publish"
+    DependsOnTargets="BuildBundledResvgNative"
+    Condition="'$(BuildResvgNative)' == 'true'"
+  >
+    <Copy SourceFiles="$(ResvgNativeLibraryPath)" DestinationFolder="$(PublishDir)" />
+  </Target>
+</Project>

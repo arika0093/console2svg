@@ -14,6 +14,10 @@ runs:
       if: ${{ inputs.version == 'develop' }}
       uses: actions/setup-dotnet@v6
 
+    - name: Setup Rust (develop)
+      if: ${{ inputs.version == 'develop' }}
+      uses: dtolnay/rust-toolchain@stable
+
     - name: Build and install console2svg from source (develop)
       if: ${{ inputs.version == 'develop' }}
       shell: bash
@@ -31,6 +35,16 @@ runs:
             ;;
         esac
 
+        case "$RID" in
+          linux-x64) RUST_TARGET="x86_64-unknown-linux-gnu" ;;
+          linux-arm64) RUST_TARGET="aarch64-unknown-linux-gnu" ;;
+          win-x64) RUST_TARGET="x86_64-pc-windows-msvc" ;;
+          win-arm64) RUST_TARGET="aarch64-pc-windows-msvc" ;;
+          osx-x64) RUST_TARGET="x86_64-apple-darwin" ;;
+          osx-arm64) RUST_TARGET="aarch64-apple-darwin" ;;
+        esac
+        rustup target add "$RUST_TARGET"
+
         INSTALL_DIR="${{ runner.tool_cache }}/console2svg/develop/${{ runner.arch }}"
         rm -rf "$INSTALL_DIR"
         mkdir -p "$INSTALL_DIR"
@@ -42,7 +56,9 @@ runs:
           -r "$RID" \
           -p:PublishAot=true \
           -p:SelfContained=true \
+          -p:BuildResvgNative=false \
           -o "$publish_dir"
+        "${{ github.action_path }}/scripts/build-resvg-native.sh" "$RUST_TARGET" "$publish_dir"
 
         if [ -f "$publish_dir/ConsoleToSvg${EXT}" ]; then
           cp "$publish_dir/ConsoleToSvg${EXT}" "$INSTALL_DIR/console2svg${EXT}"

@@ -292,8 +292,8 @@ public static class InputReplayFile
 
     /// <summary>
     /// Like <see cref="ParseInputText"/> but returns any trailing incomplete ESC sequence
-    /// as <paramref name="remainder"/> instead of misinterpreting it. The caller should
-    /// prepend <paramref name="remainder"/> to the next chunk of input.
+    /// as <c>Remainder</c> instead of misinterpreting it. The caller should
+    /// prepend <c>Remainder</c> to the next chunk of input.
     /// </summary>
     public static (List<InputEvent> Events, string Remainder) ParseInputTextPartial(
         string text,

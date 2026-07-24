@@ -138,7 +138,11 @@ public static class RepeatRecorder
             }
         });
 
+#if NET8_0_OR_GREATER
+        var output = await process.StandardOutput.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
+#else
         var output = await process.StandardOutput.ReadToEndAsync().ConfigureAwait(false);
+#endif
 
         // WaitForExitAsync is available from .NET 5 and above.
         await process.WaitForExitAsync(CancellationToken.None).ConfigureAwait(false);

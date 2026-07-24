@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using ResvgSharp;
 using ZLogger;
 
 namespace ConsoleToSvg.Svg;
@@ -16,7 +15,7 @@ namespace ConsoleToSvg.Svg;
 /// <summary>Selection mode for the SVG → raster converter.</summary>
 public enum SvgConverterMode
 {
-    /// <summary>Auto-detect: prefer ffmpeg+librsvg, then rsvg-convert, then ResvgSharp.</summary>
+    /// <summary>Auto-detect: prefer the bundled resvg host, then ffmpeg+librsvg.</summary>
     Auto,
 
     /// <summary>Force ffmpeg (requires librsvg). Fails if ffmpeg can't read SVG.</summary>
@@ -25,16 +24,16 @@ public enum SvgConverterMode
     /// <summary>Force the rsvg-convert CLI tool.</summary>
     RsvgConvert,
 
-    /// <summary>Force the managed ResvgSharp library.</summary>
+    /// <summary>Force the bundled resvg native renderer.</summary>
     Resvg,
 }
 
 /// <summary>
 /// Handles detection of available SVG-to-PNG converters and performs the
-/// SVG → raster pipeline, falling back from ffmpeg (librsvg) to rsvg-convert
-/// or ResvgSharp when ffmpeg cannot read SVG directly. See issue #43.
+/// SVG → raster pipeline, falling back from ffmpeg (librsvg) to the bundled
+/// resvg host when ffmpeg cannot read SVG directly. See issue #43.
 /// </summary>
-internal static class SvgConverter
+public static class SvgConverter
 {
     // Reuse ffmpeg discovery from Program. We pass the ffmpeg path in to avoid
     // duplicating logic; detection helpers here only need to know whether the
@@ -113,16 +112,21 @@ internal static class SvgConverter
             if (!_resvgAvailable.Value)
             {
                 throw new InvalidOperationException(
-                    "--svg-converter resvg was requested but the ResvgSharp native library is not available."
+                    "--svg-converter resvg was requested but the bundled resvg native library is not available."
                 );
             }
             return SvgConverterMode.Resvg;
         }
 
-        // Auto: prefer ffmpeg+librsvg, then rsvg-convert, then ResvgSharp.
-        // When ffmpeg is present but lacks SVG support, prefer the fallback
-        // converters so that PNG output works (ffmpeg can still be used for
-        // PNG → JPG/MP4 onwards).
+        // Auto: prefer the bundled host so SVG → PNG never depends on the
+        // installed ffmpeg build. Its process-wide font database is reused
+        // for subsequent frames.
+        if (_resvgAvailable.Value)
+        {
+            logger.ZLogDebug($"Auto-selected bundled resvg for SVG conversion.");
+            return SvgConverterMode.Resvg;
+        }
+
         if (_ffmpegAvailable.Value && _ffmpegSupportsSvg.Value)
         {
             logger.ZLogDebug($"Auto-selected ffmpeg (librsvg) for SVG conversion.");
@@ -133,12 +137,6 @@ internal static class SvgConverter
         {
             logger.ZLogDebug($"Auto-selected rsvg-convert for SVG conversion.");
             return SvgConverterMode.RsvgConvert;
-        }
-
-        if (_resvgAvailable.Value)
-        {
-            logger.ZLogDebug($"Auto-selected ResvgSharp for SVG conversion.");
-            return SvgConverterMode.Resvg;
         }
 
         // Last resort: ffmpeg is available but can't read SVG. We still return
@@ -155,7 +153,7 @@ internal static class SvgConverter
         throw new InvalidOperationException(
             "No SVG-to-PNG converter available. Install ffmpeg (with librsvg), "
             + "rsvg-convert ('librsvg2-bin' / 'brew install librsvg'), or build "
-            + "with the ResvgSharp native runtime."
+            + "with the bundled resvg native runtime."
         );
     }
 
@@ -165,7 +163,7 @@ internal static class SvgConverter
     /// <see cref="SvgConverterMode.Ffmpeg"/> and ffmpeg can read SVG directly
     /// (librsvg enabled), returns <see cref="SvgConverterMode.Ffmpeg"/> — no
     /// pre-conversion is needed. When ffmpeg cannot decode SVG, resolves a
-    /// fallback (rsvg-convert or ResvgSharp) for the SVG → PNG step, then ffmpeg
+    /// fallback (rsvg-convert or bundled resvg) for the SVG → PNG step, then ffmpeg
     /// ingests PNGs for the final format. Throws when no SVG-capable converter
     /// is available at all (issue #79).
     /// </summary>
@@ -182,21 +180,22 @@ internal static class SvgConverter
             return converter;
         }
 
-        // ffmpeg can't decode SVG; find a fallback for the SVG → PNG step.
-        if (_rsvgConvertAvailable.Value)
-        {
-            return SvgConverterMode.RsvgConvert;
-        }
+        // ffmpeg can't decode SVG; prefer the bundled host for the SVG → PNG
+        // step so repeated conversions reuse its process-wide font database.
         if (_resvgAvailable.Value)
         {
             return SvgConverterMode.Resvg;
         }
+        if (_rsvgConvertAvailable.Value)
+        {
+            return SvgConverterMode.RsvgConvert;
+        }
 
         throw new InvalidOperationException(
             "ffmpeg cannot decode SVG (librsvg input device not enabled) and no fallback "
-            + "converter (rsvg-convert, ResvgSharp) is available. Install librsvg for ffmpeg, "
+            + "converter (rsvg-convert, bundled resvg) is available. Install librsvg for ffmpeg, "
             + "rsvg-convert ('librsvg2-bin' on Debian/Ubuntu or 'librsvg' via Homebrew), or "
-            + "use a build with the ResvgSharp native runtime."
+            + "use a build with the bundled resvg native runtime."
         );
     }
 
@@ -218,7 +217,7 @@ internal static class SvgConverter
         var converter = ResolveConverter(wanted, _ffmpegAvailable.Value, logger);
 
         // ResolvePreConversionConverter throws when ffmpeg can't decode SVG
-        // and no fallback converter (rsvg-convert, ResvgSharp) is available.
+        // and no fallback converter (rsvg-convert, bundled resvg) is available.
         _ = ResolvePreConversionConverter(converter);
 
         // For video and non-PNG image output, ffmpeg is required for the final
@@ -254,7 +253,7 @@ internal static class SvgConverter
             .ToLowerInvariant();
         var isPng = string.Equals(outputExt, "png", StringComparison.Ordinal);
 
-        // ResolvePreConversionConverter falls back to rsvg-convert/ResvgSharp when
+        // ResolvePreConversionConverter falls back to rsvg-convert/bundled resvg when
         // ffmpeg can't decode SVG (issue #79), so we never feed raw SVG to a
         // ffmpeg build that lacks the librsvg input device.
         var effectiveConverter = ResolvePreConversionConverter(converter);
@@ -344,7 +343,7 @@ internal static class SvgConverter
         // Resolve the effective SVG → raster converter. When ffmpeg can read
         // SVG (librsvg enabled), frames are fed directly to ffmpeg. When
         // ffmpeg can't decode SVG, ResolvePreConversionConverter falls back to
-        // rsvg-convert/ResvgSharp for the SVG → PNG pre-conversion step, then
+        // rsvg-convert/bundled resvg for the SVG → PNG pre-conversion step, then
         // ffmpeg ingests PNGs for the final video encode (issue #79).
         var effectiveConverter = ResolvePreConversionConverter(converter);
 
@@ -483,7 +482,7 @@ internal static class SvgConverter
         CancellationToken cancellationToken
     )
     {
-        var exe = FindRsvgConvertExecutable()!;
+        var exe = FindRsvgConvertExecutable();
         var args = new List<string>();
         if (width.HasValue)
         {
@@ -537,7 +536,7 @@ internal static class SvgConverter
     }
 
     /// <summary>
-    /// Renders an SVG to PNG using the managed ResvgSharp library. The native
+    /// Renders an SVG to PNG using the bundled resvg library. The native
     /// library is loaded lazily; if it's missing, an informative error is
     /// thrown instead of crashing at startup.
     /// </summary>
@@ -550,13 +549,13 @@ internal static class SvgConverter
         CancellationToken cancellationToken
     )
     {
-        // ResvgSharp's API is synchronous and CPU-bound. Run it on a thread
+        // The native renderer's API is synchronous and CPU-bound. Run it on a thread
         // pool thread so the caller's async flow can observe the cancellation.
         var svg = await File.ReadAllTextAsync(svgPath, cancellationToken)
             .ConfigureAwait(false);
 
         logger.ZLogDebug(
-            $"Rendering SVG ({svg.Length} chars) via ResvgSharp → {pngPath}"
+            $"Rendering SVG ({svg.Length} chars) via bundled resvg → {pngPath}"
         );
 
         await Task
@@ -564,30 +563,20 @@ internal static class SvgConverter
                 () =>
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    var options = new ResvgOptions
-                    {
-                        // Render the entire SVG viewport.
-                        ExportAreaPage = true,
-                    };
-                    if (width.HasValue)
-                    {
-                        options.Width = ToPxInt(width.Value);
-                    }
-                    if (height.HasValue)
-                    {
-                        options.Height = ToPxInt(height.Value);
-                    }
-
                     byte[] pngBytes;
                     try
                     {
-                        pngBytes = Resvg.RenderToPng(svg, options);
+                        pngBytes = ResvgNative.RenderToPng(
+                            svg,
+                            width.HasValue ? ToPxInt(width.Value) : null,
+                            height.HasValue ? ToPxInt(height.Value) : null
+                        );
                     }
                     catch (Exception ex)
                         when (IsResvgLoadFailure(ex))
                     {
                         throw new InvalidOperationException(
-                            "ResvgSharp native library failed to load. Falling back "
+                            "Bundled resvg native library failed to load. Falling back "
                             + "requires the resvg native runtime shipped with this build.",
                             ex
                         );
@@ -603,16 +592,14 @@ internal static class SvgConverter
     }
 
     /// <summary>
-    /// Detects whether the ResvgSharp managed wrapper can load its native
-    /// counterpart. We do a tiny throwaway render rather than probing for the
-    /// native lib on disk so the check works portably across RIDs.
+    /// Detects and warms the bundled resvg renderer. Loading system fonts here
+    /// means all subsequent renders reuse the same native font database.
     /// </summary>
     private static bool DetectResvg()
     {
         try
         {
-            var tiny = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\"/>";
-            _ = Resvg.RenderToPng(tiny);
+            ResvgNative.WarmSystemFonts();
             return true;
         }
         catch

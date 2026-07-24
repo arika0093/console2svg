@@ -904,7 +904,7 @@ public sealed class OptionParserTests
         options!.PcMode.ShouldBeTrue();
         options.Window.ShouldBe("macos");
         // SvgRenderOptions.FromAppOptions resolves the effective window name
-        var svgOptions = SvgRenderOptions.FromAppOptions(options!);
+        var svgOptions = SvgRenderOptionsFactory.Create(options!);
         // The chrome should have IsDesktop = true (macos + --pcmode -> macos-pc path)
         svgOptions.Chrome.ShouldNotBeNull();
         svgOptions.Chrome!.IsDesktop.ShouldBeTrue();
@@ -921,7 +921,7 @@ public sealed class OptionParserTests
             out _
         );
         ok.ShouldBeTrue();
-        var svgOptions = SvgRenderOptions.FromAppOptions(options!);
+        var svgOptions = SvgRenderOptionsFactory.Create(options!);
         svgOptions.Chrome.ShouldNotBeNull();
         svgOptions.Chrome!.IsDesktop.ShouldBeTrue();
     }
@@ -936,7 +936,7 @@ public sealed class OptionParserTests
             out _
         );
         ok.ShouldBeTrue();
-        var svgOptions = SvgRenderOptions.FromAppOptions(options!);
+        var svgOptions = SvgRenderOptionsFactory.Create(options!);
         svgOptions.Chrome.ShouldNotBeNull();
         svgOptions.Chrome!.DesktopPadding.ShouldBe(40d);
     }
@@ -952,7 +952,7 @@ public sealed class OptionParserTests
             out _
         );
         ok.ShouldBeTrue();
-        var svgOptions = SvgRenderOptions.FromAppOptions(options!);
+        var svgOptions = SvgRenderOptionsFactory.Create(options!);
         // transparent-pc resolves to transparent base with IsDesktop=true
         svgOptions.Chrome.ShouldNotBeNull();
         svgOptions.Chrome!.IsDesktop.ShouldBeTrue();
@@ -969,7 +969,7 @@ public sealed class OptionParserTests
         );
         ok.ShouldBeTrue();
 
-        var renderOptions = SvgRenderOptions.FromAppOptions(options!);
+        var renderOptions = SvgRenderOptionsFactory.Create(options!);
         renderOptions.VideoTiming.ShouldBe(VideoTimingMode.Realtime);
     }
 
@@ -1189,7 +1189,7 @@ public sealed class OptionParserTests
     {
         var ok = OptionParser.TryParse(new[] { "--size", "1000x500" }, out var options, out _, out _);
         ok.ShouldBeTrue();
-        var renderOptions = SvgRenderOptions.FromAppOptions(options!);
+        var renderOptions = SvgRenderOptionsFactory.Create(options!);
         renderOptions.SizeWidth.ShouldBe(1000d);
         renderOptions.SizeHeight.ShouldBe(500d);
     }

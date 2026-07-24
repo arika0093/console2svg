@@ -21,6 +21,7 @@ public static class OptionParser
                 -w, --width <int|adjust>  Terminal width in characters (default: auto[pipe], 100[pty]).
                 -h, --height <int|adjust> Terminal height in rows (default: auto).
                 -v                        Output animated SVG (alias for --mode video).
+                -i, --interactive         Run an interactive shell; press F12 to capture.
                 -c, --with-command        Prepend the command line to the output.
                 -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc, transparent.
                 --background <color> [color]  Background color, gradient, or image path.
@@ -73,10 +74,10 @@ public static class OptionParser
                 --header <text>           Override command header text (shown even without -c).
                 --prompt <text>           Prompt prefix for -c (default: $ or # when root).
                 -d, --window [none|macos|windows|macos-pc|windows-pc|transparent|path/to/chrome.json]
-                                          Terminal window chrome style (default: none, or macos if specified without a value).
-                                          Built-in styles: none, macos, windows, transparent.
-                                          Any built-in style can be suffixed with -pc to enable desktop (floating window) mode.
-                                          Custom: provide a path to a .json chrome definition file.
+                    Terminal window chrome style (default: none, or macos if specified without a value).
+                    Built-in styles: none, macos, windows, transparent.
+                    Any built-in style can be suffixed with -pc to enable desktop (floating window) mode.
+                    Custom: provide a path to a .json chrome definition file.
                 --pcmode                  Enable PC (desktop) mode for the selected window style.
                                           Appends -pc to any window style that does not already end in -pc.
                 --pc-padding <px>         Override the outer desktop padding in PC mode (default: 20).
@@ -125,14 +126,19 @@ public static class OptionParser
                                           deterministic: normalize frame times to reduce output diffs.
                                           realtime: preserve measured event timing as-is.
 
+            Options (Interactive mode):
+                -i, --interactive         Run an interactive shell; press F12 to capture.
+                                          In video mode, press once to start and once more
+                                          to write the animation.
+
             Options (Conversion):
                 --svg-converter <auto|ffmpeg|rsvg-convert|resvg>
-                                          SVG → raster converter (default: auto).
-                                          auto: prefer the bundled resvg host, then ffmpeg+librsvg.
-                                          ffmpeg: force ffmpeg (requires librsvg input device).
-                                          rsvg-convert: force the rsvg-convert CLI tool (librsvg2-bin / brew install librsvg).
-                                          resvg: force the bundled resvg renderer.
-                                          When a fallback handles SVG→PNG, ffmpeg is only used for subsequent format conversion.
+                    SVG → raster converter (default: auto).
+                    auto: prefer the bundled resvg host, then ffmpeg+librsvg.
+                    ffmpeg: force ffmpeg (requires librsvg input device).
+                    rsvg-convert: force the rsvg-convert CLI tool (librsvg2-bin / brew install librsvg).
+                    resvg: force the bundled resvg renderer.
+                    When a fallback handles SVG→PNG, ffmpeg is only used for subsequent format conversion.
             """;
 
     public static bool TryParse(
@@ -290,7 +296,9 @@ public static class OptionParser
             && !string.Equals(name, "-d", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--pcmode", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--stdout", StringComparison.OrdinalIgnoreCase);
+            && !string.Equals(name, "--stdout", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "-i", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--interactive", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsVerboseLogPathValue(string token) =>
@@ -697,6 +705,10 @@ public static class OptionParser
                 return true;
             case "--stdout":
                 options.StdOut = true;
+                return true;
+            case "-i":
+            case "--interactive":
+                options.Interactive = true;
                 return true;
             case "--pc-padding":
                 if (!TryParseDouble(value, "--pc-padding", out var pcPadding, out error))
@@ -1127,6 +1139,42 @@ public static class OptionParser
         {
             error = "--timeout must be greater than 0.";
             return false;
+        }
+
+        if (options.Interactive)
+        {
+            if (!string.IsNullOrWhiteSpace(options.Command))
+            {
+                error = "--interactive cannot be used with a command.";
+                return false;
+            }
+
+            if (!string.IsNullOrWhiteSpace(options.InputCastPath))
+            {
+                error = "--interactive cannot be used with --in.";
+                return false;
+            }
+
+            if (options.StdOut)
+            {
+                error = "--interactive cannot be used with --stdout.";
+                return false;
+            }
+
+            if (options.Mode == OutputMode.Repeat)
+            {
+                error = "--interactive cannot be used with --mode repeat.";
+                return false;
+            }
+
+            if (
+                !string.IsNullOrWhiteSpace(options.ReplayPath)
+                || !string.IsNullOrWhiteSpace(options.ReplaySavePath)
+            )
+            {
+                error = "--interactive cannot be used with replay options.";
+                return false;
+            }
         }
 
         if (

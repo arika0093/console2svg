@@ -1258,7 +1258,7 @@ public static class PtyRecorder
         return Path.Combine(systemDir, "cmd.exe");
     }
 
-    private sealed class ConsoleInputMode : IDisposable
+    internal sealed class ConsoleInputMode : IDisposable
     {
         private const uint StdInputHandle = 0xFFFFFFF6;
         private const uint EnableProcessedInput = 0x0001;

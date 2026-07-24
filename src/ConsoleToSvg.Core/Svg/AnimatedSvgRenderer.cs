@@ -19,13 +19,28 @@ public static class AnimatedSvgRenderer
         var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
         var frames = emulator.ReplayFrames(session);
         frames = TrimTrailingAltScreenRestoreFrame(frames, session);
-        frames = NormalizeTiming(frames, options.VideoFps, options.VideoTiming);
 
         if (frames.Count == 0)
         {
             return SvgRenderer.Render(session, options);
         }
 
+        return RenderFrames(frames, options);
+    }
+
+    /// <summary>Renders terminal frames captured from an already-running interactive terminal.</summary>
+    public static string RenderFrames(
+        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
+        SvgRenderOptions options
+    )
+    {
+        if (frames.Count == 0)
+        {
+            throw new ArgumentException("At least one terminal frame is required.", nameof(frames));
+        }
+
+        var theme = SvgRenderShared.ResolveTheme(options);
+        frames = NormalizeTiming(frames, options.VideoFps, options.VideoTiming);
         var reducedFrames = ReduceFrames(frames, options.VideoFps);
         reducedFrames = SpreadCollapsedFrameTimes(reducedFrames, options.VideoFps);
 
@@ -73,7 +88,7 @@ public static class AnimatedSvgRenderer
 
             if (filtered.Count == 0)
             {
-                return SvgRenderer.Render(session, options);
+                return SvgRenderer.Render(reducedFrames[0].Buffer, options);
             }
 
             reducedFrames = filtered;

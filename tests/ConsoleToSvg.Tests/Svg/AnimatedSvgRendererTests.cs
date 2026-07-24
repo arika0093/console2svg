@@ -2,11 +2,32 @@ using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using ConsoleToSvg.Recording;
+using ConsoleToSvg.Terminal;
 
 namespace ConsoleToSvg.Tests.Svg;
 
 public sealed class AnimatedSvgRendererTests
 {
+    [Test]
+    public void RenderFramesStartsWithProvidedTerminalState()
+    {
+        var emulator = new TerminalEmulator(12, 2, Theme.Resolve("dark"));
+        emulator.Process("before");
+        var initial = emulator.Buffer.Clone();
+        emulator.Process("\rafter");
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.RenderFrames(
+            [
+                new TerminalFrame(0, initial),
+                new TerminalFrame(0.2, emulator.Buffer.Clone()),
+            ],
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", VideoFps = 30 }
+        );
+
+        svg.ShouldContain("before");
+        svg.ShouldContain("after");
+    }
+
     [Test]
     public void RenderAnimatedSvgIncludesKeyframes()
     {

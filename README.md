@@ -172,6 +172,25 @@ If you want to match the current terminal width, specify `-w adjust`.
 console2svg -w adjust -h 20 -- git log --oneline
 ```
 
+### Interactive capture
+
+Run your normal interactive shell in a PTY and capture its current screen on demand.
+On Unix, `console2svg` uses `$SHELL`; on Windows, it uses the system command shell.
+The shell's output is forwarded live to your terminal. Press <kbd>F12</kbd> to write a
+static SVG; the capture notification is printed by the host and is not sent to the shell.
+
+```sh
+console2svg --interactive -o ./captures/output.svg
+# writes ./captures/output_yyyyMMdd_HHmmss.svg
+```
+
+With `-v` (or `--mode video`), the first F12 press starts recording from the exact
+current terminal state and the second press writes an animated SVG.
+
+```sh
+console2svg --interactive -v -o ./captures/session.svg
+```
+
 ### Static SVG with crop
 
 You can crop the output by specifying the number of pixels or characters to crop from each side.

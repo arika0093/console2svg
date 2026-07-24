@@ -482,7 +482,7 @@ public static class SvgConverter
         CancellationToken cancellationToken
     )
     {
-        var exe = FindRsvgConvertExecutable()!;
+        var exe = FindRsvgConvertExecutable();
         var args = new List<string>();
         if (width.HasValue)
         {

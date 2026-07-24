@@ -169,7 +169,7 @@ public static class PtyRecorder
             {
                 logger.ZLogDebug($"Input source: replay file. Path={replayPath}");
                 replayData = await InputReplayFile
-                    .ReadDataAsync(replayPath!, cancellationToken)
+                    .ReadDataAsync(replayPath, cancellationToken)
                     .ConfigureAwait(false);
                 inputForward = new InputReplayFile.ReplayStream(replayData.Replay, logger);
             }
@@ -182,7 +182,7 @@ public static class PtyRecorder
             if (!string.IsNullOrWhiteSpace(replaySavePath))
             {
                 logger.ZLogDebug($"Saving input to replay file. Path={replaySavePath}");
-                var dir = Path.GetDirectoryName(Path.GetFullPath(replaySavePath!));
+                var dir = Path.GetDirectoryName(Path.GetFullPath(replaySavePath));
                 if (!string.IsNullOrWhiteSpace(dir))
                 {
                     Directory.CreateDirectory(dir);
@@ -190,7 +190,7 @@ public static class PtyRecorder
 
                 replaySaveWriter = new InputReplayFile.InputReplayWriter(
                     new FileStream(
-                        replaySavePath!,
+                        replaySavePath,
                         FileMode.Create,
                         FileAccess.Write,
                         FileShare.None,
@@ -481,7 +481,7 @@ public static class PtyRecorder
             {
                 logger.ZLogDebug($"Input source: replay file. Path={replayPath}");
                 replayData = await InputReplayFile
-                    .ReadDataAsync(replayPath!, cancellationToken)
+                    .ReadDataAsync(replayPath, cancellationToken)
                     .ConfigureAwait(false);
                 inputForward = new InputReplayFile.ReplayStream(replayData.Replay, logger);
             }
@@ -494,7 +494,7 @@ public static class PtyRecorder
             if (!string.IsNullOrWhiteSpace(replaySavePath))
             {
                 logger.ZLogDebug($"Saving input to replay file. Path={replaySavePath}");
-                var dir = Path.GetDirectoryName(Path.GetFullPath(replaySavePath!));
+                var dir = Path.GetDirectoryName(Path.GetFullPath(replaySavePath));
                 if (!string.IsNullOrWhiteSpace(dir))
                 {
                     Directory.CreateDirectory(dir);
@@ -502,7 +502,7 @@ public static class PtyRecorder
 
                 replaySaveWriter = new InputReplayFile.InputReplayWriter(
                     new FileStream(
-                        replaySavePath!,
+                        replaySavePath,
                         FileMode.Create,
                         FileAccess.Write,
                         FileShare.None,
@@ -1460,4 +1460,3 @@ public static class PtyRecorder
 
 // Exception type for PTY startup hang detection.
 public sealed class PtyStartupHangException(string message) : Exception(message) { }
-

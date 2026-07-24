@@ -152,7 +152,7 @@ internal static class Program
             {
                 logger.ZLogDebug($"Saving asciicast to {options.SaveCastPath}");
                 await AsciicastWriter
-                    .WriteToFileAsync(options.SaveCastPath!, session, outputToken)
+                    .WriteToFileAsync(options.SaveCastPath, session, outputToken)
                     .ConfigureAwait(false);
                 logger.ZLogDebug($"Saved asciicast to {options.SaveCastPath}");
             }
@@ -340,7 +340,7 @@ internal static class Program
 
             if (!string.IsNullOrWhiteSpace(options.SaveFramesDir))
             {
-                await SaveFramesAsync(session, renderOptions, options.SaveFramesDir!, options.VideoFps, logger, outputToken)
+                await SaveFramesAsync(session, renderOptions, options.SaveFramesDir, options.VideoFps, logger, outputToken)
                     .ConfigureAwait(false);
             }
 
@@ -348,9 +348,10 @@ internal static class Program
             {
                 var cause = GetCancellationCause(options, canceledByCtrlC);
                 logger.ZLogDebug($"Recording stopped. Cause={cause}");
-                await Console.Error.WriteLineAsync(
-                    options.StdOut ? "Generated (partial): (stdout)" : $"Generated (partial): {options.OutputPath}"
-                );
+                var message = options.StdOut
+                    ? "Generated (partial): (stdout)"
+                    : $"Generated (partial): {options.OutputPath}";
+                await Console.Error.WriteLineAsync(message.AsMemory(), CancellationToken.None);
                 return 0;
             }
 
@@ -385,7 +386,7 @@ internal static class Program
         {
             logger.ZLogDebug($"Input source: asciicast file. Path={options.InputCastPath}");
             return await AsciicastReader
-                .ReadFromFileAsync(options.InputCastPath!, cancellationToken)
+                .ReadFromFileAsync(options.InputCastPath, cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -401,7 +402,7 @@ internal static class Program
                 );
                 return await RepeatRecorder
                     .RecordAsync(
-                        options.Command!,
+                        options.Command,
                         ptyWidth,
                         ptyHeight,
                         options.VideoFps,
@@ -416,7 +417,7 @@ internal static class Program
             );
             return await PtyRecorder
                 .RecordAsync(
-                    options.Command!,
+                    options.Command,
                     ptyWidth,
                     ptyHeight,
                     cancellationToken,
@@ -672,7 +673,10 @@ internal static class Program
 
             baseOptions.Frame = null;
             logger.ZLogDebug($"Saved {savedCount} frames to {directory}");
-            await Console.Error.WriteLineAsync($"Saved {savedCount} frames to {directory}");
+            await Console.Error.WriteLineAsync(
+                $"Saved {savedCount} frames to {directory}".AsMemory(),
+                CancellationToken.None
+            );
             return savedCount;
         }
         else
@@ -713,7 +717,10 @@ internal static class Program
 
             baseOptions.Frame = null;
             logger.ZLogDebug($"Saved {savedCount} unique frames (of {eventCount} events) to {directory}");
-            await Console.Error.WriteLineAsync($"Saved {savedCount} frames to {directory}");
+            await Console.Error.WriteLineAsync(
+                $"Saved {savedCount} frames to {directory}".AsMemory(),
+                CancellationToken.None
+            );
             return savedCount;
         }
     }

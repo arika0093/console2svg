@@ -3,7 +3,12 @@ rm -rf ./publish || true
 dotnet clean
 dotnet build -c Release --no-cache
 dotnet pack src/ConsoleToSvg.Converter/ConsoleToSvg.Converter.csproj -c Release -o publish -p:WarningLevel=0
-converter_package="$(find ./publish -maxdepth 1 -name 'ConsoleToSvg.Converter.*.nupkg' -printf '%f\n')"
+set -- ./publish/ConsoleToSvg.Converter.*.nupkg
+if [ "$#" -ne 1 ] || [ ! -f "$1" ]; then
+  echo "Expected exactly one ConsoleToSvg.Converter package in ./publish" >&2
+  exit 1
+fi
+converter_package="${1##*/}"
 converter_version="${converter_package#ConsoleToSvg.Converter.}"
 converter_version="${converter_version%.nupkg}"
 cat > ./publish/NuGet.Config <<'EOF'

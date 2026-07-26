@@ -74,7 +74,9 @@ public static class InteractiveRecorder
             RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !Console.IsOutputRedirected
                 ? Console.Out
                 : null;
-        var input = Console.OpenStandardInput();
+        var input = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? Console.OpenStandardInput()
+            : null;
         PtyRecorder.TryDisableTerminalMouseTracking(forwardToConsole: true, logger);
 
         async Task ClearHostTerminalAsync()
@@ -322,6 +324,7 @@ public static class InteractiveRecorder
                 var router = new InteractiveInputRouter(screenshotKey.Span, recordingKey.Span);
                 var inputGate = new SemaphoreSlim(1, 1);
                 long escapePendingVersion = 0;
+                logger.ZLogDebug($"Interactive input forwarding started.");
 
                 void ScheduleStandaloneEscape(long version)
                 {
@@ -370,9 +373,19 @@ public static class InteractiveRecorder
                 {
                     while (!lifetime.IsCancellationRequested)
                     {
-                        var count = await input
-                            .ReadAsync(bytes, 0, bytes.Length, lifetime.Token)
-                            .ConfigureAwait(false);
+                        var count = input is not null
+                            ? await input
+                                .ReadAsync(bytes, 0, bytes.Length, lifetime.Token)
+                                .ConfigureAwait(false)
+                            : await Task.Run(
+                                () => ReadUnixTerminalInput(bytes, timeoutMilliseconds: 100),
+                                CancellationToken.None
+                            ).ConfigureAwait(false);
+                        if (count < 0)
+                        {
+                            // Poll timeout; check cancellation and continue.
+                            continue;
+                        }
                         if (count <= 0)
                         {
                             // An EOF from the outer terminal is another form of
@@ -522,6 +535,35 @@ public static class InteractiveRecorder
         frames.Add(new TerminalFrame(elapsedSeconds, finalScreen.Clone()));
         return new InteractiveCapture(frames.ToArray());
     }
+
+    private static int ReadUnixTerminalInput(byte[] buffer, int timeoutMilliseconds)
+    {
+        var descriptors = new[] { new PollFd { FileDescriptor = 0, Events = PollIn } };
+        var pollResult = poll(descriptors, (nuint)descriptors.Length, timeoutMilliseconds);
+        if (pollResult <= 0)
+        {
+            return -1;
+        }
+
+        var count = read(0, buffer, (nuint)buffer.Length);
+        return count < 0 ? 0 : checked((int)count);
+    }
+
+    private const short PollIn = 0x0001;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct PollFd
+    {
+        public int FileDescriptor;
+        public short Events;
+        public short Revents;
+    }
+
+    [DllImport("libc", SetLastError = true)]
+    private static extern int poll(PollFd[] fds, nuint nfds, int timeout);
+
+    [DllImport("libc", SetLastError = true)]
+    private static extern nint read(int fd, byte[] buffer, nuint count);
 
     public sealed class HostTerminalSequenceFilter
     {

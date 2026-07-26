@@ -1360,18 +1360,21 @@ public static class PtyRecorder
                 const int stdinFd = 0;
                 if (tcgetattr(stdinFd, out var termios) != 0)
                 {
+                    logger.ZLogDebug($"tcgetattr failed while enabling raw terminal input. errno={Marshal.GetLastWin32Error()}");
                     return null;
                 }
 
                 var raw = termios;
-                raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
-                raw.c_oflag &= ~OPOST;
-                raw.c_cflag |= CS8;
-                raw.c_lflag &= ~(ICANON | ECHO | IEXTEN | ISIG);
+                // Let libc select the platform's complete raw-mode bit set. The
+                // previous hand-maintained flags worked on some Unix terminals but
+                // left WSL input in a cooked mode, so Ctrl keys and F-key VT
+                // sequences were consumed before the PTY forwarder could read them.
+                cfmakeraw(ref raw);
                 raw.c_cc[VMIN] = 1;
                 raw.c_cc[VTIME] = 0;
                 if (tcsetattr(stdinFd, TCSANOW, ref raw) != 0)
                 {
+                    logger.ZLogDebug($"tcsetattr failed while enabling raw terminal input. errno={Marshal.GetLastWin32Error()}");
                     return null;
                 }
 
@@ -1414,17 +1417,6 @@ public static class PtyRecorder
         }
 
         private const int TCSANOW = 0;
-        private const uint BRKINT = 0x0002;
-        private const uint ICRNL = 0x0100;
-        private const uint INPCK = 0x0010;
-        private const uint ISTRIP = 0x0020;
-        private const uint IXON = 0x0400;
-        private const uint OPOST = 0x0001;
-        private const uint CS8 = 0x0030;
-        private const uint ICANON = 0x0002;
-        private const uint ECHO = 0x0008;
-        private const uint IEXTEN = 0x8000;
-        private const uint ISIG = 0x0001;
         private const int VTIME = 5;
         private const int VMIN = 6;
 
@@ -1449,6 +1441,9 @@ public static class PtyRecorder
 
         [DllImport("libc", SetLastError = true)]
         private static extern int tcsetattr(int fd, int optional_actions, ref Termios termios);
+
+        [DllImport("libc")]
+        private static extern void cfmakeraw(ref Termios termios);
 
         [DllImport("kernel32.dll")]
         private static extern IntPtr GetStdHandle(uint nStdHandle);

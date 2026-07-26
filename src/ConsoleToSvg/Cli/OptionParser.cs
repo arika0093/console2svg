@@ -21,7 +21,8 @@ public static class OptionParser
                 -w, --width <int|adjust>  Terminal width in characters (default: auto[pipe], 100[pty]).
                 -h, --height <int|adjust> Terminal height in rows (default: auto).
                 -v                        Output animated SVG (alias for --mode video).
-                -i, --interactive         Run an interactive shell; press F12 to capture.
+                -i, --interactive         Run an interactive shell; F9 records and F10 takes a screenshot.
+                                          Use -- to start another interactive program (e.g. -i -- pwsh).
                 -c, --with-command        Prepend the command line to the output.
                 -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc, transparent.
                 --background <color> [color]  Background color, gradient, or image path.
@@ -127,9 +128,10 @@ public static class OptionParser
                                           realtime: preserve measured event timing as-is.
 
             Options (Interactive mode):
-                -i, --interactive         Run an interactive shell; press F12 to capture.
-                                          In video mode, press once to start and once more
-                                          to write the animation.
+                -i, --interactive         Run an interactive shell. F9 starts/stops an animation recording;
+                                          F10 saves a static screenshot. These keys work independently of -v.
+                                          Use -- to start another interactive program, preserving its arguments
+                                          (e.g. -i -- pwsh, -i -- vim README.md).
 
             Options (Conversion):
                 --svg-converter <auto|ffmpeg|rsvg-convert|resvg>
@@ -172,7 +174,8 @@ public static class OptionParser
                     return false;
                 }
 
-                options.Command = string.Join(' ', args, i + 1, args.Length - (i + 1));
+                options.DelimitedCommand = args[(i + 1)..];
+                options.Command = string.Join(' ', options.DelimitedCommand);
                 break;
             }
 
@@ -1143,9 +1146,9 @@ public static class OptionParser
 
         if (options.Interactive)
         {
-            if (!string.IsNullOrWhiteSpace(options.Command))
+            if (!string.IsNullOrWhiteSpace(options.Command) && options.DelimitedCommand is null)
             {
-                error = "--interactive cannot be used with a command.";
+                error = "An interactive program must be specified after -- (for example: -i -- vim).";
                 return false;
             }
 

@@ -495,18 +495,15 @@ internal static class Program
             theme = theme.WithForeground(renderOptions.ForeColor);
         }
 
-        await Console.Error.WriteLineAsync(
-            "Interactive shell started. Press F12 to capture.".AsMemory(),
-            CancellationToken.None
-        );
         await InteractiveRecorder
             .RunAsync(
                 width,
                 height,
                 theme,
-                Encoding.ASCII.GetBytes("\u001b[24~"),
-                options.Mode == OutputMode.Video,
+                Encoding.ASCII.GetBytes("\u001b[21~"),
+                Encoding.ASCII.GetBytes("\u001b[20~"),
                 options.NoDeleteEnvs,
+                options.DelimitedCommand,
                 async capture =>
                 {
                     var outputPath = GetInteractiveOutputPath(options.OutputPath);
@@ -518,10 +515,7 @@ internal static class Program
                             loggerFactory.CreateLogger("ConsoleToSvg.InteractiveCapture")
                         )
                         .ConfigureAwait(false);
-                    await Console.Error.WriteLineAsync(
-                        $"Captured: {outputPath}",
-                        CancellationToken.None
-                    );
+                    return capture.IsVideo ? "Recording saved" : "Screenshot saved";
                 },
                 cancellationToken,
                 loggerFactory.CreateLogger("ConsoleToSvg.InteractiveRecorder")

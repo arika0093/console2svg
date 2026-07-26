@@ -23,6 +23,12 @@ public sealed class AppOptions
 
     public string? Command { get; set; }
 
+    /// <summary>
+    /// Unmodified arguments following <c>--</c>. Interactive mode uses these to
+    /// start the requested program without losing argument boundaries.
+    /// </summary>
+    public string[]? DelimitedCommand { get; set; }
+
     public string? InputCastPath { get; set; }
 
     public string OutputPath { get; set; } = "output.svg";

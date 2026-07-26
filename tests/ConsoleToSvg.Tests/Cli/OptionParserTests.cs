@@ -30,7 +30,7 @@ public sealed class OptionParserTests
     }
 
     [Test]
-    [Arguments(new[] { "--interactive", "echo hi" }, "--interactive cannot be used with a command.")]
+    [Arguments(new[] { "--interactive", "echo hi" }, "An interactive program must be specified after -- (for example: -i -- vim).")]
     [Arguments(new[] { "--interactive", "--in", "record.cast" }, "--interactive cannot be used with --in.")]
     [Arguments(new[] { "--interactive", "--stdout" }, "--interactive cannot be used with --stdout.")]
     [Arguments(new[] { "--interactive", "--mode", "repeat" }, "--interactive cannot be used with --mode repeat.")]
@@ -41,6 +41,21 @@ public sealed class OptionParserTests
 
         ok.ShouldBeFalse();
         error.ShouldBe(expectedError);
+    }
+
+    [Test]
+    public void InteractiveModeStartsDelimitedProgramWithUnmodifiedArguments()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "-i", "--", "vim", "file name.txt" },
+            out var options,
+            out _,
+            out _
+        );
+
+        ok.ShouldBeTrue();
+        options!.Command.ShouldBe("vim file name.txt");
+        options.DelimitedCommand.ShouldBe(new[] { "vim", "file name.txt" });
     }
 
     [Test]

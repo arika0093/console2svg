@@ -17,7 +17,7 @@ public static class PtyRecorder
 {
     // This sequence disables various mouse tracking modes in the terminal, which can be left enabled by some applications and cause issues with input forwarding (e.g. mouse clicks not working in Vim). It's safe to send this on every recording stop, even if the child process has already exited or doesn't support these modes.
     private const string DisableMouseTrackingSequence =
-        "\u001b[?9l\u001b[?1000l\u001b[?1002l\u001b[?1003l\u001b[?1004l\u001b[?1005l\u001b[?1006l\u001b[?1015l\u001b[?1016l";
+        "\u001b[?9l\u001b[?1000l\u001b[?1002l\u001b[?1003l\u001b[?1004l\u001b[?1005l\u001b[?1006l\u001b[?1015l\u001b[?1016l\u001b[?9001l";
 
     // remove some CI environments to avoid apps switching to no-color mode.
     // for example: chalk(Node.js) checks "CI" to disable colors on CI environments:
@@ -1082,7 +1082,7 @@ public static class PtyRecorder
         }
     }
 
-    private static void TryDisableTerminalMouseTracking(bool forwardToConsole, ILogger logger)
+    internal static void TryDisableTerminalMouseTracking(bool forwardToConsole, ILogger logger)
     {
         if (!forwardToConsole || Console.IsOutputRedirected)
         {
@@ -1264,6 +1264,7 @@ public static class PtyRecorder
         private const uint EnableProcessedInput = 0x0001;
         private const uint EnableLineInput = 0x0002;
         private const uint EnableEchoInput = 0x0004;
+        private const uint EnableMouseInput = 0x0010;
         private const uint EnableQuickEditMode = 0x0040;
         private const uint EnableExtendedFlags = 0x0080;
         private const uint EnableVirtualTerminalInput = 0x0200;
@@ -1321,9 +1322,11 @@ public static class PtyRecorder
                 }
 
                 var newMode = mode;
-                newMode |= EnableVirtualTerminalInput | EnableExtendedFlags;
+                newMode |= EnableVirtualTerminalInput | EnableExtendedFlags | EnableQuickEditMode;
                 newMode &= ~(EnableLineInput | EnableEchoInput | EnableProcessedInput);
-                newMode &= ~EnableQuickEditMode;
+                // Keep host-side text selection available. Mouse reports, if a host
+                // still emits them as VT input, are discarded by InteractiveRecorder.
+                newMode &= ~EnableMouseInput;
 
                 if (newMode == mode)
                 {

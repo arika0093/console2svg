@@ -113,20 +113,12 @@ internal static class Program
 
         try
         {
-            if (options.Interactive)
-            {
-                return await RunInteractiveAsync(
-                        options,
-                        loggerFactory,
-                        cancellationTokenSource.Token
-                    )
-                    .ConfigureAwait(false);
-            }
-
             // Pre-check: verify ffmpeg and converter availability BEFORE starting
             // the recording, so a missing tool surfaces immediately instead of
-            // wasting the recorded session (issue #78). Only raster/video outputs
-            // need conversion tools; pure SVG output (including --stdout) does not.
+            // wasting the recorded session. This also applies to interactive
+            // capture, where frames cannot be recovered after a failed save.
+            // Only raster/video outputs need conversion tools; pure SVG output
+            // (including --stdout) does not.
             if (!options.StdOut)
             {
                 var preCheckExt = Path.GetExtension(options.OutputPath)
@@ -151,6 +143,16 @@ internal static class Program
                         $"Pre-conversion check passed: converter verified for .{preCheckExt} output."
                     );
                 }
+            }
+
+            if (options.Interactive)
+            {
+                return await RunInteractiveAsync(
+                        options,
+                        loggerFactory,
+                        cancellationTokenSource.Token
+                    )
+                    .ConfigureAwait(false);
             }
 
             var session = await LoadOrRecordAsync(

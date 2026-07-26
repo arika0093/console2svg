@@ -186,7 +186,7 @@ public static class InteractiveRecorder
             }
         }
 
-        async Task CaptureScreenshotAsync()
+        async Task<InteractiveCapture> CaptureScreenshotAsync()
         {
             await WaitForOutputToSettleAsync().ConfigureAwait(false);
             InteractiveCapture capture;
@@ -195,10 +195,10 @@ public static class InteractiveRecorder
                 capture = new InteractiveCapture(emulator.Buffer.Clone());
             }
 
-            await SaveCaptureAsync(capture).ConfigureAwait(false);
+            return capture;
         }
 
-        async Task ToggleRecordingAsync()
+        async Task<InteractiveCapture?> ToggleRecordingAsync()
         {
             var isStarting = false;
             lock (captureGate)
@@ -214,7 +214,7 @@ public static class InteractiveRecorder
             if (isStarting)
             {
                 ShowNotification("Recording started");
-                return;
+                return null;
             }
 
             await WaitForOutputToSettleAsync().ConfigureAwait(false);
@@ -229,7 +229,7 @@ public static class InteractiveRecorder
                 videoFrames = null;
             }
 
-            await SaveCaptureAsync(capture).ConfigureAwait(false);
+            return capture;
         }
 
         var outputTask = Task.Run(
@@ -317,6 +317,8 @@ public static class InteractiveRecorder
             CancellationToken.None
         );
 
+        var captureQueueGate = new object();
+        Task captureQueue = Task.CompletedTask;
         var inputTask = Task.Run(
             async () =>
             {
@@ -367,6 +369,29 @@ public static class InteractiveRecorder
                         },
                         CancellationToken.None
                     );
+                }
+
+                void QueueSaveCapture(InteractiveCapture capture)
+                {
+                    lock (captureQueueGate)
+                    {
+                        captureQueue = captureQueue.ContinueWith(
+                            async _ =>
+                            {
+                                try
+                                {
+                                    await SaveCaptureAsync(capture).ConfigureAwait(false);
+                                }
+                                catch (Exception ex)
+                                {
+                                    logger.ZLogError(ex, $"Interactive capture failed.");
+                                }
+                            },
+                            CancellationToken.None,
+                            TaskContinuationOptions.None,
+                            TaskScheduler.Default
+                        ).Unwrap();
+                    }
                 }
 
                 try
@@ -426,7 +451,9 @@ public static class InteractiveRecorder
                                     case InteractiveInputAction.Screenshot:
                                         try
                                         {
-                                            await CaptureScreenshotAsync().ConfigureAwait(false);
+                                            QueueSaveCapture(
+                                                await CaptureScreenshotAsync().ConfigureAwait(false)
+                                            );
                                         }
                                         catch (Exception ex)
                                         {
@@ -436,7 +463,11 @@ public static class InteractiveRecorder
                                     case InteractiveInputAction.ToggleRecording:
                                         try
                                         {
-                                            await ToggleRecordingAsync().ConfigureAwait(false);
+                                            var capture = await ToggleRecordingAsync().ConfigureAwait(false);
+                                            if (capture is not null)
+                                            {
+                                                QueueSaveCapture(capture);
+                                            }
                                         }
                                         catch (Exception ex)
                                         {
@@ -518,6 +549,12 @@ public static class InteractiveRecorder
             connection.Dispose();
             await IgnoreFailureAsync(outputTask).ConfigureAwait(false);
             await IgnoreFailureAsync(inputTask).ConfigureAwait(false);
+            Task pendingCaptures;
+            lock (captureQueueGate)
+            {
+                pendingCaptures = captureQueue;
+            }
+            await IgnoreFailureAsync(pendingCaptures).ConfigureAwait(false);
             // A child application can leave the outer terminal in mouse-reporting
             // mode. Reset it before restoring the host input mode so selection is
             // available after an interactive session ends.

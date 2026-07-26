@@ -313,7 +313,7 @@ public sealed class SvgRendererTests
     }
 
     [Test]
-    public void RenderStaticSvgTintsWhiteHighlightNearGreenToBrightGreen()
+    public void RenderStaticSvgPreservesWhiteHighlightNearGreen()
     {
         var session = new RecordingSession(width: 8, height: 2);
         session.AddEvent(0.01, "\u001b[32mA\u001b[37mB\u001b[39m");
@@ -323,7 +323,7 @@ public sealed class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        svg.ShouldContain("fill=\"#23D18B\"");
+        svg.ShouldContain("fill=\"#e5e5e5\"");
     }
 
     [Test]

@@ -105,7 +105,7 @@ public sealed class AnimatedSvgRendererTests
     }
 
     [Test]
-    public void RenderAnimatedSvgPreservesRapidColorChanges()
+    public void RenderAnimatedSvgPreservesCmatrixHighlightColors()
     {
         var session = new RecordingSession(width: 8, height: 2);
         session.AddEvent(0.00, "\u001b[32mA");
@@ -118,7 +118,7 @@ public sealed class AnimatedSvgRendererTests
         );
 
         svg.ShouldContain("#0dbc79");
-        svg.ShouldContain("#23D18B");
+        svg.ShouldContain("#e5e5e5");
     }
 
     [Test]

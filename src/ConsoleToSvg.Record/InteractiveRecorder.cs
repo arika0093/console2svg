@@ -61,6 +61,7 @@ public static class InteractiveRecorder
         List<TerminalFrame>? videoFrames = null;
         var videoStarted = 0d;
         var stopwatch = Stopwatch.StartNew();
+        long lastOutputTimestamp = Stopwatch.GetTimestamp();
 
         var options = BuildOptions(width, height, noDeleteEnvs, command);
         using var connection = await NativePty
@@ -76,6 +77,29 @@ public static class InteractiveRecorder
         var input = Console.OpenStandardInput();
         PtyRecorder.TryDisableTerminalMouseTracking(forwardToConsole: true, logger);
 
+        async Task ClearHostTerminalAsync()
+        {
+            if (Console.IsOutputRedirected)
+            {
+                return;
+            }
+
+            await hostOutputGate.WaitAsync(CancellationToken.None).ConfigureAwait(false);
+            try
+            {
+                // Match the visible part of `cls` without sending anything to the
+                // child PTY. The child will still receive Ctrl+L and redraw itself.
+                var clear = "\u001b[2J\u001b[H";
+                await output.WriteAsync(Encoding.ASCII.GetBytes(clear), CancellationToken.None)
+                    .ConfigureAwait(false);
+                await output.FlushAsync(CancellationToken.None).ConfigureAwait(false);
+            }
+            finally
+            {
+                hostOutputGate.Release();
+            }
+        }
+
         async Task NotifyAsync(string message)
         {
             if (Console.IsOutputRedirected)
@@ -83,23 +107,34 @@ public static class InteractiveRecorder
                 return;
             }
 
+            var width = Math.Max(20, Console.WindowWidth);
+            var label = $"  {message}  ";
+            if (label.Length > width - 2)
+            {
+                label = label[..Math.Max(1, width - 2)];
+            }
+
+            var column = Math.Max(1, width - label.Length);
             await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
             try
             {
                 // This is deliberately written to the host terminal, never the PTY.
                 // Saving/restoring the cursor prevents it from becoming shell input.
-                var width = Math.Max(20, Console.WindowWidth);
-                var label = $"  {message}  ";
-                if (label.Length > width - 2)
-                {
-                    label = label[..Math.Max(1, width - 2)];
-                }
-
-                var column = Math.Max(1, width - label.Length);
                 var overlay = $"\u001b7\u001b[1;{column}H\u001b[30;48;5;114m{label}\u001b[0m\u001b8";
                 await output.WriteAsync(Encoding.UTF8.GetBytes(overlay), lifetime.Token).ConfigureAwait(false);
                 await output.FlushAsync(lifetime.Token).ConfigureAwait(false);
-                await Task.Delay(TimeSpan.FromMilliseconds(1500), lifetime.Token).ConfigureAwait(false);
+            }
+            finally
+            {
+                hostOutputGate.Release();
+            }
+
+            // Do not hold the output gate while the popup is visible: PTY output
+            // must keep flowing while the user continues typing.
+            await Task.Delay(TimeSpan.FromMilliseconds(1500), lifetime.Token).ConfigureAwait(false);
+            await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
+            try
+            {
                 var clear = $"\u001b7\u001b[1;{column}H{new string(' ', label.Length)}\u001b8";
                 await output.WriteAsync(Encoding.UTF8.GetBytes(clear), lifetime.Token).ConfigureAwait(false);
                 await output.FlushAsync(lifetime.Token).ConfigureAwait(false);
@@ -110,17 +145,48 @@ public static class InteractiveRecorder
             }
         }
 
+        void ShowNotification(string message)
+        {
+            _ = NotifyAsync(message).ContinueWith(
+                task => logger.ZLogDebug(task.Exception, $"Interactive notification failed."),
+                TaskContinuationOptions.OnlyOnFaulted
+            );
+        }
+
+        async Task WaitForOutputToSettleAsync()
+        {
+            const int quietMilliseconds = 100;
+            const int maxWaitMilliseconds = 750;
+            // Allow output caused by the immediately preceding Enter/key press to
+            // reach the PTY before considering the terminal idle.
+            await Task.Delay(150, lifetime.Token).ConfigureAwait(false);
+            var started = Stopwatch.GetTimestamp();
+            while (!lifetime.IsCancellationRequested)
+            {
+                var now = Stopwatch.GetTimestamp();
+                var quietFor = (now - Volatile.Read(ref lastOutputTimestamp)) * 1000 / Stopwatch.Frequency;
+                var waited = (now - started) * 1000 / Stopwatch.Frequency;
+                if (quietFor >= quietMilliseconds || waited >= maxWaitMilliseconds)
+                {
+                    return;
+                }
+
+                await Task.Delay(20, lifetime.Token).ConfigureAwait(false);
+            }
+        }
+
         async Task SaveCaptureAsync(InteractiveCapture capture)
         {
             var message = await onCapture(capture).ConfigureAwait(false);
             if (!string.IsNullOrWhiteSpace(message))
             {
-                await NotifyAsync(message).ConfigureAwait(false);
+                ShowNotification(message);
             }
         }
 
         async Task CaptureScreenshotAsync()
         {
+            await WaitForOutputToSettleAsync().ConfigureAwait(false);
             InteractiveCapture capture;
             lock (captureGate)
             {
@@ -132,25 +198,33 @@ public static class InteractiveRecorder
 
         async Task ToggleRecordingAsync()
         {
-            InteractiveCapture? capture = null;
+            var isStarting = false;
             lock (captureGate)
             {
                 if (videoFrames is null)
                 {
                     videoStarted = stopwatch.Elapsed.TotalSeconds;
                     videoFrames = [new TerminalFrame(0d, emulator.Buffer.Clone())];
-                }
-                else
-                {
-                    capture = new InteractiveCapture(videoFrames);
-                    videoFrames = null;
+                    isStarting = true;
                 }
             }
 
-            if (capture is null)
+            if (isStarting)
             {
-                await NotifyAsync("Recording started").ConfigureAwait(false);
+                ShowNotification("Recording started");
                 return;
+            }
+
+            await WaitForOutputToSettleAsync().ConfigureAwait(false);
+            InteractiveCapture capture;
+            lock (captureGate)
+            {
+                capture = CompleteRecording(
+                    videoFrames,
+                    stopwatch.Elapsed.TotalSeconds - videoStarted,
+                    emulator.Buffer
+                );
+                videoFrames = null;
             }
 
             await SaveCaptureAsync(capture).ConfigureAwait(false);
@@ -185,6 +259,7 @@ public static class InteractiveRecorder
                             {
                                 var text = new string(chars, 0, charCount);
                                 emulator.Process(text);
+                                Volatile.Write(ref lastOutputTimestamp, Stopwatch.GetTimestamp());
                                 if (videoFrames is not null)
                                 {
                                     videoFrames.Add(
@@ -244,8 +319,7 @@ public static class InteractiveRecorder
             async () =>
             {
                 var bytes = new byte[256];
-                var pending = new List<byte>(Math.Max(screenshotKey.Length, recordingKey.Length));
-                var discardingSgrMouseReport = false;
+                var router = new InteractiveInputRouter(screenshotKey.Span, recordingKey.Span);
                 var inputGate = new SemaphoreSlim(1, 1);
                 long escapePendingVersion = 0;
 
@@ -262,14 +336,14 @@ public static class InteractiveRecorder
                                 {
                                     if (
                                         Volatile.Read(ref escapePendingVersion) == version
-                                        && pending.Count == 1
-                                        && pending[0] == 0x1b
+                                        && router.HasStandaloneEscape
                                     )
                                     {
+                                        var forwarded = new List<byte>(1);
+                                        router.ForwardPending(forwarded);
                                         await connection.WriterStream
-                                            .WriteAsync(pending.ToArray(), lifetime.Token)
+                                            .WriteAsync(forwarded.ToArray(), lifetime.Token)
                                             .ConfigureAwait(false);
-                                        pending.Clear();
                                         await connection.WriterStream
                                             .FlushAsync(lifetime.Token)
                                             .ConfigureAwait(false);
@@ -298,6 +372,10 @@ public static class InteractiveRecorder
                             .ConfigureAwait(false);
                         if (count <= 0)
                         {
+                            // An EOF from the outer terminal is another form of
+                            // Ctrl+D. Do not leave the child shell running after its
+                            // input owner has gone away.
+                            await lifetime.CancelAsync().ConfigureAwait(false);
                             break;
                         }
 
@@ -308,72 +386,46 @@ public static class InteractiveRecorder
                             Interlocked.Increment(ref escapePendingVersion);
                             for (var i = 0; i < count; i++)
                             {
-                                if (discardingSgrMouseReport)
+                                var forwarded = new List<byte>();
+                                var action = router.Process(bytes[i], forwarded);
+                                if (forwarded.Count > 0)
                                 {
-                                    if (bytes[i] is (byte)'M' or (byte)'m')
-                                    {
-                                        discardingSgrMouseReport = false;
-                                    }
-
-                                    continue;
+                                    await connection.WriterStream
+                                        .WriteAsync(forwarded.ToArray(), lifetime.Token)
+                                        .ConfigureAwait(false);
                                 }
 
-                                pending.Add(bytes[i]);
-                                while (pending.Count > 0)
+                                switch (action)
                                 {
-                                    if (IsPrefix(pending, screenshotKey.Span) || IsPrefix(pending, recordingKey.Span))
-                                    {
-                                        if (pending.Count == screenshotKey.Length && IsPrefix(pending, screenshotKey.Span))
+                                    case InteractiveInputAction.Exit:
+                                        await lifetime.CancelAsync().ConfigureAwait(false);
+                                        return;
+                                    case InteractiveInputAction.Screenshot:
+                                        try
                                         {
-                                            pending.Clear();
-                                            try
-                                            {
-                                                await CaptureScreenshotAsync().ConfigureAwait(false);
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                logger.ZLogError(ex, $"Interactive capture failed.");
-                                            }
+                                            await CaptureScreenshotAsync().ConfigureAwait(false);
                                         }
-                                        else if (pending.Count == recordingKey.Length && IsPrefix(pending, recordingKey.Span))
+                                        catch (Exception ex)
                                         {
-                                            pending.Clear();
-                                            try
-                                            {
-                                                await ToggleRecordingAsync().ConfigureAwait(false);
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                logger.ZLogError(ex, $"Interactive recording capture failed.");
-                                            }
+                                            logger.ZLogError(ex, $"Interactive capture failed.");
                                         }
                                         break;
-                                    }
-
-                                    // ENABLE_VIRTUAL_TERMINAL_INPUT can surface host mouse
-                                    // reports as CSI <... M/m. They are neither shell input
-                                    // nor capture keys; forwarding them produces visible
-                                    // fragments such as "[<35;..." in line editors.
-                                    if (IsSgrMouseReportPrefix(pending))
-                                    {
-                                        pending.Clear();
-                                        discardingSgrMouseReport = true;
+                                    case InteractiveInputAction.ToggleRecording:
+                                        try
+                                        {
+                                            await ToggleRecordingAsync().ConfigureAwait(false);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            logger.ZLogError(ex, $"Interactive recording capture failed.");
+                                        }
                                         break;
-                                    }
-
-                                    // Any non-capture sequence is opaque input. Forward
-                                    // it as received rather than special-casing cursor
-                                    // keys, paste markers, modifiers, or future VT keys.
-                                    await connection.WriterStream
-                                        .WriteAsync(pending.ToArray(), lifetime.Token)
-                                        .ConfigureAwait(false);
-                                    pending.Clear();
                                 }
                             }
 
                             // Function keys and other VT input can arrive across reads.
                             // Give a lone Escape a short grace period before forwarding it.
-                            if (pending.Count == 1 && pending[0] == 0x1b)
+                            if (router.HasStandaloneEscape)
                             {
                                 var version = Interlocked.Increment(ref escapePendingVersion);
                                 ScheduleStandaloneEscape(version);
@@ -407,6 +459,26 @@ public static class InteractiveRecorder
             CancellationToken.None
         );
 
+        _ = Task.Run(
+            async () =>
+            {
+                try
+                {
+                    // cmd/Clink and Starship often clear the terminal while their
+                    // startup scripts run. Wait for that output to finish before
+                    // drawing the host-only key guide.
+                    await Task.Delay(500, lifetime.Token).ConfigureAwait(false);
+                    await WaitForOutputToSettleAsync().ConfigureAwait(false);
+                    ShowNotification("F9: Record start   F10: Capture");
+                }
+                catch (OperationCanceledException)
+                {
+                    // The shell exited before its startup hint was needed.
+                }
+            },
+            CancellationToken.None
+        );
+
         try
         {
             while (!cancellationToken.IsCancellationRequested && !outputTask.IsCompleted)
@@ -427,31 +499,21 @@ public static class InteractiveRecorder
             // mode. Reset it before restoring the host input mode so selection is
             // available after an interactive session ends.
             PtyRecorder.TryDisableTerminalMouseTracking(forwardToConsole: true, logger);
+            await ClearHostTerminalAsync().ConfigureAwait(false);
         }
     }
 
-    private static bool IsPrefix(List<byte> value, ReadOnlySpan<byte> expected)
+    public static InteractiveCapture CompleteRecording(
+        List<TerminalFrame> frames,
+        double elapsedSeconds,
+        ScreenBuffer finalScreen
+    )
     {
-        if (value.Count > expected.Length)
-        {
-            return false;
-        }
-
-        for (var i = 0; i < value.Count; i++)
-        {
-            if (value[i] != expected[i])
-            {
-                return false;
-            }
-        }
-
-        return true;
+        frames.Add(new TerminalFrame(elapsedSeconds, finalScreen.Clone()));
+        return new InteractiveCapture(frames.ToArray());
     }
 
-    private static bool IsSgrMouseReportPrefix(List<byte> value) =>
-        value.Count == 3 && value[0] == 0x1b && value[1] == (byte)'[' && value[2] == (byte)'<';
-
-    private sealed class HostTerminalSequenceFilter
+    public sealed class HostTerminalSequenceFilter
     {
         private static readonly HashSet<string> SuppressedPrivateModes =
             ["9", "1000", "1002", "1003", "1004", "1005", "1006", "1015", "1016", "9001"];

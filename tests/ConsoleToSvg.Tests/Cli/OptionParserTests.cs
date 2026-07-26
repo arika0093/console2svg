@@ -16,6 +16,13 @@ public sealed class OptionParserTests
     }
 
     [Test]
+    public void InteractiveHelpDocumentsF9RecordingAndF10Screenshot()
+    {
+        OptionParser.HelpText.ShouldContain("F9 starts/stops an animation recording");
+        OptionParser.HelpText.ShouldContain("F10 saves a static screenshot");
+    }
+
+    [Test]
     public void InteractiveModeRejectsRemovedKeybindOption()
     {
         var ok = OptionParser.TryParse(

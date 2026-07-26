@@ -71,8 +71,10 @@ public sealed class InteractiveRecorderTests
     public void CtrlDRequestsInteractiveExit()
     {
         var router = new InteractiveInputRouter(ScreenshotKey, RecordingKey);
+        var forwarded = new List<byte>();
 
-        router.Process(0x04, new List<byte>()).ShouldBe(InteractiveInputAction.Exit);
+        router.Process(0x04, forwarded).ShouldBe(InteractiveInputAction.Exit);
+        forwarded.ToArray().ShouldBe(new byte[] { 0x04 });
     }
 
     [Test]

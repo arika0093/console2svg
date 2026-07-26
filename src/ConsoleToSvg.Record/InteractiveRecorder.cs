@@ -330,7 +330,10 @@ public static class InteractiveRecorder
                         {
                             try
                             {
-                                await Task.Delay(30, lifetime.Token).ConfigureAwait(false);
+                                // Some WSL terminal stacks deliver a function-key
+                                // sequence in separate reads. Keep ESC long enough
+                                // for the remaining CSI bytes to arrive.
+                                await Task.Delay(100, lifetime.Token).ConfigureAwait(false);
                                 await inputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
                                 try
                                 {
@@ -398,8 +401,15 @@ public static class InteractiveRecorder
                                 switch (action)
                                 {
                                     case InteractiveInputAction.Exit:
-                                        await lifetime.CancelAsync().ConfigureAwait(false);
-                                        return;
+                                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                                        {
+                                            await lifetime.CancelAsync().ConfigureAwait(false);
+                                            return;
+                                        }
+
+                                        // Bash receives the EOT byte above and exits;
+                                        // wait for the PTY's normal process-exit path.
+                                        break;
                                     case InteractiveInputAction.Screenshot:
                                         try
                                         {
@@ -650,7 +660,9 @@ public static class InteractiveRecorder
         var unixShell = Environment.GetEnvironmentVariable("SHELL");
         if (string.IsNullOrWhiteSpace(unixShell))
         {
-            unixShell = "/bin/sh";
+            // WSL does not always propagate SHELL to a launched .NET process.
+            // Prefer Bash so Ctrl+L/Ctrl+D retain the familiar interactive bindings.
+            unixShell = File.Exists("/bin/bash") ? "/bin/bash" : "/bin/sh";
         }
 
         if (command is { Length: > 0 })

@@ -36,6 +36,10 @@ public sealed class InteractiveInputRouter
     {
         if (value == 0x04)
         {
+            // Let Unix shells receive EOT so Bash can close normally. Windows
+            // cmd.exe does not treat it as EOF, so the caller also receives the
+            // explicit Exit action and can close the recording session there.
+            forwarded.Add(value);
             return InteractiveInputAction.Exit;
         }
 

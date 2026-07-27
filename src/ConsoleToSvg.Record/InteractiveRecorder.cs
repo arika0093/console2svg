@@ -111,7 +111,7 @@ public static class InteractiveRecorder
             }
         }
 
-        using var connection = await NativePty
+        var connection = await NativePty
             .SpawnAsync(options, cancellationToken)
             .ConfigureAwait(false);
         var rawInput = PtyRecorder.ConsoleInputMode.TryEnableRaw(logger);
@@ -446,10 +446,13 @@ public static class InteractiveRecorder
             InteractiveCapture capture;
             lock (captureGate)
             {
+                var finalScreen = Volatile.Read(ref recordingPaused) != 0
+                    ? videoFrames[^1].Buffer
+                    : emulator.Buffer;
                 capture = CompleteRecording(
                     videoFrames,
                     GetRecordingElapsedSeconds(),
-                    emulator.Buffer
+                    finalScreen
                 );
                 videoFrames = null;
                 videoPausedDuration = 0d;
@@ -900,10 +903,13 @@ public static class InteractiveRecorder
             {
                 if (videoFrames is not null)
                 {
+                    var finalScreen = Volatile.Read(ref recordingPaused) != 0
+                        ? videoFrames[^1].Buffer
+                        : emulator.Buffer;
                     capture = CompleteRecording(
                         videoFrames,
                         GetRecordingElapsedSeconds(),
-                        emulator.Buffer
+                        finalScreen
                     );
                     videoFrames = null;
                     videoPausedDuration = 0d;

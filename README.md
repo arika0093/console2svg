@@ -283,16 +283,18 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
 
 In v0.8 and later, you can specify the output format based on the file extension specified with `-o output.mp4`.
 
-First, install `ffmpeg`.  
-On Linux/macOS, you can easily install it using a package manager.  
-On Windows, ffmpeg is bundled in the release archive, so no separate installation is required.
+First, install `ffmpeg`. Release archives on Windows already include it. For the dotnet
+tool on Windows or Linux, download the supported build alongside the tool:
 
 ```bash
 # ubuntu
 sudo apt install ffmpeg
 # macos
 brew install ffmpeg
-# windows: ffmpeg is included in console2svg-win-x64.zip
+# windows
+# > ffmpeg is included in console2svg-win-x64.zip
+# dotnet tool (Windows / Linux)
+console2svg --install-deps
 ```
 
 Then, you can specify the output file with the desired extension. For example, to convert an animated command to any format, you can use the following command:
@@ -306,8 +308,8 @@ console2svg -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 
 
 You can also output as MP4, WebM, or a static PNG/JPG by changing the extension.
 
-> [!WARNING]
-> If you downloaded it as a dotnet tool, you need to install `ffmpeg` separately and add it to your PATH.
+> [!NOTE]
+> `--install-deps` supports Windows and Linux. On macOS, install `ffmpeg` with Homebrew.
 
 ## Appearance options
 ### Background and opacity

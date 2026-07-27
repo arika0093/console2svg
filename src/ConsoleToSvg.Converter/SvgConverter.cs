@@ -83,7 +83,8 @@ public static class SvgConverter
             if (!ffmpegAvailableOverride && !_ffmpegAvailable.Value)
             {
                 throw new InvalidOperationException(
-                    "--svg-converter ffmpeg was requested but ffmpeg is not installed or not on PATH."
+                    "--svg-converter ffmpeg was requested but ffmpeg is not installed or not on PATH. "
+                    + "Run 'console2svg --install-deps' to install the supported bundled build."
                 );
             }
             if (!_ffmpegSupportsSvg.Value)
@@ -151,7 +152,8 @@ public static class SvgConverter
         }
 
         throw new InvalidOperationException(
-            "No SVG-to-PNG converter available. Install ffmpeg (with librsvg), "
+            "No SVG-to-PNG converter available. Run 'console2svg --install-deps' to install ffmpeg, "
+            + "or install ffmpeg (with librsvg), "
             + "rsvg-convert ('librsvg2-bin' / 'brew install librsvg'), or build "
             + "with the bundled resvg native runtime."
         );
@@ -226,8 +228,8 @@ public static class SvgConverter
         {
             throw new InvalidOperationException(
                 "ffmpeg is required for the requested output format but was not found. "
-                + "Install ffmpeg (or bundle it next to this executable) and ensure it "
-                + "is on PATH."
+                + "Run 'console2svg --install-deps' to install the supported bundled build, "
+                + "or install ffmpeg and ensure it is on PATH."
             );
         }
     }

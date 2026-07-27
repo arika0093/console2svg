@@ -46,9 +46,9 @@ public static class OptionParser
             Options (Common):
                 -o, --out <path>          Output file path (default: output.svg).
                                           Extension determines format:
-                                            .svg          – SVG output (default, no external tools required).
-                                            .png          – Raster image via resvg.
-                                            .mp4/.webm/…  – Video using frame sequences via ffmpeg.
+                                            .svg          - SVG output (default, no external tools required).
+                                            .png          - Raster image via resvg.
+                                            .mp4/.webm/…  - Video using frame sequences via ffmpeg.
                 --stdout                  Write SVG to stdout instead of a file.
                                           PTY output forwarding is suppressed so the pipe receives only SVG.
                 -m, --mode <image|video|repeat>  Output mode (default: image).
@@ -62,6 +62,8 @@ public static class OptionParser
                 --verbose [path]          Enable verbose logging; write to path (default: console2svg.log).
                 --help                    Show help.
                 --version                 Show version and exit.
+                --install-deps            Download ffmpeg to the application directory and exit.
+                                          Supported on Windows and Linux; macOS users should use brew install ffmpeg.
                 --timeout <sec>           Stop recording after specified seconds (e.g. 5, 0.5).
                 --no-colorenv             Disable PTY color environment overrides (TERM/COLORTERM/FORCE_COLOR).
                 --no-delete-envs          Keep CI/TF_BUILD in shell execution environment.
@@ -100,10 +102,10 @@ public static class OptionParser
                                           Alternatively, a range: --time 1.5-3.0 (works with --save-frames and --video).
                                           Mutually exclusive with --frame.
                 --size <WxH>              Output image pixel dimensions. Formats:
-                                            800         – width only (height scaled proportionally).
-                                            800x*       – width only (height scaled proportionally).
-                                            *x600       – height only (width scaled proportionally).
-                                            800x600     – both; content is centered, background extended.
+                                            800         - width only (height scaled proportionally).
+                                            800x*       - width only (height scaled proportionally).
+                                            *x600       - height only (width scaled proportionally).
+                                            800x600     - both; content is centered, background extended.
                 --save-frames <dir>       Save each visual frame as a separate static SVG in the given directory.
                 --crop-top <value>        Crop top by px, ch, or text pattern (e.g. 10px, 2ch, sometext, summary:-3).
                 --crop-bottom <value>     Crop bottom by px, ch, or text pattern.
@@ -276,6 +278,7 @@ public static class OptionParser
     {
         return !string.Equals(name, "--help", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--version", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--install-deps", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--no-loop", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "-c", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--with-command", StringComparison.OrdinalIgnoreCase)
@@ -367,6 +370,9 @@ public static class OptionParser
                 return true;
             case "--version":
                 options.ShowVersion = true;
+                return true;
+            case "--install-deps":
+                options.InstallDependencies = true;
                 return true;
             case "-c":
             case "--with-command":

@@ -48,6 +48,12 @@ internal static class Program
             return 0;
         }
 
+        if (options.InstallDependencies)
+        {
+            await DependencyInstaller.InstallFfmpegAsync().ConfigureAwait(false);
+            return 0;
+        }
+
         if (args.Length == 0 && !Console.IsInputRedirected)
         {
             Console.WriteLine(OptionParser.ShortHelpText);
@@ -583,24 +589,31 @@ internal static class Program
 
     /// <summary>
     /// Finds the ffmpeg executable to use for format conversion.
-    /// Preference order: bundled ffmpeg/ subdirectory, binary next to this executable (legacy bundled), then PATH.
+    /// Preference order: application ffmpeg/ subdirectory, binary next to the host (legacy bundled), then PATH.
     /// </summary>
     private static string FindFfmpegExecutable()
     {
         var exeName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "ffmpeg.exe" : "ffmpeg";
 
-        var exeDir = Path.GetDirectoryName(Environment.ProcessPath ?? string.Empty);
-        if (!string.IsNullOrEmpty(exeDir))
+        // AppContext.BaseDirectory is the dotnet tool directory. Environment.ProcessPath
+        // points at the dotnet host for framework-dependent tools, so it cannot be used
+        // as the install location for --install-deps.
+        var appDir = AppContext.BaseDirectory;
+        if (!string.IsNullOrEmpty(appDir))
         {
-            // 1. Bundled ffmpeg in a subdirectory. This keeps ffmpeg off the user's PATH while
-            //    still making it available to console2svg (e.g. WinGet and npm dist/ layouts).
-            var bundledSubDir = Path.Combine(exeDir, "ffmpeg", exeName);
+            // 1. ffmpeg installed/bundled in a subdirectory. This keeps ffmpeg off the
+            //    user's PATH while still making it available to console2svg.
+            var bundledSubDir = Path.Combine(appDir, "ffmpeg", exeName);
             if (File.Exists(bundledSubDir))
             {
                 return bundledSubDir;
             }
+        }
 
-            // 2. Legacy bundled layout: ffmpeg next to this executable.
+        var exeDir = Path.GetDirectoryName(Environment.ProcessPath ?? string.Empty);
+        if (!string.IsNullOrEmpty(exeDir))
+        {
+            // 2. Legacy bundled layout: ffmpeg next to the process executable.
             var bundled = Path.Combine(exeDir, exeName);
             if (File.Exists(bundled))
             {

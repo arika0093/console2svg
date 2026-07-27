@@ -14,23 +14,26 @@ public sealed class InteractiveRecorderTests
 {
     private static readonly byte[] ScreenshotKey = Encoding.ASCII.GetBytes("\u001b[21~");
     private static readonly byte[] RecordingKey = Encoding.ASCII.GetBytes("\u001b[20~");
+    private static readonly byte[] PauseKey = Encoding.ASCII.GetBytes("\u001b[24~");
 
     [Test]
-    public void F9AndF10AreConsumedAsRecordingAndScreenshotActions()
+    public void F9F10AndF12AreConsumedAsInteractiveCaptureActions()
     {
-        var router = new InteractiveInputRouter(ScreenshotKey, RecordingKey);
+        var router = new InteractiveInputRouter(ScreenshotKey, RecordingKey, PauseKey);
         var forwarded = new List<byte>();
 
         Process(router, RecordingKey, forwarded).ShouldBe(InteractiveInputAction.ToggleRecording);
         forwarded.ShouldBeEmpty();
         Process(router, ScreenshotKey, forwarded).ShouldBe(InteractiveInputAction.Screenshot);
         forwarded.ShouldBeEmpty();
+        Process(router, PauseKey, forwarded).ShouldBe(InteractiveInputAction.TogglePause);
+        forwarded.ShouldBeEmpty();
     }
 
     [Test]
     public void NonCaptureVtSequencesAreForwardedUnchangedEvenWhenSplitAcrossReads()
     {
-        var router = new InteractiveInputRouter(ScreenshotKey, RecordingKey);
+        var router = new InteractiveInputRouter(ScreenshotKey, RecordingKey, PauseKey);
         var forwarded = new List<byte>();
         var cursorUp = Encoding.ASCII.GetBytes("\u001b[A");
 
@@ -45,7 +48,7 @@ public sealed class InteractiveRecorderTests
     [Test]
     public void CtrlLIsForwardedWithoutInteractiveRecorderIntervention()
     {
-        var router = new InteractiveInputRouter(ScreenshotKey, RecordingKey);
+        var router = new InteractiveInputRouter(ScreenshotKey, RecordingKey, PauseKey);
         var forwarded = new List<byte>();
 
         router.Process(0x0c, forwarded).ShouldBe(InteractiveInputAction.None);
@@ -56,7 +59,7 @@ public sealed class InteractiveRecorderTests
     [Test]
     public void SgrMouseReportsAreDiscarded()
     {
-        var router = new InteractiveInputRouter(ScreenshotKey, RecordingKey);
+        var router = new InteractiveInputRouter(ScreenshotKey, RecordingKey, PauseKey);
         var forwarded = new List<byte>();
 
         foreach (var value in Encoding.ASCII.GetBytes("\u001b[<35;10;5M"))
@@ -70,7 +73,7 @@ public sealed class InteractiveRecorderTests
     [Test]
     public void CtrlDRequestsInteractiveExit()
     {
-        var router = new InteractiveInputRouter(ScreenshotKey, RecordingKey);
+        var router = new InteractiveInputRouter(ScreenshotKey, RecordingKey, PauseKey);
         var forwarded = new List<byte>();
 
         router.Process(0x04, forwarded).ShouldBe(InteractiveInputAction.Exit);

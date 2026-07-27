@@ -67,7 +67,7 @@ console2svg -v -c -d macos -- copilot --banner
 
 ---
 
-In interactive mode(`-i`), you can run your normal interactive shell in a PTY and capture its current screen on demand. Press <kbd>F10</kbd> to write a static SVG, or <kbd>F9</kbd> to start recording from the exact current terminal state, then press <kbd>F9</kbd> again to save the recording.
+In interactive mode(`-i`), you can run your normal interactive shell in a PTY and capture its current screen on demand. Press `F10` to write a static SVG, or `F9` to start recording from the exact current terminal state.
 
 ```bash
 console2svg -i -d windows-pc -o ./captures/output.svg
@@ -203,12 +203,12 @@ console2svg -i -o ./captures/output.svg
 # -> writes ./captures/output_yyyyMMdd_HHmmss.svg (image)
 ```
 
-Press `F9` to start recording from the exact current terminal state, then press `F9` again to save the recording.
+Press `F9` to start recording from the exact current terminal state, `F12` to pause or resume it, then `F9` again to save the recording. Output and elapsed time while paused are excluded from the recording.
 The output format controls whether the capture is written as animated SVG or converted to the requested video format.
 
 ```sh
 console2svg -i -o ./captures/session.svg
-# -> writes ./captures/session_yyyyMMdd_HHmmss.svg (video)
+# -> writes ./captures/session_yyyyMMdd_HHmmss.svg (animation)
 ```
 
 ### Static SVG with crop

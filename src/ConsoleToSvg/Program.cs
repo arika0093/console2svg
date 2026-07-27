@@ -502,8 +502,9 @@ internal static class Program
                 width,
                 height,
                 theme,
-                Encoding.ASCII.GetBytes("\u001b[21~"),
-                Encoding.ASCII.GetBytes("\u001b[20~"),
+                Encoding.ASCII.GetBytes("\u001b[21~"), // F10
+                Encoding.ASCII.GetBytes("\u001b[20~"), // F9
+                Encoding.ASCII.GetBytes("\u001b[24~"), // F12
                 options.NoDeleteEnvs,
                 options.DelimitedCommand,
                 options.DelimitedCommand is null or { Length: 0 },

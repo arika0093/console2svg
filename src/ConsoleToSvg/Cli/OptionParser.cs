@@ -21,7 +21,7 @@ public static class OptionParser
                 -w, --width <int|adjust>  Terminal width in characters (default: auto[pipe], 100[pty]).
                 -h, --height <int|adjust> Terminal height in rows (default: auto).
                 -v                        Output animated SVG (alias for --mode video).
-                -i, --interactive         Run an interactive shell; F9 records and F10 takes a screenshot.
+                -i, --interactive         Run an interactive shell; F9 records, F12 pauses, and F10 takes a screenshot.
                                           Use -- to start another interactive program (e.g. -i -- pwsh).
                 -c, --with-command        Prepend the command line to the output.
                 -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc, transparent.
@@ -127,7 +127,7 @@ public static class OptionParser
 
             Options (Interactive mode):
                 -i, --interactive         Run an interactive shell. F9 starts/stops an animation recording;
-                                          F10 saves a static screenshot. These keys work independently of -v.
+                                          F12 pauses/resumes it, and F10 saves a static screenshot. These keys work independently of -v.
                                           Use -- to start another interactive program, preserving its arguments
                                           (e.g. -i -- pwsh, -i -- vim README.md).
 

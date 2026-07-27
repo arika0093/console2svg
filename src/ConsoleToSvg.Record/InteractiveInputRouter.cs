@@ -9,6 +9,7 @@ public enum InteractiveInputAction
     None,
     Screenshot,
     ToggleRecording,
+    TogglePause,
     Exit,
 }
 
@@ -16,14 +17,22 @@ public sealed class InteractiveInputRouter
 {
     private readonly byte[] _screenshotKey;
     private readonly byte[] _recordingKey;
+    private readonly byte[] _pauseKey;
     private readonly List<byte> _pending;
     private bool _discardingSgrMouseReport;
 
-    public InteractiveInputRouter(ReadOnlySpan<byte> screenshotKey, ReadOnlySpan<byte> recordingKey)
+    public InteractiveInputRouter(
+        ReadOnlySpan<byte> screenshotKey,
+        ReadOnlySpan<byte> recordingKey,
+        ReadOnlySpan<byte> pauseKey
+    )
     {
         _screenshotKey = screenshotKey.ToArray();
         _recordingKey = recordingKey.ToArray();
-        _pending = new List<byte>(Math.Max(_screenshotKey.Length, _recordingKey.Length));
+        _pauseKey = pauseKey.ToArray();
+        _pending = new List<byte>(
+            Math.Max(_screenshotKey.Length, Math.Max(_recordingKey.Length, _pauseKey.Length))
+        );
     }
 
     public bool HasStandaloneEscape => _pending.Count == 1 && _pending[0] == 0x1b;
@@ -54,7 +63,11 @@ public sealed class InteractiveInputRouter
         }
 
         _pending.Add(value);
-        if (IsPrefix(_pending, _screenshotKey) || IsPrefix(_pending, _recordingKey))
+        if (
+            IsPrefix(_pending, _screenshotKey)
+            || IsPrefix(_pending, _recordingKey)
+            || IsPrefix(_pending, _pauseKey)
+        )
         {
             if (_pending.Count == _screenshotKey.Length && IsPrefix(_pending, _screenshotKey))
             {
@@ -66,6 +79,12 @@ public sealed class InteractiveInputRouter
             {
                 _pending.Clear();
                 return InteractiveInputAction.ToggleRecording;
+            }
+
+            if (_pending.Count == _pauseKey.Length && IsPrefix(_pending, _pauseKey))
+            {
+                _pending.Clear();
+                return InteractiveInputAction.TogglePause;
             }
 
             return InteractiveInputAction.None;

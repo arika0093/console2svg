@@ -43,6 +43,7 @@ public static class InteractiveRecorder
         Theme theme,
         ReadOnlyMemory<byte> screenshotKey,
         ReadOnlyMemory<byte> recordingKey,
+        ReadOnlyMemory<byte> pauseKey,
         bool noDeleteEnvs,
         string[]? command,
         bool exitOnCtrlD,
@@ -51,9 +52,9 @@ public static class InteractiveRecorder
         ILogger? logger = null
     )
     {
-        if (screenshotKey.IsEmpty || recordingKey.IsEmpty)
+        if (screenshotKey.IsEmpty || recordingKey.IsEmpty || pauseKey.IsEmpty)
         {
-            throw new ArgumentException("Screenshot and recording keys are required.");
+            throw new ArgumentException("Screenshot, recording, and pause keys are required.");
         }
 
         logger ??= Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
@@ -64,9 +65,12 @@ public static class InteractiveRecorder
         var notificationColumn = 1;
         var notificationLength = 0;
         var recordingIndicatorActive = 0;
+        var recordingPaused = 0;
         var startupIndicatorActive = 0;
         List<TerminalFrame>? videoFrames = null;
         var videoStarted = 0d;
+        var videoPausedAt = 0d;
+        var videoPausedDuration = 0d;
         var stopwatch = Stopwatch.StartNew();
         long lastOutputTimestamp = Stopwatch.GetTimestamp();
 
@@ -233,9 +237,14 @@ public static class InteractiveRecorder
                 return;
             }
 
-            var label = isRecording
-                ? "  ● REC  "
-                : "  F9: Record start   F10: Capture  ";
+            var label = "  F9: Record start   F10: Capture  ";
+            if (isRecording)
+            {
+                label =
+                    Volatile.Read(ref recordingPaused) != 0
+                        ? "  ● REC (F9:End, F12:Resume)  "
+                        : "  ● REC (F9:End, F12:Pause)  ";
+            }
             var width = Math.Max(20, Console.WindowWidth);
             var column = Math.Max(1, width - label.Length);
             var clearPrevious = notificationLength == 0
@@ -406,6 +415,8 @@ public static class InteractiveRecorder
                 if (videoFrames is null)
                 {
                     videoStarted = stopwatch.Elapsed.TotalSeconds;
+                    videoPausedDuration = 0d;
+                    videoPausedAt = 0d;
                     videoFrames = [new TerminalFrame(0d, emulator.Buffer.Clone())];
                     isStarting = true;
                 }
@@ -423,14 +434,69 @@ public static class InteractiveRecorder
             {
                 capture = CompleteRecording(
                     videoFrames,
-                    stopwatch.Elapsed.TotalSeconds - videoStarted,
+                    GetRecordingElapsedSeconds(),
                     emulator.Buffer
                 );
                 videoFrames = null;
+                videoPausedDuration = 0d;
+                videoPausedAt = 0d;
             }
             Interlocked.Exchange(ref recordingIndicatorActive, 0);
+            Interlocked.Exchange(ref recordingPaused, 0);
 
             return capture;
+        }
+
+        async Task TogglePauseAsync()
+        {
+            var changed = false;
+            lock (captureGate)
+            {
+                if (videoFrames is null)
+                {
+                    return;
+                }
+
+                if (Volatile.Read(ref recordingPaused) == 0)
+                {
+                    videoPausedAt = stopwatch.Elapsed.TotalSeconds;
+                    Interlocked.Exchange(ref recordingPaused, 1);
+                }
+                else
+                {
+                    videoPausedDuration += stopwatch.Elapsed.TotalSeconds - videoPausedAt;
+                    videoPausedAt = 0d;
+                    Interlocked.Exchange(ref recordingPaused, 0);
+                }
+
+                changed = true;
+            }
+
+            if (changed)
+            {
+                Interlocked.Exchange(ref recordingIndicatorActive, 1);
+                Interlocked.Increment(ref notificationVersion);
+                await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
+                try
+                {
+                    await RenderPersistentIndicatorAsync().ConfigureAwait(false);
+                }
+                finally
+                {
+                    hostOutputGate.Release();
+                }
+            }
+        }
+
+        double GetRecordingElapsedSeconds()
+        {
+            var elapsed = stopwatch.Elapsed.TotalSeconds - videoStarted - videoPausedDuration;
+            if (Volatile.Read(ref recordingPaused) != 0)
+            {
+                elapsed -= stopwatch.Elapsed.TotalSeconds - videoPausedAt;
+            }
+
+            return Math.Max(0d, elapsed);
         }
 
         var outputTask = Task.Run(
@@ -463,11 +529,14 @@ public static class InteractiveRecorder
                                 var text = new string(chars, 0, charCount);
                                 emulator.Process(text);
                                 Volatile.Write(ref lastOutputTimestamp, Stopwatch.GetTimestamp());
-                                if (videoFrames is not null)
+                                if (
+                                    videoFrames is not null
+                                    && Volatile.Read(ref recordingPaused) == 0
+                                )
                                 {
                                     videoFrames.Add(
                                         new TerminalFrame(
-                                            stopwatch.Elapsed.TotalSeconds - videoStarted,
+                                            GetRecordingElapsedSeconds(),
                                             emulator.Buffer.Clone()
                                         )
                                     );
@@ -569,7 +638,11 @@ public static class InteractiveRecorder
             async () =>
             {
                 var bytes = new byte[256];
-                var router = new InteractiveInputRouter(screenshotKey.Span, recordingKey.Span);
+                var router = new InteractiveInputRouter(
+                    screenshotKey.Span,
+                    recordingKey.Span,
+                    pauseKey.Span
+                );
                 var inputGate = new SemaphoreSlim(1, 1);
                 long escapePendingVersion = 0;
                 logger.ZLogDebug($"Interactive input forwarding started.");
@@ -701,6 +774,16 @@ public static class InteractiveRecorder
                                             logger.ZLogError(ex, $"Interactive recording capture failed.");
                                         }
                                         break;
+                                    case InteractiveInputAction.TogglePause:
+                                        try
+                                        {
+                                            await TogglePauseAsync().ConfigureAwait(false);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            logger.ZLogError(ex, $"Interactive recording pause failed.");
+                                        }
+                                        break;
                                 }
                             }
 
@@ -807,16 +890,19 @@ public static class InteractiveRecorder
                 {
                     capture = CompleteRecording(
                         videoFrames,
-                        stopwatch.Elapsed.TotalSeconds - videoStarted,
+                        GetRecordingElapsedSeconds(),
                         emulator.Buffer
                     );
                     videoFrames = null;
+                    videoPausedDuration = 0d;
+                    videoPausedAt = 0d;
                 }
             }
 
             if (capture is not null)
             {
                 Interlocked.Exchange(ref recordingIndicatorActive, 0);
+                Interlocked.Exchange(ref recordingPaused, 0);
                 Interlocked.Increment(ref notificationVersion);
                 QueueSaveCapture(capture);
             }

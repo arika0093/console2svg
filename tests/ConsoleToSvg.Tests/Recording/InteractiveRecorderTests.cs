@@ -141,6 +141,16 @@ public sealed class InteractiveRecorderTests
         filter.Filter("06hready").ShouldBe("ready");
     }
 
+    [Test]
+    public void HostFilterRemovesCombinedInputModes()
+    {
+        var filter = new InteractiveRecorder.HostTerminalSequenceFilter();
+
+        var result = filter.Filter("\u001b[?1000;1006hready");
+
+        result.ShouldBe("ready");
+    }
+
     private static InteractiveInputAction Process(
         InteractiveInputRouter router,
         IEnumerable<byte> values,

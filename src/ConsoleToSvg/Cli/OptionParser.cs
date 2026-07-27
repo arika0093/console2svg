@@ -1162,6 +1162,12 @@ public static class OptionParser
                 return false;
             }
 
+            if (!string.IsNullOrWhiteSpace(options.SaveCastPath))
+            {
+                error = "--interactive cannot be used with --save-cast.";
+                return false;
+            }
+
             if (options.Mode == OutputMode.Repeat)
             {
                 error = "--interactive cannot be used with --mode repeat.";

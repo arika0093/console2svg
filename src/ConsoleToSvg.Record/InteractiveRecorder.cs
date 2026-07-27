@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -797,26 +798,27 @@ public static class InteractiveRecorder
                 // Drain the PTY before completing the recording so its final output
                 // becomes part of the saved capture.
                 await IgnoreFailureAsync(outputTask).ConfigureAwait(false);
-                InteractiveCapture? capture = null;
-                lock (captureGate)
-                {
-                    if (videoFrames is not null)
-                    {
-                        capture = CompleteRecording(
-                            videoFrames,
-                            stopwatch.Elapsed.TotalSeconds - videoStarted,
-                            emulator.Buffer
-                        );
-                        videoFrames = null;
-                    }
-                }
+            }
 
-                if (capture is not null)
+            InteractiveCapture? capture = null;
+            lock (captureGate)
+            {
+                if (videoFrames is not null)
                 {
-                    Interlocked.Exchange(ref recordingIndicatorActive, 0);
-                    Interlocked.Increment(ref notificationVersion);
-                    QueueSaveCapture(capture);
+                    capture = CompleteRecording(
+                        videoFrames,
+                        stopwatch.Elapsed.TotalSeconds - videoStarted,
+                        emulator.Buffer
+                    );
+                    videoFrames = null;
                 }
+            }
+
+            if (capture is not null)
+            {
+                Interlocked.Exchange(ref recordingIndicatorActive, 0);
+                Interlocked.Increment(ref notificationVersion);
+                QueueSaveCapture(capture);
             }
 
             await lifetime.CancelAsync().ConfigureAwait(false);
@@ -920,7 +922,10 @@ public static class InteractiveRecorder
                 }
 
                 var end = index + 3;
-                while (end < _pending.Length && char.IsDigit(_pending[end]))
+                while (
+                    end < _pending.Length
+                    && (char.IsDigit(_pending[end]) || _pending[end] == ';')
+                )
                 {
                     end++;
                 }
@@ -931,7 +936,10 @@ public static class InteractiveRecorder
                 }
 
                 var mode = _pending.ToString(index + 3, end - index - 3);
-                if ((_pending[end] is 'h' or 'l') && SuppressedPrivateModes.Contains(mode))
+                if (
+                    (_pending[end] is 'h' or 'l')
+                    && mode.Split(';').All(SuppressedPrivateModes.Contains)
+                )
                 {
                     index = end + 1;
                     continue;

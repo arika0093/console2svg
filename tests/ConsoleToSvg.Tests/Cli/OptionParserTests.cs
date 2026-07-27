@@ -40,6 +40,7 @@ public sealed class OptionParserTests
     [Arguments(new[] { "--interactive", "echo hi" }, "An interactive program must be specified after -- (for example: -i -- vim).")]
     [Arguments(new[] { "--interactive", "--in", "record.cast" }, "--interactive cannot be used with --in.")]
     [Arguments(new[] { "--interactive", "--stdout" }, "--interactive cannot be used with --stdout.")]
+    [Arguments(new[] { "--interactive", "--save-cast", "trace.cast" }, "--interactive cannot be used with --save-cast.")]
     [Arguments(new[] { "--interactive", "--mode", "repeat" }, "--interactive cannot be used with --mode repeat.")]
     [Arguments(new[] { "--interactive", "--replay", "input.json" }, "--interactive cannot be used with replay options.")]
     public void InteractiveModeRejectsIncompatibleSources(string[] args, string expectedError)

@@ -391,6 +391,11 @@ public static class AnimatedSvgRenderer
                 signature = HashBool(signature, cell.Underline);
                 signature = HashBool(signature, cell.Reversed);
                 signature = HashBool(signature, cell.Faint);
+                signature = HashBool(signature, cell.Hidden);
+                signature = HashBool(signature, cell.Strikethrough);
+                signature = HashBool(signature, cell.Overline);
+                signature = HashBool(signature, cell.Blink);
+                signature = HashString(signature, cell.UnderlineColor ?? string.Empty);
                 signature = HashBool(signature, cell.IsWide);
                 signature = HashBool(signature, cell.IsWideContinuation);
             }

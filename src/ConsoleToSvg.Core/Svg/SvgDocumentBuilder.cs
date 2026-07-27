@@ -428,6 +428,8 @@ internal static class SvgDocumentBuilder
         sb.Append(Format(context.FontSize));
         sb.Append("px;\n");
         sb.Append("}\n");
+        sb.Append(".blink { animation: blink 1s step-start infinite; }\n");
+        sb.Append("@keyframes blink { 50% { visibility: hidden; } }\n");
         sb.Append("text {\n");
         sb.Append("  dominant-baseline: alphabetic;\n");
         sb.Append("}\n");
@@ -1016,7 +1018,11 @@ internal static class SvgDocumentBuilder
             string? fgRunColor = null;
             bool fgBold = false,
                 fgItalic = false,
-                fgUnderline = false;
+                fgUnderline = false,
+                fgStrikethrough = false,
+                fgOverline = false,
+                fgBlink = false;
+            string? fgUnderlineColor = null;
             int fgRunCellCount = 0;
 
             void FlushFgRun()
@@ -1028,7 +1034,12 @@ internal static class SvgDocumentBuilder
 
                 var tx = (fgRunStart - context.StartCol) * context.CellWidth;
                 var tLen = fgRunCellCount * context.CellWidth;
-                sb.Append("<text class=\"crt\" x=\"");
+                sb.Append("<text class=\"crt");
+                if (fgBlink)
+                {
+                    sb.Append(" blink");
+                }
+                sb.Append("\" x=\"");
                 sb.Append(Format(tx));
                 sb.Append("\" y=\"");
                 sb.Append(Format(y + context.BaselineOffset));
@@ -1039,15 +1050,30 @@ internal static class SvgDocumentBuilder
                 sb.Append("\" lengthAdjust=\"");
                 sb.Append(EscapeAttribute(effectiveLengthAdjust));
                 sb.Append("\"");
-                if (fgBold || fgItalic || fgUnderline)
+                if (fgBold || fgItalic || fgUnderline || fgStrikethrough || fgOverline || fgUnderlineColor != null)
                 {
                     sb.Append(" style=\"");
                     if (fgBold)
                         sb.Append("font-weight:bold;");
                     if (fgItalic)
                         sb.Append("font-style:italic;");
-                    if (fgUnderline)
-                        sb.Append("text-decoration:underline;");
+                    if (fgUnderline || fgStrikethrough || fgOverline)
+                    {
+                        sb.Append("text-decoration:");
+                        if (fgUnderline)
+                            sb.Append("underline ");
+                        if (fgStrikethrough)
+                            sb.Append("line-through ");
+                        if (fgOverline)
+                            sb.Append("overline ");
+                        sb.Append(';');
+                    }
+                    if (fgUnderlineColor != null)
+                    {
+                        sb.Append("text-decoration-color:");
+                        sb.Append(fgUnderlineColor);
+                        sb.Append(';');
+                    }
                     sb.Append("\"");
                 }
                 sb.Append('>');
@@ -1072,6 +1098,13 @@ internal static class SvgDocumentBuilder
                 if (cell.Text == " ")
                 {
                     // Space: flush current run and skip (background already drawn)
+                    FlushFgRun();
+                    fgRunStart = col + 1;
+                    continue;
+                }
+
+                if (cell.Hidden)
+                {
                     FlushFgRun();
                     fgRunStart = col + 1;
                     continue;
@@ -1123,6 +1156,10 @@ internal static class SvgDocumentBuilder
                     && cell.Bold == fgBold
                     && cell.Italic == fgItalic
                     && cell.Underline == fgUnderline
+                    && cell.Strikethrough == fgStrikethrough
+                    && cell.Overline == fgOverline
+                    && cell.Blink == fgBlink
+                    && string.Equals(cell.UnderlineColor, fgUnderlineColor, StringComparison.OrdinalIgnoreCase)
                     && !cell.IsWide;
 
                 if (!sameStyle)
@@ -1133,6 +1170,10 @@ internal static class SvgDocumentBuilder
                     fgBold = cell.Bold;
                     fgItalic = cell.Italic;
                     fgUnderline = cell.Underline;
+                    fgStrikethrough = cell.Strikethrough;
+                    fgOverline = cell.Overline;
+                    fgBlink = cell.Blink;
+                    fgUnderlineColor = cell.UnderlineColor;
                 }
 
                 fgRunText.Append(EscapeText(cell.Text));

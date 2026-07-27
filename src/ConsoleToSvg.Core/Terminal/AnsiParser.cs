@@ -15,6 +15,11 @@ public sealed class AnsiParser
     private CharacterSet _g0CharacterSet;
     private CharacterSet _g1CharacterSet;
     private bool _useG1CharacterSet;
+    private TextStyle _savedDecStyle;
+    private CharacterSet _savedDecG0CharacterSet;
+    private CharacterSet _savedDecG1CharacterSet;
+    private bool _savedDecUseG1CharacterSet;
+    private bool _savedDecOriginMode;
 
     // Holds a partial caret-notation sequence that spans event chunks (e.g. echoed ESC as "^[")
     private string _pendingCaretSequence = string.Empty;
@@ -203,10 +208,24 @@ public sealed class AnsiParser
                 return TrySkipEscSingleFinal(text, index + 2, out endIndex);
             case '7':
                 _buffer.SaveCursor();
+                _savedDecStyle = _style;
+                _savedDecG0CharacterSet = _g0CharacterSet;
+                _savedDecG1CharacterSet = _g1CharacterSet;
+                _savedDecUseG1CharacterSet = _useG1CharacterSet;
+                _savedDecOriginMode = _buffer.OriginMode;
                 endIndex = index + 1;
                 return true;
             case '8':
+                _style = _savedDecStyle;
+                _g0CharacterSet = _savedDecG0CharacterSet;
+                _g1CharacterSet = _savedDecG1CharacterSet;
+                _useG1CharacterSet = _savedDecUseG1CharacterSet;
+                _buffer.SetOriginMode(_savedDecOriginMode);
                 _buffer.RestoreCursor();
+                endIndex = index + 1;
+                return true;
+            case 'H':
+                _buffer.SetTabStop();
                 endIndex = index + 1;
                 return true;
             case 'D':
@@ -362,18 +381,38 @@ public sealed class AnsiParser
 
     private void ApplyCsi(char? privateMarker, char command, List<int> parameters)
     {
-        if (privateMarker == '?' && parameters.Count > 0 && parameters[0] == 1049)
+        if (privateMarker == '?' && parameters.Count > 0)
         {
-            if (command == 'h')
+            foreach (var parameter in parameters)
             {
-                _buffer.SetAlternateScreen(true);
-            }
-            else if (command == 'l')
-            {
-                _buffer.SetAlternateScreen(false);
-            }
+                if (parameter is 47 or 1047 or 1049)
+                {
+                    if (command == 'h')
+                    {
+                        _buffer.SetAlternateScreen(true);
+                    }
+                    else if (command == 'l')
+                    {
+                        _buffer.SetAlternateScreen(false);
+                    }
 
-            return;
+                    return;
+                }
+
+                if (parameter == 6)
+                {
+                    if (command == 'h')
+                    {
+                        _buffer.SetOriginMode(true);
+                    }
+                    else if (command == 'l')
+                    {
+                        _buffer.SetOriginMode(false);
+                    }
+
+                    return;
+                }
+            }
         }
 
         // Private CSI sequences (e.g. CSI ? 4 m, CSI > 4 ; 2 m) are not SGR.
@@ -425,13 +464,13 @@ public sealed class AnsiParser
             {
                 var row = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
                 var col = Math.Max(1, GetParameter(parameters, 1, 1)) - 1;
-                _buffer.MoveCursorTo(row, col);
+                _buffer.MoveCursorToOriginRelative(row, col);
                 return;
             }
             case 'd':
             {
                 var row = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
-                _buffer.MoveCursorTo(row, _buffer.CursorCol);
+                _buffer.MoveCursorToOriginRelative(row, _buffer.CursorCol);
                 return;
             }
             case 'J':
@@ -465,6 +504,22 @@ public sealed class AnsiParser
                 _buffer.SetScrollRegion(top, bottom);
                 return;
             }
+            case 'g':
+                _buffer.ClearTabStops(GetParameter(parameters, 0, 0));
+                return;
+            case 'h':
+                if (GetParameter(parameters, 0, 0) == 4)
+                {
+                    _buffer.SetInsertMode(true);
+                }
+
+                return;
+            case 'l':
+                if (GetParameter(parameters, 0, 0) == 4)
+                {
+                    _buffer.SetInsertMode(false);
+                }
+                return;
             case 'X':
                 _buffer.EraseChars(Math.Max(1, GetParameter(parameters, 0, 1)), _style);
                 return;
@@ -506,8 +561,21 @@ public sealed class AnsiParser
                 case 4:
                     _style = _style with { Underline = true };
                     break;
+                case 5:
+                case 6:
+                    _style = _style with { Blink = true };
+                    break;
                 case 7:
                     _style = _style with { Reversed = true };
+                    break;
+                case 8:
+                    _style = _style with { Hidden = true };
+                    break;
+                case 9:
+                    _style = _style with { Strikethrough = true };
+                    break;
+                case 21:
+                    _style = _style with { Underline = true };
                     break;
                 case 22:
                     _style = _style with { Bold = false, Faint = false };
@@ -518,8 +586,26 @@ public sealed class AnsiParser
                 case 24:
                     _style = _style with { Underline = false };
                     break;
+                case 25:
+                    _style = _style with { Blink = false };
+                    break;
                 case 27:
                     _style = _style with { Reversed = false };
+                    break;
+                case 28:
+                    _style = _style with { Hidden = false };
+                    break;
+                case 29:
+                    _style = _style with { Strikethrough = false };
+                    break;
+                case 53:
+                    _style = _style with { Overline = true };
+                    break;
+                case 55:
+                    _style = _style with { Overline = false };
+                    break;
+                case 59:
+                    _style = _style with { UnderlineColor = null };
                     break;
                 case 39:
                     _style = _style with { Foreground = _buffer.DefaultStyle.Foreground };
@@ -544,22 +630,15 @@ public sealed class AnsiParser
                     {
                         _style = _style with { Background = _theme.AnsiPalette[8 + (code - 100)] };
                     }
-                    else if ((code == 38 || code == 48) && i + 1 < parameters.Count)
+                    else if ((code == 38 || code == 48 || code == 58) && i + 1 < parameters.Count)
                     {
                         var isForeground = code == 38;
+                        var isUnderlineColor = code == 58;
                         var mode = GetParameter(parameters, i + 1, 0);
                         if (mode == 5 && i + 2 < parameters.Count)
                         {
                             var color = FromAnsi256(GetParameter(parameters, i + 2, 0));
-                            _style = isForeground
-                                ? _style with
-                                {
-                                    Foreground = color,
-                                }
-                                : _style with
-                                {
-                                    Background = color,
-                                };
+                            _style = ApplySgrColor(isForeground, isUnderlineColor, color);
                             i += 2;
                         }
                         else if (mode == 2)
@@ -579,22 +658,27 @@ public sealed class AnsiParser
                             var g = Clamp(GetParameter(parameters, rgbStart + 1, 0), 0, 255);
                             var b = Clamp(GetParameter(parameters, rgbStart + 2, 0), 0, 255);
                             var color = $"#{r:X2}{g:X2}{b:X2}";
-                            _style = isForeground
-                                ? _style with
-                                {
-                                    Foreground = color,
-                                }
-                                : _style with
-                                {
-                                    Background = color,
-                                };
+                            _style = ApplySgrColor(isForeground, isUnderlineColor, color);
                             i = rgbStart + 2;
                         }
+
                     }
 
                     break;
             }
         }
+    }
+
+    private TextStyle ApplySgrColor(bool isForeground, bool isUnderlineColor, string color)
+    {
+        if (isUnderlineColor)
+        {
+            return _style with { UnderlineColor = color };
+        }
+
+        return isForeground
+            ? _style with { Foreground = color }
+            : _style with { Background = color };
     }
 
     private string FromAnsi256(int index)

@@ -147,6 +147,23 @@ public sealed class SvgRendererTests
     }
 
     [Test]
+    public void RenderStaticSvgSupportsSgrDecorations()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "\u001b[4;9;53;58;2;1;2;3mA\u001b[8mB");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain("text-decoration:underline line-through overline");
+        svg.ShouldContain("text-decoration-color:#010203");
+        svg.ShouldContain(">A<");
+        svg.ShouldNotContain(">B<");
+    }
+
+    [Test]
     public void RenderStaticSvgWithEmoji()
     {
         var session = new RecordingSession(width: 8, height: 2);

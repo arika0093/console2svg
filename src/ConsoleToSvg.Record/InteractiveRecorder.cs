@@ -23,6 +23,11 @@ public sealed class InteractiveCapture
 
     public InteractiveCapture(IReadOnlyList<TerminalFrame> frames)
     {
+        if (frames.Count == 0)
+        {
+            throw new ArgumentException("At least one frame is required.", nameof(frames));
+        }
+
         Frames = frames;
         Screen = frames[0].Buffer;
     }
@@ -47,6 +52,7 @@ public static class InteractiveRecorder
         bool noDeleteEnvs,
         string[]? command,
         bool exitOnCtrlD,
+        bool recordingEnabled,
         Func<InteractiveCapture, Task<string?>> onCapture,
         CancellationToken cancellationToken,
         ILogger? logger = null
@@ -77,10 +83,6 @@ public static class InteractiveRecorder
         var options = BuildOptions(width, height, noDeleteEnvs, command);
         using var lifetime = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         var output = Console.OpenStandardOutput();
-        var outputWriter =
-            RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !Console.IsOutputRedirected
-                ? Console.Out
-                : null;
         var input = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
             ? Console.OpenStandardInput()
             : null;
@@ -117,6 +119,12 @@ public static class InteractiveRecorder
             forwardToConsole: true,
             logger
         );
+        // Console.Out is recreated when the console encoding changes. Acquire it
+        // after entering the UTF-8 scope so its writer matches the console.
+        var outputWriter =
+            RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !Console.IsOutputRedirected
+                ? Console.Out
+                : null;
         await ClearHostTerminalAsync().ConfigureAwait(false);
 
         async Task NotifyAsync(string message, bool isRecording, long version)
@@ -131,14 +139,14 @@ public static class InteractiveRecorder
                 return;
             }
 
-            var width = Math.Max(20, Console.WindowWidth);
+            var consoleWidth = Math.Max(20, Console.WindowWidth);
             var label = $"  {message}  ";
-            if (label.Length > width - 2)
+            if (label.Length > consoleWidth - 2)
             {
-                label = label[..Math.Max(1, width - 2)];
+                label = label[..Math.Max(1, consoleWidth - 2)];
             }
 
-            var column = Math.Max(1, width - label.Length);
+            var column = Math.Max(1, consoleWidth - label.Length);
             await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
             try
             {
@@ -409,6 +417,12 @@ public static class InteractiveRecorder
 
         async Task<InteractiveCapture?> ToggleRecordingAsync()
         {
+            if (!recordingEnabled)
+            {
+                ShowNotification("Recording requires SVG or a video output format");
+                return null;
+            }
+
             var isStarting = false;
             lock (captureGate)
             {
@@ -504,10 +518,7 @@ public static class InteractiveRecorder
             {
                 var bytes = new byte[4096];
                 var chars = new char[8192];
-                var outputEncoding = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                    ? Console.OutputEncoding
-                    : Encoding.UTF8;
-                var decoder = outputEncoding.GetDecoder();
+                var decoder = Encoding.UTF8.GetDecoder();
                 var hostSequenceFilter = new HostTerminalSequenceFilter();
                 try
                 {
@@ -569,9 +580,9 @@ public static class InteractiveRecorder
                         }
                         else
                         {
-                            var text = hostSequenceFilter.Filter(
-                                Encoding.UTF8.GetString(bytes, 0, count)
-                            );
+                            var text = charCount > 0
+                                ? hostSequenceFilter.Filter(new string(chars, 0, charCount))
+                                : string.Empty;
                             if (text.Length == 0)
                             {
                                 continue;
@@ -880,7 +891,8 @@ public static class InteractiveRecorder
             {
                 // Drain the PTY before completing the recording so its final output
                 // becomes part of the saved capture.
-                await IgnoreFailureAsync(outputTask).ConfigureAwait(false);
+                await Task.WhenAny(outputTask, Task.Delay(500, CancellationToken.None))
+                    .ConfigureAwait(false);
             }
 
             InteractiveCapture? capture = null;
@@ -952,13 +964,24 @@ public static class InteractiveRecorder
     {
         var descriptors = new[] { new PollFd { FileDescriptor = 0, Events = PollIn } };
         var pollResult = poll(descriptors, (nuint)descriptors.Length, timeoutMilliseconds);
-        if (pollResult <= 0)
+        if (pollResult == 0)
         {
             return -1;
         }
+        if (pollResult < 0)
+        {
+            var error = Marshal.GetLastWin32Error();
+            return error is 4 or 11 ? -1 : throw new IOException($"poll failed: errno {error}");
+        }
 
         var count = read(0, buffer, (nuint)buffer.Length);
-        return count < 0 ? 0 : checked((int)count);
+        if (count >= 0)
+        {
+            return checked((int)count);
+        }
+
+        var readError = Marshal.GetLastWin32Error();
+        return readError is 4 or 11 ? -1 : throw new IOException($"read failed: errno {readError}");
     }
 
     private const short PollIn = 0x0001;

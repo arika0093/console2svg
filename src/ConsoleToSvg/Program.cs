@@ -136,7 +136,7 @@ internal static class Program
 
                     SvgConverter.VerifyConversionPipeline(
                         options.SvgConverter,
-                        options.Interactive || RequiresFfmpeg(options, preCheckExt),
+                        RequiresFfmpeg(options, preCheckExt),
                         logger
                     );
                     logger.ZLogDebug(
@@ -508,6 +508,7 @@ internal static class Program
                 options.NoDeleteEnvs,
                 options.DelimitedCommand,
                 options.DelimitedCommand is null or { Length: 0 },
+                IsInteractiveRecordingFormat(options.OutputPath),
                 async capture =>
                 {
                     var outputPath = GetInteractiveOutputPath(options.OutputPath);
@@ -542,7 +543,7 @@ internal static class Program
             extension = ".svg";
         }
 
-        var stamp = DateTime.Now.ToString("yyyyMMdd_HHmmss", System.Globalization.CultureInfo.InvariantCulture);
+        var stamp = DateTime.Now.ToString("yyyyMMdd_HHmmssfff", System.Globalization.CultureInfo.InvariantCulture);
         var candidateName = $"{name}_{stamp}{extension}";
         var candidate = string.IsNullOrEmpty(directory)
             ? candidateName
@@ -569,12 +570,12 @@ internal static class Program
     )
     {
         EnsureDirectory(outputPath);
-        var svg = capture.IsVideo
-            ? AnimatedSvgRenderer.RenderFrames(capture.Frames, renderOptions)
-            : SvgRenderer.Render(capture.Screen, renderOptions);
         var extension = Path.GetExtension(outputPath).TrimStart('.').ToLowerInvariant();
         if (string.IsNullOrEmpty(extension) || extension == "svg")
         {
+            var svg = capture.IsVideo
+                ? AnimatedSvgRenderer.RenderFrames(capture.Frames, renderOptions)
+                : SvgRenderer.Render(capture.Screen, renderOptions);
             await File.WriteAllTextAsync(
                     outputPath,
                     svg,
@@ -582,6 +583,30 @@ internal static class Program
                     CancellationToken.None
                 )
                 .ConfigureAwait(false);
+
+            if (capture.IsVideo && !string.IsNullOrWhiteSpace(options.SaveFramesDir))
+            {
+                var framesPath = Path.Combine(
+                    options.SaveFramesDir,
+                    Path.GetFileNameWithoutExtension(outputPath)
+                );
+                Directory.CreateDirectory(framesPath);
+                var frames = SampleInteractiveFrames(
+                    FilterInteractiveFrames(capture.Frames, renderOptions),
+                    options.VideoFps
+                );
+                var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+                for (var i = 0; i < frames.Count; i++)
+                {
+                    await File.WriteAllTextAsync(
+                            Path.Combine(framesPath, $"frame-{i:D4}.svg"),
+                            SvgRenderer.Render(frames[i].Buffer, renderOptions),
+                            utf8,
+                            CancellationToken.None
+                        )
+                        .ConfigureAwait(false);
+                }
+            }
             return;
         }
 
@@ -593,12 +618,12 @@ internal static class Program
             logger
         );
         var preserveFrames = capture.IsVideo && !string.IsNullOrWhiteSpace(options.SaveFramesDir);
-        var workPath = preserveFrames
-            ? Path.Combine(
-                options.SaveFramesDir!,
-                Path.GetFileNameWithoutExtension(outputPath)
-            )
-            : Path.Combine(Path.GetTempPath(), $"c2s-{Guid.NewGuid():N}");
+        var preservedFramesPath = preserveFrames
+            ? Path.Combine(options.SaveFramesDir!, Path.GetFileNameWithoutExtension(outputPath))
+            : null;
+        // Conversion may replace SVGs with PNG intermediates. Keep that work
+        // separate from --save-frames so the requested SVG frames survive.
+        var workPath = Path.Combine(Path.GetTempPath(), $"c2s-{Guid.NewGuid():N}");
         try
         {
             if (capture.IsVideo)
@@ -611,13 +636,20 @@ internal static class Program
                 for (var i = 0; i < frames.Count; i++)
                 {
                     var frameSvg = SvgRenderer.Render(frames[i].Buffer, renderOptions);
+                    var fileName = $"frame-{i:D4}.svg";
+                    var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
                     await File.WriteAllTextAsync(
-                            Path.Combine(workPath, $"frame-{i:D4}.svg"),
-                            frameSvg,
-                            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
-                            CancellationToken.None
+                            Path.Combine(workPath, fileName), frameSvg, utf8, CancellationToken.None
                         )
                         .ConfigureAwait(false);
+                    if (preservedFramesPath is not null)
+                    {
+                        Directory.CreateDirectory(preservedFramesPath);
+                        await File.WriteAllTextAsync(
+                                Path.Combine(preservedFramesPath, fileName), frameSvg, utf8, CancellationToken.None
+                            )
+                            .ConfigureAwait(false);
+                    }
                 }
 
                 await SvgConverter.ConvertFramesToVideoAsync(
@@ -635,6 +667,7 @@ internal static class Program
             }
             else
             {
+                var svg = SvgRenderer.Render(capture.Screen, renderOptions);
                 var temporarySvg = workPath + ".svg";
                 await File.WriteAllTextAsync(
                         temporarySvg,
@@ -661,11 +694,11 @@ internal static class Program
         {
             try
             {
-                if (!preserveFrames && Directory.Exists(workPath))
+                if (Directory.Exists(workPath))
                 {
                     Directory.Delete(workPath, recursive: true);
                 }
-                else if (!preserveFrames && File.Exists(workPath + ".svg"))
+                else if (File.Exists(workPath + ".svg"))
                 {
                     File.Delete(workPath + ".svg");
                 }
@@ -727,6 +760,7 @@ internal static class Program
             return frames;
         }
 
+        var hasStart = renderOptions.TimeStart.HasValue;
         var start = renderOptions.TimeStart ?? double.MinValue;
         var end = renderOptions.TimeEnd ?? double.MaxValue;
         var filtered = new List<TerminalFrame>(frames.Count);
@@ -749,7 +783,9 @@ internal static class Program
 
         if (lastBeforeStart is not null)
         {
-            filtered.Insert(0, lastBeforeStart);
+            // Carry the visible terminal state into the requested range rather
+            // than extending the clip backwards to its previous update.
+            filtered.Insert(0, new TerminalFrame(start, lastBeforeStart.Buffer));
         }
 
         if (filtered.Count == 0)
@@ -757,7 +793,7 @@ internal static class Program
             return [frames[0]];
         }
 
-        var baseTime = filtered[0].Time;
+        var baseTime = hasStart ? start : filtered[0].Time;
         for (var i = 0; i < filtered.Count; i++)
         {
             filtered[i] = new TerminalFrame(filtered[i].Time - baseTime, filtered[i].Buffer);
@@ -871,6 +907,14 @@ internal static class Program
     };
 
     private static bool IsVideoFormat(string extension) => VideoExtensions.Contains(extension);
+
+    private static bool IsInteractiveRecordingFormat(string outputPath)
+    {
+        var extension = Path.GetExtension(outputPath).TrimStart('.');
+        return string.IsNullOrEmpty(extension)
+            || string.Equals(extension, "svg", StringComparison.OrdinalIgnoreCase)
+            || IsVideoFormat(extension);
+    }
 
     /// <summary>
     /// Determines whether ffmpeg is required to produce the final output format.

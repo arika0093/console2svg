@@ -20,10 +20,10 @@ jobs:
     needs: build-aot
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.version.outputs.semver }}
-      package-version: ${{ steps.version.outputs.package_version }}
-      package-iteration: ${{ steps.version.outputs.package_iteration }}
-      prerelease: ${{ steps.version.outputs.prerelease }}
+      version: ${{ steps.nbgv.outputs.SemVer2 }}
+      package-version: ${{ steps.nbgv.outputs.SimpleVersion }}
+      package-iteration: ${{ steps.package-iteration.outputs.package_iteration }}
+      prerelease: ${{ steps.nbgv.outputs.PrereleaseVersion != '' }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -47,10 +47,10 @@ jobs:
         shell: bash
         run: bash scripts/release/stage-native-assets.sh
 
-      - name: Export version
-        id: version
+      - name: Export package iteration
+        id: package-iteration
         shell: bash
-        run: bash scripts/release/export-version.sh '${{ steps.nbgv.outputs.SemVer2 }}'
+        run: bash scripts/release/export-package-iteration.sh '${{ steps.nbgv.outputs.PrereleaseVersionNoLeadingHyphen }}' '${{ steps.nbgv.outputs.BuildMetadataFragment }}'
 
       - name: Restore dependencies
         run: dotnet restore --locked-mode

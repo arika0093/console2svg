@@ -626,7 +626,7 @@ public static class PtyRecorder
         return exception.Message.Contains("Input/output error", StringComparison.OrdinalIgnoreCase);
     }
 
-    private static IDisposable? TryUseUtf8ConsoleOutputEncoding(
+    public static IDisposable? TryUseUtf8ConsoleOutputEncoding(
         bool forwardToConsole,
         ILogger logger
     )

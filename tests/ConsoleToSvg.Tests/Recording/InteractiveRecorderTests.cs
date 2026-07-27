@@ -132,6 +132,15 @@ public sealed class InteractiveRecorderTests
         result.ShouldBe("\u001b[2J\u001b[H");
     }
 
+    [Test]
+    public void HostFilterRemovesInputModesSplitAcrossOutputReads()
+    {
+        var filter = new InteractiveRecorder.HostTerminalSequenceFilter();
+
+        filter.Filter("\u001b[?10").ShouldBeEmpty();
+        filter.Filter("06hready").ShouldBe("ready");
+    }
+
     private static InteractiveInputAction Process(
         InteractiveInputRouter router,
         IEnumerable<byte> values,

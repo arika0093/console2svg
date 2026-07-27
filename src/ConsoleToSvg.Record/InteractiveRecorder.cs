@@ -44,6 +44,7 @@ public static class InteractiveRecorder
         ReadOnlyMemory<byte> recordingKey,
         bool noDeleteEnvs,
         string[]? command,
+        bool exitOnCtrlD,
         Func<InteractiveCapture, Task<string?>> onCapture,
         CancellationToken cancellationToken,
         ILogger? logger = null
@@ -107,6 +108,10 @@ public static class InteractiveRecorder
             .SpawnAsync(options, cancellationToken)
             .ConfigureAwait(false);
         var rawInput = PtyRecorder.ConsoleInputMode.TryEnableRaw(logger);
+        using var utf8OutputScope = PtyRecorder.TryUseUtf8ConsoleOutputEncoding(
+            forwardToConsole: true,
+            logger
+        );
         await ClearHostTerminalAsync().ConfigureAwait(false);
 
         async Task NotifyAsync(string message, bool isRecording, long version)
@@ -494,11 +499,22 @@ public static class InteractiveRecorder
                         }
                         else
                         {
+                            var text = hostSequenceFilter.Filter(
+                                Encoding.UTF8.GetString(bytes, 0, count)
+                            );
+                            if (text.Length == 0)
+                            {
+                                continue;
+                            }
+
                             await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
                             try
                             {
                                 await output
-                                    .WriteAsync(bytes, 0, count, lifetime.Token)
+                                    .WriteAsync(
+                                        Encoding.UTF8.GetBytes(text),
+                                        lifetime.Token
+                                    )
                                     .ConfigureAwait(false);
                                 await output.FlushAsync(lifetime.Token).ConfigureAwait(false);
                                 await RenderPersistentIndicatorAsync().ConfigureAwait(false);
@@ -627,6 +643,7 @@ public static class InteractiveRecorder
                         }
 
                         await inputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
+                        var captures = new List<InteractiveCapture>();
                         try
                         {
                             // A new byte invalidates any pending standalone-Escape timer.
@@ -645,7 +662,10 @@ public static class InteractiveRecorder
                                 switch (action)
                                 {
                                     case InteractiveInputAction.Exit:
-                                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                                        if (
+                                            exitOnCtrlD
+                                            && RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                                        )
                                         {
                                             await lifetime.CancelAsync().ConfigureAwait(false);
                                             return;
@@ -657,7 +677,7 @@ public static class InteractiveRecorder
                                     case InteractiveInputAction.Screenshot:
                                         try
                                         {
-                                            QueueSaveCapture(
+                                            captures.Add(
                                                 await CaptureScreenshotAsync().ConfigureAwait(false)
                                             );
                                         }
@@ -672,7 +692,7 @@ public static class InteractiveRecorder
                                             var capture = await ToggleRecordingAsync().ConfigureAwait(false);
                                             if (capture is not null)
                                             {
-                                                QueueSaveCapture(capture);
+                                                captures.Add(capture);
                                             }
                                         }
                                         catch (Exception ex)
@@ -696,6 +716,13 @@ public static class InteractiveRecorder
                         finally
                         {
                             inputGate.Release();
+                        }
+
+                        // Rendering and conversion run after input forwarding releases
+                        // its gate, so an expensive save cannot hold terminal input.
+                        foreach (var capture in captures)
+                        {
+                            QueueSaveCapture(capture);
                         }
                     }
                 }

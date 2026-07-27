@@ -136,7 +136,7 @@ internal static class Program
 
                     SvgConverter.VerifyConversionPipeline(
                         options.SvgConverter,
-                        RequiresFfmpeg(options, preCheckExt),
+                        options.Interactive || RequiresFfmpeg(options, preCheckExt),
                         logger
                     );
                     logger.ZLogDebug(
@@ -506,6 +506,7 @@ internal static class Program
                 Encoding.ASCII.GetBytes("\u001b[20~"),
                 options.NoDeleteEnvs,
                 options.DelimitedCommand,
+                options.DelimitedCommand is null or { Length: 0 },
                 async capture =>
                 {
                     var outputPath = GetInteractiveOutputPath(options.OutputPath);
@@ -592,7 +593,10 @@ internal static class Program
         );
         var preserveFrames = capture.IsVideo && !string.IsNullOrWhiteSpace(options.SaveFramesDir);
         var workPath = preserveFrames
-            ? options.SaveFramesDir!
+            ? Path.Combine(
+                options.SaveFramesDir!,
+                Path.GetFileNameWithoutExtension(outputPath)
+            )
             : Path.Combine(Path.GetTempPath(), $"c2s-{Guid.NewGuid():N}");
         try
         {

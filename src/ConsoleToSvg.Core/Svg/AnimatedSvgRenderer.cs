@@ -72,14 +72,19 @@ public static class AnimatedSvgRenderer
             // correct terminal state at the start of the time window.
             if (lastBeforeRange is not null)
             {
-                filtered.Insert(0, lastBeforeRange);
+                filtered.Insert(
+                    0,
+                    options.TimeStart.HasValue
+                        ? new TerminalFrame(rangeStart, lastBeforeRange.Buffer)
+                        : lastBeforeRange
+                );
             }
 
             // Rebase timestamps so the clip starts at t=0 instead of the
             // original absolute time (e.g., --time 5-6 → clip from 0 to 1s).
             if (filtered.Count > 0)
             {
-                var baseTime = filtered[0].Time;
+                var baseTime = options.TimeStart ?? filtered[0].Time;
                 for (var i = 0; i < filtered.Count; i++)
                 {
                     filtered[i] = new TerminalFrame(filtered[i].Time - baseTime, filtered[i].Buffer);

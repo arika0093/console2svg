@@ -511,7 +511,10 @@ internal static class Program
                 IsInteractiveRecordingFormat(options.OutputPath),
                 async capture =>
                 {
-                    var outputPath = GetInteractiveOutputPath(options.OutputPath);
+                    var outputPath = GetInteractiveOutputPath(
+                        options.OutputPath,
+                        capture.IsVideo ? null : ".svg"
+                    );
                     await WriteInteractiveCaptureAsync(
                             capture,
                             outputPath,
@@ -529,10 +532,10 @@ internal static class Program
         return 0;
     }
 
-    private static string GetInteractiveOutputPath(string configuredPath)
+    private static string GetInteractiveOutputPath(string configuredPath, string? extensionOverride = null)
     {
         var directory = Path.GetDirectoryName(configuredPath);
-        var extension = Path.GetExtension(configuredPath);
+        var extension = extensionOverride ?? Path.GetExtension(configuredPath);
         var name = Path.GetFileNameWithoutExtension(configuredPath);
         if (string.IsNullOrEmpty(name))
         {

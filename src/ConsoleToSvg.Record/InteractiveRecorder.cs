@@ -125,7 +125,16 @@ public static class InteractiveRecorder
             RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !Console.IsOutputRedirected
                 ? Console.Out
                 : null;
-        await ClearHostTerminalAsync().ConfigureAwait(false);
+        try
+        {
+            await ClearHostTerminalAsync().ConfigureAwait(false);
+        }
+        catch
+        {
+            rawInput?.Dispose();
+            connection.Dispose();
+            throw;
+        }
 
         async Task NotifyAsync(string message, bool isRecording, long version)
         {
@@ -1050,12 +1059,26 @@ public static class InteractiveRecorder
                     break;
                 }
 
-                var mode = _pending.ToString(index + 3, end - index - 3);
-                if (
-                    (_pending[end] is 'h' or 'l')
-                    && mode.Split(';').All(SuppressedPrivateModes.Contains)
-                )
+                if (_pending[end] is 'h' or 'l')
                 {
+                    var modes = _pending
+                        .ToString(index + 3, end - index - 3)
+                        .Split(';');
+                    var retainedModes = modes
+                        .Where(mode => !SuppressedPrivateModes.Contains(mode))
+                        .ToArray();
+                    if (retainedModes.Length == modes.Length)
+                    {
+                        output.Append(_pending[index++]);
+                        continue;
+                    }
+
+                    if (retainedModes.Length > 0)
+                    {
+                        output.Append("\u001b[?");
+                        output.Append(string.Join(";", retainedModes));
+                        output.Append(_pending[end]);
+                    }
                     index = end + 1;
                     continue;
                 }

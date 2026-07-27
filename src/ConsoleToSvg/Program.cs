@@ -517,7 +517,7 @@ internal static class Program
                             loggerFactory.CreateLogger("ConsoleToSvg.InteractiveCapture")
                         )
                         .ConfigureAwait(false);
-                    return capture.IsVideo ? "Recording saved" : "Screenshot saved";
+                    return "Saved";
                 },
                 cancellationToken,
                 loggerFactory.CreateLogger("ConsoleToSvg.InteractiveRecorder")

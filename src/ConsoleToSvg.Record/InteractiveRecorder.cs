@@ -58,17 +58,18 @@ public static class InteractiveRecorder
         var emulator = new TerminalEmulator(width, height, theme);
         var captureGate = new object();
         using var hostOutputGate = new SemaphoreSlim(1, 1);
+        long notificationVersion = 0;
+        var notificationColumn = 1;
+        var notificationLength = 0;
+        var recordingIndicatorActive = 0;
+        var startupIndicatorActive = 0;
         List<TerminalFrame>? videoFrames = null;
         var videoStarted = 0d;
         var stopwatch = Stopwatch.StartNew();
         long lastOutputTimestamp = Stopwatch.GetTimestamp();
 
         var options = BuildOptions(width, height, noDeleteEnvs, command);
-        using var connection = await NativePty
-            .SpawnAsync(options, cancellationToken)
-            .ConfigureAwait(false);
         using var lifetime = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        using var rawInput = PtyRecorder.ConsoleInputMode.TryEnableRaw(logger);
         var output = Console.OpenStandardOutput();
         var outputWriter =
             RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !Console.IsOutputRedirected
@@ -102,9 +103,25 @@ public static class InteractiveRecorder
             }
         }
 
-        async Task NotifyAsync(string message)
+        using var connection = await NativePty
+            .SpawnAsync(options, cancellationToken)
+            .ConfigureAwait(false);
+        var rawInput = PtyRecorder.ConsoleInputMode.TryEnableRaw(logger);
+        await ClearHostTerminalAsync().ConfigureAwait(false);
+
+        async Task NotifyAsync(
+            string message,
+            bool isRecording,
+            long version,
+            TimeSpan displayDuration
+        )
         {
             if (Console.IsOutputRedirected)
+            {
+                return;
+            }
+
+            if (Volatile.Read(ref notificationVersion) != version)
             {
                 return;
             }
@@ -120,26 +137,50 @@ public static class InteractiveRecorder
             await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
             try
             {
-                // This is deliberately written to the host terminal, never the PTY.
-                // Saving/restoring the cursor prevents it from becoming shell input.
-                var overlay = $"\u001b7\u001b[1;{column}H\u001b[30;48;5;114m{label}\u001b[0m\u001b8";
-                await output.WriteAsync(Encoding.UTF8.GetBytes(overlay), lifetime.Token).ConfigureAwait(false);
+                if (Volatile.Read(ref notificationVersion) != version)
+                {
+                    return;
+                }
+
+                var style = isRecording ? "\u001b[1;31;48;5;236m" : "\u001b[30;48;5;114m";
+                var clearPrevious = notificationLength == 0
+                    ? string.Empty
+                    : $"\u001b[1;{notificationColumn}H{new string(' ', notificationLength)}";
+                var overlay =
+                    $"\u001b7{clearPrevious}\u001b[1;{column}H{style}{label}\u001b[0m\u001b8";
+                await output
+                    .WriteAsync(Encoding.UTF8.GetBytes(overlay), lifetime.Token)
+                    .ConfigureAwait(false);
                 await output.FlushAsync(lifetime.Token).ConfigureAwait(false);
+                notificationColumn = column;
+                notificationLength = label.Length;
             }
             finally
             {
                 hostOutputGate.Release();
             }
 
-            // Do not hold the output gate while the popup is visible: PTY output
-            // must keep flowing while the user continues typing.
-            await Task.Delay(TimeSpan.FromMilliseconds(1500), lifetime.Token).ConfigureAwait(false);
+            await Task.Delay(displayDuration, lifetime.Token).ConfigureAwait(false);
+            if (Volatile.Read(ref notificationVersion) != version)
+            {
+                return;
+            }
+
             await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
             try
             {
-                var clear = $"\u001b7\u001b[1;{column}H{new string(' ', label.Length)}\u001b8";
-                await output.WriteAsync(Encoding.UTF8.GetBytes(clear), lifetime.Token).ConfigureAwait(false);
+                if (Volatile.Read(ref notificationVersion) != version)
+                {
+                    return;
+                }
+
+                var clear =
+                    $"\u001b7\u001b[1;{notificationColumn}H{new string(' ', notificationLength)}\u001b8";
+                await output
+                    .WriteAsync(Encoding.UTF8.GetBytes(clear), lifetime.Token)
+                    .ConfigureAwait(false);
                 await output.FlushAsync(lifetime.Token).ConfigureAwait(false);
+                notificationLength = 0;
             }
             finally
             {
@@ -147,9 +188,98 @@ public static class InteractiveRecorder
             }
         }
 
-        void ShowNotification(string message)
+        (long Version, Task Completion) ShowNotification(
+            string message,
+            bool isRecording = false,
+            TimeSpan? displayDuration = null
+        )
         {
-            _ = NotifyAsync(message).ContinueWith(
+            var version = Interlocked.Increment(ref notificationVersion);
+            var notification = NotifyAsync(
+                    message,
+                    isRecording,
+                    version,
+                    displayDuration ?? TimeSpan.FromMilliseconds(1500)
+                );
+            _ = notification.ContinueWith(
+                task => logger.ZLogDebug(task.Exception, $"Interactive notification failed."),
+                TaskContinuationOptions.OnlyOnFaulted
+            );
+            return (version, notification);
+        }
+
+        async Task RenderPersistentIndicatorAsync()
+        {
+            if (Console.IsOutputRedirected)
+            {
+                return;
+            }
+
+            var isRecording = Volatile.Read(ref recordingIndicatorActive) != 0;
+            if (!isRecording && Volatile.Read(ref startupIndicatorActive) == 0)
+            {
+                return;
+            }
+
+            var label = isRecording
+                ? "  ● REC  "
+                : "  F9: Record start   F10: Capture  ";
+            var width = Math.Max(20, Console.WindowWidth);
+            var column = Math.Max(1, width - label.Length);
+            var clearPrevious = notificationLength == 0
+                ? string.Empty
+                : $"\u001b[1;{notificationColumn}H{new string(' ', notificationLength)}";
+            var overlay =
+                isRecording
+                    ? $"\u001b7{clearPrevious}\u001b[1;{column}H\u001b[1;31;48;5;236m{label}\u001b[0m\u001b8"
+                    : $"\u001b7{clearPrevious}\u001b[1;{column}H\u001b[30;48;5;114m{label}\u001b[0m\u001b8";
+            await output
+                .WriteAsync(Encoding.UTF8.GetBytes(overlay), lifetime.Token)
+                .ConfigureAwait(false);
+            await output.FlushAsync(lifetime.Token).ConfigureAwait(false);
+            notificationColumn = column;
+            notificationLength = label.Length;
+        }
+
+        void ShowRecordingStartedNotification()
+        {
+            Interlocked.Exchange(ref startupIndicatorActive, 0);
+            ShowNotification("Started");
+            _ = Task.Run(
+                async () =>
+                {
+                    try
+                    {
+                        await Task
+                            .Delay(TimeSpan.FromMilliseconds(1500), lifetime.Token)
+                            .ConfigureAwait(false);
+                        lock (captureGate)
+                        {
+                            if (videoFrames is null)
+                            {
+                                return;
+                            }
+                        }
+
+                        Interlocked.Exchange(ref recordingIndicatorActive, 1);
+                        Interlocked.Increment(ref notificationVersion);
+                        await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
+                        try
+                        {
+                            await RenderPersistentIndicatorAsync().ConfigureAwait(false);
+                        }
+                        finally
+                        {
+                            hostOutputGate.Release();
+                        }
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // The session ended before the recording indicator was due.
+                    }
+                },
+                CancellationToken.None
+            ).ContinueWith(
                 task => logger.ZLogDebug(task.Exception, $"Interactive notification failed."),
                 TaskContinuationOptions.OnlyOnFaulted
             );
@@ -179,10 +309,60 @@ public static class InteractiveRecorder
 
         async Task SaveCaptureAsync(InteractiveCapture capture)
         {
+            ShowNotification("Saving...");
             var message = await onCapture(capture).ConfigureAwait(false);
             if (!string.IsNullOrWhiteSpace(message))
             {
-                ShowNotification(message);
+                var savedNotification = ShowNotification(message);
+                _ = Task.Run(
+                    async () =>
+                    {
+                        try
+                        {
+                            await savedNotification.Completion.ConfigureAwait(false);
+                            if (
+                                Volatile.Read(ref notificationVersion) != savedNotification.Version
+                                || Volatile.Read(ref recordingIndicatorActive) != 0
+                            )
+                            {
+                                return;
+                            }
+
+                            lock (captureGate)
+                            {
+                                if (videoFrames is not null)
+                                {
+                                    return;
+                                }
+                            }
+
+                            Interlocked.Exchange(ref startupIndicatorActive, 1);
+                            await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
+                            try
+                            {
+                                if (
+                                    Volatile.Read(ref notificationVersion)
+                                    == savedNotification.Version
+                                )
+                                {
+                                    await RenderPersistentIndicatorAsync().ConfigureAwait(false);
+                                }
+                            }
+                            finally
+                            {
+                                hostOutputGate.Release();
+                            }
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            // The session ended before restoring the startup indicator.
+                        }
+                    },
+                    CancellationToken.None
+                ).ContinueWith(
+                    task => logger.ZLogDebug(task.Exception, $"Interactive notification failed."),
+                    TaskContinuationOptions.OnlyOnFaulted
+                );
             }
         }
 
@@ -213,7 +393,7 @@ public static class InteractiveRecorder
 
             if (isStarting)
             {
-                ShowNotification("Recording started");
+                ShowRecordingStartedNotification();
                 return null;
             }
 
@@ -228,6 +408,7 @@ public static class InteractiveRecorder
                 );
                 videoFrames = null;
             }
+            Interlocked.Exchange(ref recordingIndicatorActive, 0);
 
             return capture;
         }
@@ -288,6 +469,7 @@ public static class InteractiveRecorder
                                             .WriteAsync(text.AsMemory(), lifetime.Token)
                                             .ConfigureAwait(false);
                                         await outputWriter.FlushAsync(lifetime.Token).ConfigureAwait(false);
+                                        await RenderPersistentIndicatorAsync().ConfigureAwait(false);
                                     }
                                     finally
                                     {
@@ -298,10 +480,19 @@ public static class InteractiveRecorder
                         }
                         else
                         {
-                            await output
-                                .WriteAsync(bytes, 0, count, lifetime.Token)
-                                .ConfigureAwait(false);
-                            await output.FlushAsync(lifetime.Token).ConfigureAwait(false);
+                            await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
+                            try
+                            {
+                                await output
+                                    .WriteAsync(bytes, 0, count, lifetime.Token)
+                                    .ConfigureAwait(false);
+                                await output.FlushAsync(lifetime.Token).ConfigureAwait(false);
+                                await RenderPersistentIndicatorAsync().ConfigureAwait(false);
+                            }
+                            finally
+                            {
+                                hostOutputGate.Release();
+                            }
                         }
                     }
                 }
@@ -319,6 +510,30 @@ public static class InteractiveRecorder
 
         var captureQueueGate = new object();
         Task captureQueue = Task.CompletedTask;
+
+        void QueueSaveCapture(InteractiveCapture capture)
+        {
+            lock (captureQueueGate)
+            {
+                captureQueue = captureQueue.ContinueWith(
+                    async _ =>
+                    {
+                        try
+                        {
+                            await SaveCaptureAsync(capture).ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.ZLogError(ex, $"Interactive capture failed.");
+                        }
+                    },
+                    CancellationToken.None,
+                    TaskContinuationOptions.None,
+                    TaskScheduler.Default
+                ).Unwrap();
+            }
+        }
+
         var inputTask = Task.Run(
             async () =>
             {
@@ -369,29 +584,6 @@ public static class InteractiveRecorder
                         },
                         CancellationToken.None
                     );
-                }
-
-                void QueueSaveCapture(InteractiveCapture capture)
-                {
-                    lock (captureQueueGate)
-                    {
-                        captureQueue = captureQueue.ContinueWith(
-                            async _ =>
-                            {
-                                try
-                                {
-                                    await SaveCaptureAsync(capture).ConfigureAwait(false);
-                                }
-                                catch (Exception ex)
-                                {
-                                    logger.ZLogError(ex, $"Interactive capture failed.");
-                                }
-                            },
-                            CancellationToken.None,
-                            TaskContinuationOptions.None,
-                            TaskScheduler.Default
-                        ).Unwrap();
-                    }
                 }
 
                 try
@@ -518,12 +710,25 @@ public static class InteractiveRecorder
             {
                 try
                 {
+                    var initialNotificationVersion = Volatile.Read(ref notificationVersion);
                     // cmd/Clink and Starship often clear the terminal while their
                     // startup scripts run. Wait for that output to finish before
                     // drawing the host-only key guide.
                     await Task.Delay(500, lifetime.Token).ConfigureAwait(false);
                     await WaitForOutputToSettleAsync().ConfigureAwait(false);
-                    ShowNotification("F9: Record start   F10: Capture");
+                    if (Volatile.Read(ref notificationVersion) == initialNotificationVersion)
+                    {
+                        Interlocked.Exchange(ref startupIndicatorActive, 1);
+                        await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
+                        try
+                        {
+                            await RenderPersistentIndicatorAsync().ConfigureAwait(false);
+                        }
+                        finally
+                        {
+                            hostOutputGate.Release();
+                        }
+                    }
                 }
                 catch (OperationCanceledException)
                 {
@@ -545,6 +750,34 @@ public static class InteractiveRecorder
         }
         finally
         {
+            var childExited = connection.WaitForExit(0);
+            if (childExited)
+            {
+                // Drain the PTY before completing the recording so its final output
+                // becomes part of the saved capture.
+                await IgnoreFailureAsync(outputTask).ConfigureAwait(false);
+                InteractiveCapture? capture = null;
+                lock (captureGate)
+                {
+                    if (videoFrames is not null)
+                    {
+                        capture = CompleteRecording(
+                            videoFrames,
+                            stopwatch.Elapsed.TotalSeconds - videoStarted,
+                            emulator.Buffer
+                        );
+                        videoFrames = null;
+                    }
+                }
+
+                if (capture is not null)
+                {
+                    Interlocked.Exchange(ref recordingIndicatorActive, 0);
+                    Interlocked.Increment(ref notificationVersion);
+                    QueueSaveCapture(capture);
+                }
+            }
+
             await lifetime.CancelAsync().ConfigureAwait(false);
             connection.Dispose();
             await IgnoreFailureAsync(outputTask).ConfigureAwait(false);
@@ -559,7 +792,20 @@ public static class InteractiveRecorder
             // mode. Reset it before restoring the host input mode so selection is
             // available after an interactive session ends.
             PtyRecorder.TryDisableTerminalMouseTracking(forwardToConsole: true, logger);
-            await ClearHostTerminalAsync().ConfigureAwait(false);
+            try
+            {
+                await ClearHostTerminalAsync().ConfigureAwait(false);
+            }
+            finally
+            {
+                rawInput?.Dispose();
+            }
+            await Console.Out
+                .WriteLineAsync(
+                    "console2svg interactive mode finished".AsMemory(),
+                    CancellationToken.None
+                )
+                .ConfigureAwait(false);
         }
     }
 

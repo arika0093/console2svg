@@ -96,6 +96,57 @@ public sealed class SvgRendererTests
     }
 
     [Test]
+    public void RenderStaticSvgWithBoxDrawingUsesConnectedPaths()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "\u001b(0lqqkxmqqj\u001b(B");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+        svg.ShouldContain("<path class=\"box\"");
+        svg.ShouldContain("<path class=\"box\"");
+        svg.ShouldNotContain("shape-rendering=\"crispEdges\"");
+        svg.ShouldNotContain(">┌");
+        svg.ShouldNotContain(">─");
+    }
+
+    [Test]
+    public void RenderStaticSvgWithUnicodeBoxDrawingUsesConnectedPaths()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "└──┘");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain("<path class=\"box\"");
+        svg.ShouldContain("M4.2 8.5H8.4V9.5H4.2Z");
+        svg.ShouldNotContain(">└");
+        svg.ShouldNotContain(">─");
+        svg.ShouldNotContain(">┘");
+    }
+
+    [Test]
+    public void RenderStaticSvgWithRepeatedBoxDrawingUsesConnectedPaths()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "\u001b(0lq\u001b[5bk\u001b(B");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain("<path class=\"box\"");
+        svg.ShouldNotContain(">q<");
+        svg.ShouldNotContain(">─<");
+    }
+
+    [Test]
     public void RenderStaticSvgWithEmoji()
     {
         var session = new RecordingSession(width: 8, height: 2);

@@ -399,6 +399,9 @@ public sealed class AnsiParser
             case 'a':
                 _buffer.MoveCursorBy(0, Math.Max(1, GetParameter(parameters, 0, 1)));
                 return;
+            case 'b':
+                _buffer.RepeatPreviousCharacter(Math.Max(1, GetParameter(parameters, 0, 1)));
+                return;
             case 'D':
                 _buffer.MoveCursorBy(0, -Math.Max(1, GetParameter(parameters, 0, 1)));
                 return;

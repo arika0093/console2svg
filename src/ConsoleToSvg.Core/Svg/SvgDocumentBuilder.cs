@@ -1101,6 +1101,23 @@ internal static class SvgDocumentBuilder
                     continue;
                 }
 
+                if (IsSingleLineBoxDrawing(cell.Text))
+                {
+                    FlushFgRun();
+                    RenderBoxDrawing(
+                        sb,
+                        cell.Text,
+                        cellX,
+                        y,
+                        cellW,
+                        context.CellHeight,
+                        context.FontSize / 14d,
+                        effectiveFg
+                    );
+                    fgRunStart = col + 1;
+                    continue;
+                }
+
                 var sameStyle =
                     string.Equals(effectiveFg, fgRunColor, StringComparison.OrdinalIgnoreCase)
                     && cell.Bold == fgBold
@@ -1164,6 +1181,95 @@ internal static class SvgDocumentBuilder
 
         // Unicode Block Elements (U+2580–U+259F), excluding shade chars (U+2591–U+2593)
         return cp is >= 0x2580 and <= 0x259F and not (0x2591 or 0x2592 or 0x2593);
+    }
+
+    private static bool IsSingleLineBoxDrawing(string text) =>
+        text.Length == 1
+        && text[0]
+            is '\u2500'
+                or '\u2502'
+                or '\u250C'
+                or '\u2510'
+                or '\u2514'
+                or '\u2518'
+                or '\u251C'
+                or '\u2524'
+                or '\u252C'
+                or '\u2534'
+                or '\u253C';
+
+    private static void RenderBoxDrawing(
+        StringBuilder sb,
+        string text,
+        double x,
+        double y,
+        double width,
+        double height,
+        double strokeWidth,
+        string stroke
+    )
+    {
+        var centerX = x + width / 2d;
+        var centerY = y + height / 2d;
+        var character = text[0];
+        var left = character is '\u2500' or '\u2510' or '\u2518' or '\u2524' or '\u252C' or '\u2534' or '\u253C';
+        var right = character is '\u2500' or '\u250C' or '\u2514' or '\u251C' or '\u252C' or '\u2534' or '\u253C';
+        var up = character is '\u2502' or '\u2514' or '\u2518' or '\u251C' or '\u2524' or '\u2534' or '\u253C';
+        var down = character is '\u2502' or '\u250C' or '\u2510' or '\u251C' or '\u2524' or '\u252C' or '\u253C';
+
+        sb.Append("<path class=\"box\" d=\"");
+        if (left)
+        {
+            AppendBoxSegment(centerX, centerY, x, centerY);
+        }
+
+        if (right)
+        {
+            AppendBoxSegment(centerX, centerY, x + width, centerY);
+        }
+
+        if (up)
+        {
+            AppendBoxSegment(centerX, centerY, centerX, y);
+        }
+
+        if (down)
+        {
+            AppendBoxSegment(centerX, centerY, centerX, y + height);
+        }
+
+        sb.Append("\" fill=\"");
+        sb.Append(stroke);
+        sb.Append("\"/>\n");
+
+        void AppendBoxRect(double rectX, double rectY, double rectWidth, double rectHeight)
+        {
+            sb.Append('M');
+            sb.Append(Format(rectX));
+            sb.Append(' ');
+            sb.Append(Format(rectY));
+            sb.Append('H');
+            sb.Append(Format(rectX + rectWidth));
+            sb.Append('V');
+            sb.Append(Format(rectY + rectHeight));
+            sb.Append('H');
+            sb.Append(Format(rectX));
+            sb.Append('Z');
+        }
+
+        void AppendBoxSegment(double startX, double startY, double endX, double endY)
+        {
+            if (Math.Abs(startY - endY) < 0.0001d)
+            {
+                var leftX = Math.Min(startX, endX);
+                AppendBoxRect(leftX, startY - strokeWidth / 2d, Math.Abs(endX - startX), strokeWidth);
+            }
+            else
+            {
+                var topY = Math.Min(startY, endY);
+                AppendBoxRect(startX - strokeWidth / 2d, topY, strokeWidth, Math.Abs(endY - startY));
+            }
+        }
     }
 
     private static void RenderBlockElement(

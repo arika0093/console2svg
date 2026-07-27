@@ -201,6 +201,38 @@ public sealed class ScreenBuffer
         PutPrintable(cluster, style);
     }
 
+    public void RepeatPreviousCharacter(int count)
+    {
+        if (count <= 0)
+        {
+            return;
+        }
+
+        var row = CursorRow;
+        var col = _pendingWrap ? CursorCol : CursorCol - 1;
+        if (col < 0)
+        {
+            return;
+        }
+
+        if (_cells[row, col].IsWideContinuation && col > 0)
+        {
+            col--;
+        }
+
+        var previous = _cells[row, col];
+        if (previous.IsWideContinuation)
+        {
+            return;
+        }
+
+        var style = previous.ToTextStyle();
+        for (var i = 0; i < count; i++)
+        {
+            PutPrintable(previous.Text, style);
+        }
+    }
+
     public void AppendToPreviousCell(string combining)
     {
         // Find the previous printable cell

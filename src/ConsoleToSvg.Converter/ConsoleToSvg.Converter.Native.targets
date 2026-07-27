@@ -2,6 +2,10 @@
   <PropertyGroup>
     <ResvgNativeRuntimeIdentifier Condition="'$(RuntimeIdentifier)' != ''">$(RuntimeIdentifier)</ResvgNativeRuntimeIdentifier>
     <ResvgNativeRuntimeIdentifier Condition="'$(ResvgNativeRuntimeIdentifier)' == ''">$(NETCoreSdkRuntimeIdentifier)</ResvgNativeRuntimeIdentifier>
+    <!-- ResvgBuild was used by the CLI development command before this target
+         adopted the more descriptive BuildResvgNative property. Keep it as an
+         alias so `-p ResvgBuild=false` still disables the local Cargo build. -->
+    <BuildResvgNative Condition="'$(ResvgBuild)' != ''">$(ResvgBuild)</BuildResvgNative>
     <BuildResvgNative Condition="'$(BuildResvgNative)' == '' and ('$(RuntimeIdentifier)' != '' Or '$(TargetFramework)' == 'net10.0')">true</BuildResvgNative>
     <ResvgNativeRustTarget Condition="'$(ResvgNativeRuntimeIdentifier)' == 'linux-x64'">x86_64-unknown-linux-gnu</ResvgNativeRustTarget>
     <ResvgNativeRustTarget Condition="'$(ResvgNativeRuntimeIdentifier)' == 'linux-arm64'">aarch64-unknown-linux-gnu</ResvgNativeRustTarget>

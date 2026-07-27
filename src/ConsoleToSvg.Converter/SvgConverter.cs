@@ -644,13 +644,7 @@ public static class SvgConverter
     {
         logger.ZLogDebug($"Running ffmpeg: {ffmpegPath} {string.Join(' ', args)}");
 
-        using var process = new Process();
-        process.StartInfo.FileName = ffmpegPath;
-        process.StartInfo.UseShellExecute = false;
-        foreach (var arg in args)
-        {
-            process.StartInfo.ArgumentList.Add(arg);
-        }
+        using var process = new Process { StartInfo = CreateFfmpegStartInfo(ffmpegPath, args) };
 
         try
         {
@@ -666,6 +660,12 @@ public static class SvgConverter
             );
         }
 
+        // ffmpeg's progress and diagnostics must not be written into the interactive
+        // terminal. Start draining both streams immediately to avoid blocking when a
+        // conversion produces enough output to fill an OS pipe buffer.
+        var standardOutputTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
+        var standardErrorTask = process.StandardError.ReadToEndAsync(cancellationToken);
+
         using var killOnCancel = cancellationToken.Register(() =>
         {
             try { process.Kill(entireProcessTree: true); }
@@ -673,6 +673,8 @@ public static class SvgConverter
         });
 
         await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
+        await standardOutputTask.ConfigureAwait(false);
+        var standardError = await standardErrorTask.ConfigureAwait(false);
 
         if (process.ExitCode != 0)
         {
@@ -680,10 +682,47 @@ public static class SvgConverter
                 $"ffmpeg exited with code {process.ExitCode}. "
                 + "Ensure ffmpeg supports the requested output format "
                 + "(SVG input requires the librsvg input device)."
+                + FormatFfmpegError(standardError)
             );
         }
 
         logger.ZLogDebug($"ffmpeg completed successfully.");
+    }
+
+    private static ProcessStartInfo CreateFfmpegStartInfo(string ffmpegPath, string[] args)
+    {
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = ffmpegPath,
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true,
+        };
+
+        foreach (var arg in args)
+        {
+            startInfo.ArgumentList.Add(arg);
+        }
+
+        return startInfo;
+    }
+
+    private static string FormatFfmpegError(string standardError)
+    {
+        if (string.IsNullOrWhiteSpace(standardError))
+        {
+            return string.Empty;
+        }
+
+        const int maxLength = 2_000;
+        var details = standardError.Trim();
+        if (details.Length > maxLength)
+        {
+            details = details[^maxLength..];
+        }
+
+        return $"\nffmpeg stderr:\n{details}";
     }
 
     /// <summary>

@@ -3,7 +3,7 @@
 src/ConsoleToSvg.Converter/native/resvg-wrapper/target/
 native-assets/
 exported/
-output.svg
+output*.svg
 *.recieved.*
 frames-dir/
 output.mp4

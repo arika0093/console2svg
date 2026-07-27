@@ -17,7 +17,7 @@ public static class PtyRecorder
 {
     // This sequence disables various mouse tracking modes in the terminal, which can be left enabled by some applications and cause issues with input forwarding (e.g. mouse clicks not working in Vim). It's safe to send this on every recording stop, even if the child process has already exited or doesn't support these modes.
     private const string DisableMouseTrackingSequence =
-        "\u001b[?9l\u001b[?1000l\u001b[?1002l\u001b[?1003l\u001b[?1004l\u001b[?1005l\u001b[?1006l\u001b[?1015l\u001b[?1016l";
+        "\u001b[?9l\u001b[?1000l\u001b[?1002l\u001b[?1003l\u001b[?1004l\u001b[?1005l\u001b[?1006l\u001b[?1015l\u001b[?1016l\u001b[?9001l";
 
     // remove some CI environments to avoid apps switching to no-color mode.
     // for example: chalk(Node.js) checks "CI" to disable colors on CI environments:
@@ -626,7 +626,7 @@ public static class PtyRecorder
         return exception.Message.Contains("Input/output error", StringComparison.OrdinalIgnoreCase);
     }
 
-    private static IDisposable? TryUseUtf8ConsoleOutputEncoding(
+    public static IDisposable? TryUseUtf8ConsoleOutputEncoding(
         bool forwardToConsole,
         ILogger logger
     )
@@ -1082,7 +1082,7 @@ public static class PtyRecorder
         }
     }
 
-    private static void TryDisableTerminalMouseTracking(bool forwardToConsole, ILogger logger)
+    internal static void TryDisableTerminalMouseTracking(bool forwardToConsole, ILogger logger)
     {
         if (!forwardToConsole || Console.IsOutputRedirected)
         {
@@ -1258,12 +1258,13 @@ public static class PtyRecorder
         return Path.Combine(systemDir, "cmd.exe");
     }
 
-    private sealed class ConsoleInputMode : IDisposable
+    internal sealed class ConsoleInputMode : IDisposable
     {
         private const uint StdInputHandle = 0xFFFFFFF6;
         private const uint EnableProcessedInput = 0x0001;
         private const uint EnableLineInput = 0x0002;
         private const uint EnableEchoInput = 0x0004;
+        private const uint EnableMouseInput = 0x0010;
         private const uint EnableQuickEditMode = 0x0040;
         private const uint EnableExtendedFlags = 0x0080;
         private const uint EnableVirtualTerminalInput = 0x0200;
@@ -1321,9 +1322,11 @@ public static class PtyRecorder
                 }
 
                 var newMode = mode;
-                newMode |= EnableVirtualTerminalInput | EnableExtendedFlags;
+                newMode |= EnableVirtualTerminalInput | EnableExtendedFlags | EnableQuickEditMode;
                 newMode &= ~(EnableLineInput | EnableEchoInput | EnableProcessedInput);
-                newMode &= ~EnableQuickEditMode;
+                // Keep host-side text selection available. Mouse reports, if a host
+                // still emits them as VT input, are discarded by InteractiveRecorder.
+                newMode &= ~EnableMouseInput;
 
                 if (newMode == mode)
                 {
@@ -1357,18 +1360,21 @@ public static class PtyRecorder
                 const int stdinFd = 0;
                 if (tcgetattr(stdinFd, out var termios) != 0)
                 {
+                    logger.ZLogDebug($"tcgetattr failed while enabling raw terminal input. errno={Marshal.GetLastWin32Error()}");
                     return null;
                 }
 
                 var raw = termios;
-                raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
-                raw.c_oflag &= ~OPOST;
-                raw.c_cflag |= CS8;
-                raw.c_lflag &= ~(ICANON | ECHO | IEXTEN | ISIG);
+                // Let libc select the platform's complete raw-mode bit set. The
+                // previous hand-maintained flags worked on some Unix terminals but
+                // left WSL input in a cooked mode, so Ctrl keys and F-key VT
+                // sequences were consumed before the PTY forwarder could read them.
+                cfmakeraw(ref raw);
                 raw.c_cc[VMIN] = 1;
                 raw.c_cc[VTIME] = 0;
                 if (tcsetattr(stdinFd, TCSANOW, ref raw) != 0)
                 {
+                    logger.ZLogDebug($"tcsetattr failed while enabling raw terminal input. errno={Marshal.GetLastWin32Error()}");
                     return null;
                 }
 
@@ -1411,17 +1417,6 @@ public static class PtyRecorder
         }
 
         private const int TCSANOW = 0;
-        private const uint BRKINT = 0x0002;
-        private const uint ICRNL = 0x0100;
-        private const uint INPCK = 0x0010;
-        private const uint ISTRIP = 0x0020;
-        private const uint IXON = 0x0400;
-        private const uint OPOST = 0x0001;
-        private const uint CS8 = 0x0030;
-        private const uint ICANON = 0x0002;
-        private const uint ECHO = 0x0008;
-        private const uint IEXTEN = 0x8000;
-        private const uint ISIG = 0x0001;
         private const int VTIME = 5;
         private const int VMIN = 6;
 
@@ -1446,6 +1441,9 @@ public static class PtyRecorder
 
         [DllImport("libc", SetLastError = true)]
         private static extern int tcsetattr(int fd, int optional_actions, ref Termios termios);
+
+        [DllImport("libc")]
+        private static extern void cfmakeraw(ref Termios termios);
 
         [DllImport("kernel32.dll")]
         private static extern IntPtr GetStdHandle(uint nStdHandle);

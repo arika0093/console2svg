@@ -12,7 +12,7 @@ public enum OutputMode
 
 public sealed class AppOptions
 {
-        public bool Verbose { get; set; }
+    public bool Verbose { get; set; }
 
     public string? VerboseLogPath { get; set; }
 
@@ -22,6 +22,12 @@ public sealed class AppOptions
     public bool InstallDependencies { get; set; }
 
     public string? Command { get; set; }
+
+    /// <summary>
+    /// Unmodified arguments following <c>--</c>. Interactive mode uses these to
+    /// start the requested program without losing argument boundaries.
+    /// </summary>
+    public string[]? DelimitedCommand { get; set; }
 
     public string? InputCastPath { get; set; }
 
@@ -118,6 +124,9 @@ public sealed class AppOptions
 
     /// <summary>Write SVG output to stdout instead of a file. PTY forwarding is suppressed.</summary>
     public bool StdOut { get; set; }
+
+    /// <summary>Run the user's shell in a PTY and capture the terminal on demand.</summary>
+    public bool Interactive { get; set; }
 
     /// <summary>Directory path to save individual static SVG frames (one per visual frame).</summary>
     public string? SaveFramesDir { get; set; }

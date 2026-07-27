@@ -7,6 +7,66 @@ namespace ConsoleToSvg.Tests.Cli;
 public sealed class OptionParserTests
 {
     [Test]
+    public void InteractiveModeIsEnabled()
+    {
+        var ok = OptionParser.TryParse(new[] { "--interactive" }, out var options, out _, out _);
+
+        ok.ShouldBeTrue();
+        options!.Interactive.ShouldBeTrue();
+    }
+
+    [Test]
+    public void InteractiveHelpDocumentsF9RecordingAndF10Screenshot()
+    {
+        OptionParser.HelpText.ShouldContain("F9 starts/stops an animation recording");
+        OptionParser.HelpText.ShouldContain("F10 saves a static screenshot");
+    }
+
+    [Test]
+    public void InteractiveModeRejectsRemovedKeybindOption()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--interactive", "--keybind", "Ctrl+G" },
+            out _,
+            out var error,
+            out _
+        );
+
+        ok.ShouldBeFalse();
+        error.ShouldBe("Unknown option: --keybind");
+    }
+
+    [Test]
+    [Arguments(new[] { "--interactive", "echo hi" }, "An interactive program must be specified after -- (for example: -i -- vim).")]
+    [Arguments(new[] { "--interactive", "--in", "record.cast" }, "--interactive cannot be used with --in.")]
+    [Arguments(new[] { "--interactive", "--stdout" }, "--interactive cannot be used with --stdout.")]
+    [Arguments(new[] { "--interactive", "--save-cast", "trace.cast" }, "--interactive cannot be used with --save-cast.")]
+    [Arguments(new[] { "--interactive", "--mode", "repeat" }, "--interactive cannot be used with --mode repeat.")]
+    [Arguments(new[] { "--interactive", "--replay", "input.json" }, "--interactive cannot be used with replay options.")]
+    public void InteractiveModeRejectsIncompatibleSources(string[] args, string expectedError)
+    {
+        var ok = OptionParser.TryParse(args, out _, out var error, out _);
+
+        ok.ShouldBeFalse();
+        error.ShouldBe(expectedError);
+    }
+
+    [Test]
+    public void InteractiveModeStartsDelimitedProgramWithUnmodifiedArguments()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "-i", "--", "vim", "file name.txt" },
+            out var options,
+            out _,
+            out _
+        );
+
+        ok.ShouldBeTrue();
+        options!.Command.ShouldBe("vim file name.txt");
+        options.DelimitedCommand.ShouldBe(new[] { "vim", "file name.txt" });
+    }
+
+    [Test]
     public void ShortFlagWidthParsed()
     {
         var ok = OptionParser.TryParse(new[] { "-w", "120" }, out var options, out _, out _);

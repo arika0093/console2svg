@@ -1,10 +1,15 @@
-# console2svg
-Easily convert terminal output into SVG images. truecolor, animation, cropping and many appearance options are supported.
+<div align="center">
 
 ![console2svg hero image with oh-my-logo](./assets/cmd-hero.svg)
 
-> Of course, this hero image is [generated](https://github.com/arika0093/console2svg/blob/main/scripts/image-gen.sh#L2-L3) using console2svg itself.
+[![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) [![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest)
 
+Easily convert terminal output into SVG images. <br/>
+Truecolor, animation, cropping and many appearance options are supported.
+
+</div>
+
+# console2svg
 
 * [Why console2svg?](#why-console2svg)
 * [Overview](#overview)
@@ -21,11 +26,14 @@ There are similar tools, but console2svg stands out for:
 
 * [**No dependencies**](#install): no additional software or libraries required. Everything you need is included.
 * [**Video mode**](#animated-svg): save command execution animations as SVG. great for documentation and blog posts.
+* [**Interactive capture**](#interactive-capture): capture the current terminal screen on demand, or record a session and save it as an animated SVG.
 * [**Crop**](#static-svg-with-crop): trim specific parts of the output. Crop based on text patterns is also supported, making it easy to trim specific lines or sections.
 * [**Background and window**](#window-chrome): add background and window frames to produce presentation-ready SVGs for documentation, blogs, social media, etc.
 * [**CI friendly**](#github-actions): with features like replay and timeout, it can generate both static and animated SVGs in CI environments, minimizing discrepancies between code and images.
 * [**Windows support**](#supported-platforms): works on Windows, macOS and Linux.
 * [**Support many format**](#convert-to-other-formats): By incorporating `ffmpeg` and `resvg`, it can output not only SVG but also various formats such as PNG, MP4, GIF, etc.
+
+> Of course, this hero image is [generated](https://github.com/arika0093/console2svg/blob/main/scripts/image-gen.sh#L2-L3) using console2svg itself.
 
 ## Overview
 
@@ -57,8 +65,19 @@ console2svg -v -c -d macos -- copilot --banner
 
 ![console2svg -v -c -d macos -- copilot --banner](./assets/cmd-loop.svg)
 
+---
+
+In interactive mode(`-i`), you can run your normal interactive shell in a PTY and capture its current screen on demand. Press `F10` to write a static SVG, or `F9` to start recording from the exact current terminal state.
+
+```bash
+console2svg -i -d windows-pc -o ./captures/output.svg
+# -> saves ./captures/output_yyyyMMdd_HHmmss.svg
+```
+
+![console2svg -i -d windows-pc -o ./captures/output.svg](./assets/cmd-interactive.svg)
+
+
 ## Install
-[![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) [![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest)
 
 The easiest way on Linux/macOS is the install script. Windows users can use npm or download the zip.
 
@@ -170,6 +189,26 @@ If you want to match the current terminal width, specify `-w adjust`.
 
 ```sh
 console2svg -w adjust -h 20 -- git log --oneline
+```
+
+### Interactive capture
+
+Run your normal interactive shell in a PTY and capture its current screen on demand.
+On Unix, `console2svg` uses `$SHELL`; on Windows, it uses the system command shell.
+The shell's output is forwarded live to your terminal. Press `F10` to write a
+static SVG; the capture notification is printed by the host and is not sent to the shell.
+
+```sh
+console2svg -i -o ./captures/output.svg
+# -> writes ./captures/output_yyyyMMdd_HHmmss.svg (image)
+```
+
+Press `F9` to start recording from the exact current terminal state, `F12` to pause or resume it, then `F9` again to save the recording. Output and elapsed time while paused are excluded from the recording.
+The output format controls whether the capture is written as animated SVG or converted to the requested video format.
+
+```sh
+console2svg -i -o ./captures/session.svg
+# -> writes ./captures/session_yyyyMMdd_HHmmss.svg (animation)
 ```
 
 ### Static SVG with crop
@@ -437,6 +476,7 @@ tmux capture-pane -pe -S - -t :0 | console2svg -o full-capture-$(date +%s).svg
 * `-w`: width of the output SVG (default: terminal width[pipe], 100ch[pty])
 * `-h`: height of the output SVG (default: terminal height[pipe], auto[pty])
 * `-v`: output to video mode SVG (animated, looped by default)
+* `-i`: interactive mode (run a shell in a PTY and capture the current screen on demand)
 * `-d`: window chrome style (none, macos, windows, macos-pc, windows-pc, transparent, ...)
 * `--background`: background color or image for the output SVG
 * `--forecolor`: override default console foreground color

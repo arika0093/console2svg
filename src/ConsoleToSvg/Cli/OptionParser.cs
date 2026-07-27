@@ -27,8 +27,6 @@ public static class OptionParser
                 -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc, transparent.
                 --background <color> [color]  Background color, gradient, or image path.
                 --crop-top/bottom/left/right  Crop by px, ch, or text pattern.
-                --forecolor <color>       Override default foreground color.
-                --adjust <value>          SVG text lengthAdjust (default: spacing).
                 --header <text>           Override command header text.
                 --prompt <text>           Override prompt prefix for -c (default: $ or # when root).
                 --verbose [path]          Enable verbose logging (log to path, default: console2svg.log).

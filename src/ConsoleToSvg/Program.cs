@@ -590,7 +590,10 @@ internal static class Program
             ffmpegAvailableOverride: SvgConverter.IsFfmpegAvailable,
             logger
         );
-        var workPath = Path.Combine(Path.GetTempPath(), $"c2s-{Guid.NewGuid():N}");
+        var preserveFrames = capture.IsVideo && !string.IsNullOrWhiteSpace(options.SaveFramesDir);
+        var workPath = preserveFrames
+            ? options.SaveFramesDir!
+            : Path.Combine(Path.GetTempPath(), $"c2s-{Guid.NewGuid():N}");
         try
         {
             if (capture.IsVideo)
@@ -653,11 +656,11 @@ internal static class Program
         {
             try
             {
-                if (Directory.Exists(workPath))
+                if (!preserveFrames && Directory.Exists(workPath))
                 {
                     Directory.Delete(workPath, recursive: true);
                 }
-                else if (File.Exists(workPath + ".svg"))
+                else if (!preserveFrames && File.Exists(workPath + ".svg"))
                 {
                     File.Delete(workPath + ".svg");
                 }

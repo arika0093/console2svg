@@ -109,12 +109,7 @@ public static class InteractiveRecorder
         var rawInput = PtyRecorder.ConsoleInputMode.TryEnableRaw(logger);
         await ClearHostTerminalAsync().ConfigureAwait(false);
 
-        async Task NotifyAsync(
-            string message,
-            bool isRecording,
-            long version,
-            TimeSpan displayDuration
-        )
+        async Task NotifyAsync(string message, bool isRecording, long version)
         {
             if (Console.IsOutputRedirected)
             {
@@ -160,7 +155,10 @@ public static class InteractiveRecorder
                 hostOutputGate.Release();
             }
 
-            await Task.Delay(displayDuration, lifetime.Token).ConfigureAwait(false);
+        }
+
+        async Task ClearNotificationAsync(long version)
+        {
             if (Volatile.Read(ref notificationVersion) != version)
             {
                 return;
@@ -188,24 +186,32 @@ public static class InteractiveRecorder
             }
         }
 
-        (long Version, Task Completion) ShowNotification(
-            string message,
-            bool isRecording = false,
-            TimeSpan? displayDuration = null
-        )
+        async Task ShowTimedNotificationAsync(string message, bool isRecording, long version)
+        {
+            await NotifyAsync(message, isRecording, version).ConfigureAwait(false);
+            await Task.Delay(TimeSpan.FromMilliseconds(1500), lifetime.Token).ConfigureAwait(false);
+            await ClearNotificationAsync(version).ConfigureAwait(false);
+        }
+
+        (long Version, Task Completion) ShowNotification(string message, bool isRecording = false)
         {
             var version = Interlocked.Increment(ref notificationVersion);
-            var notification = NotifyAsync(
-                    message,
-                    isRecording,
-                    version,
-                    displayDuration ?? TimeSpan.FromMilliseconds(1500)
-                );
+            var notification = ShowTimedNotificationAsync(message, isRecording, version);
             _ = notification.ContinueWith(
                 task => logger.ZLogDebug(task.Exception, $"Interactive notification failed."),
                 TaskContinuationOptions.OnlyOnFaulted
             );
             return (version, notification);
+        }
+
+        void ShowPersistentNotification(string message)
+        {
+            var version = Interlocked.Increment(ref notificationVersion);
+            var notification = NotifyAsync(message, isRecording: false, version: version);
+            _ = notification.ContinueWith(
+                task => logger.ZLogDebug(task.Exception, $"Interactive notification failed."),
+                TaskContinuationOptions.OnlyOnFaulted
+            );
         }
 
         async Task RenderPersistentIndicatorAsync()
@@ -309,60 +315,68 @@ public static class InteractiveRecorder
 
         async Task SaveCaptureAsync(InteractiveCapture capture)
         {
-            ShowNotification("Saving...");
-            var message = await onCapture(capture).ConfigureAwait(false);
-            if (!string.IsNullOrWhiteSpace(message))
+            ShowPersistentNotification("Saving...");
+            try
             {
-                var savedNotification = ShowNotification(message);
-                _ = Task.Run(
-                    async () =>
-                    {
-                        try
+                var message = await onCapture(capture).ConfigureAwait(false);
+                if (!string.IsNullOrWhiteSpace(message))
+                {
+                    var savedNotification = ShowNotification(message);
+                    _ = Task.Run(
+                        async () =>
                         {
-                            await savedNotification.Completion.ConfigureAwait(false);
-                            if (
-                                Volatile.Read(ref notificationVersion) != savedNotification.Version
-                                || Volatile.Read(ref recordingIndicatorActive) != 0
-                            )
+                            try
                             {
-                                return;
-                            }
-
-                            lock (captureGate)
-                            {
-                                if (videoFrames is not null)
+                                await savedNotification.Completion.ConfigureAwait(false);
+                                if (
+                                    Volatile.Read(ref notificationVersion) != savedNotification.Version
+                                    || Volatile.Read(ref recordingIndicatorActive) != 0
+                                )
                                 {
                                     return;
                                 }
-                            }
 
-                            Interlocked.Exchange(ref startupIndicatorActive, 1);
-                            await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
-                            try
-                            {
-                                if (
-                                    Volatile.Read(ref notificationVersion)
-                                    == savedNotification.Version
-                                )
+                                lock (captureGate)
                                 {
-                                    await RenderPersistentIndicatorAsync().ConfigureAwait(false);
+                                    if (videoFrames is not null)
+                                    {
+                                        return;
+                                    }
+                                }
+
+                                Interlocked.Exchange(ref startupIndicatorActive, 1);
+                                await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
+                                try
+                                {
+                                    if (
+                                        Volatile.Read(ref notificationVersion)
+                                        == savedNotification.Version
+                                    )
+                                    {
+                                        await RenderPersistentIndicatorAsync().ConfigureAwait(false);
+                                    }
+                                }
+                                finally
+                                {
+                                    hostOutputGate.Release();
                                 }
                             }
-                            finally
+                            catch (OperationCanceledException)
                             {
-                                hostOutputGate.Release();
+                                // The session ended before restoring the startup indicator.
                             }
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            // The session ended before restoring the startup indicator.
-                        }
-                    },
-                    CancellationToken.None
-                ).ContinueWith(
-                    task => logger.ZLogDebug(task.Exception, $"Interactive notification failed."),
-                    TaskContinuationOptions.OnlyOnFaulted
-                );
+                        },
+                        CancellationToken.None
+                    ).ContinueWith(
+                        task => logger.ZLogDebug(task.Exception, $"Interactive notification failed."),
+                        TaskContinuationOptions.OnlyOnFaulted
+                    );
+                }
+            }
+            catch
+            {
+                ShowNotification("Save failed");
+                throw;
             }
         }
 

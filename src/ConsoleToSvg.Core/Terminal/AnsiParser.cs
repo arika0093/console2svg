@@ -12,6 +12,9 @@ public sealed class AnsiParser
     private readonly Theme _theme;
     private TextStyle _style;
     private string _pendingEscapeSequence = string.Empty;
+    private CharacterSet _g0CharacterSet;
+    private CharacterSet _g1CharacterSet;
+    private bool _useG1CharacterSet;
 
     // Holds a partial caret-notation sequence that spans event chunks (e.g. echoed ESC as "^[")
     private string _pendingCaretSequence = string.Empty;
@@ -73,6 +76,18 @@ public sealed class AnsiParser
                 continue;
             }
 
+            if (ch == '\u000E')
+            {
+                _useG1CharacterSet = true;
+                continue;
+            }
+
+            if (ch == '\u000F')
+            {
+                _useG1CharacterSet = false;
+                continue;
+            }
+
             if (char.IsHighSurrogate(ch) && i + 1 < text.Length && char.IsLowSurrogate(text[i + 1]))
             {
                 var cluster = text.Substring(i, 2);
@@ -109,7 +124,7 @@ public sealed class AnsiParser
                 continue;
             }
 
-            _buffer.PutChar(ch, _style);
+            _buffer.PutChar(TranslateCharacterSet(ch), _style);
         }
     }
 
@@ -117,6 +132,46 @@ public sealed class AnsiParser
         ch is '\u00AD' or '\u200B' or '\u200C' or '\u200D' or '\uFEFF';
 
     private static bool IsVariationSelector(char ch) => ch is >= '\uFE00' and <= '\uFE0F';
+
+    private char TranslateCharacterSet(char value)
+    {
+        if ((_useG1CharacterSet ? _g1CharacterSet : _g0CharacterSet) != CharacterSet.DecSpecialGraphics)
+        {
+            return value;
+        }
+
+        return value switch
+        {
+            '`' => '\u25C6',
+            'a' => '\u2592',
+            'f' => '\u00B0',
+            'g' => '\u00B1',
+            'j' => '\u2518',
+            'k' => '\u2510',
+            'l' => '\u250C',
+            'm' => '\u2514',
+            'n' => '\u253C',
+            'q' => '\u2500',
+            't' => '\u251C',
+            'u' => '\u2524',
+            'v' => '\u2534',
+            'w' => '\u252C',
+            'x' => '\u2502',
+            'y' => '\u2264',
+            'z' => '\u2265',
+            '{' => '\u03C0',
+            '|' => '\u2260',
+            '}' => '\u00A3',
+            '~' => '\u00B7',
+            _ => value,
+        };
+    }
+
+    private enum CharacterSet
+    {
+        UsAscii,
+        DecSpecialGraphics,
+    }
 
     private bool TryHandleEscape(string text, int index, out int endIndex)
     {
@@ -137,6 +192,7 @@ public sealed class AnsiParser
                 return TrySkipDcs(text, index + 2, out endIndex);
             case '(':
             case ')':
+                return TryHandleCharacterSetDesignation(next, text, index + 2, out endIndex);
             case '*':
             case '+':
             case '-':
@@ -175,6 +231,34 @@ public sealed class AnsiParser
                 endIndex = index + 1;
                 return true;
         }
+    }
+
+    private bool TryHandleCharacterSetDesignation(
+        char selector,
+        string text,
+        int start,
+        out int endIndex
+    )
+    {
+        endIndex = start;
+        if (start >= text.Length)
+        {
+            return false;
+        }
+
+        var characterSet = text[start] == '0'
+            ? CharacterSet.DecSpecialGraphics
+            : CharacterSet.UsAscii;
+        if (selector == '(')
+        {
+            _g0CharacterSet = characterSet;
+        }
+        else
+        {
+            _g1CharacterSet = characterSet;
+        }
+
+        return true;
     }
 
     private static bool TrySkipEscSingleFinal(string text, int start, out int endIndex)

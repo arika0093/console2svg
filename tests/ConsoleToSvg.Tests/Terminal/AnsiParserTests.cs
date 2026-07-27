@@ -22,6 +22,36 @@ public sealed class AnsiParserTests
     }
 
     [Test]
+    public void DecSpecialGraphicsRenderBoxDrawingCharacters()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        emulator.Process("\u001b(0lqkxm\u001b(B");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("\u250C");
+        emulator.Buffer.GetCell(0, 1).Text.ShouldBe("\u2500");
+        emulator.Buffer.GetCell(0, 2).Text.ShouldBe("\u2510");
+        emulator.Buffer.GetCell(0, 3).Text.ShouldBe("\u2502");
+        emulator.Buffer.GetCell(0, 4).Text.ShouldBe("\u2514");
+        emulator.Buffer.GetCell(0, 5).Text.ShouldBe(" ");
+    }
+
+    [Test]
+    public void DecSpecialGraphicsPersistsAcrossInputChunks()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        emulator.Process("\u001b(");
+        emulator.Process("0lqk");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("\u250C");
+        emulator.Buffer.GetCell(0, 1).Text.ShouldBe("\u2500");
+        emulator.Buffer.GetCell(0, 2).Text.ShouldBe("\u2510");
+    }
+
+    [Test]
     public void PrivateCsiQuestionMarkMDoesNotApplyUnderline()
     {
         var theme = Theme.Resolve("dark");

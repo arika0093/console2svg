@@ -590,8 +590,7 @@ internal static class Program
             ffmpegAvailableOverride: SvgConverter.IsFfmpegAvailable,
             logger
         );
-        var outputDirectory = Path.GetDirectoryName(Path.GetFullPath(outputPath))!;
-        var workPath = Path.Combine(outputDirectory, $".console2svg-{Guid.NewGuid():N}");
+        var workPath = Path.Combine(Path.GetTempPath(), $"c2s-{Guid.NewGuid():N}");
         try
         {
             if (capture.IsVideo)

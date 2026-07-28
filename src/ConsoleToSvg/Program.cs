@@ -509,11 +509,12 @@ internal static class Program
                 options.DelimitedCommand,
                 options.DelimitedCommand is null or { Length: 0 },
                 IsInteractiveRecordingFormat(options.OutputPath),
+                !IsVideoFormat(Path.GetExtension(options.OutputPath).TrimStart('.')),
                 async capture =>
                 {
                     var outputPath = GetInteractiveOutputPath(
                         options.OutputPath,
-                        capture.IsVideo ? null : ".svg"
+                        capture.IsVideo ? null : Path.GetExtension(options.OutputPath)
                     );
                     await WriteInteractiveCaptureAsync(
                             capture,

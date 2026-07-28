@@ -53,6 +53,7 @@ public static class InteractiveRecorder
         string[]? command,
         bool exitOnCtrlD,
         bool recordingEnabled,
+        bool screenshotEnabled,
         Func<InteractiveCapture, Task<string?>> onCapture,
         CancellationToken cancellationToken,
         ILogger? logger = null
@@ -79,6 +80,8 @@ public static class InteractiveRecorder
         var videoPausedDuration = 0d;
         var stopwatch = Stopwatch.StartNew();
         long lastOutputTimestamp = Stopwatch.GetTimestamp();
+        var canRecord = recordingEnabled;
+        var canScreenshot = screenshotEnabled;
 
         var options = BuildOptions(width, height, noDeleteEnvs, command);
         using var lifetime = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -136,7 +139,7 @@ public static class InteractiveRecorder
             throw;
         }
 
-        async Task NotifyAsync(string message, bool isRecording, long version)
+        async Task NotifyAsync(string message, bool isRecording, bool isError, long version)
         {
             if (Console.IsOutputRedirected)
             {
@@ -164,7 +167,19 @@ public static class InteractiveRecorder
                     return;
                 }
 
-                var style = isRecording ? "\u001b[1;31;48;5;236m" : "\u001b[30;48;5;114m";
+                string style;
+                if (isError)
+                {
+                    style = "\u001b[1;97;48;5;196m";  // Bright white on red background for errors
+                }
+                else if (isRecording)
+                {
+                    style = "\u001b[1;31;48;5;236m";  // Red on dark gray for recording
+                }
+                else
+                {
+                    style = "\u001b[30;48;5;114m";   // Black on green for normal
+                }
                 var clearPrevious = notificationLength == 0
                     ? string.Empty
                     : $"\u001b[1;{notificationColumn}H{new string(' ', notificationLength)}";
@@ -213,17 +228,22 @@ public static class InteractiveRecorder
             }
         }
 
-        async Task ShowTimedNotificationAsync(string message, bool isRecording, long version)
+        async Task ShowTimedNotificationAsync(string message, bool isRecording, bool isError, long version)
         {
-            await NotifyAsync(message, isRecording, version).ConfigureAwait(false);
+            await NotifyAsync(message, isRecording, isError, version).ConfigureAwait(false);
             await Task.Delay(TimeSpan.FromMilliseconds(1500), lifetime.Token).ConfigureAwait(false);
             await ClearNotificationAsync(version).ConfigureAwait(false);
+            // After error notification clears, restore persistent indicator if recording is active
+            if (isError && Volatile.Read(ref recordingIndicatorActive) != 0)
+            {
+                await RenderPersistentIndicatorAsync().ConfigureAwait(false);
+            }
         }
 
-        (long Version, Task Completion) ShowNotification(string message, bool isRecording = false)
+        (long Version, Task Completion) ShowNotification(string message, bool isRecording = false, bool isError = false)
         {
             var version = Interlocked.Increment(ref notificationVersion);
-            var notification = ShowTimedNotificationAsync(message, isRecording, version);
+            var notification = ShowTimedNotificationAsync(message, isRecording, isError, version);
             _ = notification.ContinueWith(
                 task => logger.ZLogDebug(task.Exception, $"Interactive notification failed."),
                 TaskContinuationOptions.OnlyOnFaulted
@@ -234,7 +254,7 @@ public static class InteractiveRecorder
         void ShowPersistentNotification(string message)
         {
             var version = Interlocked.Increment(ref notificationVersion);
-            var notification = NotifyAsync(message, isRecording: false, version: version);
+            var notification = NotifyAsync(message, isRecording: false, isError: false, version: version);
             _ = notification.ContinueWith(
                 task => logger.ZLogDebug(task.Exception, $"Interactive notification failed."),
                 TaskContinuationOptions.OnlyOnFaulted
@@ -254,14 +274,34 @@ public static class InteractiveRecorder
                 return;
             }
 
-            var label = "  F9: Record start   F10: Capture  ";
+            // Build label based on enabled features
+            var hints = new List<string>();
+            if (canRecord)
+            {
+                hints.Add("F9: Record start");
+            }
+            if (canScreenshot)
+            {
+                hints.Add("F10: Capture");
+            }
+            
+            string label;
             if (isRecording)
             {
-                label =
-                    Volatile.Read(ref recordingPaused) != 0
-                        ? "  ● REC (F9:End, F12:Resume)  "
-                        : "  ● REC (F9:End, F12:Pause)  ";
+                label = Volatile.Read(ref recordingPaused) != 0
+                    ? "  ● REC (F9:End, F12:Resume)  "
+                    : "  ● REC (F9:End, F12:Pause)  ";
             }
+            else if (hints.Count > 0)
+            {
+                label = "  " + string.Join("   ", hints) + "  ";
+            }
+            else
+            {
+                // No features enabled, don't show indicator
+                return;
+            }
+            
             var width = Math.Max(20, Console.WindowWidth);
             var column = Math.Max(1, width - label.Length);
             var clearPrevious = notificationLength == 0
@@ -428,7 +468,7 @@ public static class InteractiveRecorder
         {
             if (!recordingEnabled)
             {
-                ShowNotification("Recording requires SVG or a video output format");
+                ShowNotification("Recording requires SVG or a video output format", isError: true);
                 return null;
             }
 
@@ -772,6 +812,11 @@ public static class InteractiveRecorder
                                         // wait for the PTY's normal process-exit path.
                                         break;
                                     case InteractiveInputAction.Screenshot:
+                                        if (!screenshotEnabled)
+                                        {
+                                            ShowNotification("Screenshots are not supported for video formats", isError: true);
+                                            break;
+                                        }
                                         try
                                         {
                                             captures.Add(

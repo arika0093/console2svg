@@ -184,6 +184,11 @@ internal static class Program
                     : SvgRenderer.Render(session, renderOptions);
             logger.ZLogDebug($"Rendering completed. SvgLength={svg.Length}");
 
+            // Background temp-dir deletion task for the video path; awaited
+            // just before the process exits so deletion completes even when
+            // Windows AV makes recursive Directory.Delete slow.
+            Task? tempCleanup = null;
+
             if (options.StdOut)
             {
                 logger.ZLogDebug($"Writing SVG to stdout.");
@@ -293,17 +298,23 @@ internal static class Program
                         }
                         finally
                         {
-                            if (Directory.Exists(tempDir))
+                            // Start temp-dir deletion on a background thread so
+                            // the remaining work (writing "Generated:" message,
+                            // save-frames, etc.) can proceed concurrently. The
+                            // Task is awaited before the process exits so that
+                            // deletion actually completes even on Windows where
+                            // AV scans make recursive delete slow.
+                            tempCleanup = Task.Run(() =>
                             {
                                 try
                                 {
-                                    Directory.Delete(tempDir, recursive: true);
+                                    Directory.Delete(tempDir);
                                 }
                                 catch (Exception ex)
                                 {
                                     logger.ZLogDebug(ex, $"Failed to delete temp dir {tempDir}: {ex.Message}");
                                 }
-                            }
+                            });
                         }
                     }
                     else
@@ -371,12 +382,20 @@ internal static class Program
                     ? "Generated (partial): (stdout)"
                     : $"Generated (partial): {options.OutputPath}";
                 await Console.Error.WriteLineAsync(message.AsMemory(), CancellationToken.None);
+                if (tempCleanup is not null)
+                {
+                    await tempCleanup.ConfigureAwait(false);
+                }
                 return 0;
             }
 
             await Console.Error.WriteLineAsync(
                 options.StdOut ? "Generated: (stdout)" : $"Generated: {options.OutputPath}"
             );
+            if (tempCleanup is not null)
+            {
+                await tempCleanup.ConfigureAwait(false);
+            }
             return 0;
         }
         catch (OperationCanceledException)

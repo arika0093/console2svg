@@ -399,15 +399,12 @@ public static class SvgConverter
                             )
                             .ConfigureAwait(false);
 
-                        // Remove the SVG so ffmpeg's pattern doesn't pick it up.
-                        try { File.Delete(svgFile); }
-                        catch (Exception ex)
-                        {
-                            logger.ZLogDebug(
-                                ex,
-                                $"Failed to delete frame SVG {svgFile}: {ex.Message}"
-                            );
-                        }
+                        // Intermediate SVGs are left in place and removed
+                        // together with the temp directory after ffmpeg runs
+                        // (frame-%04d.png only matches PNGs, so ffmpeg is
+                        // unaffected). Deleting per-frame on Windows triggers
+                        // per-file antivirus scans that dramatically slow the
+                        // pipeline (see issue about slow mp4 on Windows).
                     }
                 )
                 .ConfigureAwait(false);

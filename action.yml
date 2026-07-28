@@ -21,138 +21,19 @@ runs:
     - name: Build and install console2svg from source (develop)
       if: ${{ inputs.version == 'develop' }}
       shell: bash
-      run: |
-        case "${{ runner.os }}/${{ runner.arch }}" in
-          Linux/X64)     RID="linux-x64"   ; EXT="" ;;
-          Linux/ARM64)   RID="linux-arm64" ; EXT="" ;;
-          Windows/X64)   RID="win-x64"     ; EXT=".exe" ;;
-          Windows/ARM64) RID="win-arm64"   ; EXT=".exe" ;;
-          macOS/X64)     RID="osx-x64"     ; EXT="" ;;
-          macOS/ARM64)   RID="osx-arm64"   ; EXT="" ;;
-          *)
-            echo "Unsupported OS/arch: ${{ runner.os }}/${{ runner.arch }}"
-            exit 1
-            ;;
-        esac
-
-        case "$RID" in
-          linux-x64) RUST_TARGET="x86_64-unknown-linux-gnu" ;;
-          linux-arm64) RUST_TARGET="aarch64-unknown-linux-gnu" ;;
-          win-x64) RUST_TARGET="x86_64-pc-windows-msvc" ;;
-          win-arm64) RUST_TARGET="aarch64-pc-windows-msvc" ;;
-          osx-x64) RUST_TARGET="x86_64-apple-darwin" ;;
-          osx-arm64) RUST_TARGET="aarch64-apple-darwin" ;;
-        esac
-        rustup target add "$RUST_TARGET"
-
-        INSTALL_DIR="${{ runner.tool_cache }}/console2svg/develop/${{ runner.arch }}"
-        rm -rf "$INSTALL_DIR"
-        mkdir -p "$INSTALL_DIR"
-        publish_dir="$INSTALL_DIR/publish"
-
-        export NBGV_GitEngine=Disabled
-        dotnet publish "${{ github.action_path }}/src/ConsoleToSvg/ConsoleToSvg.csproj" \
-          -c Release \
-          -r "$RID" \
-          -p:PublishAot=true \
-          -p:SelfContained=true \
-          -p:BuildResvgNative=false \
-          -o "$publish_dir"
-        "${{ github.action_path }}/scripts/build-resvg-native.sh" "$RUST_TARGET" "$publish_dir"
-
-        if [ -f "$publish_dir/ConsoleToSvg${EXT}" ]; then
-          cp "$publish_dir/ConsoleToSvg${EXT}" "$INSTALL_DIR/console2svg${EXT}"
-        elif [ -f "$publish_dir/console2svg${EXT}" ]; then
-          cp "$publish_dir/console2svg${EXT}" "$INSTALL_DIR/console2svg${EXT}"
-        else
-          echo "Published binary not found in $publish_dir"
-          ls -la "$publish_dir"
-          exit 1
-        fi
-
-        # Native runtime libraries and child executables must be next to the executable.
-        if [ -n "${EXT}" ]; then
-          for f in "$publish_dir"/*.dll; do
-            [ -f "$f" ] && cp "$f" "$INSTALL_DIR/"
-          done
-          for f in "$publish_dir"/*.exe; do
-            [ -f "$f" ] || continue
-            [ "$(basename "$f")" = "console2svg${EXT}" ] && continue
-            cp "$f" "$INSTALL_DIR/"
-          done
-        else
-          for f in "$publish_dir"/*.so "$publish_dir"/*.dylib; do
-            [ -f "$f" ] && cp "$f" "$INSTALL_DIR/"
-          done
-        fi
-
-        [ -z "${EXT}" ] && chmod +x "$INSTALL_DIR/console2svg"
-        rm -rf "$publish_dir"
-        echo "$INSTALL_DIR" >> "$GITHUB_PATH"
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+        TOOL_CACHE: ${{ runner.tool_cache }}
+        RUNNER_OS: ${{ runner.os }}
+        RUNNER_ARCH: ${{ runner.arch }}
+      run: "${{ github.action_path }}/scripts/action-build-develop.sh"
 
     - name: Download and install console2svg
       if: ${{ inputs.version != 'develop' }}
       shell: bash
-      run: |
-        VERSION="${{ inputs.version }}"
-
-        case "${{ runner.os }}/${{ runner.arch }}" in
-          Linux/X64)     RID="linux-x64"   ; EXT="" ;;
-          Linux/ARM64)   RID="linux-arm64" ; EXT="" ;;
-          Windows/X64)   RID="win-x64"     ; EXT=".exe" ;;
-          Windows/ARM64) RID="win-arm64"   ; EXT=".exe" ;;
-          macOS/X64)     RID="osx-x64"     ; EXT="" ;;
-          macOS/ARM64)   RID="osx-arm64"   ; EXT="" ;;
-          *)
-            echo "Unsupported OS/arch: ${{ runner.os }}/${{ runner.arch }}"
-            exit 1
-            ;;
-        esac
-
-        INSTALL_DIR="${{ runner.tool_cache }}/console2svg/${VERSION}/${{ runner.arch }}"
-        rm -rf "$INSTALL_DIR"
-        mkdir -p "$INSTALL_DIR"
-
-        # Try new format (v0.8+): archives (tar.gz/zip)
-        if [ -n "${EXT}" ]; then
-          FILE_NEW="console2svg-${RID}.zip"
-        else
-          FILE_NEW="console2svg-${RID}.tar.gz"
-        fi
-
-        if [ "$VERSION" = "latest" ]; then
-          URL_NEW="https://github.com/arika0093/console2svg/releases/latest/download/${FILE_NEW}"
-        else
-          URL_NEW="https://github.com/arika0093/console2svg/releases/download/v${VERSION}/${FILE_NEW}"
-        fi
-
-        echo "Trying new format (v0.8+): ${URL_NEW} ..."
-        if curl -fsSL -L -o "${INSTALL_DIR}/${FILE_NEW}" "$URL_NEW" 2>/dev/null; then
-          echo "Downloaded new format"
-          if [ -n "${EXT}" ]; then
-            unzip -q "${INSTALL_DIR}/${FILE_NEW}" -d "$INSTALL_DIR"
-          else
-            tar -xzf "${INSTALL_DIR}/${FILE_NEW}" -C "$INSTALL_DIR"
-          fi
-          rm -f "${INSTALL_DIR}/${FILE_NEW}"
-        else
-          # Fallback to old format (v0.7): raw binaries
-          if [ -n "${EXT}" ]; then
-            FILE_OLD="console2svg-${RID}${EXT}"
-          else
-            FILE_OLD="console2svg-${RID}"
-          fi
-
-          if [ "$VERSION" = "latest" ]; then
-            URL_OLD="https://github.com/arika0093/console2svg/releases/latest/download/${FILE_OLD}"
-          else
-            URL_OLD="https://github.com/arika0093/console2svg/releases/download/v${VERSION}/${FILE_OLD}"
-          fi
-
-          echo "Falling back to old format (v0.7): ${URL_OLD} ..."
-          curl -fsSL -L -o "${INSTALL_DIR}/console2svg${EXT}" "$URL_OLD"
-        fi
-
-        [ -z "${EXT}" ] && chmod +x "${INSTALL_DIR}/console2svg"
-
-        echo "$INSTALL_DIR" >> "$GITHUB_PATH"
+      env:
+        VERSION: ${{ inputs.version }}
+        TOOL_CACHE: ${{ runner.tool_cache }}
+        RUNNER_OS: ${{ runner.os }}
+        RUNNER_ARCH: ${{ runner.arch }}
+      run: "${{ github.action_path }}/scripts/action-install-release.sh"

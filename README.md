@@ -79,12 +79,19 @@ console2svg -i -d windows-pc -o ./captures/output.svg
 
 ## Install
 
-The easiest way on Linux/macOS is the install script. Windows users can use npm or download the zip.
+The easiest way is the install script.
 
 ```sh
 # Linux / macOS
 curl -sSL https://raw.githubusercontent.com/arika0093/console2svg/main/install.sh | bash
 
+# Windows (PowerShell)
+irm https://raw.githubusercontent.com/arika0093/console2svg/main/install.ps1 | iex
+```
+
+You can also install via package managers.
+
+```sh
 # dotnet global tool
 dotnet tool install -g ConsoleToSvg
 
@@ -99,11 +106,10 @@ You can also install from the [release archives](https://github.com/arika0093/co
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg.amd64.deb -o console2svg.deb
 dpkg -i console2svg.deb
 
-# windows (PowerShell, bundled with ffmpeg)
-$arch = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'win-arm64' } else { 'win-x64' }
-Invoke-WebRequest -Uri "https://github.com/arika0093/console2svg/releases/latest/download/console2svg-${arch}.zip" -OutFile console2svg.zip
-Expand-Archive -Path console2svg.zip -DestinationPath console2svg
-# Add console2svg\ to PATH, or use console2svg\console2svg.exe
+# Linux
+curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg.linux-x64.tar.gz -o console2svg.tar.gz
+tar -xzf console2svg.tar.gz
+chmod +x console2svg
 ```
 
 ### GitHub Actions

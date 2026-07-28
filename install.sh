@@ -35,13 +35,6 @@ case "$OS" in
     ;;
 esac
 
-ARCHIVE="console2svg-${RID}.tar.gz"
-if [ "$VERSION" = "latest" ]; then
-  URL="https://github.com/${REPO}/releases/latest/download/${ARCHIVE}"
-else
-  URL="https://github.com/${REPO}/releases/download/v${VERSION}/${ARCHIVE}"
-fi
-
 # Choose install destination.
 if [ -n "${CONSOLE2SVG_INSTALL_DIR:-}" ]; then
   INSTALL_DIR="$CONSOLE2SVG_INSTALL_DIR"
@@ -59,10 +52,28 @@ echo "Installing console2svg (${RID}) ..."
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
-curl -fsSL -L -o "${TMP_DIR}/${ARCHIVE}" "$URL"
-
 mkdir -p "$INSTALL_DIR"
-tar -xzf "${TMP_DIR}/${ARCHIVE}" -C "$INSTALL_DIR"
+
+# Try new format (v0.8+): tar.gz archive
+ARCHIVE_NEW="console2svg-${RID}.tar.gz"
+if [ "$VERSION" = "latest" ]; then
+  URL_NEW="https://github.com/${REPO}/releases/latest/download/${ARCHIVE_NEW}"
+else
+  URL_NEW="https://github.com/${REPO}/releases/download/v${VERSION}/${ARCHIVE_NEW}"
+fi
+
+if curl -fsSL -L -o "${TMP_DIR}/${ARCHIVE_NEW}" "$URL_NEW" 2>/dev/null; then
+  tar -xzf "${TMP_DIR}/${ARCHIVE_NEW}" -C "$INSTALL_DIR"
+else
+  # Fallback to old format (v0.7): raw binary
+  BINARY_OLD="console2svg-${RID}"
+  if [ "$VERSION" = "latest" ]; then
+    URL_OLD="https://github.com/${REPO}/releases/latest/download/${BINARY_OLD}"
+  else
+    URL_OLD="https://github.com/${REPO}/releases/download/v${VERSION}/${BINARY_OLD}"
+  fi
+  curl -fsSL -L -o "${INSTALL_DIR}/console2svg" "$URL_OLD"
+fi
 
 chmod +x "$INSTALL_DIR/console2svg"
 

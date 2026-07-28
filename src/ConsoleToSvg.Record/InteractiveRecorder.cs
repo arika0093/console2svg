@@ -82,6 +82,7 @@ public static class InteractiveRecorder
         long lastOutputTimestamp = Stopwatch.GetTimestamp();
         var canRecord = recordingEnabled;
         var canScreenshot = screenshotEnabled;
+        var notificationActive = 0;
 
         var options = BuildOptions(width, height, noDeleteEnvs, command);
         using var lifetime = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -170,7 +171,7 @@ public static class InteractiveRecorder
                 string style;
                 if (isError)
                 {
-                    style = "\u001b[1;97;48;5;196m";  // Bright white on red background for errors
+                    style = "\u001b[1;97;48;5;88m";  // White on dark red background for errors
                 }
                 else if (isRecording)
                 {
@@ -233,8 +234,10 @@ public static class InteractiveRecorder
             await NotifyAsync(message, isRecording, isError, version).ConfigureAwait(false);
             await Task.Delay(TimeSpan.FromMilliseconds(1500), lifetime.Token).ConfigureAwait(false);
             await ClearNotificationAsync(version).ConfigureAwait(false);
-            // After error notification clears, restore persistent indicator if recording is active
-            if (isError && Volatile.Read(ref recordingIndicatorActive) != 0)
+            // Mark notification as no longer active before restoring persistent indicator
+            Interlocked.Exchange(ref notificationActive, 0);
+            // After timed notification clears, restore persistent indicator
+            if (Volatile.Read(ref notificationVersion) == version)
             {
                 await RenderPersistentIndicatorAsync().ConfigureAwait(false);
             }
@@ -243,6 +246,7 @@ public static class InteractiveRecorder
         (long Version, Task Completion) ShowNotification(string message, bool isRecording = false, bool isError = false)
         {
             var version = Interlocked.Increment(ref notificationVersion);
+            Interlocked.Exchange(ref notificationActive, 1);
             var notification = ShowTimedNotificationAsync(message, isRecording, isError, version);
             _ = notification.ContinueWith(
                 task => logger.ZLogDebug(task.Exception, $"Interactive notification failed."),
@@ -254,6 +258,7 @@ public static class InteractiveRecorder
         void ShowPersistentNotification(string message)
         {
             var version = Interlocked.Increment(ref notificationVersion);
+            Interlocked.Exchange(ref notificationActive, 1);
             var notification = NotifyAsync(message, isRecording: false, isError: false, version: version);
             _ = notification.ContinueWith(
                 task => logger.ZLogDebug(task.Exception, $"Interactive notification failed."),
@@ -264,6 +269,12 @@ public static class InteractiveRecorder
         async Task RenderPersistentIndicatorAsync()
         {
             if (Console.IsOutputRedirected)
+            {
+                return;
+            }
+
+            // Skip if a timed notification is currently active
+            if (Volatile.Read(ref notificationActive) != 0)
             {
                 return;
             }
@@ -447,7 +458,7 @@ public static class InteractiveRecorder
             }
             catch
             {
-                ShowNotification("Save failed");
+                ShowNotification("Save failed", isError: true);
                 throw;
             }
         }

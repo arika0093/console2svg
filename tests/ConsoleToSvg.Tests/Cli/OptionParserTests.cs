@@ -7,6 +7,66 @@ namespace ConsoleToSvg.Tests.Cli;
 public sealed class OptionParserTests
 {
     [Test]
+    public void InteractiveModeIsEnabled()
+    {
+        var ok = OptionParser.TryParse(new[] { "--interactive" }, out var options, out _, out _);
+
+        ok.ShouldBeTrue();
+        options!.Interactive.ShouldBeTrue();
+    }
+
+    [Test]
+    public void InteractiveHelpDocumentsF9RecordingAndF10Screenshot()
+    {
+        OptionParser.HelpText.ShouldContain("F9 starts/stops an animation recording");
+        OptionParser.HelpText.ShouldContain("F10 saves a static screenshot");
+    }
+
+    [Test]
+    public void InteractiveModeRejectsRemovedKeybindOption()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--interactive", "--keybind", "Ctrl+G" },
+            out _,
+            out var error,
+            out _
+        );
+
+        ok.ShouldBeFalse();
+        error.ShouldBe("Unknown option: --keybind");
+    }
+
+    [Test]
+    [Arguments(new[] { "--interactive", "echo hi" }, "An interactive program must be specified after -- (for example: -i -- vim).")]
+    [Arguments(new[] { "--interactive", "--in", "record.cast" }, "--interactive cannot be used with --in.")]
+    [Arguments(new[] { "--interactive", "--stdout" }, "--interactive cannot be used with --stdout.")]
+    [Arguments(new[] { "--interactive", "--save-cast", "trace.cast" }, "--interactive cannot be used with --save-cast.")]
+    [Arguments(new[] { "--interactive", "--mode", "repeat" }, "--interactive cannot be used with --mode repeat.")]
+    [Arguments(new[] { "--interactive", "--replay", "input.json" }, "--interactive cannot be used with replay options.")]
+    public void InteractiveModeRejectsIncompatibleSources(string[] args, string expectedError)
+    {
+        var ok = OptionParser.TryParse(args, out _, out var error, out _);
+
+        ok.ShouldBeFalse();
+        error.ShouldBe(expectedError);
+    }
+
+    [Test]
+    public void InteractiveModeStartsDelimitedProgramWithUnmodifiedArguments()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "-i", "--", "vim", "file name.txt" },
+            out var options,
+            out _,
+            out _
+        );
+
+        ok.ShouldBeTrue();
+        options!.Command.ShouldBe("vim file name.txt");
+        options.DelimitedCommand.ShouldBe(new[] { "vim", "file name.txt" });
+    }
+
+    [Test]
     public void ShortFlagWidthParsed()
     {
         var ok = OptionParser.TryParse(new[] { "-w", "120" }, out var options, out _, out _);
@@ -327,6 +387,14 @@ public sealed class OptionParserTests
         var ok = OptionParser.TryParse(new[] { "--version" }, out var options, out _, out _);
         ok.ShouldBeTrue();
         options!.ShowVersion.ShouldBeTrue();
+    }
+
+    [Test]
+    public void InstallDependenciesFlagParsed()
+    {
+        var ok = OptionParser.TryParse(new[] { "--install-deps" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.InstallDependencies.ShouldBeTrue();
     }
 
     [Test]
@@ -904,7 +972,7 @@ public sealed class OptionParserTests
         options!.PcMode.ShouldBeTrue();
         options.Window.ShouldBe("macos");
         // SvgRenderOptions.FromAppOptions resolves the effective window name
-        var svgOptions = SvgRenderOptions.FromAppOptions(options!);
+        var svgOptions = SvgRenderOptionsFactory.Create(options!);
         // The chrome should have IsDesktop = true (macos + --pcmode -> macos-pc path)
         svgOptions.Chrome.ShouldNotBeNull();
         svgOptions.Chrome!.IsDesktop.ShouldBeTrue();
@@ -921,7 +989,7 @@ public sealed class OptionParserTests
             out _
         );
         ok.ShouldBeTrue();
-        var svgOptions = SvgRenderOptions.FromAppOptions(options!);
+        var svgOptions = SvgRenderOptionsFactory.Create(options!);
         svgOptions.Chrome.ShouldNotBeNull();
         svgOptions.Chrome!.IsDesktop.ShouldBeTrue();
     }
@@ -936,7 +1004,7 @@ public sealed class OptionParserTests
             out _
         );
         ok.ShouldBeTrue();
-        var svgOptions = SvgRenderOptions.FromAppOptions(options!);
+        var svgOptions = SvgRenderOptionsFactory.Create(options!);
         svgOptions.Chrome.ShouldNotBeNull();
         svgOptions.Chrome!.DesktopPadding.ShouldBe(40d);
     }
@@ -952,7 +1020,7 @@ public sealed class OptionParserTests
             out _
         );
         ok.ShouldBeTrue();
-        var svgOptions = SvgRenderOptions.FromAppOptions(options!);
+        var svgOptions = SvgRenderOptionsFactory.Create(options!);
         // transparent-pc resolves to transparent base with IsDesktop=true
         svgOptions.Chrome.ShouldNotBeNull();
         svgOptions.Chrome!.IsDesktop.ShouldBeTrue();
@@ -969,7 +1037,7 @@ public sealed class OptionParserTests
         );
         ok.ShouldBeTrue();
 
-        var renderOptions = SvgRenderOptions.FromAppOptions(options!);
+        var renderOptions = SvgRenderOptionsFactory.Create(options!);
         renderOptions.VideoTiming.ShouldBe(VideoTimingMode.Realtime);
     }
 
@@ -1189,7 +1257,7 @@ public sealed class OptionParserTests
     {
         var ok = OptionParser.TryParse(new[] { "--size", "1000x500" }, out var options, out _, out _);
         ok.ShouldBeTrue();
-        var renderOptions = SvgRenderOptions.FromAppOptions(options!);
+        var renderOptions = SvgRenderOptionsFactory.Create(options!);
         renderOptions.SizeWidth.ShouldBe(1000d);
         renderOptions.SizeHeight.ShouldBe(500d);
     }

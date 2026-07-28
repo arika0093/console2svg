@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using ConsoleToSvg.Cli;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
 using ConsoleToSvg.Utils;
@@ -20,13 +19,28 @@ public static class AnimatedSvgRenderer
         var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
         var frames = emulator.ReplayFrames(session);
         frames = TrimTrailingAltScreenRestoreFrame(frames, session);
-        frames = NormalizeTiming(frames, options.VideoFps, options.VideoTiming);
 
         if (frames.Count == 0)
         {
             return SvgRenderer.Render(session, options);
         }
 
+        return RenderFrames(frames, options);
+    }
+
+    /// <summary>Renders terminal frames captured from an already-running interactive terminal.</summary>
+    public static string RenderFrames(
+        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
+        SvgRenderOptions options
+    )
+    {
+        if (frames.Count == 0)
+        {
+            throw new ArgumentException("At least one terminal frame is required.", nameof(frames));
+        }
+
+        var theme = SvgRenderShared.ResolveTheme(options);
+        frames = NormalizeTiming(frames, options.VideoFps, options.VideoTiming);
         var reducedFrames = ReduceFrames(frames, options.VideoFps);
         reducedFrames = SpreadCollapsedFrameTimes(reducedFrames, options.VideoFps);
 
@@ -58,14 +72,19 @@ public static class AnimatedSvgRenderer
             // correct terminal state at the start of the time window.
             if (lastBeforeRange is not null)
             {
-                filtered.Insert(0, lastBeforeRange);
+                filtered.Insert(
+                    0,
+                    options.TimeStart.HasValue
+                        ? new TerminalFrame(rangeStart, lastBeforeRange.Buffer)
+                        : lastBeforeRange
+                );
             }
 
             // Rebase timestamps so the clip starts at t=0 instead of the
             // original absolute time (e.g., --time 5-6 → clip from 0 to 1s).
             if (filtered.Count > 0)
             {
-                var baseTime = filtered[0].Time;
+                var baseTime = options.TimeStart ?? filtered[0].Time;
                 for (var i = 0; i < filtered.Count; i++)
                 {
                     filtered[i] = new TerminalFrame(filtered[i].Time - baseTime, filtered[i].Buffer);
@@ -74,7 +93,7 @@ public static class AnimatedSvgRenderer
 
             if (filtered.Count == 0)
             {
-                return SvgRenderer.Render(session, options);
+                return SvgRenderer.Render(reducedFrames[0].Buffer, options);
             }
 
             reducedFrames = filtered;
@@ -392,6 +411,11 @@ public static class AnimatedSvgRenderer
                 signature = HashBool(signature, cell.Underline);
                 signature = HashBool(signature, cell.Reversed);
                 signature = HashBool(signature, cell.Faint);
+                signature = HashBool(signature, cell.Hidden);
+                signature = HashBool(signature, cell.Strikethrough);
+                signature = HashBool(signature, cell.Overline);
+                signature = HashBool(signature, cell.Blink);
+                signature = HashString(signature, cell.UnderlineColor ?? string.Empty);
                 signature = HashBool(signature, cell.IsWide);
                 signature = HashBool(signature, cell.IsWideContinuation);
             }

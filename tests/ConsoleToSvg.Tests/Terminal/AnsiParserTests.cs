@@ -22,6 +22,148 @@ public sealed class AnsiParserTests
     }
 
     [Test]
+    public void DecSpecialGraphicsRenderBoxDrawingCharacters()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        emulator.Process("\u001b(0lqkxm\u001b(B");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("\u250C");
+        emulator.Buffer.GetCell(0, 1).Text.ShouldBe("\u2500");
+        emulator.Buffer.GetCell(0, 2).Text.ShouldBe("\u2510");
+        emulator.Buffer.GetCell(0, 3).Text.ShouldBe("\u2502");
+        emulator.Buffer.GetCell(0, 4).Text.ShouldBe("\u2514");
+        emulator.Buffer.GetCell(0, 5).Text.ShouldBe(" ");
+    }
+
+    [Test]
+    public void DecSpecialGraphicsPersistsAcrossInputChunks()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        emulator.Process("\u001b(");
+        emulator.Process("0lqk");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("\u250C");
+        emulator.Buffer.GetCell(0, 1).Text.ShouldBe("\u2500");
+        emulator.Buffer.GetCell(0, 2).Text.ShouldBe("\u2510");
+    }
+
+    [Test]
+    public void CsiRepeatRendersRepeatedDecSpecialGraphicsCharacter()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        emulator.Process("\u001b(0lq\u001b[5bk\u001b(B");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("\u250C");
+        for (var col = 1; col <= 6; col++)
+        {
+            emulator.Buffer.GetCell(0, col).Text.ShouldBe("\u2500");
+        }
+
+        emulator.Buffer.GetCell(0, 7).Text.ShouldBe("\u2510");
+    }
+
+    [Test]
+    public void CsiRepeatRendersRepeatedSpaces()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        emulator.Process("A \u001b[3bB");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("A");
+        for (var col = 1; col <= 4; col++)
+        {
+            emulator.Buffer.GetCell(0, col).Text.ShouldBe(" ");
+        }
+
+        emulator.Buffer.GetCell(0, 5).Text.ShouldBe("B");
+    }
+
+    [Test]
+    public void LegacyAlternateScreenModesPreserveMainScreen()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        emulator.Process("M\u001b[?47hA\u001b[?47lB");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("M");
+        emulator.Buffer.GetCell(0, 1).Text.ShouldBe("B");
+    }
+
+    [Test]
+    public void DecSaveRestoreRestoresTextStyle()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        emulator.Process("\u001b[1mA\u001b7\u001b[0m\u001b[2CB\u001b8C");
+
+        emulator.Buffer.GetCell(0, 0).Bold.ShouldBeTrue();
+        emulator.Buffer.GetCell(0, 3).Bold.ShouldBeFalse();
+        emulator.Buffer.GetCell(0, 1).Bold.ShouldBeTrue();
+    }
+
+    [Test]
+    public void OriginModeAddressesCursorRelativeToScrollRegion()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 6, theme);
+
+        emulator.Process("\u001b[3;5r\u001b[?6h\u001b[1;1HX");
+
+        emulator.Buffer.GetCell(2, 0).Text.ShouldBe("X");
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe(" ");
+    }
+
+    [Test]
+    public void InsertModeShiftsExistingCharacters()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        emulator.Process("ABC\u001b[1D\u001b[4hX\u001b[4l");
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("A");
+        emulator.Buffer.GetCell(0, 1).Text.ShouldBe("B");
+        emulator.Buffer.GetCell(0, 2).Text.ShouldBe("X");
+        emulator.Buffer.GetCell(0, 3).Text.ShouldBe("C");
+    }
+
+    [Test]
+    public void CustomTabStopIsUsed()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        emulator.Process("\u001b[4G\u001bH\u001b[1G\tX");
+
+        emulator.Buffer.GetCell(0, 3).Text.ShouldBe("X");
+    }
+
+    [Test]
+    public void SgrDecorationsAndUnderlineColorAreStored()
+    {
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(8, 2, theme);
+
+        emulator.Process("\u001b[5;8;9;53;58;2;1;2;3mX");
+
+        var cell = emulator.Buffer.GetCell(0, 0);
+        cell.Blink.ShouldBeTrue();
+        cell.Hidden.ShouldBeTrue();
+        cell.Strikethrough.ShouldBeTrue();
+        cell.Overline.ShouldBeTrue();
+        cell.UnderlineColor.ShouldBe("#010203");
+    }
+
+    [Test]
     public void PrivateCsiQuestionMarkMDoesNotApplyUnderline()
     {
         var theme = Theme.Resolve("dark");

@@ -42,7 +42,7 @@ public static class AsciicastWriter
             session.Header,
             AsciicastJsonContext.Default.AsciicastHeader
         );
-        await writer.WriteLineAsync(headerLine).ConfigureAwait(false);
+        await writer.WriteLineAsync(headerLine.AsMemory(), cancellationToken).ConfigureAwait(false);
 
         using var ms = new MemoryStream();
         foreach (var outputEvent in session.Events)
@@ -55,11 +55,15 @@ public static class AsciicastWriter
             jw.WriteStringValue(outputEvent.Type);
             jw.WriteStringValue(outputEvent.Data);
             jw.WriteEndArray();
-            await jw.FlushAsync().ConfigureAwait(false);
+            await jw.FlushAsync(cancellationToken).ConfigureAwait(false);
             var line = Encoding.UTF8.GetString(ms.GetBuffer(), 0, (int)ms.Length);
-            await writer.WriteLineAsync(line).ConfigureAwait(false);
+            await writer.WriteLineAsync(line.AsMemory(), cancellationToken).ConfigureAwait(false);
         }
 
+#if NET8_0_OR_GREATER
+        await writer.FlushAsync(cancellationToken).ConfigureAwait(false);
+#else
         await writer.FlushAsync().ConfigureAwait(false);
+#endif
     }
 }

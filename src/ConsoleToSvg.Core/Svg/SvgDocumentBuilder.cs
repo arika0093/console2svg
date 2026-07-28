@@ -9,7 +9,7 @@ namespace ConsoleToSvg.Svg;
 internal static class SvgDocumentBuilder
 {
     private const string DefaultFontFamily = $"""
-        ui-monospace,"JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,monospace
+        "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace
         """;
 
     internal sealed class Context
@@ -428,6 +428,8 @@ internal static class SvgDocumentBuilder
         sb.Append(Format(context.FontSize));
         sb.Append("px;\n");
         sb.Append("}\n");
+        sb.Append(".blink { animation: blink 1s step-start infinite; }\n");
+        sb.Append("@keyframes blink { 50% { visibility: hidden; } }\n");
         sb.Append("text {\n");
         sb.Append("  dominant-baseline: alphabetic;\n");
         sb.Append("}\n");
@@ -1016,7 +1018,11 @@ internal static class SvgDocumentBuilder
             string? fgRunColor = null;
             bool fgBold = false,
                 fgItalic = false,
-                fgUnderline = false;
+                fgUnderline = false,
+                fgStrikethrough = false,
+                fgOverline = false,
+                fgBlink = false;
+            string? fgUnderlineColor = null;
             int fgRunCellCount = 0;
 
             void FlushFgRun()
@@ -1028,7 +1034,12 @@ internal static class SvgDocumentBuilder
 
                 var tx = (fgRunStart - context.StartCol) * context.CellWidth;
                 var tLen = fgRunCellCount * context.CellWidth;
-                sb.Append("<text class=\"crt\" x=\"");
+                sb.Append("<text class=\"crt");
+                if (fgBlink)
+                {
+                    sb.Append(" blink");
+                }
+                sb.Append("\" x=\"");
                 sb.Append(Format(tx));
                 sb.Append("\" y=\"");
                 sb.Append(Format(y + context.BaselineOffset));
@@ -1039,15 +1050,30 @@ internal static class SvgDocumentBuilder
                 sb.Append("\" lengthAdjust=\"");
                 sb.Append(EscapeAttribute(effectiveLengthAdjust));
                 sb.Append("\"");
-                if (fgBold || fgItalic || fgUnderline)
+                if (fgBold || fgItalic || fgUnderline || fgStrikethrough || fgOverline || fgUnderlineColor != null)
                 {
                     sb.Append(" style=\"");
                     if (fgBold)
                         sb.Append("font-weight:bold;");
                     if (fgItalic)
                         sb.Append("font-style:italic;");
-                    if (fgUnderline)
-                        sb.Append("text-decoration:underline;");
+                    if (fgUnderline || fgStrikethrough || fgOverline)
+                    {
+                        sb.Append("text-decoration:");
+                        if (fgUnderline)
+                            sb.Append("underline ");
+                        if (fgStrikethrough)
+                            sb.Append("line-through ");
+                        if (fgOverline)
+                            sb.Append("overline ");
+                        sb.Append(';');
+                    }
+                    if (fgUnderlineColor != null)
+                    {
+                        sb.Append("text-decoration-color:");
+                        sb.Append(fgUnderlineColor);
+                        sb.Append(';');
+                    }
                     sb.Append("\"");
                 }
                 sb.Append('>');
@@ -1077,16 +1103,15 @@ internal static class SvgDocumentBuilder
                     continue;
                 }
 
+                if (cell.Hidden)
+                {
+                    FlushFgRun();
+                    fgRunStart = col + 1;
+                    continue;
+                }
+
                 var effectiveFg = cell.Reversed ? cell.Background : cell.Foreground;
                 effectiveFg = ApplyIntensity(effectiveFg, cell.Bold, cell.Faint);
-                effectiveFg = ApplyContextualMatrixTint(
-                    buffer,
-                    row,
-                    col,
-                    includeScrollback,
-                    effectiveFg,
-                    theme
-                );
 
                 var cellX = (col - context.StartCol) * context.CellWidth;
                 var cellW = cell.IsWide ? context.CellWidth * 2d : context.CellWidth;
@@ -1109,11 +1134,32 @@ internal static class SvgDocumentBuilder
                     continue;
                 }
 
+                if (IsSingleLineBoxDrawing(cell.Text))
+                {
+                    FlushFgRun();
+                    RenderBoxDrawing(
+                        sb,
+                        cell.Text,
+                        cellX,
+                        y,
+                        cellW,
+                        context.CellHeight,
+                        context.FontSize / 14d,
+                        effectiveFg
+                    );
+                    fgRunStart = col + 1;
+                    continue;
+                }
+
                 var sameStyle =
                     string.Equals(effectiveFg, fgRunColor, StringComparison.OrdinalIgnoreCase)
                     && cell.Bold == fgBold
                     && cell.Italic == fgItalic
                     && cell.Underline == fgUnderline
+                    && cell.Strikethrough == fgStrikethrough
+                    && cell.Overline == fgOverline
+                    && cell.Blink == fgBlink
+                    && string.Equals(cell.UnderlineColor, fgUnderlineColor, StringComparison.OrdinalIgnoreCase)
                     && !cell.IsWide;
 
                 if (!sameStyle)
@@ -1124,6 +1170,10 @@ internal static class SvgDocumentBuilder
                     fgBold = cell.Bold;
                     fgItalic = cell.Italic;
                     fgUnderline = cell.Underline;
+                    fgStrikethrough = cell.Strikethrough;
+                    fgOverline = cell.Overline;
+                    fgBlink = cell.Blink;
+                    fgUnderlineColor = cell.UnderlineColor;
                 }
 
                 fgRunText.Append(EscapeText(cell.Text));
@@ -1172,6 +1222,95 @@ internal static class SvgDocumentBuilder
 
         // Unicode Block Elements (U+2580–U+259F), excluding shade chars (U+2591–U+2593)
         return cp is >= 0x2580 and <= 0x259F and not (0x2591 or 0x2592 or 0x2593);
+    }
+
+    private static bool IsSingleLineBoxDrawing(string text) =>
+        text.Length == 1
+        && text[0]
+            is '\u2500'
+                or '\u2502'
+                or '\u250C'
+                or '\u2510'
+                or '\u2514'
+                or '\u2518'
+                or '\u251C'
+                or '\u2524'
+                or '\u252C'
+                or '\u2534'
+                or '\u253C';
+
+    private static void RenderBoxDrawing(
+        StringBuilder sb,
+        string text,
+        double x,
+        double y,
+        double width,
+        double height,
+        double strokeWidth,
+        string stroke
+    )
+    {
+        var centerX = x + width / 2d;
+        var centerY = y + height / 2d;
+        var character = text[0];
+        var left = character is '\u2500' or '\u2510' or '\u2518' or '\u2524' or '\u252C' or '\u2534' or '\u253C';
+        var right = character is '\u2500' or '\u250C' or '\u2514' or '\u251C' or '\u252C' or '\u2534' or '\u253C';
+        var up = character is '\u2502' or '\u2514' or '\u2518' or '\u251C' or '\u2524' or '\u2534' or '\u253C';
+        var down = character is '\u2502' or '\u250C' or '\u2510' or '\u251C' or '\u2524' or '\u252C' or '\u253C';
+
+        sb.Append("<path class=\"box\" d=\"");
+        if (left)
+        {
+            AppendBoxSegment(centerX, centerY, x, centerY);
+        }
+
+        if (right)
+        {
+            AppendBoxSegment(centerX, centerY, x + width, centerY);
+        }
+
+        if (up)
+        {
+            AppendBoxSegment(centerX, centerY, centerX, y);
+        }
+
+        if (down)
+        {
+            AppendBoxSegment(centerX, centerY, centerX, y + height);
+        }
+
+        sb.Append("\" fill=\"");
+        sb.Append(stroke);
+        sb.Append("\"/>\n");
+
+        void AppendBoxRect(double rectX, double rectY, double rectWidth, double rectHeight)
+        {
+            sb.Append('M');
+            sb.Append(Format(rectX));
+            sb.Append(' ');
+            sb.Append(Format(rectY));
+            sb.Append('H');
+            sb.Append(Format(rectX + rectWidth));
+            sb.Append('V');
+            sb.Append(Format(rectY + rectHeight));
+            sb.Append('H');
+            sb.Append(Format(rectX));
+            sb.Append('Z');
+        }
+
+        void AppendBoxSegment(double startX, double startY, double endX, double endY)
+        {
+            if (Math.Abs(startY - endY) < 0.0001d)
+            {
+                var leftX = Math.Min(startX, endX);
+                AppendBoxRect(leftX, startY - strokeWidth / 2d, Math.Abs(endX - startX), strokeWidth);
+            }
+            else
+            {
+                var topY = Math.Min(startY, endY);
+                AppendBoxRect(startX - strokeWidth / 2d, topY, strokeWidth, Math.Abs(endY - startY));
+            }
+        }
     }
 
     private static void RenderBlockElement(
@@ -1318,64 +1457,6 @@ internal static class SvgDocumentBuilder
     private static string EscapeAttribute(string value)
     {
         return EscapeText(value);
-    }
-
-    private static string ApplyContextualMatrixTint(
-        ScreenBuffer buffer,
-        int row,
-        int col,
-        bool includeScrollback,
-        string effectiveForeground,
-        Theme theme
-    )
-    {
-        if (
-            !string.Equals(
-                effectiveForeground,
-                theme.AnsiPalette[7],
-                StringComparison.OrdinalIgnoreCase
-            )
-        )
-        {
-            return effectiveForeground;
-        }
-
-        if (
-            HasNeighborGreen(buffer, row - 1, col, includeScrollback, theme)
-            || HasNeighborGreen(buffer, row + 1, col, includeScrollback, theme)
-            || HasNeighborGreen(buffer, row, col - 1, includeScrollback, theme)
-            || HasNeighborGreen(buffer, row, col + 1, includeScrollback, theme)
-        )
-        {
-            return theme.AnsiPalette[10];
-        }
-
-        return effectiveForeground;
-    }
-
-    private static bool HasNeighborGreen(
-        ScreenBuffer buffer,
-        int row,
-        int col,
-        bool includeScrollback,
-        Theme theme
-    )
-    {
-        if (col < 0 || col >= buffer.Width)
-        {
-            return false;
-        }
-
-        var maxRows = includeScrollback ? buffer.TotalHeight : buffer.Height;
-        if (row < 0 || row >= maxRows)
-        {
-            return false;
-        }
-
-        var cell = includeScrollback ? buffer.GetCellFromTop(row, col) : buffer.GetCell(row, col);
-        var fg = cell.Reversed ? cell.Background : cell.Foreground;
-        return string.Equals(fg, theme.AnsiPalette[2], StringComparison.OrdinalIgnoreCase)
-            || string.Equals(fg, theme.AnsiPalette[10], StringComparison.OrdinalIgnoreCase);
     }
 
     private static string ApplyIntensity(string color, bool bold, bool faint)

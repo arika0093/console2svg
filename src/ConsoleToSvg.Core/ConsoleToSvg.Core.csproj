@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <PackageId>ConsoleToSvg.Core</PackageId>
+    <PackageDescription>Core terminal rendering APIs for ConsoleToSvg.</PackageDescription>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Themes\macos.json" LogicalName="chrome.macos.json" />
+    <EmbeddedResource Include="Themes\transparent.json" LogicalName="chrome.transparent.json" />
+    <EmbeddedResource Include="Themes\windows.json" LogicalName="chrome.windows.json" />
+  </ItemGroup>
+</Project>

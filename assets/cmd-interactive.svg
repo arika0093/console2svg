@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1307.2" height="386" viewBox="0 0 1307.2 386" role="img" aria-label="console2svg output">
+<style>
+.crt {
+  font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace;
+  font-size: 14px;
+}
+text {
+  dominant-baseline: alphabetic;
+}
+.bg {
+  shape-rendering: crispEdges;
+}
+</style>
+<defs>
+<linearGradient id="desktop-bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a2535"/><stop offset="100%" stop-color="#253345"/></linearGradient>
+</defs>
+<rect width="1307.2" height="386" fill="url(#desktop-bg)"/>
+<rect x="26" y="26" width="1261.2" height="340" fill="black" fill-opacity="0.25"/>
+<rect x="20.5" y="20.5" width="1260.2" height="339" fill="#333" stroke="#333"/>
+<rect x="21" y="21" width="1259.2" height="34" fill="#333"/>
+<path d="M 28,55 L 28,31 Q 28,26 33,26 L 183,26 Q 188,26 188,31 L 188,55 Z" fill="#0c0c0c"/>
+<polyline points="36,35.5 40,39.5 36,43.5" fill="none" stroke="#cccccc" stroke-width="1.2" stroke-linejoin="round"/>
+<line x1="43" y1="44" x2="49" y2="44" stroke="#cccccc" stroke-width="1.2"/>
+<line x1="172.5" y1="36" x2="179.5" y2="43" stroke="#888888" stroke-width="1.1"/>
+<line x1="179.5" y1="36" x2="172.5" y2="43" stroke="#888888" stroke-width="1.1"/>
+<line x1="1161.2" y1="39.5" x2="1171.2" y2="39.5" stroke="#cccccc" stroke-width="1.2"/>
+<rect x="1207.2" y="34.5" width="10" height="10" fill="none" stroke="#cccccc" stroke-width="1.2"/>
+<line x1="1253.2" y1="34.5" x2="1263.2" y2="44.5" stroke="#cccccc" stroke-width="1.3"/>
+<line x1="1263.2" y1="34.5" x2="1253.2" y2="44.5" stroke="#cccccc" stroke-width="1.3"/>
+<rect x="21" y="55" width="1259.2" height="304" fill="#0c0c0c"/>
+<g transform="translate(29 63)">
+<rect width="1243.2" height="288" fill="#0c0c0c"/>
+<rect class="bg" x="940.8" y="0" width="294" height="18" fill="#87D787"/>
+<text class="crt" x="0" y="14" fill="#0dbc79" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="84" y="14" fill="#F63B3B" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">➜</text>
+<text class="crt" x="100.8" y="14" fill="#2B89F0" textLength="92.4" lengthAdjust="spacing" style="font-weight:bold;">~/workspace</text>
+<text class="crt" x="201.6" y="14" fill="#11a8cd" textLength="8.4" lengthAdjust="spacing">(</text>
+<text class="crt" x="210" y="14" fill="#F63B3B" textLength="226.8" lengthAdjust="spacing" style="font-weight:bold;">feature/interactive-capture</text>
+<text class="crt" x="436.8" y="14" fill="#11a8cd" textLength="8.4" lengthAdjust="spacing">)</text>
+<text class="crt" x="453.6" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
+<text class="crt" x="470.4" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">cat</text>
+<text class="crt" x="504" y="14" fill="#d4d4d4" textLength="126" lengthAdjust="spacing">/etc/os-release</text>
+<text class="crt" x="957.6" y="14" fill="#1e1e1e" textLength="25.2" lengthAdjust="spacing">F9:</text>
+<text class="crt" x="991.2" y="14" fill="#1e1e1e" textLength="50.4" lengthAdjust="spacing">Record</text>
+<text class="crt" x="1050" y="14" fill="#1e1e1e" textLength="42" lengthAdjust="spacing">start</text>
+<text class="crt" x="1117.2" y="14" fill="#1e1e1e" textLength="33.6" lengthAdjust="spacing">F10:</text>
+<text class="crt" x="1159.2" y="14" fill="#1e1e1e" textLength="58.8" lengthAdjust="spacing">Capture</text>
+<text class="crt" x="0" y="32" fill="#d4d4d4" textLength="159.6" lengthAdjust="spacing">PRETTY_NAME=&quot;Ubuntu</text>
+<text class="crt" x="168" y="32" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">24.04.4</text>
+<text class="crt" x="235.2" y="32" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">LTS&quot;</text>
+<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacing">NAME=&quot;Ubuntu&quot;</text>
+<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="151.2" lengthAdjust="spacing">VERSION_ID=&quot;24.04&quot;</text>
+<text class="crt" x="0" y="86" fill="#d4d4d4" textLength="134.4" lengthAdjust="spacing">VERSION=&quot;24.04.4</text>
+<text class="crt" x="142.8" y="86" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">LTS</text>
+<text class="crt" x="176.4" y="86" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">(Noble</text>
+<text class="crt" x="235.2" y="86" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">Numbat)&quot;</text>
+<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="184.8" lengthAdjust="spacing">VERSION_CODENAME=noble</text>
+<text class="crt" x="0" y="122" fill="#d4d4d4" textLength="75.6" lengthAdjust="spacing">ID=ubuntu</text>
+<text class="crt" x="0" y="140" fill="#d4d4d4" textLength="117.6" lengthAdjust="spacing">ID_LIKE=debian</text>
+<text class="crt" x="0" y="158" fill="#d4d4d4" textLength="285.6" lengthAdjust="spacing">HOME_URL=&quot;https://www.ubuntu.com/&quot;</text>
+<text class="crt" x="0" y="176" fill="#d4d4d4" textLength="319.2" lengthAdjust="spacing">SUPPORT_URL=&quot;https://help.ubuntu.com/&quot;</text>
+<text class="crt" x="0" y="194" fill="#d4d4d4" textLength="428.4" lengthAdjust="spacing">BUG_REPORT_URL=&quot;https://bugs.launchpad.net/ubuntu/&quot;</text>
+<text class="crt" x="0" y="212" fill="#d4d4d4" textLength="697.2" lengthAdjust="spacing">PRIVACY_POLICY_URL=&quot;https://www.ubuntu.com/legal/terms-and-policies/privacy-policy&quot;</text>
+<text class="crt" x="0" y="230" fill="#d4d4d4" textLength="176.4" lengthAdjust="spacing">UBUNTU_CODENAME=noble</text>
+<text class="crt" x="0" y="248" fill="#d4d4d4" textLength="134.4" lengthAdjust="spacing">LOGO=ubuntu-logo</text>
+<text class="crt" x="0" y="266" fill="#0dbc79" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="84" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">➜</text>
+<text class="crt" x="100.8" y="266" fill="#2B89F0" textLength="92.4" lengthAdjust="spacing" style="font-weight:bold;">~/workspace</text>
+<text class="crt" x="201.6" y="266" fill="#11a8cd" textLength="8.4" lengthAdjust="spacing">(</text>
+<text class="crt" x="210" y="266" fill="#F63B3B" textLength="226.8" lengthAdjust="spacing" style="font-weight:bold;">feature/interactive-capture</text>
+<text class="crt" x="436.8" y="266" fill="#11a8cd" textLength="8.4" lengthAdjust="spacing">)</text>
+<text class="crt" x="453.6" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
+</g>
+</svg>

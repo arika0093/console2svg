@@ -30,10 +30,20 @@ public static class SvgRenderer
             emulator.Replay(session, targetFrame);
         }
 
+        return Render(emulator.Buffer, options, includeScrollback: effectiveFrame == null);
+    }
+
+    /// <summary>Renders an already-emulated terminal screen.</summary>
+    public static string Render(
+        ScreenBuffer buffer,
+        SvgRenderOptions options,
+        bool includeScrollback = false
+    )
+    {
+        var theme = SvgRenderShared.ResolveTheme(options);
         var commandHeaderRows = string.IsNullOrEmpty(options.CommandHeader) ? 0 : 1;
-        var includeScrollback = effectiveFrame == null;
         var context = SvgRenderShared.CreateContext(
-            emulator.Buffer,
+            buffer,
             options,
             includeScrollback,
             commandHeaderRows
@@ -52,7 +62,7 @@ public static class SvgRenderer
         );
         SvgDocumentBuilder.AppendFrameGroup(
             sb.Inner,
-            emulator.Buffer,
+            buffer,
             context,
             theme,
             id: null,

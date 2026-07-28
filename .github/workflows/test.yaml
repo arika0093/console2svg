@@ -8,6 +8,10 @@ on:
     paths:
       - '**.csproj'
       - '**.cs'
+      - 'src/ConsoleToSvg.Converter/native/**'
+      - 'scripts/build-resvg-native.sh'
+      - 'action.yml'
+      - '.github/workflows/release.yaml'
       - '**./Directories.Build.props'
       - '.github/workflows/test.yaml'
 
@@ -34,12 +38,18 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
       - name: Restore dependencies
         run: dotnet restore 
 
       - name: Build
         run: dotnet build --no-restore
+        # Cargo's inherited workflow env file can contain malformed metadata on
+        # macOS runners. This build does not need to export variables to later steps.
+        env:
+          GITHUB_ENV: ${{ runner.os == 'Windows' && 'NUL' || '/dev/null' }}
 
       - name: Run tests
         run: dotnet test --no-build --verbosity normal
-

@@ -12,7 +12,7 @@ using Pty.Net;
 
 namespace ConsoleToSvg.Recording;
 
-internal sealed class NativePtyOptions
+public sealed class NativePtyOptions
 {
     public string? Name { get; init; }
     public int Cols { get; init; }
@@ -24,7 +24,7 @@ internal sealed class NativePtyOptions
     public bool DisableInputEcho { get; init; }
 }
 
-internal static class NativePty
+public static class NativePty
 {
     public static Task<NativePtyConnection> SpawnAsync(
         NativePtyOptions options,
@@ -41,7 +41,7 @@ internal static class NativePty
     }
 }
 
-internal sealed class NativePtyConnection : IDisposable
+public sealed class NativePtyConnection : IDisposable
 {
     private readonly Action _dispose;
     private readonly Func<int, bool> _waitForExit;

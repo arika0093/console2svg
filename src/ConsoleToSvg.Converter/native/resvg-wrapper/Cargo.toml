@@ -1,0 +1,17 @@
+[package]
+name = "console2svg-resvg-wrapper"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+name = "console2svg_resvg"
+crate-type = ["cdylib"]
+
+[dependencies]
+resvg = "=0.43.0"
+
+[profile.release]
+lto = true
+opt-level = 3
+strip = true

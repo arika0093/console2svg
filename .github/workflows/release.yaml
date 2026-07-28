@@ -17,12 +17,13 @@ env:
 
 jobs:
   build-nupkg:
+    needs: build-aot
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.version.outputs.semver }}
-      package-version: ${{ steps.version.outputs.package_version }}
-      package-iteration: ${{ steps.version.outputs.package_iteration }}
-      prerelease: ${{ steps.version.outputs.prerelease }}
+      version: ${{ steps.nbgv.outputs.SemVer2 }}
+      package-version: ${{ steps.nbgv.outputs.SimpleVersion }}
+      package-iteration: ${{ steps.package-iteration.outputs.package_iteration }}
+      prerelease: ${{ steps.nbgv.outputs.PrereleaseVersion != '' }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -35,53 +36,45 @@ jobs:
       - uses: dotnet/nbgv@v0.5
         id: nbgv
 
-      - name: Export version
-        id: version
+      - name: Download native runtime assets
+        uses: actions/download-artifact@v8
+        with:
+          pattern: native-*
+          path: ./native-artifacts
+          merge-multiple: false
+
+      - name: Stage native runtime assets for NuGet
         shell: bash
-        run: |
-          semver='${{ steps.nbgv.outputs.SemVer2 }}'
-          package_version="${semver%%[-+]*}"
-          package_iteration=1
+        run: bash scripts/release/stage-native-assets.sh
 
-          if [[ "$semver" == *-* ]]; then
-            prerelease="${semver#"$package_version"-}"
-            prerelease="${prerelease%%+*}"
-            prerelease="${prerelease//[^0-9A-Za-z.]/.}"
-            prerelease="$(tr -s '.' <<< "$prerelease")"
-            prerelease="${prerelease#.}"
-            prerelease="${prerelease%.}"
-            package_iteration="0.${prerelease}"
-          fi
-
-          if [[ "$semver" == *+* ]]; then
-            metadata="${semver#*+}"
-            metadata="${metadata//[^0-9A-Za-z.]/.}"
-            metadata="$(tr -s '.' <<< "$metadata")"
-            metadata="${metadata#.}"
-            metadata="${metadata%.}"
-            package_iteration="${package_iteration}.${metadata}"
-          fi
-
-          prerelease='false'
-          if [[ "$semver" == *-* ]]; then
-            prerelease='true'
-          fi
-
-          {
-            echo "semver=$semver"
-            echo "package_version=$package_version"
-            echo "package_iteration=$package_iteration"
-            echo "prerelease=$prerelease"
-          } >> "$GITHUB_OUTPUT"
+      - name: Export package iteration
+        id: package-iteration
+        shell: bash
+        run: bash scripts/release/export-package-iteration.sh '${{ steps.nbgv.outputs.PrereleaseVersionNoLeadingHyphen }}' '${{ steps.nbgv.outputs.BuildMetadataFragment }}'
 
       - name: Restore dependencies
         run: dotnet restore --locked-mode
 
       - name: Build
-        run: dotnet build --no-restore -c Release
+        run: dotnet build --no-restore -c Release -p:BuildResvgNative=false
 
-      - name: Generate NuGet Package
-        run: dotnet pack --no-build -c Release --output ./nuget-artifacts
+      - name: Pack ConsoleToSvg.Converter
+        run: dotnet pack src/ConsoleToSvg.Converter/ConsoleToSvg.Converter.csproj --no-build -c Release --output ./nuget-artifacts -p:ResvgNativeAssetsDirectory="$GITHUB_WORKSPACE/native-assets" -p:RequireResvgNativeAssets=true
+
+      - name: Restore tool against packaged converter
+        id: converter
+        shell: bash
+        run: bash scripts/release/restore-packaged-converter.sh
+
+      - name: Build ConsoleToSvg tool against packaged converter
+        env:
+          CONVERTER_VERSION: ${{ steps.converter.outputs.version }}
+        run: dotnet build src/ConsoleToSvg/ConsoleToSvg.csproj --no-restore -c Release -p:BuildResvgNative=false -p:UseConverterPackage=true -p:ConverterPackageVersion="$CONVERTER_VERSION"
+
+      - name: Pack ConsoleToSvg tool
+        env:
+          CONVERTER_VERSION: ${{ steps.converter.outputs.version }}
+        run: dotnet pack src/ConsoleToSvg/ConsoleToSvg.csproj --no-build -c Release --output ./nuget-artifacts -p:BuildResvgNative=false -p:UseConverterPackage=true -p:ConverterPackageVersion="$CONVERTER_VERSION"
 
       - name: Upload NuGet artifacts
         uses: actions/upload-artifact@v7
@@ -95,16 +88,22 @@ jobs:
         include:
           - os: ubuntu-latest
             rid: linux-x64
+            rust-target: x86_64-unknown-linux-gnu
           - os: ubuntu-24.04-arm
             rid: linux-arm64
+            rust-target: aarch64-unknown-linux-gnu
           - os: windows-latest
             rid: win-x64
+            rust-target: x86_64-pc-windows-msvc
           - os: windows-latest
             rid: win-arm64
+            rust-target: aarch64-pc-windows-msvc
           - os: macos-latest
             rid: osx-x64
+            rust-target: x86_64-apple-darwin
           - os: macos-latest
             rid: osx-arm64
+            rust-target: aarch64-apple-darwin
 
     runs-on: ${{ matrix.os }}
 
@@ -117,17 +116,18 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust-target }}
+
+      - name: Build bundled resvg library
+        shell: bash
+        run: bash scripts/build-resvg-native.sh '${{ matrix.rust-target }}' './native-build/${{ matrix.rid }}'
+
       - name: Publish NativeAOT
         shell: bash
-        run: |
-          dotnet publish src/ConsoleToSvg/ConsoleToSvg.csproj \
-            -c Release \
-            -r ${{ matrix.rid }} \
-            --self-contained \
-            -p:PublishAot=true \
-            -p:PublishSingleFile=true \
-            -p:WarningLevel=0 \
-            -o ./native-publish/${{ matrix.rid }}
+        run: bash scripts/release/publish-native-aot.sh '${{ matrix.rid }}'
 
       - name: Upload native publish output
         uses: actions/upload-artifact@v7
@@ -143,6 +143,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v7
+
       - name: Download NuGet artifacts
         uses: actions/download-artifact@v8
         with:
@@ -158,147 +160,14 @@ jobs:
 
       - name: Build native archives
         shell: bash
-        run: |
-          sudo apt-get install -y unzip tar
-
-          for dir in ./native-artifacts/native-*/; do
-            rid=$(basename "$dir" | sed 's/^native-//')
-            bundle_dir="./bundle-${rid}"
-            rm -rf "$bundle_dir"
-            mkdir -p "$bundle_dir"
-
-            if [[ "$rid" == win-* ]]; then
-              cp "$dir/console2svg.exe" "$bundle_dir/console2svg.exe"
-              # Copy native runtime libraries next to the executable (Windows loader).
-              for f in "$dir"/*.dll; do
-                [ -f "$f" ] && cp "$f" "$bundle_dir/"
-              done
-              # Copy child executables such as winpty-agent.exe.
-              for f in "$dir"/*.exe; do
-                [ -f "$f" ] || continue
-                [ "$(basename "$f")" = "console2svg.exe" ] && continue
-                cp "$f" "$bundle_dir/"
-              done
-            else
-              cp "$dir/console2svg" "$bundle_dir/console2svg"
-              chmod +x "$bundle_dir/console2svg"
-              # Copy native runtime libraries next to the executable.
-              for f in "$dir"/*.so "$dir"/*.dylib; do
-                [ -f "$f" ] && cp "$f" "$bundle_dir/"
-              done
-            fi
-
-            # Windows: bundle ffmpeg in a subdirectory so console2svg can locate it.
-            # BtbN publishes FFmpeg-Builds as a rolling 'latest' release, so the
-            # download URL points to the current latest build. There is no stable
-            # immutable URL available; we verify the archive integrity after download.
-            case "$rid" in
-              win-x64)
-                ffmpeg_zip_url="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-lgpl-shared.zip"
-                ;;
-              win-arm64)
-                ffmpeg_zip_url="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-winarm64-lgpl-shared.zip"
-                ;;
-              *)
-                ffmpeg_zip_url=""
-                ;;
-            esac
-
-            if [ -n "$ffmpeg_zip_url" ]; then
-              ffmpeg_zip="./ffmpeg-${rid}.zip"
-              curl -fsSL -o "$ffmpeg_zip" "$ffmpeg_zip_url"
-
-              # Verify zip integrity before extraction. (SHA-256 pinning is not
-              # feasible because BtbN overwrites the 'latest' release assets.)
-              if ! unzip -t "$ffmpeg_zip" >/dev/null; then
-                echo "Downloaded ffmpeg archive is corrupt: $ffmpeg_zip"
-                exit 1
-              fi
-              sha256sum "$ffmpeg_zip"
-
-              ffmpeg_extract="./ffmpeg-extract-${rid}"
-              mkdir -p "$ffmpeg_extract"
-              unzip -q "$ffmpeg_zip" -d "$ffmpeg_extract"
-              top_dir=$(ls -d "$ffmpeg_extract"/*/ | head -1)
-              ffmpeg_bin_dir="${top_dir}bin"
-              if [ ! -f "$ffmpeg_bin_dir/ffmpeg.exe" ]; then
-                echo "ffmpeg.exe not found at $ffmpeg_bin_dir/ffmpeg.exe."
-                exit 1
-              fi
-              mkdir -p "$bundle_dir/ffmpeg"
-              cp "$ffmpeg_bin_dir"/*.exe "$bundle_dir/ffmpeg/"
-              cp "$ffmpeg_bin_dir"/*.dll "$bundle_dir/ffmpeg/"
-              cp "${top_dir}LICENSE.txt" "$bundle_dir/ffmpeg/ffmpeg-LICENSE.txt"
-            fi
-
-            case "$rid" in
-              win-*)
-                archive_name="./release-upload/console2svg-${rid}.zip"
-                (cd "$bundle_dir" && zip -q -r "../${archive_name#./}" .)
-                ;;
-              *)
-                archive_name="./release-upload/console2svg-${rid}.tar.gz"
-                tar -czf "$archive_name" -C "$bundle_dir" .
-                ;;
-            esac
-            echo "Created $archive_name"
-          done
+        run: bash scripts/release/build-native-archives.sh
 
       - name: Install Linux packaging tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y rpm
-          sudo gem install --no-document fpm
+        run: bash scripts/release/install-linux-packaging-tools.sh
 
       - name: Build Linux packages
         shell: bash
-        run: |
-          for rid in linux-x64 linux-arm64; do
-            case "$rid" in
-              linux-x64)
-                asset_arch=x64
-                deb_arch=amd64
-                rpm_arch=x86_64
-                ;;
-              linux-arm64)
-                asset_arch=arm64
-                deb_arch=arm64
-                rpm_arch=aarch64
-                ;;
-            esac
-
-            src="./native-artifacts/native-${rid}/console2svg"
-            if [ ! -f "$src" ]; then
-              continue
-            fi
-
-            chmod 755 "$src"
-
-            so_src="./native-artifacts/native-${rid}/libresvg_wrapper.so"
-            if [ ! -f "$so_src" ]; then
-              echo "Native library not found: $so_src"
-              exit 1
-            fi
-
-            common_args=(
-              -s dir
-              -n console2svg
-              -v "${{ needs.build-nupkg.outputs.package-version }}"
-              --iteration "${{ needs.build-nupkg.outputs.package-iteration }}"
-              --license Apache-2.0
-              --url "https://github.com/${{ github.repository }}"
-              --description "Convert terminal output to SVG images."
-            )
-
-            fpm "${common_args[@]}" -t deb -a "$deb_arch" -p "./release-upload/console2svg.${asset_arch}.deb" \
-              "$src=/usr/local/bin/console2svg" \
-              "$so_src=/usr/local/lib/console2svg/libresvg_wrapper.so"
-            fpm "${common_args[@]}" -t rpm -a "$rpm_arch" -p "./release-upload/console2svg.${asset_arch}.rpm" \
-              "$src=/usr/local/bin/console2svg" \
-              "$so_src=/usr/local/lib/console2svg/libresvg_wrapper.so"
-          done
-
-      # Windows ffmpeg bundling is handled in "Build native archives" above.
+        run: bash scripts/release/build-linux-packages.sh '${{ needs.build-nupkg.outputs.package-version }}' '${{ needs.build-nupkg.outputs.package-iteration }}'
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
@@ -314,6 +183,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v7
+
       - name: Download NuGet artifacts
         uses: actions/download-artifact@v8
         with:
@@ -326,8 +197,15 @@ jobs:
         with:
           user: arika0093
 
-      - name: Publish NuGet Package
-        run: dotnet nuget push ./nuget-artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+      - name: Publish ConsoleToSvg.Converter Package
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        run: dotnet nuget push ./nuget-artifacts/ConsoleToSvg.Converter.*.nupkg --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY"
+
+      - name: Publish ConsoleToSvg Tool Package
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        run: dotnet nuget push ./nuget-artifacts/ConsoleToSvg.[0-9]*.nupkg --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY"
 
   release-npm:
     needs: [build-nupkg, release-github]
@@ -367,11 +245,6 @@ jobs:
 
       - name: Setup console2svg
         uses: ./
-
-      - name: Install dependencies
-        run: |
-          sudo npm install -g oh-my-logo
-          sudo apt-get install -y sl nyancat vim cmatrix ffmpeg
 
       - name: Generate images
         run: bash scripts/image-gen.sh

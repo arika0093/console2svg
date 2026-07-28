@@ -21,12 +21,12 @@ public static class OptionParser
                 -w, --width <int|adjust>  Terminal width in characters (default: auto[pipe], 100[pty]).
                 -h, --height <int|adjust> Terminal height in rows (default: auto).
                 -v                        Output animated SVG (alias for --mode video).
+                -i, --interactive         Run an interactive shell; F9 records, F12 pauses, and F10 takes a screenshot.
+                                          Use -- to start another interactive program (e.g. -i -- pwsh).
                 -c, --with-command        Prepend the command line to the output.
                 -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc, transparent.
                 --background <color> [color]  Background color, gradient, or image path.
                 --crop-top/bottom/left/right  Crop by px, ch, or text pattern.
-                --forecolor <color>       Override default foreground color.
-                --adjust <value>          SVG text lengthAdjust (default: spacing).
                 --header <text>           Override command header text.
                 --prompt <text>           Override prompt prefix for -c (default: $ or # when root).
                 --verbose [path]          Enable verbose logging (log to path, default: console2svg.log).
@@ -46,9 +46,9 @@ public static class OptionParser
             Options (Common):
                 -o, --out <path>          Output file path (default: output.svg).
                                           Extension determines format:
-                                            .svg          – SVG output (default, no external tools required).
-                                            .png          – Raster image via resvg.
-                                            .mp4/.webm/…  – Video using frame sequences via ffmpeg.
+                                            .svg          - SVG output (default, no external tools required).
+                                            .png          - Raster image via resvg.
+                                            .mp4/.webm/…  - Video using frame sequences via ffmpeg.
                 --stdout                  Write SVG to stdout instead of a file.
                                           PTY output forwarding is suppressed so the pipe receives only SVG.
                 -m, --mode <image|video|repeat>  Output mode (default: image).
@@ -62,6 +62,8 @@ public static class OptionParser
                 --verbose [path]          Enable verbose logging; write to path (default: console2svg.log).
                 --help                    Show help.
                 --version                 Show version and exit.
+                --install-deps            Download ffmpeg to the application directory and exit.
+                                          Supported on Windows and Linux; macOS users should use brew install ffmpeg.
                 --timeout <sec>           Stop recording after specified seconds (e.g. 5, 0.5).
                 --no-colorenv             Disable PTY color environment overrides (TERM/COLORTERM/FORCE_COLOR).
                 --no-delete-envs          Keep CI/TF_BUILD in shell execution environment.
@@ -71,10 +73,10 @@ public static class OptionParser
                 --header <text>           Override command header text (shown even without -c).
                 --prompt <text>           Prompt prefix for -c (default: $ or # when root).
                 -d, --window [none|macos|windows|macos-pc|windows-pc|transparent|path/to/chrome.json]
-                                          Terminal window chrome style (default: none, or macos if specified without a value).
-                                          Built-in styles: none, macos, windows, transparent.
-                                          Any built-in style can be suffixed with -pc to enable desktop (floating window) mode.
-                                          Custom: provide a path to a .json chrome definition file.
+                    Terminal window chrome style (default: none, or macos if specified without a value).
+                    Built-in styles: none, macos, windows, transparent.
+                    Any built-in style can be suffixed with -pc to enable desktop (floating window) mode.
+                    Custom: provide a path to a .json chrome definition file.
                 --pcmode                  Enable PC (desktop) mode for the selected window style.
                                           Appends -pc to any window style that does not already end in -pc.
                 --pc-padding <px>         Override the outer desktop padding in PC mode (default: 20).
@@ -100,10 +102,10 @@ public static class OptionParser
                                           Alternatively, a range: --time 1.5-3.0 (works with --save-frames and --video).
                                           Mutually exclusive with --frame.
                 --size <WxH>              Output image pixel dimensions. Formats:
-                                            800         – width only (height scaled proportionally).
-                                            800x*       – width only (height scaled proportionally).
-                                            *x600       – height only (width scaled proportionally).
-                                            800x600     – both; content is centered, background extended.
+                                            800         - width only (height scaled proportionally).
+                                            800x*       - width only (height scaled proportionally).
+                                            *x600       - height only (width scaled proportionally).
+                                            800x600     - both; content is centered, background extended.
                 --save-frames <dir>       Save each visual frame as a separate static SVG in the given directory.
                 --crop-top <value>        Crop top by px, ch, or text pattern (e.g. 10px, 2ch, sometext, summary:-3).
                 --crop-bottom <value>     Crop bottom by px, ch, or text pattern.
@@ -123,14 +125,20 @@ public static class OptionParser
                                           deterministic: normalize frame times to reduce output diffs.
                                           realtime: preserve measured event timing as-is.
 
+            Options (Interactive mode):
+                -i, --interactive         Run an interactive shell. F9 starts/stops an animation recording;
+                                          F12 pauses/resumes it, and F10 saves a static screenshot. These keys work independently of -v.
+                                          Use -- to start another interactive program, preserving its arguments
+                                          (e.g. -i -- pwsh, -i -- vim README.md).
+
             Options (Conversion):
                 --svg-converter <auto|ffmpeg|rsvg-convert|resvg>
-                                          SVG → raster converter (default: auto).
-                                          auto: prefer ffmpeg+librsvg, then rsvg-convert, then ResvgSharp.
-                                          ffmpeg: force ffmpeg (requires librsvg input device).
-                                          rsvg-convert: force the rsvg-convert CLI tool (librsvg2-bin / brew install librsvg).
-                                          resvg: force the managed ResvgSharp library.
-                                          When a fallback handles SVG→PNG, ffmpeg is only used for subsequent format conversion.
+                    SVG → raster converter (default: auto).
+                    auto: prefer the bundled resvg host, then ffmpeg+librsvg.
+                    ffmpeg: force ffmpeg (requires librsvg input device).
+                    rsvg-convert: force the rsvg-convert CLI tool (librsvg2-bin / brew install librsvg).
+                    resvg: force the bundled resvg renderer.
+                    When a fallback handles SVG→PNG, ffmpeg is only used for subsequent format conversion.
             """;
 
     public static bool TryParse(
@@ -164,7 +172,8 @@ public static class OptionParser
                     return false;
                 }
 
-                options.Command = string.Join(' ', args, i + 1, args.Length - (i + 1));
+                options.DelimitedCommand = args[(i + 1)..];
+                options.Command = string.Join(' ', options.DelimitedCommand);
                 break;
             }
 
@@ -276,6 +285,7 @@ public static class OptionParser
     {
         return !string.Equals(name, "--help", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--version", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--install-deps", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--no-loop", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "-c", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--with-command", StringComparison.OrdinalIgnoreCase)
@@ -287,7 +297,9 @@ public static class OptionParser
             && !string.Equals(name, "-d", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--pcmode", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--stdout", StringComparison.OrdinalIgnoreCase);
+            && !string.Equals(name, "--stdout", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "-i", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--interactive", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsVerboseLogPathValue(string token) =>
@@ -367,6 +379,9 @@ public static class OptionParser
                 return true;
             case "--version":
                 options.ShowVersion = true;
+                return true;
+            case "--install-deps":
+                options.InstallDependencies = true;
                 return true;
             case "-c":
             case "--with-command":
@@ -691,6 +706,10 @@ public static class OptionParser
                 return true;
             case "--stdout":
                 options.StdOut = true;
+                return true;
+            case "-i":
+            case "--interactive":
+                options.Interactive = true;
                 return true;
             case "--pc-padding":
                 if (!TryParseDouble(value, "--pc-padding", out var pcPadding, out error))
@@ -1121,6 +1140,48 @@ public static class OptionParser
         {
             error = "--timeout must be greater than 0.";
             return false;
+        }
+
+        if (options.Interactive)
+        {
+            if (!string.IsNullOrWhiteSpace(options.Command) && options.DelimitedCommand is null)
+            {
+                error = "An interactive program must be specified after -- (for example: -i -- vim).";
+                return false;
+            }
+
+            if (!string.IsNullOrWhiteSpace(options.InputCastPath))
+            {
+                error = "--interactive cannot be used with --in.";
+                return false;
+            }
+
+            if (options.StdOut)
+            {
+                error = "--interactive cannot be used with --stdout.";
+                return false;
+            }
+
+            if (!string.IsNullOrWhiteSpace(options.SaveCastPath))
+            {
+                error = "--interactive cannot be used with --save-cast.";
+                return false;
+            }
+
+            if (options.Mode == OutputMode.Repeat)
+            {
+                error = "--interactive cannot be used with --mode repeat.";
+                return false;
+            }
+
+            if (
+                !string.IsNullOrWhiteSpace(options.ReplayPath)
+                || !string.IsNullOrWhiteSpace(options.ReplaySavePath)
+            )
+            {
+                error = "--interactive cannot be used with replay options.";
+                return false;
+            }
         }
 
         if (

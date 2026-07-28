@@ -89,6 +89,11 @@ internal static class SvgRenderShared
                     || cell.Underline
                     || cell.Reversed
                     || cell.Faint
+                    || cell.Hidden
+                    || cell.Strikethrough
+                    || cell.Overline
+                    || cell.Blink
+                    || cell.UnderlineColor != null
                 )
                 {
                     return false;

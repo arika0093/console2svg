@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ConsoleToSvg.Terminal;
 
@@ -10,7 +11,12 @@ public readonly record struct TextStyle(
     bool Italic,
     bool Underline,
     bool Reversed = false,
-    bool Faint = false
+    bool Faint = false,
+    bool Hidden = false,
+    bool Strikethrough = false,
+    bool Overline = false,
+    bool Blink = false,
+    string? UnderlineColor = null
 );
 
 public readonly struct ScreenCell
@@ -30,6 +36,11 @@ public readonly struct ScreenCell
         Underline = style.Underline;
         Reversed = style.Reversed;
         Faint = style.Faint;
+        Hidden = style.Hidden;
+        Strikethrough = style.Strikethrough;
+        Overline = style.Overline;
+        Blink = style.Blink;
+        UnderlineColor = style.UnderlineColor;
         IsWide = isWide;
         IsWideContinuation = isWideContinuation;
     }
@@ -49,13 +60,31 @@ public readonly struct ScreenCell
     public bool Reversed { get; }
 
     public bool Faint { get; }
+    public bool Hidden { get; }
+    public bool Strikethrough { get; }
+    public bool Overline { get; }
+    public bool Blink { get; }
+    public string? UnderlineColor { get; }
 
     public bool IsWide { get; }
 
     public bool IsWideContinuation { get; }
 
     public TextStyle ToTextStyle() =>
-        new TextStyle(Foreground, Background, Bold, Italic, Underline, Reversed, Faint);
+        new TextStyle(
+            Foreground,
+            Background,
+            Bold,
+            Italic,
+            Underline,
+            Reversed,
+            Faint,
+            Hidden,
+            Strikethrough,
+            Overline,
+            Blink,
+            UnderlineColor
+        );
 }
 
 public sealed class ScreenBuffer
@@ -72,6 +101,9 @@ public sealed class ScreenBuffer
     private int _scrollTop;
     private int _scrollBottom;
     private bool _pendingWrap;
+    private bool _originMode;
+    private bool _insertMode;
+    private readonly SortedSet<int> _tabStops = new();
     private readonly List<ScreenCell[]> _scrollbackRows = new();
 
     public ScreenBuffer(int width, int height, Theme theme)
@@ -88,6 +120,10 @@ public sealed class ScreenBuffer
         _scrollBottom = Height - 1;
         CursorRow = 0;
         CursorCol = 0;
+        for (var col = 8; col < Width; col += 8)
+        {
+            _tabStops.Add(col);
+        }
     }
 
     public int Width { get; }
@@ -99,6 +135,8 @@ public sealed class ScreenBuffer
     public int CursorCol { get; private set; }
 
     public TextStyle DefaultStyle { get; }
+
+    public bool OriginMode => _originMode;
 
     public int ScrollbackCount => _scrollbackRows.Count;
 
@@ -148,9 +186,13 @@ public sealed class ScreenBuffer
             _scrollTop = _scrollTop,
             _scrollBottom = _scrollBottom,
             _pendingWrap = _pendingWrap,
+            _originMode = _originMode,
+            _insertMode = _insertMode,
             _mainCells = CloneCells(_mainCells),
             _altCells = CloneCells(_altCells),
         };
+        cloned._tabStops.Clear();
+        cloned._tabStops.UnionWith(_tabStops);
 
         cloned._cells = cloned._isAltScreen ? cloned._altCells : cloned._mainCells;
         return cloned;
@@ -178,7 +220,8 @@ public sealed class ScreenBuffer
 
         if (value == '\t')
         {
-            var nextStop = ((CursorCol / 8) + 1) * 8;
+            var nextStop = _tabStops.Where(stop => stop > CursorCol).DefaultIfEmpty(Width - 1).First();
+
             var spaces = Math.Max(1, nextStop - CursorCol);
             for (var i = 0; i < spaces; i++)
             {
@@ -199,6 +242,38 @@ public sealed class ScreenBuffer
     public void PutSurrogatePair(string cluster, TextStyle style)
     {
         PutPrintable(cluster, style);
+    }
+
+    public void RepeatPreviousCharacter(int count)
+    {
+        if (count <= 0)
+        {
+            return;
+        }
+
+        var row = CursorRow;
+        var col = _pendingWrap ? CursorCol : CursorCol - 1;
+        if (col < 0)
+        {
+            return;
+        }
+
+        if (_cells[row, col].IsWideContinuation && col > 0)
+        {
+            col--;
+        }
+
+        var previous = _cells[row, col];
+        if (previous.IsWideContinuation)
+        {
+            return;
+        }
+
+        var style = previous.ToTextStyle();
+        for (var i = 0; i < count; i++)
+        {
+            PutPrintable(previous.Text, style);
+        }
     }
 
     public void AppendToPreviousCell(string combining)
@@ -291,6 +366,10 @@ public sealed class ScreenBuffer
         }
 
         var isWide = IsWideCharacter(text);
+        if (_insertMode)
+        {
+            InsertBlankCharacters(isWide ? 2 : 1, style);
+        }
 
         if (isWide && CursorCol + 1 >= Width)
         {
@@ -388,6 +467,31 @@ public sealed class ScreenBuffer
         MoveCursorTo(CursorRow + rowDelta, CursorCol + colDelta);
     }
 
+    public void MoveCursorToOriginRelative(int row, int col) =>
+        MoveCursorTo(_originMode ? _scrollTop + row : row, col);
+
+    public void SetOriginMode(bool enabled)
+    {
+        _originMode = enabled;
+        MoveCursorTo(enabled ? _scrollTop : 0, 0);
+    }
+
+    public void SetInsertMode(bool enabled) => _insertMode = enabled;
+
+    public void SetTabStop() => _tabStops.Add(CursorCol);
+
+    public void ClearTabStops(int mode)
+    {
+        if (mode == 3)
+        {
+            _tabStops.Clear();
+        }
+        else
+        {
+            _tabStops.Remove(CursorCol);
+        }
+    }
+
     public void SaveCursor()
     {
         _savedRow = CursorRow;
@@ -461,7 +565,7 @@ public sealed class ScreenBuffer
             _scrollBottom = bottom;
         }
 
-        MoveCursorTo(0, 0);
+        MoveCursorTo(_originMode ? _scrollTop : 0, 0);
     }
 
     public void Backspace()

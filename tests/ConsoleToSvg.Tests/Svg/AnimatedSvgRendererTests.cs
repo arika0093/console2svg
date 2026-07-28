@@ -2,11 +2,32 @@ using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using ConsoleToSvg.Recording;
+using ConsoleToSvg.Terminal;
 
 namespace ConsoleToSvg.Tests.Svg;
 
 public sealed class AnimatedSvgRendererTests
 {
+    [Test]
+    public void RenderFramesStartsWithProvidedTerminalState()
+    {
+        var emulator = new TerminalEmulator(12, 2, Theme.Resolve("dark"));
+        emulator.Process("before");
+        var initial = emulator.Buffer.Clone();
+        emulator.Process("\rafter");
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.RenderFrames(
+            [
+                new TerminalFrame(0, initial),
+                new TerminalFrame(0.2, emulator.Buffer.Clone()),
+            ],
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", VideoFps = 30 }
+        );
+
+        svg.ShouldContain("before");
+        svg.ShouldContain("after");
+    }
+
     [Test]
     public void RenderAnimatedSvgIncludesKeyframes()
     {
@@ -105,7 +126,7 @@ public sealed class AnimatedSvgRendererTests
     }
 
     [Test]
-    public void RenderAnimatedSvgPreservesRapidColorChanges()
+    public void RenderAnimatedSvgPreservesCmatrixHighlightColors()
     {
         var session = new RecordingSession(width: 8, height: 2);
         session.AddEvent(0.00, "\u001b[32mA");
@@ -118,7 +139,7 @@ public sealed class AnimatedSvgRendererTests
         );
 
         svg.ShouldContain("#0dbc79");
-        svg.ShouldContain("#23D18B");
+        svg.ShouldContain("#e5e5e5");
     }
 
     [Test]
@@ -394,7 +415,7 @@ public sealed class AnimatedSvgRendererTests
             {
                 Theme = "dark",
                 VideoFps = 1,
-                VideoTiming = ConsoleToSvg.Cli.VideoTimingMode.Realtime,
+                VideoTiming = ConsoleToSvg.Svg.VideoTimingMode.Realtime,
             }
         );
 
@@ -419,7 +440,7 @@ public sealed class AnimatedSvgRendererTests
             {
                 Theme = "dark",
                 VideoFps = 1,
-                VideoTiming = ConsoleToSvg.Cli.VideoTimingMode.Realtime,
+                VideoTiming = ConsoleToSvg.Svg.VideoTimingMode.Realtime,
             }
         );
 
@@ -444,7 +465,7 @@ public sealed class AnimatedSvgRendererTests
         {
             Theme = "dark",
             VideoFps = 12,
-            VideoTiming = ConsoleToSvg.Cli.VideoTimingMode.Deterministic,
+            VideoTiming = ConsoleToSvg.Svg.VideoTimingMode.Deterministic,
         };
 
         var svgA = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(sessionA, options);

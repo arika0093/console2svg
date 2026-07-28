@@ -96,6 +96,74 @@ public sealed class SvgRendererTests
     }
 
     [Test]
+    public void RenderStaticSvgWithBoxDrawingUsesConnectedPaths()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "\u001b(0lqqkxmqqj\u001b(B");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+        svg.ShouldContain("<path class=\"box\"");
+        svg.ShouldContain("<path class=\"box\"");
+        svg.ShouldNotContain("shape-rendering=\"crispEdges\"");
+        svg.ShouldNotContain(">┌");
+        svg.ShouldNotContain(">─");
+    }
+
+    [Test]
+    public void RenderStaticSvgWithUnicodeBoxDrawingUsesConnectedPaths()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "└──┘");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain("<path class=\"box\"");
+        svg.ShouldContain("M4.2 8.5H8.4V9.5H4.2Z");
+        svg.ShouldNotContain(">└");
+        svg.ShouldNotContain(">─");
+        svg.ShouldNotContain(">┘");
+    }
+
+    [Test]
+    public void RenderStaticSvgWithRepeatedBoxDrawingUsesConnectedPaths()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "\u001b(0lq\u001b[5bk\u001b(B");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain("<path class=\"box\"");
+        svg.ShouldNotContain(">q<");
+        svg.ShouldNotContain(">─<");
+    }
+
+    [Test]
+    public void RenderStaticSvgSupportsSgrDecorations()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "\u001b[4;9;53;58;2;1;2;3mA\u001b[8mB");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain("text-decoration:underline line-through overline");
+        svg.ShouldContain("text-decoration-color:#010203");
+        svg.ShouldContain(">A<");
+        svg.ShouldNotContain(">B<");
+    }
+
+    [Test]
     public void RenderStaticSvgWithEmoji()
     {
         var session = new RecordingSession(width: 8, height: 2);
@@ -218,7 +286,7 @@ public sealed class SvgRendererTests
     }
 
     [Test]
-    public void RenderStaticSvgUsesDefaultSystemMonospaceFont()
+    public void RenderStaticSvgUsesDefaultCompatibleMonospaceFont()
     {
         var session = new RecordingSession(width: 8, height: 2);
         session.AddEvent(0.01, "A");
@@ -228,7 +296,7 @@ public sealed class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        svg.ShouldContain("ui-monospace");
+        svg.ShouldContain("DejaVu Sans Mono");
     }
 
     [Test]
@@ -313,7 +381,7 @@ public sealed class SvgRendererTests
     }
 
     [Test]
-    public void RenderStaticSvgTintsWhiteHighlightNearGreenToBrightGreen()
+    public void RenderStaticSvgPreservesWhiteHighlightNearGreen()
     {
         var session = new RecordingSession(width: 8, height: 2);
         session.AddEvent(0.01, "\u001b[32mA\u001b[37mB\u001b[39m");
@@ -323,7 +391,7 @@ public sealed class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        svg.ShouldContain("fill=\"#23D18B\"");
+        svg.ShouldContain("fill=\"#e5e5e5\"");
     }
 
     [Test]
@@ -563,7 +631,7 @@ public sealed class SvgRendererTests
             out _
         );
         ok.ShouldBeTrue();
-        var renderOptions = ConsoleToSvg.Svg.SvgRenderOptions.FromAppOptions(options!);
+        var renderOptions = ConsoleToSvg.Cli.SvgRenderOptionsFactory.Create(options!);
         renderOptions.Padding.ShouldBe(8d);
     }
 
@@ -577,7 +645,7 @@ public sealed class SvgRendererTests
             out _
         );
         ok.ShouldBeTrue();
-        var renderOptions = ConsoleToSvg.Svg.SvgRenderOptions.FromAppOptions(options!);
+        var renderOptions = ConsoleToSvg.Cli.SvgRenderOptionsFactory.Create(options!);
         renderOptions.Padding.ShouldBe(3d);
     }
 
@@ -591,7 +659,7 @@ public sealed class SvgRendererTests
             out _
         );
         ok.ShouldBeTrue();
-        var renderOptions = ConsoleToSvg.Svg.SvgRenderOptions.FromAppOptions(options!);
+        var renderOptions = ConsoleToSvg.Cli.SvgRenderOptionsFactory.Create(options!);
         renderOptions.CommandHeader.ShouldBe("@ custom");
     }
 
@@ -605,7 +673,7 @@ public sealed class SvgRendererTests
             out _
         );
         ok.ShouldBeTrue();
-        var renderOptions = ConsoleToSvg.Svg.SvgRenderOptions.FromAppOptions(options!);
+        var renderOptions = ConsoleToSvg.Cli.SvgRenderOptionsFactory.Create(options!);
         renderOptions.CommandHeader.ShouldBe("# ls");
     }
 

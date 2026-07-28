@@ -93,31 +93,49 @@ runs:
             ;;
         esac
 
-        if [ -n "${EXT}" ]; then
-          FILE="console2svg-${RID}.zip"
-        else
-          FILE="console2svg-${RID}.tar.gz"
-        fi
-        if [ "$VERSION" = "latest" ]; then
-          URL="https://github.com/arika0093/console2svg/releases/latest/download/${FILE}"
-        else
-          URL="https://github.com/arika0093/console2svg/releases/download/v${VERSION}/${FILE}"
-        fi
-
         INSTALL_DIR="${{ runner.tool_cache }}/console2svg/${VERSION}/${{ runner.arch }}"
         rm -rf "$INSTALL_DIR"
         mkdir -p "$INSTALL_DIR"
-        archive_path="${INSTALL_DIR}/${FILE}"
 
-        echo "Downloading ${URL} ..."
-        curl -fsSL -L -o "$archive_path" "$URL"
-
+        # Try new format (v0.8+): archives (tar.gz/zip)
         if [ -n "${EXT}" ]; then
-          unzip -q "$archive_path" -d "$INSTALL_DIR"
+          FILE_NEW="console2svg-${RID}.zip"
         else
-          tar -xzf "$archive_path" -C "$INSTALL_DIR"
+          FILE_NEW="console2svg-${RID}.tar.gz"
         fi
-        rm -f "$archive_path"
+
+        if [ "$VERSION" = "latest" ]; then
+          URL_NEW="https://github.com/arika0093/console2svg/releases/latest/download/${FILE_NEW}"
+        else
+          URL_NEW="https://github.com/arika0093/console2svg/releases/download/v${VERSION}/${FILE_NEW}"
+        fi
+
+        echo "Trying new format (v0.8+): ${URL_NEW} ..."
+        if curl -fsSL -L -o "${INSTALL_DIR}/${FILE_NEW}" "$URL_NEW" 2>/dev/null; then
+          echo "Downloaded new format"
+          if [ -n "${EXT}" ]; then
+            unzip -q "${INSTALL_DIR}/${FILE_NEW}" -d "$INSTALL_DIR"
+          else
+            tar -xzf "${INSTALL_DIR}/${FILE_NEW}" -C "$INSTALL_DIR"
+          fi
+          rm -f "${INSTALL_DIR}/${FILE_NEW}"
+        else
+          # Fallback to old format (v0.7): raw binaries
+          if [ -n "${EXT}" ]; then
+            FILE_OLD="console2svg-${RID}${EXT}"
+          else
+            FILE_OLD="console2svg-${RID}"
+          fi
+
+          if [ "$VERSION" = "latest" ]; then
+            URL_OLD="https://github.com/arika0093/console2svg/releases/latest/download/${FILE_OLD}"
+          else
+            URL_OLD="https://github.com/arika0093/console2svg/releases/download/v${VERSION}/${FILE_OLD}"
+          fi
+
+          echo "Falling back to old format (v0.7): ${URL_OLD} ..."
+          curl -fsSL -L -o "${INSTALL_DIR}/console2svg${EXT}" "$URL_OLD"
+        fi
 
         [ -z "${EXT}" ] && chmod +x "${INSTALL_DIR}/console2svg"
 

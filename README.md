@@ -7,6 +7,8 @@
 Easily convert terminal output into SVG images. <br/>
 Truecolor, animation, cropping and many appearance options are supported.
 
+> Of course, this hero image is [generated](https://github.com/arika0093/console2svg/blob/main/scripts/image-gen.sh#L2-L3) using console2svg itself.
+
 </div>
 
 # console2svg
@@ -32,8 +34,6 @@ There are similar tools, but console2svg stands out for:
 * [**CI friendly**](#github-actions): with features like replay and timeout, it can generate both static and animated SVGs in CI environments, minimizing discrepancies between code and images.
 * [**Windows support**](#supported-platforms): works on Windows, macOS and Linux.
 * [**Support many format**](#convert-to-other-formats): By incorporating `ffmpeg` and `resvg`, it can output not only SVG but also various formats such as PNG, MP4, GIF, etc.
-
-> Of course, this hero image is [generated](https://github.com/arika0093/console2svg/blob/main/scripts/image-gen.sh#L2-L3) using console2svg itself.
 
 ## Overview
 
@@ -352,9 +352,6 @@ console2svg -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 
 ![console2svg -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab](./assets/cmd-matrix-video.gif)
 
 You can also output as MP4, WebM, or a static PNG/JPG by changing the extension.
-
-> [!NOTE]
-> `--install-deps` supports Windows and Linux. On macOS, install `ffmpeg` with Homebrew.
 
 ## Appearance options
 ### Background and opacity

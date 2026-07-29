@@ -258,12 +258,27 @@ public static class OptionParser
             i++;
         }
 
+        ApplyInteractiveSizeDefaults(options);
+
         if (!Validate(options, out error))
         {
             return false;
         }
 
         return true;
+    }
+
+    private static void ApplyInteractiveSizeDefaults(AppOptions options)
+    {
+        if (!options.Interactive)
+        {
+            return;
+        }
+
+        // Interactive captures share the host terminal viewport by default.
+        // Explicit numeric dimensions and explicit "adjust" values always take precedence.
+        options.WidthAdjust |= !options.Width.HasValue;
+        options.HeightAdjust |= !options.Height.HasValue;
     }
 
     private static bool TrySplitToken(string token, out string name, out string? inlineValue)

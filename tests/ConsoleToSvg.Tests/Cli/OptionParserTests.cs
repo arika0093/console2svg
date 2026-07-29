@@ -13,6 +13,25 @@ public sealed class OptionParserTests
 
         ok.ShouldBeTrue();
         options!.Interactive.ShouldBeTrue();
+        options.WidthAdjust.ShouldBeTrue();
+        options.HeightAdjust.ShouldBeTrue();
+    }
+
+    [Test]
+    public void InteractiveModePreservesExplicitDimensions()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--interactive", "-w", "120", "-h", "30" },
+            out var options,
+            out _,
+            out _
+        );
+
+        ok.ShouldBeTrue();
+        options!.Width.ShouldBe(120);
+        options.WidthAdjust.ShouldBeFalse();
+        options.Height.ShouldBe(30);
+        options.HeightAdjust.ShouldBeFalse();
     }
 
     [Test]

@@ -479,8 +479,8 @@ tmux capture-pane -pe -S - -t :0 | console2svg -o full-capture-$(date +%s).svg
 
 * `-o`: Output SVG file path (default: `output.svg`)
 * `-c`: Prepend the command line to the output as if typed in a terminal.
-* `-w`: width of the output SVG (default: terminal width[pipe], 100ch[pty])
-* `-h`: height of the output SVG (default: terminal height[pipe], auto[pty])
+* `-w`: width of the output SVG (default: terminal width[pipe], 100ch[pty], terminal width[interactive])
+* `-h`: height of the output SVG (default: terminal height[pipe], auto[pty], terminal height[interactive])
 * `-v`: output to video mode SVG (animated, looped by default)
 * `-i`: interactive mode (run a shell in a PTY and capture the current screen on demand)
 * `-d`: window chrome style (none, macos, windows, macos-pc, windows-pc, transparent, ...)

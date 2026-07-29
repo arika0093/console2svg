@@ -37,6 +37,7 @@
     <RuntimeHostConfigurationOption Include="System.Runtime.EnableWriteXorExecute" Value="false" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="VYaml" Version="1.4.0" />
     <ProjectReference Include="..\ConsoleToSvg.Core\ConsoleToSvg.Core.csproj" AdditionalProperties="PublishAot=false">
       <PrivateAssets Condition="'$(UseConverterPackage)' == 'true'">all</PrivateAssets>
     </ProjectReference>

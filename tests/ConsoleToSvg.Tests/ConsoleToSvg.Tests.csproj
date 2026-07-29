@@ -8,5 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ConsoleToSvg\ConsoleToSvg.csproj" />
+    <PackageReference Include="VYaml" Version="1.4.0" />
   </ItemGroup>
 </Project>

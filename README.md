@@ -392,6 +392,32 @@ console2svg -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "
 
 ![console2svg -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" --backcolor "#042515" -- echo "hi"](./assets/cmd-term-custom.svg)
 
+### Appearance configuration file
+
+Use `--config` to keep reusable generation settings in YAML. Command-line options override the file, and `include` lets teams split a shared base style from a project-specific file. Top-level keys correspond to the non-appearance option names in camel case; visual settings live under `appearance`.
+
+```yaml
+# console2svg.yml
+$schema: https://raw.githubusercontent.com/arika0093/console2svg/main/docs/console2svg.schema.json
+include: [styles/base.yml]
+outputPath: output.svg
+width: "120"
+mode: video
+videoFps: "24"
+appearance:
+  window: macos-pc
+  padding: 16
+  background: ["#003060", "#0080c0"]
+  font: "Cascadia Mono, monospace"
+  fontSize: 16
+```
+
+```sh
+console2svg --config console2svg.yml --padding 8 -- dotnet --version
+```
+
+The [`configuration schema`](./docs/console2svg.schema.json) provides completion and validation in YAML-aware editors. Add its URL as `$schema` (as shown above), or configure the file association in your editor. The `appearance` section supports `window`, `padding`, `pcMode`, `pcPadding`, `opacity`, `theme`, `foreColor`, `backColor`, `background`, `font`, `fontSize`, `lengthAdjust`, `withCommand`, `header`, and `prompt`. The top level supports output, recording, crop, timing, replay, conversion, interactive, and video options (`outputPath`, `inputCastPath`, `width`, `height`, `mode`, `frame`, `time`, `cropTop`, `videoFps`, `loop`, `size`, `svgConverter`, and the corresponding remaining option names).
+
 
 ### Window chrome
 

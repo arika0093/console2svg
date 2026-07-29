@@ -60,6 +60,7 @@ public static partial class OptionParser
                 --in <path>               Read existing asciicast file.
                 --save-cast <path>        Save captured output as asciicast file.
                 --verbose [path]          Enable verbose logging; write to path (default: console2svg.log).
+                --config <path.yml>       Load appearance options from a YAML file. CLI values take precedence.
                 --help                    Show help.
                 --version                 Show version and exit.
                 --install-deps            Download ffmpeg to the application directory and exit.
@@ -149,6 +150,59 @@ public static partial class OptionParser
     )
     {
         options = new AppOptions();
+        error = null;
+        showHelp = false;
+
+        if (!ConfigurationLoader.TryExtract(args, out var configPaths, out var commandLineArgs, out error))
+        {
+            options = null;
+            return false;
+        }
+
+        foreach (var configPath in configPaths)
+        {
+            if (!ConfigurationLoader.TryLoad(configPath, out var configArgs, out error))
+            {
+                options = null;
+                return false;
+            }
+
+            if (!TryParseArguments(configArgs, options, out error, out _))
+            {
+                options = null;
+                return false;
+            }
+        }
+
+        if (!TryParseArguments(commandLineArgs, options, out error, out showHelp))
+        {
+            options = null;
+            return false;
+        }
+
+        if (showHelp)
+        {
+            return true;
+        }
+
+        ApplyInteractiveSizeDefaults(options);
+
+        if (!Validate(options, out error))
+        {
+            options = null;
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool TryParseArguments(
+        string[] args,
+        AppOptions options,
+        out string? error,
+        out bool showHelp
+    )
+    {
         error = null;
         showHelp = false;
 
@@ -256,13 +310,6 @@ public static partial class OptionParser
             }
 
             i++;
-        }
-
-        ApplyInteractiveSizeDefaults(options);
-
-        if (!Validate(options, out error))
-        {
-            return false;
         }
 
         return true;

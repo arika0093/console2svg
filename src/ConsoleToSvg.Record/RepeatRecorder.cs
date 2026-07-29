@@ -125,21 +125,36 @@ public static class RepeatRecorder
         // pipe open, which would cause ReadToEndAsync to hang indefinitely.
         using var registration = cancellationToken.Register(() =>
         {
-            try
+            // Let a short-lived command finish writing its already-started frame
+            // before cancelling its process tree. This also prevents a timer that
+            // fires during process startup from turning a valid snapshot into an
+            // empty frame.
+            _ = Task.Run(async () =>
             {
-                if (!process.HasExited)
+                await Task
+                    .Delay(TimeSpan.FromMilliseconds(100), CancellationToken.None)
+                    .ConfigureAwait(false);
+                try
                 {
-                    process.Kill(entireProcessTree: true);
+                    if (!process.HasExited)
+                    {
+                        process.Kill(entireProcessTree: true);
+                    }
                 }
-            }
-            catch
-            {
-                // Ignore errors killing the process.
-            }
+                catch
+                {
+                    // Ignore errors killing the process.
+                }
+            }, CancellationToken.None);
         });
 
 #if NET8_0_OR_GREATER
-        var output = await process.StandardOutput.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
+        // The process-tree cancellation registration above owns shutdown. Do not cancel
+        // this read independently: a short recording timeout may otherwise discard
+        // output that the child process already wrote before it exited.
+        var output = await process
+            .StandardOutput.ReadToEndAsync(CancellationToken.None)
+            .ConfigureAwait(false);
 #else
         var output = await process.StandardOutput.ReadToEndAsync().ConfigureAwait(false);
 #endif
@@ -150,7 +165,6 @@ public static class RepeatRecorder
             $"Repeat command completed. ExitCode={process.ExitCode} OutputLength={output.Length}"
         );
 
-        cancellationToken.ThrowIfCancellationRequested();
         return output;
     }
 

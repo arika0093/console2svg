@@ -7,41 +7,65 @@
   "additionalProperties": false,
   "properties": {
     "include": { "type": "array", "items": { "type": "string" }, "description": "YAML files to load before this file, relative to this file." },
-    "verbose": { "type": "boolean" },
-    "verboseLogPath": { "type": "string" },
-    "showVersion": { "type": "boolean" },
-    "installDependencies": { "type": "boolean" },
-    "inputCastPath": { "type": "string" },
-    "outputPath": { "type": "string", "default": "output.svg" },
-    "mode": { "enum": ["image", "video", "repeat"] },
-    "width": { "type": "string", "description": "Positive integer or 'adjust'." },
-    "height": { "type": "string", "description": "Positive integer or 'adjust'." },
-    "frame": { "type": "string" },
-    "time": { "type": "string", "description": "Seconds or a START-END range." },
-    "cropTop": { "type": "string" },
-    "cropRight": { "type": "string" },
-    "cropBottom": { "type": "string" },
-    "cropLeft": { "type": "string" },
-    "saveCastPath": { "type": "string" },
-    "replaySavePath": { "type": "string" },
-    "replayPath": { "type": "string" },
-    "noColorEnv": { "type": "boolean" },
-    "noDeleteEnvs": { "type": "boolean" },
-    "videoFps": { "type": "string" },
-    "videoSleep": { "type": "string" },
-    "videoFadeOut": { "type": "string" },
-    "videoTiming": { "enum": ["deterministic", "realtime"] },
-    "outputCoalesceMs": { "type": "string" },
-    "timeout": { "type": "string" },
-    "loop": { "type": "boolean", "default": true },
-    "stdOut": { "type": "boolean" },
-    "interactive": { "type": "boolean" },
-    "saveFramesDir": { "type": "string" },
-    "size": { "type": "string", "description": "WIDTH, WIDTHxHEIGHT, WIDTHx*, or *xHEIGHT." },
-    "svgConverter": { "enum": ["auto", "ffmpeg", "rsvg-convert", "resvg"] },
+    "input": { "$ref": "#/$defs/input" },
+    "output": { "$ref": "#/$defs/output" },
+    "capture": { "$ref": "#/$defs/capture" },
+    "video": { "$ref": "#/$defs/video" },
+    "replay": { "$ref": "#/$defs/replay" },
+    "conversion": { "$ref": "#/$defs/conversion" },
+    "runtime": { "$ref": "#/$defs/runtime" },
     "appearance": { "$ref": "#/$defs/appearance" }
   },
   "$defs": {
+    "input": {
+      "type": "object", "additionalProperties": false,
+      "properties": { "castPath": { "type": "string", "description": "asciicast input path." } }
+    },
+    "output": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string", "default": "output.svg" },
+        "mode": { "enum": ["image", "video", "repeat"] },
+        "stdOut": { "type": "boolean" },
+        "saveFramesDir": { "type": "string" },
+        "size": { "type": "string" }
+      }
+    },
+    "capture": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "width": { "type": "string" }, "height": { "type": "string" },
+        "frame": { "type": "string" }, "time": { "type": "string" },
+        "cropTop": { "type": "string" }, "cropRight": { "type": "string" },
+        "cropBottom": { "type": "string" }, "cropLeft": { "type": "string" },
+        "saveCastPath": { "type": "string" }
+      }
+    },
+    "video": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "fps": { "type": "string" }, "sleep": { "type": "string" },
+        "fadeOut": { "type": "string" }, "timing": { "enum": ["deterministic", "realtime"] },
+        "coalesceMs": { "type": "string" }, "loop": { "type": "boolean", "default": true }
+      }
+    },
+    "replay": {
+      "type": "object", "additionalProperties": false,
+      "properties": { "path": { "type": "string" }, "savePath": { "type": "string" } }
+    },
+    "conversion": {
+      "type": "object", "additionalProperties": false,
+      "properties": { "installDependencies": { "type": "boolean" }, "svgConverter": { "enum": ["auto", "ffmpeg", "rsvg-convert", "resvg"] } }
+    },
+    "runtime": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "verbose": { "type": "boolean" }, "verboseLogPath": { "type": "string" },
+        "showVersion": { "type": "boolean" }, "timeout": { "type": "string" },
+        "noColorEnv": { "type": "boolean" }, "noDeleteEnvs": { "type": "boolean" },
+        "interactive": { "type": "boolean" }
+      }
+    },
     "appearance": {
       "type": "object",
       "additionalProperties": false,

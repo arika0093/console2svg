@@ -83,40 +83,80 @@ internal static class ConfigurationLoader
 
     private static void AddConfigurationArguments(ConsoleToSvgConfiguration config, List<string> args)
     {
-        AddFlag(args, "--verbose", config.Verbose);
-        Add(args, "--verbose", config.VerboseLogPath);
-        AddFlag(args, "--version", config.ShowVersion);
-        AddFlag(args, "--install-deps", config.InstallDependencies);
-        Add(args, "--in", config.InputCastPath);
-        Add(args, "--out", config.OutputPath);
-        Add(args, "--mode", config.Mode);
-        Add(args, "--width", config.Width);
-        Add(args, "--height", config.Height);
-        Add(args, "--frame", config.Frame);
-        Add(args, "--time", config.Time);
-        Add(args, "--crop-top", config.CropTop);
-        Add(args, "--crop-right", config.CropRight);
-        Add(args, "--crop-bottom", config.CropBottom);
-        Add(args, "--crop-left", config.CropLeft);
-        Add(args, "--save-cast", config.SaveCastPath);
-        Add(args, "--replay-save", config.ReplaySavePath);
-        Add(args, "--replay", config.ReplayPath);
-        AddFlag(args, "--no-colorenv", config.NoColorEnv);
-        AddFlag(args, "--no-delete-envs", config.NoDeleteEnvs);
-        Add(args, "--fps", config.VideoFps);
-        Add(args, "--sleep", config.VideoSleep);
-        Add(args, "--fadeout", config.VideoFadeOut);
-        Add(args, "--timing", config.VideoTiming);
-        Add(args, "--coalesce-ms", config.OutputCoalesceMs);
-        Add(args, "--timeout", config.Timeout);
-        AddFlag(args, "--stdout", config.StdOut);
-        AddFlag(args, "--interactive", config.Interactive);
-        Add(args, "--save-frames", config.SaveFramesDir);
-        Add(args, "--size", config.Size);
-        Add(args, "--svg-converter", config.SvgConverter);
-        AddInverseFlag(args, "--no-loop", config.Loop);
-
+        AddInputArguments(config.Input, args);
+        AddOutputArguments(config.Output, args);
+        AddCaptureArguments(config.Capture, args);
+        AddVideoArguments(config.Video, args);
+        AddReplayArguments(config.Replay, args);
+        AddConversionArguments(config.Conversion, args);
+        AddRuntimeArguments(config.Runtime, args);
         AddAppearanceArguments(config.Appearance, args);
+    }
+
+    private static void AddInputArguments(InputConfiguration? input, List<string> args)
+    {
+        if (input is not null) Add(args, "--in", input.CastPath);
+    }
+
+    private static void AddOutputArguments(OutputConfiguration? output, List<string> args)
+    {
+        if (output is null) return;
+        Add(args, "--out", output.Path);
+        Add(args, "--mode", output.Mode);
+        AddFlag(args, "--stdout", output.StdOut);
+        Add(args, "--save-frames", output.SaveFramesDir);
+        Add(args, "--size", output.Size);
+    }
+
+    private static void AddCaptureArguments(CaptureConfiguration? capture, List<string> args)
+    {
+        if (capture is null) return;
+        Add(args, "--width", capture.Width);
+        Add(args, "--height", capture.Height);
+        Add(args, "--frame", capture.Frame);
+        Add(args, "--time", capture.Time);
+        Add(args, "--crop-top", capture.CropTop);
+        Add(args, "--crop-right", capture.CropRight);
+        Add(args, "--crop-bottom", capture.CropBottom);
+        Add(args, "--crop-left", capture.CropLeft);
+        Add(args, "--save-cast", capture.SaveCastPath);
+    }
+
+    private static void AddVideoArguments(VideoConfiguration? video, List<string> args)
+    {
+        if (video is null) return;
+        Add(args, "--fps", video.Fps);
+        Add(args, "--sleep", video.Sleep);
+        Add(args, "--fadeout", video.FadeOut);
+        Add(args, "--timing", video.Timing);
+        Add(args, "--coalesce-ms", video.CoalesceMs);
+        AddInverseFlag(args, "--no-loop", video.Loop);
+    }
+
+    private static void AddReplayArguments(ReplayConfiguration? replay, List<string> args)
+    {
+        if (replay is null) return;
+        Add(args, "--replay", replay.Path);
+        Add(args, "--replay-save", replay.SavePath);
+    }
+
+    private static void AddConversionArguments(ConversionConfiguration? conversion, List<string> args)
+    {
+        if (conversion is null) return;
+        AddFlag(args, "--install-deps", conversion.InstallDependencies);
+        Add(args, "--svg-converter", conversion.SvgConverter);
+    }
+
+    private static void AddRuntimeArguments(RuntimeConfiguration? runtime, List<string> args)
+    {
+        if (runtime is null) return;
+        AddFlag(args, "--verbose", runtime.Verbose);
+        Add(args, "--verbose", runtime.VerboseLogPath);
+        AddFlag(args, "--version", runtime.ShowVersion);
+        Add(args, "--timeout", runtime.Timeout);
+        AddFlag(args, "--no-colorenv", runtime.NoColorEnv);
+        AddFlag(args, "--no-delete-envs", runtime.NoDeleteEnvs);
+        AddFlag(args, "--interactive", runtime.Interactive);
     }
 
     private static void AddAppearanceArguments(AppearanceConfiguration? appearance, List<string> args)
@@ -185,15 +225,32 @@ internal static class ConfigurationLoader
 internal sealed partial class ConsoleToSvgConfiguration
 {
     public List<string>? Include { get; set; }
+    public InputConfiguration? Input { get; set; }
+    public OutputConfiguration? Output { get; set; }
+    public CaptureConfiguration? Capture { get; set; }
+    public VideoConfiguration? Video { get; set; }
+    public ReplayConfiguration? Replay { get; set; }
+    public ConversionConfiguration? Conversion { get; set; }
+    public RuntimeConfiguration? Runtime { get; set; }
     public AppearanceConfiguration? Appearance { get; set; }
-    public bool? Verbose { get; set; }
-    public string? VerboseLogPath { get; set; }
-    public bool? ShowVersion { get; set; }
-    public bool? InstallDependencies { get; set; }
-    public string? Command { get; set; }
-    public string? InputCastPath { get; set; }
-    public string? OutputPath { get; set; }
+}
+
+[YamlObject]
+internal sealed partial class InputConfiguration { public string? CastPath { get; set; } }
+
+[YamlObject]
+internal sealed partial class OutputConfiguration
+{
+    public string? Path { get; set; }
     public string? Mode { get; set; }
+    public bool? StdOut { get; set; }
+    public string? SaveFramesDir { get; set; }
+    public string? Size { get; set; }
+}
+
+[YamlObject]
+internal sealed partial class CaptureConfiguration
+{
     public string? Width { get; set; }
     public string? Height { get; set; }
     public string? Frame { get; set; }
@@ -203,22 +260,35 @@ internal sealed partial class ConsoleToSvgConfiguration
     public string? CropBottom { get; set; }
     public string? CropLeft { get; set; }
     public string? SaveCastPath { get; set; }
-    public string? ReplaySavePath { get; set; }
-    public string? ReplayPath { get; set; }
+}
+
+[YamlObject]
+internal sealed partial class VideoConfiguration
+{
+    public string? Fps { get; set; }
+    public string? Sleep { get; set; }
+    public string? FadeOut { get; set; }
+    public string? Timing { get; set; }
+    public string? CoalesceMs { get; set; }
+    public bool? Loop { get; set; }
+}
+
+[YamlObject]
+internal sealed partial class ReplayConfiguration { public string? Path { get; set; } public string? SavePath { get; set; } }
+
+[YamlObject]
+internal sealed partial class ConversionConfiguration { public bool? InstallDependencies { get; set; } public string? SvgConverter { get; set; } }
+
+[YamlObject]
+internal sealed partial class RuntimeConfiguration
+{
+    public bool? Verbose { get; set; }
+    public string? VerboseLogPath { get; set; }
+    public bool? ShowVersion { get; set; }
+    public string? Timeout { get; set; }
     public bool? NoColorEnv { get; set; }
     public bool? NoDeleteEnvs { get; set; }
-    public string? VideoFps { get; set; }
-    public string? VideoSleep { get; set; }
-    public string? VideoFadeOut { get; set; }
-    public string? VideoTiming { get; set; }
-    public string? OutputCoalesceMs { get; set; }
-    public string? Timeout { get; set; }
-    public bool? Loop { get; set; }
-    public bool? StdOut { get; set; }
     public bool? Interactive { get; set; }
-    public string? SaveFramesDir { get; set; }
-    public string? Size { get; set; }
-    public string? SvgConverter { get; set; }
 }
 
 [YamlObject]

@@ -16,10 +16,13 @@ public sealed class ConfigurationLoaderTests
         {
             File.WriteAllText(configPath, """
                 $schema: https://raw.githubusercontent.com/arika0093/console2svg/main/docs/console2svg.schema.json
-                outputPath: capture.svg
-                width: "120"
-                mode: video
-                videoFps: "24"
+                output:
+                  path: capture.svg
+                  mode: video
+                capture:
+                  width: "120"
+                video:
+                  fps: "24"
                 appearance:
                   window: macos-pc
                   padding: 16

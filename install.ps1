@@ -17,9 +17,29 @@ $ErrorActionPreference = "Stop"
 $Repo = "arika0093/console2svg"
 $Version = if ($env:CONSOLE2SVG_VERSION) { $env:CONSOLE2SVG_VERSION } else { "latest" }
 
-$Arch = [System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture
-switch ($Arch) {
+# RuntimeInformation.OSArchitecture is unavailable in some Windows PowerShell
+# 5.1/.NET Framework combinations. Use the OS architecture (rather than the
+# PowerShell process architecture) and retain a compatible fallback.
+$Arch = $null
+try {
+    $RuntimeInformationType = [type]::GetType(
+        "System.Runtime.InteropServices.RuntimeInformation, System.Runtime.InteropServices.RuntimeInformation",
+        $false
+    )
+    if ($null -ne $RuntimeInformationType) {
+        $Arch = $RuntimeInformationType::OSArchitecture.ToString()
+    }
+} catch {
+    # Fall back below for older .NET Framework installations.
+}
+
+if ([string]::IsNullOrWhiteSpace($Arch)) {
+    $Arch = if ([Environment]::Is64BitOperatingSystem) { "X64" } else { "X86" }
+}
+
+switch ($Arch.ToUpperInvariant()) {
     "X64"   { $RID = "win-x64" }
+    "AMD64" { $RID = "win-x64" }
     "ARM64" { $RID = "win-arm64" }
     default { Write-Error "Unsupported architecture: $Arch"; exit 1 }
 }

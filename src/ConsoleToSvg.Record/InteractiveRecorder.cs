@@ -13,34 +13,7 @@ using ZLogger;
 
 namespace ConsoleToSvg.Recording;
 
-public sealed class InteractiveCapture
-{
-    public InteractiveCapture(ScreenBuffer screen)
-    {
-        Screen = screen;
-        Frames = [];
-    }
-
-    public InteractiveCapture(IReadOnlyList<TerminalFrame> frames)
-    {
-        if (frames.Count == 0)
-        {
-            throw new ArgumentException("At least one frame is required.", nameof(frames));
-        }
-
-        Frames = frames;
-        Screen = frames[0].Buffer;
-    }
-
-    public ScreenBuffer Screen { get; }
-
-    public IReadOnlyList<TerminalFrame> Frames { get; }
-
-    public bool IsVideo => Frames.Count > 0;
-}
-
-/// <summary>Runs an interactive shell in a PTY and emits snapshots without sending capture keys to it.</summary>
-public static class InteractiveRecorder
+public static partial class InteractiveRecorder
 {
     public static async Task RunAsync(
         int width,
@@ -92,29 +65,6 @@ public static class InteractiveRecorder
             : null;
         PtyRecorder.TryDisableTerminalMouseTracking(forwardToConsole: true, logger);
 
-        async Task ClearHostTerminalAsync()
-        {
-            if (Console.IsOutputRedirected)
-            {
-                return;
-            }
-
-            await hostOutputGate.WaitAsync(CancellationToken.None).ConfigureAwait(false);
-            try
-            {
-                // Match the visible part of `cls` without sending anything to the
-                // child PTY. The child will still receive Ctrl+L and redraw itself.
-                var clear = "\u001b[2J\u001b[H";
-                await output.WriteAsync(Encoding.ASCII.GetBytes(clear), CancellationToken.None)
-                    .ConfigureAwait(false);
-                await output.FlushAsync(CancellationToken.None).ConfigureAwait(false);
-            }
-            finally
-            {
-                hostOutputGate.Release();
-            }
-        }
-
         var connection = await NativePty
             .SpawnAsync(options, cancellationToken)
             .ConfigureAwait(false);
@@ -131,7 +81,7 @@ public static class InteractiveRecorder
                 : null;
         try
         {
-            await ClearHostTerminalAsync().ConfigureAwait(false);
+            await ClearHostTerminalAsync(output, hostOutputGate).ConfigureAwait(false);
         }
         catch
         {
@@ -171,19 +121,20 @@ public static class InteractiveRecorder
                 string style;
                 if (isError)
                 {
-                    style = "\u001b[1;97;48;5;88m";  // White on dark red background for errors
+                    style = "\u001b[1;97;48;5;88m"; // White on dark red background for errors
                 }
                 else if (isRecording)
                 {
-                    style = "\u001b[1;31;48;5;236m";  // Red on dark gray for recording
+                    style = "\u001b[1;31;48;5;236m"; // Red on dark gray for recording
                 }
                 else
                 {
-                    style = "\u001b[30;48;5;114m";   // Black on green for normal
+                    style = "\u001b[30;48;5;114m"; // Black on green for normal
                 }
-                var clearPrevious = notificationLength == 0
-                    ? string.Empty
-                    : $"\u001b[1;{notificationColumn}H{new string(' ', notificationLength)}";
+                var clearPrevious =
+                    notificationLength == 0
+                        ? string.Empty
+                        : $"\u001b[1;{notificationColumn}H{new string(' ', notificationLength)}";
                 var overlay =
                     $"\u001b7{clearPrevious}\u001b[1;{column}H{style}{label}\u001b[0m\u001b8";
                 await output
@@ -197,7 +148,6 @@ public static class InteractiveRecorder
             {
                 hostOutputGate.Release();
             }
-
         }
 
         async Task ClearNotificationAsync(long version)
@@ -229,7 +179,12 @@ public static class InteractiveRecorder
             }
         }
 
-        async Task ShowTimedNotificationAsync(string message, bool isRecording, bool isError, long version)
+        async Task ShowTimedNotificationAsync(
+            string message,
+            bool isRecording,
+            bool isError,
+            long version
+        )
         {
             await NotifyAsync(message, isRecording, isError, version).ConfigureAwait(false);
             await Task.Delay(TimeSpan.FromMilliseconds(1500), lifetime.Token).ConfigureAwait(false);
@@ -243,7 +198,11 @@ public static class InteractiveRecorder
             }
         }
 
-        (long Version, Task Completion) ShowNotification(string message, bool isRecording = false, bool isError = false)
+        (long Version, Task Completion) ShowNotification(
+            string message,
+            bool isRecording = false,
+            bool isError = false
+        )
         {
             var version = Interlocked.Increment(ref notificationVersion);
             Interlocked.Exchange(ref notificationActive, 1);
@@ -259,7 +218,12 @@ public static class InteractiveRecorder
         {
             var version = Interlocked.Increment(ref notificationVersion);
             Interlocked.Exchange(ref notificationActive, 1);
-            var notification = NotifyAsync(message, isRecording: false, isError: false, version: version);
+            var notification = NotifyAsync(
+                message,
+                isRecording: false,
+                isError: false,
+                version: version
+            );
             _ = notification.ContinueWith(
                 task => logger.ZLogDebug(task.Exception, $"Interactive notification failed."),
                 TaskContinuationOptions.OnlyOnFaulted
@@ -295,13 +259,14 @@ public static class InteractiveRecorder
             {
                 hints.Add("F10: Capture");
             }
-            
+
             string label;
             if (isRecording)
             {
-                label = Volatile.Read(ref recordingPaused) != 0
-                    ? "  ● REC (F9:End, F12:Resume)  "
-                    : "  ● REC (F9:End, F12:Pause)  ";
+                label =
+                    Volatile.Read(ref recordingPaused) != 0
+                        ? "  ● REC (F9:End, F12:Resume)  "
+                        : "  ● REC (F9:End, F12:Pause)  ";
             }
             else if (hints.Count > 0)
             {
@@ -312,16 +277,16 @@ public static class InteractiveRecorder
                 // No features enabled, don't show indicator
                 return;
             }
-            
+
             var width = Math.Max(20, Console.WindowWidth);
             var column = Math.Max(1, width - label.Length);
-            var clearPrevious = notificationLength == 0
-                ? string.Empty
-                : $"\u001b[1;{notificationColumn}H{new string(' ', notificationLength)}";
-            var overlay =
-                isRecording
-                    ? $"\u001b7{clearPrevious}\u001b[1;{column}H\u001b[1;31;48;5;236m{label}\u001b[0m\u001b8"
-                    : $"\u001b7{clearPrevious}\u001b[1;{column}H\u001b[30;48;5;114m{label}\u001b[0m\u001b8";
+            var clearPrevious =
+                notificationLength == 0
+                    ? string.Empty
+                    : $"\u001b[1;{notificationColumn}H{new string(' ', notificationLength)}";
+            var overlay = isRecording
+                ? $"\u001b7{clearPrevious}\u001b[1;{column}H\u001b[1;31;48;5;236m{label}\u001b[0m\u001b8"
+                : $"\u001b7{clearPrevious}\u001b[1;{column}H\u001b[30;48;5;114m{label}\u001b[0m\u001b8";
             await output
                 .WriteAsync(Encoding.UTF8.GetBytes(overlay), lifetime.Token)
                 .ConfigureAwait(false);
@@ -335,43 +300,43 @@ public static class InteractiveRecorder
             Interlocked.Exchange(ref startupIndicatorActive, 0);
             ShowNotification("Started");
             _ = Task.Run(
-                async () =>
-                {
-                    try
+                    async () =>
                     {
-                        await Task
-                            .Delay(TimeSpan.FromMilliseconds(1500), lifetime.Token)
-                            .ConfigureAwait(false);
-                        lock (captureGate)
-                        {
-                            if (videoFrames is null)
-                            {
-                                return;
-                            }
-                        }
-
-                        Interlocked.Exchange(ref recordingIndicatorActive, 1);
-                        Interlocked.Increment(ref notificationVersion);
-                        await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
                         try
                         {
-                            await RenderPersistentIndicatorAsync().ConfigureAwait(false);
+                            await Task.Delay(TimeSpan.FromMilliseconds(1500), lifetime.Token)
+                                .ConfigureAwait(false);
+                            lock (captureGate)
+                            {
+                                if (videoFrames is null)
+                                {
+                                    return;
+                                }
+                            }
+
+                            Interlocked.Exchange(ref recordingIndicatorActive, 1);
+                            Interlocked.Increment(ref notificationVersion);
+                            await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
+                            try
+                            {
+                                await RenderPersistentIndicatorAsync().ConfigureAwait(false);
+                            }
+                            finally
+                            {
+                                hostOutputGate.Release();
+                            }
                         }
-                        finally
+                        catch (OperationCanceledException)
                         {
-                            hostOutputGate.Release();
+                            // The session ended before the recording indicator was due.
                         }
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        // The session ended before the recording indicator was due.
-                    }
-                },
-                CancellationToken.None
-            ).ContinueWith(
-                task => logger.ZLogDebug(task.Exception, $"Interactive notification failed."),
-                TaskContinuationOptions.OnlyOnFaulted
-            );
+                    },
+                    CancellationToken.None
+                )
+                .ContinueWith(
+                    task => logger.ZLogDebug(task.Exception, $"Interactive notification failed."),
+                    TaskContinuationOptions.OnlyOnFaulted
+                );
         }
 
         async Task WaitForOutputToSettleAsync()
@@ -385,7 +350,8 @@ public static class InteractiveRecorder
             while (!lifetime.IsCancellationRequested)
             {
                 var now = Stopwatch.GetTimestamp();
-                var quietFor = (now - Volatile.Read(ref lastOutputTimestamp)) * 1000 / Stopwatch.Frequency;
+                var quietFor =
+                    (now - Volatile.Read(ref lastOutputTimestamp)) * 1000 / Stopwatch.Frequency;
                 var waited = (now - started) * 1000 / Stopwatch.Frequency;
                 if (quietFor >= quietMilliseconds || waited >= maxWaitMilliseconds)
                 {
@@ -406,54 +372,63 @@ public static class InteractiveRecorder
                 {
                     var savedNotification = ShowNotification(message);
                     _ = Task.Run(
-                        async () =>
-                        {
-                            try
+                            async () =>
                             {
-                                await savedNotification.Completion.ConfigureAwait(false);
-                                if (
-                                    Volatile.Read(ref notificationVersion) != savedNotification.Version
-                                    || Volatile.Read(ref recordingIndicatorActive) != 0
-                                )
+                                try
                                 {
-                                    return;
-                                }
-
-                                lock (captureGate)
-                                {
-                                    if (videoFrames is not null)
+                                    await savedNotification.Completion.ConfigureAwait(false);
+                                    if (
+                                        Volatile.Read(ref notificationVersion)
+                                            != savedNotification.Version
+                                        || Volatile.Read(ref recordingIndicatorActive) != 0
+                                    )
                                     {
                                         return;
                                     }
-                                }
 
-                                Interlocked.Exchange(ref startupIndicatorActive, 1);
-                                await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
-                                try
-                                {
-                                    if (
-                                        Volatile.Read(ref notificationVersion)
-                                        == savedNotification.Version
-                                    )
+                                    lock (captureGate)
                                     {
-                                        await RenderPersistentIndicatorAsync().ConfigureAwait(false);
+                                        if (videoFrames is not null)
+                                        {
+                                            return;
+                                        }
+                                    }
+
+                                    Interlocked.Exchange(ref startupIndicatorActive, 1);
+                                    await hostOutputGate
+                                        .WaitAsync(lifetime.Token)
+                                        .ConfigureAwait(false);
+                                    try
+                                    {
+                                        if (
+                                            Volatile.Read(ref notificationVersion)
+                                            == savedNotification.Version
+                                        )
+                                        {
+                                            await RenderPersistentIndicatorAsync()
+                                                .ConfigureAwait(false);
+                                        }
+                                    }
+                                    finally
+                                    {
+                                        hostOutputGate.Release();
                                     }
                                 }
-                                finally
+                                catch (OperationCanceledException)
                                 {
-                                    hostOutputGate.Release();
+                                    // The session ended before restoring the startup indicator.
                                 }
-                            }
-                            catch (OperationCanceledException)
-                            {
-                                // The session ended before restoring the startup indicator.
-                            }
-                        },
-                        CancellationToken.None
-                    ).ContinueWith(
-                        task => logger.ZLogDebug(task.Exception, $"Interactive notification failed."),
-                        TaskContinuationOptions.OnlyOnFaulted
-                    );
+                            },
+                            CancellationToken.None
+                        )
+                        .ContinueWith(
+                            task =>
+                                logger.ZLogDebug(
+                                    task.Exception,
+                                    $"Interactive notification failed."
+                                ),
+                            TaskContinuationOptions.OnlyOnFaulted
+                        );
                 }
             }
             catch
@@ -506,14 +481,11 @@ public static class InteractiveRecorder
             InteractiveCapture capture;
             lock (captureGate)
             {
-                var finalScreen = Volatile.Read(ref recordingPaused) != 0
-                    ? videoFrames[^1].Buffer
-                    : emulator.Buffer;
-                capture = CompleteRecording(
-                    videoFrames,
-                    GetRecordingElapsedSeconds(),
-                    finalScreen
-                );
+                var finalScreen =
+                    Volatile.Read(ref recordingPaused) != 0
+                        ? videoFrames[^1].Buffer
+                        : emulator.Buffer;
+                capture = CompleteRecording(videoFrames, GetRecordingElapsedSeconds(), finalScreen);
                 videoFrames = null;
                 videoPausedDuration = 0d;
                 videoPausedAt = 0d;
@@ -587,8 +559,8 @@ public static class InteractiveRecorder
                 {
                     while (!lifetime.IsCancellationRequested)
                     {
-                        var count = await connection.ReaderStream
-                            .ReadAsync(bytes, 0, bytes.Length, lifetime.Token)
+                        var count = await connection
+                            .ReaderStream.ReadAsync(bytes, 0, bytes.Length, lifetime.Token)
                             .ConfigureAwait(false);
                         if (count <= 0)
                         {
@@ -622,17 +594,24 @@ public static class InteractiveRecorder
                         {
                             if (charCount > 0)
                             {
-                                var text = hostSequenceFilter.Filter(new string(chars, 0, charCount));
+                                var text = hostSequenceFilter.Filter(
+                                    new string(chars, 0, charCount)
+                                );
                                 if (text.Length > 0)
                                 {
-                                    await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
+                                    await hostOutputGate
+                                        .WaitAsync(lifetime.Token)
+                                        .ConfigureAwait(false);
                                     try
                                     {
                                         await outputWriter
                                             .WriteAsync(text.AsMemory(), lifetime.Token)
                                             .ConfigureAwait(false);
-                                        await outputWriter.FlushAsync(lifetime.Token).ConfigureAwait(false);
-                                        await RenderPersistentIndicatorAsync().ConfigureAwait(false);
+                                        await outputWriter
+                                            .FlushAsync(lifetime.Token)
+                                            .ConfigureAwait(false);
+                                        await RenderPersistentIndicatorAsync()
+                                            .ConfigureAwait(false);
                                     }
                                     finally
                                     {
@@ -643,9 +622,10 @@ public static class InteractiveRecorder
                         }
                         else
                         {
-                            var text = charCount > 0
-                                ? hostSequenceFilter.Filter(new string(chars, 0, charCount))
-                                : string.Empty;
+                            var text =
+                                charCount > 0
+                                    ? hostSequenceFilter.Filter(new string(chars, 0, charCount))
+                                    : string.Empty;
                             if (text.Length == 0)
                             {
                                 continue;
@@ -655,10 +635,7 @@ public static class InteractiveRecorder
                             try
                             {
                                 await output
-                                    .WriteAsync(
-                                        Encoding.UTF8.GetBytes(text),
-                                        lifetime.Token
-                                    )
+                                    .WriteAsync(Encoding.UTF8.GetBytes(text), lifetime.Token)
                                     .ConfigureAwait(false);
                                 await output.FlushAsync(lifetime.Token).ConfigureAwait(false);
                                 await RenderPersistentIndicatorAsync().ConfigureAwait(false);
@@ -689,22 +666,24 @@ public static class InteractiveRecorder
         {
             lock (captureQueueGate)
             {
-                captureQueue = captureQueue.ContinueWith(
-                    async _ =>
-                    {
-                        try
+                captureQueue = captureQueue
+                    .ContinueWith(
+                        async _ =>
                         {
-                            await SaveCaptureAsync(capture).ConfigureAwait(false);
-                        }
-                        catch (Exception ex)
-                        {
-                            logger.ZLogError(ex, $"Interactive capture failed.");
-                        }
-                    },
-                    CancellationToken.None,
-                    TaskContinuationOptions.None,
-                    TaskScheduler.Default
-                ).Unwrap();
+                            try
+                            {
+                                await SaveCaptureAsync(capture).ConfigureAwait(false);
+                            }
+                            catch (Exception ex)
+                            {
+                                logger.ZLogError(ex, $"Interactive capture failed.");
+                            }
+                        },
+                        CancellationToken.None,
+                        TaskContinuationOptions.None,
+                        TaskScheduler.Default
+                    )
+                    .Unwrap();
             }
         }
 
@@ -742,11 +721,14 @@ public static class InteractiveRecorder
                                     {
                                         var forwarded = new List<byte>(1);
                                         router.ForwardPending(forwarded);
-                                        await connection.WriterStream
-                                            .WriteAsync(forwarded.ToArray(), lifetime.Token)
+                                        await connection
+                                            .WriterStream.WriteAsync(
+                                                forwarded.ToArray(),
+                                                lifetime.Token
+                                            )
                                             .ConfigureAwait(false);
-                                        await connection.WriterStream
-                                            .FlushAsync(lifetime.Token)
+                                        await connection
+                                            .WriterStream.FlushAsync(lifetime.Token)
                                             .ConfigureAwait(false);
                                     }
                                 }
@@ -773,9 +755,10 @@ public static class InteractiveRecorder
                                 .ReadAsync(bytes, 0, bytes.Length, lifetime.Token)
                                 .ConfigureAwait(false)
                             : await Task.Run(
-                                () => ReadUnixTerminalInput(bytes, timeoutMilliseconds: 100),
-                                CancellationToken.None
-                            ).ConfigureAwait(false);
+                                    () => ReadUnixTerminalInput(bytes, timeoutMilliseconds: 100),
+                                    CancellationToken.None
+                                )
+                                .ConfigureAwait(false);
                         if (count < 0)
                         {
                             // Poll timeout; check cancellation and continue.
@@ -802,8 +785,11 @@ public static class InteractiveRecorder
                                 var action = router.Process(bytes[i], forwarded);
                                 if (forwarded.Count > 0)
                                 {
-                                    await connection.WriterStream
-                                        .WriteAsync(forwarded.ToArray(), lifetime.Token)
+                                    await connection
+                                        .WriterStream.WriteAsync(
+                                            forwarded.ToArray(),
+                                            lifetime.Token
+                                        )
                                         .ConfigureAwait(false);
                                 }
 
@@ -825,7 +811,10 @@ public static class InteractiveRecorder
                                     case InteractiveInputAction.Screenshot:
                                         if (!screenshotEnabled)
                                         {
-                                            ShowNotification("Screenshots are not supported for video formats", isError: true);
+                                            ShowNotification(
+                                                "Screenshots are not supported for video formats",
+                                                isError: true
+                                            );
                                             break;
                                         }
                                         try
@@ -842,7 +831,8 @@ public static class InteractiveRecorder
                                     case InteractiveInputAction.ToggleRecording:
                                         try
                                         {
-                                            var capture = await ToggleRecordingAsync().ConfigureAwait(false);
+                                            var capture = await ToggleRecordingAsync()
+                                                .ConfigureAwait(false);
                                             if (capture is not null)
                                             {
                                                 captures.Add(capture);
@@ -850,7 +840,10 @@ public static class InteractiveRecorder
                                         }
                                         catch (Exception ex)
                                         {
-                                            logger.ZLogError(ex, $"Interactive recording capture failed.");
+                                            logger.ZLogError(
+                                                ex,
+                                                $"Interactive recording capture failed."
+                                            );
                                         }
                                         break;
                                     case InteractiveInputAction.TogglePause:
@@ -860,7 +853,10 @@ public static class InteractiveRecorder
                                         }
                                         catch (Exception ex)
                                         {
-                                            logger.ZLogError(ex, $"Interactive recording pause failed.");
+                                            logger.ZLogError(
+                                                ex,
+                                                $"Interactive recording pause failed."
+                                            );
                                         }
                                         break;
                                 }
@@ -874,7 +870,9 @@ public static class InteractiveRecorder
                                 ScheduleStandaloneEscape(version);
                             }
 
-                            await connection.WriterStream.FlushAsync(lifetime.Token).ConfigureAwait(false);
+                            await connection
+                                .WriterStream.FlushAsync(lifetime.Token)
+                                .ConfigureAwait(false);
                         }
                         finally
                         {
@@ -968,9 +966,10 @@ public static class InteractiveRecorder
             {
                 if (videoFrames is not null)
                 {
-                    var finalScreen = Volatile.Read(ref recordingPaused) != 0
-                        ? videoFrames[^1].Buffer
-                        : emulator.Buffer;
+                    var finalScreen =
+                        Volatile.Read(ref recordingPaused) != 0
+                            ? videoFrames[^1].Buffer
+                            : emulator.Buffer;
                     capture = CompleteRecording(
                         videoFrames,
                         GetRecordingElapsedSeconds(),
@@ -1006,258 +1005,18 @@ public static class InteractiveRecorder
             PtyRecorder.TryDisableTerminalMouseTracking(forwardToConsole: true, logger);
             try
             {
-                await ClearHostTerminalAsync().ConfigureAwait(false);
+                await ClearHostTerminalAsync(output, hostOutputGate).ConfigureAwait(false);
             }
             finally
             {
                 rawInput?.Dispose();
             }
-            await Console.Out
-                .WriteLineAsync(
+            await Console
+                .Out.WriteLineAsync(
                     "console2svg interactive mode finished".AsMemory(),
                     CancellationToken.None
                 )
                 .ConfigureAwait(false);
         }
-    }
-
-    public static InteractiveCapture CompleteRecording(
-        List<TerminalFrame> frames,
-        double elapsedSeconds,
-        ScreenBuffer finalScreen
-    )
-    {
-        frames.Add(new TerminalFrame(elapsedSeconds, finalScreen.Clone()));
-        return new InteractiveCapture(frames.ToArray());
-    }
-
-    private static int ReadUnixTerminalInput(byte[] buffer, int timeoutMilliseconds)
-    {
-        var descriptors = new[] { new PollFd { FileDescriptor = 0, Events = PollIn } };
-        var pollResult = poll(descriptors, (nuint)descriptors.Length, timeoutMilliseconds);
-        if (pollResult == 0)
-        {
-            return -1;
-        }
-        if (pollResult < 0)
-        {
-            var error = Marshal.GetLastWin32Error();
-            return error is 4 or 11 ? -1 : throw new IOException($"poll failed: errno {error}");
-        }
-
-        var count = read(0, buffer, (nuint)buffer.Length);
-        if (count >= 0)
-        {
-            return checked((int)count);
-        }
-
-        var readError = Marshal.GetLastWin32Error();
-        return readError is 4 or 11 ? -1 : throw new IOException($"read failed: errno {readError}");
-    }
-
-    private const short PollIn = 0x0001;
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct PollFd
-    {
-        public int FileDescriptor;
-        public short Events;
-        public short Revents;
-    }
-
-    [DllImport("libc", SetLastError = true)]
-    private static extern int poll(PollFd[] fds, nuint nfds, int timeout);
-
-    [DllImport("libc", SetLastError = true)]
-    private static extern nint read(int fd, byte[] buffer, nuint count);
-
-    public sealed class HostTerminalSequenceFilter
-    {
-        private static readonly HashSet<string> SuppressedPrivateModes =
-            ["9", "1000", "1002", "1003", "1004", "1005", "1006", "1015", "1016", "9001"];
-        private readonly StringBuilder _pending = new();
-
-        public string Filter(string text)
-        {
-            _pending.Append(text);
-            var output = new StringBuilder(_pending.Length);
-            var index = 0;
-            while (index < _pending.Length)
-            {
-                if (_pending[index] != '\u001b')
-                {
-                    output.Append(_pending[index++]);
-                    continue;
-                }
-
-                if (index + 2 >= _pending.Length)
-                {
-                    break;
-                }
-
-                if (_pending[index + 1] != '[' || _pending[index + 2] != '?')
-                {
-                    output.Append(_pending[index++]);
-                    continue;
-                }
-
-                var end = index + 3;
-                while (
-                    end < _pending.Length
-                    && (char.IsDigit(_pending[end]) || _pending[end] == ';')
-                )
-                {
-                    end++;
-                }
-
-                if (end >= _pending.Length)
-                {
-                    break;
-                }
-
-                if (_pending[end] is 'h' or 'l')
-                {
-                    var modes = _pending
-                        .ToString(index + 3, end - index - 3)
-                        .Split(';');
-                    var retainedModes = modes
-                        .Where(mode => !SuppressedPrivateModes.Contains(mode))
-                        .ToArray();
-                    if (retainedModes.Length == modes.Length)
-                    {
-                        output.Append(_pending[index++]);
-                        continue;
-                    }
-
-                    if (retainedModes.Length > 0)
-                    {
-                        output.Append("\u001b[?");
-                        output.Append(string.Join(";", retainedModes));
-                        output.Append(_pending[end]);
-                    }
-                    index = end + 1;
-                    continue;
-                }
-
-                output.Append(_pending[index++]);
-            }
-
-            _pending.Remove(0, index);
-            return output.ToString();
-        }
-    }
-
-    private static async Task IgnoreFailureAsync(Task task)
-    {
-        try
-        {
-            await task.ConfigureAwait(false);
-        }
-        catch
-        {
-            // PTY shutdown races are expected.
-        }
-    }
-
-    private static NativePtyOptions BuildOptions(
-        int width,
-        int height,
-        bool noDeleteEnvs,
-        string[]? command
-    )
-    {
-        var environment = new Dictionary<string, string>(StringComparer.Ordinal);
-        foreach (System.Collections.DictionaryEntry entry in Environment.GetEnvironmentVariables())
-        {
-            if (entry.Key is string key && entry.Value is string value)
-            {
-                environment[key] = value;
-            }
-        }
-
-        environment["COLUMNS"] = width.ToString(System.Globalization.CultureInfo.InvariantCulture);
-        environment["LINES"] = height.ToString(System.Globalization.CultureInfo.InvariantCulture);
-        if (!noDeleteEnvs)
-        {
-            environment.Remove("CI");
-            environment.Remove("TF_BUILD");
-        }
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            if (command is { Length: > 0 })
-            {
-                return new NativePtyOptions
-                {
-                    Name = "console2svg",
-                    Cols = width,
-                    Rows = height,
-                    Cwd = Environment.CurrentDirectory,
-                    App = command[0],
-                    Args = command[1..],
-                    Environment = environment,
-                    DisableInputEcho = false,
-                };
-            }
-
-            var shell = Environment.GetEnvironmentVariable("COMSPEC");
-            if (string.IsNullOrWhiteSpace(shell))
-            {
-                shell = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.System),
-                    "cmd.exe"
-                );
-            }
-
-            return new NativePtyOptions
-            {
-                Name = "console2svg",
-                Cols = width,
-                Rows = height,
-                Cwd = Environment.CurrentDirectory,
-                App = shell,
-                // Do not use cmd.exe's /d switch here: it disables the user's
-                // AutoRun configuration, including prompt integrations such as
-                // Starship. An interactive capture should behave like their shell.
-                Args = ["/k"],
-                Environment = environment,
-                DisableInputEcho = false,
-            };
-        }
-
-        var unixShell = Environment.GetEnvironmentVariable("SHELL");
-        if (string.IsNullOrWhiteSpace(unixShell))
-        {
-            // WSL does not always propagate SHELL to a launched .NET process.
-            // Prefer Bash so Ctrl+L/Ctrl+D retain the familiar interactive bindings.
-            unixShell = File.Exists("/bin/bash") ? "/bin/bash" : "/bin/sh";
-        }
-
-        if (command is { Length: > 0 })
-        {
-            return new NativePtyOptions
-            {
-                Name = "console2svg",
-                Cols = width,
-                Rows = height,
-                Cwd = Environment.CurrentDirectory,
-                App = command[0],
-                Args = command[1..],
-                Environment = environment,
-                DisableInputEcho = false,
-            };
-        }
-
-        return new NativePtyOptions
-        {
-            Name = "console2svg",
-            Cols = width,
-            Rows = height,
-            Cwd = Environment.CurrentDirectory,
-            App = unixShell,
-            Args = ["-i"],
-            Environment = environment,
-            DisableInputEcho = false,
-        };
     }
 }

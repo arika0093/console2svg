@@ -33,14 +33,14 @@ public enum SvgConverterMode
 /// SVG → raster pipeline, falling back from ffmpeg (librsvg) to the bundled
 /// resvg host when ffmpeg cannot read SVG directly. See issue #43.
 /// </summary>
-public static class SvgConverter
+public static partial class SvgConverter
 {
     // Reuse ffmpeg discovery from Program. We pass the ffmpeg path in to avoid
     // duplicating logic; detection helpers here only need to know whether the
     // binary exists and what it supports.
 
-    private static readonly Lazy<bool> _rsvgConvertAvailable = new(
-        () => !string.IsNullOrEmpty(FindRsvgConvertExecutable())
+    private static readonly Lazy<bool> _rsvgConvertAvailable = new(() =>
+        !string.IsNullOrEmpty(FindRsvgConvertExecutable())
     );
 
     private static readonly Lazy<bool> _resvgAvailable = new(DetectResvg);
@@ -50,8 +50,8 @@ public static class SvgConverter
     // back to the bundled dir and PATH.
     private static string? _resolvedFfmpegPath;
 
-    private static readonly Lazy<bool> _ffmpegAvailable = new(
-        () => !string.IsNullOrEmpty(FindFfmpegForDetection())
+    private static readonly Lazy<bool> _ffmpegAvailable = new(() =>
+        !string.IsNullOrEmpty(FindFfmpegForDetection())
     );
 
     // Cached so we don't shell out to ffmpeg on every call.
@@ -76,7 +76,11 @@ public static class SvgConverter
     /// local environment. Throws <see cref="InvalidOperationException"/> when
     /// the forced converter is unavailable.
     /// </summary>
-    public static SvgConverterMode ResolveConverter(SvgConverterMode wanted, bool ffmpegAvailableOverride, ILogger logger)
+    public static SvgConverterMode ResolveConverter(
+        SvgConverterMode wanted,
+        bool ffmpegAvailableOverride,
+        ILogger logger
+    )
     {
         if (wanted == SvgConverterMode.Ffmpeg)
         {
@@ -84,14 +88,12 @@ public static class SvgConverter
             {
                 throw new InvalidOperationException(
                     "--svg-converter ffmpeg was requested but ffmpeg is not installed or not on PATH. "
-                    + "Run 'console2svg --install-deps' to install the supported bundled build."
+                        + "Run 'console2svg --install-deps' to install the supported bundled build."
                 );
             }
             if (!_ffmpegSupportsSvg.Value)
             {
-                logger.ZLogDebug(
-                    $"ffmpeg forced but lacks librsvg; SVG input will likely fail."
-                );
+                logger.ZLogDebug($"ffmpeg forced but lacks librsvg; SVG input will likely fail.");
             }
             return SvgConverterMode.Ffmpeg;
         }
@@ -102,7 +104,7 @@ public static class SvgConverter
             {
                 throw new InvalidOperationException(
                     "--svg-converter rsvg-convert was requested but rsvg-convert is not installed "
-                    + "(install 'librsvg2-bin' on Debian/Ubuntu or 'librsvg' via Homebrew)."
+                        + "(install 'librsvg2-bin' on Debian/Ubuntu or 'librsvg' via Homebrew)."
                 );
             }
             return SvgConverterMode.RsvgConvert;
@@ -153,9 +155,9 @@ public static class SvgConverter
 
         throw new InvalidOperationException(
             "No SVG-to-PNG converter available. Run 'console2svg --install-deps' to install ffmpeg, "
-            + "or install ffmpeg (with librsvg), "
-            + "rsvg-convert ('librsvg2-bin' / 'brew install librsvg'), or build "
-            + "with the bundled resvg native runtime."
+                + "or install ffmpeg (with librsvg), "
+                + "rsvg-convert ('librsvg2-bin' / 'brew install librsvg'), or build "
+                + "with the bundled resvg native runtime."
         );
     }
 
@@ -195,9 +197,9 @@ public static class SvgConverter
 
         throw new InvalidOperationException(
             "ffmpeg cannot decode SVG (librsvg input device not enabled) and no fallback "
-            + "converter (rsvg-convert, bundled resvg) is available. Install librsvg for ffmpeg, "
-            + "rsvg-convert ('librsvg2-bin' on Debian/Ubuntu or 'librsvg' via Homebrew), or "
-            + "use a build with the bundled resvg native runtime."
+                + "converter (rsvg-convert, bundled resvg) is available. Install librsvg for ffmpeg, "
+                + "rsvg-convert ('librsvg2-bin' on Debian/Ubuntu or 'librsvg' via Homebrew), or "
+                + "use a build with the bundled resvg native runtime."
         );
     }
 
@@ -213,7 +215,8 @@ public static class SvgConverter
     public static void VerifyConversionPipeline(
         SvgConverterMode wanted,
         bool requiresFfmpeg,
-        ILogger logger)
+        ILogger logger
+    )
     {
         // ResolveConverter throws when a forced converter is unavailable.
         var converter = ResolveConverter(wanted, _ffmpegAvailable.Value, logger);
@@ -228,8 +231,8 @@ public static class SvgConverter
         {
             throw new InvalidOperationException(
                 "ffmpeg is required for the requested output format but was not found. "
-                + "Run 'console2svg --install-deps' to install the supported bundled build, "
-                + "or install ffmpeg and ensure it is on PATH."
+                    + "Run 'console2svg --install-deps' to install the supported bundled build, "
+                    + "or install ffmpeg and ensure it is on PATH."
             );
         }
     }
@@ -250,9 +253,7 @@ public static class SvgConverter
         CancellationToken cancellationToken
     )
     {
-        var outputExt = Path.GetExtension(outputPath)
-            .TrimStart('.')
-            .ToLowerInvariant();
+        var outputExt = Path.GetExtension(outputPath).TrimStart('.').ToLowerInvariant();
         var isPng = string.Equals(outputExt, "png", StringComparison.Ordinal);
 
         // ResolvePreConversionConverter falls back to rsvg-convert/bundled resvg when
@@ -275,10 +276,7 @@ public static class SvgConverter
         // Render to a temp PNG, then pipe to ffmpeg if the target isn't PNG.
         var tempPng = isPng
             ? outputPath
-            : Path.Combine(
-                Path.GetTempPath(),
-                $"c2s-{Guid.NewGuid():N}.png"
-            );
+            : Path.Combine(Path.GetTempPath(), $"c2s-{Guid.NewGuid():N}.png");
 
         try
         {
@@ -314,7 +312,10 @@ public static class SvgConverter
         {
             if (!isPng && File.Exists(tempPng))
             {
-                try { File.Delete(tempPng); }
+                try
+                {
+                    File.Delete(tempPng);
+                }
                 catch (Exception ex)
                 {
                     logger.ZLogDebug(ex, $"Failed to delete temp PNG {tempPng}: {ex.Message}");
@@ -356,7 +357,8 @@ public static class SvgConverter
         else
         {
             // Pre-convert all SVG frames to PNG so ffmpeg can ingest them.
-            var svgFiles = Directory.EnumerateFiles(framesDir, "frame-*.svg")
+            var svgFiles = Directory
+                .EnumerateFiles(framesDir, "frame-*.svg")
                 .OrderBy(f => f, StringComparer.Ordinal)
                 .ToList();
 
@@ -421,492 +423,4 @@ public static class SvgConverter
             )
             .ConfigureAwait(false);
     }
-
-    /// <summary>Renders a single SVG file to a PNG file using the chosen fallback.</summary>
-    private static async Task ConvertSvgToPngAsync(
-        string svgPath,
-        string pngPath,
-        SvgConverterMode converter,
-        double? width,
-        double? height,
-        ILogger logger,
-        CancellationToken cancellationToken
-    )
-    {
-        EnsureDirectoryFor(pngPath);
-
-        if (converter == SvgConverterMode.RsvgConvert)
-        {
-            await ConvertSvgToPngViaRsvgAsync(
-                    svgPath,
-                    pngPath,
-                    width,
-                    height,
-                    logger,
-                    cancellationToken
-                )
-                .ConfigureAwait(false);
-            return;
-        }
-
-        if (converter == SvgConverterMode.Resvg)
-        {
-            await ConvertSvgToPngViaResvgAsync(
-                    svgPath,
-                    pngPath,
-                    width,
-                    height,
-                    logger,
-                    cancellationToken
-                )
-                .ConfigureAwait(false);
-            return;
-        }
-
-        throw new InvalidOperationException(
-            $"Converter {converter} cannot directly produce PNG (use ffmpeg for SVG-capable builds)."
-        );
-    }
-
-    /// <summary>
-    /// Runs <c>rsvg-convert</c> to render an SVG to PNG. Width/height, when
-    /// given, are forwarded; otherwise the SVG's intrinsic size is used.
-    /// </summary>
-    private static async Task ConvertSvgToPngViaRsvgAsync(
-        string svgPath,
-        string pngPath,
-        double? width,
-        double? height,
-        ILogger logger,
-        CancellationToken cancellationToken
-    )
-    {
-        var exe = FindRsvgConvertExecutable();
-        var args = new List<string>();
-        if (width.HasValue)
-        {
-            args.AddRange(["-w", FormatPx(width.Value)]);
-        }
-        if (height.HasValue)
-        {
-            args.AddRange(["-h", FormatPx(height.Value)]);
-        }
-        args.Add(svgPath);
-        args.AddRange(["-o", pngPath]);
-
-        logger.ZLogDebug($"Running rsvg-convert: {exe} {string.Join(' ', args)}");
-
-        using var process = new Process();
-        process.StartInfo.FileName = exe;
-        process.StartInfo.UseShellExecute = false;
-        foreach (var a in args)
-        {
-            process.StartInfo.ArgumentList.Add(a);
-        }
-
-        try
-        {
-            process.Start();
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException(
-                "Failed to start rsvg-convert. Install 'librsvg2-bin' (Debian/Ubuntu) "
-                + "or 'librsvg' (Homebrew).\n"
-                + ex.Message,
-                ex
-            );
-        }
-
-        using var killOnCancel = cancellationToken.Register(() =>
-        {
-            try { process.Kill(entireProcessTree: true); }
-            catch { /* process may have already exited */ }
-        });
-
-        await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
-
-        if (process.ExitCode != 0)
-        {
-            throw new InvalidOperationException(
-                $"rsvg-convert exited with code {process.ExitCode}."
-            );
-        }
-    }
-
-    /// <summary>
-    /// Renders an SVG to PNG using the bundled resvg library. The native
-    /// library is loaded lazily; if it's missing, an informative error is
-    /// thrown instead of crashing at startup.
-    /// </summary>
-    private static async Task ConvertSvgToPngViaResvgAsync(
-        string svgPath,
-        string pngPath,
-        double? width,
-        double? height,
-        ILogger logger,
-        CancellationToken cancellationToken
-    )
-    {
-        // The native renderer's API is synchronous and CPU-bound. Run it on a thread
-        // pool thread so the caller's async flow can observe the cancellation.
-        var svg = await File.ReadAllTextAsync(svgPath, cancellationToken)
-            .ConfigureAwait(false);
-
-        logger.ZLogDebug(
-            $"Rendering SVG ({svg.Length} chars) via bundled resvg → {pngPath}"
-        );
-
-        await Task
-            .Run(
-                () =>
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    byte[] pngBytes;
-                    try
-                    {
-                        pngBytes = ResvgNative.RenderToPng(
-                            svg,
-                            width.HasValue ? ToPxInt(width.Value) : null,
-                            height.HasValue ? ToPxInt(height.Value) : null
-                        );
-                    }
-                    catch (Exception ex)
-                        when (IsResvgLoadFailure(ex))
-                    {
-                        throw new InvalidOperationException(
-                            "Bundled resvg native library failed to load. Falling back "
-                            + "requires the resvg native runtime shipped with this build.",
-                            ex
-                        );
-                    }
-
-                    cancellationToken.ThrowIfCancellationRequested();
-                    EnsureDirectoryFor(pngPath);
-                    File.WriteAllBytes(pngPath, pngBytes);
-                },
-                cancellationToken
-            )
-            .ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Detects and warms the bundled resvg renderer. Loading system fonts here
-    /// means all subsequent renders reuse the same native font database.
-    /// </summary>
-    private static bool DetectResvg()
-    {
-        try
-        {
-            ResvgNative.WarmSystemFonts();
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    /// <summary>Returns true when an exception looks like a native-lib load failure.</summary>
-    private static bool IsResvgLoadFailure(Exception ex)
-    {
-        for (var e = ex; e != null; e = e.InnerException)
-        {
-            if (e is DllNotFoundException || e is TypeLoadException)
-            {
-                return true;
-            }
-
-            var msg = e.Message ?? string.Empty;
-            if (
-                msg.Contains("libresvg", StringComparison.OrdinalIgnoreCase)
-                || msg.Contains("Cannot find", StringComparison.OrdinalIgnoreCase)
-                || msg.Contains("shared object", StringComparison.OrdinalIgnoreCase)
-                || msg.Contains("DllNotFoundException", StringComparison.OrdinalIgnoreCase)
-            )
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /// <summary>Throws if ffmpeg exits non-zero. Describes the invocation in debug logs.</summary>
-    private static async Task RunFfmpegAsync(
-        string ffmpegPath,
-        string[] args,
-        ILogger logger,
-        CancellationToken cancellationToken
-    )
-    {
-        logger.ZLogDebug($"Running ffmpeg: {ffmpegPath} {string.Join(' ', args)}");
-
-        using var process = new Process { StartInfo = CreateFfmpegStartInfo(ffmpegPath, args) };
-
-        try
-        {
-            process.Start();
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException(
-                "Failed to start ffmpeg. Please ensure ffmpeg is installed "
-                + "(bundled with the application or available in PATH).\n"
-                + ex.Message,
-                ex
-            );
-        }
-
-        // ffmpeg's progress and diagnostics must not be written into the interactive
-        // terminal. Start draining both streams immediately to avoid blocking when a
-        // conversion produces enough output to fill an OS pipe buffer.
-        var standardOutputTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
-        var standardErrorTask = process.StandardError.ReadToEndAsync(cancellationToken);
-
-        using var killOnCancel = cancellationToken.Register(() =>
-        {
-            try { process.Kill(entireProcessTree: true); }
-            catch { /* process may have already exited */ }
-        });
-
-        await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
-        await standardOutputTask.ConfigureAwait(false);
-        var standardError = await standardErrorTask.ConfigureAwait(false);
-
-        if (process.ExitCode != 0)
-        {
-            throw new InvalidOperationException(
-                $"ffmpeg exited with code {process.ExitCode}. "
-                + "Ensure ffmpeg supports the requested output format "
-                + "(SVG input requires the librsvg input device)."
-                + FormatFfmpegError(standardError)
-            );
-        }
-
-        logger.ZLogDebug($"ffmpeg completed successfully.");
-    }
-
-    private static ProcessStartInfo CreateFfmpegStartInfo(string ffmpegPath, string[] args)
-    {
-        var startInfo = new ProcessStartInfo
-        {
-            FileName = ffmpegPath,
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            CreateNoWindow = true,
-        };
-
-        foreach (var arg in args)
-        {
-            startInfo.ArgumentList.Add(arg);
-        }
-
-        return startInfo;
-    }
-
-    private static string FormatFfmpegError(string standardError)
-    {
-        if (string.IsNullOrWhiteSpace(standardError))
-        {
-            return string.Empty;
-        }
-
-        const int maxLength = 2_000;
-        var details = standardError.Trim();
-        if (details.Length > maxLength)
-        {
-            details = details[^maxLength..];
-        }
-
-        return $"\nffmpeg stderr:\n{details}";
-    }
-
-    /// <summary>
-    /// Sets the resolved bundled ffmpeg path so that lazy auto-detection in
-    /// <see cref="SvgConverter"/> finds ffmpeg even when not on PATH.
-    /// Called by Program.Main (which uses FindFfmpegExecutable that checks
-    /// the bundled layout next to the binary AND PATH).
-    /// </summary>
-    public static void SetFfmpegPath(string path)
-    {
-        _resolvedFfmpegPath = string.IsNullOrEmpty(path) ? null : path;
-    }
-
-    /// <summary>
-    /// Finds the ffmpeg binary for support detection.
-    /// Prefers the path resolved by Program.Main, then checks the bundled
-    /// layout next to this binary, then falls back to PATH.
-    /// </summary>
-    private static string FindFfmpegForDetection()
-    {
-        if (!string.IsNullOrEmpty(_resolvedFfmpegPath) && File.Exists(_resolvedFfmpegPath))
-        {
-            return _resolvedFfmpegPath;
-        }
-
-        var exeName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-            ? "ffmpeg.exe"
-            : "ffmpeg";
-
-        // Check next to this binary (bundled / npm layout)
-        var exeDir = Path.GetDirectoryName(Environment.ProcessPath ?? string.Empty);
-        if (!string.IsNullOrEmpty(exeDir))
-        {
-            var bundled = Path.Combine(exeDir, exeName);
-            if (File.Exists(bundled))
-            {
-                return bundled;
-            }
-        }
-
-        // PATH
-        return FindExecutable(exeName);
-    }
-
-    /// <summary>
-    /// Probes whether ffmpeg can actually decode SVG (rasterize via librsvg)
-    /// by doing a minimal SVG → PNG test conversion. <c>ffmpeg -formats</c>
-    /// lists <c>svg_pipe</c> even when librsvg decoder is NOT enabled
-    /// (false positive), so only a real conversion confirms support.
-    /// Result is cached via <see cref="_ffmpegSupportsSvg"/>.
-    /// </summary>
-    private static bool CheckFfmpegSvgSupport()
-    {
-        var exe = FindFfmpegForDetection();
-        if (string.IsNullOrEmpty(exe))
-        {
-            return false;
-        }
-
-        var tempDir = Path.Combine(Path.GetTempPath(), $"c2s-probe-{Guid.NewGuid():N}");
-        Directory.CreateDirectory(tempDir);
-        var tempSvg = Path.Combine(tempDir, "probe.svg");
-        var tempPng = Path.Combine(tempDir, "probe.png");
-
-        try
-        {
-            File.WriteAllText(tempSvg, "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\"/>");
-
-            using var process = new Process();
-            process.StartInfo.FileName = exe;
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.RedirectStandardError = true;
-            process.StartInfo.ArgumentList.Add("-hide_banner");
-            process.StartInfo.ArgumentList.Add("-i");
-            process.StartInfo.ArgumentList.Add(tempSvg);
-            process.StartInfo.ArgumentList.Add("-y");
-            process.StartInfo.ArgumentList.Add("-frames:v");
-            process.StartInfo.ArgumentList.Add("1");
-            process.StartInfo.ArgumentList.Add("-update");
-            process.StartInfo.ArgumentList.Add("1");
-            process.StartInfo.ArgumentList.Add(tempPng);
-
-            process.Start();
-            process.WaitForExit();
-
-            return process.ExitCode == 0 && File.Exists(tempPng);
-        }
-        catch
-        {
-            return false;
-        }
-        finally
-        {
-            try
-            {
-                if (File.Exists(tempSvg)) File.Delete(tempSvg);
-            }
-            catch
-            {
-                // Best-effort cleanup; ignore any errors.
-            }
-
-            try
-            {
-                if (File.Exists(tempPng)) File.Delete(tempPng);
-            }
-            catch
-            {
-                // Best-effort cleanup; ignore any errors.
-            }
-
-            try
-            {
-                if (Directory.Exists(tempDir)) Directory.Delete(tempDir);
-            }
-            catch
-            {
-                // Best-effort cleanup; ignore any errors.
-            }
-        }
-    }
-
-    /// <summary>Finds rsvg-convert (or rsvg-convert.exe) on PATH.</summary>
-    private static string FindRsvgConvertExecutable()
-    {
-        var exeName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-            ? "rsvg-convert.exe"
-            : "rsvg-convert";
-
-        // 1. next to this binary (bundled layout)
-        var exeDir = Path.GetDirectoryName(Environment.ProcessPath ?? string.Empty);
-        if (!string.IsNullOrEmpty(exeDir))
-        {
-            var bundled = Path.Combine(exeDir, exeName);
-            if (File.Exists(bundled))
-            {
-                return bundled;
-            }
-        }
-
-        // 2. PATH
-        return FindExecutable(exeName);
-    }
-
-    /// <summary>
-    /// Resolves a binary name to its full path using <c>which</c> semantics
-    /// across platforms. Returns an empty string when not found.
-    /// </summary>
-    private static string FindExecutable(string name)
-    {
-        if (File.Exists(name))
-        {
-            return Path.GetFullPath(name);
-        }
-
-        var pathEnv = Environment.GetEnvironmentVariable("PATH");
-        if (string.IsNullOrEmpty(pathEnv))
-        {
-            return string.Empty;
-        }
-
-        var separator = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ';' : ':';
-        foreach (var dir in pathEnv.Split(separator, StringSplitOptions.RemoveEmptyEntries))
-        {
-            var full = Path.Combine(dir, name);
-            if (File.Exists(full))
-            {
-                return full;
-            }
-        }
-
-        return string.Empty;
-    }
-
-    private static void EnsureDirectoryFor(string path)
-    {
-        var dir = Path.GetDirectoryName(Path.GetFullPath(path));
-        if (!string.IsNullOrWhiteSpace(dir))
-        {
-            Directory.CreateDirectory(dir);
-        }
-    }
-
-    private static string FormatPx(double px) =>
-        Math.Round(px, MidpointRounding.AwayFromZero)
-            .ToString("0", CultureInfo.InvariantCulture);
-
-    private static int ToPxInt(double px) => (int)Math.Round(px, MidpointRounding.AwayFromZero);
 }

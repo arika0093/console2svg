@@ -94,9 +94,12 @@ public sealed class RepeatRecorderTests
     {
         using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(450));
 
+        var command = OperatingSystem.IsWindows()
+            ? "echo \x1b[44mA"
+            : "printf '\\033[44mA\\n'";
         var session = await RepeatRecorder.RecordAsync(
             // Emit a colored short line without trailing spaces.
-            "printf '\\033[44mA\\n'",
+            command,
             width: 10,
             height: 3,
             fps: 4,

@@ -23,7 +23,7 @@
     <None Include="$(ResvgNativeAssetsDirectory)/osx-arm64/libconsole2svg_resvg.dylib" Pack="true" PackagePath="runtimes/osx-arm64/native/" Visible="false" Condition="Exists('$(ResvgNativeAssetsDirectory)/osx-arm64/libconsole2svg_resvg.dylib')" />
   </ItemGroup>
   <Import Project="ConsoleToSvg.Converter.Native.targets" />
-  <Target Name="StageLocalResvgNativeAsset" Condition="'$(UseStagedResvgNativeAssets)' != 'true'">
+  <Target Name="StageLocalResvgNativeAsset" Condition="'$(BuildResvgNative)' == 'true' and '$(UseStagedResvgNativeAssets)' != 'true'">
     <Exec Command="cargo --version" />
     <Exec Command="cargo build --manifest-path &quot;$(MSBuildThisFileDirectory)native/resvg-wrapper/Cargo.toml&quot; --release --target $(ResvgNativeRustTarget)" />
     <MakeDir Directories="$(ResvgNativeAssetsDirectory)/linux-x64;$(ResvgNativeAssetsDirectory)/linux-arm64;$(ResvgNativeAssetsDirectory)/win-x64;$(ResvgNativeAssetsDirectory)/win-arm64;$(ResvgNativeAssetsDirectory)/osx-x64;$(ResvgNativeAssetsDirectory)/osx-arm64" />

@@ -14,9 +14,9 @@ Build a runtime library with:
 ./scripts/build-resvg-native.sh <rust-target> <output-directory>
 ```
 
-A source `dotnet build` or `dotnet publish` with a runtime identifier also invokes Cargo and
-copies the library beside the application output. Install Rust and the requested target first.
-Set `BuildResvgNative=false` only when a caller supplies the library separately.
+In CI, source `dotnet build` or `dotnet publish` invokes Cargo and copies the library beside
+the application output. Local builds leave this disabled by default; install Rust and set
+`BuildResvgNative=true` when a local build needs to bundle the library.
 
 The release workflow collects all six release RID builds before packaging
 `ConsoleToSvg.Converter`. It places each generated library in the NuGet conventional

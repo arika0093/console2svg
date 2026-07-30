@@ -1,8 +1,13 @@
+#!/usr/bin/env bash
+
+set -eu
+
 export DOTNET_EnableWriteXorExecute=0
 rm -rf ./publish || true
-dotnet clean
-dotnet build -c Release --no-cache
-dotnet pack src/ConsoleToSvg.Converter/ConsoleToSvg.Converter.csproj -c Release -o publish -p:WarningLevel=0
+converter_project=src/ConsoleToSvg.Converter/ConsoleToSvg.Converter.csproj
+dotnet restore "$converter_project" --force
+dotnet build "$converter_project" -c Release --no-restore
+dotnet pack "$converter_project" -c Release --no-build -o publish -p:WarningLevel=0
 set -- ./publish/ConsoleToSvg.Converter.*.nupkg
 if [ "$#" -ne 1 ] || [ ! -f "$1" ]; then
   echo "Expected exactly one ConsoleToSvg.Converter package in ./publish" >&2
@@ -34,4 +39,4 @@ dotnet pack src/ConsoleToSvg/ConsoleToSvg.csproj -c Release --no-build -o publis
   -p:UseConverterPackage=true \
   -p:ConverterPackageVersion="$converter_version"
 dotnet tool uninstall -g ConsoleToSvg || true
-(cd ./publish && dotnet tool install -g ConsoleToSvg --version "$converter_version")
+(cd ./publish && dotnet tool install -g ConsoleToSvg --version "$converter_version" --configfile ./NuGet.Config)

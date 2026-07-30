@@ -28,12 +28,10 @@ dotnet restore src/ConsoleToSvg/ConsoleToSvg.csproj \
   -p:ConverterPackageVersion="$converter_version"
 dotnet build src/ConsoleToSvg/ConsoleToSvg.csproj -c Release --no-restore \
   -p:UseConverterPackage=true \
-  -p:ConverterPackageVersion="$converter_version" \
-  -p:BuildResvgNative=false
+  -p:ConverterPackageVersion="$converter_version"
 dotnet pack src/ConsoleToSvg/ConsoleToSvg.csproj -c Release --no-build -o publish \
   -p:WarningLevel=0 \
   -p:UseConverterPackage=true \
-  -p:ConverterPackageVersion="$converter_version" \
-  -p:BuildResvgNative=false
+  -p:ConverterPackageVersion="$converter_version"
 dotnet tool uninstall -g ConsoleToSvg || true
 (cd ./publish && dotnet tool install -g ConsoleToSvg --version "$converter_version")

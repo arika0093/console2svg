@@ -6,7 +6,10 @@
          adopted the more descriptive BuildResvgNative property. Keep it as an
          alias so `-p ResvgBuild=false` still disables the local Cargo build. -->
     <BuildResvgNative Condition="'$(ResvgBuild)' != ''">$(ResvgBuild)</BuildResvgNative>
-    <BuildResvgNative Condition="'$(BuildResvgNative)' == '' and ('$(RuntimeIdentifier)' != '' Or '$(TargetFramework)' == 'net10.0')">true</BuildResvgNative>
+    <!-- Local builds do not require Rust. CI builds the bundled library by default;
+         callers that stage or supply it separately can still override this property. -->
+    <BuildResvgNative Condition="'$(BuildResvgNative)' == '' and '$(CI)' == 'true'">true</BuildResvgNative>
+    <BuildResvgNative Condition="'$(BuildResvgNative)' == ''">false</BuildResvgNative>
     <ResvgNativeRustTarget Condition="'$(ResvgNativeRuntimeIdentifier)' == 'linux-x64'">x86_64-unknown-linux-gnu</ResvgNativeRustTarget>
     <ResvgNativeRustTarget Condition="'$(ResvgNativeRuntimeIdentifier)' == 'linux-arm64'">aarch64-unknown-linux-gnu</ResvgNativeRustTarget>
     <ResvgNativeRustTarget Condition="'$(ResvgNativeRuntimeIdentifier)' == 'win-x64'">x86_64-pc-windows-msvc</ResvgNativeRustTarget>

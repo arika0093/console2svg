@@ -15,7 +15,7 @@ public sealed class ConfigurationLoaderTests
         try
         {
             File.WriteAllText(configPath, """
-                $schema: https://raw.githubusercontent.com/arika0093/console2svg/main/docs/console2svg.schema.json
+                $schema: https://raw.githubusercontent.com/arika0093/console2svg/main/schema.json
                 output:
                   path: capture.svg
                   mode: video

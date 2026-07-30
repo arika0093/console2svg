@@ -398,7 +398,7 @@ Use `--config` to keep reusable generation settings in YAML. Command-line option
 
 ```yaml
 # console2svg.yml
-$schema: https://raw.githubusercontent.com/arika0093/console2svg/main/docs/console2svg.schema.json
+$schema: https://raw.githubusercontent.com/arika0093/console2svg/main/schema.json
 include: [styles/base.yml]
 output:
   path: output.svg
@@ -419,7 +419,7 @@ appearance:
 console2svg --config console2svg.yml --padding 8 -- dotnet --version
 ```
 
-The [`configuration schema`](./docs/console2svg.schema.json) provides completion and validation in YAML-aware editors. Add its URL as `$schema` (as shown above), or configure the file association in your editor. `appearance` contains visual settings; the other sections cover input, output, terminal capture and crop, video timing, replay, conversion, and runtime behavior.
+The [`configuration schema`](./schema.json) provides completion and validation in YAML-aware editors. Add its URL as `$schema` (as shown above), or configure the file association in your editor. `appearance` contains visual settings; the other sections cover input, output, terminal capture and crop, video timing, replay, conversion, and runtime behavior.
 
 
 ### Window chrome

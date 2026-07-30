@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/arika0093/console2svg/main/docs/console2svg.schema.json",
+  "$id": "https://raw.githubusercontent.com/arika0093/console2svg/main/schema.json",
   "title": "console2svg configuration",
   "description": "Configuration consumed by console2svg --config. Command-line arguments override these values.",
   "type": "object",

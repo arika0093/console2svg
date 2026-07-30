@@ -465,6 +465,18 @@ Of course, you can also save all lines (useful for evidence). In that case, spec
 tmux capture-pane -pe -S - -t :0 | console2svg -o full-capture-$(date +%s).svg
 ```
 
+### Repeat capture mode
+
+use `-m repeat` to repeatedly run a command and capture each result as an animated SVG.
+This is useful for commands that output a static snapshot of another terminal, such as `tmux capture-pane`.
+
+Each result is treated as a full-screen update, so content from the previous capture is cleared before the next one is displayed.
+The command runs at the interval specified by `--fps` until you stop `console2svg` with `Ctrl+C`.
+
+```sh
+console2svg -m repeat --fps 2 -- tmux capture-pane -pe -t :0
+```
+
 ## Supported platforms
 
 * Windows 10 and later (required `ConPTY`)

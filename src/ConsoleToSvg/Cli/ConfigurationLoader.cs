@@ -154,7 +154,6 @@ internal static class ConfigurationLoader
         Add(args, "--timeout", runtime.Timeout);
         AddFlag(args, "--no-colorenv", runtime.NoColorEnv);
         AddFlag(args, "--no-delete-envs", runtime.NoDeleteEnvs);
-        AddFlag(args, "--interactive", runtime.Interactive);
     }
 
     private static void AddAppearanceArguments(AppearanceConfiguration? appearance, List<string> args)
@@ -285,7 +284,6 @@ internal sealed partial class RuntimeConfiguration
     public string? Timeout { get; set; }
     public bool? NoColorEnv { get; set; }
     public bool? NoDeleteEnvs { get; set; }
-    public bool? Interactive { get; set; }
 }
 
 [YamlObject]

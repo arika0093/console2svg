@@ -89,8 +89,7 @@
         "verboseLogPath": { "type": "string", "description": "Optional diagnostic log file path." },
         "timeout": { "type": "string", "description": "Maximum command execution time in seconds." },
         "noColorEnv": { "type": "boolean", "description": "Do not set terminal color environment variables for child commands." },
-        "noDeleteEnvs": { "type": "boolean", "description": "Keep CI and TF_BUILD environment variables for child commands." },
-        "interactive": { "type": "boolean", "description": "Run an interactive shell capture session." }
+        "noDeleteEnvs": { "type": "boolean", "description": "Keep CI and TF_BUILD environment variables for child commands." }
       }
     },
     "appearance": {

@@ -181,6 +181,104 @@ public static partial class SvgConverter
             .ConfigureAwait(false);
     }
 
+    /// <summary>Renders SVG text to PNG bytes without creating an intermediate file.</summary>
+    private static async Task<byte[]> RenderSvgToPngAsync(
+        string svg,
+        SvgConverterMode converter,
+        double? width,
+        double? height,
+        ILogger logger,
+        CancellationToken cancellationToken
+    )
+    {
+        if (converter == SvgConverterMode.Resvg)
+        {
+            return await Task.Run(
+                    () =>
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        try
+                        {
+                            return ResvgNative.RenderToPng(
+                                svg,
+                                width.HasValue ? ToPxInt(width.Value) : null,
+                                height.HasValue ? ToPxInt(height.Value) : null
+                            );
+                        }
+                        catch (Exception ex) when (IsResvgLoadFailure(ex))
+                        {
+                            throw new InvalidOperationException(
+                                "Bundled resvg native library failed to load. Falling back "
+                                    + "requires the resvg native runtime shipped with this build.",
+                                ex
+                            );
+                        }
+                    },
+                    cancellationToken
+                )
+                .ConfigureAwait(false);
+        }
+
+        if (converter != SvgConverterMode.RsvgConvert)
+        {
+            throw new InvalidOperationException($"Converter {converter} cannot directly produce PNG.");
+        }
+
+        var exe = FindRsvgConvertExecutable();
+        var args = new List<string>();
+        if (width.HasValue)
+        {
+            args.AddRange(["-w", FormatPx(width.Value)]);
+        }
+        if (height.HasValue)
+        {
+            args.AddRange(["-h", FormatPx(height.Value)]);
+        }
+
+        logger.ZLogDebug($"Rendering in-memory SVG ({svg.Length} chars) via rsvg-convert.");
+        using var process = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = exe,
+                UseShellExecute = false,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true,
+            },
+        };
+        foreach (var arg in args)
+        {
+            process.StartInfo.ArgumentList.Add(arg);
+        }
+
+        process.Start();
+        using var killOnCancel = cancellationToken.Register(() =>
+        {
+            try
+            {
+                process.Kill(entireProcessTree: true);
+            }
+            catch
+            {
+                // The converter may already have exited between cancellation and Kill.
+            }
+        });
+        var errorTask = process.StandardError.ReadToEndAsync(cancellationToken);
+        await process.StandardInput.WriteAsync(svg.AsMemory(), cancellationToken).ConfigureAwait(false);
+        await process.StandardInput.DisposeAsync().ConfigureAwait(false);
+        await using var output = new MemoryStream();
+        await process.StandardOutput.BaseStream.CopyToAsync(output, cancellationToken).ConfigureAwait(false);
+        await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
+        var error = await errorTask.ConfigureAwait(false);
+        if (process.ExitCode != 0)
+        {
+            throw new InvalidOperationException($"rsvg-convert exited with code {process.ExitCode}. {error}".TrimEnd());
+        }
+        return output.ToArray();
+    }
+
     /// <summary>
     /// Detects and warms the bundled resvg renderer. Loading system fonts here
     /// means all subsequent renders reuse the same native font database.

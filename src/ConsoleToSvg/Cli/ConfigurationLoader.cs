@@ -143,7 +143,6 @@ internal static class ConfigurationLoader
     private static void AddConversionArguments(ConversionConfiguration? conversion, List<string> args)
     {
         if (conversion is null) return;
-        AddFlag(args, "--install-deps", conversion.InstallDependencies);
         Add(args, "--svg-converter", conversion.SvgConverter);
     }
 
@@ -152,7 +151,6 @@ internal static class ConfigurationLoader
         if (runtime is null) return;
         AddFlag(args, "--verbose", runtime.Verbose);
         Add(args, "--verbose", runtime.VerboseLogPath);
-        AddFlag(args, "--version", runtime.ShowVersion);
         Add(args, "--timeout", runtime.Timeout);
         AddFlag(args, "--no-colorenv", runtime.NoColorEnv);
         AddFlag(args, "--no-delete-envs", runtime.NoDeleteEnvs);
@@ -277,14 +275,13 @@ internal sealed partial class VideoConfiguration
 internal sealed partial class ReplayConfiguration { public string? Path { get; set; } public string? SavePath { get; set; } }
 
 [YamlObject]
-internal sealed partial class ConversionConfiguration { public bool? InstallDependencies { get; set; } public string? SvgConverter { get; set; } }
+internal sealed partial class ConversionConfiguration { public string? SvgConverter { get; set; } }
 
 [YamlObject]
 internal sealed partial class RuntimeConfiguration
 {
     public bool? Verbose { get; set; }
     public string? VerboseLogPath { get; set; }
-    public bool? ShowVersion { get; set; }
     public string? Timeout { get; set; }
     public bool? NoColorEnv { get; set; }
     public bool? NoDeleteEnvs { get; set; }

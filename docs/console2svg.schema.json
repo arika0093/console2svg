@@ -6,85 +6,112 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "include": { "type": "array", "items": { "type": "string" }, "description": "YAML files to load before this file, relative to this file." },
-    "input": { "$ref": "#/$defs/input" },
-    "output": { "$ref": "#/$defs/output" },
-    "capture": { "$ref": "#/$defs/capture" },
-    "video": { "$ref": "#/$defs/video" },
-    "replay": { "$ref": "#/$defs/replay" },
-    "conversion": { "$ref": "#/$defs/conversion" },
-    "runtime": { "$ref": "#/$defs/runtime" },
-    "appearance": { "$ref": "#/$defs/appearance" }
+    "include": {
+      "type": "array",
+      "description": "Configuration files to load first, resolved relative to this file.",
+      "items": { "type": "string" }
+    },
+    "input": { "$ref": "#/$defs/input", "description": "Existing terminal recording input." },
+    "output": { "$ref": "#/$defs/output", "description": "Generated file and output-mode settings." },
+    "capture": { "$ref": "#/$defs/capture", "description": "Terminal dimensions, frame selection, cropping, and cast recording." },
+    "video": { "$ref": "#/$defs/video", "description": "Animated SVG and video timing settings." },
+    "replay": { "$ref": "#/$defs/replay", "description": "Interactive input replay settings." },
+    "conversion": { "$ref": "#/$defs/conversion", "description": "SVG rasterization settings." },
+    "runtime": { "$ref": "#/$defs/runtime", "description": "Execution environment and diagnostic settings." },
+    "appearance": { "$ref": "#/$defs/appearance", "description": "Terminal and window visual settings." }
   },
   "$defs": {
     "input": {
-      "type": "object", "additionalProperties": false,
-      "properties": { "castPath": { "type": "string", "description": "asciicast input path." } }
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "castPath": { "type": "string", "description": "Path to an asciicast file to render instead of running a command." }
+      }
     },
     "output": {
-      "type": "object", "additionalProperties": false,
+      "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "path": { "type": "string", "default": "output.svg" },
-        "mode": { "enum": ["image", "video", "repeat"] },
-        "stdOut": { "type": "boolean" },
-        "saveFramesDir": { "type": "string" },
-        "size": { "type": "string" }
+        "path": { "type": "string", "default": "output.svg", "description": "Output file path; the extension selects SVG, image, or video conversion." },
+        "mode": { "enum": ["image", "video", "repeat"], "description": "Generation mode." },
+        "stdOut": { "type": "boolean", "description": "Write SVG to standard output instead of a file." },
+        "saveFramesDir": { "type": "string", "description": "Directory in which to save every static SVG frame." },
+        "size": { "type": "string", "description": "Target image size: WIDTH, WIDTHxHEIGHT, WIDTHx*, or *xHEIGHT." }
       }
     },
     "capture": {
-      "type": "object", "additionalProperties": false,
+      "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "width": { "type": "string" }, "height": { "type": "string" },
-        "frame": { "type": "string" }, "time": { "type": "string" },
-        "cropTop": { "type": "string" }, "cropRight": { "type": "string" },
-        "cropBottom": { "type": "string" }, "cropLeft": { "type": "string" },
-        "saveCastPath": { "type": "string" }
+        "width": { "type": "string", "description": "Terminal column count or 'adjust'." },
+        "height": { "type": "string", "description": "Terminal row count or 'adjust'." },
+        "frame": { "type": "string", "description": "Zero-based visual frame index for image output." },
+        "time": { "type": "string", "description": "Frame time in seconds, or START-END seconds range." },
+        "cropTop": { "type": "string", "description": "Top crop value in px, ch, or a text pattern." },
+        "cropRight": { "type": "string", "description": "Right crop value in px or ch." },
+        "cropBottom": { "type": "string", "description": "Bottom crop value in px, ch, or a text pattern." },
+        "cropLeft": { "type": "string", "description": "Left crop value in px or ch." },
+        "saveCastPath": { "type": "string", "description": "Path at which to write the captured asciicast." }
       }
     },
     "video": {
-      "type": "object", "additionalProperties": false,
+      "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "fps": { "type": "string" }, "sleep": { "type": "string" },
-        "fadeOut": { "type": "string" }, "timing": { "enum": ["deterministic", "realtime"] },
-        "coalesceMs": { "type": "string" }, "loop": { "type": "boolean", "default": true }
+        "fps": { "type": "string", "description": "Maximum frames per second." },
+        "sleep": { "type": "string", "description": "Seconds to show the final frame after command completion." },
+        "fadeOut": { "type": "string", "description": "Final fade-out duration in seconds." },
+        "timing": { "enum": ["deterministic", "realtime"], "description": "Whether to normalize or preserve measured frame timings." },
+        "coalesceMs": { "type": "string", "description": "Merge output chunks received within this many milliseconds." },
+        "loop": { "type": "boolean", "default": true, "description": "Whether animated SVG playback loops." }
       }
     },
     "replay": {
-      "type": "object", "additionalProperties": false,
-      "properties": { "path": { "type": "string" }, "savePath": { "type": "string" } }
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string", "description": "Input replay JSON file to execute." },
+        "savePath": { "type": "string", "description": "Path at which to save captured interactive input." }
+      }
     },
     "conversion": {
-      "type": "object", "additionalProperties": false,
-      "properties": { "installDependencies": { "type": "boolean" }, "svgConverter": { "enum": ["auto", "ffmpeg", "rsvg-convert", "resvg"] } }
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "svgConverter": { "enum": ["auto", "ffmpeg", "rsvg-convert", "resvg"], "description": "SVG-to-raster converter implementation." }
+      }
     },
     "runtime": {
-      "type": "object", "additionalProperties": false,
+      "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "verbose": { "type": "boolean" }, "verboseLogPath": { "type": "string" },
-        "showVersion": { "type": "boolean" }, "timeout": { "type": "string" },
-        "noColorEnv": { "type": "boolean" }, "noDeleteEnvs": { "type": "boolean" },
-        "interactive": { "type": "boolean" }
+        "verbose": { "type": "boolean", "description": "Enable diagnostic logging." },
+        "verboseLogPath": { "type": "string", "description": "Optional diagnostic log file path." },
+        "timeout": { "type": "string", "description": "Maximum command execution time in seconds." },
+        "noColorEnv": { "type": "boolean", "description": "Do not set terminal color environment variables for child commands." },
+        "noDeleteEnvs": { "type": "boolean", "description": "Keep CI and TF_BUILD environment variables for child commands." },
+        "interactive": { "type": "boolean", "description": "Run an interactive shell capture session." }
       }
     },
     "appearance": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "window": { "type": "string", "description": "none, macos, windows, transparent, a *-pc variant, or a chrome JSON path." },
-        "padding": { "type": "number", "minimum": 0 },
-        "pcMode": { "type": "boolean" },
-        "pcPadding": { "type": "number", "minimum": 0 },
-        "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
-        "theme": { "enum": ["dark", "light"] },
-        "foreColor": { "type": "string" },
-        "backColor": { "type": "string" },
-        "background": { "type": "array", "minItems": 1, "maxItems": 2, "items": { "type": "string" } },
-        "font": { "type": "string" },
-        "fontSize": { "type": "number", "exclusiveMinimum": 0 },
-        "lengthAdjust": { "enum": ["spacing", "spacingAndGlyphs"] },
-        "withCommand": { "type": "boolean" },
-        "header": { "type": "string" },
-        "prompt": { "type": "string" }
+        "window": { "type": "string", "description": "Window chrome style: none, macos, windows, transparent, a *-pc variant, or a chrome JSON path." },
+        "padding": { "type": "number", "minimum": 0, "description": "Outer padding in pixels." },
+        "pcMode": { "type": "boolean", "description": "Enable desktop-style floating-window mode." },
+        "pcPadding": { "type": "number", "minimum": 0, "description": "Outer desktop padding in pixels when PC mode is active." },
+        "opacity": { "type": "number", "minimum": 0, "maximum": 1, "description": "Background fill opacity." },
+        "theme": { "enum": ["dark", "light"], "description": "Base terminal color theme." },
+        "foreColor": { "type": "string", "description": "Override terminal foreground color." },
+        "backColor": { "type": "string", "description": "Override terminal interior background color." },
+        "background": { "type": "array", "minItems": 1, "maxItems": 2, "items": { "type": "string" }, "description": "One background color or image path, or two colors for a gradient." },
+        "font": { "type": "string", "description": "CSS font-family for terminal text." },
+        "fontSize": { "type": "number", "exclusiveMinimum": 0, "description": "Terminal text size in pixels." },
+        "lengthAdjust": { "enum": ["spacing", "spacingAndGlyphs"], "description": "SVG text length-adjustment mode." },
+        "withCommand": { "type": "boolean", "description": "Prepend the executed command as a prompt line." },
+        "header": { "type": "string", "description": "Header text displayed above terminal content." },
+        "prompt": { "type": "string", "description": "Prompt prefix used with withCommand." }
       }
     }
   }

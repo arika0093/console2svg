@@ -73,7 +73,8 @@ public static class RepeatRecorder
             // Each frame: clear the screen then apply the captured content so that
             // consecutive frames start from a clean slate.
             var normalizedOutput = NormalizeLineEndings(output);
-            var eolCompletedOutput = EnsureEraseToEndOfLine(normalizedOutput);
+            var trimmedOutput = TrimTrailingBlankLines(normalizedOutput);
+            var eolCompletedOutput = EnsureEraseToEndOfLine(trimmedOutput);
             var frameData = ClearScreenSequence + eolCompletedOutput;
             session.AddEvent(frameStart, frameData);
             logger.ZLogDebug(
@@ -194,6 +195,114 @@ public static class RepeatRecorder
         }
 
         return sb.ToString();
+    }
+
+    /// <summary>
+    /// Removes trailing blank lines from the output to prevent excessive cursor
+    /// movement that can cause content to scroll out of the visible terminal area.
+    /// A line is considered blank if it contains only whitespace or ANSI escape
+    /// sequences that don't produce visible content (e.g., ESC[K).
+    /// </summary>
+    private static string TrimTrailingBlankLines(string text)
+    {
+        if (text.Length == 0)
+        {
+            return text;
+        }
+
+        // Split by CRLF and remove trailing blank lines
+        var lines = text.Split(["\r\n"], StringSplitOptions.None);
+        var lastNonBlankIndex = lines.Length - 1;
+
+        // Find the last non-blank line
+        while (lastNonBlankIndex >= 0 && IsBlankLine(lines[lastNonBlankIndex]))
+        {
+            lastNonBlankIndex--;
+        }
+
+        // If all lines are blank, return empty string
+        if (lastNonBlankIndex < 0)
+        {
+            return string.Empty;
+        }
+
+        // Reconstruct the text up to the last non-blank line
+        if (lastNonBlankIndex == lines.Length - 1)
+        {
+            // No trailing blank lines
+            return text;
+        }
+
+        var sb = new StringBuilder();
+        for (var i = 0; i <= lastNonBlankIndex; i++)
+        {
+            sb.Append(lines[i]);
+            if (i < lastNonBlankIndex)
+            {
+                sb.Append("\r\n");
+            }
+        }
+
+        // Add final CRLF if the original text ended with one
+        if (text.EndsWith("\r\n", StringComparison.Ordinal))
+        {
+            sb.Append("\r\n");
+        }
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Determines whether a line is blank (contains only whitespace or non-printing
+    /// ANSI escape sequences).
+    /// </summary>
+    private static bool IsBlankLine(string line)
+    {
+        if (string.IsNullOrEmpty(line))
+        {
+            return true;
+        }
+
+        // Check if the line contains only whitespace and ANSI escape sequences
+        var i = 0;
+        while (i < line.Length)
+        {
+            var ch = line[i];
+
+            // Skip whitespace
+            if (char.IsWhiteSpace(ch))
+            {
+                i++;
+                continue;
+            }
+
+            // Skip ANSI escape sequences
+            if (ch == '\x1b' && i + 1 < line.Length && line[i + 1] == '[')
+            {
+                i += 2;
+                // Skip parameter bytes (0x30-0x3F)
+                while (i < line.Length && line[i] >= 0x30 && line[i] <= 0x3F)
+                {
+                    i++;
+                }
+                // Skip intermediate bytes (0x20-0x2F)
+                while (i < line.Length && line[i] >= 0x20 && line[i] <= 0x2F)
+                {
+                    i++;
+                }
+                // Skip final byte (0x40-0x7E)
+                if (i < line.Length && line[i] >= 0x40 && line[i] <= 0x7E)
+                {
+                    i++;
+                }
+                continue;
+            }
+
+            // Found a printable character
+            return false;
+        }
+
+        return true;
     }
 
     /// <summary>

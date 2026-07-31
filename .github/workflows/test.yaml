@@ -42,14 +42,14 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Restore dependencies
-        run: dotnet restore 
+        run: dotnet restore
 
       - name: Build
-        run: dotnet build --no-restore
+        run: dotnet build --no-restore -f net10.0
         # Cargo's inherited workflow env file can contain malformed metadata on
         # macOS runners. This build does not need to export variables to later steps.
         env:
           GITHUB_ENV: ${{ runner.os == 'Windows' && 'NUL' || '/dev/null' }}
 
       - name: Run tests
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --no-build -f net10.0 --verbosity normal

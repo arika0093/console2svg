@@ -169,15 +169,11 @@ To disable this behavior, use the `--no-colorenv` and `--no-delete-envs` options
 ## Usage
 ### Pipe mode
 
-Width and height default to the current terminal dimensions.
-
 ```sh
 my-command | console2svg
 ```
 
 ### PTY command mode
-
-Width is 100 characters by default, and height is automatically adjusted to fit the content.
 
 ```sh
 console2svg "git log --oneline"
@@ -189,12 +185,6 @@ If you want to set a fixed width and height, you can use the `-w` and `-h` optio
 
 ```sh
 console2svg -w 120 -h 20 -- git log --oneline
-```
-
-If you want to match the current terminal width, specify `-w adjust`.
-
-```sh
-console2svg -w adjust -h 20 -- git log --oneline
 ```
 
 ### Interactive capture
@@ -488,8 +478,8 @@ console2svg -m repeat --fps 2 -- tmux capture-pane -pe -t :0
 
 * `-o`: Output SVG file path (default: `output.svg`)
 * `-c`: Prepend the command line to the output as if typed in a terminal.
-* `-w`: width of the output SVG (default: terminal width[pipe], 100ch[pty], terminal width[interactive])
-* `-h`: height of the output SVG (default: terminal height[pipe], auto[pty], terminal height[interactive])
+* `-w`: width of the output SVG (default: terminal width)
+* `-h`: height of the output SVG (default: terminal height)
 * `-v`: output to video mode SVG (animated, looped by default)
 * `-i`: interactive mode (run a shell in a PTY and capture the current screen on demand)
 * `-d`: window chrome style (none, macos, windows, macos-pc, windows-pc, transparent, ...)

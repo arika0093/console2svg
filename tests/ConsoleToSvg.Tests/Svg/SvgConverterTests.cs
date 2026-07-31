@@ -40,7 +40,7 @@ public sealed class SvgConverterTests
         args.ShouldBe(
         [
             "-y", "-framerate", "2.5", "-f", "image2pipe", "-vcodec", "png",
-            "-i", "pipe:0", "output.mp4",
+            "-i", "pipe:0", "-pix_fmt", "yuv420p", "output.mp4",
         ]
         );
     }

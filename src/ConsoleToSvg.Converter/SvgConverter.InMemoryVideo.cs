@@ -123,6 +123,8 @@ public static partial class SvgConverter
             "png",
             "-i",
             "pipe:0",
+            "-pix_fmt",
+            "yuv420p",
             outputPath,
         ];
     }

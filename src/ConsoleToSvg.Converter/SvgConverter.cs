@@ -417,7 +417,7 @@ public static partial class SvgConverter
         var fpsStr = fps.ToString(CultureInfo.InvariantCulture);
         await RunFfmpegAsync(
                 ffmpegPath,
-                ["-y", "-framerate", fpsStr, "-i", framePattern, outputPath],
+                ["-y", "-framerate", fpsStr, "-i", framePattern, "-pix_fmt", "yuv420p", outputPath],
                 logger,
                 cancellationToken
             )

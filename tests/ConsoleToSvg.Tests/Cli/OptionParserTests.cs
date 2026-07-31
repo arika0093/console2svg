@@ -340,6 +340,33 @@ public sealed partial class OptionParserTests
     }
 
     [Test]
+    public void WidthAdjustAndHeightAdjustAreTrueByDefault()
+    {
+        var ok = OptionParser.TryParse(System.Array.Empty<string>(), out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.WidthAdjust.ShouldBeTrue();
+        options.HeightAdjust.ShouldBeTrue();
+    }
+
+    [Test]
+    public void ExplicitNumericWidthSetsWidthAdjustFalse()
+    {
+        var ok = OptionParser.TryParse(new[] { "-w", "80" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Width.ShouldBe(80);
+        options.WidthAdjust.ShouldBeFalse();
+    }
+
+    [Test]
+    public void ExplicitNumericHeightSetsHeightAdjustFalse()
+    {
+        var ok = OptionParser.TryParse(new[] { "-h", "24" }, out var options, out _, out _);
+        ok.ShouldBeTrue();
+        options!.Height.ShouldBe(24);
+        options.HeightAdjust.ShouldBeFalse();
+    }
+
+    [Test]
     public void WidthAdjustParsed()
     {
         var ok = OptionParser.TryParse(

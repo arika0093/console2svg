@@ -80,6 +80,7 @@ public static partial class OptionParser
                 }
 
                 options.Width = width;
+                options.WidthAdjust = false;
                 return true;
             case "-h":
             case "--height":
@@ -95,6 +96,7 @@ public static partial class OptionParser
                 }
 
                 options.Height = height;
+                options.HeightAdjust = false;
                 return true;
             case "--frame":
                 if (!TryParseInt(value, "--frame", out var frame, out error))

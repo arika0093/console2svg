@@ -18,8 +18,10 @@ public static partial class OptionParser
             Major options:
                 -o, --out <path>          Output file path (default: output.svg).
                                           Non-SVG extensions trigger ffmpeg conversion (e.g. output.png, output.mp4).
-                -w, --width <int|adjust>  Terminal width in characters (default: auto[pipe], 100[pty]).
-                -h, --height <int|adjust> Terminal height in rows (default: auto).
+                -w, --width <int|adjust>  Terminal width in characters (default: adjust).
+                                          Specify an integer to use a fixed width.
+                -h, --height <int|adjust> Terminal height in rows (default: adjust).
+                                          Specify an integer to use a fixed height.
                 -v                        Output animated SVG (alias for --mode video).
                 -i, --interactive         Run an interactive shell; F9 records, F12 pauses, and F10 takes a screenshot.
                                           Use -- to start another interactive program (e.g. -i -- pwsh).
@@ -53,10 +55,10 @@ public static partial class OptionParser
                                           PTY output forwarding is suppressed so the pipe receives only SVG.
                 -m, --mode <image|video|repeat>  Output mode (default: image).
                 -v                        is alias for --mode video.
-                -w, --width <int|adjust>  Terminal width in characters (default: auto[pipe], 100[pty]).
-                                          Specify "adjust" to use the current terminal width.
-                -h, --height <int|adjust> Terminal height in rows (default: auto).
-                                          Specify "adjust" to use the current terminal height.
+                -w, --width <int|adjust>  Terminal width in characters (default: adjust).
+                                          Uses the current terminal width. Specify an integer for a fixed width.
+                -h, --height <int|adjust> Terminal height in rows (default: adjust).
+                                          Uses the current terminal height. Specify an integer for a fixed height.
                 --in <path>               Read existing asciicast file.
                 --save-cast <path>        Save captured output as asciicast file.
                 --verbose [path]          Enable verbose logging; write to path (default: console2svg.log).
@@ -258,27 +260,12 @@ public static partial class OptionParser
             i++;
         }
 
-        ApplyInteractiveSizeDefaults(options);
-
         if (!Validate(options, out error))
         {
             return false;
         }
 
         return true;
-    }
-
-    private static void ApplyInteractiveSizeDefaults(AppOptions options)
-    {
-        if (!options.Interactive)
-        {
-            return;
-        }
-
-        // Interactive captures share the host terminal viewport by default.
-        // Explicit numeric dimensions and explicit "adjust" values always take precedence.
-        options.WidthAdjust |= !options.Width.HasValue;
-        options.HeightAdjust |= !options.Height.HasValue;
     }
 
     private static bool TrySplitToken(string token, out string name, out string? inlineValue)

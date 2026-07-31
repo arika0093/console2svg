@@ -295,6 +295,31 @@ public static partial class InteractiveRecorder
             notificationLength = label.Length;
         }
 
+        async Task ClearPersistentIndicatorAsync()
+        {
+            if (Console.IsOutputRedirected)
+            {
+                return;
+            }
+
+            // Skip if a timed notification is currently active
+            if (Volatile.Read(ref notificationActive) != 0)
+            {
+                return;
+            }
+
+            // Clear the previous indicator if one exists
+            if (notificationLength > 0)
+            {
+                var clearSequence = $"\u001b7\u001b[1;{notificationColumn}H{new string(' ', notificationLength)}\u001b8";
+                await output
+                    .WriteAsync(Encoding.UTF8.GetBytes(clearSequence), lifetime.Token)
+                    .ConfigureAwait(false);
+                await output.FlushAsync(lifetime.Token).ConfigureAwait(false);
+                notificationLength = 0;
+            }
+        }
+
         void ShowRecordingStartedNotification()
         {
             Interlocked.Exchange(ref startupIndicatorActive, 0);
@@ -492,6 +517,9 @@ public static partial class InteractiveRecorder
             }
             Interlocked.Exchange(ref recordingIndicatorActive, 0);
             Interlocked.Exchange(ref recordingPaused, 0);
+
+            // Clear the recording indicator from the screen
+            await ClearPersistentIndicatorAsync().ConfigureAwait(false);
 
             return capture;
         }
@@ -986,6 +1014,10 @@ public static partial class InteractiveRecorder
                 Interlocked.Exchange(ref recordingIndicatorActive, 0);
                 Interlocked.Exchange(ref recordingPaused, 0);
                 Interlocked.Increment(ref notificationVersion);
+                
+                // Clear the recording indicator from the screen
+                await ClearPersistentIndicatorAsync().ConfigureAwait(false);
+                
                 QueueSaveCapture(capture);
             }
 

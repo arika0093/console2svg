@@ -25,7 +25,7 @@
   <Target
     Name="BuildBundledResvgNative"
     AfterTargets="Build"
-    Condition="'$(BuildResvgNative)' == 'true'"
+    Condition="'$(BuildResvgNative)' == 'true' And '$(TargetDir)' != ''"
   >
     <Error
       Condition="'$(ResvgNativeRustTarget)' == '' Or '$(ResvgNativeLibraryName)' == ''"
@@ -48,7 +48,7 @@
     Name="PublishBundledResvgNative"
     AfterTargets="Publish"
     DependsOnTargets="BuildBundledResvgNative"
-    Condition="'$(BuildResvgNative)' == 'true'"
+    Condition="'$(BuildResvgNative)' == 'true' And '$(PublishDir)' != ''"
   >
     <Copy SourceFiles="$(ResvgNativeLibraryPath)" DestinationFolder="$(PublishDir)" />
   </Target>

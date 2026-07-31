@@ -98,8 +98,18 @@ internal static partial class Program
             );
         }
 
-        var pipeWidth = options.Width ?? TryGetConsoleWidth() ?? DefaultWidth;
-        var pipeHeight = options.Height ?? TryGetConsoleHeight() ?? DefaultHeight;
+        var pipeWidth = ResolveSize(
+            options.Width,
+            options.WidthAdjust,
+            TryGetConsoleWidth,
+            DefaultWidth
+        );
+        var pipeHeight = ResolveSize(
+            options.Height,
+            options.HeightAdjust,
+            TryGetConsoleHeight,
+            DefaultHeight
+        );
         logger.ZLogDebug($"Input source: stdin pipe. Width={pipeWidth} Height={pipeHeight}");
         return await PipeRecorder
             .RecordAsync(

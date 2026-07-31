@@ -35,7 +35,7 @@ public sealed class SvgConverterTests
         );
         method.ShouldNotBeNull();
 
-        var args = (string[])method.Invoke(null, [2.5d, "png", "output.mp4"])!;
+        var args = (string[])method.Invoke(null, [2.5d, "output.mp4"])!;
 
         args.ShouldBe(
         [

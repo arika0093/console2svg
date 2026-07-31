@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -14,9 +13,9 @@ namespace ConsoleToSvg.Svg;
 public static partial class SvgConverter
 {
     /// <summary>
-    /// Encodes SVG frames without writing frame files. SVG-capable ffmpeg builds
-    /// receive SVG directly; other converters render each frame to PNG bytes and
-    /// feed an image2pipe PNG stream to ffmpeg.
+    /// Encodes SVG frames without writing frame files. Each frame is rendered to
+    /// PNG in memory and streamed to ffmpeg via image2pipe, avoiding intermediate
+    /// files on disk.
     /// </summary>
     public static async Task ConvertSvgFramesToVideoAsync(
         IEnumerable<string> svgFrames,
@@ -30,11 +29,13 @@ public static partial class SvgConverter
         CancellationToken cancellationToken
     )
     {
-        var effectiveConverter = ResolvePreConversionConverter(converter);
-        var codec = effectiveConverter == SvgConverterMode.Ffmpeg ? "svg" : "png";
-        var args = CreateInMemoryVideoFfmpegArgs(fps, codec, outputPath);
+        // The in-memory pipe path always renders to PNG because ffmpeg's
+        // image2pipe demuxer cannot split concatenated SVG documents into
+        // individual frames (unlike file-based frame-%04d.svg input).
+        var effectiveConverter = ResolveInMemoryPngConverter(converter);
+        var args = CreateInMemoryVideoFfmpegArgs(fps, outputPath);
 
-        logger.ZLogDebug($"Encoding video from in-memory {codec.ToUpperInvariant()} frames.");
+        logger.ZLogDebug($"Encoding video from in-memory PNG frames.");
         using var process = new Process { StartInfo = CreateFfmpegStartInfo(ffmpegPath, args) };
         process.StartInfo.RedirectStandardInput = true;
         try
@@ -65,16 +66,14 @@ public static partial class SvgConverter
             foreach (var svg in svgFrames)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var bytes = effectiveConverter == SvgConverterMode.Ffmpeg
-                    ? Encoding.UTF8.GetBytes(svg)
-                    : await RenderSvgToPngAsync(svg, effectiveConverter, width, height, logger, cancellationToken)
-                        .ConfigureAwait(false);
+                var bytes = await RenderSvgToPngAsync(svg, effectiveConverter, width, height, logger, cancellationToken)
+                    .ConfigureAwait(false);
                 await process.StandardInput.BaseStream.WriteAsync(bytes, cancellationToken).ConfigureAwait(false);
             }
             await process.StandardInput.DisposeAsync().ConfigureAwait(false);
             await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
         }
-        catch
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             try
             {
@@ -84,7 +83,11 @@ public static partial class SvgConverter
             {
                 // Preserve the original write/render failure when ffmpeg is already gone.
             }
-            throw;
+            var stderrOnFailure = await standardErrorTask.ConfigureAwait(false);
+            throw new InvalidOperationException(
+                "Failed while feeding frames to ffmpeg." + FormatFfmpegError(stderrOnFailure),
+                ex
+            );
         }
 
         await standardOutputTask.ConfigureAwait(false);
@@ -101,19 +104,55 @@ public static partial class SvgConverter
 
     private static string[] CreateInMemoryVideoFfmpegArgs(
         double fps,
-        string codec,
         string outputPath
-    ) =>
-    [
-        "-y",
-        "-framerate",
-        fps.ToString(CultureInfo.InvariantCulture),
-        "-f",
-        "image2pipe",
-        "-vcodec",
-        codec,
-        "-i",
-        "pipe:0",
-        outputPath,
-    ];
+    )
+    {
+        if (fps <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(fps), fps, "Frame rate must be positive.");
+        }
+
+        return
+        [
+            "-y",
+            "-framerate",
+            fps.ToString(CultureInfo.InvariantCulture),
+            "-f",
+            "image2pipe",
+            "-vcodec",
+            "png",
+            "-i",
+            "pipe:0",
+            outputPath,
+        ];
+    }
+
+    /// <summary>
+    /// Resolves a PNG-capable converter for the in-memory pipe path. Unlike
+    /// file-based input (where ffmpeg can read individual SVG files), the
+    /// image2pipe demuxer cannot split concatenated SVG documents, so the
+    /// in-memory path always renders to PNG first.
+    /// </summary>
+    private static SvgConverterMode ResolveInMemoryPngConverter(SvgConverterMode converter)
+    {
+        if (converter != SvgConverterMode.Ffmpeg)
+        {
+            return converter;
+        }
+
+        if (_resvgAvailable.Value)
+        {
+            return SvgConverterMode.Resvg;
+        }
+
+        if (_rsvgConvertAvailable.Value)
+        {
+            return SvgConverterMode.RsvgConvert;
+        }
+
+        throw new InvalidOperationException(
+            "In-memory video rendering requires resvg or rsvg-convert. "
+                + "Install 'librsvg2-bin' (Debian/Ubuntu) or 'librsvg' (Homebrew)."
+        );
+    }
 }

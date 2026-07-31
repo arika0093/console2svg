@@ -324,7 +324,7 @@ internal static partial class Program
                                 {
                                     try
                                     {
-                                        Directory.Delete(tempDir);
+                                        Directory.Delete(tempDir, recursive: true);
                                     }
                                     catch (Exception ex)
                                     {

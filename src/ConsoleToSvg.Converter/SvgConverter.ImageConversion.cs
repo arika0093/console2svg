@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -246,6 +247,7 @@ public static partial class SvgConverter
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 CreateNoWindow = true,
+                StandardInputEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
             },
         };
         foreach (var arg in args)
@@ -253,7 +255,19 @@ public static partial class SvgConverter
             process.StartInfo.ArgumentList.Add(arg);
         }
 
-        process.Start();
+        try
+        {
+            process.Start();
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException(
+                "Failed to start rsvg-convert. Install 'librsvg2-bin' (Debian/Ubuntu) "
+                    + "or 'librsvg' (Homebrew).\n"
+                    + ex.Message,
+                ex
+            );
+        }
         using var killOnCancel = cancellationToken.Register(() =>
         {
             try
@@ -266,10 +280,11 @@ public static partial class SvgConverter
             }
         });
         var errorTask = process.StandardError.ReadToEndAsync(cancellationToken);
+        await using var output = new MemoryStream();
+        var outputTask = process.StandardOutput.BaseStream.CopyToAsync(output, cancellationToken);
         await process.StandardInput.WriteAsync(svg.AsMemory(), cancellationToken).ConfigureAwait(false);
         await process.StandardInput.DisposeAsync().ConfigureAwait(false);
-        await using var output = new MemoryStream();
-        await process.StandardOutput.BaseStream.CopyToAsync(output, cancellationToken).ConfigureAwait(false);
+        await outputTask.ConfigureAwait(false);
         await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
         var error = await errorTask.ConfigureAwait(false);
         if (process.ExitCode != 0)

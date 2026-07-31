@@ -298,7 +298,6 @@ internal static partial class Program
                 );
                 if (preservedFramesPath is null)
                 {
-                    EnsureDirectory(outputPath);
                     await SvgConverter
                         .ConvertSvgFramesToVideoAsync(
                             RenderInteractiveFrameSvgs(frames, capture, renderOptions),
@@ -316,11 +315,12 @@ internal static partial class Program
                 else
                 {
                     Directory.CreateDirectory(workPath);
+                    Directory.CreateDirectory(preservedFramesPath);
+                    var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
                     for (var i = 0; i < frames.Count; i++)
                     {
                         var frameSvg = SvgRenderer.Render(frames[i].Buffer, renderOptions);
                         var fileName = $"frame-{i:D4}.svg";
-                        var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
                         await File.WriteAllTextAsync(
                                 Path.Combine(workPath, fileName),
                                 frameSvg,
@@ -328,7 +328,6 @@ internal static partial class Program
                                 CancellationToken.None
                             )
                             .ConfigureAwait(false);
-                        Directory.CreateDirectory(preservedFramesPath);
                         await File.WriteAllTextAsync(
                                 Path.Combine(preservedFramesPath, fileName),
                                 frameSvg,

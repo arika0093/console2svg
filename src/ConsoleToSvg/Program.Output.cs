@@ -60,14 +60,14 @@ internal static partial class Program
                 var totalFrames = (int)Math.Floor(totalTime * fps) + 1;
                 var rangeStart = baseOptions.TimeStart ?? 0.0;
                 var rangeEnd = baseOptions.TimeEnd ?? totalTime;
+                var eventIndex = 0;
                 for (var f = 0; f < totalFrames; f++)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     var t = f / fps;
                     if (t < rangeStart - 1e-9) continue;
                     if (t > rangeEnd + 1e-9) break;
-                    var eventIndex = 0;
-                    for (var i = 0; i < eventCount && session.Events[i].Time <= t + 1e-9; i++) eventIndex = i;
+                    while (eventIndex + 1 < eventCount && session.Events[eventIndex + 1].Time <= t + 1e-9) eventIndex++;
                     baseOptions.Frame = eventIndex;
                     yielded = true;
                     yield return SvgRenderer.Render(session, baseOptions);

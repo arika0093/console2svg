@@ -36,6 +36,7 @@ public static partial class SvgConverter
         var args = CreateInMemoryVideoFfmpegArgs(fps, outputPath);
 
         logger.ZLogDebug($"Encoding video from in-memory PNG frames.");
+        await Console.Error.WriteLineAsync("Encoding video frames...".AsMemory(), cancellationToken);
         using var process = new Process { StartInfo = CreateFfmpegStartInfo(ffmpegPath, args) };
         process.StartInfo.RedirectStandardInput = true;
         try
@@ -61,6 +62,7 @@ public static partial class SvgConverter
             }
         });
 
+        var frameCount = 0;
         try
         {
             foreach (var svg in svgFrames)
@@ -69,6 +71,7 @@ public static partial class SvgConverter
                 var bytes = await RenderSvgToPngAsync(svg, effectiveConverter, width, height, logger, cancellationToken)
                     .ConfigureAwait(false);
                 await process.StandardInput.BaseStream.WriteAsync(bytes, cancellationToken).ConfigureAwait(false);
+                frameCount++;
             }
             await process.StandardInput.DisposeAsync().ConfigureAwait(false);
             await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
@@ -100,6 +103,7 @@ public static partial class SvgConverter
                     + FormatFfmpegError(standardError)
             );
         }
+        await Console.Error.WriteLineAsync($"Encoded {frameCount} frames to video.".AsMemory(), CancellationToken.None);
     }
 
     private static string[] CreateInMemoryVideoFfmpegArgs(

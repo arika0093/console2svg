@@ -181,10 +181,20 @@ internal static partial class Program
 
             var renderOptions = SvgRenderOptionsFactory.Create(options);
             logger.ZLogDebug($"Rendering SVG. Mode={options.Mode}");
+            var currentOutputExt = Path.GetExtension(options.OutputPath).TrimStart('.').ToLowerInvariant();
+            var isVideoOutput = !string.IsNullOrEmpty(currentOutputExt) && currentOutputExt != "svg" && IsVideoFormat(currentOutputExt);
+            if (!isVideoOutput && !options.StdOut)
+            {
+                await Console.Error.WriteLineAsync("Rendering SVG...".AsMemory(), outputToken);
+            }
             var svg = options.Mode is OutputMode.Video or OutputMode.Repeat
                 ? AnimatedSvgRenderer.Render(session, renderOptions)
                 : SvgRenderer.Render(session, renderOptions);
             logger.ZLogDebug($"Rendering completed. SvgLength={svg.Length}");
+            if (!isVideoOutput && !options.StdOut)
+            {
+                await Console.Error.WriteLineAsync("SVG rendering completed.".AsMemory(), CancellationToken.None);
+            }
 
             // Background temp-dir deletion task for the video path; awaited
             // just before the process exits so deletion completes even when

@@ -292,26 +292,42 @@ internal static partial class Program
         {
             if (capture.IsVideo)
             {
-                Directory.CreateDirectory(workPath);
                 var frames = SampleInteractiveFrames(
                     FilterInteractiveFrames(capture.Frames, renderOptions),
                     options.VideoFps
                 );
-                for (var i = 0; i < frames.Count; i++)
+                if (preservedFramesPath is null)
                 {
-                    var frameSvg = SvgRenderer.Render(frames[i].Buffer, renderOptions);
-                    var fileName = $"frame-{i:D4}.svg";
-                    var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
-                    await File.WriteAllTextAsync(
-                            Path.Combine(workPath, fileName),
-                            frameSvg,
-                            utf8,
+                    await SvgConverter
+                        .ConvertSvgFramesToVideoAsync(
+                            RenderInteractiveFrameSvgs(frames, capture, renderOptions),
+                            options.VideoFps,
+                            outputPath,
+                            converter,
+                            ffmpegPath,
+                            options.SizeWidth,
+                            options.SizeHeight,
+                            logger,
                             CancellationToken.None
                         )
                         .ConfigureAwait(false);
-                    if (preservedFramesPath is not null)
+                }
+                else
+                {
+                    Directory.CreateDirectory(workPath);
+                    Directory.CreateDirectory(preservedFramesPath);
+                    var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+                    for (var i = 0; i < frames.Count; i++)
                     {
-                        Directory.CreateDirectory(preservedFramesPath);
+                        var frameSvg = SvgRenderer.Render(frames[i].Buffer, renderOptions);
+                        var fileName = $"frame-{i:D4}.svg";
+                        await File.WriteAllTextAsync(
+                                Path.Combine(workPath, fileName),
+                                frameSvg,
+                                utf8,
+                                CancellationToken.None
+                            )
+                            .ConfigureAwait(false);
                         await File.WriteAllTextAsync(
                                 Path.Combine(preservedFramesPath, fileName),
                                 frameSvg,
@@ -320,21 +336,21 @@ internal static partial class Program
                             )
                             .ConfigureAwait(false);
                     }
-                }
 
-                await SvgConverter
-                    .ConvertFramesToVideoAsync(
-                        workPath,
-                        options.VideoFps,
-                        outputPath,
-                        converter,
-                        ffmpegPath,
-                        options.SizeWidth,
-                        options.SizeHeight,
-                        logger,
-                        CancellationToken.None
-                    )
-                    .ConfigureAwait(false);
+                    await SvgConverter
+                        .ConvertFramesToVideoAsync(
+                            workPath,
+                            options.VideoFps,
+                            outputPath,
+                            converter,
+                            ffmpegPath,
+                            options.SizeWidth,
+                            options.SizeHeight,
+                            logger,
+                            CancellationToken.None
+                        )
+                        .ConfigureAwait(false);
+                }
             }
             else
             {
@@ -416,6 +432,24 @@ internal static partial class Program
         }
 
         return sampled;
+    }
+
+    private static IEnumerable<string> RenderInteractiveFrameSvgs(
+        IReadOnlyList<TerminalFrame> frames,
+        InteractiveCapture capture,
+        SvgRenderOptions renderOptions
+    )
+    {
+        if (frames.Count == 0)
+        {
+            yield return SvgRenderer.Render(capture.Screen, renderOptions);
+            yield break;
+        }
+
+        foreach (var frame in frames)
+        {
+            yield return SvgRenderer.Render(frame.Buffer, renderOptions);
+        }
     }
 
     private static IReadOnlyList<TerminalFrame> FilterInteractiveFrames(

@@ -29,110 +29,73 @@ internal static partial class Program
     {
         Directory.CreateDirectory(directory);
         var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
-        var eventCount = session.Events.Count;
-        logger.ZLogDebug($"Saving individual frames to {directory}. Events={eventCount} Fps={fps}");
-
-        if (fps > 0 && eventCount > 0)
+        var savedCount = 0;
+        foreach (var frameSvg in RenderFrameSvgs(session, baseOptions, fps, cancellationToken))
         {
-            // Sample frames at exactly fps intervals so frame count = floor(totalTime * fps) + 1
-            var totalTime = session.Events[eventCount - 1].Time;
-            var totalFrames = (int)Math.Floor(totalTime * fps) + 1;
-            var interval = 1.0 / fps;
+            await File.WriteAllTextAsync(
+                    Path.Combine(directory, $"frame-{savedCount:D4}.svg"), frameSvg, utf8, cancellationToken)
+                .ConfigureAwait(false);
+            savedCount++;
+        }
+        logger.ZLogDebug($"Saved {savedCount} frames to {directory}");
+        await Console.Error.WriteLineAsync($"Saved {savedCount} frames to {directory}".AsMemory(), CancellationToken.None);
+        return savedCount;
+    }
 
-            // When a time range is specified, skip frames outside [TimeStart, TimeEnd].
-            var rangeStart = baseOptions.TimeStart ?? 0.0;
-            var rangeEnd = baseOptions.TimeEnd ?? totalTime;
-
-            var savedCount = 0;
-            for (var f = 0; f < totalFrames; f++)
+    private static IEnumerable<string> RenderFrameSvgs(
+        RecordingSession session,
+        SvgRenderOptions baseOptions,
+        double fps,
+        CancellationToken cancellationToken,
+        bool includeFallback = false
+    )
+    {
+        var eventCount = session.Events.Count;
+        var yielded = false;
+        try
+        {
+            if (fps > 0 && eventCount > 0)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                var t = f * interval;
-                if (t < rangeStart - 1e-9)
+                var totalTime = session.Events[eventCount - 1].Time;
+                var totalFrames = (int)Math.Floor(totalTime * fps) + 1;
+                var rangeStart = baseOptions.TimeStart ?? 0.0;
+                var rangeEnd = baseOptions.TimeEnd ?? totalTime;
+                var eventIndex = 0;
+                for (var f = 0; f < totalFrames; f++)
                 {
-                    continue;
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var t = f / fps;
+                    if (t < rangeStart - 1e-9) continue;
+                    if (t > rangeEnd + 1e-9) break;
+                    while (eventIndex + 1 < eventCount && session.Events[eventIndex + 1].Time <= t + 1e-9) eventIndex++;
+                    baseOptions.Frame = eventIndex;
+                    yielded = true;
+                    yield return SvgRenderer.Render(session, baseOptions);
                 }
-                if (t > rangeEnd + 1e-9)
-                {
-                    break;
-                }
-
-                // Find the last event index at or before time t
-                var eventIndex = -1;
+            }
+            else
+            {
+                string? previousSvg = null;
                 for (var i = 0; i < eventCount; i++)
                 {
-                    if (session.Events[i].Time <= t + 1e-9)
-                        eventIndex = i;
-                    else
-                        break;
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var time = session.Events[i].Time;
+                    if (baseOptions.TimeStart.HasValue && time < baseOptions.TimeStart.Value - 1e-9) continue;
+                    if (baseOptions.TimeEnd.HasValue && time > baseOptions.TimeEnd.Value + 1e-9) break;
+                    baseOptions.Frame = i;
+                    var frameSvg = SvgRenderer.Render(session, baseOptions);
+                    if (frameSvg == previousSvg) continue;
+                    previousSvg = frameSvg;
+                    yielded = true;
+                    yield return frameSvg;
                 }
-
-                baseOptions.Frame = eventIndex >= 0 ? eventIndex : 0;
-                var frameSvg = SvgRenderer.Render(session, baseOptions);
-                var framePath = Path.Combine(directory, $"frame-{savedCount:D4}.svg");
-                await File.WriteAllTextAsync(framePath, frameSvg, utf8, cancellationToken)
-                    .ConfigureAwait(false);
-                savedCount++;
             }
-
-            baseOptions.Frame = null;
-            logger.ZLogDebug($"Saved {savedCount} frames to {directory}");
-            await Console.Error.WriteLineAsync(
-                $"Saved {savedCount} frames to {directory}".AsMemory(),
-                CancellationToken.None
-            );
-            return savedCount;
-        }
-        else
-        {
-            // No fps specified: save one file per unique visual state
-            var savedCount = 0;
-            string? previousSvg = null;
-
-            for (var i = 0; i < eventCount; i++)
+            if (!yielded && includeFallback)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                // Skip frames outside the time range if specified.
-                var eventTime = session.Events[i].Time;
-                if (
-                    baseOptions.TimeStart.HasValue
-                    && eventTime < baseOptions.TimeStart.Value - 1e-9
-                )
-                {
-                    continue;
-                }
-                if (baseOptions.TimeEnd.HasValue && eventTime > baseOptions.TimeEnd.Value + 1e-9)
-                {
-                    break;
-                }
-
-                baseOptions.Frame = i;
-                var frameSvg = SvgRenderer.Render(session, baseOptions);
-
-                if (frameSvg == previousSvg)
-                {
-                    continue;
-                }
-
-                previousSvg = frameSvg;
-                var framePath = Path.Combine(directory, $"frame-{savedCount:D4}.svg");
-                await File.WriteAllTextAsync(framePath, frameSvg, utf8, cancellationToken)
-                    .ConfigureAwait(false);
-                savedCount++;
+                yield return SvgRenderer.Render(session, baseOptions);
             }
-
-            baseOptions.Frame = null;
-            logger.ZLogDebug(
-                $"Saved {savedCount} unique frames (of {eventCount} events) to {directory}"
-            );
-            await Console.Error.WriteLineAsync(
-                $"Saved {savedCount} frames to {directory}".AsMemory(),
-                CancellationToken.None
-            );
-            return savedCount;
         }
+        finally { baseOptions.Frame = null; }
     }
 
     private static string GetDefaultPrompt()

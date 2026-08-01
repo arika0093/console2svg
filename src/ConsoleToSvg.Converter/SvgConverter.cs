@@ -262,6 +262,7 @@ public static partial class SvgConverter
         var effectiveConverter = ResolvePreConversionConverter(converter);
         if (effectiveConverter == SvgConverterMode.Ffmpeg)
         {
+            await Console.Error.WriteLineAsync("Converting SVG to image...".AsMemory(), cancellationToken);
             await RunFfmpegAsync(
                     ffmpegPath,
                     ["-y", "-i", svgPath, "-frames:v", "1", "-update", "1", outputPath],
@@ -269,6 +270,7 @@ public static partial class SvgConverter
                     cancellationToken
                 )
                 .ConfigureAwait(false);
+            await Console.Error.WriteLineAsync("Image conversion completed.".AsMemory(), CancellationToken.None);
             return;
         }
 
@@ -280,6 +282,7 @@ public static partial class SvgConverter
 
         try
         {
+            await Console.Error.WriteLineAsync("Converting SVG to PNG...".AsMemory(), cancellationToken);
             await ConvertSvgToPngAsync(
                     svgPath,
                     tempPng,
@@ -295,11 +298,13 @@ public static partial class SvgConverter
             {
                 // PNG output: ffmpeg not needed.
                 logger.ZLogDebug($"PNG written via fallback converter: {tempPng}");
+                await Console.Error.WriteLineAsync("PNG conversion completed.".AsMemory(), CancellationToken.None);
                 return;
             }
 
             // PNG → final format via ffmpeg. -frames:v 1 -update 1 avoid the
             // "image sequence pattern" warning for single-frame outputs.
+            await Console.Error.WriteLineAsync("Converting PNG to final format...".AsMemory(), cancellationToken);
             await RunFfmpegAsync(
                     ffmpegPath,
                     ["-y", "-i", tempPng, "-frames:v", "1", "-update", "1", outputPath],
@@ -307,6 +312,7 @@ public static partial class SvgConverter
                     cancellationToken
                 )
                 .ConfigureAwait(false);
+            await Console.Error.WriteLineAsync("Image conversion completed.".AsMemory(), CancellationToken.None);
         }
         finally
         {
@@ -415,12 +421,14 @@ public static partial class SvgConverter
         }
 
         var fpsStr = fps.ToString(CultureInfo.InvariantCulture);
+        await Console.Error.WriteLineAsync("Encoding video frames...".AsMemory(), cancellationToken);
         await RunFfmpegAsync(
                 ffmpegPath,
-                ["-y", "-framerate", fpsStr, "-i", framePattern, outputPath],
+                ["-y", "-framerate", fpsStr, "-i", framePattern, "-pix_fmt", "yuv420p", outputPath],
                 logger,
                 cancellationToken
             )
             .ConfigureAwait(false);
+        await Console.Error.WriteLineAsync("Video encoding completed.".AsMemory(), CancellationToken.None);
     }
 }

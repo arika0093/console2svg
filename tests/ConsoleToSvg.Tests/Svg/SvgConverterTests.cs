@@ -25,4 +25,23 @@ public sealed class SvgConverterTests
         startInfo.RedirectStandardOutput.ShouldBeTrue();
         startInfo.RedirectStandardError.ShouldBeTrue();
     }
+
+    [Test]
+    public void InMemoryVideoUsesImagePipeAndInvariantFramerate()
+    {
+        var method = typeof(SvgConverter).GetMethod(
+            "CreateInMemoryVideoFfmpegArgs",
+            BindingFlags.NonPublic | BindingFlags.Static
+        );
+        method.ShouldNotBeNull();
+
+        var args = (string[])method.Invoke(null, [2.5d, "output.mp4"])!;
+
+        args.ShouldBe(
+        [
+            "-y", "-framerate", "2.5", "-f", "image2pipe", "-vcodec", "png",
+            "-i", "pipe:0", "-pix_fmt", "yuv420p", "output.mp4",
+        ]
+        );
+    }
 }

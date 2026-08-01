@@ -181,10 +181,20 @@ internal static partial class Program
 
             var renderOptions = SvgRenderOptionsFactory.Create(options);
             logger.ZLogDebug($"Rendering SVG. Mode={options.Mode}");
+            var currentOutputExt = Path.GetExtension(options.OutputPath).TrimStart('.').ToLowerInvariant();
+            var isVideoOutput = !string.IsNullOrEmpty(currentOutputExt) && currentOutputExt != "svg" && IsVideoFormat(currentOutputExt);
+            if (!isVideoOutput && !options.StdOut)
+            {
+                await Console.Error.WriteLineAsync("Rendering SVG...".AsMemory(), outputToken);
+            }
             var svg = options.Mode is OutputMode.Video or OutputMode.Repeat
                 ? AnimatedSvgRenderer.Render(session, renderOptions)
                 : SvgRenderer.Render(session, renderOptions);
             logger.ZLogDebug($"Rendering completed. SvgLength={svg.Length}");
+            if (!isVideoOutput && !options.StdOut)
+            {
+                await Console.Error.WriteLineAsync("SVG rendering completed.".AsMemory(), CancellationToken.None);
+            }
 
             // Background temp-dir deletion task for the video path; awaited
             // just before the process exits so deletion completes even when
@@ -247,76 +257,94 @@ internal static partial class Program
 
                     if (useVideoPath)
                     {
-                        // Video format: save frames to a temp dir, then invoke ffmpeg.
-                        var tempDir = Path.Combine(Path.GetTempPath(), $"c2s-{Guid.NewGuid():N}");
-                        try
+                        if (string.IsNullOrWhiteSpace(options.SaveFramesDir))
                         {
-                            logger.ZLogDebug($"Video output: saving frames to temp dir {tempDir}");
-                            var frameCount = await SaveFramesAsync(
-                                    session,
-                                    renderOptions,
-                                    tempDir,
-                                    options.VideoFps,
-                                    logger,
-                                    outputToken
-                                )
+                            EnsureDirectory(options.OutputPath);
+                            await SvgConverter.ConvertSvgFramesToVideoAsync(
+                                    RenderFrameSvgs(
+                                        session,
+                                        renderOptions,
+                                        options.VideoFps,
+                                        outputToken,
+                                        includeFallback: true
+                                    ),
+                                    options.VideoFps, options.OutputPath, converter, ffmpegPath,
+                                    options.SizeWidth, options.SizeHeight, logger, outputToken)
                                 .ConfigureAwait(false);
-
-                            // Guard against empty recordings: ensure at least one frame exists
-                            // so ffmpeg receives valid input (e.g. commands that exit without output).
-                            if (frameCount == 0)
+                        }
+                        else
+                        {
+                            // Video format: save frames to a temp dir, then invoke ffmpeg.
+                            var tempDir = Path.Combine(Path.GetTempPath(), $"c2s-{Guid.NewGuid():N}");
+                            try
                             {
-                                var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
-                                var fallbackSvg = SvgRenderer.Render(session, renderOptions);
-                                await File.WriteAllTextAsync(
-                                        Path.Combine(tempDir, "frame-0000.svg"),
-                                        fallbackSvg,
-                                        utf8,
+                                logger.ZLogDebug($"Video output: saving frames to temp dir {tempDir}");
+                                var frameCount = await SaveFramesAsync(
+                                        session,
+                                        renderOptions,
+                                        tempDir,
+                                        options.VideoFps,
+                                        logger,
                                         outputToken
                                     )
                                     .ConfigureAwait(false);
-                                logger.ZLogDebug(
-                                    $"Empty recording: wrote single fallback frame to {tempDir}"
-                                );
-                            }
 
-                            EnsureDirectory(options.OutputPath);
-                            await SvgConverter
-                                .ConvertFramesToVideoAsync(
-                                    tempDir,
-                                    options.VideoFps,
-                                    options.OutputPath,
-                                    converter,
-                                    ffmpegPath,
-                                    options.SizeWidth,
-                                    options.SizeHeight,
-                                    logger,
-                                    outputToken
-                                )
-                                .ConfigureAwait(false);
-                        }
-                        finally
-                        {
-                            // Start temp-dir deletion on a background thread so
-                            // the remaining work (writing "Generated:" message,
-                            // save-frames, etc.) can proceed concurrently. The
-                            // Task is awaited before the process exits so that
-                            // deletion actually completes even on Windows where
-                            // AV scans make recursive delete slow.
-                            tempCleanup = Task.Run(() =>
-                            {
-                                try
+                                // Guard against empty recordings: ensure at least one frame exists
+                                // so ffmpeg receives valid input (e.g. commands that exit without output).
+                                if (frameCount == 0)
                                 {
-                                    Directory.Delete(tempDir);
-                                }
-                                catch (Exception ex)
-                                {
+                                    var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+                                    var fallbackSvg = SvgRenderer.Render(session, renderOptions);
+                                    await File.WriteAllTextAsync(
+                                            Path.Combine(tempDir, "frame-0000.svg"),
+                                            fallbackSvg,
+                                            utf8,
+                                            outputToken
+                                        )
+                                        .ConfigureAwait(false);
                                     logger.ZLogDebug(
-                                        ex,
-                                        $"Failed to delete temp dir {tempDir}: {ex.Message}"
+                                        $"Empty recording: wrote single fallback frame to {tempDir}"
                                     );
                                 }
-                            });
+
+                                EnsureDirectory(options.OutputPath);
+                                await SvgConverter
+                                    .ConvertFramesToVideoAsync(
+                                        tempDir,
+                                        options.VideoFps,
+                                        options.OutputPath,
+                                        converter,
+                                        ffmpegPath,
+                                        options.SizeWidth,
+                                        options.SizeHeight,
+                                        logger,
+                                        outputToken
+                                    )
+                                    .ConfigureAwait(false);
+                            }
+                            finally
+                            {
+                                // Start temp-dir deletion on a background thread so
+                                // the remaining work (writing "Generated:" message,
+                                // save-frames, etc.) can proceed concurrently. The
+                                // Task is awaited before the process exits so that
+                                // deletion actually completes even on Windows where
+                                // AV scans make recursive delete slow.
+                                tempCleanup = Task.Run(() =>
+                                {
+                                    try
+                                    {
+                                        Directory.Delete(tempDir, recursive: true);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        logger.ZLogDebug(
+                                            ex,
+                                            $"Failed to delete temp dir {tempDir}: {ex.Message}"
+                                        );
+                                    }
+                                });
+                            }
                         }
                     }
                     else

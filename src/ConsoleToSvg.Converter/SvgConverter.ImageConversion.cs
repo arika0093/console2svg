@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -179,6 +180,118 @@ public static partial class SvgConverter
                 cancellationToken
             )
             .ConfigureAwait(false);
+    }
+
+    /// <summary>Renders SVG text to PNG bytes without creating an intermediate file.</summary>
+    private static async Task<byte[]> RenderSvgToPngAsync(
+        string svg,
+        SvgConverterMode converter,
+        double? width,
+        double? height,
+        ILogger logger,
+        CancellationToken cancellationToken
+    )
+    {
+        if (converter == SvgConverterMode.Resvg)
+        {
+            return await Task.Run(
+                    () =>
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        try
+                        {
+                            return ResvgNative.RenderToPng(
+                                svg,
+                                width.HasValue ? ToPxInt(width.Value) : null,
+                                height.HasValue ? ToPxInt(height.Value) : null
+                            );
+                        }
+                        catch (Exception ex) when (IsResvgLoadFailure(ex))
+                        {
+                            throw new InvalidOperationException(
+                                "Bundled resvg native library failed to load. Falling back "
+                                    + "requires the resvg native runtime shipped with this build.",
+                                ex
+                            );
+                        }
+                    },
+                    cancellationToken
+                )
+                .ConfigureAwait(false);
+        }
+
+        if (converter != SvgConverterMode.RsvgConvert)
+        {
+            throw new InvalidOperationException($"Converter {converter} cannot directly produce PNG.");
+        }
+
+        var exe = FindRsvgConvertExecutable();
+        var args = new List<string>();
+        if (width.HasValue)
+        {
+            args.AddRange(["-w", FormatPx(width.Value)]);
+        }
+        if (height.HasValue)
+        {
+            args.AddRange(["-h", FormatPx(height.Value)]);
+        }
+
+        logger.ZLogDebug($"Rendering in-memory SVG ({svg.Length} chars) via rsvg-convert.");
+        using var process = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = exe,
+                UseShellExecute = false,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true,
+                StandardInputEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+            },
+        };
+        foreach (var arg in args)
+        {
+            process.StartInfo.ArgumentList.Add(arg);
+        }
+
+        try
+        {
+            process.Start();
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException(
+                "Failed to start rsvg-convert. Install 'librsvg2-bin' (Debian/Ubuntu) "
+                    + "or 'librsvg' (Homebrew).\n"
+                    + ex.Message,
+                ex
+            );
+        }
+        using var killOnCancel = cancellationToken.Register(() =>
+        {
+            try
+            {
+                process.Kill(entireProcessTree: true);
+            }
+            catch
+            {
+                // The converter may already have exited between cancellation and Kill.
+            }
+        });
+        var errorTask = process.StandardError.ReadToEndAsync(cancellationToken);
+        await using var output = new MemoryStream();
+        var outputTask = process.StandardOutput.BaseStream.CopyToAsync(output, cancellationToken);
+        await process.StandardInput.WriteAsync(svg.AsMemory(), cancellationToken).ConfigureAwait(false);
+        await process.StandardInput.DisposeAsync().ConfigureAwait(false);
+        await outputTask.ConfigureAwait(false);
+        await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
+        var error = await errorTask.ConfigureAwait(false);
+        if (process.ExitCode != 0)
+        {
+            throw new InvalidOperationException($"rsvg-convert exited with code {process.ExitCode}. {error}".TrimEnd());
+        }
+        return output.ToArray();
     }
 
     /// <summary>

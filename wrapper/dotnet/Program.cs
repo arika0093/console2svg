@@ -71,6 +71,7 @@ internal static class Program
             process.StartInfo.ArgumentList.Add(argument);
         }
 
+        ConsoleCancelEventHandler cancelKeyPressHandler = (_, eventArgs) => eventArgs.Cancel = true;
         try
         {
             if (!process.Start())
@@ -79,7 +80,16 @@ internal static class Program
                 return 1;
             }
 
-            await process.WaitForExitAsync().ConfigureAwait(false);
+            Console.CancelKeyPress += cancelKeyPressHandler;
+            try
+            {
+                await process.WaitForExitAsync().ConfigureAwait(false);
+            }
+            finally
+            {
+                Console.CancelKeyPress -= cancelKeyPressHandler;
+            }
+
             return process.ExitCode;
         }
         catch (Exception ex)
@@ -222,10 +232,12 @@ internal static class Program
 
     private static string GetDistributionDirectory()
     {
+        var xdgCacheHome = Environment.GetEnvironmentVariable("XDG_CACHE_HOME");
         var cacheRoot = OperatingSystem.IsWindows()
             ? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
-            : Environment.GetEnvironmentVariable("XDG_CACHE_HOME")
-                ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".cache");
+            : !string.IsNullOrWhiteSpace(xdgCacheHome) && Path.IsPathFullyQualified(xdgCacheHome)
+                ? xdgCacheHome
+                : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".cache");
         return Path.Combine(cacheRoot, "console2svg", GetReleaseVersion());
     }
 

@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.IO.Compression;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace ConsoleToSvg.Tool;
@@ -222,12 +221,7 @@ internal static class Program
 
     private static string GetReleaseVersion()
     {
-        var version = Assembly
-            .GetExecutingAssembly()
-            .GetCustomAttributes<AssemblyMetadataAttribute>()
-            .SingleOrDefault(attribute => attribute.Key == "ConsoleToSvgReleaseVersion")
-            ?.Value;
-        return version ?? throw new InvalidOperationException("Tool release version is unavailable.");
+        return ThisAssembly.NuGetPackageVersion;
     }
 
     private static string GetDistributionDirectory()
@@ -244,15 +238,23 @@ internal static class Program
     private static async Task<FileStream> AcquireInstallationLockAsync(string distributionDirectory)
     {
         var lockPath = Path.Combine(distributionDirectory, ".install.lock");
+        var deadline = DateTime.UtcNow + TimeSpan.FromSeconds(30);
         while (true)
         {
             try
             {
                 return new FileStream(lockPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
             }
-            catch (IOException)
+            catch (IOException) when (DateTime.UtcNow < deadline)
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(100)).ConfigureAwait(false);
+            }
+            catch (IOException ex)
+            {
+                throw new InvalidOperationException(
+                    $"Timed out waiting for installation lock at '{lockPath}'.",
+                    ex
+                );
             }
         }
     }

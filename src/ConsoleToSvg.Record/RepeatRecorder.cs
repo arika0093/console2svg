@@ -149,16 +149,12 @@ public static class RepeatRecorder
             }, CancellationToken.None);
         });
 
-#if NET8_0_OR_GREATER
         // The process-tree cancellation registration above owns shutdown. Do not cancel
         // this read independently: a short recording timeout may otherwise discard
         // output that the child process already wrote before it exited.
         var output = await process
             .StandardOutput.ReadToEndAsync(CancellationToken.None)
             .ConfigureAwait(false);
-#else
-        var output = await process.StandardOutput.ReadToEndAsync().ConfigureAwait(false);
-#endif
 
         // WaitForExitAsync is available from .NET 5 and above.
         await process.WaitForExitAsync(CancellationToken.None).ConfigureAwait(false);

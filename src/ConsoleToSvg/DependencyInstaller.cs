@@ -65,13 +65,9 @@ internal static class DependencyInstaller
             var extractDirectory = Path.Combine(temporaryDirectory, "extract");
             if (package.IsZip)
             {
-#if NET10_0_OR_GREATER
                 await ZipFile
                     .ExtractToDirectoryAsync(archivePath, extractDirectory)
                     .ConfigureAwait(false);
-#else
-                ZipFile.ExtractToDirectory(archivePath, extractDirectory);
-#endif
             }
             else
             {

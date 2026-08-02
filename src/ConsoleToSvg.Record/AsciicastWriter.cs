@@ -60,10 +60,6 @@ public static class AsciicastWriter
             await writer.WriteLineAsync(line.AsMemory(), cancellationToken).ConfigureAwait(false);
         }
 
-#if NET8_0_OR_GREATER
         await writer.FlushAsync(cancellationToken).ConfigureAwait(false);
-#else
-        await writer.FlushAsync().ConfigureAwait(false);
-#endif
     }
 }

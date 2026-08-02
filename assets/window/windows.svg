@@ -1,9 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="354" height="142" viewBox="0 0 354 142" role="img" aria-label="console2svg output">
 <style>
 .crt {
-  font-family: ui-monospace,"JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,monospace;
+  font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace;
   font-size: 14px;
 }
+.blink { animation: blink 1s step-start infinite; }
+@keyframes blink { 50% { visibility: hidden; } }
 text {
   dominant-baseline: alphabetic;
 }

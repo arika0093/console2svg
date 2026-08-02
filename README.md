@@ -92,7 +92,7 @@ irm https://raw.githubusercontent.com/arika0093/console2svg/main/install.ps1 | i
 You can also install via package managers.
 
 ```sh
-# dotnet global tool
+# dotnet global tool (downloads the platform-native binary on first run)
 dotnet tool install -g ConsoleToSvg
 
 # npm global package (Windows / Linux / macOS)
@@ -318,8 +318,8 @@ The replay file is in a simple JSON format. If you make a mistake in the input, 
 
 In v0.8 and later, you can specify the output format based on the file extension specified with `-o output.mp4`.
 
-First, install `ffmpeg`. Release archives on Windows already include it. For the dotnet
-tool on Windows or Linux, download the supported build alongside the tool:
+First, install `ffmpeg`. Release archives on Windows already include it. On Linux,
+install it with your distribution's package manager; on macOS, use Homebrew:
 
 ```bash
 # ubuntu
@@ -328,8 +328,6 @@ sudo apt install ffmpeg
 brew install ffmpeg
 # windows
 # > ffmpeg is included in console2svg-win-x64.zip
-# dotnet tool (Windows / Linux)
-console2svg --install-deps
 ```
 
 Then, you can specify the output file with the desired extension. For example, to convert an animated command to any format, you can use the following command:

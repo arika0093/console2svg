@@ -49,12 +49,6 @@ internal static partial class Program
             return 0;
         }
 
-        if (options.InstallDependencies)
-        {
-            await DependencyInstaller.InstallFfmpegAsync().ConfigureAwait(false);
-            return 0;
-        }
-
         if (args.Length == 0 && !Console.IsInputRedirected)
         {
             Console.WriteLine(OptionParser.ShortHelpText);

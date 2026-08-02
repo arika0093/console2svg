@@ -6,7 +6,7 @@ sudo apt install -y librsvg2-bin sl nyancat vim tmux ffmpeg cmatrix
 # required: sudo npm install -g oh-my-logo
 console2svg -o ./assets/cmd-hero.svg        --verbose ./logs/cmd-hero.log         -w 100 -h 10 -c -d macos-pc --opacity 0.95 --background ./assets/image1.png -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
 console2svg -o ./assets/cmd-hero-grad.svg   --verbose ./logs/cmd-hero-grad.log    -w 100 -h 10 -c -d macos-pc --opacity 0.95 --background "#30a0d0" "#0060c0" -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
-console2svg -o ./assets/cmd.svg             --verbose ./logs/cmd.log              -w 100 console2svg 
+console2svg -o ./assets/cmd.svg             --verbose ./logs/cmd.log              -w 120 console2svg 
 console2svg -o ./assets/cmd-window.svg      --verbose ./logs/cmd-window.log       -w 120 -c -d macos-pc  -- console2svg
 console2svg -o ./assets/cmd-crop-word.svg   --verbose ./logs/cmd-crop-word.log    -w 100 --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -- dotnet --info
 console2svg -o ./assets/cmd-term-custom.svg --verbose ./logs/cmd-term-custom.log  -w 100 -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" --backcolor "#042515" -- echo "hi"

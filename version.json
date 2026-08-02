@@ -17,6 +17,7 @@
     "branchName": "release/v{version}"
   },
   "pathFilters": [
-    "./src"
+    "./src",
+    "./wrapper/dotnet"
   ]
 }

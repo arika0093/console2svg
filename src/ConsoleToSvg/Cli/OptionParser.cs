@@ -64,8 +64,6 @@ public static partial class OptionParser
                 --verbose [path]          Enable verbose logging; write to path (default: console2svg.log).
                 --help                    Show help.
                 --version                 Show version and exit.
-                --install-deps            Download ffmpeg to the application directory and exit.
-                                          Supported on Windows and Linux; macOS users should use brew install ffmpeg.
                 --timeout <sec>           Stop recording after specified seconds (e.g. 5, 0.5).
                 --no-colorenv             Disable PTY color environment overrides (TERM/COLORTERM/FORCE_COLOR).
                 --no-delete-envs          Keep CI/TF_BUILD in shell execution environment.
@@ -287,7 +285,6 @@ public static partial class OptionParser
     {
         return !string.Equals(name, "--help", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--version", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--install-deps", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--no-loop", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "-c", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--with-command", StringComparison.OrdinalIgnoreCase)

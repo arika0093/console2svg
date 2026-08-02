@@ -464,14 +464,6 @@ public sealed partial class OptionParserTests
     }
 
     [Test]
-    public void InstallDependenciesFlagParsed()
-    {
-        var ok = OptionParser.TryParse(new[] { "--install-deps" }, out var options, out _, out _);
-        ok.ShouldBeTrue();
-        options!.InstallDependencies.ShouldBeTrue();
-    }
-
-    [Test]
     public void WindowAndPaddingParsed()
     {
         var ok = OptionParser.TryParse(

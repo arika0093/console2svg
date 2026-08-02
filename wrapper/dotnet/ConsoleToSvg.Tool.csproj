@@ -16,6 +16,11 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+  <Target Name="AddReleaseVersionMetadata" BeforeTargets="GetAssemblyAttributes" DependsOnTargets="GetNuGetPackageVersion">
+    <ItemGroup>
+      <AssemblyMetadata Include="ConsoleToSvgReleaseVersion" Value="$(NuGetPackageVersion)" />
+    </ItemGroup>
+  </Target>
   <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.*">
       <PrivateAssets>all</PrivateAssets>

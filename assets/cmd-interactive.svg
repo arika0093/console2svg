@@ -1,74 +1,1891 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1307.2" height="386" viewBox="0 0 1307.2 386" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="841.2" height="369" viewBox="0 0 841.2 369" role="img" aria-label="console2svg output">
 <style>
 .crt {
   font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace;
   font-size: 14px;
 }
+.blink { animation: blink 1s step-start infinite; }
+@keyframes blink { 50% { visibility: hidden; } }
 text {
   dominant-baseline: alphabetic;
 }
 .bg {
   shape-rendering: crispEdges;
 }
+
+.frame {
+  opacity: 0;
+}
+@keyframes k0 {
+  0%, 0% {
+    opacity: 0;
+  }
+  0%, 0.588% {
+    opacity: 1;
+  }
+  0.589%, 100% {
+    opacity: 0;
+  }
+}
+.frame-0 { animation:k0 14.167s linear infinite; }
+@keyframes k1 {
+  0%, 0.587% {
+    opacity: 0;
+  }
+  0.588%, 1.176% {
+    opacity: 1;
+  }
+  1.177%, 100% {
+    opacity: 0;
+  }
+}
+.frame-1 { animation:k1 14.167s linear infinite; }
+@keyframes k2 {
+  0%, 1.175% {
+    opacity: 0;
+  }
+  1.176%, 1.765% {
+    opacity: 1;
+  }
+  1.766%, 100% {
+    opacity: 0;
+  }
+}
+.frame-2 { animation:k2 14.167s linear infinite; }
+@keyframes k3 {
+  0%, 1.764% {
+    opacity: 0;
+  }
+  1.765%, 2.941% {
+    opacity: 1;
+  }
+  2.942%, 100% {
+    opacity: 0;
+  }
+}
+.frame-3 { animation:k3 14.167s linear infinite; }
+@keyframes k4 {
+  0%, 2.94% {
+    opacity: 0;
+  }
+  2.941%, 3.529% {
+    opacity: 1;
+  }
+  3.53%, 100% {
+    opacity: 0;
+  }
+}
+.frame-4 { animation:k4 14.167s linear infinite; }
+@keyframes k5 {
+  0%, 3.528% {
+    opacity: 0;
+  }
+  3.529%, 4.706% {
+    opacity: 1;
+  }
+  4.707%, 100% {
+    opacity: 0;
+  }
+}
+.frame-5 { animation:k5 14.167s linear infinite; }
+@keyframes k6 {
+  0%, 4.705% {
+    opacity: 0;
+  }
+  4.706%, 5.294% {
+    opacity: 1;
+  }
+  5.295%, 100% {
+    opacity: 0;
+  }
+}
+.frame-6 { animation:k6 14.167s linear infinite; }
+@keyframes k7 {
+  0%, 5.293% {
+    opacity: 0;
+  }
+  5.294%, 6.471% {
+    opacity: 1;
+  }
+  6.472%, 100% {
+    opacity: 0;
+  }
+}
+.frame-7 { animation:k7 14.167s linear infinite; }
+@keyframes k8 {
+  0%, 6.47% {
+    opacity: 0;
+  }
+  6.471%, 7.059% {
+    opacity: 1;
+  }
+  7.06%, 100% {
+    opacity: 0;
+  }
+}
+.frame-8 { animation:k8 14.167s linear infinite; }
+@keyframes k9 {
+  0%, 7.058% {
+    opacity: 0;
+  }
+  7.059%, 8.235% {
+    opacity: 1;
+  }
+  8.236%, 100% {
+    opacity: 0;
+  }
+}
+.frame-9 { animation:k9 14.167s linear infinite; }
+@keyframes k10 {
+  0%, 8.234% {
+    opacity: 0;
+  }
+  8.235%, 8.824% {
+    opacity: 1;
+  }
+  8.825%, 100% {
+    opacity: 0;
+  }
+}
+.frame-10 { animation:k10 14.167s linear infinite; }
+@keyframes k11 {
+  0%, 8.823% {
+    opacity: 0;
+  }
+  8.824%, 10% {
+    opacity: 1;
+  }
+  10.001%, 100% {
+    opacity: 0;
+  }
+}
+.frame-11 { animation:k11 14.167s linear infinite; }
+@keyframes k12 {
+  0%, 9.999% {
+    opacity: 0;
+  }
+  10%, 10.588% {
+    opacity: 1;
+  }
+  10.589%, 100% {
+    opacity: 0;
+  }
+}
+.frame-12 { animation:k12 14.167s linear infinite; }
+@keyframes k13 {
+  0%, 10.587% {
+    opacity: 0;
+  }
+  10.588%, 11.765% {
+    opacity: 1;
+  }
+  11.766%, 100% {
+    opacity: 0;
+  }
+}
+.frame-13 { animation:k13 14.167s linear infinite; }
+@keyframes k14 {
+  0%, 11.764% {
+    opacity: 0;
+  }
+  11.765%, 12.353% {
+    opacity: 1;
+  }
+  12.354%, 100% {
+    opacity: 0;
+  }
+}
+.frame-14 { animation:k14 14.167s linear infinite; }
+@keyframes k15 {
+  0%, 12.352% {
+    opacity: 0;
+  }
+  12.353%, 13.529% {
+    opacity: 1;
+  }
+  13.53%, 100% {
+    opacity: 0;
+  }
+}
+.frame-15 { animation:k15 14.167s linear infinite; }
+@keyframes k16 {
+  0%, 13.528% {
+    opacity: 0;
+  }
+  13.529%, 14.118% {
+    opacity: 1;
+  }
+  14.119%, 100% {
+    opacity: 0;
+  }
+}
+.frame-16 { animation:k16 14.167s linear infinite; }
+@keyframes k17 {
+  0%, 14.117% {
+    opacity: 0;
+  }
+  14.118%, 15.294% {
+    opacity: 1;
+  }
+  15.295%, 100% {
+    opacity: 0;
+  }
+}
+.frame-17 { animation:k17 14.167s linear infinite; }
+@keyframes k18 {
+  0%, 15.293% {
+    opacity: 0;
+  }
+  15.294%, 15.882% {
+    opacity: 1;
+  }
+  15.883%, 100% {
+    opacity: 0;
+  }
+}
+.frame-18 { animation:k18 14.167s linear infinite; }
+@keyframes k19 {
+  0%, 15.881% {
+    opacity: 0;
+  }
+  15.882%, 17.059% {
+    opacity: 1;
+  }
+  17.06%, 100% {
+    opacity: 0;
+  }
+}
+.frame-19 { animation:k19 14.167s linear infinite; }
+@keyframes k20 {
+  0%, 17.058% {
+    opacity: 0;
+  }
+  17.059%, 17.647% {
+    opacity: 1;
+  }
+  17.648%, 100% {
+    opacity: 0;
+  }
+}
+.frame-20 { animation:k20 14.167s linear infinite; }
+@keyframes k21 {
+  0%, 17.646% {
+    opacity: 0;
+  }
+  17.647%, 18.824% {
+    opacity: 1;
+  }
+  18.825%, 100% {
+    opacity: 0;
+  }
+}
+.frame-21 { animation:k21 14.167s linear infinite; }
+@keyframes k22 {
+  0%, 18.823% {
+    opacity: 0;
+  }
+  18.824%, 19.412% {
+    opacity: 1;
+  }
+  19.413%, 100% {
+    opacity: 0;
+  }
+}
+.frame-22 { animation:k22 14.167s linear infinite; }
+@keyframes k23 {
+  0%, 19.411% {
+    opacity: 0;
+  }
+  19.412%, 20.588% {
+    opacity: 1;
+  }
+  20.589%, 100% {
+    opacity: 0;
+  }
+}
+.frame-23 { animation:k23 14.167s linear infinite; }
+@keyframes k24 {
+  0%, 20.587% {
+    opacity: 0;
+  }
+  20.588%, 21.176% {
+    opacity: 1;
+  }
+  21.177%, 100% {
+    opacity: 0;
+  }
+}
+.frame-24 { animation:k24 14.167s linear infinite; }
+@keyframes k25 {
+  0%, 21.175% {
+    opacity: 0;
+  }
+  21.176%, 22.353% {
+    opacity: 1;
+  }
+  22.354%, 100% {
+    opacity: 0;
+  }
+}
+.frame-25 { animation:k25 14.167s linear infinite; }
+@keyframes k26 {
+  0%, 22.352% {
+    opacity: 0;
+  }
+  22.353%, 22.941% {
+    opacity: 1;
+  }
+  22.942%, 100% {
+    opacity: 0;
+  }
+}
+.frame-26 { animation:k26 14.167s linear infinite; }
+@keyframes k27 {
+  0%, 22.94% {
+    opacity: 0;
+  }
+  22.941%, 24.118% {
+    opacity: 1;
+  }
+  24.119%, 100% {
+    opacity: 0;
+  }
+}
+.frame-27 { animation:k27 14.167s linear infinite; }
+@keyframes k28 {
+  0%, 24.117% {
+    opacity: 0;
+  }
+  24.118%, 24.706% {
+    opacity: 1;
+  }
+  24.707%, 100% {
+    opacity: 0;
+  }
+}
+.frame-28 { animation:k28 14.167s linear infinite; }
+@keyframes k29 {
+  0%, 24.705% {
+    opacity: 0;
+  }
+  24.706%, 25.882% {
+    opacity: 1;
+  }
+  25.883%, 100% {
+    opacity: 0;
+  }
+}
+.frame-29 { animation:k29 14.167s linear infinite; }
+@keyframes k30 {
+  0%, 25.881% {
+    opacity: 0;
+  }
+  25.882%, 26.471% {
+    opacity: 1;
+  }
+  26.472%, 100% {
+    opacity: 0;
+  }
+}
+.frame-30 { animation:k30 14.167s linear infinite; }
+@keyframes k31 {
+  0%, 26.47% {
+    opacity: 0;
+  }
+  26.471%, 27.647% {
+    opacity: 1;
+  }
+  27.648%, 100% {
+    opacity: 0;
+  }
+}
+.frame-31 { animation:k31 14.167s linear infinite; }
+@keyframes k32 {
+  0%, 27.646% {
+    opacity: 0;
+  }
+  27.647%, 28.235% {
+    opacity: 1;
+  }
+  28.236%, 100% {
+    opacity: 0;
+  }
+}
+.frame-32 { animation:k32 14.167s linear infinite; }
+@keyframes k33 {
+  0%, 28.234% {
+    opacity: 0;
+  }
+  28.235%, 29.412% {
+    opacity: 1;
+  }
+  29.413%, 100% {
+    opacity: 0;
+  }
+}
+.frame-33 { animation:k33 14.167s linear infinite; }
+@keyframes k34 {
+  0%, 29.411% {
+    opacity: 0;
+  }
+  29.412%, 30% {
+    opacity: 1;
+  }
+  30.001%, 100% {
+    opacity: 0;
+  }
+}
+.frame-34 { animation:k34 14.167s linear infinite; }
+@keyframes k35 {
+  0%, 29.999% {
+    opacity: 0;
+  }
+  30%, 31.176% {
+    opacity: 1;
+  }
+  31.177%, 100% {
+    opacity: 0;
+  }
+}
+.frame-35 { animation:k35 14.167s linear infinite; }
+@keyframes k36 {
+  0%, 31.175% {
+    opacity: 0;
+  }
+  31.176%, 31.765% {
+    opacity: 1;
+  }
+  31.766%, 100% {
+    opacity: 0;
+  }
+}
+.frame-36 { animation:k36 14.167s linear infinite; }
+@keyframes k37 {
+  0%, 31.764% {
+    opacity: 0;
+  }
+  31.765%, 32.941% {
+    opacity: 1;
+  }
+  32.942%, 100% {
+    opacity: 0;
+  }
+}
+.frame-37 { animation:k37 14.167s linear infinite; }
+@keyframes k38 {
+  0%, 32.94% {
+    opacity: 0;
+  }
+  32.941%, 33.529% {
+    opacity: 1;
+  }
+  33.53%, 100% {
+    opacity: 0;
+  }
+}
+.frame-38 { animation:k38 14.167s linear infinite; }
+@keyframes k39 {
+  0%, 33.528% {
+    opacity: 0;
+  }
+  33.529%, 34.706% {
+    opacity: 1;
+  }
+  34.707%, 100% {
+    opacity: 0;
+  }
+}
+.frame-39 { animation:k39 14.167s linear infinite; }
+@keyframes k40 {
+  0%, 34.705% {
+    opacity: 0;
+  }
+  34.706%, 35.294% {
+    opacity: 1;
+  }
+  35.295%, 100% {
+    opacity: 0;
+  }
+}
+.frame-40 { animation:k40 14.167s linear infinite; }
+@keyframes k41 {
+  0%, 35.293% {
+    opacity: 0;
+  }
+  35.294%, 36.471% {
+    opacity: 1;
+  }
+  36.472%, 100% {
+    opacity: 0;
+  }
+}
+.frame-41 { animation:k41 14.167s linear infinite; }
+@keyframes k42 {
+  0%, 36.47% {
+    opacity: 0;
+  }
+  36.471%, 37.059% {
+    opacity: 1;
+  }
+  37.06%, 100% {
+    opacity: 0;
+  }
+}
+.frame-42 { animation:k42 14.167s linear infinite; }
+@keyframes k43 {
+  0%, 37.058% {
+    opacity: 0;
+  }
+  37.059%, 38.235% {
+    opacity: 1;
+  }
+  38.236%, 100% {
+    opacity: 0;
+  }
+}
+.frame-43 { animation:k43 14.167s linear infinite; }
+@keyframes k44 {
+  0%, 38.234% {
+    opacity: 0;
+  }
+  38.235%, 38.824% {
+    opacity: 1;
+  }
+  38.825%, 100% {
+    opacity: 0;
+  }
+}
+.frame-44 { animation:k44 14.167s linear infinite; }
+@keyframes k45 {
+  0%, 38.823% {
+    opacity: 0;
+  }
+  38.824%, 39.412% {
+    opacity: 1;
+  }
+  39.413%, 100% {
+    opacity: 0;
+  }
+}
+.frame-45 { animation:k45 14.167s linear infinite; }
+@keyframes k46 {
+  0%, 39.411% {
+    opacity: 0;
+  }
+  39.412%, 40% {
+    opacity: 1;
+  }
+  40.001%, 100% {
+    opacity: 0;
+  }
+}
+.frame-46 { animation:k46 14.167s linear infinite; }
+@keyframes k47 {
+  0%, 39.999% {
+    opacity: 0;
+  }
+  40%, 40.588% {
+    opacity: 1;
+  }
+  40.589%, 100% {
+    opacity: 0;
+  }
+}
+.frame-47 { animation:k47 14.167s linear infinite; }
+@keyframes k48 {
+  0%, 40.587% {
+    opacity: 0;
+  }
+  40.588%, 41.765% {
+    opacity: 1;
+  }
+  41.766%, 100% {
+    opacity: 0;
+  }
+}
+.frame-48 { animation:k48 14.167s linear infinite; }
+@keyframes k49 {
+  0%, 41.764% {
+    opacity: 0;
+  }
+  41.765%, 42.353% {
+    opacity: 1;
+  }
+  42.354%, 100% {
+    opacity: 0;
+  }
+}
+.frame-49 { animation:k49 14.167s linear infinite; }
+@keyframes k50 {
+  0%, 42.352% {
+    opacity: 0;
+  }
+  42.353%, 43.529% {
+    opacity: 1;
+  }
+  43.53%, 100% {
+    opacity: 0;
+  }
+}
+.frame-50 { animation:k50 14.167s linear infinite; }
+@keyframes k51 {
+  0%, 43.528% {
+    opacity: 0;
+  }
+  43.529%, 44.118% {
+    opacity: 1;
+  }
+  44.119%, 100% {
+    opacity: 0;
+  }
+}
+.frame-51 { animation:k51 14.167s linear infinite; }
+@keyframes k52 {
+  0%, 44.117% {
+    opacity: 0;
+  }
+  44.118%, 45.294% {
+    opacity: 1;
+  }
+  45.295%, 100% {
+    opacity: 0;
+  }
+}
+.frame-52 { animation:k52 14.167s linear infinite; }
+@keyframes k53 {
+  0%, 45.293% {
+    opacity: 0;
+  }
+  45.294%, 45.882% {
+    opacity: 1;
+  }
+  45.883%, 100% {
+    opacity: 0;
+  }
+}
+.frame-53 { animation:k53 14.167s linear infinite; }
+@keyframes k54 {
+  0%, 45.881% {
+    opacity: 0;
+  }
+  45.882%, 47.059% {
+    opacity: 1;
+  }
+  47.06%, 100% {
+    opacity: 0;
+  }
+}
+.frame-54 { animation:k54 14.167s linear infinite; }
+@keyframes k55 {
+  0%, 47.058% {
+    opacity: 0;
+  }
+  47.059%, 47.647% {
+    opacity: 1;
+  }
+  47.648%, 100% {
+    opacity: 0;
+  }
+}
+.frame-55 { animation:k55 14.167s linear infinite; }
+@keyframes k56 {
+  0%, 47.646% {
+    opacity: 0;
+  }
+  47.647%, 48.824% {
+    opacity: 1;
+  }
+  48.825%, 100% {
+    opacity: 0;
+  }
+}
+.frame-56 { animation:k56 14.167s linear infinite; }
+@keyframes k57 {
+  0%, 48.823% {
+    opacity: 0;
+  }
+  48.824%, 49.412% {
+    opacity: 1;
+  }
+  49.413%, 100% {
+    opacity: 0;
+  }
+}
+.frame-57 { animation:k57 14.167s linear infinite; }
+@keyframes k58 {
+  0%, 49.411% {
+    opacity: 0;
+  }
+  49.412%, 50% {
+    opacity: 1;
+  }
+  50.001%, 100% {
+    opacity: 0;
+  }
+}
+.frame-58 { animation:k58 14.167s linear infinite; }
+@keyframes k59 {
+  0%, 49.999% {
+    opacity: 0;
+  }
+  50%, 50.588% {
+    opacity: 1;
+  }
+  50.589%, 100% {
+    opacity: 0;
+  }
+}
+.frame-59 { animation:k59 14.167s linear infinite; }
+@keyframes k60 {
+  0%, 50.587% {
+    opacity: 0;
+  }
+  50.588%, 51.765% {
+    opacity: 1;
+  }
+  51.766%, 100% {
+    opacity: 0;
+  }
+}
+.frame-60 { animation:k60 14.167s linear infinite; }
+@keyframes k61 {
+  0%, 51.764% {
+    opacity: 0;
+  }
+  51.765%, 52.941% {
+    opacity: 1;
+  }
+  52.942%, 100% {
+    opacity: 0;
+  }
+}
+.frame-61 { animation:k61 14.167s linear infinite; }
+@keyframes k62 {
+  0%, 52.94% {
+    opacity: 0;
+  }
+  52.941%, 53.529% {
+    opacity: 1;
+  }
+  53.53%, 100% {
+    opacity: 0;
+  }
+}
+.frame-62 { animation:k62 14.167s linear infinite; }
+@keyframes k63 {
+  0%, 53.528% {
+    opacity: 0;
+  }
+  53.529%, 54.706% {
+    opacity: 1;
+  }
+  54.707%, 100% {
+    opacity: 0;
+  }
+}
+.frame-63 { animation:k63 14.167s linear infinite; }
+@keyframes k64 {
+  0%, 54.705% {
+    opacity: 0;
+  }
+  54.706%, 55.882% {
+    opacity: 1;
+  }
+  55.883%, 100% {
+    opacity: 0;
+  }
+}
+.frame-64 { animation:k64 14.167s linear infinite; }
+@keyframes k65 {
+  0%, 55.881% {
+    opacity: 0;
+  }
+  55.882%, 56.471% {
+    opacity: 1;
+  }
+  56.472%, 100% {
+    opacity: 0;
+  }
+}
+.frame-65 { animation:k65 14.167s linear infinite; }
+@keyframes k66 {
+  0%, 56.47% {
+    opacity: 0;
+  }
+  56.471%, 57.647% {
+    opacity: 1;
+  }
+  57.648%, 100% {
+    opacity: 0;
+  }
+}
+.frame-66 { animation:k66 14.167s linear infinite; }
+@keyframes k67 {
+  0%, 57.646% {
+    opacity: 0;
+  }
+  57.647%, 58.235% {
+    opacity: 1;
+  }
+  58.236%, 100% {
+    opacity: 0;
+  }
+}
+.frame-67 { animation:k67 14.167s linear infinite; }
+@keyframes k68 {
+  0%, 58.234% {
+    opacity: 0;
+  }
+  58.235%, 58.824% {
+    opacity: 1;
+  }
+  58.825%, 100% {
+    opacity: 0;
+  }
+}
+.frame-68 { animation:k68 14.167s linear infinite; }
+@keyframes k69 {
+  0%, 58.823% {
+    opacity: 0;
+  }
+  58.824%, 60% {
+    opacity: 1;
+  }
+  60.001%, 100% {
+    opacity: 0;
+  }
+}
+.frame-69 { animation:k69 14.167s linear infinite; }
+@keyframes k70 {
+  0%, 59.999% {
+    opacity: 0;
+  }
+  60%, 61.176% {
+    opacity: 1;
+  }
+  61.177%, 100% {
+    opacity: 0;
+  }
+}
+.frame-70 { animation:k70 14.167s linear infinite; }
+@keyframes k71 {
+  0%, 61.175% {
+    opacity: 0;
+  }
+  61.176%, 61.765% {
+    opacity: 1;
+  }
+  61.766%, 100% {
+    opacity: 0;
+  }
+}
+.frame-71 { animation:k71 14.167s linear infinite; }
+@keyframes k72 {
+  0%, 61.764% {
+    opacity: 0;
+  }
+  61.765%, 62.941% {
+    opacity: 1;
+  }
+  62.942%, 100% {
+    opacity: 0;
+  }
+}
+.frame-72 { animation:k72 14.167s linear infinite; }
+@keyframes k73 {
+  0%, 62.94% {
+    opacity: 0;
+  }
+  62.941%, 63.529% {
+    opacity: 1;
+  }
+  63.53%, 100% {
+    opacity: 0;
+  }
+}
+.frame-73 { animation:k73 14.167s linear infinite; }
+@keyframes k74 {
+  0%, 63.528% {
+    opacity: 0;
+  }
+  63.529%, 64.706% {
+    opacity: 1;
+  }
+  64.707%, 100% {
+    opacity: 0;
+  }
+}
+.frame-74 { animation:k74 14.167s linear infinite; }
+@keyframes k75 {
+  0%, 64.705% {
+    opacity: 0;
+  }
+  64.706%, 65.294% {
+    opacity: 1;
+  }
+  65.295%, 100% {
+    opacity: 0;
+  }
+}
+.frame-75 { animation:k75 14.167s linear infinite; }
+@keyframes k76 {
+  0%, 65.293% {
+    opacity: 0;
+  }
+  65.294%, 66.471% {
+    opacity: 1;
+  }
+  66.472%, 100% {
+    opacity: 0;
+  }
+}
+.frame-76 { animation:k76 14.167s linear infinite; }
+@keyframes k77 {
+  0%, 66.47% {
+    opacity: 0;
+  }
+  66.471%, 67.059% {
+    opacity: 1;
+  }
+  67.06%, 100% {
+    opacity: 0;
+  }
+}
+.frame-77 { animation:k77 14.167s linear infinite; }
+@keyframes k78 {
+  0%, 67.058% {
+    opacity: 0;
+  }
+  67.059%, 68.235% {
+    opacity: 1;
+  }
+  68.236%, 100% {
+    opacity: 0;
+  }
+}
+.frame-78 { animation:k78 14.167s linear infinite; }
+@keyframes k79 {
+  0%, 68.234% {
+    opacity: 0;
+  }
+  68.235%, 68.824% {
+    opacity: 1;
+  }
+  68.825%, 100% {
+    opacity: 0;
+  }
+}
+.frame-79 { animation:k79 14.167s linear infinite; }
+@keyframes k80 {
+  0%, 68.823% {
+    opacity: 0;
+  }
+  68.824%, 70% {
+    opacity: 1;
+  }
+  70.001%, 100% {
+    opacity: 0;
+  }
+}
+.frame-80 { animation:k80 14.167s linear infinite; }
+@keyframes k81 {
+  0%, 69.999% {
+    opacity: 0;
+  }
+  70%, 70.588% {
+    opacity: 1;
+  }
+  70.589%, 100% {
+    opacity: 0;
+  }
+}
+.frame-81 { animation:k81 14.167s linear infinite; }
+@keyframes k82 {
+  0%, 70.587% {
+    opacity: 0;
+  }
+  70.588%, 71.765% {
+    opacity: 1;
+  }
+  71.766%, 100% {
+    opacity: 0;
+  }
+}
+.frame-82 { animation:k82 14.167s linear infinite; }
+@keyframes k83 {
+  0%, 71.764% {
+    opacity: 0;
+  }
+  71.765%, 72.353% {
+    opacity: 1;
+  }
+  72.354%, 100% {
+    opacity: 0;
+  }
+}
+.frame-83 { animation:k83 14.167s linear infinite; }
+@keyframes k84 {
+  0%, 72.352% {
+    opacity: 0;
+  }
+  72.353%, 73.529% {
+    opacity: 1;
+  }
+  73.53%, 100% {
+    opacity: 0;
+  }
+}
+.frame-84 { animation:k84 14.167s linear infinite; }
+@keyframes k85 {
+  0%, 73.528% {
+    opacity: 0;
+  }
+  73.529%, 74.118% {
+    opacity: 1;
+  }
+  74.119%, 100% {
+    opacity: 0;
+  }
+}
+.frame-85 { animation:k85 14.167s linear infinite; }
+@keyframes k86 {
+  0%, 74.117% {
+    opacity: 0;
+  }
+  74.118%, 75.294% {
+    opacity: 1;
+  }
+  75.295%, 100% {
+    opacity: 0;
+  }
+}
+.frame-86 { animation:k86 14.167s linear infinite; }
+@keyframes k87 {
+  0%, 75.293% {
+    opacity: 0;
+  }
+  75.294%, 75.882% {
+    opacity: 1;
+  }
+  75.883%, 100% {
+    opacity: 0;
+  }
+}
+.frame-87 { animation:k87 14.167s linear infinite; }
+@keyframes k88 {
+  0%, 75.881% {
+    opacity: 0;
+  }
+  75.882%, 77.059% {
+    opacity: 1;
+  }
+  77.06%, 100% {
+    opacity: 0;
+  }
+}
+.frame-88 { animation:k88 14.167s linear infinite; }
+@keyframes k89 {
+  0%, 77.058% {
+    opacity: 0;
+  }
+  77.059%, 77.647% {
+    opacity: 1;
+  }
+  77.648%, 100% {
+    opacity: 0;
+  }
+}
+.frame-89 { animation:k89 14.167s linear infinite; }
+@keyframes k90 {
+  0%, 77.646% {
+    opacity: 0;
+  }
+  77.647%, 78.824% {
+    opacity: 1;
+  }
+  78.825%, 100% {
+    opacity: 0;
+  }
+}
+.frame-90 { animation:k90 14.167s linear infinite; }
+@keyframes k91 {
+  0%, 78.823% {
+    opacity: 0;
+  }
+  78.824%, 79.412% {
+    opacity: 1;
+  }
+  79.413%, 100% {
+    opacity: 0;
+  }
+}
+.frame-91 { animation:k91 14.167s linear infinite; }
+@keyframes k92 {
+  0%, 79.411% {
+    opacity: 0;
+  }
+  79.412%, 80% {
+    opacity: 1;
+  }
+  80.001%, 100% {
+    opacity: 0;
+  }
+}
+.frame-92 { animation:k92 14.167s linear infinite; }
+@keyframes k93 {
+  0%, 79.999% {
+    opacity: 0;
+  }
+  80%, 81.176% {
+    opacity: 1;
+  }
+  81.177%, 100% {
+    opacity: 0;
+  }
+}
+.frame-93 { animation:k93 14.167s linear infinite; }
+@keyframes k94 {
+  0%, 81.175% {
+    opacity: 0;
+  }
+  81.176%, 82.353% {
+    opacity: 1;
+  }
+  82.354%, 100% {
+    opacity: 0;
+  }
+}
+.frame-94 { animation:k94 14.167s linear infinite; }
+@keyframes k95 {
+  0%, 82.352% {
+    opacity: 0;
+  }
+  82.353%, 82.941% {
+    opacity: 1;
+  }
+  82.942%, 100% {
+    opacity: 0;
+  }
+}
+.frame-95 { animation:k95 14.167s linear infinite; }
+@keyframes k96 {
+  0%, 82.94% {
+    opacity: 0;
+  }
+  82.941%, 84.118% {
+    opacity: 1;
+  }
+  84.119%, 100% {
+    opacity: 0;
+  }
+}
+.frame-96 { animation:k96 14.167s linear infinite; }
+@keyframes k97 {
+  0%, 84.117% {
+    opacity: 0;
+  }
+  84.118%, 84.706% {
+    opacity: 1;
+  }
+  84.707%, 100% {
+    opacity: 0;
+  }
+}
+.frame-97 { animation:k97 14.167s linear infinite; }
+@keyframes k98 {
+  0%, 84.705% {
+    opacity: 0;
+  }
+  84.706%, 85.882% {
+    opacity: 1;
+  }
+  85.883%, 100% {
+    opacity: 0;
+  }
+}
+.frame-98 { animation:k98 14.167s linear infinite; }
+@keyframes k99 {
+  0%, 85.881% {
+    opacity: 0;
+  }
+  85.882%, 86.471% {
+    opacity: 1;
+  }
+  86.472%, 100% {
+    opacity: 0;
+  }
+}
+.frame-99 { animation:k99 14.167s linear infinite; }
+@keyframes k100 {
+  0%, 86.47% {
+    opacity: 0;
+  }
+  86.471%, 87.647% {
+    opacity: 1;
+  }
+  87.648%, 100% {
+    opacity: 0;
+  }
+}
+.frame-100 { animation:k100 14.167s linear infinite; }
+@keyframes k101 {
+  0%, 87.646% {
+    opacity: 0;
+  }
+  87.647%, 88.235% {
+    opacity: 1;
+  }
+  88.236%, 100% {
+    opacity: 0;
+  }
+}
+.frame-101 { animation:k101 14.167s linear infinite; }
+@keyframes k102 {
+  0%, 88.234% {
+    opacity: 0;
+  }
+  88.235%, 89.412% {
+    opacity: 1;
+  }
+  89.413%, 100% {
+    opacity: 0;
+  }
+}
+.frame-102 { animation:k102 14.167s linear infinite; }
+@keyframes k103 {
+  0%, 89.411% {
+    opacity: 0;
+  }
+  89.412%, 90% {
+    opacity: 1;
+  }
+  90.001%, 100% {
+    opacity: 0;
+  }
+}
+.frame-103 { animation:k103 14.167s linear infinite; }
+@keyframes k104 {
+  0%, 89.999% {
+    opacity: 0;
+  }
+  90%, 90.588% {
+    opacity: 1;
+  }
+  90.589%, 100% {
+    opacity: 0;
+  }
+}
+.frame-104 { animation:k104 14.167s linear infinite; }
+@keyframes k105 {
+  0%, 90.587% {
+    opacity: 0;
+  }
+  90.588%, 91.765% {
+    opacity: 1;
+  }
+  91.766%, 100% {
+    opacity: 0;
+  }
+}
+.frame-105 { animation:k105 14.167s linear infinite; }
+@keyframes k106 {
+  0%, 91.764% {
+    opacity: 0;
+  }
+  91.765%, 92.941% {
+    opacity: 1;
+  }
+  92.942%, 100% {
+    opacity: 0;
+  }
+}
+.frame-106 { animation:k106 14.167s linear infinite; }
+@keyframes k107 {
+  0%, 92.94% {
+    opacity: 0;
+  }
+  92.941%, 93.529% {
+    opacity: 1;
+  }
+  93.53%, 100% {
+    opacity: 0;
+  }
+}
+.frame-107 { animation:k107 14.167s linear infinite; }
+@keyframes k108 {
+  0%, 93.528% {
+    opacity: 0;
+  }
+  93.529%, 94.706% {
+    opacity: 1;
+  }
+  94.707%, 100% {
+    opacity: 0;
+  }
+}
+.frame-108 { animation:k108 14.167s linear infinite; }
+@keyframes k109 {
+  0%, 94.705% {
+    opacity: 0;
+  }
+  94.706%, 95.294% {
+    opacity: 1;
+  }
+  95.295%, 100% {
+    opacity: 0;
+  }
+}
+.frame-109 { animation:k109 14.167s linear infinite; }
+@keyframes k110 {
+  0%, 95.293% {
+    opacity: 0;
+  }
+  95.294%, 96.471% {
+    opacity: 1;
+  }
+  96.472%, 100% {
+    opacity: 0;
+  }
+}
+.frame-110 { animation:k110 14.167s linear infinite; }
+@keyframes k111 {
+  0%, 96.47% {
+    opacity: 0;
+  }
+  96.471%, 97.059% {
+    opacity: 1;
+  }
+  97.06%, 100% {
+    opacity: 0;
+  }
+}
+.frame-111 { animation:k111 14.167s linear infinite; }
+@keyframes k112 {
+  0%, 97.058% {
+    opacity: 0;
+  }
+  97.059%, 98.235% {
+    opacity: 1;
+  }
+  98.236%, 100% {
+    opacity: 0;
+  }
+}
+.frame-112 { animation:k112 14.167s linear infinite; }
+@keyframes k113 {
+  0%, 98.234% {
+    opacity: 0;
+  }
+  98.235%, 98.824% {
+    opacity: 1;
+  }
+  98.825%, 100% {
+    opacity: 0;
+  }
+}
+.frame-113 { animation:k113 14.167s linear infinite; }
+@keyframes k114 {
+  0%, 98.823% {
+    opacity: 0;
+  }
+  98.824%, 99.412% {
+    opacity: 1;
+  }
+  99.413%, 100% {
+    opacity: 0;
+  }
+}
+.frame-114 { animation:k114 14.167s linear infinite; }
+@keyframes k115 {
+  0%, 99.411% {
+    opacity: 0;
+  }
+  99.412% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.frame-115 { animation:k115 14.167s linear infinite; }
 </style>
+<rect x="0.5" y="0.5" rx="10" ry="10" width="840.2" height="368" fill="#1f1f1f" stroke="#3a3a3a"/>
+<rect x="1" y="1" rx="9" ry="9" width="839.2" height="27" fill="#2c2c2c"/>
+<circle cx="14" cy="14" r="5" fill="#ff5f57"/>
+<circle cx="30" cy="14" r="5" fill="#febc2e"/>
+<circle cx="46" cy="14" r="5" fill="#28c840"/>
+<rect x="1" y="28" width="839.2" height="340" rx="9" ry="9" fill="#1e1e1e"/>
 <defs>
-<linearGradient id="desktop-bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a2535"/><stop offset="100%" stop-color="#253345"/></linearGradient>
-</defs>
-<rect width="1307.2" height="386" fill="url(#desktop-bg)"/>
-<rect x="26" y="26" width="1261.2" height="340" fill="black" fill-opacity="0.25"/>
-<rect x="20.5" y="20.5" width="1260.2" height="339" fill="#333" stroke="#333"/>
-<rect x="21" y="21" width="1259.2" height="34" fill="#333"/>
-<path d="M 28,55 L 28,31 Q 28,26 33,26 L 183,26 Q 188,26 188,31 L 188,55 Z" fill="#0c0c0c"/>
-<polyline points="36,35.5 40,39.5 36,43.5" fill="none" stroke="#cccccc" stroke-width="1.2" stroke-linejoin="round"/>
-<line x1="43" y1="44" x2="49" y2="44" stroke="#cccccc" stroke-width="1.2"/>
-<line x1="172.5" y1="36" x2="179.5" y2="43" stroke="#888888" stroke-width="1.1"/>
-<line x1="179.5" y1="36" x2="172.5" y2="43" stroke="#888888" stroke-width="1.1"/>
-<line x1="1161.2" y1="39.5" x2="1171.2" y2="39.5" stroke="#cccccc" stroke-width="1.2"/>
-<rect x="1207.2" y="34.5" width="10" height="10" fill="none" stroke="#cccccc" stroke-width="1.2"/>
-<line x1="1253.2" y1="34.5" x2="1263.2" y2="44.5" stroke="#cccccc" stroke-width="1.3"/>
-<line x1="1263.2" y1="34.5" x2="1253.2" y2="44.5" stroke="#cccccc" stroke-width="1.3"/>
-<rect x="21" y="55" width="1259.2" height="304" fill="#0c0c0c"/>
-<g transform="translate(29 63)">
-<rect width="1243.2" height="288" fill="#0c0c0c"/>
-<rect class="bg" x="940.8" y="0" width="294" height="18" fill="#87D787"/>
-<text class="crt" x="0" y="14" fill="#0dbc79" textLength="75.6" lengthAdjust="spacing">codespace</text>
-<text class="crt" x="84" y="14" fill="#F63B3B" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">➜</text>
-<text class="crt" x="100.8" y="14" fill="#2B89F0" textLength="92.4" lengthAdjust="spacing" style="font-weight:bold;">~/workspace</text>
-<text class="crt" x="201.6" y="14" fill="#11a8cd" textLength="8.4" lengthAdjust="spacing">(</text>
-<text class="crt" x="210" y="14" fill="#F63B3B" textLength="226.8" lengthAdjust="spacing" style="font-weight:bold;">feature/interactive-capture</text>
-<text class="crt" x="436.8" y="14" fill="#11a8cd" textLength="8.4" lengthAdjust="spacing">)</text>
-<text class="crt" x="453.6" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
-<text class="crt" x="470.4" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">cat</text>
-<text class="crt" x="504" y="14" fill="#d4d4d4" textLength="126" lengthAdjust="spacing">/etc/os-release</text>
-<text class="crt" x="957.6" y="14" fill="#1e1e1e" textLength="25.2" lengthAdjust="spacing">F9:</text>
-<text class="crt" x="991.2" y="14" fill="#1e1e1e" textLength="50.4" lengthAdjust="spacing">Record</text>
-<text class="crt" x="1050" y="14" fill="#1e1e1e" textLength="42" lengthAdjust="spacing">start</text>
-<text class="crt" x="1117.2" y="14" fill="#1e1e1e" textLength="33.6" lengthAdjust="spacing">F10:</text>
-<text class="crt" x="1159.2" y="14" fill="#1e1e1e" textLength="58.8" lengthAdjust="spacing">Capture</text>
-<text class="crt" x="0" y="32" fill="#d4d4d4" textLength="159.6" lengthAdjust="spacing">PRETTY_NAME=&quot;Ubuntu</text>
-<text class="crt" x="168" y="32" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">24.04.4</text>
-<text class="crt" x="235.2" y="32" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">LTS&quot;</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacing">NAME=&quot;Ubuntu&quot;</text>
-<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="151.2" lengthAdjust="spacing">VERSION_ID=&quot;24.04&quot;</text>
-<text class="crt" x="0" y="86" fill="#d4d4d4" textLength="134.4" lengthAdjust="spacing">VERSION=&quot;24.04.4</text>
-<text class="crt" x="142.8" y="86" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">LTS</text>
-<text class="crt" x="176.4" y="86" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">(Noble</text>
-<text class="crt" x="235.2" y="86" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">Numbat)&quot;</text>
-<text class="crt" x="0" y="104" fill="#d4d4d4" textLength="184.8" lengthAdjust="spacing">VERSION_CODENAME=noble</text>
-<text class="crt" x="0" y="122" fill="#d4d4d4" textLength="75.6" lengthAdjust="spacing">ID=ubuntu</text>
-<text class="crt" x="0" y="140" fill="#d4d4d4" textLength="117.6" lengthAdjust="spacing">ID_LIKE=debian</text>
-<text class="crt" x="0" y="158" fill="#d4d4d4" textLength="285.6" lengthAdjust="spacing">HOME_URL=&quot;https://www.ubuntu.com/&quot;</text>
-<text class="crt" x="0" y="176" fill="#d4d4d4" textLength="319.2" lengthAdjust="spacing">SUPPORT_URL=&quot;https://help.ubuntu.com/&quot;</text>
-<text class="crt" x="0" y="194" fill="#d4d4d4" textLength="428.4" lengthAdjust="spacing">BUG_REPORT_URL=&quot;https://bugs.launchpad.net/ubuntu/&quot;</text>
-<text class="crt" x="0" y="212" fill="#d4d4d4" textLength="697.2" lengthAdjust="spacing">PRIVACY_POLICY_URL=&quot;https://www.ubuntu.com/legal/terms-and-policies/privacy-policy&quot;</text>
-<text class="crt" x="0" y="230" fill="#d4d4d4" textLength="176.4" lengthAdjust="spacing">UBUNTU_CODENAME=noble</text>
-<text class="crt" x="0" y="248" fill="#d4d4d4" textLength="134.4" lengthAdjust="spacing">LOGO=ubuntu-logo</text>
-<text class="crt" x="0" y="266" fill="#0dbc79" textLength="75.6" lengthAdjust="spacing">codespace</text>
-<text class="crt" x="84" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">➜</text>
-<text class="crt" x="100.8" y="266" fill="#2B89F0" textLength="92.4" lengthAdjust="spacing" style="font-weight:bold;">~/workspace</text>
-<text class="crt" x="201.6" y="266" fill="#11a8cd" textLength="8.4" lengthAdjust="spacing">(</text>
-<text class="crt" x="210" y="266" fill="#F63B3B" textLength="226.8" lengthAdjust="spacing" style="font-weight:bold;">feature/interactive-capture</text>
-<text class="crt" x="436.8" y="266" fill="#11a8cd" textLength="8.4" lengthAdjust="spacing">)</text>
-<text class="crt" x="453.6" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
+<g id="fd-0" transform="translate(9 36)">
+<rect width="823.2" height="324" fill="#1e1e1e"/>
+<rect class="bg" x="520.8" y="0" width="294" height="18" fill="#87D787"/>
+<text class="crt" x="537.6" y="14" fill="#1e1e1e" textLength="25.2" lengthAdjust="spacing">F9:</text>
+<text class="crt" x="571.2" y="14" fill="#1e1e1e" textLength="50.4" lengthAdjust="spacing">Record</text>
+<text class="crt" x="630" y="14" fill="#1e1e1e" textLength="42" lengthAdjust="spacing">start</text>
+<text class="crt" x="697.2" y="14" fill="#1e1e1e" textLength="33.6" lengthAdjust="spacing">F10:</text>
+<text class="crt" x="739.2" y="14" fill="#1e1e1e" textLength="58.8" lengthAdjust="spacing">Capture</text>
+<text class="crt" x="0" y="32" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="32" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="32" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="32" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="32" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="32" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="32" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="32" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="386.4" y="32" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">took</text>
+<text class="crt" x="428.4" y="32" fill="#FFFF13" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">1m4s</text>
+<text class="crt" x="0" y="50" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
 </g>
+<g id="fd-19" transform="translate(9 36)">
+<rect width="823.2" height="324" fill="#1e1e1e"/>
+<rect class="bg" x="722.4" y="0" width="92.4" height="18" fill="#87D787"/>
+<text class="crt" x="739.2" y="14" fill="#1e1e1e" textLength="58.8" lengthAdjust="spacing">Started</text>
+<text class="crt" x="0" y="32" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="32" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="32" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="32" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="32" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="32" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="32" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="32" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="386.4" y="32" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">took</text>
+<text class="crt" x="428.4" y="32" fill="#FFFF13" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">1m4s</text>
+<text class="crt" x="0" y="50" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
+</g>
+<g id="fd-45" transform="translate(9 36)">
+<rect width="823.2" height="324" fill="#1e1e1e"/>
+<rect class="bg" x="571.2" y="0" width="243.6" height="18" fill="#303030"/>
+<text class="crt" x="588" y="14" fill="#F63B3B" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">●</text>
+<text class="crt" x="604.8" y="14" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">REC</text>
+<text class="crt" x="638.4" y="14" fill="#F63B3B" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">(F9:End,</text>
+<text class="crt" x="714" y="14" fill="#F63B3B" textLength="84" lengthAdjust="spacing" style="font-weight:bold;">F12:Pause)</text>
+<text class="crt" x="0" y="32" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="32" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="32" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="32" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="32" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="32" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="32" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="32" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="386.4" y="32" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">took</text>
+<text class="crt" x="428.4" y="32" fill="#FFFF13" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">1m4s</text>
+<text class="crt" x="0" y="50" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
+<text class="crt" x="16.8" y="50" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">e</text>
+</g>
+<g id="fd-46" transform="translate(9 36)">
+<rect width="823.2" height="324" fill="#1e1e1e"/>
+<rect class="bg" x="571.2" y="0" width="243.6" height="18" fill="#303030"/>
+<text class="crt" x="588" y="14" fill="#F63B3B" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">●</text>
+<text class="crt" x="604.8" y="14" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">REC</text>
+<text class="crt" x="638.4" y="14" fill="#F63B3B" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">(F9:End,</text>
+<text class="crt" x="714" y="14" fill="#F63B3B" textLength="84" lengthAdjust="spacing" style="font-weight:bold;">F12:Pause)</text>
+<text class="crt" x="0" y="32" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="32" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="32" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="32" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="32" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="32" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="32" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="32" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="386.4" y="32" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">took</text>
+<text class="crt" x="428.4" y="32" fill="#FFFF13" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">1m4s</text>
+<text class="crt" x="0" y="50" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
+<text class="crt" x="16.8" y="50" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">ec</text>
+</g>
+<g id="fd-47" transform="translate(9 36)">
+<rect width="823.2" height="324" fill="#1e1e1e"/>
+<rect class="bg" x="571.2" y="0" width="243.6" height="18" fill="#303030"/>
+<text class="crt" x="588" y="14" fill="#F63B3B" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">●</text>
+<text class="crt" x="604.8" y="14" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">REC</text>
+<text class="crt" x="638.4" y="14" fill="#F63B3B" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">(F9:End,</text>
+<text class="crt" x="714" y="14" fill="#F63B3B" textLength="84" lengthAdjust="spacing" style="font-weight:bold;">F12:Pause)</text>
+<text class="crt" x="0" y="32" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="32" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="32" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="32" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="32" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="32" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="32" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="32" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="386.4" y="32" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">took</text>
+<text class="crt" x="428.4" y="32" fill="#FFFF13" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">1m4s</text>
+<text class="crt" x="0" y="50" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
+<text class="crt" x="16.8" y="50" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">ech</text>
+</g>
+<g id="fd-48" transform="translate(9 36)">
+<rect width="823.2" height="324" fill="#1e1e1e"/>
+<rect class="bg" x="571.2" y="0" width="243.6" height="18" fill="#303030"/>
+<text class="crt" x="588" y="14" fill="#F63B3B" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">●</text>
+<text class="crt" x="604.8" y="14" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">REC</text>
+<text class="crt" x="638.4" y="14" fill="#F63B3B" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">(F9:End,</text>
+<text class="crt" x="714" y="14" fill="#F63B3B" textLength="84" lengthAdjust="spacing" style="font-weight:bold;">F12:Pause)</text>
+<text class="crt" x="0" y="32" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="32" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="32" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="32" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="32" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="32" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="32" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="32" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="386.4" y="32" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">took</text>
+<text class="crt" x="428.4" y="32" fill="#FFFF13" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">1m4s</text>
+<text class="crt" x="0" y="50" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
+<text class="crt" x="16.8" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">echo</text>
+</g>
+<g id="fd-56" transform="translate(9 36)">
+<rect width="823.2" height="324" fill="#1e1e1e"/>
+<rect class="bg" x="571.2" y="0" width="243.6" height="18" fill="#303030"/>
+<text class="crt" x="588" y="14" fill="#F63B3B" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">●</text>
+<text class="crt" x="604.8" y="14" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">REC</text>
+<text class="crt" x="638.4" y="14" fill="#F63B3B" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">(F9:End,</text>
+<text class="crt" x="714" y="14" fill="#F63B3B" textLength="84" lengthAdjust="spacing" style="font-weight:bold;">F12:Pause)</text>
+<text class="crt" x="0" y="32" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="32" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="32" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="32" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="32" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="32" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="32" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="32" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="386.4" y="32" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">took</text>
+<text class="crt" x="428.4" y="32" fill="#FFFF13" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">1m4s</text>
+<text class="crt" x="0" y="50" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
+<text class="crt" x="16.8" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">echo</text>
+<text class="crt" x="58.8" y="50" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">H</text>
+</g>
+<g id="fd-57" transform="translate(9 36)">
+<rect width="823.2" height="324" fill="#1e1e1e"/>
+<rect class="bg" x="571.2" y="0" width="243.6" height="18" fill="#303030"/>
+<text class="crt" x="588" y="14" fill="#F63B3B" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">●</text>
+<text class="crt" x="604.8" y="14" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">REC</text>
+<text class="crt" x="638.4" y="14" fill="#F63B3B" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">(F9:End,</text>
+<text class="crt" x="714" y="14" fill="#F63B3B" textLength="84" lengthAdjust="spacing" style="font-weight:bold;">F12:Pause)</text>
+<text class="crt" x="0" y="32" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="32" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="32" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="32" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="32" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="32" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="32" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="32" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="386.4" y="32" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">took</text>
+<text class="crt" x="428.4" y="32" fill="#FFFF13" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">1m4s</text>
+<text class="crt" x="0" y="50" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
+<text class="crt" x="16.8" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">echo</text>
+<text class="crt" x="58.8" y="50" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">He</text>
+</g>
+<g id="fd-59" transform="translate(9 36)">
+<rect width="823.2" height="324" fill="#1e1e1e"/>
+<rect class="bg" x="571.2" y="0" width="243.6" height="18" fill="#303030"/>
+<text class="crt" x="588" y="14" fill="#F63B3B" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">●</text>
+<text class="crt" x="604.8" y="14" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">REC</text>
+<text class="crt" x="638.4" y="14" fill="#F63B3B" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">(F9:End,</text>
+<text class="crt" x="714" y="14" fill="#F63B3B" textLength="84" lengthAdjust="spacing" style="font-weight:bold;">F12:Pause)</text>
+<text class="crt" x="0" y="32" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="32" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="32" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="32" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="32" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="32" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="32" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="32" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="386.4" y="32" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">took</text>
+<text class="crt" x="428.4" y="32" fill="#FFFF13" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">1m4s</text>
+<text class="crt" x="0" y="50" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
+<text class="crt" x="16.8" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">echo</text>
+<text class="crt" x="58.8" y="50" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">Hel</text>
+</g>
+<g id="fd-60" transform="translate(9 36)">
+<rect width="823.2" height="324" fill="#1e1e1e"/>
+<rect class="bg" x="571.2" y="0" width="243.6" height="18" fill="#303030"/>
+<text class="crt" x="588" y="14" fill="#F63B3B" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">●</text>
+<text class="crt" x="604.8" y="14" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">REC</text>
+<text class="crt" x="638.4" y="14" fill="#F63B3B" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">(F9:End,</text>
+<text class="crt" x="714" y="14" fill="#F63B3B" textLength="84" lengthAdjust="spacing" style="font-weight:bold;">F12:Pause)</text>
+<text class="crt" x="0" y="32" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="32" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="32" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="32" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="32" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="32" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="32" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="32" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="386.4" y="32" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">took</text>
+<text class="crt" x="428.4" y="32" fill="#FFFF13" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">1m4s</text>
+<text class="crt" x="0" y="50" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
+<text class="crt" x="16.8" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">echo</text>
+<text class="crt" x="58.8" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">Hell</text>
+</g>
+<g id="fd-61" transform="translate(9 36)">
+<rect width="823.2" height="324" fill="#1e1e1e"/>
+<rect class="bg" x="571.2" y="0" width="243.6" height="18" fill="#303030"/>
+<text class="crt" x="588" y="14" fill="#F63B3B" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">●</text>
+<text class="crt" x="604.8" y="14" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">REC</text>
+<text class="crt" x="638.4" y="14" fill="#F63B3B" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">(F9:End,</text>
+<text class="crt" x="714" y="14" fill="#F63B3B" textLength="84" lengthAdjust="spacing" style="font-weight:bold;">F12:Pause)</text>
+<text class="crt" x="0" y="32" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="32" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="32" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="32" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="32" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="32" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="32" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="32" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="386.4" y="32" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">took</text>
+<text class="crt" x="428.4" y="32" fill="#FFFF13" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">1m4s</text>
+<text class="crt" x="0" y="50" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
+<text class="crt" x="16.8" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">echo</text>
+<text class="crt" x="58.8" y="50" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">Hello</text>
+</g>
+<g id="fd-63" transform="translate(9 36)">
+<rect width="823.2" height="324" fill="#1e1e1e"/>
+<rect class="bg" x="571.2" y="0" width="243.6" height="18" fill="#303030"/>
+<text class="crt" x="588" y="14" fill="#F63B3B" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">●</text>
+<text class="crt" x="604.8" y="14" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">REC</text>
+<text class="crt" x="638.4" y="14" fill="#F63B3B" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">(F9:End,</text>
+<text class="crt" x="714" y="14" fill="#F63B3B" textLength="84" lengthAdjust="spacing" style="font-weight:bold;">F12:Pause)</text>
+<text class="crt" x="0" y="32" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="32" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="32" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="32" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="32" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="32" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="32" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="32" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="386.4" y="32" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">took</text>
+<text class="crt" x="428.4" y="32" fill="#FFFF13" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">1m4s</text>
+<text class="crt" x="0" y="50" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
+<text class="crt" x="16.8" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">echo</text>
+<text class="crt" x="58.8" y="50" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">Hello!</text>
+</g>
+<g id="fd-69" transform="translate(9 36)">
+<rect width="823.2" height="324" fill="#1e1e1e"/>
+<rect class="bg" x="571.2" y="0" width="243.6" height="18" fill="#303030"/>
+<text class="crt" x="588" y="14" fill="#F63B3B" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">●</text>
+<text class="crt" x="604.8" y="14" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">REC</text>
+<text class="crt" x="638.4" y="14" fill="#F63B3B" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">(F9:End,</text>
+<text class="crt" x="714" y="14" fill="#F63B3B" textLength="84" lengthAdjust="spacing" style="font-weight:bold;">F12:Pause)</text>
+<text class="crt" x="0" y="32" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="32" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="32" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="32" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="32" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="32" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="32" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="32" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="386.4" y="32" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">took</text>
+<text class="crt" x="428.4" y="32" fill="#FFFF13" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">1m4s</text>
+<text class="crt" x="0" y="50" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
+<text class="crt" x="16.8" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">echo</text>
+<text class="crt" x="58.8" y="50" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">Hello!</text>
+<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">Hello!</text>
+</g>
+<g id="fd-73" transform="translate(9 36)">
+<rect width="823.2" height="324" fill="#1e1e1e"/>
+<rect class="bg" x="571.2" y="0" width="243.6" height="18" fill="#303030"/>
+<text class="crt" x="588" y="14" fill="#F63B3B" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">●</text>
+<text class="crt" x="604.8" y="14" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">REC</text>
+<text class="crt" x="638.4" y="14" fill="#F63B3B" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">(F9:End,</text>
+<text class="crt" x="714" y="14" fill="#F63B3B" textLength="84" lengthAdjust="spacing" style="font-weight:bold;">F12:Pause)</text>
+<text class="crt" x="0" y="32" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="32" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="32" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="32" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="32" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="32" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="32" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="32" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="386.4" y="32" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">took</text>
+<text class="crt" x="428.4" y="32" fill="#FFFF13" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">1m4s</text>
+<text class="crt" x="0" y="50" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
+<text class="crt" x="16.8" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">echo</text>
+<text class="crt" x="58.8" y="50" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">Hello!</text>
+<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">Hello!</text>
+<text class="crt" x="0" y="104" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="104" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="104" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="104" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="104" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="104" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="104" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="104" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="0" y="122" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
+</g>
+<g id="fd-93" transform="translate(9 36)">
+<rect width="823.2" height="324" fill="#1e1e1e"/>
+<rect class="bg" x="739.2" y="0" width="75.6" height="18" fill="#87D787"/>
+<text class="crt" x="756" y="14" fill="#1e1e1e" textLength="42" lengthAdjust="spacing">Saved</text>
+<text class="crt" x="0" y="32" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="32" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="32" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="32" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="32" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="32" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="32" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="32" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="386.4" y="32" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">took</text>
+<text class="crt" x="428.4" y="32" fill="#FFFF13" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">1m4s</text>
+<text class="crt" x="0" y="50" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
+<text class="crt" x="16.8" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">echo</text>
+<text class="crt" x="58.8" y="50" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">Hello!</text>
+<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">Hello!</text>
+<text class="crt" x="0" y="104" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="104" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="104" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="104" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="104" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="104" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="104" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="104" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="0" y="122" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
+</g>
+<g id="fd-105" transform="translate(9 36)">
+<rect width="823.2" height="324" fill="#1e1e1e"/>
+<rect class="bg" x="520.8" y="0" width="294" height="18" fill="#87D787"/>
+<text class="crt" x="537.6" y="14" fill="#1e1e1e" textLength="25.2" lengthAdjust="spacing">F9:</text>
+<text class="crt" x="571.2" y="14" fill="#1e1e1e" textLength="50.4" lengthAdjust="spacing">Record</text>
+<text class="crt" x="630" y="14" fill="#1e1e1e" textLength="42" lengthAdjust="spacing">start</text>
+<text class="crt" x="697.2" y="14" fill="#1e1e1e" textLength="33.6" lengthAdjust="spacing">F10:</text>
+<text class="crt" x="739.2" y="14" fill="#1e1e1e" textLength="58.8" lengthAdjust="spacing">Capture</text>
+<text class="crt" x="0" y="32" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="32" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="32" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="32" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="32" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="32" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="32" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="32" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="386.4" y="32" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">took</text>
+<text class="crt" x="428.4" y="32" fill="#FFFF13" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">1m4s</text>
+<text class="crt" x="0" y="50" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
+<text class="crt" x="16.8" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">echo</text>
+<text class="crt" x="58.8" y="50" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">Hello!</text>
+<text class="crt" x="0" y="68" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">Hello!</text>
+<text class="crt" x="0" y="104" fill="#14CAF6" textLength="100.8" lengthAdjust="spacing" style="font-weight:bold;">ConsoleToSvg</text>
+<text class="crt" x="109.2" y="104" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">on</text>
+<text class="crt" x="134.4" y="104" fill="#E24CE2" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;"></text>
+<text class="crt" x="151.2" y="104" fill="#E24CE2" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">main</text>
+<text class="crt" x="193.2" y="104" fill="#F63B3B" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">[$]</text>
+<text class="crt" x="226.8" y="104" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">via</text>
+<text class="crt" x="260.4" y="104" fill="#2B89F0" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">.NET</text>
+<text class="crt" x="302.4" y="104" fill="#2B89F0" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">v10.0.110</text>
+<text class="crt" x="0" y="122" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">❯</text>
+</g>
+</defs>
+<use href="#fd-0" id="frame-0" class="frame frame-0"/>
+<use href="#fd-0" id="frame-1" class="frame frame-1"/>
+<use href="#fd-0" id="frame-2" class="frame frame-2"/>
+<use href="#fd-0" id="frame-3" class="frame frame-3"/>
+<use href="#fd-0" id="frame-4" class="frame frame-4"/>
+<use href="#fd-0" id="frame-5" class="frame frame-5"/>
+<use href="#fd-0" id="frame-6" class="frame frame-6"/>
+<use href="#fd-0" id="frame-7" class="frame frame-7"/>
+<use href="#fd-0" id="frame-8" class="frame frame-8"/>
+<use href="#fd-0" id="frame-9" class="frame frame-9"/>
+<use href="#fd-0" id="frame-10" class="frame frame-10"/>
+<use href="#fd-0" id="frame-11" class="frame frame-11"/>
+<use href="#fd-0" id="frame-12" class="frame frame-12"/>
+<use href="#fd-0" id="frame-13" class="frame frame-13"/>
+<use href="#fd-0" id="frame-14" class="frame frame-14"/>
+<use href="#fd-0" id="frame-15" class="frame frame-15"/>
+<use href="#fd-0" id="frame-16" class="frame frame-16"/>
+<use href="#fd-0" id="frame-17" class="frame frame-17"/>
+<use href="#fd-0" id="frame-18" class="frame frame-18"/>
+<use href="#fd-19" id="frame-19" class="frame frame-19"/>
+<use href="#fd-19" id="frame-20" class="frame frame-20"/>
+<use href="#fd-19" id="frame-21" class="frame frame-21"/>
+<use href="#fd-19" id="frame-22" class="frame frame-22"/>
+<use href="#fd-19" id="frame-23" class="frame frame-23"/>
+<use href="#fd-19" id="frame-24" class="frame frame-24"/>
+<use href="#fd-19" id="frame-25" class="frame frame-25"/>
+<use href="#fd-19" id="frame-26" class="frame frame-26"/>
+<use href="#fd-19" id="frame-27" class="frame frame-27"/>
+<use href="#fd-19" id="frame-28" class="frame frame-28"/>
+<use href="#fd-19" id="frame-29" class="frame frame-29"/>
+<use href="#fd-19" id="frame-30" class="frame frame-30"/>
+<use href="#fd-19" id="frame-31" class="frame frame-31"/>
+<use href="#fd-19" id="frame-32" class="frame frame-32"/>
+<use href="#fd-19" id="frame-33" class="frame frame-33"/>
+<use href="#fd-19" id="frame-34" class="frame frame-34"/>
+<use href="#fd-19" id="frame-35" class="frame frame-35"/>
+<use href="#fd-19" id="frame-36" class="frame frame-36"/>
+<use href="#fd-19" id="frame-37" class="frame frame-37"/>
+<use href="#fd-19" id="frame-38" class="frame frame-38"/>
+<use href="#fd-19" id="frame-39" class="frame frame-39"/>
+<use href="#fd-19" id="frame-40" class="frame frame-40"/>
+<use href="#fd-19" id="frame-41" class="frame frame-41"/>
+<use href="#fd-19" id="frame-42" class="frame frame-42"/>
+<use href="#fd-19" id="frame-43" class="frame frame-43"/>
+<use href="#fd-19" id="frame-44" class="frame frame-44"/>
+<use href="#fd-45" id="frame-45" class="frame frame-45"/>
+<use href="#fd-46" id="frame-46" class="frame frame-46"/>
+<use href="#fd-47" id="frame-47" class="frame frame-47"/>
+<use href="#fd-48" id="frame-48" class="frame frame-48"/>
+<use href="#fd-48" id="frame-49" class="frame frame-49"/>
+<use href="#fd-48" id="frame-50" class="frame frame-50"/>
+<use href="#fd-48" id="frame-51" class="frame frame-51"/>
+<use href="#fd-48" id="frame-52" class="frame frame-52"/>
+<use href="#fd-48" id="frame-53" class="frame frame-53"/>
+<use href="#fd-48" id="frame-54" class="frame frame-54"/>
+<use href="#fd-48" id="frame-55" class="frame frame-55"/>
+<use href="#fd-56" id="frame-56" class="frame frame-56"/>
+<use href="#fd-57" id="frame-57" class="frame frame-57"/>
+<use href="#fd-57" id="frame-58" class="frame frame-58"/>
+<use href="#fd-59" id="frame-59" class="frame frame-59"/>
+<use href="#fd-60" id="frame-60" class="frame frame-60"/>
+<use href="#fd-61" id="frame-61" class="frame frame-61"/>
+<use href="#fd-61" id="frame-62" class="frame frame-62"/>
+<use href="#fd-63" id="frame-63" class="frame frame-63"/>
+<use href="#fd-63" id="frame-64" class="frame frame-64"/>
+<use href="#fd-63" id="frame-65" class="frame frame-65"/>
+<use href="#fd-63" id="frame-66" class="frame frame-66"/>
+<use href="#fd-63" id="frame-67" class="frame frame-67"/>
+<use href="#fd-63" id="frame-68" class="frame frame-68"/>
+<use href="#fd-69" id="frame-69" class="frame frame-69"/>
+<use href="#fd-69" id="frame-70" class="frame frame-70"/>
+<use href="#fd-69" id="frame-71" class="frame frame-71"/>
+<use href="#fd-69" id="frame-72" class="frame frame-72"/>
+<use href="#fd-73" id="frame-73" class="frame frame-73"/>
+<use href="#fd-73" id="frame-74" class="frame frame-74"/>
+<use href="#fd-73" id="frame-75" class="frame frame-75"/>
+<use href="#fd-73" id="frame-76" class="frame frame-76"/>
+<use href="#fd-73" id="frame-77" class="frame frame-77"/>
+<use href="#fd-73" id="frame-78" class="frame frame-78"/>
+<use href="#fd-73" id="frame-79" class="frame frame-79"/>
+<use href="#fd-73" id="frame-80" class="frame frame-80"/>
+<use href="#fd-73" id="frame-81" class="frame frame-81"/>
+<use href="#fd-73" id="frame-82" class="frame frame-82"/>
+<use href="#fd-73" id="frame-83" class="frame frame-83"/>
+<use href="#fd-73" id="frame-84" class="frame frame-84"/>
+<use href="#fd-73" id="frame-85" class="frame frame-85"/>
+<use href="#fd-73" id="frame-86" class="frame frame-86"/>
+<use href="#fd-73" id="frame-87" class="frame frame-87"/>
+<use href="#fd-73" id="frame-88" class="frame frame-88"/>
+<use href="#fd-73" id="frame-89" class="frame frame-89"/>
+<use href="#fd-73" id="frame-90" class="frame frame-90"/>
+<use href="#fd-73" id="frame-91" class="frame frame-91"/>
+<use href="#fd-73" id="frame-92" class="frame frame-92"/>
+<use href="#fd-93" id="frame-93" class="frame frame-93"/>
+<use href="#fd-93" id="frame-94" class="frame frame-94"/>
+<use href="#fd-93" id="frame-95" class="frame frame-95"/>
+<use href="#fd-93" id="frame-96" class="frame frame-96"/>
+<use href="#fd-93" id="frame-97" class="frame frame-97"/>
+<use href="#fd-93" id="frame-98" class="frame frame-98"/>
+<use href="#fd-93" id="frame-99" class="frame frame-99"/>
+<use href="#fd-93" id="frame-100" class="frame frame-100"/>
+<use href="#fd-93" id="frame-101" class="frame frame-101"/>
+<use href="#fd-93" id="frame-102" class="frame frame-102"/>
+<use href="#fd-93" id="frame-103" class="frame frame-103"/>
+<use href="#fd-93" id="frame-104" class="frame frame-104"/>
+<use href="#fd-105" id="frame-105" class="frame frame-105"/>
+<use href="#fd-105" id="frame-106" class="frame frame-106"/>
+<use href="#fd-105" id="frame-107" class="frame frame-107"/>
+<use href="#fd-105" id="frame-108" class="frame frame-108"/>
+<use href="#fd-105" id="frame-109" class="frame frame-109"/>
+<use href="#fd-105" id="frame-110" class="frame frame-110"/>
+<use href="#fd-105" id="frame-111" class="frame frame-111"/>
+<use href="#fd-105" id="frame-112" class="frame frame-112"/>
+<use href="#fd-105" id="frame-113" class="frame frame-113"/>
+<use href="#fd-105" id="frame-114" class="frame frame-114"/>
+<use href="#fd-105" id="frame-115" class="frame frame-115"/>
 </svg>

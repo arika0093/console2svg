@@ -61,20 +61,8 @@ jobs:
       - name: Pack ConsoleToSvg.Converter
         run: dotnet pack src/ConsoleToSvg.Converter/ConsoleToSvg.Converter.csproj --no-build -c Release --output ./nuget-artifacts -p:ResvgNativeAssetsDirectory="$GITHUB_WORKSPACE/native-assets" -p:RequireResvgNativeAssets=true
 
-      - name: Restore tool against packaged converter
-        id: converter
-        shell: bash
-        run: bash scripts/release/restore-packaged-converter.sh
-
-      - name: Build ConsoleToSvg tool against packaged converter
-        env:
-          CONVERTER_VERSION: ${{ steps.converter.outputs.version }}
-        run: dotnet build src/ConsoleToSvg/ConsoleToSvg.csproj --no-restore -c Release -p:BuildResvgNative=false -p:UseConverterPackage=true -p:ConverterPackageVersion="$CONVERTER_VERSION"
-
       - name: Pack ConsoleToSvg tool
-        env:
-          CONVERTER_VERSION: ${{ steps.converter.outputs.version }}
-        run: dotnet pack src/ConsoleToSvg/ConsoleToSvg.csproj --no-build -c Release --output ./nuget-artifacts -p:BuildResvgNative=false -p:UseConverterPackage=true -p:ConverterPackageVersion="$CONVERTER_VERSION"
+        run: dotnet pack wrapper/dotnet/ConsoleToSvg.Tool.csproj --no-build -c Release --output ./nuget-artifacts
 
       - name: Upload NuGet artifacts
         uses: actions/upload-artifact@v7
@@ -179,7 +167,7 @@ jobs:
           files: ./release-upload/*
 
   release-nuget:
-    needs: build-nupkg
+    needs: [build-nupkg, release-github]
     runs-on: ubuntu-latest
 
     steps:

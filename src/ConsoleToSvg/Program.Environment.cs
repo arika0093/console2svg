@@ -151,14 +151,11 @@ internal static partial class Program
     {
         var exeName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "ffmpeg.exe" : "ffmpeg";
 
-        // AppContext.BaseDirectory is the dotnet tool directory. Environment.ProcessPath
-        // points at the dotnet host for framework-dependent tools, so it cannot be used
-        // as the install location for --install-deps.
         var appDir = AppContext.BaseDirectory;
         if (!string.IsNullOrEmpty(appDir))
         {
-            // 1. ffmpeg installed/bundled in a subdirectory. This keeps ffmpeg off the
-            //    user's PATH while still making it available to console2svg.
+            // 1. ffmpeg bundled in a subdirectory. This keeps ffmpeg off the user's PATH
+            //    while still making it available to console2svg.
             var bundledSubDir = Path.Combine(appDir, "ffmpeg", exeName);
             if (File.Exists(bundledSubDir))
             {

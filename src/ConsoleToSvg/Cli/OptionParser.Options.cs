@@ -27,9 +27,6 @@ public static partial class OptionParser
             case "--version":
                 options.ShowVersion = true;
                 return true;
-            case "--install-deps":
-                options.InstallDependencies = true;
-                return true;
             case "-c":
             case "--with-command":
                 options.WithCommand = true;

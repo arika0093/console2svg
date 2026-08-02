@@ -1,23 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <PackAsTool>true</PackAsTool>
-    <PackageId>ConsoleToSvg</PackageId>
     <AssemblyName>console2svg</AssemblyName>
-    <ToolCommandName>console2svg</ToolCommandName>
-    <CheckEolTargetFramework>false</CheckEolTargetFramework>
-    <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
-    <RollForward>LatestMajor</RollForward>
+    <IsPackable>false</IsPackable>
     <IsAotCompatible>true</IsAotCompatible>
-    <NoWarn>$(NoWarn);AD0001;NU5128</NoWarn>
   </PropertyGroup>
 
   <!-- NativeAOT publish settings (activated when PublishAot=true) -->
   <PropertyGroup Condition="'$(PublishAot)' == 'true'">
     <InvariantGlobalization>false</InvariantGlobalization>
     <StripSymbols>true</StripSymbols>
-    <!-- Disable dotnet tool packaging for NativeAOT builds -->
-    <PackAsTool>false</PackAsTool>
   </PropertyGroup>
   <ItemGroup Condition="'$(PublishAot)' == 'true'">
     <!-- NativeAOT binaries need to locate bundled native libraries at runtime.
@@ -37,24 +29,11 @@
     <RuntimeHostConfigurationOption Include="System.Runtime.EnableWriteXorExecute" Value="false" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ConsoleToSvg.Core\ConsoleToSvg.Core.csproj" AdditionalProperties="PublishAot=false">
-      <PrivateAssets Condition="'$(UseConverterPackage)' == 'true'">all</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="..\ConsoleToSvg.Pty\ConsoleToSvg.Pty.csproj" AdditionalProperties="PublishAot=false">
-      <PrivateAssets Condition="'$(UseConverterPackage)' == 'true'">all</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="..\ConsoleToSvg.Record\ConsoleToSvg.Record.csproj" AdditionalProperties="PublishAot=false">
-      <PrivateAssets Condition="'$(UseConverterPackage)' == 'true'">all</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="..\ConsoleToSvg.Converter\ConsoleToSvg.Converter.csproj" AdditionalProperties="PublishAot=false" Condition="'$(UseConverterPackage)' != 'true'" />
-    <PackageReference Include="ConsoleToSvg.Converter" Version="$(ConverterPackageVersion)" Condition="'$(UseConverterPackage)' == 'true'" />
+    <ProjectReference Include="..\ConsoleToSvg.Core\ConsoleToSvg.Core.csproj" AdditionalProperties="PublishAot=false" />
+    <ProjectReference Include="..\ConsoleToSvg.Pty\ConsoleToSvg.Pty.csproj" AdditionalProperties="PublishAot=false" />
+    <ProjectReference Include="..\ConsoleToSvg.Record\ConsoleToSvg.Record.csproj" AdditionalProperties="PublishAot=false" />
+    <ProjectReference Include="..\ConsoleToSvg.Converter\ConsoleToSvg.Converter.csproj" AdditionalProperties="PublishAot=false" />
     <PackageReference Include="ZLogger" Version="2.5.10" />
   </ItemGroup>
   <Import Project="..\ConsoleToSvg.Converter\ConsoleToSvg.Converter.Native.targets" />
-  <!-- PackAsTool normally suppresses dependencies; retain the converter package dependency. -->
-  <Target Name="IncludeConverterPackageDependency" BeforeTargets="_GetFrameworksWithSuppressedDependencies" Condition="'$(UseConverterPackage)' == 'true'">
-    <PropertyGroup>
-      <SuppressDependenciesWhenPacking>false</SuppressDependenciesWhenPacking>
-    </PropertyGroup>
-  </Target>
 </Project>

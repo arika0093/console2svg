@@ -231,7 +231,7 @@ jobs:
         uses: vedantmgoyal9/winget-releaser@v2
         with:
           identifier: arika0093.console2svg
-          installers-regex: '^console2svg-win-(x64|arm64)\.exe$'
+          installers-regex: '^console2svg-win-(x64|arm64)\.zip$'
           release-tag: v${{ needs.build-nupkg.outputs.version }}
           token: ${{ secrets.WINGET_TOKEN }}
 

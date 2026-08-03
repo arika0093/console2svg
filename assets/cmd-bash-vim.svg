@@ -1,11 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="690" height="405" viewBox="0 0 690 405" role="img" aria-label="console2svg output">
 <style>
 .crt {
-  font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace;
+  font-family: ui-monospace,"JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,monospace;
   font-size: 14px;
 }
-.blink { animation: blink 1s step-start infinite; }
-@keyframes blink { 50% { visibility: hidden; } }
 text {
   dominant-baseline: alphabetic;
 }
@@ -17,10 +15,10 @@ text {
   opacity: 0;
 }
 @keyframes k0 {
-  0%, 0.97% {
+  0%, 0.484% {
     opacity: 0;
   }
-  0.971%, 16.505% {
+  0.485%, 16.505% {
     opacity: 1;
   }
   16.506%, 100% {
@@ -68,43 +66,43 @@ text {
   0%, 19.902% {
     opacity: 0;
   }
-  19.903%, 24.757% {
+  19.903%, 23.301% {
     opacity: 1;
   }
-  24.758%, 100% {
+  23.302%, 100% {
     opacity: 0;
   }
 }
 .frame-4 { animation:k4 17.167s linear infinite; }
 @keyframes k5 {
-  0%, 24.756% {
+  0%, 23.3% {
     opacity: 0;
   }
-  24.757%, 25.243% {
+  23.301%, 26.699% {
     opacity: 1;
   }
-  25.244%, 100% {
+  26.7%, 100% {
     opacity: 0;
   }
 }
 .frame-5 { animation:k5 17.167s linear infinite; }
 @keyframes k6 {
-  0%, 25.242% {
+  0%, 26.698% {
     opacity: 0;
   }
-  25.243%, 30.34% {
+  26.699%, 31.068% {
     opacity: 1;
   }
-  30.341%, 100% {
+  31.069%, 100% {
     opacity: 0;
   }
 }
 .frame-6 { animation:k6 17.167s linear infinite; }
 @keyframes k7 {
-  0%, 30.339% {
+  0%, 31.067% {
     opacity: 0;
   }
-  30.34%, 35.437% {
+  31.068%, 35.437% {
     opacity: 1;
   }
   35.438%, 100% {
@@ -411,16 +409,14 @@ text {
 <text class="crt" x="403.2" y="158" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacing">distributable</text>
 <text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="210" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">Help</text>
-<text class="crt" x="252" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">poor</text>
-<text class="crt" x="294" y="194" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">children</text>
-<text class="crt" x="369.6" y="194" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">in</text>
-<text class="crt" x="394.8" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Uganda!</text>
+<text class="crt" x="235.2" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Sponsor</text>
+<text class="crt" x="302.4" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">Vim</text>
+<text class="crt" x="336" y="194" fill="#d4d4d4" textLength="100.8" lengthAdjust="spacing">development!</text>
 <text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="142.8" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
 <text class="crt" x="193.2" y="212" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">iccf</text>
-<text class="crt" x="277.2" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
+<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">sponsor</text>
+<text class="crt" x="302.4" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
 <text class="crt" x="394.8" y="212" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
 <text class="crt" x="428.4" y="212" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">information</text>
 <text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
@@ -486,16 +482,14 @@ text {
 <text class="crt" x="403.2" y="158" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacing">distributable</text>
 <text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="210" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">Help</text>
-<text class="crt" x="252" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">poor</text>
-<text class="crt" x="294" y="194" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">children</text>
-<text class="crt" x="369.6" y="194" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">in</text>
-<text class="crt" x="394.8" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Uganda!</text>
+<text class="crt" x="235.2" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Sponsor</text>
+<text class="crt" x="302.4" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">Vim</text>
+<text class="crt" x="336" y="194" fill="#d4d4d4" textLength="100.8" lengthAdjust="spacing">development!</text>
 <text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="142.8" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
 <text class="crt" x="193.2" y="212" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">iccf</text>
-<text class="crt" x="277.2" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
+<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">sponsor</text>
+<text class="crt" x="302.4" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
 <text class="crt" x="394.8" y="212" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
 <text class="crt" x="428.4" y="212" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">information</text>
 <text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
@@ -562,16 +556,14 @@ text {
 <text class="crt" x="403.2" y="158" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacing">distributable</text>
 <text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="210" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">Help</text>
-<text class="crt" x="252" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">poor</text>
-<text class="crt" x="294" y="194" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">children</text>
-<text class="crt" x="369.6" y="194" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">in</text>
-<text class="crt" x="394.8" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Uganda!</text>
+<text class="crt" x="235.2" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Sponsor</text>
+<text class="crt" x="302.4" y="194" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">Vim</text>
+<text class="crt" x="336" y="194" fill="#d4d4d4" textLength="100.8" lengthAdjust="spacing">development!</text>
 <text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
 <text class="crt" x="142.8" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
 <text class="crt" x="193.2" y="212" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">iccf</text>
-<text class="crt" x="277.2" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
+<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">sponsor</text>
+<text class="crt" x="302.4" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
 <text class="crt" x="394.8" y="212" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
 <text class="crt" x="428.4" y="212" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">information</text>
 <text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>

@@ -35,7 +35,7 @@ public sealed class SvgConverterTests
         );
         method.ShouldNotBeNull();
 
-        var args = (string[])method.Invoke(null, [2.5d, "output.mp4"])!;
+        var args = (string[])method.Invoke(null, [2.5d, "output.mp4", "mpeg4"])!;
 
         // Verify structure: codec should be at index 10 (after "-c:v") for MP4
         args.Length.ShouldBe(14);
@@ -49,8 +49,7 @@ public sealed class SvgConverterTests
         args[7].ShouldBe("-i");
         args[8].ShouldBe("pipe:0");
         args[9].ShouldBe("-c:v");
-        // Index 10: codec (libx264 or mpeg4 depending on availability)
-        (args[10] == "libx264" || args[10] == "mpeg4").ShouldBeTrue();
+        args[10].ShouldBe("mpeg4");
         args[11].ShouldBe("-pix_fmt");
         args[12].ShouldBe("yuv420p");
         args[13].ShouldBe("output.mp4");
@@ -66,7 +65,7 @@ public sealed class SvgConverterTests
         method.ShouldNotBeNull();
 
         // Test GIF output
-        var gifArgs = (string[])method.Invoke(null, [2.5d, "output.gif"])!;
+        var gifArgs = (string[])method.Invoke(null, [2.5d, "output.gif", null])!;
         gifArgs.Length.ShouldBe(10);
         gifArgs[0].ShouldBe("-y");
         gifArgs[1].ShouldBe("-framerate");
@@ -80,7 +79,7 @@ public sealed class SvgConverterTests
         gifArgs[9].ShouldBe("output.gif");
 
         // Test WebM output
-        var webmArgs = (string[])method.Invoke(null, [2.5d, "output.webm"])!;
+        var webmArgs = (string[])method.Invoke(null, [2.5d, "output.webm", null])!;
         webmArgs.Length.ShouldBe(10);
         webmArgs[9].ShouldBe("output.webm");
     }

@@ -57,10 +57,6 @@ public static partial class SvgConverter
     // Cached so we don't shell out to ffmpeg on every call.
     private static readonly Lazy<bool> _ffmpegSupportsSvg = new(CheckFfmpegSvgSupport);
 
-    // Cached video encoder availability (checked via ffmpeg -encoders).
-    private static readonly Lazy<bool> _libx264Available = new(() => CheckFfmpegEncoder("libx264"));
-    private static readonly Lazy<bool> _mpeg4Available = new(() => CheckFfmpegEncoder("mpeg4"));
-
     /// <summary>
     /// True when an ffmpeg binary was discovered (via <see cref="SetFfmpegPath"/>,
     /// the bundled layout, or PATH). Safe to call before a recording to drive
@@ -80,7 +76,7 @@ public static partial class SvgConverter
     /// Prefers libx264 (H.264), falls back to mpeg4 (MPEG-4 Part 2), both supported by WMP.
     /// Returns null for non-MP4 formats (GIF, WebM) to let ffmpeg choose the appropriate encoder.
     /// </summary>
-    internal static string? SelectVideoCodec(string outputPath)
+    internal static string? SelectVideoCodec(string outputPath, string ffmpegPath)
     {
         var extension = Path.GetExtension(outputPath).ToLowerInvariant();
 
@@ -90,12 +86,12 @@ public static partial class SvgConverter
             return null;
         }
 
-        if (_libx264Available.Value)
+        if (CheckFfmpegEncoder("libx264", ffmpegPath))
         {
             return "libx264";
         }
 
-        if (_mpeg4Available.Value)
+        if (CheckFfmpegEncoder("mpeg4", ffmpegPath))
         {
             return "mpeg4";
         }
@@ -455,7 +451,7 @@ public static partial class SvgConverter
         }
 
         var fpsStr = fps.ToString(CultureInfo.InvariantCulture);
-        var codec = SelectVideoCodec(outputPath);
+        var codec = SelectVideoCodec(outputPath, ffmpegPath);
         string[] ffmpegArgs = codec is null
             ? ["-y", "-framerate", fpsStr, "-i", framePattern, outputPath]
             : ["-y", "-framerate", fpsStr, "-i", framePattern, "-c:v", codec, "-pix_fmt", "yuv420p", outputPath];

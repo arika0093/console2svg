@@ -137,9 +137,9 @@ public static partial class SvgConverter
     /// Checks whether ffmpeg has a specific video encoder available by parsing
     /// the output of <c>ffmpeg -encoders</c>.
     /// </summary>
-    private static bool CheckFfmpegEncoder(string encoderName)
+    private static bool CheckFfmpegEncoder(string encoderName, string ffmpegPath)
     {
-        var exe = FindFfmpegForDetection();
+        var exe = string.IsNullOrEmpty(ffmpegPath) ? FindFfmpegForDetection() : ffmpegPath;
         if (string.IsNullOrEmpty(exe))
         {
             return false;
@@ -160,7 +160,7 @@ public static partial class SvgConverter
             process.WaitForExit();
 
             // Encoder lines look like: " V....D libx264 ..."
-            // The encoder name is the third whitespace-separated token.
+            // The encoder name is the second whitespace-separated token.
             foreach (var line in output.Split('\n'))
             {
                 var trimmed = line.TrimStart();

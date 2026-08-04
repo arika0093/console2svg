@@ -57,6 +57,10 @@ public static partial class SvgConverter
     // Cached so we don't shell out to ffmpeg on every call.
     private static readonly Lazy<bool> _ffmpegSupportsSvg = new(CheckFfmpegSvgSupport);
 
+    // Cached video encoder availability (checked via ffmpeg -encoders).
+    private static readonly Lazy<bool> _libx264Available = new(() => CheckFfmpegEncoder("libx264"));
+    private static readonly Lazy<bool> _mpeg4Available = new(() => CheckFfmpegEncoder("mpeg4"));
+
     /// <summary>
     /// True when an ffmpeg binary was discovered (via <see cref="SetFfmpegPath"/>,
     /// the bundled layout, or PATH). Safe to call before a recording to drive
@@ -70,6 +74,28 @@ public static partial class SvgConverter
     /// listing (which can report false positives).
     /// </summary>
     public static bool FfmpegSupportsSvg => _ffmpegSupportsSvg.Value;
+
+    /// <summary>
+    /// Selects the best available H.264-compatible video codec for Windows Media Player.
+    /// Prefers libx264 (H.264), falls back to mpeg4 (MPEG-4 Part 2), both supported by WMP.
+    /// </summary>
+    internal static string SelectVideoCodec()
+    {
+        if (_libx264Available.Value)
+        {
+            return "libx264";
+        }
+
+        if (_mpeg4Available.Value)
+        {
+            return "mpeg4";
+        }
+
+        throw new InvalidOperationException(
+            "No compatible video codec found. ffmpeg must have libx264 or mpeg4 encoder. "
+                + "Install ffmpeg with libx264 support for best compatibility."
+        );
+    }
 
     /// <summary>
     /// Resolves the converter to use given the user's preference and the
@@ -420,10 +446,11 @@ public static partial class SvgConverter
         }
 
         var fpsStr = fps.ToString(CultureInfo.InvariantCulture);
+        var codec = SelectVideoCodec();
         await Console.Error.WriteLineAsync("Encoding video frames...".AsMemory(), cancellationToken);
         await RunFfmpegAsync(
                 ffmpegPath,
-                ["-y", "-framerate", fpsStr, "-i", framePattern, "-c:v", "libx264", "-pix_fmt", "yuv420p", outputPath],
+                ["-y", "-framerate", fpsStr, "-i", framePattern, "-c:v", codec, "-pix_fmt", "yuv420p", outputPath],
                 logger,
                 cancellationToken
             )

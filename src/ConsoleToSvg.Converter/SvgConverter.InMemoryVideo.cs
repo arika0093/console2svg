@@ -116,6 +116,8 @@ public static partial class SvgConverter
             throw new ArgumentOutOfRangeException(nameof(fps), fps, "Frame rate must be positive.");
         }
 
+        var codec = SelectVideoCodec();
+
         return
         [
             "-y",
@@ -128,7 +130,7 @@ public static partial class SvgConverter
             "-i",
             "pipe:0",
             "-c:v",
-            "libx264",
+            codec,
             "-pix_fmt",
             "yuv420p",
             outputPath,

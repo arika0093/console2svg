@@ -133,6 +133,55 @@ public static partial class SvgConverter
         }
     }
 
+    /// <summary>
+    /// Checks whether ffmpeg has a specific video encoder available by parsing
+    /// the output of <c>ffmpeg -encoders</c>.
+    /// </summary>
+    private static bool CheckFfmpegEncoder(string encoderName)
+    {
+        var exe = FindFfmpegForDetection();
+        if (string.IsNullOrEmpty(exe))
+        {
+            return false;
+        }
+
+        try
+        {
+            using var process = new Process();
+            process.StartInfo.FileName = exe;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.ArgumentList.Add("-hide_banner");
+            process.StartInfo.ArgumentList.Add("-encoders");
+
+            process.Start();
+            var output = process.StandardOutput.ReadToEnd();
+            process.WaitForExit();
+
+            // Encoder lines look like: " V....D libx264 ..."
+            // The encoder name is the third whitespace-separated token.
+            foreach (var line in output.Split('\n'))
+            {
+                var trimmed = line.TrimStart();
+                if (trimmed.StartsWith("V", StringComparison.Ordinal))
+                {
+                    var parts = trimmed.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length >= 3 && parts[2] == encoderName)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     /// <summary>Finds rsvg-convert (or rsvg-convert.exe) on PATH.</summary>
     private static string FindRsvgConvertExecutable()
     {

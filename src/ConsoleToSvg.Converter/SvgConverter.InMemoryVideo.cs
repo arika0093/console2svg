@@ -33,7 +33,8 @@ public static partial class SvgConverter
         // image2pipe demuxer cannot split concatenated SVG documents into
         // individual frames (unlike file-based frame-%04d.svg input).
         var effectiveConverter = ResolveInMemoryPngConverter(converter);
-        var args = CreateInMemoryVideoFfmpegArgs(fps, outputPath);
+        var codec = SelectVideoCodec(outputPath, ffmpegPath);
+        var args = CreateInMemoryVideoFfmpegArgs(fps, outputPath, codec);
 
         logger.ZLogDebug($"Encoding video from in-memory PNG frames.");
         await Console.Error.WriteLineAsync("Encoding video frames...".AsMemory(), cancellationToken);
@@ -108,12 +109,33 @@ public static partial class SvgConverter
 
     private static string[] CreateInMemoryVideoFfmpegArgs(
         double fps,
-        string outputPath
+        string outputPath,
+        string? codec
     )
     {
         if (fps <= 0)
         {
             throw new ArgumentOutOfRangeException(nameof(fps), fps, "Frame rate must be positive.");
+        }
+
+        // For non-MP4 formats (GIF, WebM), let ffmpeg choose the appropriate encoder
+        if (codec is null)
+        {
+            return
+            [
+                "-y",
+                "-framerate",
+                fps.ToString(CultureInfo.InvariantCulture),
+                "-f",
+                "image2pipe",
+                "-vcodec",
+                "png",
+                "-i",
+                "pipe:0",
+                "-pix_fmt",
+                "yuv420p",
+                outputPath,
+            ];
         }
 
         return
@@ -127,6 +149,8 @@ public static partial class SvgConverter
             "png",
             "-i",
             "pipe:0",
+            "-c:v",
+            codec,
             "-pix_fmt",
             "yuv420p",
             outputPath,

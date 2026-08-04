@@ -133,6 +133,61 @@ public static partial class SvgConverter
         }
     }
 
+    /// <summary>
+    /// Detects the video encoders required for Windows Media Player compatibility
+    /// by parsing the output of <c>ffmpeg -encoders</c>.
+    /// </summary>
+    private static VideoCodecAvailability DetectFfmpegVideoCodecs(string ffmpegPath)
+    {
+        try
+        {
+            using var process = new Process();
+            process.StartInfo.FileName = ffmpegPath;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.ArgumentList.Add("-hide_banner");
+            process.StartInfo.ArgumentList.Add("-encoders");
+
+            process.Start();
+            var output = process.StandardOutput.ReadToEnd();
+            process.WaitForExit();
+
+            var libx264 = false;
+            var mpeg4 = false;
+
+            // Encoder lines look like: " V....D libx264 ...".
+            // The encoder name is the second whitespace-separated token.
+            foreach (var line in output.Split('\n'))
+            {
+                var trimmed = line.TrimStart();
+                if (trimmed.StartsWith("V", StringComparison.Ordinal))
+                {
+                    var parts = trimmed.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length >= 2)
+                    {
+                        if (parts[1] == "libx264")
+                        {
+                            libx264 = true;
+                        }
+                        else if (parts[1] == "mpeg4")
+                        {
+                            mpeg4 = true;
+                        }
+                    }
+                }
+            }
+
+            return new VideoCodecAvailability(libx264, mpeg4);
+        }
+        catch
+        {
+            return default;
+        }
+    }
+
+    private readonly record struct VideoCodecAvailability(bool Libx264, bool Mpeg4);
+
     /// <summary>Finds rsvg-convert (or rsvg-convert.exe) on PATH.</summary>
     private static string FindRsvgConvertExecutable()
     {

@@ -423,7 +423,7 @@ public static partial class SvgConverter
         await Console.Error.WriteLineAsync("Encoding video frames...".AsMemory(), cancellationToken);
         await RunFfmpegAsync(
                 ffmpegPath,
-                ["-y", "-framerate", fpsStr, "-i", framePattern, "-pix_fmt", "yuv420p", outputPath],
+                ["-y", "-framerate", fpsStr, "-i", framePattern, "-c:v", "libx264", "-pix_fmt", "yuv420p", outputPath],
                 logger,
                 cancellationToken
             )

@@ -167,7 +167,7 @@ public static partial class SvgConverter
                 if (trimmed.StartsWith("V", StringComparison.Ordinal))
                 {
                     var parts = trimmed.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
-                    if (parts.Length >= 3 && parts[2] == encoderName)
+                    if (parts.Length >= 2 && parts[1] == encoderName)
                     {
                         return true;
                     }

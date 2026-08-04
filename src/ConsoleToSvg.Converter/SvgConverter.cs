@@ -78,9 +78,18 @@ public static partial class SvgConverter
     /// <summary>
     /// Selects the best available H.264-compatible video codec for Windows Media Player.
     /// Prefers libx264 (H.264), falls back to mpeg4 (MPEG-4 Part 2), both supported by WMP.
+    /// Returns null for non-MP4 formats (GIF, WebM) to let ffmpeg choose the appropriate encoder.
     /// </summary>
-    internal static string SelectVideoCodec()
+    internal static string? SelectVideoCodec(string outputPath)
     {
+        var extension = Path.GetExtension(outputPath).ToLowerInvariant();
+
+        // Only apply H.264 codec override for MP4 containers
+        if (extension != ".mp4")
+        {
+            return null;
+        }
+
         if (_libx264Available.Value)
         {
             return "libx264";
@@ -446,11 +455,15 @@ public static partial class SvgConverter
         }
 
         var fpsStr = fps.ToString(CultureInfo.InvariantCulture);
-        var codec = SelectVideoCodec();
+        var codec = SelectVideoCodec(outputPath);
+        string[] ffmpegArgs = codec is null
+            ? ["-y", "-framerate", fpsStr, "-i", framePattern, outputPath]
+            : ["-y", "-framerate", fpsStr, "-i", framePattern, "-c:v", codec, "-pix_fmt", "yuv420p", outputPath];
+
         await Console.Error.WriteLineAsync("Encoding video frames...".AsMemory(), cancellationToken);
         await RunFfmpegAsync(
                 ffmpegPath,
-                ["-y", "-framerate", fpsStr, "-i", framePattern, "-c:v", codec, "-pix_fmt", "yuv420p", outputPath],
+                ffmpegArgs,
                 logger,
                 cancellationToken
             )

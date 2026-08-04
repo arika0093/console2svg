@@ -37,7 +37,7 @@ public sealed class SvgConverterTests
 
         var args = (string[])method.Invoke(null, [2.5d, "output.mp4"])!;
 
-        // Verify structure: codec should be at index 10 (after "-c:v")
+        // Verify structure: codec should be at index 10 (after "-c:v") for MP4
         args.Length.ShouldBe(14);
         args[0].ShouldBe("-y");
         args[1].ShouldBe("-framerate");
@@ -54,5 +54,34 @@ public sealed class SvgConverterTests
         args[11].ShouldBe("-pix_fmt");
         args[12].ShouldBe("yuv420p");
         args[13].ShouldBe("output.mp4");
+    }
+
+    [Test]
+    public void InMemoryVideoOmitsCodecForNonMp4Formats()
+    {
+        var method = typeof(SvgConverter).GetMethod(
+            "CreateInMemoryVideoFfmpegArgs",
+            BindingFlags.NonPublic | BindingFlags.Static
+        );
+        method.ShouldNotBeNull();
+
+        // Test GIF output
+        var gifArgs = (string[])method.Invoke(null, [2.5d, "output.gif"])!;
+        gifArgs.Length.ShouldBe(10);
+        gifArgs[0].ShouldBe("-y");
+        gifArgs[1].ShouldBe("-framerate");
+        gifArgs[2].ShouldBe("2.5");
+        gifArgs[3].ShouldBe("-f");
+        gifArgs[4].ShouldBe("image2pipe");
+        gifArgs[5].ShouldBe("-vcodec");
+        gifArgs[6].ShouldBe("png");
+        gifArgs[7].ShouldBe("-i");
+        gifArgs[8].ShouldBe("pipe:0");
+        gifArgs[9].ShouldBe("output.gif");
+
+        // Test WebM output
+        var webmArgs = (string[])method.Invoke(null, [2.5d, "output.webm"])!;
+        webmArgs.Length.ShouldBe(10);
+        webmArgs[9].ShouldBe("output.webm");
     }
 }

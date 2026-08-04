@@ -116,7 +116,25 @@ public static partial class SvgConverter
             throw new ArgumentOutOfRangeException(nameof(fps), fps, "Frame rate must be positive.");
         }
 
-        var codec = SelectVideoCodec();
+        var codec = SelectVideoCodec(outputPath);
+
+        // For non-MP4 formats (GIF, WebM), let ffmpeg choose the appropriate encoder
+        if (codec is null)
+        {
+            return
+            [
+                "-y",
+                "-framerate",
+                fps.ToString(CultureInfo.InvariantCulture),
+                "-f",
+                "image2pipe",
+                "-vcodec",
+                "png",
+                "-i",
+                "pipe:0",
+                outputPath,
+            ];
+        }
 
         return
         [

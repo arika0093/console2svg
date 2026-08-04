@@ -10,6 +10,11 @@ internal static class Program
 
     public static async Task<int> Main(string[] args)
     {
+        if (args.Length == 1 && args[0] == "--post-install")
+        {
+            return await RunPostInstallAsync().ConfigureAwait(false);
+        }
+
         if (!TryGetRuntimeAsset(out var rid, out var executableName, out var archiveExtension))
         {
             await Console.Error.WriteLineAsync(
@@ -98,6 +103,55 @@ internal static class Program
             );
             return 1;
         }
+    }
+
+    private static async Task<int> RunPostInstallAsync()
+    {
+        if (!TryGetRuntimeAsset(out var rid, out var executableName, out var archiveExtension))
+        {
+            await Console.Error.WriteLineAsync(
+                $"console2svg: unsupported platform: {RuntimeInformation.OSDescription} {RuntimeInformation.ProcessArchitecture}."
+            );
+            return 1;
+        }
+
+        var distributionDirectory = GetDistributionDirectory();
+        var executablePath = Path.Combine(distributionDirectory, executableName);
+        if (File.Exists(executablePath))
+        {
+            return 0;
+        }
+
+        try
+        {
+            Directory.CreateDirectory(distributionDirectory);
+            await using var installationLock = await AcquireInstallationLockAsync(distributionDirectory)
+                .ConfigureAwait(false);
+            if (!File.Exists(executablePath))
+            {
+                await DownloadAndExtractAsync(rid, executableName, archiveExtension, distributionDirectory)
+                    .ConfigureAwait(false);
+                if (!OperatingSystem.IsWindows())
+                {
+                    await MakeExecutableAsync(executablePath).ConfigureAwait(false);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await Console.Error.WriteLineAsync($"console2svg: failed to install the native binary: {ex.Message}");
+            return 1;
+        }
+
+        if (!File.Exists(executablePath))
+        {
+            await Console.Error.WriteLineAsync(
+                $"console2svg: the native binary was not found at '{executablePath}' after installation."
+            );
+            return 1;
+        }
+
+        return 0;
     }
 
     private static bool TryGetRuntimeAsset(

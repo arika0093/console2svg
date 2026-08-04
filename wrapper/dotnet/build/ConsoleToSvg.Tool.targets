@@ -1,0 +1,12 @@
+<Project>
+  <Target Name="ConsoleToSvgPostInstall" AfterTargets="Restore">
+    <Exec Command="dotnet exec &quot;$(MSBuildThisFileDirectory)../ConsoleToSvg.Tool.dll&quot; --post-install"
+          IgnoreExitCode="true"
+          StandardOutputImportance="low"
+          StandardErrorImportance="high">
+      <Output TaskParameter="ExitCode" PropertyName="ConsoleToSvgPostInstallExitCode" />
+    </Exec>
+    <Warning Condition="'$(ConsoleToSvgPostInstallExitCode)' != '0'"
+             Text="console2svg: post-install binary download failed (exit code $(ConsoleToSvgPostInstallExitCode)). The native binary will be downloaded on first use." />
+  </Target>
+</Project>

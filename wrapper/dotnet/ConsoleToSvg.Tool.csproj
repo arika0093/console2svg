@@ -23,5 +23,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <None Include="../../README.md" Pack="true" PackagePath="\" />
+    <None Include="build/ConsoleToSvg.Tool.targets" Pack="true" PackagePath="tools/$(TargetFramework)/any/build/" />
   </ItemGroup>
 </Project>

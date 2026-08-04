@@ -47,6 +47,10 @@ jobs:
         shell: bash
         run: bash scripts/release/stage-native-assets.sh
 
+      - name: Stage native tool assets for NuGet
+        shell: bash
+        run: bash scripts/release/stage-native-tool-assets.sh
+
       - name: Export package iteration
         id: package-iteration
         shell: bash
@@ -62,7 +66,7 @@ jobs:
         run: dotnet pack src/ConsoleToSvg.Converter/ConsoleToSvg.Converter.csproj --no-build -c Release --output ./nuget-artifacts -p:ResvgNativeAssetsDirectory="$GITHUB_WORKSPACE/native-assets" -p:RequireResvgNativeAssets=true
 
       - name: Pack ConsoleToSvg tool
-        run: dotnet pack wrapper/dotnet/ConsoleToSvg.Tool.csproj --no-build -c Release --output ./nuget-artifacts
+        run: dotnet pack wrapper/dotnet/ConsoleToSvg.Tool.csproj --no-build -c Release --output ./nuget-artifacts -p:ToolNativeAssetsDirectory="$GITHUB_WORKSPACE/tool-native-assets" -p:RequireToolNativeAssets=true
 
       - name: Upload NuGet artifacts
         uses: actions/upload-artifact@v7

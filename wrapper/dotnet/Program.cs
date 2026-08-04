@@ -1,16 +1,13 @@
 using System.Diagnostics;
-using System.IO.Compression;
 using System.Runtime.InteropServices;
 
 namespace ConsoleToSvg.Tool;
 
 internal static class Program
 {
-    private const string ReleaseBaseUrl = "https://github.com/arika0093/console2svg/releases/download";
-
     public static async Task<int> Main(string[] args)
     {
-        if (!TryGetRuntimeAsset(out var rid, out var executableName, out var archiveExtension))
+        if (!TryGetRuntimeAsset(out var rid, out var executableName))
         {
             await Console.Error.WriteLineAsync(
                 $"console2svg: unsupported platform: {RuntimeInformation.OSDescription} {RuntimeInformation.ProcessArchitecture}."
@@ -29,13 +26,7 @@ internal static class Program
                     .ConfigureAwait(false);
                 if (!File.Exists(executablePath))
                 {
-                    await DownloadAndExtractAsync(
-                            rid,
-                            executableName,
-                            archiveExtension,
-                            distributionDirectory
-                        )
-                        .ConfigureAwait(false);
+                    CopyBundledFiles(rid, executableName, distributionDirectory);
                     if (!OperatingSystem.IsWindows())
                     {
                         await MakeExecutableAsync(executablePath).ConfigureAwait(false);
@@ -102,8 +93,7 @@ internal static class Program
 
     private static bool TryGetRuntimeAsset(
         out string rid,
-        out string executableName,
-        out string archiveExtension
+        out string executableName
     )
     {
         var architecture = RuntimeInformation.ProcessArchitecture switch
@@ -117,14 +107,12 @@ internal static class Program
         if (string.IsNullOrEmpty(architecture))
         {
             rid = string.Empty;
-            archiveExtension = string.Empty;
             return false;
         }
 
         if (OperatingSystem.IsWindows())
         {
             rid = $"win-{architecture}";
-            archiveExtension = "zip";
             return true;
         }
 
@@ -133,81 +121,48 @@ internal static class Program
             if (IsMuslLinux())
             {
                 rid = string.Empty;
-                archiveExtension = string.Empty;
                 return false;
             }
 
             rid = $"linux-{architecture}";
-            archiveExtension = "tar.gz";
             return true;
         }
 
         if (OperatingSystem.IsMacOS())
         {
             rid = $"osx-{architecture}";
-            archiveExtension = "tar.gz";
             return true;
         }
 
         rid = string.Empty;
-        archiveExtension = string.Empty;
         return false;
     }
 
-    private static async Task DownloadAndExtractAsync(
-        string rid,
-        string executableName,
-        string archiveExtension,
-        string distributionDirectory
-    )
+    private static void CopyBundledFiles(string rid, string executableName, string distributionDirectory)
     {
-        var version = GetReleaseVersion();
-        var archiveName = $"console2svg-{rid}.{archiveExtension}";
+        var bundledDirectory = Path.Combine(AppContext.BaseDirectory, "native", rid);
+        if (!Directory.Exists(bundledDirectory))
+        {
+            throw new InvalidOperationException($"The package does not contain native assets for '{rid}'.");
+        }
+
         var stagingDirectory = Path.Combine(
             distributionDirectory,
             $".staging-{Environment.ProcessId}-{Guid.NewGuid():N}"
         );
-        var archivePath = Path.Combine(stagingDirectory, archiveName);
-        var downloadUrl = $"{ReleaseBaseUrl}/v{version}/{archiveName}";
-
-        await Console.Error.WriteLineAsync($"console2svg: downloading {downloadUrl}");
         try
         {
             Directory.CreateDirectory(stagingDirectory);
-            using var client = new HttpClient();
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("console2svg-dotnet-tool-wrapper");
-            await using var input = await client
-                .GetStreamAsync(downloadUrl)
-                .ConfigureAwait(false);
-            await using (var output = File.Create(archivePath))
+            foreach (var sourcePath in Directory.GetFiles(bundledDirectory, "*", SearchOption.AllDirectories))
             {
-                await input.CopyToAsync(output).ConfigureAwait(false);
+                var destinationPath = Path.Combine(
+                    stagingDirectory,
+                    Path.GetRelativePath(bundledDirectory, sourcePath)
+                );
+                Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
+                File.Copy(sourcePath, destinationPath, overwrite: true);
             }
 
-            if (OperatingSystem.IsWindows())
-            {
-                ZipFile.ExtractToDirectory(archivePath, stagingDirectory);
-            }
-            else
-            {
-                using var tar = Process.Start(
-                    new ProcessStartInfo
-                    {
-                        FileName = "tar",
-                        UseShellExecute = false,
-                        RedirectStandardError = true,
-                        ArgumentList = { "-xzf", archivePath, "-C", stagingDirectory },
-                    }
-                ) ?? throw new InvalidOperationException("Unable to start tar.");
-                var standardError = await tar.StandardError.ReadToEndAsync().ConfigureAwait(false);
-                await tar.WaitForExitAsync().ConfigureAwait(false);
-                if (tar.ExitCode != 0)
-                {
-                    throw new InvalidOperationException($"tar failed: {standardError.Trim()}");
-                }
-            }
-
-            File.Delete(archivePath);
             PublishStagedFiles(stagingDirectory, distributionDirectory, executableName);
         }
         finally

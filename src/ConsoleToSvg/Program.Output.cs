@@ -42,6 +42,20 @@ internal static partial class Program
         return savedCount;
     }
 
+    private static void CopyRenderedFrameSvgs(string sourceDirectory, string destinationDirectory, ILogger logger)
+    {
+        Directory.CreateDirectory(destinationDirectory);
+        var copiedCount = 0;
+        foreach (var sourcePath in Directory.EnumerateFiles(sourceDirectory, "frame-*.svg"))
+        {
+            var destinationPath = Path.Combine(destinationDirectory, Path.GetFileName(sourcePath));
+            File.Copy(sourcePath, destinationPath, overwrite: true);
+            copiedCount++;
+        }
+
+        logger.ZLogDebug($"Copied {copiedCount} rendered SVG frame(s) to {destinationDirectory}");
+    }
+
     private static IEnumerable<string> RenderFrameSvgs(
         RecordingSession session,
         SvgRenderOptions baseOptions,
@@ -52,6 +66,54 @@ internal static partial class Program
     {
         var eventCount = session.Events.Count;
         var yielded = false;
+        const int maxCachedFrameSvgs = 128;
+        var svgCache = new Dictionary<ulong, string>();
+        ulong currentSignature = 0;
+        ulong previousEmittedSignature = 0;
+        var hasPreviousEmittedSignature = false;
+
+        // Advance one emulator through the recording instead of replaying from
+        // event zero for every sampled frame. This keeps replay work linear in
+        // the number of input events.
+        var theme = Theme.Resolve(baseOptions.Theme);
+        if (baseOptions.Chrome?.ThemeBackgroundOverride is string chromeBackground)
+        {
+            theme = theme.WithBackground(chromeBackground);
+        }
+        if (!string.IsNullOrWhiteSpace(baseOptions.BackColor))
+        {
+            theme = theme.WithBackground(baseOptions.BackColor);
+        }
+        if (!string.IsNullOrWhiteSpace(baseOptions.ForeColor))
+        {
+            theme = theme.WithForeground(baseOptions.ForeColor);
+        }
+        var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
+        var processedEventIndex = -1;
+
+        string RenderThrough(int eventIndex)
+        {
+            while (processedEventIndex < eventIndex)
+            {
+                processedEventIndex++;
+                emulator.Process(session.Events[processedEventIndex].Data);
+            }
+
+            currentSignature = emulator.Buffer.GetVisualSignature();
+            if (svgCache.TryGetValue(currentSignature, out var cachedSvg))
+            {
+                return cachedSvg;
+            }
+
+            var svg = SvgRenderer.Render(emulator.Buffer, baseOptions);
+            if (svgCache.Count >= maxCachedFrameSvgs)
+            {
+                svgCache.Clear();
+            }
+            svgCache.Add(currentSignature, svg);
+            return svg;
+        }
+
         try
         {
             if (fps > 0 && eventCount > 0)
@@ -68,25 +130,28 @@ internal static partial class Program
                     if (t < rangeStart - 1e-9) continue;
                     if (t > rangeEnd + 1e-9) break;
                     while (eventIndex + 1 < eventCount && session.Events[eventIndex + 1].Time <= t + 1e-9) eventIndex++;
-                    baseOptions.Frame = eventIndex;
                     yielded = true;
-                    yield return SvgRenderer.Render(session, baseOptions);
+                    yield return RenderThrough(eventIndex);
                 }
             }
             else
             {
-                string? previousSvg = null;
                 for (var i = 0; i < eventCount; i++)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     var time = session.Events[i].Time;
                     if (baseOptions.TimeStart.HasValue && time < baseOptions.TimeStart.Value - 1e-9) continue;
                     if (baseOptions.TimeEnd.HasValue && time > baseOptions.TimeEnd.Value + 1e-9) break;
-                    baseOptions.Frame = i;
-                    var frameSvg = SvgRenderer.Render(session, baseOptions);
-                    if (frameSvg == previousSvg) continue;
-                    previousSvg = frameSvg;
+                    var frameSvg = RenderThrough(i);
+                    if (hasPreviousEmittedSignature && currentSignature == previousEmittedSignature)
+                    {
+                        // Save-frames without an FPS has always emitted only
+                        // consecutive unique visual states.
+                        continue;
+                    }
                     yielded = true;
+                    previousEmittedSignature = currentSignature;
+                    hasPreviousEmittedSignature = true;
                     yield return frameSvg;
                 }
             }

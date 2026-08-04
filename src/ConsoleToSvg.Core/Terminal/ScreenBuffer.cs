@@ -142,6 +142,78 @@ public sealed partial class ScreenBuffer
 
     public int TotalHeight => _scrollbackRows.Count + Height;
 
+    /// <summary>
+    /// Returns a stable signature of the visible terminal state. This is useful
+    /// when consecutive video samples show the same screen and can reuse an
+    /// already-rendered SVG or PNG.
+    /// </summary>
+    public ulong GetVisualSignature()
+    {
+        const ulong fnvOffset = 1469598103934665603UL;
+        const ulong fnvPrime = 1099511628211UL;
+
+        var signature = fnvOffset;
+        AddInt(CursorRow);
+        AddInt(CursorCol);
+
+        for (var row = 0; row < Height; row++)
+        {
+            for (var col = 0; col < Width; col++)
+            {
+                var cell = GetCell(row, col);
+                AddString(cell.Text);
+                AddString(cell.Foreground);
+                AddString(cell.Background);
+                AddBool(cell.Bold);
+                AddBool(cell.Italic);
+                AddBool(cell.Underline);
+                AddBool(cell.Reversed);
+                AddBool(cell.Faint);
+                AddBool(cell.Hidden);
+                AddBool(cell.Strikethrough);
+                AddBool(cell.Overline);
+                AddBool(cell.Blink);
+                AddString(cell.UnderlineColor ?? string.Empty);
+                AddBool(cell.IsWide);
+                AddBool(cell.IsWideContinuation);
+            }
+        }
+
+        return signature;
+
+        void AddString(string value)
+        {
+            for (var i = 0; i < value.Length; i++)
+            {
+                signature ^= value[i];
+                signature *= fnvPrime;
+            }
+            signature ^= 0xFF;
+            signature *= fnvPrime;
+        }
+
+        void AddBool(bool value)
+        {
+            signature ^= value ? (byte)1 : (byte)0;
+            signature *= fnvPrime;
+        }
+
+        void AddInt(int value)
+        {
+            unchecked
+            {
+                signature ^= (byte)value;
+                signature *= fnvPrime;
+                signature ^= (byte)(value >> 8);
+                signature *= fnvPrime;
+                signature ^= (byte)(value >> 16);
+                signature *= fnvPrime;
+                signature ^= (byte)(value >> 24);
+                signature *= fnvPrime;
+            }
+        }
+    }
+
     public ScreenCell GetCell(int row, int col)
     {
         if (row < 0 || row >= Height || col < 0 || col >= Width)

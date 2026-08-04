@@ -63,14 +63,55 @@ public static partial class SvgConverter
         });
 
         var frameCount = 0;
+        var maxParallelRenders = GetVideoRenderParallelism();
+        var pendingRenders = new Queue<Task<byte[]>>(maxParallelRenders);
+        // PNGs can be much larger than their source SVGs, so keep this cache
+        // deliberately small while still covering common short animation loops.
+        const int maxCachedPngs = 16;
+        var renderCache = new Dictionary<string, Task<byte[]>>(ReferenceEqualityComparer.Instance);
         try
         {
             foreach (var svg in svgFrames)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var bytes = await RenderSvgToPngAsync(svg, effectiveConverter, width, height, logger, cancellationToken)
+
+                // Rendering is CPU/process-bound and can proceed concurrently,
+                // but PNGs must enter image2pipe in frame order. A bounded FIFO
+                // keeps memory stable and leaves a single writer for ffmpeg stdin.
+                if (!renderCache.TryGetValue(svg, out var render))
+                {
+                    render = RenderSvgToPngAsync(
+                        svg,
+                        effectiveConverter,
+                        width,
+                        height,
+                        logger,
+                        cancellationToken
+                    );
+                    if (renderCache.Count >= maxCachedPngs)
+                    {
+                        renderCache.Clear();
+                    }
+                    renderCache.Add(svg, render);
+                }
+                pendingRenders.Enqueue(render);
+
+                if (pendingRenders.Count >= maxParallelRenders)
+                {
+                    var bytes = await pendingRenders.Dequeue().ConfigureAwait(false);
+                    await process.StandardInput.BaseStream
+                        .WriteAsync(bytes, cancellationToken)
+                        .ConfigureAwait(false);
+                    frameCount++;
+                }
+            }
+
+            while (pendingRenders.Count > 0)
+            {
+                var bytes = await pendingRenders.Dequeue().ConfigureAwait(false);
+                await process.StandardInput.BaseStream
+                    .WriteAsync(bytes, cancellationToken)
                     .ConfigureAwait(false);
-                await process.StandardInput.BaseStream.WriteAsync(bytes, cancellationToken).ConfigureAwait(false);
                 frameCount++;
             }
             await process.StandardInput.DisposeAsync().ConfigureAwait(false);
@@ -105,6 +146,8 @@ public static partial class SvgConverter
         }
         await Console.Error.WriteLineAsync($"Encoded {frameCount} frames to video.".AsMemory(), CancellationToken.None);
     }
+
+    private static int GetVideoRenderParallelism() => Math.Clamp(Environment.ProcessorCount, 1, 8);
 
     private static string[] CreateInMemoryVideoFfmpegArgs(
         double fps,

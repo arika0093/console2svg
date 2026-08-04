@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -57,6 +58,10 @@ public static partial class SvgConverter
     // Cached so we don't shell out to ffmpeg on every call.
     private static readonly Lazy<bool> _ffmpegSupportsSvg = new(CheckFfmpegSvgSupport);
 
+    private static readonly ConcurrentDictionary<string, Lazy<VideoCodecAvailability>> _videoCodecAvailabilityByFfmpegPath = new(
+        StringComparer.OrdinalIgnoreCase
+    );
+
     /// <summary>
     /// True when an ffmpeg binary was discovered (via <see cref="SetFfmpegPath"/>,
     /// the bundled layout, or PATH). Safe to call before a recording to drive
@@ -86,12 +91,32 @@ public static partial class SvgConverter
             return null;
         }
 
-        if (CheckFfmpegEncoder("libx264", ffmpegPath))
+        var executable = string.IsNullOrEmpty(ffmpegPath) ? FindFfmpegForDetection() : ffmpegPath;
+        if (string.IsNullOrEmpty(executable))
+        {
+            throw new InvalidOperationException(
+                "No compatible video codec found. ffmpeg must have libx264 or mpeg4 encoder. "
+                    + "Install ffmpeg with libx264 support for best compatibility."
+            );
+        }
+
+        var resolvedExecutable = Path.GetFullPath(executable);
+        var availableCodecs = _videoCodecAvailabilityByFfmpegPath
+            .GetOrAdd(
+                resolvedExecutable,
+                static path => new Lazy<VideoCodecAvailability>(
+                    () => DetectFfmpegVideoCodecs(path),
+                    LazyThreadSafetyMode.ExecutionAndPublication
+                )
+            )
+            .Value;
+
+        if (availableCodecs.Libx264)
         {
             return "libx264";
         }
 
-        if (CheckFfmpegEncoder("mpeg4", ffmpegPath))
+        if (availableCodecs.Mpeg4)
         {
             return "mpeg4";
         }
@@ -384,6 +409,7 @@ public static partial class SvgConverter
         // ffmpeg can't decode SVG, ResolvePreConversionConverter falls back to
         // rsvg-convert/bundled resvg for the SVG → PNG pre-conversion step, then
         // ffmpeg ingests PNGs for the final video encode (issue #79).
+        var codec = SelectVideoCodec(outputPath, ffmpegPath);
         var effectiveConverter = ResolvePreConversionConverter(converter);
 
         if (effectiveConverter == SvgConverterMode.Ffmpeg)
@@ -451,9 +477,8 @@ public static partial class SvgConverter
         }
 
         var fpsStr = fps.ToString(CultureInfo.InvariantCulture);
-        var codec = SelectVideoCodec(outputPath, ffmpegPath);
         string[] ffmpegArgs = codec is null
-            ? ["-y", "-framerate", fpsStr, "-i", framePattern, outputPath]
+            ? ["-y", "-framerate", fpsStr, "-i", framePattern, "-pix_fmt", "yuv420p", outputPath]
             : ["-y", "-framerate", fpsStr, "-i", framePattern, "-c:v", codec, "-pix_fmt", "yuv420p", outputPath];
 
         await Console.Error.WriteLineAsync("Encoding video frames...".AsMemory(), cancellationToken);

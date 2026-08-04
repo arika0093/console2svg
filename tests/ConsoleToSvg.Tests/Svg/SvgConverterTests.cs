@@ -66,7 +66,7 @@ public sealed class SvgConverterTests
 
         // Test GIF output
         var gifArgs = (string[])method.Invoke(null, [2.5d, "output.gif", null])!;
-        gifArgs.Length.ShouldBe(10);
+        gifArgs.Length.ShouldBe(12);
         gifArgs[0].ShouldBe("-y");
         gifArgs[1].ShouldBe("-framerate");
         gifArgs[2].ShouldBe("2.5");
@@ -76,11 +76,13 @@ public sealed class SvgConverterTests
         gifArgs[6].ShouldBe("png");
         gifArgs[7].ShouldBe("-i");
         gifArgs[8].ShouldBe("pipe:0");
-        gifArgs[9].ShouldBe("output.gif");
+        gifArgs[9].ShouldBe("-pix_fmt");
+        gifArgs[10].ShouldBe("yuv420p");
+        gifArgs[11].ShouldBe("output.gif");
 
         // Test WebM output
         var webmArgs = (string[])method.Invoke(null, [2.5d, "output.webm", null])!;
-        webmArgs.Length.ShouldBe(10);
-        webmArgs[9].ShouldBe("output.webm");
+        webmArgs.Length.ShouldBe(12);
+        webmArgs[11].ShouldBe("output.webm");
     }
 }

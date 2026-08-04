@@ -134,21 +134,15 @@ public static partial class SvgConverter
     }
 
     /// <summary>
-    /// Checks whether ffmpeg has a specific video encoder available by parsing
-    /// the output of <c>ffmpeg -encoders</c>.
+    /// Detects the video encoders required for Windows Media Player compatibility
+    /// by parsing the output of <c>ffmpeg -encoders</c>.
     /// </summary>
-    private static bool CheckFfmpegEncoder(string encoderName, string ffmpegPath)
+    private static VideoCodecAvailability DetectFfmpegVideoCodecs(string ffmpegPath)
     {
-        var exe = string.IsNullOrEmpty(ffmpegPath) ? FindFfmpegForDetection() : ffmpegPath;
-        if (string.IsNullOrEmpty(exe))
-        {
-            return false;
-        }
-
         try
         {
             using var process = new Process();
-            process.StartInfo.FileName = exe;
+            process.StartInfo.FileName = ffmpegPath;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.RedirectStandardError = true;
@@ -159,7 +153,10 @@ public static partial class SvgConverter
             var output = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
 
-            // Encoder lines look like: " V....D libx264 ..."
+            var libx264 = false;
+            var mpeg4 = false;
+
+            // Encoder lines look like: " V....D libx264 ...".
             // The encoder name is the second whitespace-separated token.
             foreach (var line in output.Split('\n'))
             {
@@ -167,20 +164,29 @@ public static partial class SvgConverter
                 if (trimmed.StartsWith("V", StringComparison.Ordinal))
                 {
                     var parts = trimmed.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
-                    if (parts.Length >= 2 && parts[1] == encoderName)
+                    if (parts.Length >= 2)
                     {
-                        return true;
+                        if (parts[1] == "libx264")
+                        {
+                            libx264 = true;
+                        }
+                        else if (parts[1] == "mpeg4")
+                        {
+                            mpeg4 = true;
+                        }
                     }
                 }
             }
 
-            return false;
+            return new VideoCodecAvailability(libx264, mpeg4);
         }
         catch
         {
-            return false;
+            return default;
         }
     }
+
+    private readonly record struct VideoCodecAvailability(bool Libx264, bool Mpeg4);
 
     /// <summary>Finds rsvg-convert (or rsvg-convert.exe) on PATH.</summary>
     private static string FindRsvgConvertExecutable()

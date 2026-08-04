@@ -421,10 +421,9 @@ public static partial class SvgConverter
             // Pre-convert all SVG frames to PNG so ffmpeg can ingest them.
             var svgFiles = Directory
                 .EnumerateFiles(framesDir, "frame-*.svg")
-                .OrderBy(f => f, StringComparer.Ordinal)
-                .ToList();
+                .ToArray();
 
-            if (svgFiles.Count == 0)
+            if (svgFiles.Length == 0)
             {
                 throw new InvalidOperationException(
                     $"No SVG frames found in {framesDir} for video conversion."
@@ -432,7 +431,7 @@ public static partial class SvgConverter
             }
 
             logger.ZLogDebug(
-                $"Pre-converting {svgFiles.Count} SVG frame(s) to PNG via {effectiveConverter}."
+                $"Pre-converting {svgFiles.Length} SVG frame(s) to PNG via {effectiveConverter}."
             );
 
             var parallelOpts = new ParallelOptions

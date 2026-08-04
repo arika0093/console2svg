@@ -111,7 +111,7 @@ public static partial class AnimatedSvgRenderer
 
         for (var i = 0; i < reducedFrames.Count; i++)
         {
-            var hash = BuildVisualSignature(reducedFrames[i].Buffer);
+            var hash = reducedFrames[i].Buffer.GetVisualSignature();
             if (!hashToDefsFrameIndex.TryGetValue(hash, out var defsIdx))
             {
                 defsIdx = uniqueFrameIndices.Count;
@@ -196,14 +196,14 @@ public static partial class AnimatedSvgRenderer
         var reduced = new System.Collections.Generic.List<TerminalFrame>(frames.Count);
         reduced.Add(frames[0]);
         var lastKeptTime = frames[0].Time;
-        var lastKeptVisualSignature = BuildVisualSignature(frames[0].Buffer);
+        var lastKeptVisualSignature = frames[0].Buffer.GetVisualSignature();
         TerminalFrame? pendingFrame = null;
         var pendingVisualSignature = 0UL;
 
         for (var i = 1; i < frames.Count - 1; i++)
         {
             var frame = frames[i];
-            var visualSignature = BuildVisualSignature(frame.Buffer);
+            var visualSignature = frame.Buffer.GetVisualSignature();
             var visualChanged = visualSignature != lastKeptVisualSignature;
             var elapsed = frame.Time - lastKeptTime;
 

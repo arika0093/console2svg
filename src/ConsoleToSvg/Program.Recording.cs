@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -446,9 +447,24 @@ internal static partial class Program
             yield break;
         }
 
-        foreach (var frame in frames)
+        const int maxCachedFrameSvgs = 128;
+        var svgCache = new Dictionary<ulong, string>();
+        foreach (var buffer in frames.Select(frame => frame.Buffer))
         {
-            yield return SvgRenderer.Render(frame.Buffer, renderOptions);
+            var signature = buffer.GetVisualSignature();
+            if (svgCache.TryGetValue(signature, out var cachedSvg))
+            {
+                yield return cachedSvg;
+                continue;
+            }
+
+            var svg = SvgRenderer.Render(buffer, renderOptions);
+            if (svgCache.Count >= maxCachedFrameSvgs)
+            {
+                svgCache.Clear();
+            }
+            svgCache.Add(signature, svg);
+            yield return svg;
         }
     }
 

@@ -174,30 +174,36 @@ internal static partial class Program
             }
 
             var renderOptions = SvgRenderOptionsFactory.Create(options);
-            logger.ZLogDebug($"Rendering SVG. Mode={options.Mode}");
-            var currentOutputExt = Path.GetExtension(options.OutputPath).TrimStart('.').ToLowerInvariant();
-            var isVideoOutput = !string.IsNullOrEmpty(currentOutputExt) && currentOutputExt != "svg" && IsVideoFormat(currentOutputExt);
-            if (!isVideoOutput && !options.StdOut)
+            string? renderedSvg = null;
+
+            // Raster and video output have their own rendering paths below.  Do not
+            // eagerly build an SVG for them: an animated SVG can contain every
+            // terminal frame and was previously constructed only to be discarded.
+            string RenderOutputSvg()
             {
-                await Console.Error.WriteLineAsync("Rendering SVG...".AsMemory(), outputToken);
-            }
-            var svg = options.Mode is OutputMode.Video or OutputMode.Repeat
-                ? AnimatedSvgRenderer.Render(session, renderOptions)
-                : SvgRenderer.Render(session, renderOptions);
-            logger.ZLogDebug($"Rendering completed. SvgLength={svg.Length}");
-            if (!isVideoOutput && !options.StdOut)
-            {
-                await Console.Error.WriteLineAsync("SVG rendering completed.".AsMemory(), CancellationToken.None);
+                if (renderedSvg is not null)
+                {
+                    return renderedSvg;
+                }
+
+                logger.ZLogDebug($"Rendering SVG. Mode={options.Mode}");
+                renderedSvg = options.Mode is OutputMode.Video or OutputMode.Repeat
+                    ? AnimatedSvgRenderer.Render(session, renderOptions)
+                    : SvgRenderer.Render(session, renderOptions);
+                logger.ZLogDebug($"Rendering completed. SvgLength={renderedSvg.Length}");
+                return renderedSvg;
             }
 
             // Background temp-dir deletion task for the video path; awaited
             // just before the process exits so deletion completes even when
             // Windows AV makes recursive Directory.Delete slow.
             Task? tempCleanup = null;
+            var savedFramesDuringVideoConversion = false;
 
             if (options.StdOut)
             {
                 logger.ZLogDebug($"Writing SVG to stdout.");
+                var svg = RenderOutputSvg();
                 await using var stdoutWriter = new StreamWriter(
                     Console.OpenStandardOutput(),
                     new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
@@ -216,6 +222,7 @@ internal static partial class Program
                     // SVG output – existing behaviour
                     EnsureDirectory(options.OutputPath);
                     logger.ZLogDebug($"Writing output file: {options.OutputPath}");
+                    var svg = RenderOutputSvg();
                     await File.WriteAllTextAsync(
                             options.OutputPath,
                             svg,
@@ -315,6 +322,12 @@ internal static partial class Program
                                         outputToken
                                     )
                                     .ConfigureAwait(false);
+
+                                // The temp SVGs are exactly the frames requested by
+                                // --save-frames. Copy them instead of rendering the
+                                // whole recording for a second time below.
+                                CopyRenderedFrameSvgs(tempDir, options.SaveFramesDir, logger);
+                                savedFramesDuringVideoConversion = true;
                             }
                             finally
                             {
@@ -396,7 +409,7 @@ internal static partial class Program
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(options.SaveFramesDir))
+            if (!string.IsNullOrWhiteSpace(options.SaveFramesDir) && !savedFramesDuringVideoConversion)
             {
                 await SaveFramesAsync(
                         session,

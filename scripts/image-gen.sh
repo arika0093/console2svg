@@ -3,7 +3,6 @@ sudo npm install -g oh-my-logo @github/copilot
 sudo apt install -y librsvg2-bin sl nyancat vim tmux ffmpeg cmatrix
 
 # --- image ---
-# required: sudo npm install -g oh-my-logo
 console2svg -o ./assets/cmd-hero.svg        --verbose ./logs/cmd-hero.log         -w 100 -h 10 -c -d macos-pc --opacity 0.95 --background ./assets/image1.png -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
 console2svg -o ./assets/cmd-hero-grad.svg   --verbose ./logs/cmd-hero-grad.log    -w 100 -h 10 -c -d macos-pc --opacity 0.95 --background "#30a0d0" "#0060c0" -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
 console2svg -o ./assets/cmd.svg             --verbose ./logs/cmd.log              -w 120 console2svg 
@@ -23,15 +22,10 @@ console2svg -o ./assets/window/windows-pc.svg  -d windows-pc  -w 40 -h 4 -c -- d
 console2svg -o ./assets/window/transparent.svg -d transparent -w 40 -h 4 -c -- dotnet --version
 
 # --- video ---
-# required: sudo apt install -y sl nyancat vim tmux
 console2svg -o ./assets/cmd-sl.svg            --verbose ./logs/cmd-sl.log           -w 120 -h 16 -c -d -v -- sl
 console2svg -o ./assets/cmd-nyancat.svg       --verbose ./logs/cmd-nyancat.log      -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat
 console2svg -o ./assets/cmd-bash-vim.svg      --verbose ./logs/cmd-bash-vim.log     -w 80 -h 20 -v -d --replay ./assets/cmd-bash-vim-replay.json -- bash
-# required: sudo npm install -g @github/copilot
-# console2svg -o ./assets/cmd-loop.svg          --verbose ./logs/cmd-loop.log         -w 120 -h 20 -v -d  --replay ./assets/cmd-loop-replay.json -- copilot --banner
-# required: sudo apt install -y tmux
-# console2svg -o ./assets/cmd-tmux-replay.svg   --verbose ./logs/cmd-tmux-replay.log  -w 80 -h 14 -v --replay ./assets/cmd-tmux-replay.json -- tmux
+console2svg -o ./assets/cmd-loop.svg          --verbose ./logs/cmd-loop.log         -w 100 -h 20 -v -d --timeout 3 -- copilot --banner
 
 # --- video(gif) ---
-# required: sudo apt install -y ffmpeg cmatrix
 console2svg -o ./assets/cmd-matrix-video.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab

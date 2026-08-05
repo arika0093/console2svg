@@ -223,6 +223,22 @@ jobs:
         working-directory: wrapper/npm
         run: npm publish --provenance --access public
 
+  release-winget:
+    needs: [build-nupkg, release-github]
+    if: ${{ needs.build-nupkg.outputs.prerelease != 'true' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Publish to WinGet
+        # winget-releaser installs and invokes Komac to generate the manifests
+        # and submit the update to microsoft/winget-pkgs.
+        uses: vedantmgoyal9/winget-releaser@v2
+        with:
+          identifier: arika0093.console2svg
+          installers-regex: '^console2svg-win-(x64|arm64)\.zip$'
+          release-tag: v${{ needs.build-nupkg.outputs.version }}
+          token: ${{ secrets.WINGET_TOKEN }}
+
   image-gen:
     runs-on: ubuntu-latest
     needs: [release-github]

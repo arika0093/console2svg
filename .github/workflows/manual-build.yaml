@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 env:
   DOTNET_VERSION: '10.0.x'
@@ -150,6 +151,19 @@ jobs:
       - name: Build Linux packages
         shell: bash
         run: bash scripts/release/build-linux-packages.sh '${{ needs.build-nupkg.outputs.package-version }}' '${{ needs.build-nupkg.outputs.package-iteration }}'
+
+      - name: Delete internal artifacts
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          run_id="${{ github.run_id }}"
+          # Get artifact IDs to delete
+          artifact_ids=$(gh api "repos/${{ github.repository }}/actions/runs/${run_id}/artifacts" \
+            --jq '.artifacts[] | select(.name == "nuget-packages" or (.name | startswith("native-"))) | .id')
+          for id in $artifact_ids; do
+            gh api --method DELETE "repos/${{ github.repository }}/actions/artifacts/${id}" || true
+          done
 
       - name: Upload release assets
         uses: actions/upload-artifact@v7

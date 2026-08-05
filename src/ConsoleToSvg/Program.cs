@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ConsoleToSvg.Cli;
-using ConsoleToSvg.Core;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;
 using ConsoleToSvg.Terminal;
@@ -271,7 +270,7 @@ internal static partial class Program
                                         includeFallback: true
                                     ),
                                     options.VideoFps, options.OutputPath, converter, ffmpegPath,
-                                    options.SizeWidth, options.SizeHeight, logger, ConsoleNotification.Instance, outputToken)
+                                    options.SizeWidth, options.SizeHeight, logger, ConsoleProgressReporter.Instance, outputToken)
                                 .ConfigureAwait(false);
                         }
                         else
@@ -320,7 +319,7 @@ internal static partial class Program
                                         options.SizeWidth,
                                         options.SizeHeight,
                                         logger,
-                                        ConsoleNotification.Instance,
+                                        ConsoleProgressReporter.Instance,
                                         outputToken
                                     )
                                     .ConfigureAwait(false);
@@ -386,7 +385,7 @@ internal static partial class Program
                                     options.SizeWidth,
                                     options.SizeHeight,
                                     logger,
-                                    ConsoleNotification.Instance,
+                                    ConsoleProgressReporter.Instance,
                                     outputToken
                                 )
                                 .ConfigureAwait(false);

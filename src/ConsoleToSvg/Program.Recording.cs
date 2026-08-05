@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ConsoleToSvg.Cli;
-using ConsoleToSvg.Core;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;
 using ConsoleToSvg.Terminal;
@@ -166,7 +165,7 @@ internal static partial class Program
                 options.DelimitedCommand is null or { Length: 0 },
                 IsInteractiveRecordingFormat(options.OutputPath),
                 !IsVideoFormat(Path.GetExtension(options.OutputPath).TrimStart('.')),
-                async (capture, notification) =>
+                async (capture, progressReporter) =>
                 {
                     var outputPath = GetInteractiveOutputPath(
                         options.OutputPath,
@@ -178,7 +177,7 @@ internal static partial class Program
                             renderOptions,
                             options,
                             loggerFactory.CreateLogger("ConsoleToSvg.InteractiveCapture"),
-                            notification
+                            progressReporter
                         )
                         .ConfigureAwait(false);
                     return "Saved";
@@ -234,7 +233,7 @@ internal static partial class Program
         SvgRenderOptions renderOptions,
         AppOptions options,
         ILogger logger,
-        INotification notification
+        IProgressReporter progressReporter
     )
     {
         EnsureDirectory(outputPath);
@@ -312,7 +311,7 @@ internal static partial class Program
                             options.SizeWidth,
                             options.SizeHeight,
                             logger,
-                            notification,
+                            progressReporter,
                             CancellationToken.None
                         )
                         .ConfigureAwait(false);
@@ -352,7 +351,7 @@ internal static partial class Program
                             options.SizeWidth,
                             options.SizeHeight,
                             logger,
-                            notification,
+                            progressReporter,
                             CancellationToken.None
                         )
                         .ConfigureAwait(false);
@@ -378,7 +377,7 @@ internal static partial class Program
                         options.SizeWidth,
                         options.SizeHeight,
                         logger,
-                        notification,
+                        progressReporter,
                         CancellationToken.None
                     )
                     .ConfigureAwait(false);

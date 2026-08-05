@@ -5,7 +5,6 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using ConsoleToSvg.Core;
 using Microsoft.Extensions.Logging;
 using ZLogger;
 
@@ -27,7 +26,7 @@ public static partial class SvgConverter
         double? width,
         double? height,
         ILogger logger,
-        INotification notification,
+        IProgressReporter progressReporter,
         CancellationToken cancellationToken
     )
     {
@@ -39,7 +38,7 @@ public static partial class SvgConverter
         var args = CreateInMemoryVideoFfmpegArgs(fps, outputPath, codec);
 
         logger.ZLogDebug($"Encoding video from in-memory PNG frames.");
-        await notification.NotifyAsync("Encoding video frames...", cancellationToken);
+        await progressReporter.ReportAsync("Encoding video frames...", cancellationToken);
         using var process = new Process { StartInfo = CreateFfmpegStartInfo(ffmpegPath, args) };
         process.StartInfo.RedirectStandardInput = true;
         try
@@ -147,7 +146,7 @@ public static partial class SvgConverter
                     + FormatFfmpegError(standardError)
             );
         }
-        await notification.NotifyAsync($"Encoded {frameCount} frames to video.", CancellationToken.None);
+        await progressReporter.ReportAsync($"Encoded {frameCount} frames to video.", CancellationToken.None);
     }
 
     private static int GetVideoRenderParallelism() => Math.Clamp(Environment.ProcessorCount, 1, 8);

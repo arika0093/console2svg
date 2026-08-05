@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ConsoleToSvg.Svg;
 using ConsoleToSvg.Terminal;
 using Microsoft.Extensions.Logging;
 using ZLogger;
@@ -27,7 +28,7 @@ public static partial class InteractiveRecorder
         bool exitOnCtrlD,
         bool recordingEnabled,
         bool screenshotEnabled,
-        Func<InteractiveCapture, Task<string?>> onCapture,
+        Func<InteractiveCapture, IProgressReporter, Task<string?>> onCapture,
         CancellationToken cancellationToken,
         ILogger? logger = null
     )
@@ -390,9 +391,16 @@ public static partial class InteractiveRecorder
         async Task SaveCaptureAsync(InteractiveCapture capture)
         {
             ShowPersistentNotification("Saving...");
+            var conversionProgressReporter = new InteractiveConversionProgressReporter(
+                message =>
+                {
+                    _ = ShowNotification(message);
+                    return Task.CompletedTask;
+                }
+            );
             try
             {
-                var message = await onCapture(capture).ConfigureAwait(false);
+                var message = await onCapture(capture, conversionProgressReporter).ConfigureAwait(false);
                 if (!string.IsNullOrWhiteSpace(message))
                 {
                     var savedNotification = ShowNotification(message);
@@ -1049,6 +1057,26 @@ public static partial class InteractiveRecorder
                     CancellationToken.None
                 )
                 .ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Bridges <see cref="IProgressReporter"/> calls to the interactive notification bar.
+    /// Used during conversion operations in interactive mode to display progress messages
+    /// in the top-right corner instead of writing to the console.
+    /// </summary>
+    private sealed class InteractiveConversionProgressReporter : IProgressReporter
+    {
+        private readonly Func<string, Task> _showNotification;
+
+        public InteractiveConversionProgressReporter(Func<string, Task> showNotification)
+        {
+            _showNotification = showNotification;
+        }
+
+        public Task ReportAsync(string message, CancellationToken cancellationToken)
+        {
+            return _showNotification(message);
         }
     }
 }

@@ -270,7 +270,7 @@ internal static partial class Program
                                         includeFallback: true
                                     ),
                                     options.VideoFps, options.OutputPath, converter, ffmpegPath,
-                                    options.SizeWidth, options.SizeHeight, logger, outputToken)
+                                    options.SizeWidth, options.SizeHeight, logger, ConsoleProgressReporter.Instance, outputToken)
                                 .ConfigureAwait(false);
                         }
                         else
@@ -319,6 +319,7 @@ internal static partial class Program
                                         options.SizeWidth,
                                         options.SizeHeight,
                                         logger,
+                                        ConsoleProgressReporter.Instance,
                                         outputToken
                                     )
                                     .ConfigureAwait(false);
@@ -384,6 +385,7 @@ internal static partial class Program
                                     options.SizeWidth,
                                     options.SizeHeight,
                                     logger,
+                                    ConsoleProgressReporter.Instance,
                                     outputToken
                                 )
                                 .ConfigureAwait(false);

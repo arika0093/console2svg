@@ -165,7 +165,7 @@ internal static partial class Program
                 options.DelimitedCommand is null or { Length: 0 },
                 IsInteractiveRecordingFormat(options.OutputPath),
                 !IsVideoFormat(Path.GetExtension(options.OutputPath).TrimStart('.')),
-                async capture =>
+                async (capture, progressReporter) =>
                 {
                     var outputPath = GetInteractiveOutputPath(
                         options.OutputPath,
@@ -176,7 +176,8 @@ internal static partial class Program
                             outputPath,
                             renderOptions,
                             options,
-                            loggerFactory.CreateLogger("ConsoleToSvg.InteractiveCapture")
+                            loggerFactory.CreateLogger("ConsoleToSvg.InteractiveCapture"),
+                            progressReporter
                         )
                         .ConfigureAwait(false);
                     return "Saved";
@@ -231,7 +232,8 @@ internal static partial class Program
         string outputPath,
         SvgRenderOptions renderOptions,
         AppOptions options,
-        ILogger logger
+        ILogger logger,
+        IProgressReporter progressReporter
     )
     {
         EnsureDirectory(outputPath);
@@ -309,6 +311,7 @@ internal static partial class Program
                             options.SizeWidth,
                             options.SizeHeight,
                             logger,
+                            progressReporter,
                             CancellationToken.None
                         )
                         .ConfigureAwait(false);
@@ -348,6 +351,7 @@ internal static partial class Program
                             options.SizeWidth,
                             options.SizeHeight,
                             logger,
+                            progressReporter,
                             CancellationToken.None
                         )
                         .ConfigureAwait(false);
@@ -373,6 +377,7 @@ internal static partial class Program
                         options.SizeWidth,
                         options.SizeHeight,
                         logger,
+                        progressReporter,
                         CancellationToken.None
                     )
                     .ConfigureAwait(false);

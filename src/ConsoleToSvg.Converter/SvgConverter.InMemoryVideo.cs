@@ -26,6 +26,7 @@ public static partial class SvgConverter
         double? width,
         double? height,
         ILogger logger,
+        IProgressReporter progressReporter,
         CancellationToken cancellationToken
     )
     {
@@ -37,7 +38,7 @@ public static partial class SvgConverter
         var args = CreateInMemoryVideoFfmpegArgs(fps, outputPath, codec);
 
         logger.ZLogDebug($"Encoding video from in-memory PNG frames.");
-        await Console.Error.WriteLineAsync("Encoding video frames...".AsMemory(), cancellationToken);
+        await progressReporter.ReportAsync("Encoding video frames...", cancellationToken);
         using var process = new Process { StartInfo = CreateFfmpegStartInfo(ffmpegPath, args) };
         process.StartInfo.RedirectStandardInput = true;
         try
@@ -145,7 +146,7 @@ public static partial class SvgConverter
                     + FormatFfmpegError(standardError)
             );
         }
-        await Console.Error.WriteLineAsync($"Encoded {frameCount} frames to video.".AsMemory(), CancellationToken.None);
+        await progressReporter.ReportAsync($"Encoded {frameCount} frames to video.", CancellationToken.None);
     }
 
     private static int GetVideoRenderParallelism() => Math.Clamp(Environment.ProcessorCount, 1, 8);

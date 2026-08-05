@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ConsoleToSvg.Core;
 using ConsoleToSvg.Terminal;
 using Microsoft.Extensions.Logging;
 using ZLogger;
@@ -27,7 +28,7 @@ public static partial class InteractiveRecorder
         bool exitOnCtrlD,
         bool recordingEnabled,
         bool screenshotEnabled,
-        Func<InteractiveCapture, Task<string?>> onCapture,
+        Func<InteractiveCapture, INotification, Task<string?>> onCapture,
         CancellationToken cancellationToken,
         ILogger? logger = null
     )
@@ -390,9 +391,12 @@ public static partial class InteractiveRecorder
         async Task SaveCaptureAsync(InteractiveCapture capture)
         {
             ShowPersistentNotification("Saving...");
+            var conversionNotification = new InteractiveConversionNotification(
+                message => ShowNotification(message).Completion
+            );
             try
             {
-                var message = await onCapture(capture).ConfigureAwait(false);
+                var message = await onCapture(capture, conversionNotification).ConfigureAwait(false);
                 if (!string.IsNullOrWhiteSpace(message))
                 {
                     var savedNotification = ShowNotification(message);
@@ -1049,6 +1053,26 @@ public static partial class InteractiveRecorder
                     CancellationToken.None
                 )
                 .ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Bridges <see cref="INotification"/> calls to the interactive notification bar.
+    /// Used during conversion operations in interactive mode to display progress messages
+    /// in the top-right corner instead of writing to the console.
+    /// </summary>
+    private sealed class InteractiveConversionNotification : INotification
+    {
+        private readonly Func<string, Task> _showNotification;
+
+        public InteractiveConversionNotification(Func<string, Task> showNotification)
+        {
+            _showNotification = showNotification;
+        }
+
+        public Task NotifyAsync(string message, CancellationToken cancellationToken)
+        {
+            return _showNotification(message);
         }
     }
 }

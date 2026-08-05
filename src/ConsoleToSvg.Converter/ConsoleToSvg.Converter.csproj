@@ -12,6 +12,7 @@
     <BeforePack>StageLocalResvgNativeAsset;$(BeforePack)</BeforePack>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ConsoleToSvg.Core\ConsoleToSvg.Core.csproj" />
     <PackageReference Include="ZLogger" Version="2.5.10" />
   </ItemGroup>
   <ItemGroup>

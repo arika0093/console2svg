@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ConsoleToSvg.Core\ConsoleToSvg.Core.csproj" />
     <ProjectReference Include="..\ConsoleToSvg.Pty\ConsoleToSvg.Pty.csproj" />
+    <ProjectReference Include="..\ConsoleToSvg.Converter\ConsoleToSvg.Converter.csproj" />
     <PackageReference Include="ZLogger" Version="2.5.10" />
   </ItemGroup>
 </Project>

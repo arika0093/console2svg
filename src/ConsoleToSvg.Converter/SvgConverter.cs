@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using ConsoleToSvg.Core;
 using Microsoft.Extensions.Logging;
 using ZLogger;
 
@@ -305,6 +306,7 @@ public static partial class SvgConverter
         double? width,
         double? height,
         ILogger logger,
+        INotification notification,
         CancellationToken cancellationToken
     )
     {
@@ -317,7 +319,7 @@ public static partial class SvgConverter
         var effectiveConverter = ResolvePreConversionConverter(converter);
         if (effectiveConverter == SvgConverterMode.Ffmpeg)
         {
-            await Console.Error.WriteLineAsync("Converting SVG to image...".AsMemory(), cancellationToken);
+            await notification.NotifyAsync("Converting SVG to image...", cancellationToken);
             await RunFfmpegAsync(
                     ffmpegPath,
                     ["-y", "-i", svgPath, "-frames:v", "1", "-update", "1", outputPath],
@@ -325,7 +327,7 @@ public static partial class SvgConverter
                     cancellationToken
                 )
                 .ConfigureAwait(false);
-            await Console.Error.WriteLineAsync("Image conversion completed.".AsMemory(), CancellationToken.None);
+            await notification.NotifyAsync("Image conversion completed.", CancellationToken.None);
             return;
         }
 
@@ -337,7 +339,7 @@ public static partial class SvgConverter
 
         try
         {
-            await Console.Error.WriteLineAsync("Converting SVG to PNG...".AsMemory(), cancellationToken);
+            await notification.NotifyAsync("Converting SVG to PNG...", cancellationToken);
             await ConvertSvgToPngAsync(
                     svgPath,
                     tempPng,
@@ -353,13 +355,13 @@ public static partial class SvgConverter
             {
                 // PNG output: ffmpeg not needed.
                 logger.ZLogDebug($"PNG written via fallback converter: {tempPng}");
-                await Console.Error.WriteLineAsync("PNG conversion completed.".AsMemory(), CancellationToken.None);
+                await notification.NotifyAsync("PNG conversion completed.", CancellationToken.None);
                 return;
             }
 
             // PNG → final format via ffmpeg. -frames:v 1 -update 1 avoid the
             // "image sequence pattern" warning for single-frame outputs.
-            await Console.Error.WriteLineAsync("Converting PNG to final format...".AsMemory(), cancellationToken);
+            await notification.NotifyAsync("Converting PNG to final format...", cancellationToken);
             await RunFfmpegAsync(
                     ffmpegPath,
                     ["-y", "-i", tempPng, "-frames:v", "1", "-update", "1", outputPath],
@@ -367,7 +369,7 @@ public static partial class SvgConverter
                     cancellationToken
                 )
                 .ConfigureAwait(false);
-            await Console.Error.WriteLineAsync("Image conversion completed.".AsMemory(), CancellationToken.None);
+            await notification.NotifyAsync("Image conversion completed.", CancellationToken.None);
         }
         finally
         {
@@ -399,6 +401,7 @@ public static partial class SvgConverter
         double? width,
         double? height,
         ILogger logger,
+        INotification notification,
         CancellationToken cancellationToken
     )
     {
@@ -480,7 +483,7 @@ public static partial class SvgConverter
             ? ["-y", "-framerate", fpsStr, "-i", framePattern, "-pix_fmt", "yuv420p", outputPath]
             : ["-y", "-framerate", fpsStr, "-i", framePattern, "-c:v", codec, "-pix_fmt", "yuv420p", outputPath];
 
-        await Console.Error.WriteLineAsync("Encoding video frames...".AsMemory(), cancellationToken);
+        await notification.NotifyAsync("Encoding video frames...", cancellationToken);
         await RunFfmpegAsync(
                 ffmpegPath,
                 ffmpegArgs,
@@ -488,6 +491,6 @@ public static partial class SvgConverter
                 cancellationToken
             )
             .ConfigureAwait(false);
-        await Console.Error.WriteLineAsync("Video encoding completed.".AsMemory(), CancellationToken.None);
+        await notification.NotifyAsync("Video encoding completed.", CancellationToken.None);
     }
 }

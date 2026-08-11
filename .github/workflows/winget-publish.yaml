@@ -1,0 +1,19 @@
+name: Publish to Winget
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Publish to Winget
+        uses: russellbanks/Komac@v2
+        with:
+          identifier: arika0093.console2svg
+          installers-url: https://github.com/arika0093/console2svg/releases/download/{version}/ConsoleToSvg-{version}-win-x64.exe
+          token: ${{ secrets.GITHUB_TOKEN }}

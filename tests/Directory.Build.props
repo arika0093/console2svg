@@ -14,7 +14,7 @@
     <PublishAot>true</PublishAot>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
     <PackageReference Include="Shouldly" Version="4.*" />
     <PackageReference Include="TUnit" Version="1.*" />
   </ItemGroup>

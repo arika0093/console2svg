@@ -424,7 +424,7 @@ internal static partial class SvgDocumentBuilder
             double tolerance)
         {
             var groups = segments.GroupBy(s =>
-                (Position: Math.Round(getPosition(s), 3), Color: getColor(s), StrokeWidth: Math.Round(getStrokeWidth(s), 3))
+                (Position: getPosition(s), Color: getColor(s), StrokeWidth: getStrokeWidth(s))
             );
             foreach (var group in groups)
             {

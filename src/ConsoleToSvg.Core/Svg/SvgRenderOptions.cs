@@ -58,7 +58,10 @@ public sealed class SvgRenderOptions
     /// <summary>Target output image height in pixels. null = auto (derived from content).</summary>
     public double? SizeHeight { get; set; }
 
-    /// <summary>Patterns to mask in output (replaced with asterisks).</summary>
-    public string[]? MaskPatterns { get; init; }
+    /// <summary>
+    /// List of sensitive strings to mask (replace with ***) in the output.
+    /// Applied to all text content including command headers.
+    /// </summary>
+    public string[]? MaskPatterns { get; set; }
 
 }

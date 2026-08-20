@@ -33,13 +33,13 @@ internal static partial class Program
         {
             await Console.Error.WriteLineAsync(error);
             await Console.Error.WriteLineAsync();
-            await Console.Error.WriteLineAsync(OptionParser.ShortHelpText);
+            await Console.Error.WriteLineAsync(ColorizeIfSupported(OptionParser.ShortHelpText));
             return 1;
         }
 
         if (showHelp || options is null)
         {
-            Console.WriteLine(OptionParser.HelpText);
+            WritePagedHelp(ColorizeIfSupported(OptionParser.HelpText));
             return 0;
         }
 
@@ -51,7 +51,7 @@ internal static partial class Program
 
         if (args.Length == 0 && !Console.IsInputRedirected)
         {
-            Console.WriteLine(OptionParser.ShortHelpText);
+            Console.WriteLine(ColorizeIfSupported(OptionParser.ShortHelpText));
             return 0;
         }
 

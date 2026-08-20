@@ -180,6 +180,149 @@ internal static partial class Program
         }
     }
 
+    private static bool SupportsAnsiColors()
+    {
+        // Don't colorize if output is redirected
+        if (Console.IsOutputRedirected)
+        {
+            return false;
+        }
+
+        // Check for NO_COLOR convention
+        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("NO_COLOR")))
+        {
+            return false;
+        }
+
+        // Check TERM variable
+        var term = Environment.GetEnvironmentVariable("TERM");
+        if (!string.IsNullOrEmpty(term) && term != "dumb")
+        {
+            return true;
+        }
+
+        // Windows 10+ supports ANSI
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static string ColorizeIfSupported(string text)
+    {
+        if (SupportsAnsiColors())
+        {
+            return OptionParser.ColorizeHelp(text);
+        }
+        return text;
+    }
+
+    private static void WritePagedHelp(string text)
+    {
+        // Only use pager for --help (not for short help on error)
+        // and only when output is to a terminal
+        if (Console.IsOutputRedirected)
+        {
+            Console.WriteLine(text);
+            return;
+        }
+
+        // Try to find less
+        var lessPath = FindLess();
+        if (lessPath == null)
+        {
+            Console.WriteLine(text);
+            return;
+        }
+
+        // Write to temp file so less can read keyboard from terminal
+        // Create a private subdirectory to avoid publicly writable directory issues
+        var privateTempDir = Path.Combine(Path.GetTempPath(), $"console2svg-{Environment.ProcessId}");
+        Directory.CreateDirectory(privateTempDir);
+        var tempFile = Path.Combine(privateTempDir, Path.GetRandomFileName());
+        try
+        {
+            File.WriteAllText(tempFile, text);
+            var psi = new ProcessStartInfo(lessPath, $"-R -- \"{tempFile}\"")
+            {
+                UseShellExecute = false,
+            };
+
+            using var process = Process.Start(psi);
+            if (process == null)
+            {
+                Console.WriteLine(text);
+                return;
+            }
+
+            process.WaitForExit();
+        }
+        catch
+        {
+            // If less fails, fall back to direct output
+            Console.WriteLine(text);
+        }
+        finally
+        {
+            try
+            {
+                File.Delete(tempFile);
+                Directory.Delete(privateTempDir);
+            }
+            catch
+            {
+                // Ignore cleanup errors
+            }
+        }
+    }
+
+    private static string? FindLess()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            // On Windows, check if less is available (e.g., from Git Bash or WSL)
+            return FindExecutableInPath("less");
+        }
+
+        // On Unix, less is typically at /usr/bin/less
+        if (File.Exists("/usr/bin/less"))
+        {
+            return "/usr/bin/less";
+        }
+
+        return FindExecutableInPath("less");
+    }
+
+    private static string? FindExecutableInPath(string executable)
+    {
+        var path = Environment.GetEnvironmentVariable("PATH");
+        if (string.IsNullOrEmpty(path))
+        {
+            return null;
+        }
+
+        var separator = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ';' : ':';
+        var extension = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : "";
+
+        foreach (var dir in path.Split(separator))
+        {
+            if (string.IsNullOrWhiteSpace(dir))
+            {
+                continue;
+            }
+
+            var fullPath = Path.Combine(dir, executable + extension);
+            if (File.Exists(fullPath))
+            {
+                return fullPath;
+            }
+        }
+
+        return null;
+    }
+
     private static uint GetEffectiveUserId()
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

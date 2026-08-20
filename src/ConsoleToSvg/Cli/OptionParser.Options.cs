@@ -17,6 +17,7 @@ public static partial class OptionParser
         switch (name)
         {
             case "-v":
+            case "--video":
                 options.Mode = OutputMode.Video;
                 options.IsModeExplicit = true;
                 return true;

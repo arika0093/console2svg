@@ -22,7 +22,7 @@ public static partial class OptionParser
                                           Specify an integer to use a fixed width.
                 -h, --height <int|adjust> Terminal height in rows (default: adjust).
                                           Specify an integer to use a fixed height.
-                -v                        Output animated SVG (alias for --mode video).
+                -v, --video               Output animated SVG (alias for --mode video).
                 -i, --interactive         Run an interactive shell; F9 records, F12 pauses, and F10 takes a screenshot.
                                           Use -- to start another interactive program (e.g. -i -- pwsh).
                 -c, --with-command        Prepend the command line to the output.
@@ -54,7 +54,7 @@ public static partial class OptionParser
                 --stdout                  Write SVG to stdout instead of a file.
                                           PTY output forwarding is suppressed so the pipe receives only SVG.
                 -m, --mode <image|video|repeat>  Output mode (default: image).
-                -v                        is alias for --mode video.
+                -v, --video               Output animated SVG (alias for --mode video).
                 -w, --width <int|adjust>  Terminal width in characters (default: adjust).
                                           Uses the current terminal width. Specify an integer for a fixed width.
                 -h, --height <int|adjust> Terminal height in rows (default: adjust).
@@ -65,8 +65,6 @@ public static partial class OptionParser
                 --help                    Show help.
                 --version                 Show version and exit.
                 --timeout <sec>           Stop recording after specified seconds (e.g. 5, 0.5).
-                --no-colorenv             Disable PTY color environment overrides (TERM/COLORTERM/FORCE_COLOR).
-                --no-delete-envs          Keep CI/TF_BUILD in shell execution environment.
 
             Options (Appearance):
                 -c, --with-command        Prepend the command line to the output as if typed in a terminal.
@@ -122,19 +120,19 @@ public static partial class OptionParser
                 --fadeout <sec>           Fade-out duration at end of video (default: 0).
                 --coalesce-ms <ms>        Coalesce output chunks within the given gap (default: 0=disabled).
 
-            Options (Video mode):
-                --timing <deterministic|realtime>
-                                          Video timing mode (default: deterministic).
-                                          deterministic: normalize frame times to reduce output diffs.
-                                          realtime: preserve measured event timing as-is.
-
             Options (Interactive mode):
                 -i, --interactive         Run an interactive shell. F9 starts/stops an animation recording;
                                           F12 pauses/resumes it, and F10 saves a static screenshot. These keys work independently of -v.
                                           Use -- to start another interactive program, preserving its arguments
                                           (e.g. -i -- pwsh, -i -- vim README.md).
 
-            Options (Conversion):
+            Options (Advanced):
+                --no-colorenv             Disable PTY color environment overrides (TERM/COLORTERM/FORCE_COLOR).
+                --no-delete-envs          Keep CI/TF_BUILD in shell execution environment.
+                --timing <deterministic|realtime>
+                                          Video timing mode (default: deterministic).
+                                          deterministic: normalize frame times to reduce output diffs.
+                                          realtime: preserve measured event timing as-is.
                 --svg-converter <auto|ffmpeg|rsvg-convert|resvg>
                     SVG → raster converter (default: auto).
                     auto: prefer the bundled resvg host, then ffmpeg+librsvg.
@@ -143,6 +141,267 @@ public static partial class OptionParser
                     resvg: force the bundled resvg renderer.
                     When a fallback handles SVG→PNG, ffmpeg is only used for subsequent format conversion.
             """;
+
+    // ANSI color codes
+    private const string Reset = "\x1b[0m";
+    private const string Bold = "\x1b[1m";
+    private const string Dim = "\x1b[2m";
+    private const string Cyan = "\x1b[36m";
+    private const string Yellow = "\x1b[33m";
+    private const string Green = "\x1b[32m";
+    private const string Red = "\x1b[31m";
+    private const string Magenta = "\x1b[35m";
+
+    public static string ColorizeHelp(string text)
+    {
+        var lines = text.Split('\n');
+        var result = new System.Text.StringBuilder(text.Length + 512);
+
+        // Detect the standard option-line indentation by looking at the first
+        // line that starts with spaces then a dash.
+        var optionIndent = DetectOptionIndent(lines);
+
+        for (var i = 0; i < lines.Length; i++)
+        {
+            var line = lines[i];
+
+            if (i > 0)
+            {
+                result.Append('\n');
+            }
+
+            // Title line (first line with version)
+            if (i == 0 && line.StartsWith("console2svg -", StringComparison.Ordinal))
+            {
+                result.Append(Bold).Append(Green).Append(line).Append(Reset);
+                continue;
+            }
+
+            // Section headers
+            if (line.StartsWith("Usage:", StringComparison.Ordinal)
+                || line.StartsWith("Major options:", StringComparison.Ordinal)
+                || line.StartsWith("Options (", StringComparison.Ordinal)
+                || line.StartsWith("For full option list", StringComparison.Ordinal))
+            {
+                result.Append(Bold).Append(Yellow).Append(line).Append(Reset);
+                continue;
+            }
+
+            // Option lines: must have the standard option indentation and start with -
+            var leadingSpaces = CountLeadingSpaces(line);
+            var trimmed = line.TrimStart();
+            if (leadingSpaces == optionIndent && trimmed.StartsWith("-", StringComparison.Ordinal))
+            {
+                result.Append(ColorizeOptionLine(line));
+                continue;
+            }
+
+            // Continuation lines (indented descriptions) - colorize quoted strings and parens
+            if (leadingSpaces > optionIndent && !string.IsNullOrWhiteSpace(trimmed))
+            {
+                result.Append(ColorizeDescription(line));
+                continue;
+            }
+
+            // Default line
+            result.Append(line);
+        }
+
+        return result.ToString();
+    }
+
+    private static int DetectOptionIndent(string[] lines)
+    {
+        foreach (var line in lines)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue;
+            }
+
+            var spaces = CountLeadingSpaces(line);
+            if (spaces > 0 && spaces < line.Length && line[spaces] == '-')
+            {
+                return spaces;
+            }
+        }
+
+        return 4; // fallback
+    }
+
+    private static int CountLeadingSpaces(string line)
+    {
+        var count = 0;
+        while (count < line.Length && line[count] == ' ')
+        {
+            count++;
+        }
+        return count;
+    }
+
+    private static string ColorizeOptionLine(string line)
+    {
+        var result = new System.Text.StringBuilder(line.Length + 64);
+
+        // Find where description starts.
+        // First try: double space after the option part.
+        var descStart = -1;
+        for (var i = 0; i + 1 < line.Length; i++)
+        {
+            if (line[i] == ' ' && line[i + 1] == ' ')
+            {
+                var before = line[..i].Trim();
+                if (before.StartsWith("-", StringComparison.Ordinal))
+                {
+                    descStart = i;
+                    break;
+                }
+            }
+        }
+
+        // Fallback: find the first space after the last '>' or ']' argument placeholder.
+        if (descStart < 0)
+        {
+            var lastClose = -1;
+            for (var i = line.Length - 1; i >= 0; i--)
+            {
+                if (line[i] == '>' || line[i] == ']')
+                {
+                    lastClose = i;
+                    break;
+                }
+            }
+
+            if (lastClose >= 0 && lastClose + 1 < line.Length)
+            {
+                descStart = lastClose + 1;
+            }
+        }
+
+        if (descStart > 0)
+        {
+            result.Append(ColorizeOptionPart(line[..descStart]));
+            result.Append(ColorizeDescription(line[descStart..]));
+        }
+        else
+        {
+            result.Append(ColorizeOptionPart(line));
+        }
+
+        return result.ToString();
+    }
+
+    private static string ColorizeOptionPart(string text)
+    {
+        var result = new System.Text.StringBuilder(text.Length + 32);
+        var i = 0;
+
+        while (i < text.Length)
+        {
+            // Colorize option flags
+            if (text[i] == '-' && (i == 0 || text[i - 1] == ' ' || text[i - 1] == ','))
+            {
+                var start = i;
+                while (i < text.Length && text[i] != ' ' && text[i] != ',' && text[i] != '=' && text[i] != '[' && text[i] != '<')
+                {
+                    i++;
+                }
+                result.Append(Cyan).Append(text[start..i]).Append(Reset);
+                continue;
+            }
+
+            // Colorize argument placeholders <...>
+            if (text[i] == '<')
+            {
+                var start = i;
+                var end = text.IndexOf('>', i);
+                if (end > i)
+                {
+                    result.Append(Magenta).Append(text[start..(end + 1)]).Append(Reset);
+                    i = end + 1;
+                    continue;
+                }
+            }
+
+            // Colorize optional argument markers [...]
+            if (text[i] == '[')
+            {
+                var start = i;
+                var end = text.IndexOf(']', i);
+                if (end > i)
+                {
+                    result.Append(Magenta).Append(text[start..(end + 1)]).Append(Reset);
+                    i = end + 1;
+                    continue;
+                }
+            }
+
+            result.Append(text[i]);
+            i++;
+        }
+
+        return result.ToString();
+    }
+
+    private static string ColorizeDescription(string text)
+    {
+        var result = new System.Text.StringBuilder(text.Length + 64);
+        var i = 0;
+
+        while (i < text.Length)
+        {
+            // Colorize quoted strings "..."
+            if (text[i] == '"')
+            {
+                var start = i;
+                var end = text.IndexOf('"', i + 1);
+                if (end > i)
+                {
+                    result.Append(Red).Append(text[start..(end + 1)]).Append(Reset);
+                    i = end + 1;
+                    continue;
+                }
+            }
+
+            // Colorize parenthetical content (...)
+            if (text[i] == '(')
+            {
+                var start = i;
+                var depth = 1;
+                var j = i + 1;
+                while (j < text.Length && depth > 0)
+                {
+                    if (text[j] == '(') depth++;
+                    else if (text[j] == ')') depth--;
+                    j++;
+                }
+                if (depth == 0)
+                {
+                    result.Append(Dim).Append(text[start..j]).Append(Reset);
+                    i = j;
+                    continue;
+                }
+            }
+
+            // Colorize angle bracket placeholders <...>
+            if (text[i] == '<')
+            {
+                var start = i;
+                var end = text.IndexOf('>', i);
+                if (end > i)
+                {
+                    result.Append(Magenta).Append(text[start..(end + 1)]).Append(Reset);
+                    i = end + 1;
+                    continue;
+                }
+            }
+
+            result.Append(text[i]);
+            i++;
+        }
+
+        return result.ToString();
+    }
 
     public static bool TryParse(
         string[] args,
@@ -258,16 +517,21 @@ public static partial class OptionParser
                 options.Background.Add(args[i]);
             }
 
-            // --mask: consume additional space-separated patterns
+            // --mask: consume all following non-option tokens as additional mask patterns.
             if (
                 string.Equals(name, "--mask", StringComparison.OrdinalIgnoreCase)
                 && i + 1 < args.Length
-                && !args[i + 1].StartsWith("-", StringComparison.Ordinal)
-                && !string.Equals(args[i + 1], "--", StringComparison.Ordinal)
             )
             {
-                i++;
-                options.MaskPatterns.Add(args[i]);
+                while (
+                    i + 1 < args.Length
+                    && !args[i + 1].StartsWith("-", StringComparison.Ordinal)
+                    && !string.Equals(args[i + 1], "--", StringComparison.Ordinal)
+                )
+                {
+                    i++;
+                    options.MaskPatterns.Add(args[i]);
+                }
             }
 
             i++;
@@ -304,6 +568,7 @@ public static partial class OptionParser
             && !string.Equals(name, "-c", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--with-command", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "-v", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--video", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--mask", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--verbose", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--no-colorenv", StringComparison.OrdinalIgnoreCase)

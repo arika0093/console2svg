@@ -1,9 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="352" height="106" viewBox="0 0 352 106" role="img" aria-label="console2svg output">
 <style>
 .crt {
-  font-family: ui-monospace,"JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,monospace;
+  font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace;
   font-size: 14px;
 }
+.blink { animation: blink 1s step-start infinite; }
+@keyframes blink { 50% { visibility: hidden; } }
 text {
   dominant-baseline: alphabetic;
 }
@@ -17,6 +19,6 @@ text {
 <text class="crt" x="8" y="22" fill="#d4d4d4">$ dotnet --version</text>
 <g transform="translate(8 26)">
 <rect width="336" height="72" fill="transparent"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">10.0.302</text>
+<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">10.0.400</text>
 </g>
 </svg>

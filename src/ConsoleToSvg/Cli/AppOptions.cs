@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ConsoleToSvg.Svg;
 
 namespace ConsoleToSvg.Cli;
@@ -31,6 +32,9 @@ public sealed class AppOptions
     public string OutputPath { get; set; } = "output.svg";
 
     public OutputMode Mode { get; set; } = OutputMode.Image;
+
+    /// <summary>Patterns to mask in output (replaced with asterisks).</summary>
+    public List<string> MaskPatterns { get; } = [];
 
     /// <summary>True when --mode (or -v) was explicitly supplied on the command line.</summary>
     public bool IsModeExplicit { get; set; }

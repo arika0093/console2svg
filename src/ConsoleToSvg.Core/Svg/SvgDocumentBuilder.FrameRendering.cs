@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
@@ -17,7 +18,8 @@ internal static partial class SvgDocumentBuilder
         string? @class,
         bool includeScrollback = false,
         double opacity = 1d,
-        string lengthAdjust = "spacing"
+        string lengthAdjust = "spacing",
+        string[]? maskPatterns = null
     )
     {
         var effectiveLengthAdjust = string.IsNullOrWhiteSpace(lengthAdjust)
@@ -177,7 +179,7 @@ internal static partial class SvgDocumentBuilder
                     sb.Append("\"");
                 }
                 sb.Append('>');
-                sb.Append(fgRunText);
+                sb.Append(ApplyMask(fgRunText.ToString(), maskPatterns));
                 sb.Append("</text>\n");
                 fgRunText.Clear();
                 fgRunCellCount = 0;
@@ -598,6 +600,23 @@ internal static partial class SvgDocumentBuilder
             .Replace(">", "&gt;", StringComparison.Ordinal)
             .Replace("\"", "&quot;", StringComparison.Ordinal)
             .Replace("'", "&apos;", StringComparison.Ordinal);
+    }
+
+    private static string ApplyMask(string value, string[]? maskPatterns)
+    {
+        if (maskPatterns == null || maskPatterns.Length == 0 || string.IsNullOrEmpty(value))
+        {
+            return value;
+        }
+
+        var result = value;
+        var nonEmptyPatterns = maskPatterns.Where(p => !string.IsNullOrEmpty(p));
+        foreach (var pattern in nonEmptyPatterns)
+        {
+            var mask = new string('*', pattern.Length);
+            result = result.Replace(pattern, mask, StringComparison.Ordinal);
+        }
+        return result;
     }
 
     private static string EscapeAttribute(string value)

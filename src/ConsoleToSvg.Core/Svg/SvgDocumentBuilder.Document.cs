@@ -17,7 +17,8 @@ internal static partial class SvgDocumentBuilder
         ChromeDefinition? chrome = null,
         string? commandHeader = null,
         double opacity = 1d,
-        string[]? background = null
+        string[]? background = null,
+        string[]? maskPatterns = null
     )
     {
         sb.Append("<svg xmlns=\"http://www.w3.org/2000/svg\" ");
@@ -76,7 +77,7 @@ internal static partial class SvgDocumentBuilder
         AppendClientBackground(sb, context, theme, chrome);
         if (context.HeaderRows > 0 && !string.IsNullOrEmpty(commandHeader))
         {
-            AppendCommandHeader(sb, context, theme, commandHeader);
+            AppendCommandHeader(sb, context, theme, commandHeader, maskPatterns);
         }
     }
 
@@ -84,7 +85,8 @@ internal static partial class SvgDocumentBuilder
         StringBuilder sb,
         Context context,
         Theme theme,
-        string commandHeader
+        string commandHeader,
+        string[]? maskPatterns = null
     )
     {
         var x = context.HeaderOffsetX;
@@ -108,7 +110,7 @@ internal static partial class SvgDocumentBuilder
         sb.Append("\" fill=\"");
         sb.Append(theme.Foreground);
         sb.Append("\">");
-        sb.Append(EscapeText(commandHeader));
+        sb.Append(ApplyMask(EscapeText(commandHeader), maskPatterns));
         sb.Append("</text>\n");
     }
 
@@ -495,7 +497,8 @@ internal static partial class SvgDocumentBuilder
         Context context,
         Theme theme,
         string lengthAdjust,
-        double opacity = 1d
+        double opacity = 1d,
+        string[]? maskPatterns = null
     )
     {
         sb.Append("<defs>\n");
@@ -509,7 +512,8 @@ internal static partial class SvgDocumentBuilder
                 id: $"fd-{fi}",
                 @class: null,
                 opacity: opacity,
-                lengthAdjust: lengthAdjust
+                lengthAdjust: lengthAdjust,
+                maskPatterns: maskPatterns
             );
         }
 

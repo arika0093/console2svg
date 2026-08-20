@@ -64,6 +64,7 @@ public static class SvgRenderOptionsFactory
             BackColor = appOptions.BackColor,
             SizeWidth = appOptions.SizeWidth,
             SizeHeight = appOptions.SizeHeight,
+            MaskPatterns = appOptions.MaskPatterns.Count > 0 ? appOptions.MaskPatterns.ToArray() : null,
         };
     }
 }

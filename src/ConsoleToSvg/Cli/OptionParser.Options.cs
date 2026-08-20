@@ -20,6 +20,15 @@ public static partial class OptionParser
                 options.Mode = OutputMode.Video;
                 options.IsModeExplicit = true;
                 return true;
+            case "--mask":
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    error = "--mask requires a value.";
+                    return false;
+                }
+                options.MaskPatterns.Add(value);
+                return true;
+
             case "--verbose":
                 options.Verbose = true;
                 options.VerboseLogPath = string.IsNullOrWhiteSpace(value) ? null : value;

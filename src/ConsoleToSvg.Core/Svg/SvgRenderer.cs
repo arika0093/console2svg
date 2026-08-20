@@ -58,7 +58,8 @@ public static class SvgRenderer
             chrome: options.Chrome,
             commandHeader: options.CommandHeader,
             opacity: options.Opacity,
-            background: options.Background
+            background: options.Background,
+            maskPatterns: options.MaskPatterns
         );
         SvgDocumentBuilder.AppendFrameGroup(
             sb.Inner,
@@ -68,7 +69,8 @@ public static class SvgRenderer
             id: null,
             @class: null,
             includeScrollback,
-            lengthAdjust: options.LengthAdjust
+            lengthAdjust: options.LengthAdjust,
+            maskPatterns: options.MaskPatterns
         );
         SvgDocumentBuilder.EndSvg(sb.Inner, options.Opacity);
         return sb.ToString();

@@ -95,6 +95,9 @@ public static partial class OptionParser
                     Image        : --background path/to/image.png
                 --font <family>           CSS font-family for SVG text.
                 --fontsize <px>           Font size in pixels (default: 14).
+                --mask <text> [text...]   Mask sensitive strings in the output by replacing them with ***.
+                                          Useful for hiding PC names, directories, credentials, etc.
+                                          Multiple patterns can be specified: --mask "MyPC" "secret-dir"
 
             Options (Image mode):
                 --frame <int>             Frame index for image mode.
@@ -255,6 +258,18 @@ public static partial class OptionParser
                 options.Background.Add(args[i]);
             }
 
+            // --mask: consume additional space-separated patterns
+            if (
+                string.Equals(name, "--mask", StringComparison.OrdinalIgnoreCase)
+                && i + 1 < args.Length
+                && !args[i + 1].StartsWith("-", StringComparison.Ordinal)
+                && !string.Equals(args[i + 1], "--", StringComparison.Ordinal)
+            )
+            {
+                i++;
+                options.MaskPatterns.Add(args[i]);
+            }
+
             i++;
         }
 
@@ -289,6 +304,7 @@ public static partial class OptionParser
             && !string.Equals(name, "-c", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--with-command", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "-v", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--mask", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--verbose", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--no-colorenv", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--no-delete-envs", StringComparison.OrdinalIgnoreCase)

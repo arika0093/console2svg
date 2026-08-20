@@ -154,7 +154,8 @@ public static partial class AnimatedSvgRenderer
             chrome: options.Chrome,
             commandHeader: options.CommandHeader,
             opacity: options.Opacity,
-            background: options.Background
+            background: options.Background,
+            maskPatterns: options.MaskPatterns
         );
 
         // Render each unique frame once in <defs>, then reference via <use>.
@@ -165,7 +166,8 @@ public static partial class AnimatedSvgRenderer
             context,
             theme,
             lengthAdjust: options.LengthAdjust,
-            opacity: options.Opacity
+            opacity: options.Opacity,
+            maskPatterns: options.MaskPatterns
         );
         for (var i = 0; i < reducedFrames.Count; i++)
         {

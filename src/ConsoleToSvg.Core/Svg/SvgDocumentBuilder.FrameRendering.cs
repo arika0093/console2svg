@@ -345,7 +345,7 @@ internal static partial class SvgDocumentBuilder
         }
 
         // Render merged box drawing segments
-        RenderMergedBoxSegments(sb, hSegments, vSegments);
+        RenderMergedBoxSegments(sb, hSegments, vSegments, context.CellWidth, context.CellHeight);
 
         sb.Append("</g>\n");
     }
@@ -398,7 +398,9 @@ internal static partial class SvgDocumentBuilder
     private static void RenderMergedBoxSegments(
         StringBuilder sb,
         List<(double Y, double StartX, double EndX, string Color, double StrokeWidth)> hSegments,
-        List<(double X, double StartY, double EndY, string Color, double StrokeWidth)> vSegments
+        List<(double X, double StartY, double EndY, string Color, double StrokeWidth)> vSegments,
+        double cellWidth,
+        double cellHeight
     )
     {
         if (hSegments.Count == 0 && vSegments.Count == 0)
@@ -407,7 +409,8 @@ internal static partial class SvgDocumentBuilder
         }
 
         var mergedRects = new List<(double X, double Y, double Width, double Height, string Color)>();
-        const double MergeTolerance = 0.001;
+        // Use a tolerance relative to cell size to avoid merging across real gaps at tiny font sizes
+        var mergeTolerance = Math.Min(cellWidth, cellHeight) * 0.01;
 
         static void MergeAxis<T>(
             List<T> segments,
@@ -417,7 +420,8 @@ internal static partial class SvgDocumentBuilder
             Func<T, string> getColor,
             Func<T, double> getStrokeWidth,
             Func<double, double, double, double, string, (double X, double Y, double Width, double Height, string Color)> toRect,
-            List<(double X, double Y, double Width, double Height, string Color)> output)
+            List<(double X, double Y, double Width, double Height, string Color)> output,
+            double tolerance)
         {
             var groups = segments.GroupBy(s =>
                 (Position: Math.Round(getPosition(s), 3), Color: getColor(s), StrokeWidth: Math.Round(getStrokeWidth(s), 3))
@@ -432,7 +436,7 @@ internal static partial class SvgDocumentBuilder
 
                 for (int i = 1; i < sorted.Count; i++)
                 {
-                    if (getStart(sorted[i]) <= currentEnd + MergeTolerance)
+                    if (getStart(sorted[i]) <= currentEnd + tolerance)
                     {
                         currentEnd = Math.Max(currentEnd, getEnd(sorted[i]));
                     }
@@ -451,13 +455,15 @@ internal static partial class SvgDocumentBuilder
             hSegments,
             s => s.Y, s => s.StartX, s => s.EndX, s => s.Color, s => s.StrokeWidth,
             (y, start, end, sw, color) => (start, y - sw / 2d, end - start, sw, color),
-            mergedRects);
+            mergedRects,
+            mergeTolerance);
 
         MergeAxis(
             vSegments,
             s => s.X, s => s.StartY, s => s.EndY, s => s.Color, s => s.StrokeWidth,
             (x, start, end, sw, color) => (x - sw / 2d, start, sw, end - start, color),
-            mergedRects);
+            mergedRects,
+            mergeTolerance);
 
         // Render all merged rectangles, grouped by color
         var colorGroups = mergedRects.GroupBy(r => r.Color);

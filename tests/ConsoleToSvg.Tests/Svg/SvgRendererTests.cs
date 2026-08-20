@@ -124,7 +124,10 @@ public sealed partial class SvgRendererTests
         );
 
         svg.ShouldContain("<path class=\"box\"");
-        svg.ShouldContain("M4.2 8.5H8.4V9.5H4.2Z");
+        // Horizontal line segments are merged into a single path
+        svg.ShouldContain("M4.2 8.5H29.4V9.5H4.2Z");
+        // Vertical line segments are also present
+        svg.ShouldContain("M3.7 0H4.7V9H3.7Z");
         svg.ShouldNotContain(">└");
         svg.ShouldNotContain(">─");
         svg.ShouldNotContain(">┘");

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
@@ -51,6 +53,10 @@ internal static partial class SvgDocumentBuilder
         sb.Append("\" fill=\"");
         sb.Append(theme.Background);
         sb.Append("\"/>\n");
+
+        // Collect box drawing segments for merging
+        var hSegments = new List<(double Y, double StartX, double EndX, string Color, double StrokeWidth)>();
+        var vSegments = new List<(double X, double StartY, double EndY, string Color, double StrokeWidth)>();
 
         for (var row = context.StartRow; row < context.EndRowExclusive; row++)
         {
@@ -237,16 +243,59 @@ internal static partial class SvgDocumentBuilder
                 if (IsSingleLineBoxDrawing(cell.Text))
                 {
                     FlushFgRun();
-                    RenderBoxDrawing(
-                        sb,
-                        cell.Text,
-                        cellX,
-                        y,
-                        cellW,
-                        context.CellHeight,
-                        context.FontSize / 14d,
-                        effectiveFg
-                    );
+                    // Collect segments instead of rendering immediately
+                    var character = cell.Text[0];
+                    var centerX = cellX + cellW / 2d;
+                    var centerY = y + context.CellHeight / 2d;
+                    var sw = context.FontSize / 14d;
+
+                    // Determine which directions this character connects to
+                    var left =
+                        character
+                        is '\u2500'
+                            or '\u2510'
+                            or '\u2518'
+                            or '\u2524'
+                            or '\u252C'
+                            or '\u2534'
+                            or '\u253C';
+                    var right =
+                        character
+                        is '\u2500'
+                            or '\u250C'
+                            or '\u2514'
+                            or '\u251C'
+                            or '\u252C'
+                            or '\u2534'
+                            or '\u253C';
+                    var up =
+                        character
+                        is '\u2502'
+                            or '\u2514'
+                            or '\u2518'
+                            or '\u251C'
+                            or '\u2524'
+                            or '\u2534'
+                            or '\u253C';
+                    var down =
+                        character
+                        is '\u2502'
+                            or '\u250C'
+                            or '\u2510'
+                            or '\u251C'
+                            or '\u2524'
+                            or '\u252C'
+                            or '\u253C';
+
+                    if (left)
+                        hSegments.Add((centerY, cellX, centerX, effectiveFg, sw));
+                    if (right)
+                        hSegments.Add((centerY, centerX, cellX + cellW, effectiveFg, sw));
+                    if (up)
+                        vSegments.Add((centerX, y, centerY, effectiveFg, sw));
+                    if (down)
+                        vSegments.Add((centerX, centerY, y + context.CellHeight, effectiveFg, sw));
+
                     fgRunStart = col + 1;
                     continue;
                 }
@@ -294,6 +343,9 @@ internal static partial class SvgDocumentBuilder
 
             FlushFgRun();
         }
+
+        // Render merged box drawing segments
+        RenderMergedBoxSegments(sb, hSegments, vSegments);
 
         sb.Append("</g>\n");
     }
@@ -343,119 +395,105 @@ internal static partial class SvgDocumentBuilder
                 or '\u2534'
                 or '\u253C';
 
-    private static void RenderBoxDrawing(
+    private static void RenderMergedBoxSegments(
         StringBuilder sb,
-        string text,
-        double x,
-        double y,
-        double width,
-        double height,
-        double strokeWidth,
-        string stroke
+        List<(double Y, double StartX, double EndX, string Color, double StrokeWidth)> hSegments,
+        List<(double X, double StartY, double EndY, string Color, double StrokeWidth)> vSegments
     )
     {
-        var centerX = x + width / 2d;
-        var centerY = y + height / 2d;
-        var character = text[0];
-        var left =
-            character
-            is '\u2500'
-                or '\u2510'
-                or '\u2518'
-                or '\u2524'
-                or '\u252C'
-                or '\u2534'
-                or '\u253C';
-        var right =
-            character
-            is '\u2500'
-                or '\u250C'
-                or '\u2514'
-                or '\u251C'
-                or '\u252C'
-                or '\u2534'
-                or '\u253C';
-        var up =
-            character
-            is '\u2502'
-                or '\u2514'
-                or '\u2518'
-                or '\u251C'
-                or '\u2524'
-                or '\u2534'
-                or '\u253C';
-        var down =
-            character
-            is '\u2502'
-                or '\u250C'
-                or '\u2510'
-                or '\u251C'
-                or '\u2524'
-                or '\u252C'
-                or '\u253C';
-
-        sb.Append("<path class=\"box\" d=\"");
-        if (left)
+        if (hSegments.Count == 0 && vSegments.Count == 0)
         {
-            AppendBoxSegment(centerX, centerY, x, centerY);
+            return;
         }
 
-        if (right)
-        {
-            AppendBoxSegment(centerX, centerY, x + width, centerY);
-        }
+        // Merge horizontal segments: group by (Y, Color, StrokeWidth), sort by StartX, merge touching/overlapping
+        var mergedRects = new List<(double X, double Y, double Width, double Height, string Color)>();
 
-        if (up)
+        var hGroups = hSegments.GroupBy(s =>
+            (Y: Math.Round(s.Y, 3), Color: s.Color, StrokeWidth: Math.Round(s.StrokeWidth, 3))
+        );
+        foreach (var group in hGroups)
         {
-            AppendBoxSegment(centerX, centerY, centerX, y);
-        }
+            var sorted = group.OrderBy(s => s.StartX).ToList();
+            double currentStart = sorted[0].StartX;
+            double currentEnd = sorted[0].EndX;
+            double y = group.Key.Y;
+            double sw = group.Key.StrokeWidth;
+            string color = group.Key.Color;
 
-        if (down)
-        {
-            AppendBoxSegment(centerX, centerY, centerX, y + height);
-        }
-
-        sb.Append("\" fill=\"");
-        sb.Append(stroke);
-        sb.Append("\"/>\n");
-
-        void AppendBoxRect(double rectX, double rectY, double rectWidth, double rectHeight)
-        {
-            sb.Append('M');
-            sb.Append(Format(rectX));
-            sb.Append(' ');
-            sb.Append(Format(rectY));
-            sb.Append('H');
-            sb.Append(Format(rectX + rectWidth));
-            sb.Append('V');
-            sb.Append(Format(rectY + rectHeight));
-            sb.Append('H');
-            sb.Append(Format(rectX));
-            sb.Append('Z');
-        }
-
-        void AppendBoxSegment(double startX, double startY, double endX, double endY)
-        {
-            if (Math.Abs(startY - endY) < 0.0001d)
+            for (int i = 1; i < sorted.Count; i++)
             {
-                var leftX = Math.Min(startX, endX);
-                AppendBoxRect(
-                    leftX,
-                    startY - strokeWidth / 2d,
-                    Math.Abs(endX - startX),
-                    strokeWidth
-                );
+                if (sorted[i].StartX <= currentEnd + 0.001)
+                {
+                    // Merge: extend current segment
+                    currentEnd = Math.Max(currentEnd, sorted[i].EndX);
+                }
+                else
+                {
+                    // Emit current segment and start new one
+                    mergedRects.Add((currentStart, y - sw / 2d, currentEnd - currentStart, sw, color));
+                    currentStart = sorted[i].StartX;
+                    currentEnd = sorted[i].EndX;
+                }
             }
-            else
+            // Emit last segment
+            mergedRects.Add((currentStart, y - sw / 2d, currentEnd - currentStart, sw, color));
+        }
+
+        // Merge vertical segments: group by (X, Color, StrokeWidth), sort by StartY, merge touching/overlapping
+        var vGroups = vSegments.GroupBy(s =>
+            (X: Math.Round(s.X, 3), Color: s.Color, StrokeWidth: Math.Round(s.StrokeWidth, 3))
+        );
+        foreach (var group in vGroups)
+        {
+            var sorted = group.OrderBy(s => s.StartY).ToList();
+            double currentStart = sorted[0].StartY;
+            double currentEnd = sorted[0].EndY;
+            double x = group.Key.X;
+            double sw = group.Key.StrokeWidth;
+            string color = group.Key.Color;
+
+            for (int i = 1; i < sorted.Count; i++)
             {
-                var topY = Math.Min(startY, endY);
-                AppendBoxRect(
-                    startX - strokeWidth / 2d,
-                    topY,
-                    strokeWidth,
-                    Math.Abs(endY - startY)
-                );
+                if (sorted[i].StartY <= currentEnd + 0.001)
+                {
+                    // Merge: extend current segment
+                    currentEnd = Math.Max(currentEnd, sorted[i].EndY);
+                }
+                else
+                {
+                    // Emit current segment and start new one
+                    mergedRects.Add((x - sw / 2d, currentStart, sw, currentEnd - currentStart, color));
+                    currentStart = sorted[i].StartY;
+                    currentEnd = sorted[i].EndY;
+                }
             }
+            // Emit last segment
+            mergedRects.Add((x - sw / 2d, currentStart, sw, currentEnd - currentStart, color));
+        }
+
+        // Render all merged rectangles, grouped by color
+        var colorGroups = mergedRects.GroupBy(r => r.Color);
+        foreach (var group in colorGroups)
+        {
+            sb.Append("<path class=\"box\" d=\"");
+            foreach (var rect in group)
+            {
+                sb.Append('M');
+                sb.Append(Format(rect.X));
+                sb.Append(' ');
+                sb.Append(Format(rect.Y));
+                sb.Append('H');
+                sb.Append(Format(rect.X + rect.Width));
+                sb.Append('V');
+                sb.Append(Format(rect.Y + rect.Height));
+                sb.Append('H');
+                sb.Append(Format(rect.X));
+                sb.Append('Z');
+            }
+            sb.Append("\" fill=\"");
+            sb.Append(group.Key);
+            sb.Append("\"/>\n");
         }
     }
 

@@ -406,71 +406,58 @@ internal static partial class SvgDocumentBuilder
             return;
         }
 
-        // Merge horizontal segments: group by (Y, Color, StrokeWidth), sort by StartX, merge touching/overlapping
         var mergedRects = new List<(double X, double Y, double Width, double Height, string Color)>();
+        const double MergeTolerance = 0.001;
 
-        var hGroups = hSegments.GroupBy(s =>
-            (Y: Math.Round(s.Y, 3), Color: s.Color, StrokeWidth: Math.Round(s.StrokeWidth, 3))
-        );
-        foreach (var group in hGroups)
+        static void MergeAxis<T>(
+            List<T> segments,
+            Func<T, double> getPosition,
+            Func<T, double> getStart,
+            Func<T, double> getEnd,
+            Func<T, string> getColor,
+            Func<T, double> getStrokeWidth,
+            Func<double, double, double, double, string, (double X, double Y, double Width, double Height, string Color)> toRect,
+            List<(double X, double Y, double Width, double Height, string Color)> output)
         {
-            var sorted = group.OrderBy(s => s.StartX).ToList();
-            double currentStart = sorted[0].StartX;
-            double currentEnd = sorted[0].EndX;
-            double y = group.Key.Y;
-            double sw = group.Key.StrokeWidth;
-            string color = group.Key.Color;
-
-            for (int i = 1; i < sorted.Count; i++)
+            var groups = segments.GroupBy(s =>
+                (Position: Math.Round(getPosition(s), 3), Color: getColor(s), StrokeWidth: Math.Round(getStrokeWidth(s), 3))
+            );
+            foreach (var group in groups)
             {
-                if (sorted[i].StartX <= currentEnd + 0.001)
+                var sorted = group.OrderBy(s => getStart(s)).ToList();
+                double currentStart = getStart(sorted[0]);
+                double currentEnd = getEnd(sorted[0]);
+                double sw = getStrokeWidth(sorted[0]);
+                string color = group.Key.Color;
+
+                for (int i = 1; i < sorted.Count; i++)
                 {
-                    // Merge: extend current segment
-                    currentEnd = Math.Max(currentEnd, sorted[i].EndX);
+                    if (getStart(sorted[i]) <= currentEnd + MergeTolerance)
+                    {
+                        currentEnd = Math.Max(currentEnd, getEnd(sorted[i]));
+                    }
+                    else
+                    {
+                        output.Add(toRect(group.Key.Position, currentStart, currentEnd, sw, color));
+                        currentStart = getStart(sorted[i]);
+                        currentEnd = getEnd(sorted[i]);
+                    }
                 }
-                else
-                {
-                    // Emit current segment and start new one
-                    mergedRects.Add((currentStart, y - sw / 2d, currentEnd - currentStart, sw, color));
-                    currentStart = sorted[i].StartX;
-                    currentEnd = sorted[i].EndX;
-                }
+                output.Add(toRect(group.Key.Position, currentStart, currentEnd, sw, color));
             }
-            // Emit last segment
-            mergedRects.Add((currentStart, y - sw / 2d, currentEnd - currentStart, sw, color));
         }
 
-        // Merge vertical segments: group by (X, Color, StrokeWidth), sort by StartY, merge touching/overlapping
-        var vGroups = vSegments.GroupBy(s =>
-            (X: Math.Round(s.X, 3), Color: s.Color, StrokeWidth: Math.Round(s.StrokeWidth, 3))
-        );
-        foreach (var group in vGroups)
-        {
-            var sorted = group.OrderBy(s => s.StartY).ToList();
-            double currentStart = sorted[0].StartY;
-            double currentEnd = sorted[0].EndY;
-            double x = group.Key.X;
-            double sw = group.Key.StrokeWidth;
-            string color = group.Key.Color;
+        MergeAxis(
+            hSegments,
+            s => s.Y, s => s.StartX, s => s.EndX, s => s.Color, s => s.StrokeWidth,
+            (y, start, end, sw, color) => (start, y - sw / 2d, end - start, sw, color),
+            mergedRects);
 
-            for (int i = 1; i < sorted.Count; i++)
-            {
-                if (sorted[i].StartY <= currentEnd + 0.001)
-                {
-                    // Merge: extend current segment
-                    currentEnd = Math.Max(currentEnd, sorted[i].EndY);
-                }
-                else
-                {
-                    // Emit current segment and start new one
-                    mergedRects.Add((x - sw / 2d, currentStart, sw, currentEnd - currentStart, color));
-                    currentStart = sorted[i].StartY;
-                    currentEnd = sorted[i].EndY;
-                }
-            }
-            // Emit last segment
-            mergedRects.Add((x - sw / 2d, currentStart, sw, currentEnd - currentStart, color));
-        }
+        MergeAxis(
+            vSegments,
+            s => s.X, s => s.StartY, s => s.EndY, s => s.Color, s => s.StrokeWidth,
+            (x, start, end, sw, color) => (x - sw / 2d, start, sw, end - start, color),
+            mergedRects);
 
         // Render all merged rectangles, grouped by color
         var colorGroups = mergedRects.GroupBy(r => r.Color);

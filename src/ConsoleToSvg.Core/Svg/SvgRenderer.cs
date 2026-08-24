@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
 using ConsoleToSvg.Utils;
@@ -19,18 +20,27 @@ public static class SvgRenderer
             effectiveFrame = TimeToFrameIndex(session, options.Time.Value);
         }
 
-        var targetFrame =
-            effectiveFrame
-            ?? ResolveDefaultTargetFrame(
-                session,
-                new TerminalEmulator(session.Header.width, session.Header.height, theme)
-            );
-        if (targetFrame >= 0)
+        ScreenBuffer renderBuffer;
+        if (effectiveFrame.HasValue)
         {
-            emulator.Replay(session, targetFrame);
+            // Explicit --frame/--time path: replay up to the target frame once.
+            if (effectiveFrame.Value >= 0)
+            {
+                emulator.Replay(session, effectiveFrame.Value);
+            }
+
+            renderBuffer = emulator.Buffer;
+        }
+        else
+        {
+            // Default path: replay the session exactly once and reuse the
+            // captured frames to resolve the target frame (no second replay).
+            var frames = emulator.ReplayFrames(session);
+            var targetFrame = ResolveDefaultTargetFrame(session, frames);
+            renderBuffer = targetFrame >= 0 ? frames[targetFrame].Buffer : emulator.Buffer;
         }
 
-        return Render(emulator.Buffer, options, includeScrollback: effectiveFrame == null);
+        return Render(renderBuffer, options, includeScrollback: effectiveFrame == null);
     }
 
     /// <summary>Renders an already-emulated terminal screen.</summary>
@@ -78,7 +88,7 @@ public static class SvgRenderer
 
     private static int ResolveDefaultTargetFrame(
         RecordingSession session,
-        TerminalEmulator probeEmulator
+        IReadOnlyList<TerminalFrame> frames
     )
     {
         var lastIndex = session.Events.Count - 1;
@@ -87,7 +97,6 @@ public static class SvgRenderer
             return lastIndex;
         }
 
-        var frames = probeEmulator.ReplayFrames(session);
         if (frames.Count != session.Events.Count)
         {
             return lastIndex;

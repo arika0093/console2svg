@@ -266,6 +266,11 @@ public sealed partial class ScreenBuffer
         cloned._tabStops.Clear();
         cloned._tabStops.UnionWith(_tabStops);
 
+        foreach (var row in _scrollbackRows)
+        {
+            cloned._scrollbackRows.Add((ScreenCell[])row.Clone());
+        }
+
         cloned._cells = cloned._isAltScreen ? cloned._altCells : cloned._mainCells;
         return cloned;
     }

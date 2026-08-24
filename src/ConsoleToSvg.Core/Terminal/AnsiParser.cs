@@ -117,16 +117,19 @@ public sealed partial class AnsiParser
                 continue;
             }
 
-            var category = CharUnicodeInfo.GetUnicodeCategory(ch);
-            if (
-                category
-                is UnicodeCategory.NonSpacingMark
-                    or UnicodeCategory.SpacingCombiningMark
-                    or UnicodeCategory.EnclosingMark
-            )
+            if (ch >= '\u0300')
             {
-                _buffer.AppendToPreviousCell(ch);
-                continue;
+                var category = CharUnicodeInfo.GetUnicodeCategory(ch);
+                if (
+                    category
+                    is UnicodeCategory.NonSpacingMark
+                        or UnicodeCategory.SpacingCombiningMark
+                        or UnicodeCategory.EnclosingMark
+                )
+                {
+                    _buffer.AppendToPreviousCell(ch);
+                    continue;
+                }
             }
 
             _buffer.PutChar(TranslateCharacterSet(ch), _style);

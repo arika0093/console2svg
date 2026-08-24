@@ -1,0 +1,12 @@
+# Enforce LF line endings for all text files on every platform.
+# C# multi-line raw string literals ("""...""") embed the source file's
+# actual line endings, so a CRLF checkout on Windows would emit "\r\n"
+# inside generated SVG/CSS and break line-ending assertions in tests.
+* text=auto eol=lf
+
+# Binary files must never be normalized.
+*.png binary
+*.gif binary
+*.dll binary
+*.dbg binary
+*.o binary

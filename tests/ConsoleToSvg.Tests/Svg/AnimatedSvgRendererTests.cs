@@ -475,7 +475,7 @@ public sealed class AnimatedSvgRendererTests
     }
 
     [Test]
-    public void RenderAnimatedSvgUsesReadableMultilineStyleBlock()
+    public void RenderAnimatedSvgUsesReadableSingleLineStyleBlock()
     {
         var session = new RecordingSession(width: 8, height: 2);
         session.AddEvent(0.01, "A");
@@ -487,8 +487,14 @@ public sealed class AnimatedSvgRendererTests
         );
 
         svg.ShouldContain("<style>\n");
-        svg.ShouldContain("@keyframes k0 {\n");
-        svg.ShouldContain(".frame {\n");
+        svg.ShouldContain(".frame { opacity: 0; }");
+        svg.ShouldContain("@keyframes k0 { 0%, ");
+        svg.ShouldContain(".frame-0 { animation:k0 ");
+
+        // Non-keyframe rules must be grouped before the keyframes.
+        var firstKeyframe = svg.IndexOf("@keyframes k0", StringComparison.Ordinal);
+        var lastFrameRule = svg.LastIndexOf(".frame-1 { animation:", StringComparison.Ordinal);
+        firstKeyframe.ShouldBeGreaterThan(lastFrameRule);
     }
 
     private static int CountOccurrences(string text, string token)
@@ -532,7 +538,7 @@ public sealed class AnimatedSvgRendererTests
     {
         var match = Regex.Match(
             keyframeBlock,
-            @"(?m)^\s*(?<percent>\d+(?:\.\d+)?)%(?:,\s*\d+(?:\.\d+)?%)?\s*\{\s*\r?\n\s*opacity:\s*1;"
+            @"(?<percent>\d+(?:\.\d+)?)%(?:,\s*\d+(?:\.\d+)?%)?\s*\{\s*opacity:\s*1;"
         );
         match.Success.ShouldBeTrue();
         return double.Parse(match.Groups["percent"].Value, CultureInfo.InvariantCulture);

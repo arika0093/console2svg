@@ -57,10 +57,19 @@ public static partial class AnimatedSvgRenderer
     )
     {
         var sb = new LfStringBuilder();
-        sb.AppendLine(".frame {");
-        sb.AppendLine("  opacity: 0;");
-        sb.AppendLine("}");
 
+        // Static frame rule (single line).
+        sb.AppendLine(".frame { opacity: 0; }");
+
+        // Per-frame animation rules (single line each), grouped before the keyframes.
+        for (var i = 0; i < frames.Count; i++)
+        {
+            sb.AppendLine(
+                $$""".frame-{{i}} { animation:k{{i}} {{Format(totalDuration)}}s linear {{(loop ? "infinite" : "forwards")}}; }"""
+            );
+        }
+
+        // Keyframes (single line each), grouped after all frame rules.
         for (var i = 0; i < frames.Count; i++)
         {
             var isLast = i == frames.Count - 1;
@@ -79,59 +88,27 @@ public static partial class AnimatedSvgRenderer
             var fadeInPoint = Math.Max(0d, start - 0.001d);
             var fadeOutPoint = Math.Min(100d, end + 0.001d);
 
-            sb.Append("@keyframes k");
-            sb.Append(i.ToString(CultureInfo.InvariantCulture));
-            sb.AppendLine(" {");
-            sb.Append("  0%, ");
-            sb.Append(Format(fadeInPoint));
-            sb.AppendLine("% {");
-            sb.AppendLine("    opacity: 0;");
-            sb.AppendLine("  }");
-
+            string segments;
             if (isLast && fadeOut <= 0d)
             {
-                sb.Append("  ");
-                sb.Append(Format(start));
-                sb.AppendLine("% {");
-                sb.AppendLine("    opacity: 1;");
-                sb.AppendLine("  }");
+                segments = $$"""{{Format(start)}}% { opacity: 1; }""";
                 if (start < 100d)
                 {
-                    sb.AppendLine("  100% {");
-                    sb.AppendLine("    opacity: 1;");
-                    sb.AppendLine("  }");
+                    segments += " 100% { opacity: 1; }";
                 }
             }
             else
             {
-                sb.Append("  ");
-                sb.Append(Format(start));
-                sb.Append("%, ");
-                sb.Append(Format(end));
-                sb.AppendLine("% {");
-                sb.AppendLine("    opacity: 1;");
-                sb.AppendLine("  }");
+                segments = $$"""{{Format(start)}}%, {{Format(end)}}% { opacity: 1; }""";
                 if (!isLast || fadeOut > 0d)
                 {
-                    sb.Append("  ");
-                    sb.Append(Format(fadeOutPoint));
-                    sb.AppendLine("%, 100% {");
-                    sb.AppendLine("    opacity: 0;");
-                    sb.AppendLine("  }");
+                    segments += $$""" {{Format(fadeOutPoint)}}%, 100% { opacity: 0; }""";
                 }
             }
 
-            sb.AppendLine("}");
-
-            sb.Append(".frame-");
-            sb.Append(i.ToString(CultureInfo.InvariantCulture));
-            sb.Append(" { animation:k");
-            sb.Append(i.ToString(CultureInfo.InvariantCulture));
-            sb.Append(' ');
-            sb.Append(Format(totalDuration));
-            sb.Append("s linear ");
-            sb.Append(loop ? "infinite;" : "forwards;");
-            sb.AppendLine(" }");
+            sb.AppendLine(
+                $$"""@keyframes k{{i}} { 0%, {{Format(fadeInPoint)}}% { opacity: 0; } {{segments}} }"""
+            );
         }
 
         return sb.ToString();

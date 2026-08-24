@@ -41,23 +41,15 @@ internal static partial class SvgDocumentBuilder
         var effectiveFont = string.IsNullOrWhiteSpace(font)
             ? DefaultFontFamily
             : EscapeAttribute(font);
-        sb.Append("<style>\n");
-        sb.Append(".crt {\n");
-        sb.Append("  font-family: ");
-        sb.Append(effectiveFont);
-        sb.Append(";\n");
-        sb.Append("  font-size: ");
-        sb.Append(Format(context.FontSize));
-        sb.Append("px;\n");
-        sb.Append("}\n");
-        sb.Append(".blink { animation: blink 1s step-start infinite; }\n");
-        sb.Append("@keyframes blink { 50% { visibility: hidden; } }\n");
-        sb.Append("text {\n");
-        sb.Append("  dominant-baseline: alphabetic;\n");
-        sb.Append("}\n");
-        sb.Append(".bg {\n");
-        sb.Append("  shape-rendering: crispEdges;\n");
-        sb.Append("}\n");
+        sb.Append(
+            $$"""
+            <style>
+            .crt { font-family: {{effectiveFont}}; font-size: {{Format(context.FontSize)}}px; }
+            .blink { animation: blink 1s step-start infinite; }
+            text { dominant-baseline: alphabetic; }
+            .bg { shape-rendering: crispEdges; }
+            """
+        );
         if (!string.IsNullOrWhiteSpace(additionalCss))
         {
             sb.Append('\n');
@@ -68,7 +60,12 @@ internal static partial class SvgDocumentBuilder
             }
         }
 
-        sb.Append("</style>\n");
+        sb.Append(
+            """
+            @keyframes blink { 50% { visibility: hidden; } }
+            </style>
+            """
+        );
 
         AppendDefs(sb, context, chrome, background);
         AppendBackground(sb, context, chrome, background);

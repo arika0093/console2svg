@@ -25,6 +25,41 @@ public sealed partial class SvgRendererTests
     }
 
     [Test]
+    public void RenderStaticSvgMergesWhitespaceSeparatedWordsIntoSingleTextNode()
+    {
+        var session = new RecordingSession(width: 30, height: 3);
+        session.AddEvent(0.01, "VIM - Vi Improved\r\nby Bram Moolenaar et al.");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain(">VIM - Vi Improved<");
+        svg.ShouldContain(">by Bram Moolenaar et al.<");
+        svg.ShouldContain("xml:space=\"preserve\"");
+    }
+
+    [Test]
+    public void RenderStaticSvgMergesMultipleSpacesAndTabsIntoOneNode()
+    {
+        var session = new RecordingSession(width: 40, height: 2);
+        session.AddEvent(0.01, "This   is    a\t\tMessage");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        // Tabs expand to spaces (2 + 8 = 10 cells) in the terminal; the whole
+        // run merges into a single <text> node with preserved whitespace.
+        var expected = "This" + new string(' ', 3) + "is" + new string(' ', 4)
+            + "a" + new string(' ', 10) + "Message";
+        svg.ShouldContain($">{expected}<");
+        svg.ShouldContain("xml:space=\"preserve\"");
+    }
+
+    [Test]
     public void RenderStaticSvgWithCharacterCrop()
     {
         var session = new RecordingSession(width: 8, height: 2);

@@ -124,6 +124,8 @@ internal static partial class SvgDocumentBuilder
                 fgBlink = false;
             string? fgUnderlineColor = null;
             int fgRunCellCount = 0;
+            bool fgRunHasSpace = false;
+            int pendingSpaces = 0;
 
             void FlushFgRun()
             {
@@ -139,7 +141,12 @@ internal static partial class SvgDocumentBuilder
                 {
                     sb.Append(" blink");
                 }
-                sb.Append("\" x=\"");
+                sb.Append("\"");
+                if (fgRunHasSpace)
+                {
+                    sb.Append(" xml:space=\"preserve\"");
+                }
+                sb.Append(" x=\"");
                 sb.Append(Format(tx));
                 sb.Append("\" y=\"");
                 sb.Append(Format(y + context.BaselineOffset));
@@ -189,7 +196,22 @@ internal static partial class SvgDocumentBuilder
                 fgRunText.Clear();
                 fgRunCellCount = 0;
                 fgRunColor = null;
+                fgRunHasSpace = false;
             }
+
+            bool MatchesRunStyle(string effectiveFg, ScreenCell cell) =>
+                string.Equals(effectiveFg, fgRunColor, StringComparison.OrdinalIgnoreCase)
+                && cell.Bold == fgBold
+                && cell.Italic == fgItalic
+                && cell.Underline == fgUnderline
+                && cell.Strikethrough == fgStrikethrough
+                && cell.Overline == fgOverline
+                && cell.Blink == fgBlink
+                && string.Equals(
+                    cell.UnderlineColor,
+                    fgUnderlineColor,
+                    StringComparison.OrdinalIgnoreCase
+                );
 
             for (var col = context.StartCol; col < context.EndColExclusive; col++)
             {
@@ -202,16 +224,30 @@ internal static partial class SvgDocumentBuilder
                     continue;
                 }
 
-                if (cell.Text == " ")
+                if (cell.Hidden)
                 {
-                    // Space: flush current run and skip (background already drawn)
+                    pendingSpaces = 0;
                     FlushFgRun();
                     fgRunStart = col + 1;
                     continue;
                 }
 
-                if (cell.Hidden)
+                if (cell.Text == " ")
                 {
+                    // Buffer whitespace-only gaps. A space is merged into the
+                    // current run only when a later non-space cell of the same
+                    // style continues the run; trailing spaces (e.g. empty cells
+                    // after the last character) are dropped to keep output small.
+                    var spaceFg = cell.Reversed ? cell.Background : cell.Foreground;
+                    spaceFg = ApplyIntensity(spaceFg, cell.Bold, cell.Faint);
+
+                    if (!cell.Reversed && fgRunColor != null && MatchesRunStyle(spaceFg, cell))
+                    {
+                        pendingSpaces += 1;
+                        continue;
+                    }
+
+                    pendingSpaces = 0;
                     FlushFgRun();
                     fgRunStart = col + 1;
                     continue;
@@ -227,6 +263,7 @@ internal static partial class SvgDocumentBuilder
                 // adjacent cells always tile seamlessly regardless of font metrics.
                 if (IsBlockElement(cell.Text))
                 {
+                    pendingSpaces = 0;
                     FlushFgRun();
                     RenderBlockElement(
                         sb,
@@ -243,6 +280,7 @@ internal static partial class SvgDocumentBuilder
 
                 if (IsSingleLineBoxDrawing(cell.Text))
                 {
+                    pendingSpaces = 0;
                     FlushFgRun();
                     // Collect segments instead of rendering immediately
                     var character = cell.Text[0];
@@ -301,23 +339,11 @@ internal static partial class SvgDocumentBuilder
                     continue;
                 }
 
-                var sameStyle =
-                    string.Equals(effectiveFg, fgRunColor, StringComparison.OrdinalIgnoreCase)
-                    && cell.Bold == fgBold
-                    && cell.Italic == fgItalic
-                    && cell.Underline == fgUnderline
-                    && cell.Strikethrough == fgStrikethrough
-                    && cell.Overline == fgOverline
-                    && cell.Blink == fgBlink
-                    && string.Equals(
-                        cell.UnderlineColor,
-                        fgUnderlineColor,
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                    && !cell.IsWide;
+                var sameStyle = MatchesRunStyle(effectiveFg, cell) && !cell.IsWide;
 
                 if (!sameStyle)
                 {
+                    pendingSpaces = 0;
                     FlushFgRun();
                     fgRunStart = col;
                     fgRunColor = effectiveFg;
@@ -328,6 +354,14 @@ internal static partial class SvgDocumentBuilder
                     fgOverline = cell.Overline;
                     fgBlink = cell.Blink;
                     fgUnderlineColor = cell.UnderlineColor;
+                }
+
+                if (pendingSpaces > 0)
+                {
+                    fgRunText.Append(' ', pendingSpaces);
+                    fgRunCellCount += pendingSpaces;
+                    fgRunHasSpace = true;
+                    pendingSpaces = 0;
                 }
 
                 fgRunText.Append(EscapeText(cell.Text));

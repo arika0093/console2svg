@@ -191,9 +191,9 @@ public sealed partial class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        // The prompt and command should appear in the SVG
-        svg.ShouldContain(">$<");
-        svg.ShouldContain(">ls<");
+        // The prompt and command should appear in the SVG, merged into a single
+        // <text> run with the internal space preserved.
+        svg.ShouldContain(">$ ls<");
     }
 
     [Test]

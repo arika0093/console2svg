@@ -41,7 +41,8 @@ public static partial class AnimatedSvgRenderer
 
         var theme = SvgRenderShared.ResolveTheme(options);
         frames = NormalizeTiming(frames, options.VideoFps, options.VideoTiming);
-        var reducedFrames = ReduceFrames(frames, options.VideoFps);
+        var signatureCache = new System.Collections.Generic.Dictionary<ScreenBuffer, ulong>();
+        var reducedFrames = ReduceFrames(frames, options.VideoFps, signatureCache);
         reducedFrames = SpreadCollapsedFrameTimes(reducedFrames, options.VideoFps);
 
         // Filter frames by time range when --time is specified in video mode.
@@ -111,7 +112,7 @@ public static partial class AnimatedSvgRenderer
 
         for (var i = 0; i < reducedFrames.Count; i++)
         {
-            var hash = reducedFrames[i].Buffer.GetVisualSignature();
+            var hash = GetVisualSignatureCached(reducedFrames[i].Buffer, signatureCache);
             if (!hashToDefsFrameIndex.TryGetValue(hash, out var defsIdx))
             {
                 defsIdx = uniqueFrameIndices.Count;
@@ -184,9 +185,24 @@ public static partial class AnimatedSvgRenderer
         return sb.ToString();
     }
 
+    private static ulong GetVisualSignatureCached(
+        ScreenBuffer buffer,
+        System.Collections.Generic.Dictionary<ScreenBuffer, ulong> cache
+    )
+    {
+        if (!cache.TryGetValue(buffer, out var signature))
+        {
+            signature = buffer.GetVisualSignature();
+            cache[buffer] = signature;
+        }
+
+        return signature;
+    }
+
     private static System.Collections.Generic.IReadOnlyList<TerminalFrame> ReduceFrames(
         System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
-        double maxFps
+        double maxFps,
+        System.Collections.Generic.Dictionary<ScreenBuffer, ulong> signatureCache
     )
     {
         if (frames.Count <= 2 || maxFps <= 0)
@@ -198,14 +214,14 @@ public static partial class AnimatedSvgRenderer
         var reduced = new System.Collections.Generic.List<TerminalFrame>(frames.Count);
         reduced.Add(frames[0]);
         var lastKeptTime = frames[0].Time;
-        var lastKeptVisualSignature = frames[0].Buffer.GetVisualSignature();
+        var lastKeptVisualSignature = GetVisualSignatureCached(frames[0].Buffer, signatureCache);
         TerminalFrame? pendingFrame = null;
         var pendingVisualSignature = 0UL;
 
         for (var i = 1; i < frames.Count - 1; i++)
         {
             var frame = frames[i];
-            var visualSignature = frame.Buffer.GetVisualSignature();
+            var visualSignature = GetVisualSignatureCached(frame.Buffer, signatureCache);
             var visualChanged = visualSignature != lastKeptVisualSignature;
             var elapsed = frame.Time - lastKeptTime;
 

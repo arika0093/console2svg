@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
 using ConsoleToSvg.Utils;
@@ -33,11 +32,32 @@ public static class SvgRenderer
         }
         else
         {
-            // Default path: replay the session exactly once and reuse the
-            // captured frames to resolve the target frame (no second replay).
-            var frames = emulator.ReplayFrames(session);
-            var targetFrame = ResolveDefaultTargetFrame(session, frames);
-            renderBuffer = targetFrame >= 0 ? frames[targetFrame].Buffer : emulator.Buffer;
+            // Default path: replay once with no per-event buffer clones. Track the
+            // last non-blank frame index as we go (IsBlankFrame short-circuits on
+            // the first non-blank cell, so this is cheap for populated frames).
+            var lastNonBlankIndex = -1;
+            for (var i = 0; i < session.Events.Count; i++)
+            {
+                emulator.Process(session.Events[i].Data);
+                if (!SvgRenderShared.IsBlankFrame(emulator.Buffer))
+                {
+                    lastNonBlankIndex = i;
+                }
+            }
+
+            var targetFrame = ResolveDefaultTargetFrame(session, lastNonBlankIndex);
+            if (targetFrame >= session.Events.Count - 1)
+            {
+                // The final buffer is already the target (the common case).
+                renderBuffer = emulator.Buffer;
+            }
+            else
+            {
+                // Rare: trailing blank frames to trim; replay to the target frame.
+                var target = new TerminalEmulator(session.Header.width, session.Header.height, theme);
+                target.Replay(session, targetFrame);
+                renderBuffer = target.Buffer;
+            }
         }
 
         return Render(renderBuffer, options, includeScrollback: effectiveFrame == null);
@@ -88,28 +108,13 @@ public static class SvgRenderer
 
     private static int ResolveDefaultTargetFrame(
         RecordingSession session,
-        IReadOnlyList<TerminalFrame> frames
+        int lastNonBlankIndex
     )
     {
         var lastIndex = session.Events.Count - 1;
         if (lastIndex <= 0)
         {
             return lastIndex;
-        }
-
-        if (frames.Count != session.Events.Count)
-        {
-            return lastIndex;
-        }
-
-        var lastNonBlankIndex = -1;
-        for (var i = frames.Count - 1; i >= 0; i--)
-        {
-            if (!SvgRenderShared.IsBlankFrame(frames[i].Buffer))
-            {
-                lastNonBlankIndex = i;
-                break;
-            }
         }
 
         if (lastNonBlankIndex < 0 || lastNonBlankIndex == lastIndex)

@@ -311,7 +311,7 @@ public sealed partial class ScreenBuffer
             return;
         }
 
-        PutPrintable(value.ToString(), style);
+        PutPrintable(ToSingleCharString(value), style);
     }
 
     public void PutSurrogatePair(string cluster, TextStyle style)
@@ -351,7 +351,7 @@ public sealed partial class ScreenBuffer
         }
     }
 
-    public void AppendToPreviousCell(string combining)
+    public void AppendToPreviousCell(char combining)
     {
         // Find the previous printable cell
         var col = CursorCol - 1;
@@ -380,13 +380,13 @@ public sealed partial class ScreenBuffer
         }
 
         _cells[row, col] = new ScreenCell(
-            prev.Text + combining,
+            prev.Text + ToSingleCharString(combining),
             prev.ToTextStyle(),
             prev.IsWide,
             prev.IsWideContinuation
         );
 
-        if (combining == "\uFE0F" && !prev.IsWide && !prev.IsWideContinuation)
+        if (combining == '\uFE0F' && !prev.IsWide && !prev.IsWideContinuation)
         {
             TryPromoteCellToWide(row, col);
         }
@@ -469,6 +469,24 @@ public sealed partial class ScreenBuffer
             CursorCol = Width - 1;
         }
     }
+
+    private static readonly string[] AsciiSingleCharStrings = CreateAsciiSingleCharStrings();
+
+    private static string[] CreateAsciiSingleCharStrings()
+    {
+        var chars = new string[128];
+        for (var i = 0; i < chars.Length; i++)
+        {
+            chars[i] = ((char)i).ToString();
+        }
+
+        return chars;
+    }
+
+    private static string ToSingleCharString(char value) =>
+        value < AsciiSingleCharStrings.Length
+            ? AsciiSingleCharStrings[value]
+            : value.ToString();
 
     private static bool IsWideCharacter(string text)
     {

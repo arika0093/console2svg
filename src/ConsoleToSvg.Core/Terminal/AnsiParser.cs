@@ -108,7 +108,7 @@ public sealed partial class AnsiParser
 
             if (IsVariationSelector(ch))
             {
-                _buffer.AppendToPreviousCell(ch.ToString());
+                _buffer.AppendToPreviousCell(ch);
                 continue;
             }
 
@@ -125,7 +125,7 @@ public sealed partial class AnsiParser
                     or UnicodeCategory.EnclosingMark
             )
             {
-                _buffer.AppendToPreviousCell(ch.ToString());
+                _buffer.AppendToPreviousCell(ch);
                 continue;
             }
 

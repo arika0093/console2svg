@@ -1,0 +1,374 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1318" height="661" viewBox="0 0 1318 661" role="img" aria-label="console2svg output">
+<style>
+.crt { font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace; font-size: 14px; }
+.blink { animation: blink 1s step-start infinite; }
+text { dominant-baseline: alphabetic; }
+.bg { shape-rendering: crispEdges; }@keyframes blink { 50% { visibility: hidden; } }
+</style><defs>
+<linearGradient id="desktop-bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#30a0d0"/><stop offset="100%" stop-color="#0060c0"/></linearGradient>
+</defs>
+<rect width="1318" height="661" fill="url(#desktop-bg)"/>
+<g opacity="0.95">
+<rect x="20.5" y="20.5" rx="10" ry="10" width="1277" height="620" fill="#1f1f1f" stroke="#3a3a3a"/>
+<rect x="21" y="21" rx="9" ry="9" width="1276" height="27" fill="#2c2c2c"/>
+<circle cx="34" cy="34" r="5" fill="#ff5f57"/>
+<circle cx="50" cy="34" r="5" fill="#febc2e"/>
+<circle cx="66" cy="34" r="5" fill="#28c840"/>
+<rect x="21" y="48" width="1276" height="592" rx="9" ry="9" fill="#1e1e1e"/>
+<g transform="translate(29 56)">
+<rect width="1260" height="576" fill="#1e1e1e"/>
+<rect class="bg" x="0" y="0" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="0" y="14" fill="#556D59" textLength="8.4" lengthAdjust="spacing">╭</text>
+<text class="crt" x="25.2" y="14" fill="#D94D4D" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">¹</text>
+<text class="crt" x="33.6" y="14" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">cpu</text>
+<text class="crt" x="92.4" y="14" fill="#D94D4D" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">m</text>
+<text class="crt" x="100.8" y="14" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">enu</text>
+<text class="crt" x="142.8" y="14" fill="#D94D4D" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">p</text>
+<text class="crt" xml:space="preserve" x="151.2" y="14" fill="#FFFFFF" textLength="58.8" lengthAdjust="spacing" style="font-weight:bold;">reset *</text>
+<text class="crt" x="604.8" y="14" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">08:09:53</text>
+<text class="crt" x="1159.2" y="14" fill="#D94D4D" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">-</text>
+<text class="crt" x="1176" y="14" fill="#FFFFFF" textLength="42" lengthAdjust="spacing" style="font-weight:bold;">100ms</text>
+<text class="crt" x="1226.4" y="14" fill="#D94D4D" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">+</text>
+<text class="crt" x="1251.6" y="14" fill="#556D59" textLength="8.4" lengthAdjust="spacing">╮</text>
+<rect class="bg" x="0" y="18" width="1260" height="18" fill="#000000"/>
+<text class="crt" xml:space="preserve" x="999.6" y="32" fill="#DC4C4C" textLength="42" lengthAdjust="spacing">⢰   ⢰</text>
+<rect class="bg" x="0" y="36" width="1260" height="18" fill="#000000"/>
+<text class="crt" xml:space="preserve" x="957.6" y="50" fill="#D57B59" textLength="92.4" lengthAdjust="spacing">⡀ ⡄  ⢸⡄  ⢸⡇</text>
+<rect class="bg" x="0" y="54" width="1260" height="18" fill="#000000"/>
+<text class="crt" xml:space="preserve" x="940.8" y="68" fill="#CEA966" textLength="117.6" lengthAdjust="spacing">⢠⢠⣇⢀⣧⣆⡀⣼⡇ ⢸⢸⣷⢠</text>
+<text class="crt" x="1075.2" y="68" fill="#303030" textLength="8.4" lengthAdjust="spacing">╭</text>
+<text class="crt" xml:space="preserve" x="1100.4" y="68" fill="#FFFFFF" textLength="58.8" lengthAdjust="spacing" style="font-weight:bold;">EPYC 77</text>
+<text class="crt" xml:space="preserve" x="1176" y="68" fill="#FFFFFF" textLength="58.8" lengthAdjust="spacing" style="font-weight:bold;">3.2 GHz</text>
+<text class="crt" x="1243.2" y="68" fill="#303030" textLength="8.4" lengthAdjust="spacing">╮</text>
+<rect class="bg" x="0" y="72" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="940.8" y="86" fill="#BAC276" textLength="134.4" lengthAdjust="spacing">⢸⢸⣿⣿⣿⣿⣧⣿⣿⣾⣸⣸⣿⣸⡄⣼</text>
+<text class="crt" x="1083.6" y="86" fill="#F5F5F5" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">CPU</text>
+<text class="crt" x="1117.2" y="86" fill="#A2F0AF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">■</text>
+<text class="crt" x="1125.6" y="86" fill="#B6EEA4" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">■</text>
+<text class="crt" x="1134" y="86" fill="#CBEB98" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">■</text>
+<text class="crt" x="1142.4" y="86" fill="#4D4D4D" textLength="58.8" lengthAdjust="spacing" style="font-weight:bold;">■■■■■■■</text>
+<text class="crt" x="1218" y="86" fill="#B5C379" textLength="16.8" lengthAdjust="spacing">37</text>
+<text class="crt" x="1234.8" y="86" fill="#CCCCCC" textLength="8.4" lengthAdjust="spacing">%</text>
+<rect class="bg" x="0" y="90" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="940.8" y="104" fill="#98C689" textLength="134.4" lengthAdjust="spacing">⢸⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</text>
+<text class="crt" x="1083.6" y="104" fill="#F5F5F5" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">C</text>
+<text class="crt" x="1092" y="104" fill="#CCCCCC" textLength="8.4" lengthAdjust="spacing">0</text>
+<text class="crt" x="1117.2" y="104" fill="#AEC47C" textLength="8.4" lengthAdjust="spacing">⣠</text>
+<text class="crt" x="1125.6" y="104" fill="#DC4C4C" textLength="8.4" lengthAdjust="spacing">⣼</text>
+<text class="crt" x="1134" y="104" fill="#D09962" textLength="8.4" lengthAdjust="spacing">⣦</text>
+<text class="crt" x="1142.4" y="104" fill="#C2C171" textLength="8.4" lengthAdjust="spacing">⣤</text>
+<text class="crt" x="1150.8" y="104" fill="#CEA966" textLength="8.4" lengthAdjust="spacing">⣰</text>
+<text class="crt" x="1159.2" y="104" fill="#DC4C4C" textLength="8.4" lengthAdjust="spacing">⣸</text>
+<text class="crt" x="1167.6" y="104" fill="#D67457" textLength="8.4" lengthAdjust="spacing">⣧</text>
+<text class="crt" x="1176" y="104" fill="#BAC276" textLength="8.4" lengthAdjust="spacing">⣤</text>
+<text class="crt" x="1184.4" y="104" fill="#A4C582" textLength="8.4" lengthAdjust="spacing">⡀</text>
+<text class="crt" xml:space="preserve" x="1192.8" y="104" fill="#CBC06C" textLength="42" lengthAdjust="spacing">⣤  50</text>
+<text class="crt" x="1234.8" y="104" fill="#CCCCCC" textLength="8.4" lengthAdjust="spacing">%</text>
+<rect class="bg" x="0" y="108" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="940.8" y="122" fill="#A1C584" textLength="134.4" lengthAdjust="spacing">⢸⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿</text>
+<text class="crt" x="1083.6" y="122" fill="#F5F5F5" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">C</text>
+<text class="crt" x="1092" y="122" fill="#CCCCCC" textLength="8.4" lengthAdjust="spacing">1</text>
+<text class="crt" x="1117.2" y="122" fill="#CBC06C" textLength="8.4" lengthAdjust="spacing">⣤</text>
+<text class="crt" x="1125.6" y="122" fill="#DC4C4C" textLength="8.4" lengthAdjust="spacing">⣾</text>
+<text class="crt" x="1134" y="122" fill="#D19260" textLength="8.4" lengthAdjust="spacing">⣦</text>
+<text class="crt" x="1142.4" y="122" fill="#BAC276" textLength="8.4" lengthAdjust="spacing">⣤</text>
+<text class="crt" x="1150.8" y="122" fill="#CEA966" textLength="8.4" lengthAdjust="spacing">⣰</text>
+<text class="crt" x="1159.2" y="122" fill="#DC4C4C" textLength="8.4" lengthAdjust="spacing">⣼</text>
+<text class="crt" x="1167.6" y="122" fill="#D4805B" textLength="8.4" lengthAdjust="spacing">⣶</text>
+<text class="crt" x="1176" y="122" fill="#CBC06C" textLength="8.4" lengthAdjust="spacing">⣠</text>
+<text class="crt" x="1184.4" y="122" fill="#BAC276" textLength="8.4" lengthAdjust="spacing">⣤</text>
+<text class="crt" xml:space="preserve" x="1192.8" y="122" fill="#A9C47F" textLength="42" lengthAdjust="spacing">⣠  30</text>
+<text class="crt" x="1234.8" y="122" fill="#CCCCCC" textLength="8.4" lengthAdjust="spacing">%</text>
+<rect class="bg" x="0" y="126" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="940.8" y="140" fill="#CBC06C" textLength="134.4" lengthAdjust="spacing">⢸⢸⡿⠿⣿⡿⠏⣿⡟⠹⢸⢸⣿⢸⠁⠙</text>
+<text class="crt" xml:space="preserve" x="1083.6" y="140" fill="#CCCCCC" textLength="159.6" lengthAdjust="spacing">LAV: 1.17 1.61 2.27</text>
+<rect class="bg" x="0" y="144" width="1260" height="18" fill="#000000"/>
+<text class="crt" xml:space="preserve" x="957.6" y="158" fill="#D3865C" textLength="92.4" lengthAdjust="spacing">⠃ ⠇⠁ ⢸⠇ ⠈⢸⡇</text>
+<text class="crt" x="1075.2" y="158" fill="#303030" textLength="8.4" lengthAdjust="spacing">╰</text>
+<text class="crt" x="1243.2" y="158" fill="#303030" textLength="8.4" lengthAdjust="spacing">╯</text>
+<rect class="bg" x="0" y="162" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="16.8" y="176" fill="#606060" textLength="16.8" lengthAdjust="spacing">up</text>
+<text class="crt" x="42" y="176" fill="#606060" textLength="67.2" lengthAdjust="spacing">01:48:14</text>
+<text class="crt" xml:space="preserve" x="999.6" y="176" fill="#DC4C4C" textLength="50.4" lengthAdjust="spacing">⠸   ⠸⠁</text>
+<rect class="bg" x="0" y="180" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="0" y="194" fill="#556D59" textLength="8.4" lengthAdjust="spacing">╰</text>
+<text class="crt" x="1251.6" y="194" fill="#556D59" textLength="8.4" lengthAdjust="spacing">╯</text>
+<rect class="bg" x="0" y="198" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="0" y="212" fill="#6C6C4B" textLength="8.4" lengthAdjust="spacing">╭</text>
+<text class="crt" x="25.2" y="212" fill="#D94D4D" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">²</text>
+<text class="crt" x="33.6" y="212" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">mem</text>
+<text class="crt" x="310.8" y="212" fill="#D94D4D" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">d</text>
+<text class="crt" x="319.2" y="212" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">isks</text>
+<text class="crt" x="529.2" y="212" fill="#B54040" textLength="8.4" lengthAdjust="spacing">i</text>
+<text class="crt" x="537.6" y="212" fill="#EEEEEE" textLength="8.4" lengthAdjust="spacing">o</text>
+<text class="crt" x="562.8" y="212" fill="#6C6C4B" textLength="8.4" lengthAdjust="spacing">╮</text>
+<text class="crt" x="571.2" y="212" fill="#805252" textLength="8.4" lengthAdjust="spacing">╭</text>
+<text class="crt" x="596.4" y="212" fill="#D94D4D" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">⁴</text>
+<text class="crt" x="604.8" y="212" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">proc</text>
+<text class="crt" x="655.2" y="212" fill="#B54040" textLength="8.4" lengthAdjust="spacing">f</text>
+<text class="crt" x="663.6" y="212" fill="#EEEEEE" textLength="42" lengthAdjust="spacing">ilter</text>
+<text class="crt" x="924" y="212" fill="#EEEEEE" textLength="33.6" lengthAdjust="spacing">per-</text>
+<text class="crt" x="957.6" y="212" fill="#B54040" textLength="8.4" lengthAdjust="spacing">c</text>
+<text class="crt" x="966" y="212" fill="#EEEEEE" textLength="25.2" lengthAdjust="spacing">ore</text>
+<text class="crt" x="1008" y="212" fill="#B54040" textLength="8.4" lengthAdjust="spacing">r</text>
+<text class="crt" x="1016.4" y="212" fill="#EEEEEE" textLength="50.4" lengthAdjust="spacing">everse</text>
+<text class="crt" x="1083.6" y="212" fill="#EEEEEE" textLength="25.2" lengthAdjust="spacing">tre</text>
+<text class="crt" x="1108.8" y="212" fill="#B54040" textLength="8.4" lengthAdjust="spacing">e</text>
+<text class="crt" x="1134" y="212" fill="#D94D4D" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">&lt;</text>
+<text class="crt" xml:space="preserve" x="1150.8" y="212" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">cpu lazy</text>
+<text class="crt" x="1226.4" y="212" fill="#D94D4D" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">&gt;</text>
+<text class="crt" x="1251.6" y="212" fill="#805252" textLength="8.4" lengthAdjust="spacing">╮</text>
+<rect class="bg" x="0" y="216" width="1260" height="18" fill="#000000"/>
+<text class="crt" xml:space="preserve" x="16.8" y="230" fill="#FFFFFF" textLength="260.4" lengthAdjust="spacing" style="font-weight:bold;">Total:                 7.75 GiB</text>
+<text class="crt" xml:space="preserve" x="613.2" y="230" fill="#FFFFFF" textLength="621.6" lengthAdjust="spacing" style="font-weight:bold;">Pid: Program:         Command:        Threads: User:       MemB       Cpu%</text>
+<text class="crt" x="1243.2" y="230" fill="#F5F5F5" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">↑</text>
+<rect class="bg" x="0" y="234" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="16.8" y="248" fill="#CCCCCC" textLength="42" lengthAdjust="spacing">Used:</text>
+<text class="crt" x="210" y="248" fill="#CCCCCC" textLength="33.6" lengthAdjust="spacing">5.55</text>
+<text class="crt" x="252" y="248" fill="#CCCCCC" textLength="25.2" lengthAdjust="spacing">GiB</text>
+<text class="crt" x="604.8" y="248" fill="#CCCCCC" textLength="42" lengthAdjust="spacing">75402</text>
+<text class="crt" x="655.2" y="248" fill="#80D0A3" textLength="50.4" lengthAdjust="spacing">dotnet</text>
+<text class="crt" xml:space="preserve" x="798" y="248" fill="#CCCCCC" textLength="159.6" lengthAdjust="spacing">dotnet run --projec</text>
+<text class="crt" x="982.8" y="248" fill="#8BD09E" textLength="16.8" lengthAdjust="spacing">20</text>
+<text class="crt" x="1008" y="248" fill="#CCCCCC" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="1108.8" y="248" fill="#81D0A3" textLength="33.6" lengthAdjust="spacing">134M</text>
+<text class="crt" x="1150.8" y="248" fill="#404040" textLength="42" lengthAdjust="spacing">⣀⣀⣀⣀⣀</text>
+<text class="crt" x="1209.6" y="248" fill="#80D0A3" textLength="25.2" lengthAdjust="spacing">0.0</text>
+<rect class="bg" x="1243.2" y="234" width="8.4" height="18" fill="#F5F5F5"/>
+<rect class="bg" x="0" y="252" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="109.2" y="266" fill="#E9576C" textLength="134.4" lengthAdjust="spacing">⢰⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶</text>
+<text class="crt" x="252" y="266" fill="#CCCCCC" textLength="25.2" lengthAdjust="spacing">72%</text>
+<text class="crt" x="604.8" y="266" fill="#C5C5C5" textLength="42" lengthAdjust="spacing">75431</text>
+<text class="crt" x="655.2" y="266" fill="#89D09F" textLength="92.4" lengthAdjust="spacing">console2svg</text>
+<text class="crt" x="798" y="266" fill="#C5C5C5" textLength="159.6" lengthAdjust="spacing">/workspaces/console</text>
+<text class="crt" x="982.8" y="266" fill="#7FCEA2" textLength="16.8" lengthAdjust="spacing">14</text>
+<text class="crt" x="1008" y="266" fill="#C5C5C5" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="1117.2" y="266" fill="#7CC89E" textLength="25.2" lengthAdjust="spacing">55M</text>
+<text class="crt" x="1150.8" y="266" fill="#89D09F" textLength="42" lengthAdjust="spacing">⣀⣠⡀⡀⢀</text>
+<text class="crt" x="1201.2" y="266" fill="#89D09F" textLength="33.6" lengthAdjust="spacing">10.0</text>
+<rect class="bg" x="0" y="270" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="16.8" y="284" fill="#CCCCCC" textLength="84" lengthAdjust="spacing">Available:</text>
+<text class="crt" x="210" y="284" fill="#CCCCCC" textLength="33.6" lengthAdjust="spacing">2.20</text>
+<text class="crt" x="252" y="284" fill="#CCCCCC" textLength="25.2" lengthAdjust="spacing">GiB</text>
+<text class="crt" x="621.6" y="284" fill="#BDBDBD" textLength="25.2" lengthAdjust="spacing">583</text>
+<text class="crt" x="655.2" y="284" fill="#78C098" textLength="84" lengthAdjust="spacing">MainThread</text>
+<text class="crt" x="798" y="284" fill="#BDBDBD" textLength="159.6" lengthAdjust="spacing">/vscode/bin/linux-x</text>
+<text class="crt" x="982.8" y="284" fill="#7BC59C" textLength="16.8" lengthAdjust="spacing">14</text>
+<text class="crt" x="1008" y="284" fill="#BDBDBD" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="1108.8" y="284" fill="#87D0A0" textLength="33.6" lengthAdjust="spacing">1.2G</text>
+<text class="crt" x="1150.8" y="284" fill="#78C098" textLength="33.6" lengthAdjust="spacing">⣀⡄⡀⢀</text>
+<text class="crt" x="1184.4" y="284" fill="#404040" textLength="8.4" lengthAdjust="spacing">⣀</text>
+<text class="crt" x="1209.6" y="284" fill="#78C098" textLength="25.2" lengthAdjust="spacing">0.0</text>
+<rect class="bg" x="0" y="288" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="109.2" y="302" fill="#B1944A" textLength="134.4" lengthAdjust="spacing">⢀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀</text>
+<text class="crt" x="252" y="302" fill="#CCCCCC" textLength="25.2" lengthAdjust="spacing">28%</text>
+<text class="crt" x="604.8" y="302" fill="#B6B6B6" textLength="42" lengthAdjust="spacing">75455</text>
+<text class="crt" x="655.2" y="302" fill="#78C098" textLength="33.6" lengthAdjust="spacing">btop</text>
+<text class="crt" xml:space="preserve" x="798" y="302" fill="#B6B6B6" textLength="92.4" lengthAdjust="spacing">btop -u 100</text>
+<text class="crt" x="991.2" y="302" fill="#75B893" textLength="8.4" lengthAdjust="spacing">2</text>
+<text class="crt" x="1008" y="302" fill="#B6B6B6" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="1108.8" y="302" fill="#75B893" textLength="33.6" lengthAdjust="spacing">6.0M</text>
+<text class="crt" x="1150.8" y="302" fill="#404040" textLength="8.4" lengthAdjust="spacing">⣀</text>
+<text class="crt" x="1159.2" y="302" fill="#78C098" textLength="16.8" lengthAdjust="spacing">⡀⡀</text>
+<text class="crt" x="1176" y="302" fill="#404040" textLength="8.4" lengthAdjust="spacing">⣀</text>
+<text class="crt" x="1184.4" y="302" fill="#78C098" textLength="8.4" lengthAdjust="spacing">⢀</text>
+<text class="crt" x="1209.6" y="302" fill="#78C098" textLength="25.2" lengthAdjust="spacing">5.0</text>
+<rect class="bg" x="0" y="306" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="16.8" y="320" fill="#CCCCCC" textLength="58.8" lengthAdjust="spacing">Cached:</text>
+<text class="crt" x="210" y="320" fill="#CCCCCC" textLength="33.6" lengthAdjust="spacing">2.64</text>
+<text class="crt" x="252" y="320" fill="#CCCCCC" textLength="25.2" lengthAdjust="spacing">GiB</text>
+<text class="crt" x="613.2" y="320" fill="#AEAEAE" textLength="33.6" lengthAdjust="spacing">1305</text>
+<text class="crt" x="655.2" y="320" fill="#71B08D" textLength="126" lengthAdjust="spacing">Microsoft.CodeA</text>
+<text class="crt" x="798" y="320" fill="#AEAEAE" textLength="159.6" lengthAdjust="spacing">/home/codespace/.vs</text>
+<text class="crt" x="982.8" y="320" fill="#75B893" textLength="16.8" lengthAdjust="spacing">20</text>
+<text class="crt" x="1008" y="320" fill="#AEAEAE" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="1108.8" y="320" fill="#77BB95" textLength="33.6" lengthAdjust="spacing">660M</text>
+<text class="crt" x="1150.8" y="320" fill="#404040" textLength="42" lengthAdjust="spacing">⣀⣀⣀⣀⣀</text>
+<text class="crt" x="1209.6" y="320" fill="#71B08D" textLength="25.2" lengthAdjust="spacing">0.0</text>
+<rect class="bg" x="0" y="324" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="117.6" y="338" fill="#55ACC4" textLength="126" lengthAdjust="spacing">⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤</text>
+<text class="crt" x="252" y="338" fill="#CCCCCC" textLength="25.2" lengthAdjust="spacing">34%</text>
+<text class="crt" x="604.8" y="338" fill="#A7A7A7" textLength="42" lengthAdjust="spacing">72753</text>
+<text class="crt" x="655.2" y="338" fill="#6EA988" textLength="84" lengthAdjust="spacing">MainThread</text>
+<text class="crt" xml:space="preserve" x="798" y="338" fill="#A7A7A7" textLength="117.6" lengthAdjust="spacing">copilot --yolo</text>
+<text class="crt" x="982.8" y="338" fill="#72B18E" textLength="16.8" lengthAdjust="spacing">18</text>
+<text class="crt" x="1008" y="338" fill="#A7A7A7" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="1108.8" y="338" fill="#70AD8B" textLength="33.6" lengthAdjust="spacing">305M</text>
+<text class="crt" x="1150.8" y="338" fill="#404040" textLength="42" lengthAdjust="spacing">⣀⣀⣀⣀⣀</text>
+<text class="crt" x="1209.6" y="338" fill="#6EA988" textLength="25.2" lengthAdjust="spacing">0.0</text>
+<rect class="bg" x="0" y="342" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="16.8" y="356" fill="#CCCCCC" textLength="42" lengthAdjust="spacing">Free:</text>
+<text class="crt" x="218.4" y="356" fill="#CCCCCC" textLength="25.2" lengthAdjust="spacing">143</text>
+<text class="crt" x="252" y="356" fill="#CCCCCC" textLength="25.2" lengthAdjust="spacing">MiB</text>
+<text class="crt" x="613.2" y="356" fill="#9E9E9E" textLength="33.6" lengthAdjust="spacing">1135</text>
+<text class="crt" x="655.2" y="356" fill="#6AA082" textLength="84" lengthAdjust="spacing">MainThread</text>
+<text class="crt" x="798" y="356" fill="#9E9E9E" textLength="159.6" lengthAdjust="spacing">/vscode/bin/linux-x</text>
+<text class="crt" x="982.8" y="356" fill="#6DA686" textLength="16.8" lengthAdjust="spacing">14</text>
+<text class="crt" x="1008" y="356" fill="#9E9E9E" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="1117.2" y="356" fill="#6AA082" textLength="25.2" lengthAdjust="spacing">54M</text>
+<text class="crt" x="1150.8" y="356" fill="#6AA082" textLength="8.4" lengthAdjust="spacing">⡀</text>
+<text class="crt" x="1159.2" y="356" fill="#404040" textLength="8.4" lengthAdjust="spacing">⣀</text>
+<text class="crt" x="1167.6" y="356" fill="#6AA082" textLength="16.8" lengthAdjust="spacing">⡀⢀</text>
+<text class="crt" x="1184.4" y="356" fill="#404040" textLength="8.4" lengthAdjust="spacing">⣀</text>
+<text class="crt" x="1209.6" y="356" fill="#6AA082" textLength="25.2" lengthAdjust="spacing">0.0</text>
+<rect class="bg" x="0" y="360" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="260.4" y="374" fill="#CCCCCC" textLength="16.8" lengthAdjust="spacing">2%</text>
+<text class="crt" x="621.6" y="374" fill="#979797" textLength="25.2" lengthAdjust="spacing">560</text>
+<text class="crt" x="655.2" y="374" fill="#67997D" textLength="84" lengthAdjust="spacing">MainThread</text>
+<text class="crt" x="798" y="374" fill="#979797" textLength="159.6" lengthAdjust="spacing">/vscode/bin/linux-x</text>
+<text class="crt" x="982.8" y="374" fill="#699D80" textLength="16.8" lengthAdjust="spacing">11</text>
+<text class="crt" x="1008" y="374" fill="#979797" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="1108.8" y="374" fill="#689A7E" textLength="33.6" lengthAdjust="spacing">158M</text>
+<text class="crt" x="1150.8" y="374" fill="#404040" textLength="33.6" lengthAdjust="spacing">⣀⣀⣀⣀</text>
+<text class="crt" x="1184.4" y="374" fill="#67997D" textLength="8.4" lengthAdjust="spacing">⡀</text>
+<text class="crt" x="1209.6" y="374" fill="#67997D" textLength="25.2" lengthAdjust="spacing">0.0</text>
+<rect class="bg" x="0" y="378" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="0" y="392" fill="#6C6C4B" textLength="8.4" lengthAdjust="spacing">╰</text>
+<text class="crt" x="562.8" y="392" fill="#6C6C4B" textLength="8.4" lengthAdjust="spacing">╯</text>
+<text class="crt" x="613.2" y="392" fill="#8F8F8F" textLength="33.6" lengthAdjust="spacing">1889</text>
+<text class="crt" x="655.2" y="392" fill="#639077" textLength="126" lengthAdjust="spacing">Microsoft.Visua</text>
+<text class="crt" x="798" y="392" fill="#8F8F8F" textLength="159.6" lengthAdjust="spacing">/home/codespace/.vs</text>
+<text class="crt" x="982.8" y="392" fill="#67997D" textLength="16.8" lengthAdjust="spacing">19</text>
+<text class="crt" x="1008" y="392" fill="#8F8F8F" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="1108.8" y="392" fill="#65947A" textLength="33.6" lengthAdjust="spacing">283M</text>
+<text class="crt" x="1150.8" y="392" fill="#404040" textLength="42" lengthAdjust="spacing">⣀⣀⣀⣀⣀</text>
+<text class="crt" x="1209.6" y="392" fill="#639077" textLength="25.2" lengthAdjust="spacing">0.0</text>
+<rect class="bg" x="0" y="396" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="0" y="410" fill="#5C588D" textLength="8.4" lengthAdjust="spacing">╭</text>
+<text class="crt" x="25.2" y="410" fill="#D94D4D" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">³</text>
+<text class="crt" x="33.6" y="410" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">net</text>
+<text class="crt" x="75.6" y="410" fill="#FFFFFF" textLength="84" lengthAdjust="spacing" style="font-weight:bold;">10.0.11.82</text>
+<text class="crt" x="319.2" y="410" fill="#FFFFFF" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">s</text>
+<text class="crt" x="327.6" y="410" fill="#D94D4D" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">y</text>
+<text class="crt" x="336" y="410" fill="#FFFFFF" textLength="16.8" lengthAdjust="spacing" style="font-weight:bold;">nc</text>
+<text class="crt" x="369.6" y="410" fill="#D94D4D" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">a</text>
+<text class="crt" x="378" y="410" fill="#FFFFFF" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">uto</text>
+<text class="crt" x="420" y="410" fill="#B54040" textLength="8.4" lengthAdjust="spacing">z</text>
+<text class="crt" x="428.4" y="410" fill="#EEEEEE" textLength="25.2" lengthAdjust="spacing">ero</text>
+<text class="crt" x="470.4" y="410" fill="#D94D4D" textLength="16.8" lengthAdjust="spacing" style="font-weight:bold;">&lt;b</text>
+<text class="crt" x="495.6" y="410" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">eth0</text>
+<text class="crt" x="537.6" y="410" fill="#D94D4D" textLength="16.8" lengthAdjust="spacing" style="font-weight:bold;">n&gt;</text>
+<text class="crt" x="562.8" y="410" fill="#5C588D" textLength="8.4" lengthAdjust="spacing">╮</text>
+<text class="crt" x="613.2" y="410" fill="#868686" textLength="33.6" lengthAdjust="spacing">1896</text>
+<text class="crt" x="655.2" y="410" fill="#608871" textLength="126" lengthAdjust="spacing">Microsoft.Visua</text>
+<text class="crt" x="798" y="410" fill="#868686" textLength="159.6" lengthAdjust="spacing">/home/codespace/.vs</text>
+<text class="crt" x="982.8" y="410" fill="#628D75" textLength="16.8" lengthAdjust="spacing">14</text>
+<text class="crt" x="1008" y="410" fill="#868686" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="1108.8" y="410" fill="#608972" textLength="33.6" lengthAdjust="spacing">137M</text>
+<text class="crt" x="1150.8" y="410" fill="#404040" textLength="42" lengthAdjust="spacing">⣀⣀⣀⣀⣀</text>
+<text class="crt" x="1209.6" y="410" fill="#608871" textLength="25.2" lengthAdjust="spacing">0.0</text>
+<rect class="bg" x="0" y="414" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="8.4" y="428" fill="#606060" textLength="33.6" lengthAdjust="spacing">625K</text>
+<text class="crt" xml:space="preserve" x="235.2" y="428" fill="#B0A9DE" textLength="92.4" lengthAdjust="spacing">⣿ ⡇ ⡄⢰⡀⢰ ⣾⢠</text>
+<text class="crt" x="336" y="428" fill="#303030" textLength="8.4" lengthAdjust="spacing">╭</text>
+<text class="crt" x="361.2" y="428" fill="#FFFFFF" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">download</text>
+<text class="crt" x="554.4" y="428" fill="#303030" textLength="8.4" lengthAdjust="spacing">╮</text>
+<text class="crt" x="613.2" y="428" fill="#7F7F7F" textLength="33.6" lengthAdjust="spacing">1794</text>
+<text class="crt" x="655.2" y="428" fill="#5C806C" textLength="126" lengthAdjust="spacing">Microsoft.Visua</text>
+<text class="crt" x="798" y="428" fill="#7F7F7F" textLength="159.6" lengthAdjust="spacing">/home/codespace/.vs</text>
+<text class="crt" x="982.8" y="428" fill="#608871" textLength="16.8" lengthAdjust="spacing">17</text>
+<text class="crt" x="1008" y="428" fill="#7F7F7F" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="1108.8" y="428" fill="#5D826D" textLength="33.6" lengthAdjust="spacing">134M</text>
+<text class="crt" x="1150.8" y="428" fill="#404040" textLength="42" lengthAdjust="spacing">⣀⣀⣀⣀⣀</text>
+<text class="crt" x="1209.6" y="428" fill="#5C806C" textLength="25.2" lengthAdjust="spacing">0.0</text>
+<rect class="bg" x="0" y="432" width="1260" height="18" fill="#000000"/>
+<text class="crt" xml:space="preserve" x="235.2" y="446" fill="#7F76C0" textLength="100.8" lengthAdjust="spacing">⣿⣤⡇⣤⡇⢸⣧⣼ ⣿⢸⢠</text>
+<text class="crt" xml:space="preserve" x="344.4" y="446" fill="#CCCCCC" textLength="210" lengthAdjust="spacing">▼ 403 KiB/s  (3.15 Mibps)</text>
+<text class="crt" x="613.2" y="446" fill="#777777" textLength="33.6" lengthAdjust="spacing">1819</text>
+<text class="crt" x="655.2" y="446" fill="#587866" textLength="126" lengthAdjust="spacing">Microsoft.Visua</text>
+<text class="crt" x="798" y="446" fill="#777777" textLength="159.6" lengthAdjust="spacing">/home/codespace/.vs</text>
+<text class="crt" x="982.8" y="446" fill="#5C7F6B" textLength="16.8" lengthAdjust="spacing">15</text>
+<text class="crt" x="1008" y="446" fill="#777777" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="1117.2" y="446" fill="#587866" textLength="25.2" lengthAdjust="spacing">68M</text>
+<text class="crt" x="1150.8" y="446" fill="#404040" textLength="42" lengthAdjust="spacing">⣀⣀⣀⣀⣀</text>
+<text class="crt" x="1209.6" y="446" fill="#587866" textLength="25.2" lengthAdjust="spacing">0.0</text>
+<rect class="bg" x="0" y="450" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="226.8" y="464" fill="#4F43A3" textLength="109.2" lengthAdjust="spacing">⢸⣿⣿⣧⣿⣇⣾⣿⣿⣀⣿⣸⣸</text>
+<text class="crt" xml:space="preserve" x="344.4" y="464" fill="#CCCCCC" textLength="210" lengthAdjust="spacing">▼ Top:       (6.91 Mibps)</text>
+<text class="crt" x="613.2" y="464" fill="#707070" textLength="33.6" lengthAdjust="spacing">2042</text>
+<text class="crt" x="655.2" y="464" fill="#557061" textLength="50.4" lengthAdjust="spacing">dotnet</text>
+<text class="crt" x="798" y="464" fill="#707070" textLength="159.6" lengthAdjust="spacing">/usr/share/dotnet/d</text>
+<text class="crt" x="982.8" y="464" fill="#577564" textLength="16.8" lengthAdjust="spacing">10</text>
+<text class="crt" x="1008" y="464" fill="#707070" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="1117.2" y="464" fill="#557061" textLength="25.2" lengthAdjust="spacing">56M</text>
+<text class="crt" x="1150.8" y="464" fill="#404040" textLength="42" lengthAdjust="spacing">⣀⣀⣀⣀⣀</text>
+<text class="crt" x="1209.6" y="464" fill="#557061" textLength="25.2" lengthAdjust="spacing">0.0</text>
+<rect class="bg" x="0" y="468" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="210" y="482" fill="#3C318C" textLength="126" lengthAdjust="spacing">⢀⣰⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</text>
+<text class="crt" xml:space="preserve" x="344.4" y="482" fill="#CCCCCC" textLength="210" lengthAdjust="spacing">▼ Total:         12.9 GiB</text>
+<text class="crt" x="621.6" y="482" fill="#686868" textLength="25.2" lengthAdjust="spacing">599</text>
+<text class="crt" x="655.2" y="482" fill="#51685B" textLength="84" lengthAdjust="spacing">MainThread</text>
+<text class="crt" x="798" y="482" fill="#686868" textLength="159.6" lengthAdjust="spacing">/vscode/bin/linux-x</text>
+<text class="crt" x="982.8" y="482" fill="#536C5E" textLength="16.8" lengthAdjust="spacing">11</text>
+<text class="crt" x="1008" y="482" fill="#686868" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="1108.8" y="482" fill="#52695C" textLength="33.6" lengthAdjust="spacing">101M</text>
+<text class="crt" x="1150.8" y="482" fill="#404040" textLength="42" lengthAdjust="spacing">⣀⣀⣀⣀⣀</text>
+<text class="crt" x="1209.6" y="482" fill="#51685B" textLength="25.2" lengthAdjust="spacing">0.0</text>
+<rect class="bg" x="0" y="486" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="210" y="500" fill="#6F2372" textLength="126" lengthAdjust="spacing">⠈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</text>
+<text class="crt" xml:space="preserve" x="344.4" y="500" fill="#CCCCCC" textLength="210" lengthAdjust="spacing">▲ 210 KiB/s  (1.64 Mibps)</text>
+<text class="crt" x="604.8" y="500" fill="#616161" textLength="42" lengthAdjust="spacing">71269</text>
+<text class="crt" x="655.2" y="500" fill="#4E6156" textLength="33.6" lengthAdjust="spacing">bash</text>
+<text class="crt" xml:space="preserve" x="798" y="500" fill="#616161" textLength="159.6" lengthAdjust="spacing">/bin/bash --init-fi</text>
+<text class="crt" x="991.2" y="500" fill="#4E6156" textLength="8.4" lengthAdjust="spacing">1</text>
+<text class="crt" x="1008" y="500" fill="#616161" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="1117.2" y="500" fill="#4E6156" textLength="25.2" lengthAdjust="spacing">12M</text>
+<text class="crt" x="1150.8" y="500" fill="#404040" textLength="42" lengthAdjust="spacing">⣀⣀⣀⣀⣀</text>
+<text class="crt" x="1209.6" y="500" fill="#4E6156" textLength="25.2" lengthAdjust="spacing">0.0</text>
+<rect class="bg" x="0" y="504" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="218.4" y="518" fill="#7D4180" textLength="117.6" lengthAdjust="spacing">⡏⠉⠙⠙⠙⠙⠙⠋⠋⠙⠋⡿⠙⠉</text>
+<text class="crt" xml:space="preserve" x="344.4" y="518" fill="#CCCCCC" textLength="210" lengthAdjust="spacing">▲ Top:       (3.26 Mibps)</text>
+<text class="crt" x="621.6" y="518" fill="#585858" textLength="25.2" lengthAdjust="spacing">600</text>
+<text class="crt" x="655.2" y="518" fill="#4A5850" textLength="84" lengthAdjust="spacing">MainThread</text>
+<text class="crt" x="798" y="518" fill="#585858" textLength="159.6" lengthAdjust="spacing">/vscode/bin/linux-x</text>
+<text class="crt" x="982.8" y="518" fill="#4D5E54" textLength="16.8" lengthAdjust="spacing">13</text>
+<text class="crt" x="1008" y="518" fill="#585858" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="1117.2" y="518" fill="#4A5850" textLength="25.2" lengthAdjust="spacing">42M</text>
+<text class="crt" x="1150.8" y="518" fill="#404040" textLength="42" lengthAdjust="spacing">⣀⣀⣀⣀⣀</text>
+<text class="crt" x="1209.6" y="518" fill="#4A5850" textLength="25.2" lengthAdjust="spacing">0.0</text>
+<rect class="bg" x="0" y="522" width="1260" height="18" fill="#000000"/>
+<text class="crt" xml:space="preserve" x="218.4" y="536" fill="#AC78AF" textLength="100.8" lengthAdjust="spacing">⠇          ⠁</text>
+<text class="crt" xml:space="preserve" x="344.4" y="536" fill="#CCCCCC" textLength="210" lengthAdjust="spacing">▲ Total:          440 MiB</text>
+<text class="crt" x="621.6" y="536" fill="#515151" textLength="25.2" lengthAdjust="spacing">735</text>
+<text class="crt" x="655.2" y="536" fill="#47514B" textLength="84" lengthAdjust="spacing">MainThread</text>
+<text class="crt" x="798" y="536" fill="#515151" textLength="159.6" lengthAdjust="spacing">/vscode/bin/linux-x</text>
+<text class="crt" x="982.8" y="536" fill="#4A574F" textLength="16.8" lengthAdjust="spacing">14</text>
+<text class="crt" x="1008" y="536" fill="#515151" textLength="75.6" lengthAdjust="spacing">codespace</text>
+<text class="crt" x="1108.8" y="536" fill="#48544D" textLength="33.6" lengthAdjust="spacing">195M</text>
+<text class="crt" x="1150.8" y="536" fill="#404040" textLength="42" lengthAdjust="spacing">⣀⣀⣀⣀⣀</text>
+<text class="crt" x="1209.6" y="536" fill="#47514B" textLength="25.2" lengthAdjust="spacing">0.0</text>
+<rect class="bg" x="0" y="540" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="8.4" y="554" fill="#606060" textLength="33.6" lengthAdjust="spacing">625K</text>
+<text class="crt" x="336" y="554" fill="#303030" textLength="8.4" lengthAdjust="spacing">╰</text>
+<text class="crt" x="361.2" y="554" fill="#FFFFFF" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">upload</text>
+<text class="crt" x="554.4" y="554" fill="#303030" textLength="8.4" lengthAdjust="spacing">╯</text>
+<text class="crt" x="630" y="554" fill="#494949" textLength="16.8" lengthAdjust="spacing">71</text>
+<text class="crt" x="655.2" y="554" fill="#434845" textLength="84" lengthAdjust="spacing">containerd</text>
+<text class="crt" xml:space="preserve" x="798" y="554" fill="#494949" textLength="159.6" lengthAdjust="spacing">containerd --config</text>
+<text class="crt" x="991.2" y="554" fill="#454B47" textLength="8.4" lengthAdjust="spacing">8</text>
+<text class="crt" x="1008" y="554" fill="#494949" textLength="33.6" lengthAdjust="spacing">root</text>
+<text class="crt" x="1117.2" y="554" fill="#434845" textLength="25.2" lengthAdjust="spacing">22M</text>
+<text class="crt" x="1150.8" y="554" fill="#404040" textLength="42" lengthAdjust="spacing">⣀⣀⣀⣀⣀</text>
+<text class="crt" x="1209.6" y="554" fill="#434845" textLength="25.2" lengthAdjust="spacing">0.0</text>
+<text class="crt" x="1243.2" y="554" fill="#F5F5F5" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">↓</text>
+<rect class="bg" x="0" y="558" width="1260" height="18" fill="#000000"/>
+<text class="crt" x="0" y="572" fill="#5C588D" textLength="8.4" lengthAdjust="spacing">╰</text>
+<text class="crt" x="562.8" y="572" fill="#5C588D" textLength="8.4" lengthAdjust="spacing">╯</text>
+<text class="crt" x="571.2" y="572" fill="#805252" textLength="8.4" lengthAdjust="spacing">╰</text>
+<text class="crt" x="588" y="572" fill="#4D4D4D" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">↑</text>
+<text class="crt" x="604.8" y="572" fill="#FFFFFF" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">select</text>
+<text class="crt" x="663.6" y="572" fill="#D94D4D" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">↓</text>
+<text class="crt" xml:space="preserve" x="688.8" y="572" fill="#4D4D4D" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">info ↵</text>
+<text class="crt" x="756" y="572" fill="#4D4D4D" textLength="75.6" lengthAdjust="spacing" style="font-weight:bold;">terminate</text>
+<text class="crt" x="848.4" y="572" fill="#4D4D4D" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">kill</text>
+<text class="crt" x="898.8" y="572" fill="#4D4D4D" textLength="58.8" lengthAdjust="spacing" style="font-weight:bold;">signals</text>
+<text class="crt" x="1209.6" y="572" fill="#FFFFFF" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">0/36</text>
+<text class="crt" x="1251.6" y="572" fill="#805252" textLength="8.4" lengthAdjust="spacing">╯</text>
+<path class="box" d="M8.4 8.5H21V9.5H8.4ZM63 8.5H88.2V9.5H63ZM130.2 8.5H138.6V9.5H130.2ZM214.2 8.5H600.6V9.5H214.2ZM676.2 8.5H1155V9.5H676.2ZM1239 8.5H1251.6V9.5H1239ZM8.4 188.5H1251.6V189.5H8.4ZM20.5 9H21.5V18H20.5ZM62.5 9H63.5V18H62.5ZM87.7 9H88.7V18H87.7ZM129.7 9H130.7V18H129.7ZM138.1 9H139.1V18H138.1ZM213.7 9H214.7V18H213.7ZM600.1 9H601.1V18H600.1ZM675.7 9H676.7V18H675.7ZM1154.5 9H1155.5V18H1154.5ZM1238.5 9H1239.5V18H1238.5ZM3.7 18H4.7V180H3.7ZM1255.3 18H1256.3V180H1255.3Z" fill="#556D59"/>
+<path class="box" d="M1083.6 62.5H1096.2V63.5H1083.6ZM1163.4 62.5H1171.8V63.5H1163.4ZM1239 62.5H1243.2V63.5H1239ZM1083.6 152.5H1243.2V153.5H1083.6ZM289.8 224.5H562.8V225.5H289.8ZM8.4 242.5H16.8V243.5H8.4ZM58.8 242.5H210V243.5H58.8ZM243.6 242.5H252V243.5H243.6ZM277.2 242.5H289.8V243.5H277.2ZM8.4 278.5H16.8V279.5H8.4ZM100.8 278.5H210V279.5H100.8ZM243.6 278.5H252V279.5H243.6ZM277.2 278.5H289.8V279.5H277.2ZM8.4 314.5H16.8V315.5H8.4ZM75.6 314.5H210V315.5H75.6ZM243.6 314.5H252V315.5H243.6ZM277.2 314.5H289.8V315.5H277.2ZM8.4 350.5H16.8V351.5H8.4ZM58.8 350.5H218.4V351.5H58.8ZM243.6 350.5H252V351.5H243.6ZM277.2 350.5H289.8V351.5H277.2ZM344.4 422.5H357V423.5H344.4ZM432.6 422.5H554.4V423.5H432.6ZM344.4 548.5H357V549.5H344.4ZM415.8 548.5H554.4V549.5H415.8ZM1095.7 63H1096.7V72H1095.7ZM1162.9 63H1163.9V72H1162.9ZM1171.3 63H1172.3V72H1171.3ZM1238.5 63H1239.5V72H1238.5ZM1078.9 72H1079.9V144H1078.9ZM1246.9 72H1247.9V144H1246.9ZM289.3 216H290.3V378H289.3ZM356.5 423H357.5V432H356.5ZM356.5 540H357.5V549H356.5ZM432.1 423H433.1V432H432.1ZM339.7 432H340.7V540H339.7ZM558.1 432H559.1V540H558.1ZM415.3 540H416.3V549H415.3Z" fill="#303030"/>
+<path class="box" d="M8.4 206.5H21V207.5H8.4ZM63 206.5H306.6V207.5H63ZM357 206.5H525V207.5H357ZM550.2 206.5H562.8V207.5H550.2ZM562.8 224.5H567V225.5H562.8ZM4.2 242.5H8.4V243.5H4.2ZM4.2 278.5H8.4V279.5H4.2ZM4.2 314.5H8.4V315.5H4.2ZM4.2 350.5H8.4V351.5H4.2ZM8.4 386.5H562.8V387.5H8.4ZM20.5 207H21.5V216H20.5ZM62.5 207H63.5V216H62.5ZM289.3 207H290.3V216H289.3ZM289.3 378H290.3V387H289.3ZM306.1 207H307.1V216H306.1ZM356.5 207H357.5V216H356.5ZM524.5 207H525.5V216H524.5ZM549.7 207H550.7V216H549.7ZM3.7 216H4.7V378H3.7ZM566.5 216H567.5V378H566.5Z" fill="#6C6C4B"/>
+<path class="box" d="M579.6 206.5H592.2V207.5H579.6ZM642.6 206.5H651V207.5H642.6ZM709.8 206.5H919.8V207.5H709.8ZM995.4 206.5H1003.8V207.5H995.4ZM1071 206.5H1079.4V207.5H1071ZM1121.4 206.5H1129.8V207.5H1121.4ZM1239 206.5H1251.6V207.5H1239ZM579.6 566.5H583.8V567.5H579.6ZM676.2 566.5H684.6V567.5H676.2ZM743.4 566.5H751.8V567.5H743.4ZM835.8 566.5H844.2V567.5H835.8ZM886.2 566.5H894.6V567.5H886.2ZM961.8 566.5H1205.4V567.5H961.8ZM1247.4 566.5H1251.6V567.5H1247.4ZM591.7 207H592.7V216H591.7ZM642.1 207H643.1V216H642.1ZM650.5 207H651.5V216H650.5ZM709.3 207H710.3V216H709.3ZM919.3 207H920.3V216H919.3ZM994.9 207H995.9V216H994.9ZM1003.3 207H1004.3V216H1003.3ZM1070.5 207H1071.5V216H1070.5ZM1078.9 207H1079.9V216H1078.9ZM1120.9 207H1121.9V216H1120.9ZM1129.3 207H1130.3V216H1129.3ZM1238.5 207H1239.5V216H1238.5ZM574.9 216H575.9V558H574.9ZM1255.3 216H1256.3V558H1255.3ZM583.3 558H584.3V567H583.3ZM675.7 558H676.7V567H675.7ZM684.1 558H685.1V567H684.1ZM742.9 558H743.9V567H742.9ZM751.3 558H752.3V567H751.3ZM835.3 558H836.3V567H835.3ZM843.7 558H844.7V567H843.7ZM885.7 558H886.7V567H885.7ZM894.1 558H895.1V567H894.1ZM961.3 558H962.3V567H961.3ZM1204.9 558H1205.9V567H1204.9ZM1246.9 558H1247.9V567H1246.9Z" fill="#805252"/>
+<path class="box" d="M8.4 404.5H21V405.5H8.4ZM63 404.5H71.4V405.5H63ZM163.8 404.5H315V405.5H163.8ZM357 404.5H365.4V405.5H357ZM407.4 404.5H415.8V405.5H407.4ZM457.8 404.5H466.2V405.5H457.8ZM558.6 404.5H562.8V405.5H558.6ZM8.4 566.5H562.8V567.5H8.4ZM20.5 405H21.5V414H20.5ZM62.5 405H63.5V414H62.5ZM70.9 405H71.9V414H70.9ZM163.3 405H164.3V414H163.3ZM314.5 405H315.5V414H314.5ZM356.5 405H357.5V414H356.5ZM364.9 405H365.9V414H364.9ZM406.9 405H407.9V414H406.9ZM415.3 405H416.3V414H415.3ZM457.3 405H458.3V414H457.3ZM465.7 405H466.7V414H465.7ZM558.1 405H559.1V414H558.1ZM3.7 414H4.7V558H3.7ZM566.5 414H567.5V558H566.5Z" fill="#5C588D"/>
+</g>
+</g>
+</svg>

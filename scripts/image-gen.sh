@@ -1,10 +1,10 @@
 # --- install require packages ---
 sudo npm install -g oh-my-logo @github/copilot 
-sudo apt install -y librsvg2-bin sl nyancat vim tmux ffmpeg cmatrix
+sudo apt install -y librsvg2-bin sl nyancat vim tmux ffmpeg cmatrix btop
 
 # --- image ---
 console2svg -o ./assets/cmd-hero.svg        --verbose ./logs/cmd-hero.log         -w 100 -h 10 -c -d macos-pc --opacity 0.95 --background ./assets/image1.png -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
-console2svg -o ./assets/cmd-hero-grad.svg   --verbose ./logs/cmd-hero-grad.log    -w 100 -h 10 -c -d macos-pc --opacity 0.95 --background "#30a0d0" "#0060c0" -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
+console2svg -o ./assets/cmd-btop.svg        --verbose ./logs/cmd-btop.log         -w 150 -h 32 -d macos-pc --opacity 0.95 --background "#30a0d0" "#0060c0" --timeout 3 -- btop -u 100
 console2svg -o ./assets/cmd.svg             --verbose ./logs/cmd.log              -w 120 console2svg 
 console2svg -o ./assets/cmd-window.svg      --verbose ./logs/cmd-window.log       -w 120 -c -d macos-pc  -- console2svg
 console2svg -o ./assets/cmd-crop-word.svg   --verbose ./logs/cmd-crop-word.log    -w 100 --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -- dotnet --info

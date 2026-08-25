@@ -14,9 +14,11 @@ namespace ConsoleToSvg.Benchmarks;
 ///     <item><see cref="MemoryDiagnoser"/> — allocated bytes + GC collections.</item>
 ///     <item><see cref="DisassemblyDiagnoser"/> — machine code (per-benchmark .asm files).</item>
 ///   </list>
-/// Additionally enables <see cref="HardwareCounter"/>s (CPU instructions retired, total
-/// cycles, branches, cache misses) when the Linux <c>perf</c> tool is available. On systems
-/// without <c>perf</c>, those counters are skipped automatically rather than failing the run.
+/// Additionally, when the Linux <c>perf</c> tool is available, enables
+/// <see cref="HardwareCounter"/>s (CPU instructions retired, total cycles, branches, cache
+/// misses) and <see cref="PerfCollectProfiler"/> (a sampling profiler that emits a
+/// <c>.trace.zip</c> flame graph for hot-spot analysis). On systems without <c>perf</c>,
+/// those are skipped automatically rather than failing the run.
 ///
 /// Two custom columns (<see cref="StaticSvgSizeColumn"/>, <see cref="AnimatedSvgSizeColumn"/>)
 /// report the generated SVG document size in bytes.
@@ -39,11 +41,13 @@ public static class BenchmarkConfig
 
         if (FindInPath("perf") is not null)
         {
-            config.AddHardwareCounters(
-                HardwareCounter.InstructionRetired,
-                HardwareCounter.TotalCycles,
-                HardwareCounter.BranchInstructions,
-                HardwareCounter.CacheMisses);
+            config
+                .AddHardwareCounters(
+                    HardwareCounter.InstructionRetired,
+                    HardwareCounter.TotalCycles,
+                    HardwareCounter.BranchInstructions,
+                    HardwareCounter.CacheMisses)
+                .AddDiagnoser(PerfCollectProfiler.Default);
         }
 
         return config;
@@ -52,7 +56,7 @@ public static class BenchmarkConfig
     private static DisassemblyDiagnoser CreateDisassemblyDiagnoser() =>
         new(
             new DisassemblyDiagnoserConfig(
-                maxDepth: 1,
+                maxDepth: 2,
                 syntax: DisassemblySyntax.Intel,
                 filters: Array.Empty<string>(),
                 formatterOptions: new FormatterOptions(),

@@ -18,11 +18,19 @@ SVG document size in bytes (`SVG size (static)` / `SVG size (animated)`).
 ## Diagnostics enabled
 
 - **Memory** (`MemoryDiagnoser`) — allocated bytes and GC collections per operation.
-- **Disassembly** (`DisassemblyDiagnoser`) — Intel-syntax `.asm` with source interleaved;
-  a combined `*-disassembly-report.md` and per-benchmark `.asm` are exported.
+- **Disassembly** (`DisassemblyDiagnoser`) — Intel-syntax `.asm` with source interleaved,
+  recursing to `maxDepth: 2` so the hot render→emulator→buffer chain
+  (`SvgRenderer.Render`, `TerminalEmulator.Process`, `ResolveDefaultTargetFrame`, …) is
+  disassembled, not just the benchmark entry point. A combined
+  `*-disassembly-report.html` and per-benchmark `*-asm.md` are exported.
 - **Hardware counters** — `InstructionRetired`, `TotalCycles`, `BranchInstructions`,
   `CacheMisses`, enabled automatically when Linux `perf` is on `PATH` (and
   `perf_event_paranoid` allows it); silently skipped otherwise.
+- **CPU sampling profiler** (`PerfCollectProfiler`) — also gated on Linux `perf`. When
+  present it runs each benchmark under `perfcollect` and emits a `*.trace.zip` per
+  benchmark plus a flame graph, so you can see *which functions are hot* (the disassembly
+  above shows *what code* is generated, the profiler shows *where time actually goes*).
+  Open the result with `perfcollect view <trace>.trace.zip` or `perf report`.
 
 Results are exported as GitHub Markdown, HTML, JSON, and CSV into
 `BenchmarkDotNet.Artifacts/` (override with `--artifacts <dir>`).
@@ -68,6 +76,8 @@ Compare the generated files:
 - `*-report-full.json` — per-measurement data plus metrics (time, memory, counters).
 - `*-asm.md` / `*-disassembly-report.html` — per-method machine code, diffable to
   spot JIT-codegen changes between the two source trees.
+- `*-trace.zip` (only when `perf` is present) — `perfcollect` CPU samples, usable as a
+  flame graph to compare hot functions between the two source trees.
 
 ### Common BenchmarkDotNet arguments
 

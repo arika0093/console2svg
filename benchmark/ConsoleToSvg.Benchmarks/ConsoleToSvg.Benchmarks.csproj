@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <Optimize>true</Optimize>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+    <!-- BenchmarkDotNet requires a JIT-compiled, portable-pdb build (no trimming/AOT). -->
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <InvariantGlobalization>false</InvariantGlobalization>
+
+    <!--
+      ConsoleToSvgCoreProject selects which ConsoleToSvg.Core source tree the benchmark is
+      compiled against:
+
+        (default)            -> the current source tree (HEAD).
+        -p:ConsoleToSvgCoreProject=<worktree>/src/ConsoleToSvg.Core/ConsoleToSvg.Core.csproj
+                             -> a checked-out released source (e.g. the v0.8.0-rc3 tag),
+                                for baseline comparison.
+
+      See benchmark/run-baseline.sh for a one-command baseline setup and benchmark/README.md
+      for the full comparison workflow.
+    -->
+    <ConsoleToSvgCoreProject Condition="'$(ConsoleToSvgCoreProject)' == ''">$(MSBuildThisFileDirectory)../../src/ConsoleToSvg.Core/ConsoleToSvg.Core.csproj</ConsoleToSvgCoreProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(ConsoleToSvgCoreProject)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
+  </ItemGroup>
+
+  <!-- Pre-recorded asciicast fixtures (generated with the console2svg save-cast option). -->
+  <ItemGroup>
+    <None Include="../fixtures/*.cast" LinkBase="fixtures" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

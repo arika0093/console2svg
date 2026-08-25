@@ -1,0 +1,6 @@
+# git worktrees materialized for baseline (released-source) comparison
+worktrees/
+
+# benchmark results exported per run for diffing
+artifacts/
+BenchmarkDotNet.Artifacts/

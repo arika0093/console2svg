@@ -38,7 +38,7 @@ public sealed class SvgConverterTests
         var args = (string[])method.Invoke(null, [2.5d, "output.mp4", "mpeg4"])!;
 
         // Verify structure: codec should be at index 10 (after "-c:v") for MP4
-        args.Length.ShouldBe(14);
+        args.Length.ShouldBe(16);
         args[0].ShouldBe("-y");
         args[1].ShouldBe("-framerate");
         args[2].ShouldBe("2.5");
@@ -52,7 +52,9 @@ public sealed class SvgConverterTests
         args[10].ShouldBe("mpeg4");
         args[11].ShouldBe("-pix_fmt");
         args[12].ShouldBe("yuv420p");
-        args[13].ShouldBe("output.mp4");
+        args[13].ShouldBe("-vf");
+        args[14].ShouldBe("pad=ceil(iw/2)*2:ceil(ih/2)*2:0:0");
+        args[15].ShouldBe("output.mp4");
     }
 
     [Test]
@@ -66,7 +68,7 @@ public sealed class SvgConverterTests
 
         // Test GIF output
         var gifArgs = (string[])method.Invoke(null, [2.5d, "output.gif", null])!;
-        gifArgs.Length.ShouldBe(12);
+        gifArgs.Length.ShouldBe(14);
         gifArgs[0].ShouldBe("-y");
         gifArgs[1].ShouldBe("-framerate");
         gifArgs[2].ShouldBe("2.5");
@@ -78,11 +80,13 @@ public sealed class SvgConverterTests
         gifArgs[8].ShouldBe("pipe:0");
         gifArgs[9].ShouldBe("-pix_fmt");
         gifArgs[10].ShouldBe("yuv420p");
-        gifArgs[11].ShouldBe("output.gif");
+        gifArgs[11].ShouldBe("-vf");
+        gifArgs[12].ShouldBe("pad=ceil(iw/2)*2:ceil(ih/2)*2:0:0");
+        gifArgs[13].ShouldBe("output.gif");
 
         // Test WebM output
         var webmArgs = (string[])method.Invoke(null, [2.5d, "output.webm", null])!;
-        webmArgs.Length.ShouldBe(12);
-        webmArgs[11].ShouldBe("output.webm");
+        webmArgs.Length.ShouldBe(14);
+        webmArgs[13].ShouldBe("output.webm");
     }
 }

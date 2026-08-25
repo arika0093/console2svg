@@ -51,6 +51,12 @@ public static partial class SvgConverter
     // back to the bundled dir and PATH.
     private static string? _resolvedFfmpegPath;
 
+    // H.264 and yuv420p require even frame dimensions; a rendered SVG can have
+    // odd pixel dimensions (rows × cell-height + chrome padding). Pad the frame
+    // up to the next even size, anchoring content at the top-left so only the
+    // right/bottom edges grow by at most 1px (issue #112).
+    private const string VideoEvenDimensionFilter = "pad=ceil(iw/2)*2:ceil(ih/2)*2:0:0";
+
     private static readonly Lazy<bool> _ffmpegAvailable = new(() =>
         !string.IsNullOrEmpty(FindFfmpegForDetection())
     );
@@ -479,8 +485,8 @@ public static partial class SvgConverter
 
         var fpsStr = fps.ToString(CultureInfo.InvariantCulture);
         string[] ffmpegArgs = codec is null
-            ? ["-y", "-framerate", fpsStr, "-i", framePattern, "-pix_fmt", "yuv420p", outputPath]
-            : ["-y", "-framerate", fpsStr, "-i", framePattern, "-c:v", codec, "-pix_fmt", "yuv420p", outputPath];
+            ? ["-y", "-framerate", fpsStr, "-i", framePattern, "-pix_fmt", "yuv420p", "-vf", VideoEvenDimensionFilter, outputPath]
+            : ["-y", "-framerate", fpsStr, "-i", framePattern, "-c:v", codec, "-pix_fmt", "yuv420p", "-vf", VideoEvenDimensionFilter, outputPath];
 
         await progressReporter.ReportAsync("Encoding video frames...", cancellationToken);
         await RunFfmpegAsync(

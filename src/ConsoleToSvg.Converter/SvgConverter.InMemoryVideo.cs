@@ -178,6 +178,8 @@ public static partial class SvgConverter
                 "pipe:0",
                 "-pix_fmt",
                 "yuv420p",
+                "-vf",
+                VideoEvenDimensionFilter,
                 outputPath,
             ];
         }
@@ -197,6 +199,8 @@ public static partial class SvgConverter
             codec,
             "-pix_fmt",
             "yuv420p",
+            "-vf",
+            VideoEvenDimensionFilter,
             outputPath,
         ];
     }

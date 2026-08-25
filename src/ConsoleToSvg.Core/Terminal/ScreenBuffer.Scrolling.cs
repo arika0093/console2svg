@@ -24,6 +24,7 @@ public sealed partial class ScreenBuffer
             _scrollTop = 0;
             _scrollBottom = Height - 1;
             _isAltScreen = true;
+            Array.Fill(_rowSignatureDirty, true);
             return;
         }
 
@@ -38,6 +39,7 @@ public sealed partial class ScreenBuffer
         CursorCol = Clamp(_savedMainCol, 0, Width - 1);
         _scrollTop = 0;
         _scrollBottom = Height - 1;
+        Array.Fill(_rowSignatureDirty, true);
     }
 
     private void ScrollRegionUp(int top, int bottom, int count, bool includeScrollback)
@@ -50,25 +52,24 @@ public sealed partial class ScreenBuffer
         count = Math.Min(count, bottom - top + 1);
         for (var i = 0; i < count; i++)
         {
+            var topRow = _cells[top];
+            var topSignature = _rowSignatures[top];
+            var topDirty = _rowSignatureDirty[top];
             if (includeScrollback && top == 0)
             {
-                var topRow = new ScreenCell[Width];
-                for (var col = 0; col < Width; col++)
-                {
-                    topRow[col] = _cells[0, col];
-                }
-
                 _scrollbackRows.Add(topRow);
             }
 
             for (var row = top + 1; row <= bottom; row++)
             {
-                for (var col = 0; col < Width; col++)
-                {
-                    _cells[row - 1, col] = _cells[row, col];
-                }
+                _cells[row - 1] = _cells[row];
+                _rowSignatures[row - 1] = _rowSignatures[row];
+                _rowSignatureDirty[row - 1] = _rowSignatureDirty[row];
             }
 
+            _cells[bottom] = includeScrollback && top == 0 ? CreateBlankRow() : topRow;
+            _rowSignatures[bottom] = topSignature;
+            _rowSignatureDirty[bottom] = topDirty;
             ClearRow(bottom);
         }
     }
@@ -83,14 +84,19 @@ public sealed partial class ScreenBuffer
         count = Math.Min(count, bottom - top + 1);
         for (var i = 0; i < count; i++)
         {
+            var bottomRow = _cells[bottom];
+            var bottomSignature = _rowSignatures[bottom];
+            var bottomDirty = _rowSignatureDirty[bottom];
             for (var row = bottom - 1; row >= top; row--)
             {
-                for (var col = 0; col < Width; col++)
-                {
-                    _cells[row + 1, col] = _cells[row, col];
-                }
+                _cells[row + 1] = _cells[row];
+                _rowSignatures[row + 1] = _rowSignatures[row];
+                _rowSignatureDirty[row + 1] = _rowSignatureDirty[row];
             }
 
+            _cells[top] = bottomRow;
+            _rowSignatures[top] = bottomSignature;
+            _rowSignatureDirty[top] = bottomDirty;
             ClearRow(top);
         }
     }
@@ -99,33 +105,39 @@ public sealed partial class ScreenBuffer
     {
         for (var col = 0; col < Width; col++)
         {
-            _cells[row, col] = new ScreenCell(" ", DefaultStyle);
+            SetCell(row, col, CreateCell(" ", DefaultStyle));
         }
     }
 
-    private ScreenCell[,] CreateBlankCells()
+    private ScreenCell[][] CreateBlankCells()
     {
-        var cells = new ScreenCell[Height, Width];
+        var cells = new ScreenCell[Height][];
         for (var row = 0; row < Height; row++)
         {
-            for (var col = 0; col < Width; col++)
-            {
-                cells[row, col] = new ScreenCell(" ", DefaultStyle);
-            }
+            cells[row] = CreateBlankRow();
         }
 
         return cells;
     }
 
-    private static ScreenCell[,] CloneCells(ScreenCell[,] source)
+    private ScreenCell[] CreateBlankRow()
     {
-        var cloned = new ScreenCell[source.GetLength(0), source.GetLength(1)];
-        for (var row = 0; row < source.GetLength(0); row++)
+        var row = new ScreenCell[Width];
+        for (var col = 0; col < Width; col++)
         {
-            for (var col = 0; col < source.GetLength(1); col++)
-            {
-                cloned[row, col] = source[row, col];
-            }
+            row[col] = CreateCell(" ", DefaultStyle);
+        }
+
+        return row;
+    }
+
+    private static ScreenCell[][] CloneCells(ScreenCell[][] source)
+    {
+        var cloned = new ScreenCell[source.Length][];
+        for (var row = 0; row < source.Length; row++)
+        {
+            cloned[row] = new ScreenCell[source[row].Length];
+            Array.Copy(source[row], cloned[row], source[row].Length);
         }
 
         return cloned;

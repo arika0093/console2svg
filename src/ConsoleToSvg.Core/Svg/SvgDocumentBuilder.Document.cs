@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using System.Text;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
 
@@ -9,7 +8,7 @@ namespace ConsoleToSvg.Svg;
 internal static partial class SvgDocumentBuilder
 {
     public static void BeginSvg(
-        StringBuilder sb,
+        SvgWriter sb,
         Context context,
         Theme theme,
         string? additionalCss,
@@ -79,7 +78,7 @@ internal static partial class SvgDocumentBuilder
     }
 
     private static void AppendCommandHeader(
-        StringBuilder sb,
+        SvgWriter sb,
         Context context,
         Theme theme,
         string commandHeader,
@@ -113,7 +112,7 @@ internal static partial class SvgDocumentBuilder
 
     /// <summary>Renders the always-opaque background layer (desktop bg for desktop styles, canvas bg otherwise).</summary>
     private static void AppendBackground(
-        StringBuilder sb,
+        SvgWriter sb,
         Context context,
         ChromeDefinition? chrome,
         string[]? background = null
@@ -148,7 +147,7 @@ internal static partial class SvgDocumentBuilder
 
     /// <summary>Renders chrome elements via the ChromeDefinition template. No opacity wrapper  Ecaller owns the outer g.</summary>
     private static void AppendChrome(
-        StringBuilder sb,
+        SvgWriter sb,
         Context context,
         Theme theme,
         ChromeDefinition? chrome
@@ -197,7 +196,7 @@ internal static partial class SvgDocumentBuilder
     /// Ensures padding space is not transparent when a window chrome is used.
     /// </summary>
     private static void AppendClientBackground(
-        StringBuilder sb,
+        SvgWriter sb,
         Context context,
         Theme theme,
         ChromeDefinition? chrome
@@ -262,7 +261,7 @@ internal static partial class SvgDocumentBuilder
     /// (the chrome window rect provides fill) and uses the terminal background for None style.
     /// </summary>
     private static void AppendCanvasBackground(
-        StringBuilder sb,
+        SvgWriter sb,
         Context context,
         ChromeDefinition? chrome,
         string[]? background
@@ -304,7 +303,7 @@ internal static partial class SvgDocumentBuilder
     }
 
     /// <summary>Opens a &lt;g opacity&gt; group if opacity &lt; 1.</summary>
-    private static void AppendGroupOpen(StringBuilder sb, double opacity)
+    private static void AppendGroupOpen(SvgWriter sb, double opacity)
     {
         if (opacity < 1d)
         {
@@ -315,7 +314,7 @@ internal static partial class SvgDocumentBuilder
     }
 
     /// <summary>Closes a &lt;g&gt; group previously opened by AppendGroupOpen.</summary>
-    private static void AppendGroupClose(StringBuilder sb, double opacity)
+    private static void AppendGroupClose(SvgWriter sb, double opacity)
     {
         if (opacity < 1d)
         {
@@ -337,7 +336,7 @@ internal static partial class SvgDocumentBuilder
 
     /// <summary>Emits SVG &lt;defs&gt; containing gradient or image background definitions if needed.</summary>
     private static void AppendDefs(
-        StringBuilder sb,
+        SvgWriter sb,
         Context context,
         ChromeDefinition? chrome,
         string[]? background
@@ -381,7 +380,7 @@ internal static partial class SvgDocumentBuilder
     }
 
     private static void AppendLinearGradientDef(
-        StringBuilder sb,
+        SvgWriter sb,
         string id,
         string color1,
         string color2
@@ -399,7 +398,7 @@ internal static partial class SvgDocumentBuilder
         sb.Append("</linearGradient>\n");
     }
 
-    private static void AppendImagePatternDef(StringBuilder sb, string imagePath, Context context)
+    private static void AppendImagePatternDef(SvgWriter sb, string imagePath, Context context)
     {
         string href;
         var mimeType = GetImageMimeType(imagePath);
@@ -476,7 +475,7 @@ internal static partial class SvgDocumentBuilder
         };
     }
 
-    public static void EndSvg(StringBuilder sb, double opacity = 1d)
+    public static void EndSvg(SvgWriter sb, double opacity = 1d)
     {
         AppendGroupClose(sb, opacity);
         sb.Append("</svg>");
@@ -488,7 +487,7 @@ internal static partial class SvgDocumentBuilder
     /// as <c>&lt;g id="fd-{frameIndex}"&gt;</c> with no animation class.
     /// </summary>
     public static void AppendFrameDefs(
-        StringBuilder sb,
+        SvgWriter sb,
         System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
         System.Collections.Generic.IReadOnlyList<int> uniqueFrameIndices,
         Context context,
@@ -522,7 +521,7 @@ internal static partial class SvgDocumentBuilder
     /// <see cref="AppendFrameDefs"/>. The element carries the per-frame animation CSS class.
     /// </summary>
     public static void AppendFrameUse(
-        StringBuilder sb,
+        SvgWriter sb,
         string defsId,
         string frameId,
         string frameClass

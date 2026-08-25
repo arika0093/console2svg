@@ -11,6 +11,7 @@ public sealed partial class AnsiParser
     private readonly ScreenBuffer _buffer;
     private readonly Theme _theme;
     private TextStyle _style;
+    private CellStyle _cellStyle;
     private string _pendingEscapeSequence = string.Empty;
     private CharacterSet _g0CharacterSet;
     private CharacterSet _g1CharacterSet;
@@ -29,6 +30,7 @@ public sealed partial class AnsiParser
         _buffer = buffer;
         _theme = theme;
         _style = _buffer.DefaultStyle;
+        _cellStyle = _buffer.ResolveCellStyle(_style);
     }
 
     public void Process(string text)
@@ -61,6 +63,7 @@ public sealed partial class AnsiParser
                     break;
                 }
 
+                _cellStyle = _buffer.ResolveCellStyle(_style);
                 i = escapeEndIndex;
                 continue;
             }
@@ -97,7 +100,7 @@ public sealed partial class AnsiParser
             {
                 var cluster = text.Substring(i, 2);
                 i++;
-                _buffer.PutSurrogatePair(cluster, _style);
+                _buffer.PutSurrogatePair(cluster, _cellStyle);
                 continue;
             }
 
@@ -132,7 +135,7 @@ public sealed partial class AnsiParser
                 }
             }
 
-            _buffer.PutChar(TranslateCharacterSet(ch), _style);
+            _buffer.PutChar(TranslateCharacterSet(ch), _cellStyle);
         }
     }
 

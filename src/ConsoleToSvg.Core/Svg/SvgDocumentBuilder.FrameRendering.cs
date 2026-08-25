@@ -11,7 +11,7 @@ namespace ConsoleToSvg.Svg;
 internal static partial class SvgDocumentBuilder
 {
     public static void AppendFrameGroup(
-        StringBuilder sb,
+        SvgWriter sb,
         ScreenBuffer buffer,
         Context context,
         Theme theme,
@@ -56,8 +56,9 @@ internal static partial class SvgDocumentBuilder
         sb.Append("\"/>\n");
 
         // Collect box drawing segments for merging
-        var hSegments = new List<(double Y, double StartX, double EndX, string Color, double StrokeWidth)>();
-        var vSegments = new List<(double X, double StartY, double EndY, string Color, double StrokeWidth)>();
+        var hSegments = new List<AxisSegment>();
+        var vSegments = new List<AxisSegment>();
+        var fgRunText = new StringBuilder(context.EndColExclusive - context.StartCol);
 
         for (var row = context.StartRow; row < context.EndRowExclusive; row++)
         {
@@ -114,7 +115,7 @@ internal static partial class SvgDocumentBuilder
 
             // --- Foreground pass: group consecutive cells with identical style ---
             var fgRunStart = context.StartCol;
-            var fgRunText = new StringBuilder();
+            fgRunText.Clear();
             string? fgRunColor = null;
             bool fgBold = false,
                 fgItalic = false,
@@ -191,7 +192,14 @@ internal static partial class SvgDocumentBuilder
                     sb.Append("\"");
                 }
                 sb.Append('>');
-                sb.Append(ApplyMask(fgRunText.ToString(), maskPatterns));
+                if (maskPatterns is null || maskPatterns.Length == 0)
+                {
+                    sb.Append(fgRunText);
+                }
+                else
+                {
+                    sb.Append(ApplyMask(fgRunText.ToString(), maskPatterns));
+                }
                 sb.Append("</text>\n");
                 fgRunText.Clear();
                 fgRunCellCount = 0;
@@ -327,13 +335,23 @@ internal static partial class SvgDocumentBuilder
                             or '\u253C';
 
                     if (left)
-                        hSegments.Add((centerY, cellX, centerX, effectiveFg, sw));
+                        hSegments.Add(new AxisSegment(centerY, cellX, centerX, effectiveFg, sw));
                     if (right)
-                        hSegments.Add((centerY, centerX, cellX + cellW, effectiveFg, sw));
+                        hSegments.Add(
+                            new AxisSegment(centerY, centerX, cellX + cellW, effectiveFg, sw)
+                        );
                     if (up)
-                        vSegments.Add((centerX, y, centerY, effectiveFg, sw));
+                        vSegments.Add(new AxisSegment(centerX, y, centerY, effectiveFg, sw));
                     if (down)
-                        vSegments.Add((centerX, centerY, y + context.CellHeight, effectiveFg, sw));
+                        vSegments.Add(
+                            new AxisSegment(
+                                centerX,
+                                centerY,
+                                y + context.CellHeight,
+                                effectiveFg,
+                                sw
+                            )
+                        );
 
                     fgRunStart = col + 1;
                     continue;
@@ -431,9 +449,9 @@ internal static partial class SvgDocumentBuilder
                 or '\u253C';
 
     private static void RenderMergedBoxSegments(
-        StringBuilder sb,
-        List<(double Y, double StartX, double EndX, string Color, double StrokeWidth)> hSegments,
-        List<(double X, double StartY, double EndY, string Color, double StrokeWidth)> vSegments,
+        SvgWriter sb,
+        List<AxisSegment> hSegments,
+        List<AxisSegment> vSegments,
         double cellWidth,
         double cellHeight
     )
@@ -443,70 +461,26 @@ internal static partial class SvgDocumentBuilder
             return;
         }
 
-        var mergedRects = new List<(double X, double Y, double Width, double Height, string Color)>();
+        var mergedRects = new List<BoxRect>(hSegments.Count + vSegments.Count);
         // Use a tolerance relative to cell size to avoid merging across real gaps at tiny font sizes
         var mergeTolerance = Math.Min(cellWidth, cellHeight) * 0.01;
+        MergeAxis(hSegments, horizontal: true, mergeTolerance, mergedRects);
+        MergeAxis(vSegments, horizontal: false, mergeTolerance, mergedRects);
 
-        static void MergeAxis<T>(
-            List<T> segments,
-            Func<T, double> getPosition,
-            Func<T, double> getStart,
-            Func<T, double> getEnd,
-            Func<T, string> getColor,
-            Func<T, double> getStrokeWidth,
-            Func<double, double, double, double, string, (double X, double Y, double Width, double Height, string Color)> toRect,
-            List<(double X, double Y, double Width, double Height, string Color)> output,
-            double tolerance)
+        mergedRects.Sort(static (left, right) =>
+            string.CompareOrdinal(left.Color, right.Color)
+        );
+        for (var groupStart = 0; groupStart < mergedRects.Count;)
         {
-            var groups = segments.GroupBy(s =>
-                (Position: getPosition(s), Color: getColor(s), StrokeWidth: getStrokeWidth(s))
-            );
-            foreach (var group in groups)
-            {
-                var sorted = group.OrderBy(s => getStart(s)).ToList();
-                double currentStart = getStart(sorted[0]);
-                double currentEnd = getEnd(sorted[0]);
-                double sw = getStrokeWidth(sorted[0]);
-                string color = group.Key.Color;
-
-                for (int i = 1; i < sorted.Count; i++)
-                {
-                    if (getStart(sorted[i]) <= currentEnd + tolerance)
-                    {
-                        currentEnd = Math.Max(currentEnd, getEnd(sorted[i]));
-                    }
-                    else
-                    {
-                        output.Add(toRect(group.Key.Position, currentStart, currentEnd, sw, color));
-                        currentStart = getStart(sorted[i]);
-                        currentEnd = getEnd(sorted[i]);
-                    }
-                }
-                output.Add(toRect(group.Key.Position, currentStart, currentEnd, sw, color));
-            }
-        }
-
-        MergeAxis(
-            hSegments,
-            s => s.Y, s => s.StartX, s => s.EndX, s => s.Color, s => s.StrokeWidth,
-            (y, start, end, sw, color) => (start, y - sw / 2d, end - start, sw, color),
-            mergedRects,
-            mergeTolerance);
-
-        MergeAxis(
-            vSegments,
-            s => s.X, s => s.StartY, s => s.EndY, s => s.Color, s => s.StrokeWidth,
-            (x, start, end, sw, color) => (x - sw / 2d, start, sw, end - start, color),
-            mergedRects,
-            mergeTolerance);
-
-        // Render all merged rectangles, grouped by color
-        var colorGroups = mergedRects.GroupBy(r => r.Color);
-        foreach (var group in colorGroups)
-        {
+            var color = mergedRects[groupStart].Color;
             sb.Append("<path class=\"box\" d=\"");
-            foreach (var rect in group)
+            var groupEnd = groupStart;
+            while (
+                groupEnd < mergedRects.Count
+                && string.Equals(mergedRects[groupEnd].Color, color, StringComparison.Ordinal)
+            )
             {
+                var rect = mergedRects[groupEnd];
                 sb.Append('M');
                 sb.Append(Format(rect.X));
                 sb.Append(' ');
@@ -518,15 +492,112 @@ internal static partial class SvgDocumentBuilder
                 sb.Append('H');
                 sb.Append(Format(rect.X));
                 sb.Append('Z');
+                groupEnd++;
             }
             sb.Append("\" fill=\"");
-            sb.Append(group.Key);
+            sb.Append(color);
             sb.Append("\"/>\n");
+            groupStart = groupEnd;
         }
     }
 
+    private static void MergeAxis(
+        List<AxisSegment> segments,
+        bool horizontal,
+        double tolerance,
+        List<BoxRect> output
+    )
+    {
+        segments.Sort(static (left, right) =>
+        {
+            var comparison = left.Position.CompareTo(right.Position);
+            if (comparison != 0)
+                return comparison;
+            comparison = string.CompareOrdinal(left.Color, right.Color);
+            if (comparison != 0)
+                return comparison;
+            comparison = left.StrokeWidth.CompareTo(right.StrokeWidth);
+            return comparison != 0 ? comparison : left.Start.CompareTo(right.Start);
+        });
+
+        for (var groupStart = 0; groupStart < segments.Count;)
+        {
+            var first = segments[groupStart];
+            var currentStart = first.Start;
+            var currentEnd = first.End;
+            var groupEnd = groupStart + 1;
+            while (groupEnd < segments.Count && IsSameAxisGroup(first, segments[groupEnd]))
+            {
+                var segment = segments[groupEnd];
+                if (segment.Start <= currentEnd + tolerance)
+                {
+                    currentEnd = Math.Max(currentEnd, segment.End);
+                }
+                else
+                {
+                    AddRect(first, currentStart, currentEnd, horizontal, output);
+                    currentStart = segment.Start;
+                    currentEnd = segment.End;
+                }
+
+                groupEnd++;
+            }
+
+            AddRect(first, currentStart, currentEnd, horizontal, output);
+            groupStart = groupEnd;
+        }
+    }
+
+    private static bool IsSameAxisGroup(AxisSegment left, AxisSegment right) =>
+        left.Position.CompareTo(right.Position) == 0
+        && left.StrokeWidth.CompareTo(right.StrokeWidth) == 0
+        && string.Equals(left.Color, right.Color, StringComparison.Ordinal);
+
+    private static void AddRect(
+        AxisSegment segment,
+        double start,
+        double end,
+        bool horizontal,
+        List<BoxRect> output
+    )
+    {
+        output.Add(
+            horizontal
+                ? new BoxRect(
+                    start,
+                    segment.Position - segment.StrokeWidth / 2d,
+                    end - start,
+                    segment.StrokeWidth,
+                    segment.Color
+                )
+                : new BoxRect(
+                    segment.Position - segment.StrokeWidth / 2d,
+                    start,
+                    segment.StrokeWidth,
+                    end - start,
+                    segment.Color
+                )
+        );
+    }
+
+    private readonly record struct AxisSegment(
+        double Position,
+        double Start,
+        double End,
+        string Color,
+        double StrokeWidth
+    );
+
+    private readonly record struct BoxRect(
+        double X,
+        double Y,
+        double Width,
+        double Height,
+        string Color
+    );
+
     private static void RenderBlockElement(
-        StringBuilder sb,
+        SvgWriter sb,
         string text,
         double x,
         double y,

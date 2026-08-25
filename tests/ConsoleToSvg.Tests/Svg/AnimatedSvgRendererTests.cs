@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.IO;
 using System.Text.RegularExpressions;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
@@ -8,6 +9,22 @@ namespace ConsoleToSvg.Tests.Svg;
 
 public sealed class AnimatedSvgRendererTests
 {
+    [Test]
+    public void WriteMatchesStringRender()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.1, "A");
+        session.AddEvent(0.2, "B");
+        var options = new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" };
+        using var writer = new StringWriter();
+
+        ConsoleToSvg.Svg.AnimatedSvgRenderer.Write(writer, session, options);
+
+        writer.ToString().ShouldBe(
+            ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(session, options)
+        );
+    }
+
     [Test]
     public void RenderFramesStartsWithProvidedTerminalState()
     {
@@ -396,6 +413,27 @@ public sealed class AnimatedSvgRendererTests
 
         svg.ShouldContain("id=\"frame-0\"");
         svg.ShouldNotContain("id=\"frame-1\"");
+    }
+
+    [Test]
+    public void RenderAnimatedSvgKeepsUnrelatedFinalBlankAfterDiscardedClearAndRedraw()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.00, "HELLO");
+        session.AddEvent(0.01, "\u001b[2J\u001b[HHELLO");
+        session.AddEvent(0.20, "\b\b\b\b\b     ");
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                VideoFps = 12,
+                VideoTiming = ConsoleToSvg.Svg.VideoTimingMode.Realtime,
+            }
+        );
+
+        svg.ShouldContain("id=\"frame-1\"");
     }
 
     [Test]

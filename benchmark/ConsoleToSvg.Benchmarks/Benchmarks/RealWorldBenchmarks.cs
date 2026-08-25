@@ -1,4 +1,5 @@
 using BenchmarkDotNet.Attributes;
+using System.IO;
 using ConsoleToSvg.Benchmarks.Workloads;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;
@@ -37,4 +38,12 @@ public class RealWorldBenchmarks
     /// <summary>Render the session to an animated SVG document (every visual frame).</summary>
     [Benchmark]
     public string RenderAnimated() => AnimatedSvgRenderer.Render(_session, _options);
+
+    /// <summary>Stream a static SVG without materializing the final string.</summary>
+    [Benchmark]
+    public void WriteStatic() => SvgRenderer.Write(TextWriter.Null, _session, _options);
+
+    /// <summary>Stream an animated SVG without materializing the final string.</summary>
+    [Benchmark]
+    public void WriteAnimated() => AnimatedSvgRenderer.Write(TextWriter.Null, _session, _options);
 }

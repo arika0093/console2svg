@@ -5,6 +5,18 @@ namespace ConsoleToSvg.Tests.Terminal;
 public sealed class AnsiParserTests
 {
     [Test]
+    public void DefaultScreenCellHasSafeDefaultProperties()
+    {
+        var cell = default(ScreenCell);
+
+        cell.Foreground.ShouldBeNull();
+        cell.Background.ShouldBeNull();
+        cell.Bold.ShouldBeFalse();
+        cell.UnderlineColor.ShouldBeNull();
+        _ = cell.ToTextStyle();
+    }
+
+    [Test]
     public void VisualSignatureMatchesClonedScreenAndChangesWithContent()
     {
         var emulator = new TerminalEmulator(8, 2, Theme.Resolve("dark"));

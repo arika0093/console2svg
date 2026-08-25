@@ -79,9 +79,9 @@ public static class AnsiWorkload
                         sb.Append(SgrPalette[rng.Next(SgrPalette.Length)]);
                     }
 
-                    for (; cell < end; cell++)
+                    while (cell < end)
                     {
-                        AppendCell(rng, sb);
+                        cell += AppendCell(rng, sb, end - cell);
                     }
                 }
 
@@ -99,16 +99,57 @@ public static class AnsiWorkload
         return session;
     }
 
-    private static void AppendCell(Random rng, StringBuilder sb)
+    public static RecordingSession BuildWideCharacterSession(Preset preset, int seed)
     {
-        if (rng.Next(100) < 6)
+        var session = new RecordingSession(preset.Width, preset.Height);
+        var rng = new Random(seed);
+        for (var frame = 0; frame < preset.Frames; frame++)
+        {
+            var sb = new StringBuilder(preset.Width * preset.Height);
+            sb.Append("\x1b[H");
+            for (var row = 0; row < preset.Height; row++)
+            {
+                for (var col = 0; col + 1 < preset.Width; col += 2)
+                {
+                    sb.Append((char)(0x3041 + rng.Next(0x53)));
+                }
+
+                if (row < preset.Height - 1)
+                {
+                    sb.Append("\r\n");
+                }
+            }
+
+            session.AddEvent((frame + 1) * 0.05, sb.ToString());
+        }
+
+        return session;
+    }
+
+    public static RecordingSession BuildScrollStressSession(Preset preset)
+    {
+        var session = new RecordingSession(preset.Width, preset.Height);
+        var line = new string('x', preset.Width - 1);
+        var sb = new StringBuilder((line.Length + 2) * preset.Frames * preset.Height);
+        for (var lineIndex = 0; lineIndex < preset.Frames * preset.Height; lineIndex++)
+        {
+            sb.Append(line).Append("\r\n");
+        }
+
+        session.AddEvent(0.05, sb.ToString());
+        return session;
+    }
+
+    private static int AppendCell(Random rng, StringBuilder sb, int remainingWidth)
+    {
+        if (remainingWidth >= 2 && rng.Next(100) < 6)
         {
             // Hiragana (East Asian Wide): exercises the wide-cell rendering path.
             sb.Append((char)(0x3041 + rng.Next(0x53)));
+            return 2;
         }
-        else
-        {
-            sb.Append((char)('a' + rng.Next(26)));
-        }
+
+        sb.Append((char)('a' + rng.Next(26)));
+        return 1;
     }
 }

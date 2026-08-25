@@ -13,7 +13,7 @@ public static partial class AnimatedSvgRenderer
         RecordingSession session
     )
     {
-        if (frames.Count <= 1 || session.Events.Count != frames.Count)
+        if (frames.Count <= 1 || frames[0].EventIndex < 0)
         {
             return frames;
         }
@@ -33,7 +33,12 @@ public static partial class AnimatedSvgRenderer
             return frames;
         }
 
-        if (!SvgRenderShared.HasTrailingBlankIndicators(session, lastNonBlankIndex + 1))
+        if (
+            !SvgRenderShared.HasTrailingBlankIndicators(
+                session,
+                frames[lastNonBlankIndex].EventIndex + 1
+            )
+        )
         {
             return frames;
         }

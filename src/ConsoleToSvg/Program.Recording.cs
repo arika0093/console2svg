@@ -240,16 +240,20 @@ internal static partial class Program
         var extension = Path.GetExtension(outputPath).TrimStart('.').ToLowerInvariant();
         if (string.IsNullOrEmpty(extension) || extension == "svg")
         {
-            var svg = capture.IsVideo
-                ? AnimatedSvgRenderer.RenderFrames(capture.Frames, renderOptions)
-                : SvgRenderer.Render(capture.Screen, renderOptions);
-            await File.WriteAllTextAsync(
-                    outputPath,
-                    svg,
-                    new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
-                    CancellationToken.None
-                )
-                .ConfigureAwait(false);
+            await using var writer = new StreamWriter(
+                outputPath,
+                append: false,
+                new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
+            );
+            if (capture.IsVideo)
+            {
+                AnimatedSvgRenderer.WriteFrames(writer, capture.Frames, renderOptions);
+            }
+            else
+            {
+                SvgRenderer.Write(writer, capture.Screen, renderOptions);
+            }
+            await writer.FlushAsync(CancellationToken.None).ConfigureAwait(false);
 
             if (capture.IsVideo && !string.IsNullOrWhiteSpace(options.SaveFramesDir))
             {

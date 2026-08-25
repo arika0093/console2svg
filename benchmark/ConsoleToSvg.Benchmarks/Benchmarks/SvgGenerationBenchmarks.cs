@@ -19,6 +19,8 @@ public class SvgGenerationBenchmarks
     public WorkloadSize Size { get; set; }
 
     private RecordingSession _session = null!;
+    private RecordingSession _wideCharacterSession = null!;
+    private RecordingSession _scrollStressSession = null!;
 
     [GlobalSetup]
     public void GlobalSetup()
@@ -26,6 +28,11 @@ public class SvgGenerationBenchmarks
         _session = AnsiWorkload.BuildSession(
             AnsiWorkload.Presets[(int)Size],
             seed: 42);
+        _wideCharacterSession = AnsiWorkload.BuildWideCharacterSession(
+            AnsiWorkload.Presets[(int)Size],
+            seed: 42);
+        _scrollStressSession = AnsiWorkload.BuildScrollStressSession(
+            AnsiWorkload.Presets[(int)Size]);
     }
 
     /// <summary>Render the recorded session to an SVG document string.</summary>
@@ -36,11 +43,24 @@ public class SvgGenerationBenchmarks
     /// <summary>Replay the session through the terminal emulator only (no SVG emission).</summary>
     [Benchmark]
     public ScreenBuffer ParseOnly()
+        => Replay(_session);
+
+    /// <summary>Parse a screen-filling workload consisting only of wide characters.</summary>
+    [Benchmark]
+    public ScreenBuffer ParseWideCharacters()
+        => Replay(_wideCharacterSession);
+
+    /// <summary>Parse continuous output that intentionally drives full-screen scrolling.</summary>
+    [Benchmark]
+    public ScreenBuffer ParseScrollStress()
+        => Replay(_scrollStressSession);
+
+    private static ScreenBuffer Replay(RecordingSession session)
     {
         var emulator = new TerminalEmulator(
-            _session.Header.width,
-            _session.Header.height,
+            session.Header.width,
+            session.Header.height,
             Theme.Resolve("dark"));
-        return emulator.Replay(_session, _session.Events.Count - 1);
+        return emulator.Replay(session, session.Events.Count - 1);
     }
 }

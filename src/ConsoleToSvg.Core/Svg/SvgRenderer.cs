@@ -1,13 +1,39 @@
 using System;
+using System.IO;
+using System.Text;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
-using ConsoleToSvg.Utils;
 
 namespace ConsoleToSvg.Svg;
 
 public static class SvgRenderer
 {
     public static string Render(RecordingSession session, SvgRenderOptions options)
+    {
+        var builder = new StringBuilder(32 * 1024);
+        using var writer = new StringWriter(builder, System.Globalization.CultureInfo.InvariantCulture);
+        Write(writer, session, options);
+        return builder.ToString();
+    }
+
+    /// <summary>Renders an already-emulated terminal screen.</summary>
+    public static string Render(
+        ScreenBuffer buffer,
+        SvgRenderOptions options,
+        bool includeScrollback = false
+    )
+    {
+        var builder = new StringBuilder(32 * 1024);
+        using var writer = new StringWriter(builder, System.Globalization.CultureInfo.InvariantCulture);
+        Write(writer, buffer, options, includeScrollback);
+        return builder.ToString();
+    }
+
+    public static void Write(
+        TextWriter writer,
+        RecordingSession session,
+        SvgRenderOptions options
+    )
     {
         var theme = SvgRenderShared.ResolveTheme(options);
         var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
@@ -60,16 +86,17 @@ public static class SvgRenderer
             }
         }
 
-        return Render(renderBuffer, options, includeScrollback: effectiveFrame == null);
+        Write(writer, renderBuffer, options, includeScrollback: effectiveFrame == null);
     }
 
-    /// <summary>Renders an already-emulated terminal screen.</summary>
-    public static string Render(
+    public static void Write(
+        TextWriter writer,
         ScreenBuffer buffer,
         SvgRenderOptions options,
         bool includeScrollback = false
     )
     {
+        ArgumentNullException.ThrowIfNull(writer);
         var theme = SvgRenderShared.ResolveTheme(options);
         var commandHeaderRows = string.IsNullOrEmpty(options.CommandHeader) ? 0 : 1;
         var context = SvgRenderShared.CreateContext(
@@ -78,9 +105,9 @@ public static class SvgRenderer
             includeScrollback,
             commandHeaderRows
         );
-        var sb = new LfStringBuilder(32 * 1024);
+        var svgWriter = new SvgWriter(writer);
         SvgDocumentBuilder.BeginSvg(
-            sb.Inner,
+            svgWriter,
             context,
             theme,
             additionalCss: null,
@@ -92,7 +119,7 @@ public static class SvgRenderer
             maskPatterns: options.MaskPatterns
         );
         SvgDocumentBuilder.AppendFrameGroup(
-            sb.Inner,
+            svgWriter,
             buffer,
             context,
             theme,
@@ -102,8 +129,7 @@ public static class SvgRenderer
             lengthAdjust: options.LengthAdjust,
             maskPatterns: options.MaskPatterns
         );
-        SvgDocumentBuilder.EndSvg(sb.Inner, options.Opacity);
-        return sb.ToString();
+        SvgDocumentBuilder.EndSvg(svgWriter, options.Opacity);
     }
 
     private static int ResolveDefaultTargetFrame(

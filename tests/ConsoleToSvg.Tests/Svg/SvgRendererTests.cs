@@ -1,9 +1,23 @@
+using System.IO;
 using ConsoleToSvg.Recording;
 
 namespace ConsoleToSvg.Tests.Svg;
 
 public sealed partial class SvgRendererTests
 {
+    [Test]
+    public void WriteMatchesStringRender()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.1, "\u001b[32mHELLO");
+        var options = new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" };
+        using var writer = new StringWriter();
+
+        ConsoleToSvg.Svg.SvgRenderer.Write(writer, session, options);
+
+        writer.ToString().ShouldBe(ConsoleToSvg.Svg.SvgRenderer.Render(session, options));
+    }
+
     [Test]
     public void RenderStaticSvgFromLastFrame()
     {

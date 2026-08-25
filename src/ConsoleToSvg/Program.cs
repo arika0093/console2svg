@@ -174,24 +174,19 @@ internal static partial class Program
             }
 
             var renderOptions = SvgRenderOptionsFactory.Create(options);
-            string? renderedSvg = null;
 
-            // Raster and video output have their own rendering paths below.  Do not
-            // eagerly build an SVG for them: an animated SVG can contain every
-            // terminal frame and was previously constructed only to be discarded.
-            string RenderOutputSvg()
+            void WriteOutputSvg(TextWriter writer)
             {
-                if (renderedSvg is not null)
+                logger.ZLogDebug($"Rendering SVG stream. Mode={options.Mode}");
+                if (options.Mode is OutputMode.Video or OutputMode.Repeat)
                 {
-                    return renderedSvg;
+                    AnimatedSvgRenderer.Write(writer, session, renderOptions);
                 }
-
-                logger.ZLogDebug($"Rendering SVG. Mode={options.Mode}");
-                renderedSvg = options.Mode is OutputMode.Video or OutputMode.Repeat
-                    ? AnimatedSvgRenderer.Render(session, renderOptions)
-                    : SvgRenderer.Render(session, renderOptions);
-                logger.ZLogDebug($"Rendering completed. SvgLength={renderedSvg.Length}");
-                return renderedSvg;
+                else
+                {
+                    SvgRenderer.Write(writer, session, renderOptions);
+                }
+                logger.ZLogDebug($"SVG stream rendering completed.");
             }
 
             // Background temp-dir deletion task for the video path; awaited
@@ -203,12 +198,12 @@ internal static partial class Program
             if (options.StdOut)
             {
                 logger.ZLogDebug($"Writing SVG to stdout.");
-                var svg = RenderOutputSvg();
                 await using var stdoutWriter = new StreamWriter(
                     Console.OpenStandardOutput(),
                     new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
                 );
-                await stdoutWriter.WriteAsync(svg).ConfigureAwait(false);
+                WriteOutputSvg(stdoutWriter);
+                await stdoutWriter.FlushAsync(outputToken).ConfigureAwait(false);
                 logger.ZLogDebug($"SVG written to stdout.");
             }
             else
@@ -222,14 +217,13 @@ internal static partial class Program
                     // SVG output – existing behaviour
                     EnsureDirectory(options.OutputPath);
                     logger.ZLogDebug($"Writing output file: {options.OutputPath}");
-                    var svg = RenderOutputSvg();
-                    await File.WriteAllTextAsync(
-                            options.OutputPath,
-                            svg,
-                            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
-                            outputToken
-                        )
-                        .ConfigureAwait(false);
+                    await using var outputWriter = new StreamWriter(
+                        options.OutputPath,
+                        append: false,
+                        new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
+                    );
+                    WriteOutputSvg(outputWriter);
+                    await outputWriter.FlushAsync(outputToken).ConfigureAwait(false);
                     logger.ZLogDebug($"Output file written: {options.OutputPath}");
                 }
                 else

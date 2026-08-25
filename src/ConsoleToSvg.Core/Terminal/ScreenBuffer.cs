@@ -19,56 +19,134 @@ public readonly record struct TextStyle(
     string? UnderlineColor = null
 );
 
+[Flags]
+internal enum TextStyleAttributes : ushort
+{
+    None = 0,
+    Bold = 1 << 0,
+    Italic = 1 << 1,
+    Underline = 1 << 2,
+    Reversed = 1 << 3,
+    Faint = 1 << 4,
+    Hidden = 1 << 5,
+    Strikethrough = 1 << 6,
+    Overline = 1 << 7,
+    Blink = 1 << 8,
+}
+
+internal sealed record CellStyle(
+    string Foreground,
+    string Background,
+    string? UnderlineColor,
+    TextStyleAttributes Attributes
+)
+{
+    public CellStyle(TextStyle style)
+        : this(
+            style.Foreground,
+            style.Background,
+            style.UnderlineColor,
+            GetFlags(style)
+        )
+    {
+    }
+
+    private static TextStyleAttributes GetFlags(TextStyle style)
+    {
+        var flags = TextStyleAttributes.None;
+        if (style.Bold)
+            flags |= TextStyleAttributes.Bold;
+        if (style.Italic)
+            flags |= TextStyleAttributes.Italic;
+        if (style.Underline)
+            flags |= TextStyleAttributes.Underline;
+        if (style.Reversed)
+            flags |= TextStyleAttributes.Reversed;
+        if (style.Faint)
+            flags |= TextStyleAttributes.Faint;
+        if (style.Hidden)
+            flags |= TextStyleAttributes.Hidden;
+        if (style.Strikethrough)
+            flags |= TextStyleAttributes.Strikethrough;
+        if (style.Overline)
+            flags |= TextStyleAttributes.Overline;
+        if (style.Blink)
+            flags |= TextStyleAttributes.Blink;
+        return flags;
+    }
+
+    public TextStyle ToTextStyle() =>
+        new(
+            Foreground,
+            Background,
+            Attributes.HasFlag(TextStyleAttributes.Bold),
+            Attributes.HasFlag(TextStyleAttributes.Italic),
+            Attributes.HasFlag(TextStyleAttributes.Underline),
+            Attributes.HasFlag(TextStyleAttributes.Reversed),
+            Attributes.HasFlag(TextStyleAttributes.Faint),
+            Attributes.HasFlag(TextStyleAttributes.Hidden),
+            Attributes.HasFlag(TextStyleAttributes.Strikethrough),
+            Attributes.HasFlag(TextStyleAttributes.Overline),
+            Attributes.HasFlag(TextStyleAttributes.Blink),
+            UnderlineColor
+        );
+}
+
 public readonly struct ScreenCell
 {
+    private const byte Wide = 1 << 0;
+    private const byte WideContinuation = 1 << 1;
+    private readonly CellStyle _style;
+    private readonly byte _flags;
+
     public ScreenCell(
         string text,
         TextStyle style,
         bool isWide = false,
         bool isWideContinuation = false
     )
+        : this(text, new CellStyle(style), isWide, isWideContinuation)
+    {
+    }
+
+    internal ScreenCell(
+        string text,
+        CellStyle style,
+        bool isWide = false,
+        bool isWideContinuation = false
+    )
     {
         Text = text;
-        Foreground = style.Foreground;
-        Background = style.Background;
-        Bold = style.Bold;
-        Italic = style.Italic;
-        Underline = style.Underline;
-        Reversed = style.Reversed;
-        Faint = style.Faint;
-        Hidden = style.Hidden;
-        Strikethrough = style.Strikethrough;
-        Overline = style.Overline;
-        Blink = style.Blink;
-        UnderlineColor = style.UnderlineColor;
-        IsWide = isWide;
-        IsWideContinuation = isWideContinuation;
+        _style = style;
+        _flags = (byte)((isWide ? Wide : 0) | (isWideContinuation ? WideContinuation : 0));
     }
 
     public string Text { get; }
 
-    public string Foreground { get; }
+    internal CellStyle Style => _style;
 
-    public string Background { get; }
+    public string Foreground => _style?.Foreground!;
 
-    public bool Bold { get; }
+    public string Background => _style?.Background!;
 
-    public bool Italic { get; }
+    public bool Bold => HasStyle(TextStyleAttributes.Bold);
 
-    public bool Underline { get; }
+    public bool Italic => HasStyle(TextStyleAttributes.Italic);
 
-    public bool Reversed { get; }
+    public bool Underline => HasStyle(TextStyleAttributes.Underline);
 
-    public bool Faint { get; }
-    public bool Hidden { get; }
-    public bool Strikethrough { get; }
-    public bool Overline { get; }
-    public bool Blink { get; }
-    public string? UnderlineColor { get; }
+    public bool Reversed => HasStyle(TextStyleAttributes.Reversed);
 
-    public bool IsWide { get; }
+    public bool Faint => HasStyle(TextStyleAttributes.Faint);
+    public bool Hidden => HasStyle(TextStyleAttributes.Hidden);
+    public bool Strikethrough => HasStyle(TextStyleAttributes.Strikethrough);
+    public bool Overline => HasStyle(TextStyleAttributes.Overline);
+    public bool Blink => HasStyle(TextStyleAttributes.Blink);
+    public string? UnderlineColor => _style?.UnderlineColor;
 
-    public bool IsWideContinuation { get; }
+    public bool IsWide => (_flags & Wide) != 0;
+
+    public bool IsWideContinuation => (_flags & WideContinuation) != 0;
 
     public TextStyle ToTextStyle() =>
         new TextStyle(
@@ -85,14 +163,17 @@ public readonly struct ScreenCell
             Blink,
             UnderlineColor
         );
+
+    private bool HasStyle(TextStyleAttributes attribute) =>
+        _style is not null && (_style.Attributes & attribute) != 0;
 }
 
 public sealed partial class ScreenBuffer
 {
     private readonly Theme _theme;
-    private ScreenCell[,] _mainCells;
-    private ScreenCell[,] _altCells;
-    private ScreenCell[,] _cells;
+    private ScreenCell[][] _mainCells;
+    private ScreenCell[][] _altCells;
+    private ScreenCell[][] _cells;
     private bool _isAltScreen;
     private int _savedRow;
     private int _savedCol;
@@ -105,17 +186,30 @@ public sealed partial class ScreenBuffer
     private bool _insertMode;
     private readonly SortedSet<int> _tabStops = new();
     private readonly List<ScreenCell[]> _scrollbackRows = new();
+    private readonly Dictionary<TextStyle, CellStyle> _styleCache = new();
+    private TextStyle _lastTextStyle;
+    private CellStyle? _lastCellStyle;
+    private ulong[] _rowSignatures;
+    private bool[] _rowSignatureDirty;
 
     public ScreenBuffer(int width, int height, Theme theme)
+        : this(width, height, theme, initializeCells: true)
+    {
+    }
+
+    private ScreenBuffer(int width, int height, Theme theme, bool initializeCells)
     {
         Width = Math.Max(1, width);
         Height = Math.Max(1, height);
         _theme = theme;
         DefaultStyle = new TextStyle(theme.Foreground, theme.Background, false, false, false);
 
-        _mainCells = CreateBlankCells();
-        _altCells = CreateBlankCells();
+        _mainCells = initializeCells ? CreateBlankCells() : null!;
+        _altCells = initializeCells ? CreateBlankCells() : null!;
         _cells = _mainCells;
+        _rowSignatures = new ulong[Height];
+        _rowSignatureDirty = new bool[Height];
+        Array.Fill(_rowSignatureDirty, true);
         _scrollTop = 0;
         _scrollBottom = Height - 1;
         CursorRow = 0;
@@ -152,64 +246,93 @@ public sealed partial class ScreenBuffer
         const ulong fnvOffset = 1469598103934665603UL;
         const ulong fnvPrime = 1099511628211UL;
 
-        var signature = fnvOffset;
-        AddInt(CursorRow);
-        AddInt(CursorCol);
-
         for (var row = 0; row < Height; row++)
         {
+            if (!_rowSignatureDirty[row])
+            {
+                continue;
+            }
+
+            var rowSignature = fnvOffset;
             for (var col = 0; col < Width; col++)
             {
-                var cell = GetCell(row, col);
-                AddString(cell.Text);
-                AddString(cell.Foreground);
-                AddString(cell.Background);
-                AddBool(cell.Bold);
-                AddBool(cell.Italic);
-                AddBool(cell.Underline);
-                AddBool(cell.Reversed);
-                AddBool(cell.Faint);
-                AddBool(cell.Hidden);
-                AddBool(cell.Strikethrough);
-                AddBool(cell.Overline);
-                AddBool(cell.Blink);
-                AddString(cell.UnderlineColor ?? string.Empty);
-                AddBool(cell.IsWide);
-                AddBool(cell.IsWideContinuation);
+                AddCell(ref rowSignature, _cells[row][col]);
             }
+
+            _rowSignatures[row] = rowSignature;
+            _rowSignatureDirty[row] = false;
+        }
+
+        var signature = fnvOffset;
+        AddInt(ref signature, CursorRow);
+        AddInt(ref signature, CursorCol);
+        for (var row = 0; row < Height; row++)
+        {
+            AddUlong(ref signature, _rowSignatures[row]);
         }
 
         return signature;
 
-        void AddString(string value)
+        static void AddCell(ref ulong hash, ScreenCell cell)
+        {
+            AddString(ref hash, cell.Text);
+            AddString(ref hash, cell.Foreground);
+            AddString(ref hash, cell.Background);
+            AddBool(ref hash, cell.Bold);
+            AddBool(ref hash, cell.Italic);
+            AddBool(ref hash, cell.Underline);
+            AddBool(ref hash, cell.Reversed);
+            AddBool(ref hash, cell.Faint);
+            AddBool(ref hash, cell.Hidden);
+            AddBool(ref hash, cell.Strikethrough);
+            AddBool(ref hash, cell.Overline);
+            AddBool(ref hash, cell.Blink);
+            AddString(ref hash, cell.UnderlineColor ?? string.Empty);
+            AddBool(ref hash, cell.IsWide);
+            AddBool(ref hash, cell.IsWideContinuation);
+        }
+
+        static void AddString(ref ulong hash, string value)
         {
             for (var i = 0; i < value.Length; i++)
             {
-                signature ^= value[i];
-                signature *= fnvPrime;
+                hash ^= value[i];
+                hash *= fnvPrime;
             }
-            signature ^= 0xFF;
-            signature *= fnvPrime;
+            hash ^= 0xFF;
+            hash *= fnvPrime;
         }
 
-        void AddBool(bool value)
+        static void AddBool(ref ulong hash, bool value)
         {
-            signature ^= value ? (byte)1 : (byte)0;
-            signature *= fnvPrime;
+            hash ^= value ? (byte)1 : (byte)0;
+            hash *= fnvPrime;
         }
 
-        void AddInt(int value)
+        static void AddInt(ref ulong hash, int value)
         {
             unchecked
             {
-                signature ^= (byte)value;
-                signature *= fnvPrime;
-                signature ^= (byte)(value >> 8);
-                signature *= fnvPrime;
-                signature ^= (byte)(value >> 16);
-                signature *= fnvPrime;
-                signature ^= (byte)(value >> 24);
-                signature *= fnvPrime;
+                hash ^= (byte)value;
+                hash *= fnvPrime;
+                hash ^= (byte)(value >> 8);
+                hash *= fnvPrime;
+                hash ^= (byte)(value >> 16);
+                hash *= fnvPrime;
+                hash ^= (byte)(value >> 24);
+                hash *= fnvPrime;
+            }
+        }
+
+        static void AddUlong(ref ulong hash, ulong value)
+        {
+            unchecked
+            {
+                for (var shift = 0; shift < 64; shift += 8)
+                {
+                    hash ^= (byte)(value >> shift);
+                    hash *= fnvPrime;
+                }
             }
         }
     }
@@ -218,17 +341,43 @@ public sealed partial class ScreenBuffer
     {
         if (row < 0 || row >= Height || col < 0 || col >= Width)
         {
-            return new ScreenCell(" ", DefaultStyle);
+            return CreateCell(" ", DefaultStyle);
         }
 
-        return _cells[row, col];
+        return _cells[row][col];
+    }
+
+    internal bool HasSameVisualState(ScreenBuffer other)
+    {
+        if (
+            Width != other.Width
+            || Height != other.Height
+            || CursorRow != other.CursorRow
+            || CursorCol != other.CursorCol
+        )
+        {
+            return false;
+        }
+
+        for (var row = 0; row < Height; row++)
+        {
+            for (var col = 0; col < Width; col++)
+            {
+                if (!_cells[row][col].Equals(other._cells[row][col]))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     public ScreenCell GetScrollbackCell(int scrollbackRow, int col)
     {
         if (scrollbackRow < 0 || scrollbackRow >= _scrollbackRows.Count || col < 0 || col >= Width)
         {
-            return new ScreenCell(" ", DefaultStyle);
+            return CreateCell(" ", DefaultStyle);
         }
 
         return _scrollbackRows[scrollbackRow][col];
@@ -246,7 +395,7 @@ public sealed partial class ScreenBuffer
 
     public ScreenBuffer Clone()
     {
-        var cloned = new ScreenBuffer(Width, Height, _theme)
+        var cloned = new ScreenBuffer(Width, Height, _theme, initializeCells: false)
         {
             CursorRow = CursorRow,
             CursorCol = CursorCol,
@@ -262,6 +411,8 @@ public sealed partial class ScreenBuffer
             _insertMode = _insertMode,
             _mainCells = CloneCells(_mainCells),
             _altCells = CloneCells(_altCells),
+            _rowSignatures = (ulong[])_rowSignatures.Clone(),
+            _rowSignatureDirty = (bool[])_rowSignatureDirty.Clone(),
         };
         cloned._tabStops.Clear();
         cloned._tabStops.UnionWith(_tabStops);
@@ -270,7 +421,72 @@ public sealed partial class ScreenBuffer
         return cloned;
     }
 
+    internal void CopyVisibleStateFrom(ScreenBuffer source)
+    {
+        if (source.Width != Width || source.Height != Height)
+        {
+            throw new ArgumentException("Screen buffer dimensions must match.", nameof(source));
+        }
+
+        CursorRow = source.CursorRow;
+        CursorCol = source.CursorCol;
+        _isAltScreen = source._isAltScreen;
+        var sourceCells = source._cells;
+        var targetCells = _isAltScreen ? _altCells : _mainCells;
+        for (var row = 0; row < Height; row++)
+        {
+            Array.Copy(sourceCells[row], targetCells[row], Width);
+        }
+        Array.Copy(source._rowSignatures, _rowSignatures, Height);
+        Array.Copy(source._rowSignatureDirty, _rowSignatureDirty, Height);
+        _cells = targetCells;
+    }
+
+    private void SetCell(int row, int col, ScreenCell cell)
+    {
+        _cells[row][col] = cell;
+        _rowSignatureDirty[row] = true;
+    }
+
+    internal CellStyle ResolveCellStyle(TextStyle style)
+    {
+        CellStyle cellStyle;
+        if (_lastCellStyle is not null && style == _lastTextStyle)
+        {
+            cellStyle = _lastCellStyle;
+        }
+        else if (!_styleCache.TryGetValue(style, out cellStyle!))
+        {
+            cellStyle = new CellStyle(style);
+            if (_styleCache.Count >= 256)
+            {
+                _styleCache.Clear();
+            }
+            _styleCache.Add(style, cellStyle);
+        }
+
+        _lastTextStyle = style;
+        _lastCellStyle = cellStyle;
+        return cellStyle;
+    }
+
+    private ScreenCell CreateCell(
+        string text,
+        TextStyle style,
+        bool isWide = false,
+        bool isWideContinuation = false
+    )
+    {
+        var cellStyle = ResolveCellStyle(style);
+        return new ScreenCell(text, cellStyle, isWide, isWideContinuation);
+    }
+
     public void PutChar(char value, TextStyle style)
+    {
+        PutChar(value, ResolveCellStyle(style));
+    }
+
+    internal void PutChar(char value, CellStyle cellStyle)
     {
         if (value == '\n')
         {
@@ -300,7 +516,7 @@ public sealed partial class ScreenBuffer
             var spaces = Math.Max(1, nextStop - CursorCol);
             for (var i = 0; i < spaces; i++)
             {
-                PutPrintable(" ", style);
+                PutPrintable(" ", cellStyle);
             }
 
             return;
@@ -311,12 +527,17 @@ public sealed partial class ScreenBuffer
             return;
         }
 
-        PutPrintable(ToSingleCharString(value), style);
+        PutPrintable(ToSingleCharString(value), cellStyle);
     }
 
     public void PutSurrogatePair(string cluster, TextStyle style)
     {
-        PutPrintable(cluster, style);
+        PutPrintable(cluster, ResolveCellStyle(style));
+    }
+
+    internal void PutSurrogatePair(string cluster, CellStyle cellStyle)
+    {
+        PutPrintable(cluster, cellStyle);
     }
 
     public void RepeatPreviousCharacter(int count)
@@ -333,21 +554,20 @@ public sealed partial class ScreenBuffer
             return;
         }
 
-        if (_cells[row, col].IsWideContinuation && col > 0)
+        if (_cells[row][col].IsWideContinuation && col > 0)
         {
             col--;
         }
 
-        var previous = _cells[row, col];
+        var previous = _cells[row][col];
         if (previous.IsWideContinuation)
         {
             return;
         }
 
-        var style = previous.ToTextStyle();
         for (var i = 0; i < count; i++)
         {
-            PutPrintable(previous.Text, style);
+            PutPrintable(previous.Text, previous.Style);
         }
     }
 
@@ -368,23 +588,23 @@ public sealed partial class ScreenBuffer
         }
 
         // If it's a wide continuation, step back to the actual wide cell
-        if (_cells[row, col].IsWideContinuation && col > 0)
+        if (_cells[row][col].IsWideContinuation && col > 0)
         {
             col--;
         }
 
-        var prev = _cells[row, col];
+        var prev = _cells[row][col];
         if (prev.Text == " ")
         {
             return;
         }
 
-        _cells[row, col] = new ScreenCell(
+        SetCell(row, col, CreateCell(
             prev.Text + ToSingleCharString(combining),
             prev.ToTextStyle(),
             prev.IsWide,
             prev.IsWideContinuation
-        );
+        ));
 
         if (combining == '\uFE0F' && !prev.IsWide && !prev.IsWideContinuation)
         {
@@ -399,25 +619,25 @@ public sealed partial class ScreenBuffer
             return;
         }
 
-        var next = _cells[row, col + 1];
+        var next = _cells[row][col + 1];
         if (next.Text != " " || next.IsWideContinuation)
         {
             return;
         }
 
-        var cell = _cells[row, col];
-        _cells[row, col] = new ScreenCell(
+        var cell = _cells[row][col];
+        SetCell(row, col, CreateCell(
             cell.Text,
             cell.ToTextStyle(),
             isWide: true,
             isWideContinuation: false
-        );
-        _cells[row, col + 1] = new ScreenCell(
+        ));
+        SetCell(row, col + 1, CreateCell(
             " ",
             cell.ToTextStyle(),
             isWide: false,
             isWideContinuation: true
-        );
+        ));
 
         if (CursorRow == row && CursorCol == col + 1)
         {
@@ -430,7 +650,7 @@ public sealed partial class ScreenBuffer
         }
     }
 
-    private void PutPrintable(string text, TextStyle style)
+    private void PutPrintable(string text, CellStyle cellStyle)
     {
         // Apply any pending wrap from the previous character filling the last column
         if (_pendingWrap)
@@ -443,22 +663,26 @@ public sealed partial class ScreenBuffer
         var isWide = IsWideCharacter(text);
         if (_insertMode)
         {
-            InsertBlankCharacters(isWide ? 2 : 1, style);
+            InsertBlankCharacters(isWide ? 2 : 1, cellStyle.ToTextStyle());
         }
 
         if (isWide && CursorCol + 1 >= Width)
         {
-            _cells[CursorRow, CursorCol] = new ScreenCell(" ", DefaultStyle);
+            SetCell(CursorRow, CursorCol, CreateCell(" ", DefaultStyle));
             CursorCol = 0;
             Index();
         }
 
-        _cells[CursorRow, CursorCol] = new ScreenCell(text, style, isWide);
+        SetCell(CursorRow, CursorCol, new ScreenCell(text, cellStyle, isWide));
         CursorCol++;
 
         if (isWide && CursorCol < Width)
         {
-            _cells[CursorRow, CursorCol] = new ScreenCell(" ", style, false, true);
+            SetCell(
+                CursorRow,
+                CursorCol,
+                new ScreenCell(" ", cellStyle, false, true)
+            );
             CursorCol++;
         }
 

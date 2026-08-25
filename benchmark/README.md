@@ -11,6 +11,11 @@ Linux `perf` is available) CPU hardware-counter diagnostics. No Python is involv
 | --- | --- | --- |
 | `SvgGenerationBenchmarks` | `RenderSvg`, `ParseOnly` × `Small`/`Medium`/`Large` | Deterministic synthetic sessions: full pipeline vs. terminal replay only. |
 | `RealWorldBenchmarks` | `RenderStatic`, `RenderAnimated` × `nyancat`/`cmatrix`/`btop` | Pre-recorded asciicast fixtures (`benchmark/fixtures/*.cast`). |
+| `AnimatedPipelineBenchmarks` | replay, snapshots, signatures, frame render, complete render | Separates the animated pipeline stages for the real-world fixtures. |
+
+`SvgGenerationBenchmarks` also includes dedicated `ParseWideCharacters` and
+`ParseScrollStress` cases. The regular synthetic workload accounts for display width,
+so wide-character parsing and intentional scrolling no longer distort its baseline.
 
 In addition to wall-clock time and allocations, two custom columns report the generated
 SVG document size in bytes (`SVG size (static)` / `SVG size (animated)`).

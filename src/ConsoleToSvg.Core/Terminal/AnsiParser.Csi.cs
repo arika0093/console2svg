@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Globalization;
+using System.Buffers;
 
 namespace ConsoleToSvg.Terminal;
 
@@ -24,10 +23,29 @@ public sealed partial class AnsiParser
             var c = text[i];
             if (c >= '@' && c <= '~')
             {
-                var parameterText =
-                    paramStart <= i ? text.Substring(paramStart, i - paramStart) : string.Empty;
-                var parameters = ParseParameters(parameterText);
-                ApplyCsi(privateMarker, c, parameters);
+                var parameterText = text.AsSpan(paramStart, i - paramStart);
+                var parameterCount = CountParameters(parameterText);
+                if (parameterCount <= 16)
+                {
+                    Span<int> parameters = stackalloc int[parameterCount];
+                    ParseParameters(parameterText, parameters);
+                    ApplyCsi(privateMarker, c, parameters);
+                }
+                else
+                {
+                    var rented = ArrayPool<int>.Shared.Rent(parameterCount);
+                    try
+                    {
+                        var parameters = rented.AsSpan(0, parameterCount);
+                        ParseParameters(parameterText, parameters);
+                        ApplyCsi(privateMarker, c, parameters);
+                    }
+                    finally
+                    {
+                        ArrayPool<int>.Shared.Return(rented);
+                    }
+                }
+
                 endIndex = i;
                 return true;
             }
@@ -38,9 +56,9 @@ public sealed partial class AnsiParser
         return false;
     }
 
-    private void ApplyCsi(char? privateMarker, char command, List<int> parameters)
+    private void ApplyCsi(char? privateMarker, char command, ReadOnlySpan<int> parameters)
     {
-        if (privateMarker == '?' && parameters.Count > 0)
+        if (privateMarker == '?' && parameters.Length > 0)
         {
             foreach (var parameter in parameters)
             {
@@ -113,25 +131,25 @@ public sealed partial class AnsiParser
                 return;
             case 'G':
             case '`':
-            {
-                var col = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
-                _buffer.MoveCursorTo(_buffer.CursorRow, col);
-                return;
-            }
+                {
+                    var col = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
+                    _buffer.MoveCursorTo(_buffer.CursorRow, col);
+                    return;
+                }
             case 'H':
             case 'f':
-            {
-                var row = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
-                var col = Math.Max(1, GetParameter(parameters, 1, 1)) - 1;
-                _buffer.MoveCursorToOriginRelative(row, col);
-                return;
-            }
+                {
+                    var row = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
+                    var col = Math.Max(1, GetParameter(parameters, 1, 1)) - 1;
+                    _buffer.MoveCursorToOriginRelative(row, col);
+                    return;
+                }
             case 'd':
-            {
-                var row = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
-                _buffer.MoveCursorToOriginRelative(row, _buffer.CursorCol);
-                return;
-            }
+                {
+                    var row = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
+                    _buffer.MoveCursorToOriginRelative(row, _buffer.CursorCol);
+                    return;
+                }
             case 'J':
                 _buffer.ClearDisplay(GetParameter(parameters, 0, 0), _style);
                 return;
@@ -157,12 +175,12 @@ public sealed partial class AnsiParser
                 _buffer.ScrollDownLines(Math.Max(1, GetParameter(parameters, 0, 1)));
                 return;
             case 'r':
-            {
-                var top = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
-                var bottom = Math.Max(1, GetParameter(parameters, 1, _buffer.Height)) - 1;
-                _buffer.SetScrollRegion(top, bottom);
-                return;
-            }
+                {
+                    var top = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
+                    var bottom = Math.Max(1, GetParameter(parameters, 1, _buffer.Height)) - 1;
+                    _buffer.SetScrollRegion(top, bottom);
+                    return;
+                }
             case 'g':
                 _buffer.ClearTabStops(GetParameter(parameters, 0, 0));
                 return;

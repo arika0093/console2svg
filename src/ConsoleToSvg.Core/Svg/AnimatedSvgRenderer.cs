@@ -1,5 +1,7 @@
 using System;
 using System.Globalization;
+using System.IO;
+using System.Text;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
 using ConsoleToSvg.Utils;
@@ -10,22 +12,37 @@ public static partial class AnimatedSvgRenderer
 {
     public static string Render(RecordingSession session, SvgRenderOptions options)
     {
+        var builder = new StringBuilder(128 * 1024);
+        using var writer = new StringWriter(builder, CultureInfo.InvariantCulture);
+        Write(writer, session, options);
+        return builder.ToString();
+    }
+
+    public static void Write(
+        TextWriter writer,
+        RecordingSession session,
+        SvgRenderOptions options
+    )
+    {
         if (session.Events.Count == 0)
         {
-            return SvgRenderer.Render(session, options);
+            SvgRenderer.Write(writer, session, options);
+            return;
         }
 
         var theme = SvgRenderShared.ResolveTheme(options);
         var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
-        var frames = emulator.ReplayFrames(session);
+        var normalizeTime = CreateTimeNormalizer(options.VideoFps, options.VideoTiming);
+        var frames = emulator.ReplayFrames(session, options.VideoFps, normalizeTime);
         frames = TrimTrailingAltScreenRestoreFrame(frames, session);
 
         if (frames.Count == 0)
         {
-            return SvgRenderer.Render(session, options);
+            SvgRenderer.Write(writer, session, options);
+            return;
         }
 
-        return RenderFrames(frames, options);
+        WriteFrames(writer, frames, options);
     }
 
     /// <summary>Renders terminal frames captured from an already-running interactive terminal.</summary>
@@ -34,15 +51,34 @@ public static partial class AnimatedSvgRenderer
         SvgRenderOptions options
     )
     {
+        var builder = new StringBuilder(128 * 1024);
+        using var writer = new StringWriter(builder, CultureInfo.InvariantCulture);
+        WriteFrames(writer, frames, options);
+        return builder.ToString();
+    }
+
+    public static void WriteFrames(
+        TextWriter writer,
+        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
+        SvgRenderOptions options
+    )
+    {
+        ArgumentNullException.ThrowIfNull(writer);
         if (frames.Count == 0)
         {
             throw new ArgumentException("At least one terminal frame is required.", nameof(frames));
         }
 
         var theme = SvgRenderShared.ResolveTheme(options);
-        frames = NormalizeTiming(frames, options.VideoFps, options.VideoTiming);
         var signatureCache = new System.Collections.Generic.Dictionary<ScreenBuffer, ulong>();
-        var reducedFrames = ReduceFrames(frames, options.VideoFps, signatureCache);
+        var reducedFrames =
+            frames[0].EventIndex >= 0
+                ? frames
+                : ReduceFrames(
+                    NormalizeTiming(frames, options.VideoFps, options.VideoTiming),
+                    options.VideoFps,
+                    signatureCache
+                );
         reducedFrames = SpreadCollapsedFrameTimes(reducedFrames, options.VideoFps);
 
         // Filter frames by time range when --time is specified in video mode.
@@ -97,7 +133,8 @@ public static partial class AnimatedSvgRenderer
 
             if (filtered.Count == 0)
             {
-                return SvgRenderer.Render(reducedFrames[0].Buffer, options);
+                SvgRenderer.Write(writer, reducedFrames[0].Buffer, options);
+                return;
             }
 
             reducedFrames = filtered;
@@ -106,17 +143,42 @@ public static partial class AnimatedSvgRenderer
         // Build a dedup map: visual-hash → index of the first reduced frame with that hash.
         // Frames that are visually identical (e.g. in a looping animation) will share a single
         // <defs> entry and be referenced via <use>, dramatically reducing file size.
-        var hashToDefsFrameIndex = new System.Collections.Generic.Dictionary<ulong, int>();
+        var hashToDefsFrameIndices =
+            new System.Collections.Generic.Dictionary<
+                ulong,
+                System.Collections.Generic.List<int>
+            >();
         var frameToDefsFrameIndex = new int[reducedFrames.Count];
         var uniqueFrameIndices = new System.Collections.Generic.List<int>(reducedFrames.Count);
 
         for (var i = 0; i < reducedFrames.Count; i++)
         {
             var hash = GetVisualSignatureCached(reducedFrames[i].Buffer, signatureCache);
-            if (!hashToDefsFrameIndex.TryGetValue(hash, out var defsIdx))
+            var defsIdx = -1;
+            if (hashToDefsFrameIndices.TryGetValue(hash, out var candidates))
             {
+                for (var candidateIndex = 0; candidateIndex < candidates.Count; candidateIndex++)
+                {
+                    var candidate = candidates[candidateIndex];
+                    if (
+                        reducedFrames[i]
+                            .Buffer.HasSameVisualState(
+                                reducedFrames[uniqueFrameIndices[candidate]].Buffer
+                            )
+                    )
+                    {
+                        defsIdx = candidate;
+                        break;
+                    }
+                }
+            }
+
+            if (defsIdx < 0)
+            {
+                candidates ??= [];
                 defsIdx = uniqueFrameIndices.Count;
-                hashToDefsFrameIndex[hash] = defsIdx;
+                candidates.Add(defsIdx);
+                hashToDefsFrameIndices[hash] = candidates;
                 uniqueFrameIndices.Add(i);
             }
 
@@ -145,9 +207,9 @@ public static partial class AnimatedSvgRenderer
             options.Loop
         );
 
-        var sb = new LfStringBuilder(128 * 1024);
+        var svgWriter = new SvgWriter(writer);
         SvgDocumentBuilder.BeginSvg(
-            sb.Inner,
+            svgWriter,
             context,
             theme,
             css,
@@ -161,7 +223,7 @@ public static partial class AnimatedSvgRenderer
 
         // Render each unique frame once in <defs>, then reference via <use>.
         SvgDocumentBuilder.AppendFrameDefs(
-            sb.Inner,
+            svgWriter,
             reducedFrames,
             uniqueFrameIndices,
             context,
@@ -174,15 +236,14 @@ public static partial class AnimatedSvgRenderer
         {
             var defsFrameIndex = uniqueFrameIndices[frameToDefsFrameIndex[i]];
             SvgDocumentBuilder.AppendFrameUse(
-                sb.Inner,
+                svgWriter,
                 defsId: $"fd-{defsFrameIndex}",
                 frameId: $"frame-{i}",
                 frameClass: $"frame frame-{i}"
             );
         }
 
-        SvgDocumentBuilder.EndSvg(sb.Inner, options.Opacity);
-        return sb.ToString();
+        SvgDocumentBuilder.EndSvg(svgWriter, options.Opacity);
     }
 
     private static ulong GetVisualSignatureCached(
@@ -312,5 +373,32 @@ public static partial class AnimatedSvgRenderer
         }
 
         return normalized;
+    }
+
+    private static System.Func<double, double> CreateTimeNormalizer(
+        double maxFps,
+        VideoTimingMode timingMode
+    )
+    {
+        if (timingMode == VideoTimingMode.Realtime || maxFps <= 0)
+        {
+            return static time => time;
+        }
+
+        var interval = 1d / maxFps;
+        var lastTime = 0d;
+        return time =>
+        {
+            var quantizedTime =
+                Math.Round(Math.Max(0d, time) / interval, MidpointRounding.AwayFromZero)
+                * interval;
+            if (quantizedTime < lastTime)
+            {
+                quantizedTime = lastTime;
+            }
+
+            lastTime = quantizedTime;
+            return quantizedTime;
+        };
     }
 }

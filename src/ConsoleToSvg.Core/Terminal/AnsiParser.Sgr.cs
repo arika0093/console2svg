@@ -1,19 +1,19 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 
 namespace ConsoleToSvg.Terminal;
 
 public sealed partial class AnsiParser
 {
-    private void ApplySgr(List<int> parameters)
+    private void ApplySgr(ReadOnlySpan<int> parameters)
     {
-        if (parameters.Count == 0)
+        if (parameters.Length == 0)
         {
-            parameters.Add(0);
+            _style = _buffer.DefaultStyle;
+            return;
         }
 
-        for (var i = 0; i < parameters.Count; i++)
+        for (var i = 0; i < parameters.Length; i++)
         {
             var code = GetParameter(parameters, i, 0);
             switch (code)
@@ -102,12 +102,12 @@ public sealed partial class AnsiParser
                     {
                         _style = _style with { Background = _theme.AnsiPalette[8 + (code - 100)] };
                     }
-                    else if ((code == 38 || code == 48 || code == 58) && i + 1 < parameters.Count)
+                    else if ((code == 38 || code == 48 || code == 58) && i + 1 < parameters.Length)
                     {
                         var isForeground = code == 38;
                         var isUnderlineColor = code == 58;
                         var mode = GetParameter(parameters, i + 1, 0);
-                        if (mode == 5 && i + 2 < parameters.Count)
+                        if (mode == 5 && i + 2 < parameters.Length)
                         {
                             var color = FromAnsi256(GetParameter(parameters, i + 2, 0));
                             _style = ApplySgrColor(isForeground, isUnderlineColor, color);
@@ -117,14 +117,14 @@ public sealed partial class AnsiParser
                         {
                             var rgbStart = i + 2;
                             if (
-                                rgbStart < parameters.Count
+                                rgbStart < parameters.Length
                                 && parameters[rgbStart] == MissingParameter
                             )
                             {
                                 rgbStart++;
                             }
 
-                            if (rgbStart + 2 >= parameters.Count)
+                            if (rgbStart + 2 >= parameters.Length)
                             {
                                 break;
                             }
@@ -187,24 +187,45 @@ public sealed partial class AnsiParser
         return $"#{rgbR:X2}{rgbG:X2}{rgbB:X2}";
     }
 
-    private static List<int> ParseParameters(string parameterText)
+    private static int CountParameters(ReadOnlySpan<char> parameterText)
     {
-        var result = new List<int>();
-        if (string.IsNullOrEmpty(parameterText))
+        if (parameterText.IsEmpty)
         {
-            return result;
+            return 0;
         }
 
-        var separators = new[] { ';', ':' };
-        var split = parameterText.Split(separators);
-        foreach (var part in split)
+        var count = 1;
+        for (var i = 0; i < parameterText.Length; i++)
         {
-            if (string.IsNullOrWhiteSpace(part))
+            if (parameterText[i] is ';' or ':')
             {
-                result.Add(MissingParameter);
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    private static void ParseParameters(
+        ReadOnlySpan<char> parameterText,
+        Span<int> parameters
+    )
+    {
+        if (parameterText.IsEmpty)
+        {
+            return;
+        }
+
+        var parameterIndex = 0;
+        var partStart = 0;
+        for (var i = 0; i <= parameterText.Length; i++)
+        {
+            if (i < parameterText.Length && parameterText[i] is not (';' or ':'))
+            {
                 continue;
             }
 
+            var part = parameterText[partStart..i].Trim();
             if (
                 int.TryParse(
                     part,
@@ -214,20 +235,25 @@ public sealed partial class AnsiParser
                 )
             )
             {
-                result.Add(value);
+                parameters[parameterIndex] = value;
             }
             else
             {
-                result.Add(MissingParameter);
+                parameters[parameterIndex] = MissingParameter;
             }
-        }
 
-        return result;
+            parameterIndex++;
+            partStart = i + 1;
+        }
     }
 
-    private static int GetParameter(List<int> parameters, int index, int defaultValue)
+    private static int GetParameter(
+        ReadOnlySpan<int> parameters,
+        int index,
+        int defaultValue
+    )
     {
-        if (index < 0 || index >= parameters.Count)
+        if (index < 0 || index >= parameters.Length)
         {
             return defaultValue;
         }

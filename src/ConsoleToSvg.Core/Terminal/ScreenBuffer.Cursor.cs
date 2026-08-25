@@ -132,21 +132,21 @@ public sealed partial class ScreenBuffer
             case 1:
                 for (var col = 0; col <= CursorCol; col++)
                 {
-                    _cells[CursorRow, col] = new ScreenCell(" ", eraseStyle);
+                    SetCell(CursorRow, col, CreateCell(" ", eraseStyle));
                 }
 
                 return;
             case 2:
                 for (var col = 0; col < Width; col++)
                 {
-                    _cells[CursorRow, col] = new ScreenCell(" ", eraseStyle);
+                    SetCell(CursorRow, col, CreateCell(" ", eraseStyle));
                 }
 
                 return;
             default:
                 for (var col = CursorCol; col < Width; col++)
                 {
-                    _cells[CursorRow, col] = new ScreenCell(" ", eraseStyle);
+                    SetCell(CursorRow, col, CreateCell(" ", eraseStyle));
                 }
 
                 return;
@@ -167,13 +167,13 @@ public sealed partial class ScreenBuffer
         // Shift remaining cells in the row to the left
         for (var col = CursorCol; col < Width - count; col++)
         {
-            _cells[CursorRow, col] = _cells[CursorRow, col + count];
+            SetCell(CursorRow, col, _cells[CursorRow][col + count]);
         }
 
         // Fill vacated cells on the right with blanks
         for (var col = Width - count; col < Width; col++)
         {
-            _cells[CursorRow, col] = new ScreenCell(" ", eraseStyle);
+            SetCell(CursorRow, col, CreateCell(" ", eraseStyle));
         }
     }
 
@@ -190,12 +190,12 @@ public sealed partial class ScreenBuffer
 
         for (var col = Width - 1; col >= CursorCol + count; col--)
         {
-            _cells[CursorRow, col] = _cells[CursorRow, col - count];
+            SetCell(CursorRow, col, _cells[CursorRow][col - count]);
         }
 
         for (var col = CursorCol; col < CursorCol + count; col++)
         {
-            _cells[CursorRow, col] = new ScreenCell(" ", eraseStyle);
+            SetCell(CursorRow, col, CreateCell(" ", eraseStyle));
         }
     }
 
@@ -206,19 +206,7 @@ public sealed partial class ScreenBuffer
             return;
         }
 
-        count = Math.Min(count, _scrollBottom - CursorRow + 1);
-        for (var row = _scrollBottom; row >= CursorRow + count; row--)
-        {
-            for (var col = 0; col < Width; col++)
-            {
-                _cells[row, col] = _cells[row - count, col];
-            }
-        }
-
-        for (var row = CursorRow; row < CursorRow + count; row++)
-        {
-            ClearRow(row);
-        }
+        ScrollRegionDown(CursorRow, _scrollBottom, count);
     }
 
     public void DeleteLines(int count)
@@ -228,19 +216,7 @@ public sealed partial class ScreenBuffer
             return;
         }
 
-        count = Math.Min(count, _scrollBottom - CursorRow + 1);
-        for (var row = CursorRow; row <= _scrollBottom - count; row++)
-        {
-            for (var col = 0; col < Width; col++)
-            {
-                _cells[row, col] = _cells[row + count, col];
-            }
-        }
-
-        for (var row = _scrollBottom - count + 1; row <= _scrollBottom; row++)
-        {
-            ClearRow(row);
-        }
+        ScrollRegionUp(CursorRow, _scrollBottom, count, includeScrollback: false);
     }
 
     public void ScrollUpLines(int count)
@@ -270,18 +246,18 @@ public sealed partial class ScreenBuffer
         var endCol = Math.Min(Width - 1, CursorCol + count - 1);
         for (var col = CursorCol; col <= endCol; col++)
         {
-            var cell = _cells[CursorRow, col];
+            var cell = _cells[CursorRow][col];
             if (cell.IsWideContinuation && col > 0)
             {
-                _cells[CursorRow, col - 1] = new ScreenCell(" ", eraseStyle);
+                SetCell(CursorRow, col - 1, CreateCell(" ", eraseStyle));
             }
 
             if (cell.IsWide && col + 1 < Width)
             {
-                _cells[CursorRow, col + 1] = new ScreenCell(" ", eraseStyle);
+                SetCell(CursorRow, col + 1, CreateCell(" ", eraseStyle));
             }
 
-            _cells[CursorRow, col] = new ScreenCell(" ", eraseStyle);
+            SetCell(CursorRow, col, CreateCell(" ", eraseStyle));
         }
     }
 
@@ -296,7 +272,7 @@ public sealed partial class ScreenBuffer
                     var end = row == CursorRow ? CursorCol : Width - 1;
                     for (var col = 0; col <= end; col++)
                     {
-                        _cells[row, col] = new ScreenCell(" ", eraseStyle);
+                        SetCell(row, col, CreateCell(" ", eraseStyle));
                     }
                 }
 
@@ -306,7 +282,7 @@ public sealed partial class ScreenBuffer
                 {
                     for (var col = 0; col < Width; col++)
                     {
-                        _cells[row, col] = new ScreenCell(" ", eraseStyle);
+                        SetCell(row, col, CreateCell(" ", eraseStyle));
                     }
                 }
 
@@ -317,7 +293,7 @@ public sealed partial class ScreenBuffer
                     var start = row == CursorRow ? CursorCol : 0;
                     for (var col = start; col < Width; col++)
                     {
-                        _cells[row, col] = new ScreenCell(" ", eraseStyle);
+                        SetCell(row, col, CreateCell(" ", eraseStyle));
                     }
                 }
 

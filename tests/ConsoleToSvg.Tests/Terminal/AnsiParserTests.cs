@@ -42,6 +42,25 @@ public sealed class AnsiParserTests
     }
 
     [Test]
+    public void DecTextCursorEnableModeControlsCursorVisibility()
+    {
+        var emulator = new TerminalEmulator(8, 2, Theme.Resolve("dark"));
+
+        emulator.Buffer.CursorVisible.ShouldBeTrue();
+        emulator.Process("\u001b[?25l");
+        emulator.Buffer.CursorVisible.ShouldBeFalse();
+
+        var hiddenSignature = emulator.Buffer.GetVisualSignature();
+        emulator.Process("\u001b[2C");
+        emulator.Buffer.GetVisualSignature().ShouldBe(hiddenSignature);
+
+        emulator.Process("\u001b[?25h");
+        emulator.Buffer.CursorVisible.ShouldBeTrue();
+        emulator.Buffer.Clone().CursorVisible.ShouldBeTrue();
+        emulator.Buffer.GetVisualSignature().ShouldNotBe(hiddenSignature);
+    }
+
+    [Test]
     public void ApplySgrColorAndReset()
     {
         var theme = Theme.Resolve("dark");

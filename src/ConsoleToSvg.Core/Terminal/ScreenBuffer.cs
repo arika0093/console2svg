@@ -232,6 +232,7 @@ public sealed partial class ScreenBuffer
     private bool _pendingWrap;
     private bool _originMode;
     private bool _insertMode;
+    private bool _cursorVisible = true;
     private readonly SortedSet<int> _tabStops = new();
     private readonly List<ScreenCell[]> _scrollbackRows = new();
     private readonly Dictionary<TextStyle, CellStyle> _styleCache = new();
@@ -279,6 +280,8 @@ public sealed partial class ScreenBuffer
 
     public int CursorCol { get; private set; }
 
+    public bool CursorVisible => _cursorVisible;
+
     public TextStyle DefaultStyle { get; }
 
     public bool OriginMode => _originMode;
@@ -299,7 +302,7 @@ public sealed partial class ScreenBuffer
             EnsureRowVisualSignature(row);
         }
 
-        var byteCount = checked(8 + Height * sizeof(ulong));
+        var byteCount = checked(9 + Height * sizeof(ulong));
         if (byteCount <= 4096)
         {
             Span<byte> fields = stackalloc byte[byteCount];
@@ -319,9 +322,10 @@ public sealed partial class ScreenBuffer
 
     private ulong ComputeVisualSignature(Span<byte> fields)
     {
-        BinaryPrimitives.WriteInt32LittleEndian(fields, CursorRow);
-        BinaryPrimitives.WriteInt32LittleEndian(fields[4..], CursorCol);
-        var offset = 8;
+        fields[0] = _cursorVisible ? (byte)1 : (byte)0;
+        BinaryPrimitives.WriteInt32LittleEndian(fields[1..], _cursorVisible ? CursorRow : 0);
+        BinaryPrimitives.WriteInt32LittleEndian(fields[5..], _cursorVisible ? CursorCol : 0);
+        var offset = 9;
         for (var row = 0; row < Height; row++)
         {
             BinaryPrimitives.WriteUInt64LittleEndian(fields[offset..], _rowSignatures[row]);
@@ -432,8 +436,11 @@ public sealed partial class ScreenBuffer
         if (
             Width != other.Width
             || Height != other.Height
-            || CursorRow != other.CursorRow
-            || CursorCol != other.CursorCol
+            || _cursorVisible != other._cursorVisible
+            || (
+                _cursorVisible
+                && (CursorRow != other.CursorRow || CursorCol != other.CursorCol)
+            )
         )
         {
             return false;
@@ -492,6 +499,7 @@ public sealed partial class ScreenBuffer
             _pendingWrap = _pendingWrap,
             _originMode = _originMode,
             _insertMode = _insertMode,
+            _cursorVisible = _cursorVisible,
             _mainCells = (ScreenCell[][])_mainCells.Clone(),
             _altCells = (ScreenCell[][])_altCells.Clone(),
             _mainRowsShared = CreateSharedRowFlags(Height),
@@ -517,6 +525,7 @@ public sealed partial class ScreenBuffer
 
         CursorRow = source.CursorRow;
         CursorCol = source.CursorCol;
+        _cursorVisible = source._cursorVisible;
         _isAltScreen = source._isAltScreen;
         var sourceCells = source._cells;
         var targetCells = _isAltScreen ? _altCells : _mainCells;

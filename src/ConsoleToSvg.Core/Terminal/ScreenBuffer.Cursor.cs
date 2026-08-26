@@ -29,6 +29,8 @@ public sealed partial class ScreenBuffer
 
     public void SetInsertMode(bool enabled) => _insertMode = enabled;
 
+    public void SetCursorVisible(bool visible) => _cursorVisible = visible;
+
     public void SetTabStop() => _tabStops.Add(CursorCol);
 
     public void ClearTabStops(int mode)

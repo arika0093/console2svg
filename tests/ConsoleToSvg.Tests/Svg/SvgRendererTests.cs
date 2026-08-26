@@ -39,6 +39,36 @@ public sealed partial class SvgRendererTests
     }
 
     [Test]
+    public void RenderStaticSvgIncludesCursorAtTerminalPosition()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "Hi");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain(
+            "<rect class=\"cursor\" x=\"16.8\" y=\"0\" width=\"8.4\" height=\"18\""
+        );
+    }
+
+    [Test]
+    public void RenderStaticSvgOmitsHiddenCursor()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "Hi\u001b[?25l");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldNotContain("class=\"cursor\"");
+    }
+
+    [Test]
     public void RenderStaticSvgMergesWhitespaceSeparatedWordsIntoSingleTextNode()
     {
         var session = new RecordingSession(width: 30, height: 3);
@@ -196,6 +226,25 @@ public sealed partial class SvgRendererTests
         svg.ShouldContain("<path class=\"box\"");
         svg.ShouldNotContain(">q<");
         svg.ShouldNotContain(">─<");
+    }
+
+    [Test]
+    public void RenderStaticSvgWithRoundedBoxDrawingUsesCalibratedPaths()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "╭─╮\r\n╰─╯");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain("<path class=\"box\" d=\"M8.4 9Q4.2 9 4.2 18\"");
+        svg.ShouldContain("<path class=\"box\" d=\"M16.8 9Q21 9 21 18\"");
+        svg.ShouldNotContain(">╭");
+        svg.ShouldNotContain(">╮");
+        svg.ShouldNotContain(">╰");
+        svg.ShouldNotContain(">╯");
     }
 
     [Test]

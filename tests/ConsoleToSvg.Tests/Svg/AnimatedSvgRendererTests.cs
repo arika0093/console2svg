@@ -69,6 +69,22 @@ public sealed class AnimatedSvgRendererTests
     }
 
     [Test]
+    public void RenderAnimatedSvgTracksCursorAcrossFrames()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "A");
+        session.AddEvent(0.2, "B");
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain("<rect class=\"cursor\" x=\"8.4\"");
+        svg.ShouldContain("<rect class=\"cursor\" x=\"16.8\"");
+    }
+
+    [Test]
     public void RenderAnimatedSvgLastFrameDoesNotFadeToBlack()
     {
         var session = new RecordingSession(width: 8, height: 2);
@@ -372,7 +388,43 @@ public sealed class AnimatedSvgRendererTests
 
         CountOccurrences(svg, "id=\"fd-").ShouldBe(2);
         CountOccurrences(svg, "id=\"rd-").ShouldBe(3);
-        CountOccurrences(svg, "<use href=\"#rd-").ShouldBe(4);
+        CountOccurrences(svg, "<use href=\"#rd-").ShouldBe(5);
+    }
+
+    [Test]
+    public void RenderAnimatedSvgCachesLocalizedColumnChanges()
+    {
+        var session = new RecordingSession(width: 40, height: 2);
+        session.AddEvent(0.01, "prompt$ ");
+        session.AddEvent(0.2, "a");
+        session.AddEvent(0.4, "p");
+        session.AddEvent(0.6, "t");
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        CountOccurrences(svg, "<use href=\"#rd-").ShouldBeGreaterThan(8);
+        svg.ShouldContain("<g id=\"rd-");
+        svg.ShouldContain("\"><use href=\"#rd-");
+    }
+
+    [Test]
+    public void RenderAnimatedSvgLimitsColumnCacheDepth()
+    {
+        var session = new RecordingSession(width: 40, height: 2);
+        for (var i = 0; i < 7; i++)
+        {
+            session.AddEvent(i * 0.2, ((char)('a' + i)).ToString());
+        }
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        CountOccurrences(svg, "\"><use href=\"#rd-").ShouldBe(5);
     }
 
     [Test]

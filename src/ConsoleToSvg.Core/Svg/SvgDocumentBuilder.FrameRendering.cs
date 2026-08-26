@@ -20,7 +20,8 @@ internal static partial class SvgDocumentBuilder
         bool includeScrollback = false,
         double opacity = 1d,
         string lengthAdjust = "spacing",
-        string[]? maskPatterns = null
+        string[]? maskPatterns = null,
+        bool renderCursor = true
     )
     {
         var effectiveLengthAdjust = string.IsNullOrWhiteSpace(lengthAdjust)
@@ -61,6 +62,7 @@ internal static partial class SvgDocumentBuilder
         // Collect box drawing segments for merging
         var hSegments = new List<AxisSegment>();
         var vSegments = new List<AxisSegment>();
+        var roundedCorners = new List<RoundedCorner>();
         var fgRunText = new StringBuilder(context.EndColExclusive - context.StartCol);
 
         for (var row = context.StartRow; row < context.EndRowExclusive; row++)
@@ -360,6 +362,25 @@ internal static partial class SvgDocumentBuilder
                     continue;
                 }
 
+                if (IsRoundedBoxDrawing(cell.Text))
+                {
+                    pendingSpaces = 0;
+                    FlushFgRun();
+                    roundedCorners.Add(
+                        new RoundedCorner(
+                            cell.Text[0],
+                            cellX,
+                            y,
+                            cellW,
+                            context.CellHeight,
+                            effectiveFg,
+                            context.FontSize / 14d
+                        )
+                    );
+                    fgRunStart = col + 1;
+                    continue;
+                }
+
                 var sameStyle = MatchesRunStyle(effectiveFg, cell) && !cell.IsWide;
 
                 if (!sameStyle)
@@ -402,6 +423,11 @@ internal static partial class SvgDocumentBuilder
 
         // Render merged box drawing segments
         RenderMergedBoxSegments(sb, hSegments, vSegments, context.CellWidth, context.CellHeight);
+        RenderRoundedCorners(sb, roundedCorners);
+        if (renderCursor)
+        {
+            RenderCursor(sb, buffer, context, theme, includeScrollback);
+        }
 
         sb.Append("</g>\n");
     }
@@ -450,6 +476,110 @@ internal static partial class SvgDocumentBuilder
                 or '\u252C'
                 or '\u2534'
                 or '\u253C';
+
+    private static bool IsRoundedBoxDrawing(string text) =>
+        text.Length == 1 && text[0] is >= '\u256D' and <= '\u2570';
+
+    private static void RenderRoundedCorners(SvgWriter sb, List<RoundedCorner> corners)
+    {
+        foreach (var corner in corners)
+        {
+            var left = corner.X;
+            var right = corner.X + corner.Width;
+            var top = corner.Y;
+            var bottom = corner.Y + corner.Height;
+            var centerX = corner.X + corner.Width / 2d;
+            var centerY = corner.Y + corner.Height / 2d;
+
+            sb.Append("<path class=\"box\" d=\"");
+            switch (corner.Character)
+            {
+                case '\u256D': // ╭
+                    AppendCurve(sb, right, centerY, centerX, centerY, centerX, bottom);
+                    break;
+                case '\u256E': // ╮
+                    AppendCurve(sb, left, centerY, centerX, centerY, centerX, bottom);
+                    break;
+                case '\u256F': // ╯
+                    AppendCurve(sb, left, centerY, centerX, centerY, centerX, top);
+                    break;
+                default: // ╰
+                    AppendCurve(sb, right, centerY, centerX, centerY, centerX, top);
+                    break;
+            }
+
+            sb.Append("\" fill=\"none\" stroke=\"");
+            sb.Append(corner.Color);
+            sb.Append("\" stroke-width=\"");
+            sb.Append(corner.StrokeWidth);
+            sb.Append("\"/>\n");
+        }
+    }
+
+    private static void AppendCurve(
+        SvgWriter sb,
+        double startX,
+        double startY,
+        double controlX,
+        double controlY,
+        double endX,
+        double endY
+    )
+    {
+        sb.Append('M');
+        sb.Append(startX);
+        sb.Append(' ');
+        sb.Append(startY);
+        sb.Append('Q');
+        sb.Append(controlX);
+        sb.Append(' ');
+        sb.Append(controlY);
+        sb.Append(' ');
+        sb.Append(endX);
+        sb.Append(' ');
+        sb.Append(endY);
+    }
+
+    private static void RenderCursor(
+        SvgWriter sb,
+        ScreenBuffer buffer,
+        in Context context,
+        Theme theme,
+        bool includeScrollback
+    )
+    {
+        if (!buffer.CursorVisible)
+        {
+            return;
+        }
+
+        var cursorRow = includeScrollback
+            ? buffer.ScrollbackCount + buffer.CursorRow
+            : buffer.CursorRow;
+        if (
+            cursorRow < context.StartRow
+            || cursorRow >= context.EndRowExclusive
+            || buffer.CursorCol < context.StartCol
+            || buffer.CursorCol >= context.EndColExclusive
+        )
+        {
+            return;
+        }
+
+        var x = (buffer.CursorCol - context.StartCol) * context.CellWidth;
+        var y = (cursorRow - context.StartRow) * context.CellHeight;
+        sb.Append("<rect class=\"cursor\" x=\"");
+        sb.Append(x);
+        sb.Append("\" y=\"");
+        sb.Append(y);
+        sb.Append("\" width=\"");
+        sb.Append(context.CellWidth);
+        sb.Append("\" height=\"");
+        sb.Append(context.CellHeight);
+        sb.Append("\" fill=\"");
+        sb.Append(theme.Foreground);
+        sb.Append("\" opacity=\"0.65\"/>\n");
+    }
 
     private static void RenderMergedBoxSegments(
         SvgWriter sb,
@@ -587,6 +717,16 @@ internal static partial class SvgDocumentBuilder
         double Position,
         double Start,
         double End,
+        string Color,
+        double StrokeWidth
+    );
+
+    private readonly record struct RoundedCorner(
+        char Character,
+        double X,
+        double Y,
+        double Width,
+        double Height,
         string Color,
         double StrokeWidth
     );

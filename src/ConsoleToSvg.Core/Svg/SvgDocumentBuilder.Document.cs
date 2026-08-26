@@ -534,14 +534,15 @@ internal static partial class SvgDocumentBuilder
             return;
         }
 
-        var rowDefinitions =
-            new System.Collections.Generic.List<(int FrameIndex, int Row)>();
+        var rowDefinitions = new System.Collections.Generic.List<RowDefinition>();
         var hashToRowDefinitionIndices =
             new System.Collections.Generic.Dictionary<
                 ulong,
                 System.Collections.Generic.List<int>
             >();
         var frameRowDefinitions = new int[uniqueFrameIndices.Count][];
+        var lastDefinitionByRow = new int[rowCount];
+        Array.Fill(lastDefinitionByRow, -1);
 
         for (var framePosition = 0; framePosition < uniqueFrameIndices.Count; framePosition++)
         {
@@ -579,10 +580,48 @@ internal static partial class SvgDocumentBuilder
                     definitionIndex = rowDefinitions.Count;
                     candidates.Add(definitionIndex);
                     hashToRowDefinitionIndices[signature] = candidates;
-                    rowDefinitions.Add((frameIndex, row));
+                    var baseDefinitionIndex = lastDefinitionByRow[row - context.StartRow];
+                    var startCol = context.StartCol;
+                    var endColExclusive = context.EndColExclusive;
+                    var depth = 0;
+                    // Masking must see the complete text run; splitting it could miss
+                    // a pattern that crosses the unchanged/changed boundary.
+                    if (
+                        maskPatterns is not { Length: > 0 }
+                        && baseDefinitionIndex >= 0
+                        && TryGetRowDelta(
+                            buffer,
+                            row,
+                            frames,
+                            rowDefinitions,
+                            baseDefinitionIndex,
+                            context,
+                            out startCol,
+                            out endColExclusive
+                        )
+                    )
+                    {
+                        depth = rowDefinitions[baseDefinitionIndex].Depth + 1;
+                    }
+                    else
+                    {
+                        baseDefinitionIndex = -1;
+                    }
+
+                    rowDefinitions.Add(
+                        new RowDefinition(
+                            frameIndex,
+                            row,
+                            baseDefinitionIndex,
+                            startCol,
+                            endColExclusive,
+                            depth
+                        )
+                    );
                 }
 
                 rowMappings[row - context.StartRow] = definitionIndex;
+                lastDefinitionByRow[row - context.StartRow] = definitionIndex;
             }
         }
 
@@ -590,17 +629,47 @@ internal static partial class SvgDocumentBuilder
         for (var definitionIndex = 0; definitionIndex < rowDefinitions.Count; definitionIndex++)
         {
             var definition = rowDefinitions[definitionIndex];
-            AppendFrameGroup(
-                sb,
-                frames[definition.FrameIndex].Buffer,
-                CreateRowContext(context, definition.Row),
-                theme,
-                id: $"rd-{definitionIndex}",
-                @class: null,
-                opacity: opacity,
-                lengthAdjust: lengthAdjust,
-                maskPatterns: maskPatterns
-            );
+            if (definition.BaseDefinitionIndex < 0)
+            {
+                AppendFrameGroup(
+                    sb,
+                    frames[definition.FrameIndex].Buffer,
+                    CreateRowContext(context, definition.Row),
+                    theme,
+                    id: $"rd-{definitionIndex}",
+                    @class: null,
+                    opacity: opacity,
+                    lengthAdjust: lengthAdjust,
+                    maskPatterns: maskPatterns,
+                    renderCursor: false
+                );
+            }
+            else
+            {
+                sb.Append("<g id=\"rd-");
+                sb.Append(definitionIndex);
+                sb.Append("\"><use href=\"#rd-");
+                sb.Append(definition.BaseDefinitionIndex);
+                sb.Append("\"/>\n");
+                AppendFrameGroup(
+                    sb,
+                    frames[definition.FrameIndex].Buffer,
+                    CreateRowRangeContext(
+                        context,
+                        definition.Row,
+                        definition.StartCol,
+                        definition.EndColExclusive
+                    ),
+                    theme,
+                    id: null,
+                    @class: null,
+                    opacity: opacity,
+                    lengthAdjust: lengthAdjust,
+                    maskPatterns: null,
+                    renderCursor: false
+                );
+                sb.Append("</g>\n");
+            }
         }
 
         for (var framePosition = 0; framePosition < uniqueFrameIndices.Count; framePosition++)
@@ -622,6 +691,7 @@ internal static partial class SvgDocumentBuilder
                 sb.Append(rowOffset * context.CellHeight);
                 sb.Append(")\"/>\n");
             }
+            RenderCursor(sb, frames[frameIndex].Buffer, context, theme, includeScrollback: false);
             sb.Append("</g>\n");
         }
 
@@ -644,6 +714,113 @@ internal static partial class SvgDocumentBuilder
             CellHeight = context.CellHeight,
             BaselineOffset = context.BaselineOffset,
         };
+
+    private static Context CreateRowRangeContext(
+        in Context context,
+        int row,
+        int startCol,
+        int endColExclusive
+    ) =>
+        new()
+        {
+            StartRow = row,
+            EndRowExclusive = row + 1,
+            StartCol = startCol,
+            EndColExclusive = endColExclusive,
+            ContentWidth = (endColExclusive - startCol) * context.CellWidth,
+            ContentHeight = context.CellHeight,
+            ContentOffsetX = (startCol - context.StartCol) * context.CellWidth,
+            ContentOffsetY = 0d,
+            FontSize = context.FontSize,
+            CellWidth = context.CellWidth,
+            CellHeight = context.CellHeight,
+            BaselineOffset = context.BaselineOffset,
+        };
+
+    private static bool TryGetRowDelta(
+        ScreenBuffer buffer,
+        int row,
+        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
+        System.Collections.Generic.IReadOnlyList<RowDefinition> definitions,
+        int baseDefinitionIndex,
+        in Context context,
+        out int startCol,
+        out int endColExclusive
+    )
+    {
+        // Keep both the changed span and the nested <use> chain small. This captures
+        // typing and local status updates without turning every row into per-cell DOM.
+        const int maxDeltaDepth = 4;
+        const int maxDeltaColumns = 16;
+
+        var baseDefinition = definitions[baseDefinitionIndex];
+        startCol = context.StartCol;
+        endColExclusive = context.EndColExclusive;
+        if (baseDefinition.Depth >= maxDeltaDepth)
+        {
+            return false;
+        }
+
+        var baseBuffer = frames[baseDefinition.FrameIndex].Buffer;
+        while (
+            startCol < endColExclusive
+            && buffer.GetCell(row, startCol).Equals(
+                baseBuffer.GetCell(baseDefinition.Row, startCol)
+            )
+        )
+        {
+            startCol++;
+        }
+
+        if (startCol == endColExclusive)
+        {
+            return false;
+        }
+
+        while (
+            endColExclusive > startCol
+            && buffer.GetCell(row, endColExclusive - 1)
+                .Equals(baseBuffer.GetCell(baseDefinition.Row, endColExclusive - 1))
+        )
+        {
+            endColExclusive--;
+        }
+
+        if (
+            startCol > context.StartCol
+            && (
+                buffer.GetCell(row, startCol).IsWideContinuation
+                || baseBuffer.GetCell(baseDefinition.Row, startCol).IsWideContinuation
+            )
+        )
+        {
+            startCol--;
+        }
+
+        if (
+            endColExclusive < context.EndColExclusive
+            && (
+                buffer.GetCell(row, endColExclusive - 1).IsWide
+                || baseBuffer.GetCell(baseDefinition.Row, endColExclusive - 1).IsWide
+            )
+        )
+        {
+            endColExclusive++;
+        }
+
+        var deltaColumns = endColExclusive - startCol;
+        var visibleColumns = context.EndColExclusive - context.StartCol;
+        return deltaColumns <= maxDeltaColumns && deltaColumns * 4 <= visibleColumns;
+    }
+
+    private readonly record struct RowDefinition(
+        int FrameIndex,
+        int Row,
+        int BaseDefinitionIndex,
+        int StartCol,
+        int EndColExclusive,
+        int Depth
+    );
 
     /// <summary>
     /// Emits a &lt;use&gt; element that references a unique frame stored in &lt;defs&gt; by

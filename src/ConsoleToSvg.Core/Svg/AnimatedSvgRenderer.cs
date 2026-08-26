@@ -139,9 +139,8 @@ public static partial class AnimatedSvgRenderer
             reducedFrames = filtered;
         }
 
-        // Build a dedup map: visual-hash → index of the first reduced frame with that hash.
-        // Frames that are visually identical (e.g. in a looping animation) will share a single
-        // <defs> entry and be referenced via <use>, dramatically reducing file size.
+        // Frame content excludes the cursor so cursor-only differences can share
+        // the same <defs> entry. The cursor is emitted with each animated frame.
         var hashToDefsFrameIndices =
             new System.Collections.Generic.Dictionary<
                 ulong,
@@ -152,7 +151,7 @@ public static partial class AnimatedSvgRenderer
 
         for (var i = 0; i < reducedFrames.Count; i++)
         {
-            var hash = GetVisualSignatureCached(reducedFrames[i].Buffer, signatureCache);
+            var hash = reducedFrames[i].Buffer.GetContentSignature();
             var defsIdx = -1;
             if (hashToDefsFrameIndices.TryGetValue(hash, out var candidates))
             {
@@ -161,7 +160,7 @@ public static partial class AnimatedSvgRenderer
                     var candidate = candidates[candidateIndex];
                     if (
                         reducedFrames[i]
-                            .Buffer.HasSameVisualState(
+                            .Buffer.HasSameContentState(
                                 reducedFrames[uniqueFrameIndices[candidate]].Buffer
                             )
                     )
@@ -207,10 +206,22 @@ public static partial class AnimatedSvgRenderer
         );
 
         var svgWriter = new SvgWriter(writer);
+        var styles = new SvgStyleRegistry();
+        if (context.HeaderRows > 0 && !string.IsNullOrEmpty(options.CommandHeader))
+        {
+            styles.GetTextClass(theme.Foreground);
+        }
+        SvgDocumentBuilder.CollectTextStyles(
+            reducedFrames,
+            uniqueFrameIndices,
+            context,
+            styles
+        );
         SvgDocumentBuilder.BeginSvg(
             svgWriter,
             context,
             theme,
+            styles,
             css,
             font: options.Font,
             chrome: options.Chrome,
@@ -227,19 +238,31 @@ public static partial class AnimatedSvgRenderer
             uniqueFrameIndices,
             context,
             theme,
+            styles,
             lengthAdjust: options.LengthAdjust,
             opacity: options.Opacity,
             maskPatterns: options.MaskPatterns
+        );
+        var hasContentTransform = SvgDocumentBuilder.AppendContentTransformGroupOpen(
+            svgWriter,
+            context
         );
         for (var i = 0; i < reducedFrames.Count; i++)
         {
             var defsFrameIndex = uniqueFrameIndices[frameToDefsFrameIndex[i]];
             SvgDocumentBuilder.AppendFrameUse(
                 svgWriter,
-                defsId: $"fd-{defsFrameIndex}",
-                frameId: $"frame-{i}",
-                frameClass: $"frame frame-{i}"
+                defsId: $"c2d{defsFrameIndex}",
+                frameId: $"c2f{i}",
+                frameClass: $"c2 f f{i}",
+                reducedFrames[i].Buffer,
+                context,
+                theme
             );
+        }
+        if (hasContentTransform)
+        {
+            svgWriter.Append("</g>\n");
         }
 
         SvgDocumentBuilder.EndSvg(svgWriter, options.Opacity);

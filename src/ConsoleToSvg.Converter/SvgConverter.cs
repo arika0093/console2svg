@@ -97,7 +97,7 @@ public static partial class SvgConverter
             return null;
         }
 
-        var executable = string.IsNullOrEmpty(ffmpegPath) ? FindFfmpegForDetection() : ffmpegPath;
+        var executable = ResolveFfmpegExecutable(ffmpegPath);
         if (string.IsNullOrEmpty(executable))
         {
             throw new InvalidOperationException(
@@ -106,10 +106,9 @@ public static partial class SvgConverter
             );
         }
 
-        var resolvedExecutable = Path.GetFullPath(executable);
         var availableCodecs = _videoCodecAvailabilityByFfmpegPath
             .GetOrAdd(
-                resolvedExecutable,
+                executable,
                 static path => new Lazy<VideoCodecAvailability>(
                     () => DetectFfmpegVideoCodecs(path),
                     LazyThreadSafetyMode.ExecutionAndPublication

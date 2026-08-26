@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO.Hashing;
+using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace ConsoleToSvg.Terminal;
@@ -127,6 +128,7 @@ public readonly struct ScreenCell : IEquatable<ScreenCell>
 {
     private const byte Wide = 1 << 0;
     private const byte WideContinuation = 1 << 1;
+    private static readonly ulong[] AsciiTextSignatures = CreateAsciiTextSignatures();
     private readonly CellStyle _style;
     private readonly byte _flags;
 
@@ -157,6 +159,20 @@ public readonly struct ScreenCell : IEquatable<ScreenCell>
     internal CellStyle Style => _style;
 
     internal byte VisualFlags => _flags;
+
+    internal ulong VisualSignature
+    {
+        get
+        {
+            var value =
+                _style.VisualSignature
+                ^ BitOperations.RotateLeft(GetTextSignature(Text), 17)
+                ^ ((ulong)_flags * 0x9E3779B97F4A7C15UL);
+            value = (value ^ (value >> 30)) * 0xBF58476D1CE4E5B9UL;
+            value = (value ^ (value >> 27)) * 0x94D049BB133111EBUL;
+            return value ^ (value >> 31);
+        }
+    }
 
     public string Foreground => _style?.Foreground!;
 
@@ -211,6 +227,24 @@ public readonly struct ScreenCell : IEquatable<ScreenCell>
 
     private bool HasStyle(TextStyleAttributes attribute) =>
         _style is not null && (_style.Attributes & attribute) != 0;
+
+    private static ulong GetTextSignature(string text) =>
+        text.Length == 1 && text[0] < AsciiTextSignatures.Length
+            ? AsciiTextSignatures[text[0]]
+            : XxHash3.HashToUInt64(MemoryMarshal.AsBytes(text.AsSpan()));
+
+    private static ulong[] CreateAsciiTextSignatures()
+    {
+        var signatures = new ulong[128];
+        Span<char> character = stackalloc char[1];
+        for (var i = 0; i < signatures.Length; i++)
+        {
+            character[0] = (char)i;
+            signatures[i] = XxHash3.HashToUInt64(MemoryMarshal.AsBytes(character));
+        }
+
+        return signatures;
+    }
 }
 
 public sealed partial class ScreenBuffer
@@ -233,6 +267,7 @@ public sealed partial class ScreenBuffer
     private bool _originMode;
     private bool _insertMode;
     private bool _cursorVisible = true;
+    private bool _trackVisualSignatures;
     private readonly SortedSet<int> _tabStops = new();
     private readonly List<ScreenCell[]> _scrollbackRows = new();
     private readonly Dictionary<TextStyle, CellStyle> _styleCache = new();
@@ -256,12 +291,13 @@ public sealed partial class ScreenBuffer
         _mainCells = initializeCells ? CreateBlankCells() : null!;
         _altCells = initializeCells ? CreateBlankCells() : null!;
         _cells = _mainCells;
-        _mainRowsShared = new bool[Height];
-        _altRowsShared = new bool[Height];
+        _mainRowsShared = initializeCells ? new bool[Height] : null!;
+        _altRowsShared = initializeCells ? new bool[Height] : null!;
         _rowsShared = _mainRowsShared;
-        _rowSignatures = new ulong[Height];
-        _rowSignatureDirty = new bool[Height];
-        Array.Fill(_rowSignatureDirty, true);
+        _rowSignatures = initializeCells ? new ulong[Height] : null!;
+        _rowSignatureDirty = initializeCells ? new bool[Height] : null!;
+        if (initializeCells)
+            Array.Fill(_rowSignatureDirty, true);
         _scrollTop = 0;
         _scrollBottom = Height - 1;
         CursorRow = 0;
@@ -297,22 +333,21 @@ public sealed partial class ScreenBuffer
     /// </summary>
     public ulong GetVisualSignature()
     {
-        for (var row = 0; row < Height; row++)
-        {
-            EnsureRowVisualSignature(row);
-        }
-
-        var byteCount = checked(9 + Height * sizeof(ulong));
+        const int cursorFieldSize = 9;
+        var byteCount = checked(cursorFieldSize + Height * sizeof(ulong));
         if (byteCount <= 4096)
         {
             Span<byte> fields = stackalloc byte[byteCount];
-            return ComputeVisualSignature(fields);
+            return ComputeVisualSignature(fields, includeCursor: true);
         }
 
         var rented = ArrayPool<byte>.Shared.Rent(byteCount);
         try
         {
-            return ComputeVisualSignature(rented.AsSpan(0, byteCount));
+            return ComputeVisualSignature(
+                rented.AsSpan(0, byteCount),
+                includeCursor: true
+            );
         }
         finally
         {
@@ -320,12 +355,46 @@ public sealed partial class ScreenBuffer
         }
     }
 
-    private ulong ComputeVisualSignature(Span<byte> fields)
+    internal ulong GetContentSignature()
     {
-        fields[0] = _cursorVisible ? (byte)1 : (byte)0;
-        BinaryPrimitives.WriteInt32LittleEndian(fields[1..], _cursorVisible ? CursorRow : 0);
-        BinaryPrimitives.WriteInt32LittleEndian(fields[5..], _cursorVisible ? CursorCol : 0);
-        var offset = 9;
+        var byteCount = checked(Height * sizeof(ulong));
+        if (byteCount <= 4096)
+        {
+            Span<byte> fields = stackalloc byte[byteCount];
+            return ComputeVisualSignature(fields, includeCursor: false);
+        }
+
+        var rented = ArrayPool<byte>.Shared.Rent(byteCount);
+        try
+        {
+            return ComputeVisualSignature(
+                rented.AsSpan(0, byteCount),
+                includeCursor: false
+            );
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(rented);
+        }
+    }
+
+    private ulong ComputeVisualSignature(Span<byte> fields, bool includeCursor)
+    {
+        _trackVisualSignatures = true;
+        for (var row = 0; row < Height; row++)
+        {
+            EnsureRowVisualSignature(row);
+        }
+
+        var offset = 0;
+        if (includeCursor)
+        {
+            fields[0] = _cursorVisible ? (byte)1 : (byte)0;
+            BinaryPrimitives.WriteInt32LittleEndian(fields[1..], _cursorVisible ? CursorRow : 0);
+            BinaryPrimitives.WriteInt32LittleEndian(fields[5..], _cursorVisible ? CursorCol : 0);
+            offset = 9;
+        }
+
         for (var row = 0; row < Height; row++)
         {
             BinaryPrimitives.WriteUInt64LittleEndian(fields[offset..], _rowSignatures[row]);
@@ -337,6 +406,7 @@ public sealed partial class ScreenBuffer
 
     internal ulong GetRowVisualSignature(int row)
     {
+        _trackVisualSignatures = true;
         EnsureRowVisualSignature(row);
         return _rowSignatures[row];
     }
@@ -366,59 +436,35 @@ public sealed partial class ScreenBuffer
             return;
         }
 
-        const int metadataByteCount = sizeof(ulong) + sizeof(byte) + sizeof(int);
-        var byteCount = checked(Width * metadataByteCount);
+        var signature = 0UL;
         for (var col = 0; col < Width; col++)
         {
-            byteCount = checked(byteCount + _cells[row][col].Text.Length * sizeof(char));
-        }
-
-        ulong signature;
-        if (byteCount <= 4096)
-        {
-            Span<byte> fields = stackalloc byte[byteCount];
-            signature = ComputeRowVisualSignature(row, fields);
-        }
-        else
-        {
-            var rented = ArrayPool<byte>.Shared.Rent(byteCount);
-            try
-            {
-                signature = ComputeRowVisualSignature(
-                    row,
-                    rented.AsSpan(0, byteCount)
-                );
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(rented);
-            }
+            signature ^= GetPositionedCellSignature(col, _cells[row][col]);
         }
 
         _rowSignatures[row] = signature;
         _rowSignatureDirty[row] = false;
     }
 
-    private ulong ComputeRowVisualSignature(int row, Span<byte> fields)
+    private void InitializeRowVisualSignatures()
     {
-        var offset = 0;
-        for (var col = 0; col < Width; col++)
+        for (var row = 0; row < Height; row++)
         {
-            ref readonly var cell = ref _cells[row][col];
-            BinaryPrimitives.WriteUInt64LittleEndian(
-                fields[offset..],
-                cell.Style.VisualSignature
-            );
-            offset += sizeof(ulong);
-            fields[offset++] = cell.VisualFlags;
-            BinaryPrimitives.WriteInt32LittleEndian(fields[offset..], cell.Text.Length);
-            offset += sizeof(int);
-            var text = MemoryMarshal.AsBytes(cell.Text.AsSpan());
-            text.CopyTo(fields[offset..]);
-            offset += text.Length;
+            _rowSignatureDirty[row] = true;
+            EnsureRowVisualSignature(row);
         }
+    }
 
-        return XxHash3.HashToUInt64(fields);
+    private void ResetRowVisualSignatures()
+    {
+        if (_trackVisualSignatures)
+        {
+            InitializeRowVisualSignatures();
+        }
+        else
+        {
+            Array.Fill(_rowSignatureDirty, true);
+        }
     }
 
     public ScreenCell GetCell(int row, int col)
@@ -442,6 +488,27 @@ public sealed partial class ScreenBuffer
                 && (CursorRow != other.CursorRow || CursorCol != other.CursorCol)
             )
         )
+        {
+            return false;
+        }
+
+        for (var row = 0; row < Height; row++)
+        {
+            for (var col = 0; col < Width; col++)
+            {
+                if (!_cells[row][col].Equals(other._cells[row][col]))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    internal bool HasSameContentState(ScreenBuffer other)
+    {
+        if (Width != other.Width || Height != other.Height)
         {
             return false;
         }
@@ -500,6 +567,7 @@ public sealed partial class ScreenBuffer
             _originMode = _originMode,
             _insertMode = _insertMode,
             _cursorVisible = _cursorVisible,
+            _trackVisualSignatures = _trackVisualSignatures,
             _mainCells = (ScreenCell[][])_mainCells.Clone(),
             _altCells = (ScreenCell[][])_altCells.Clone(),
             _mainRowsShared = CreateSharedRowFlags(Height),
@@ -516,6 +584,35 @@ public sealed partial class ScreenBuffer
         return cloned;
     }
 
+    internal ScreenBuffer CreateVisibleSnapshot()
+    {
+        _trackVisualSignatures = true;
+        for (var row = 0; row < Height; row++)
+        {
+            EnsureRowVisualSignature(row);
+        }
+
+        Array.Fill(_rowsShared, true);
+        var cells = (ScreenCell[][])_cells.Clone();
+        var sharedRows = CreateSharedRowFlags(Height);
+        var snapshot = new ScreenBuffer(Width, Height, _theme, initializeCells: false)
+        {
+            CursorRow = CursorRow,
+            CursorCol = CursorCol,
+            _cursorVisible = _cursorVisible,
+            _trackVisualSignatures = true,
+            _mainCells = cells,
+            _altCells = cells,
+            _cells = cells,
+            _mainRowsShared = sharedRows,
+            _altRowsShared = sharedRows,
+            _rowsShared = sharedRows,
+            _rowSignatures = (ulong[])_rowSignatures.Clone(),
+            _rowSignatureDirty = new bool[Height],
+        };
+        return snapshot;
+    }
+
     internal void CopyVisibleStateFrom(ScreenBuffer source)
     {
         if (source.Width != Width || source.Height != Height)
@@ -526,6 +623,7 @@ public sealed partial class ScreenBuffer
         CursorRow = source.CursorRow;
         CursorCol = source.CursorCol;
         _cursorVisible = source._cursorVisible;
+        _trackVisualSignatures = true;
         _isAltScreen = source._isAltScreen;
         var sourceCells = source._cells;
         var targetCells = _isAltScreen ? _altCells : _mainCells;
@@ -544,9 +642,42 @@ public sealed partial class ScreenBuffer
 
     private void SetCell(int row, int col, in ScreenCell cell)
     {
+        ref readonly var previous = ref _cells[row][col];
+        if (previous.Equals(cell))
+        {
+            return;
+        }
+
+        var signature = 0UL;
+        if (_trackVisualSignatures)
+        {
+            EnsureRowVisualSignature(row);
+            signature =
+                _rowSignatures[row]
+                ^
+                GetPositionedCellSignature(col, previous)
+                ^ GetPositionedCellSignature(col, cell);
+        }
+
         EnsureWritableRow(row);
         _cells[row][col] = cell;
-        _rowSignatureDirty[row] = true;
+        if (_trackVisualSignatures)
+        {
+            _rowSignatures[row] = signature;
+            _rowSignatureDirty[row] = false;
+        }
+        else
+        {
+            _rowSignatureDirty[row] = true;
+        }
+    }
+
+    private static ulong GetPositionedCellSignature(int col, in ScreenCell cell)
+    {
+        var value = cell.VisualSignature + 0x9E3779B97F4A7C15UL * (ulong)(col + 1);
+        value = (value ^ (value >> 30)) * 0xBF58476D1CE4E5B9UL;
+        value = (value ^ (value >> 27)) * 0x94D049BB133111EBUL;
+        return value ^ (value >> 31);
     }
 
     private void EnsureWritableRow(int row)

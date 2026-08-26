@@ -83,10 +83,10 @@ public sealed class TerminalEmulator
 
             if (i == 0)
             {
-                var firstBuffer = Buffer.Clone();
+                var firstBuffer = Buffer.CreateVisibleSnapshot();
                 frames.Add(new TerminalFrame(time, firstBuffer, i));
                 lastKeptTime = time;
-                lastKeptSignature = firstBuffer.GetVisualSignature();
+                lastKeptSignature = firstBuffer.GetContentSignature();
                 continue;
             }
 
@@ -99,11 +99,11 @@ public sealed class TerminalEmulator
                     );
                 }
 
-                frames.Add(new TerminalFrame(time, Buffer.Clone(), i));
+                frames.Add(new TerminalFrame(time, Buffer.CreateVisibleSnapshot(), i));
                 continue;
             }
 
-            var signature = Buffer.GetVisualSignature();
+            var signature = Buffer.GetContentSignature();
             var visualChanged = signature != lastKeptSignature;
             var elapsed = time - lastKeptTime;
 
@@ -111,7 +111,7 @@ public sealed class TerminalEmulator
             {
                 if (visualChanged)
                 {
-                    pendingBuffer ??= Buffer.Clone();
+                    pendingBuffer ??= Buffer.CreateVisibleSnapshot();
                     if (pendingEventIndex >= 0)
                     {
                         pendingBuffer.CopyVisibleStateFrom(Buffer);
@@ -144,7 +144,7 @@ public sealed class TerminalEmulator
                 {
                     if (visualChanged)
                     {
-                        pendingBuffer = Buffer.Clone();
+                        pendingBuffer = Buffer.CreateVisibleSnapshot();
                         pendingTime = time;
                         pendingEventIndex = i;
                         pendingSignature = signature;
@@ -163,7 +163,13 @@ public sealed class TerminalEmulator
                 }
             }
 
-            var retainedBuffer = Buffer.Clone();
+            if (!visualChanged)
+            {
+                frames[frames.Count - 1].EventIndex = i;
+                continue;
+            }
+
+            var retainedBuffer = Buffer.CreateVisibleSnapshot();
             frames.Add(new TerminalFrame(time, retainedBuffer, i));
             lastKeptTime = time;
             lastKeptSignature = signature;

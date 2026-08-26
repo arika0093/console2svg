@@ -106,10 +106,22 @@ public static class SvgRenderer
             commandHeaderRows
         );
         var svgWriter = new SvgWriter(writer);
+        var styles = new SvgStyleRegistry();
+        if (context.HeaderRows > 0 && !string.IsNullOrEmpty(options.CommandHeader))
+        {
+            styles.GetTextClass(theme.Foreground);
+        }
+        SvgDocumentBuilder.CollectTextStyles(
+            buffer,
+            context,
+            styles,
+            includeScrollback
+        );
         SvgDocumentBuilder.BeginSvg(
             svgWriter,
             context,
             theme,
+            styles,
             additionalCss: null,
             font: options.Font,
             chrome: options.Chrome,
@@ -123,6 +135,7 @@ public static class SvgRenderer
             buffer,
             context,
             theme,
+            styles,
             id: null,
             @class: null,
             includeScrollback,

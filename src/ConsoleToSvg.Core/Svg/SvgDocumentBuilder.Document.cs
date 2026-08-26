@@ -11,6 +11,7 @@ internal static partial class SvgDocumentBuilder
         SvgWriter sb,
         in Context context,
         Theme theme,
+        SvgStyleRegistry styles,
         string? additionalCss,
         string? font = null,
         ChromeDefinition? chrome = null,
@@ -21,7 +22,6 @@ internal static partial class SvgDocumentBuilder
     )
     {
         sb.Append("<svg xmlns=\"http://www.w3.org/2000/svg\" ");
-        sb.Append("xmlns:xlink=\"http://www.w3.org/1999/xlink\" ");
         sb.Append("width=\"");
         sb.Append(context.OutputWidth);
         sb.Append("\" height=\"");
@@ -43,10 +43,10 @@ internal static partial class SvgDocumentBuilder
         sb.Append(
             $$"""
             <style>
-            .crt { font-family: {{effectiveFont}}; font-size: {{Format(context.FontSize)}}px; }
-            .blink { animation: blink 1s step-start infinite; }
-            text { dominant-baseline: alphabetic; }
-            .bg { shape-rendering: crispEdges; }
+            .c2.c { font-family: {{effectiveFont}}; font-size: {{Format(context.FontSize)}}px; }
+            .c2 .i { animation: c2b 1s step-start infinite; }
+            .c2 text { dominant-baseline: alphabetic; }
+            .c2 .q { shape-rendering: crispEdges; }
             """
         );
         if (!string.IsNullOrWhiteSpace(additionalCss))
@@ -59,9 +59,10 @@ internal static partial class SvgDocumentBuilder
             }
         }
 
+        styles.AppendCss(sb);
         sb.Append(
             """
-            @keyframes blink { 50% { visibility: hidden; } }
+            @keyframes c2b { 50% { visibility: hidden; } }
             </style>
             """
         );
@@ -73,7 +74,7 @@ internal static partial class SvgDocumentBuilder
         AppendClientBackground(sb, context, theme, chrome);
         if (context.HeaderRows > 0 && !string.IsNullOrEmpty(commandHeader))
         {
-            AppendCommandHeader(sb, context, theme, commandHeader, maskPatterns);
+            AppendCommandHeader(sb, context, theme, styles, commandHeader, maskPatterns);
         }
     }
 
@@ -81,6 +82,7 @@ internal static partial class SvgDocumentBuilder
         SvgWriter sb,
         in Context context,
         Theme theme,
+        SvgStyleRegistry styles,
         string commandHeader,
         string[]? maskPatterns = null
     )
@@ -88,26 +90,22 @@ internal static partial class SvgDocumentBuilder
         var x = context.HeaderOffsetX;
         var bgY = context.HeaderOffsetY;
         var bgH = context.HeaderRows * context.CellHeight;
-        sb.Append("<rect x=\"");
-        sb.Append(x);
-        sb.Append("\" y=\"");
-        sb.Append(bgY);
-        sb.Append("\" width=\"");
+        sb.Append("<g class=\"c2 c\"><rect");
+        AppendPositionAttributes(sb, x, bgY);
+        sb.Append(" width=\"");
         sb.Append(context.ViewWidth);
         sb.Append("\" height=\"");
         sb.Append(bgH);
         sb.Append("\" fill=\"");
         sb.Append(theme.Background);
         sb.Append("\"/>\n");
-        sb.Append("<text class=\"crt\" x=\"");
-        sb.Append(x);
-        sb.Append("\" y=\"");
-        sb.Append(bgY + context.BaselineOffset);
-        sb.Append("\" fill=\"");
-        sb.Append(theme.Foreground);
-        sb.Append("\">");
+        sb.Append("<text class=\"");
+        sb.Append(styles.GetTextClass(theme.Foreground));
+        sb.Append('"');
+        AppendPositionAttributes(sb, x, bgY + context.BaselineOffset);
+        sb.Append(">");
         sb.Append(ApplyMask(EscapeText(commandHeader), maskPatterns));
-        sb.Append("</text>\n");
+        sb.Append("</text></g>\n");
     }
 
     /// <summary>Renders the always-opaque background layer (desktop bg for desktop styles, canvas bg otherwise).</summary>
@@ -121,17 +119,13 @@ internal static partial class SvgDocumentBuilder
         if (chrome?.IsDesktop == true)
         {
             // Desktop background only  Eshadow + chrome go in AppendChrome (inside the single opacity group)
-            sb.Append("<rect ");
+            sb.Append("<rect");
             if (context.HasViewBoxOffset)
             {
-                sb.Append("x=\"");
-                sb.Append(context.ViewBoxX);
-                sb.Append("\" y=\"");
-                sb.Append(context.ViewBoxY);
-                sb.Append("\" ");
+                AppendPositionAttributes(sb, context.ViewBoxX, context.ViewBoxY);
             }
 
-            sb.Append("width=\"");
+            sb.Append(" width=\"");
             sb.Append(context.ViewBoxWidth);
             sb.Append("\" height=\"");
             sb.Append(context.ViewBoxHeight);
@@ -235,11 +229,9 @@ internal static partial class SvgDocumentBuilder
             return;
         }
 
-        sb.Append("<rect x=\"");
-        sb.Append(left);
-        sb.Append("\" y=\"");
-        sb.Append(top);
-        sb.Append("\" width=\"");
+        sb.Append("<rect");
+        AppendPositionAttributes(sb, left, top);
+        sb.Append(" width=\"");
         sb.Append(width);
         sb.Append("\" height=\"");
         sb.Append(height);
@@ -275,7 +267,7 @@ internal static partial class SvgDocumentBuilder
             background is { Length: >= 2 }
             || (background is { Length: 1 } && IsImagePath(background[0]))
         )
-            fill = "url(#desktop-bg)"; // gradient / image
+            fill = "url(#c2bg)"; // gradient / image
         else if (chrome != null)
             fill = null; // chrome window rect provides the background fill
         // else no chrome and no --background: omit rect ・transparent canvas
@@ -283,17 +275,13 @@ internal static partial class SvgDocumentBuilder
         if (fill == null)
             return;
 
-        sb.Append("<rect ");
+        sb.Append("<rect");
         if (context.HasViewBoxOffset)
         {
-            sb.Append("x=\"");
-            sb.Append(context.ViewBoxX);
-            sb.Append("\" y=\"");
-            sb.Append(context.ViewBoxY);
-            sb.Append("\" ");
+            AppendPositionAttributes(sb, context.ViewBoxX, context.ViewBoxY);
         }
 
-        sb.Append("width=\"");
+        sb.Append(" width=\"");
         sb.Append(context.ViewBoxWidth);
         sb.Append("\" height=\"");
         sb.Append(context.ViewBoxHeight);
@@ -324,14 +312,14 @@ internal static partial class SvgDocumentBuilder
 
     /// <summary>
     /// Returns the desktop background fill value for *-pc window styles.
-    /// Uses a default gradient (url(#desktop-bg)) when no user background is specified.
+    /// Uses a default gradient (url(#c2bg)) when no user background is specified.
     /// </summary>
     private static string GetDesktopBgFill(string[]? background)
     {
         if (background is { Length: 1 } && !IsImagePath(background[0]))
             return background[0]; // solid user color
         // gradient (2 colors), image, or default ↁEreference defs
-        return "url(#desktop-bg)";
+        return "url(#c2bg)";
     }
 
     /// <summary>Emits SVG &lt;defs&gt; containing gradient or image background definitions if needed.</summary>
@@ -366,14 +354,14 @@ internal static partial class SvgDocumentBuilder
         }
         else if (background is { Length: >= 2 })
         {
-            AppendLinearGradientDef(sb, "desktop-bg", background[0], background[1]);
+            AppendLinearGradientDef(sb, "c2bg", background[0], background[1]);
         }
         else
         {
             // Default gradient from chrome definition  Esubtle diagonal
             var c1 = chrome?.DesktopGradientFrom ?? "#1a1d2e";
             var c2 = chrome?.DesktopGradientTo ?? "#252840";
-            AppendLinearGradientDef(sb, "desktop-bg", c1, c2);
+            AppendLinearGradientDef(sb, "c2bg", c1, c2);
         }
 
         sb.Append("</defs>\n");
@@ -424,7 +412,7 @@ internal static partial class SvgDocumentBuilder
         }
 
         sb.Append(
-            "<pattern id=\"desktop-bg\" patternUnits=\"userSpaceOnUse\" patternContentUnits=\"userSpaceOnUse\" x=\""
+            "<pattern id=\"c2bg\" patternUnits=\"userSpaceOnUse\" patternContentUnits=\"userSpaceOnUse\" x=\""
         );
         sb.Append(context.ViewBoxX);
         sb.Append("\" y=\"");
@@ -488,7 +476,7 @@ internal static partial class SvgDocumentBuilder
     /// <summary>
     /// Renders unique frame contents into a &lt;defs&gt; block so they can be referenced
     /// by &lt;use&gt; elements emitted by <see cref="AppendFrameUse"/>. Each unique frame is stored
-    /// as <c>&lt;g id="fd-{frameIndex}"&gt;</c> with no animation class.
+    /// as <c>&lt;g id="c2d{frameIndex}"&gt;</c> with no animation class.
     /// </summary>
     public static void AppendFrameDefs(
         SvgWriter sb,
@@ -496,6 +484,7 @@ internal static partial class SvgDocumentBuilder
         System.Collections.Generic.IReadOnlyList<int> uniqueFrameIndices,
         in Context context,
         Theme theme,
+        SvgStyleRegistry styles,
         string lengthAdjust,
         double opacity = 1d,
         string[]? maskPatterns = null
@@ -523,11 +512,14 @@ internal static partial class SvgDocumentBuilder
                     frames[frameIndex].Buffer,
                     context,
                     theme,
-                    id: $"fd-{frameIndex}",
+                    styles,
+                    id: $"c2d{frameIndex}",
                     @class: null,
                     opacity: opacity,
                     lengthAdjust: lengthAdjust,
-                    maskPatterns: maskPatterns
+                    maskPatterns: maskPatterns,
+                    renderCursor: false,
+                    applyContentTransform: false
                 );
             }
             sb.Append("</defs>\n");
@@ -542,6 +534,7 @@ internal static partial class SvgDocumentBuilder
             >();
         var frameRowDefinitions = new int[uniqueFrameIndices.Count][];
         var lastDefinitionByRow = new int[rowCount];
+        var elements = new SvgElementRegistry();
         Array.Fill(lastDefinitionByRow, -1);
 
         for (var framePosition = 0; framePosition < uniqueFrameIndices.Count; framePosition++)
@@ -636,19 +629,21 @@ internal static partial class SvgDocumentBuilder
                     frames[definition.FrameIndex].Buffer,
                     CreateRowContext(context, definition.Row),
                     theme,
-                    id: $"rd-{definitionIndex}",
+                    styles,
+                    id: $"c2r{definitionIndex}",
                     @class: null,
                     opacity: opacity,
                     lengthAdjust: lengthAdjust,
                     maskPatterns: maskPatterns,
-                    renderCursor: false
+                    renderCursor: false,
+                    elements: elements
                 );
             }
             else
             {
-                sb.Append("<g id=\"rd-");
+                sb.Append("<g id=\"c2r");
                 sb.Append(definitionIndex);
-                sb.Append("\"><use href=\"#rd-");
+                sb.Append("\" class=\"c2 c\"><use href=\"#c2r");
                 sb.Append(definition.BaseDefinitionIndex);
                 sb.Append("\"/>\n");
                 AppendFrameGroup(
@@ -661,12 +656,15 @@ internal static partial class SvgDocumentBuilder
                         definition.EndColExclusive
                     ),
                     theme,
+                    styles,
                     id: null,
                     @class: null,
                     opacity: opacity,
                     lengthAdjust: lengthAdjust,
                     maskPatterns: null,
-                    renderCursor: false
+                    renderCursor: false,
+                    applyFontClass: false,
+                    elements: elements
                 );
                 sb.Append("</g>\n");
             }
@@ -675,23 +673,25 @@ internal static partial class SvgDocumentBuilder
         for (var framePosition = 0; framePosition < uniqueFrameIndices.Count; framePosition++)
         {
             var frameIndex = uniqueFrameIndices[framePosition];
-            sb.Append("<g id=\"fd-");
+            sb.Append("<g id=\"c2d");
             sb.Append(frameIndex);
-            sb.Append("\" transform=\"translate(");
-            sb.Append(context.ContentOffsetX - context.PixelCropLeft);
-            sb.Append(' ');
-            sb.Append(context.ContentOffsetY - context.PixelCropTop);
-            sb.Append(")\">\n");
+            sb.Append("\" class=\"c2\"");
+            sb.Append(">\n");
             var rowMappings = frameRowDefinitions[framePosition];
             for (var rowOffset = 0; rowOffset < rowMappings.Length; rowOffset++)
             {
-                sb.Append("<use href=\"#rd-");
+                sb.Append("<use href=\"#c2r");
                 sb.Append(rowMappings[rowOffset]);
-                sb.Append("\" transform=\"translate(0 ");
-                sb.Append(rowOffset * context.CellHeight);
-                sb.Append(")\"/>\n");
+                sb.Append('"');
+                var rowY = rowOffset * context.CellHeight;
+                if (rowY != 0d)
+                {
+                    sb.Append(" y=\"");
+                    sb.Append(rowY);
+                    sb.Append('"');
+                }
+                sb.Append("/>\n");
             }
-            RenderCursor(sb, frames[frameIndex].Buffer, context, theme, includeScrollback: false);
             sb.Append("</g>\n");
         }
 
@@ -830,15 +830,20 @@ internal static partial class SvgDocumentBuilder
         SvgWriter sb,
         string defsId,
         string frameId,
-        string frameClass
+        string frameClass,
+        ScreenBuffer buffer,
+        in Context context,
+        Theme theme
     )
     {
-        sb.Append("<use href=\"#");
-        sb.Append(EscapeAttribute(defsId));
-        sb.Append("\" id=\"");
+        sb.Append("<g id=\"");
         sb.Append(EscapeAttribute(frameId));
         sb.Append("\" class=\"");
         sb.Append(EscapeAttribute(frameClass));
+        sb.Append("\"><use href=\"#");
+        sb.Append(EscapeAttribute(defsId));
         sb.Append("\"/>\n");
+        RenderCursor(sb, buffer, context, theme, includeScrollback: false);
+        sb.Append("</g>\n");
     }
 }

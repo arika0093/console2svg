@@ -26,7 +26,7 @@ public sealed partial class ScreenBuffer
             _scrollTop = 0;
             _scrollBottom = Height - 1;
             _isAltScreen = true;
-            Array.Fill(_rowSignatureDirty, true);
+            ResetRowVisualSignatures();
             return;
         }
 
@@ -42,7 +42,7 @@ public sealed partial class ScreenBuffer
         CursorCol = Clamp(_savedMainCol, 0, Width - 1);
         _scrollTop = 0;
         _scrollBottom = Height - 1;
-        Array.Fill(_rowSignatureDirty, true);
+        ResetRowVisualSignatures();
     }
 
     private void ScrollRegionUp(int top, int bottom, int count, bool includeScrollback)
@@ -75,7 +75,7 @@ public sealed partial class ScreenBuffer
             _cells[bottom] = includeScrollback && top == 0 ? CreateBlankRow() : topRow;
             _rowsShared[bottom] = !(includeScrollback && top == 0) && topRowShared;
             _rowSignatures[bottom] = topSignature;
-            _rowSignatureDirty[bottom] = topDirty;
+            _rowSignatureDirty[bottom] = (includeScrollback && top == 0) || topDirty;
             ClearRow(bottom);
         }
     }

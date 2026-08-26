@@ -64,14 +64,14 @@ public static partial class AnimatedSvgRenderer
         var sb = new StringBuilder();
 
         // Static frame rule (single line).
-        sb.Append(".frame { opacity: 0; }\n");
+        sb.Append(".c2.f { opacity: 0; }\n");
 
         // Per-frame animation rules (single line each), grouped before the keyframes.
         for (var i = 0; i < frames.Count; i++)
         {
             sb.Append(
                 CultureInfo.InvariantCulture,
-                $$""".frame-{{i}} { animation:k{{i}} {{totalDuration:0.###}}s linear {{(loop ? "infinite" : "forwards")}}; }"""
+                $$""".c2.f{{i}} { animation:c2k{{i}} {{totalDuration:0.###}}s linear {{(loop ? "infinite" : "forwards")}}; }"""
             );
             sb.Append('\n');
         }
@@ -97,7 +97,7 @@ public static partial class AnimatedSvgRenderer
 
             sb.Append(
                 CultureInfo.InvariantCulture,
-                $$"""@keyframes k{{i}} { 0%, {{fadeInPoint:0.###}}% { opacity: 0; } """
+                $$"""@keyframes c2k{{i}} { 0%, {{fadeInPoint:0.###}}% { opacity: 0; } """
             );
             if (isLast && fadeOut <= 0d)
             {

@@ -1,3 +1,4 @@
+using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
 
 namespace ConsoleToSvg.Tests.Terminal;
@@ -39,6 +40,48 @@ public sealed class AnsiParserTests
         emulator.Process("\r\u001b[32mA");
 
         emulator.Buffer.GetVisualSignature().ShouldNotBe(redSignature);
+    }
+
+    [Test]
+    public void VisualSignatureReturnsToOriginalAfterIncrementalCellRestore()
+    {
+        var emulator = new TerminalEmulator(8, 2, Theme.Resolve("dark"));
+        emulator.Process("\u001b[?25l");
+        var blankSignature = emulator.Buffer.GetVisualSignature();
+
+        emulator.Process("A");
+        emulator.Buffer.GetVisualSignature().ShouldNotBe(blankSignature);
+
+        emulator.Process("\r \r");
+        emulator.Buffer.GetVisualSignature().ShouldBe(blankSignature);
+    }
+
+    [Test]
+    public void VisualSignatureRestoresAfterLeavingAlternateScreen()
+    {
+        var emulator = new TerminalEmulator(8, 2, Theme.Resolve("dark"));
+        emulator.Process("\u001b[?25lA");
+        var mainSignature = emulator.Buffer.GetVisualSignature();
+
+        emulator.Process("\u001b[?1049hB");
+        emulator.Buffer.GetVisualSignature().ShouldNotBe(mainSignature);
+
+        emulator.Process("\u001b[?1049l");
+        emulator.Buffer.GetVisualSignature().ShouldBe(mainSignature);
+    }
+
+    [Test]
+    public void PublicReplayFramesPreserveAlternateScreenState()
+    {
+        var session = new RecordingSession(8, 2);
+        session.AddEvent(0d, "M\u001b[?1049hA");
+        var emulator = new TerminalEmulator(8, 2, Theme.Resolve("dark"));
+
+        var frame = emulator.ReplayFrames(session)[0].Buffer;
+        frame.GetCell(0, 0).Text.ShouldBe("A");
+
+        frame.SetAlternateScreen(false);
+        frame.GetCell(0, 0).Text.ShouldBe("M");
     }
 
     [Test]

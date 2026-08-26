@@ -238,7 +238,7 @@ public sealed partial class SvgRendererTests
 
         svg.ShouldContain("viewBox=\"0 -15.6 67.2 67.2\"");
         svg.ShouldContain(
-            "<pattern id=\"desktop-bg\" patternUnits=\"userSpaceOnUse\" patternContentUnits=\"userSpaceOnUse\" x=\"0\" y=\"-15.6\" width=\"67.2\" height=\"67.2\">"
+            "<pattern id=\"c2bg\" patternUnits=\"userSpaceOnUse\" patternContentUnits=\"userSpaceOnUse\" x=\"0\" y=\"-15.6\" width=\"67.2\" height=\"67.2\">"
         );
         svg.ShouldContain(
             "<image href=\"background.png\" x=\"0\" y=\"0\" width=\"67.2\" height=\"67.2\" preserveAspectRatio=\"xMidYMid slice\"/>"
@@ -264,7 +264,7 @@ public sealed partial class SvgRendererTests
 
         svg.ShouldContain("viewBox=\"-2.4 0 72 36\"");
         svg.ShouldContain(
-            "<pattern id=\"desktop-bg\" patternUnits=\"userSpaceOnUse\" patternContentUnits=\"userSpaceOnUse\" x=\"-2.4\" y=\"0\" width=\"72\" height=\"36\">"
+            "<pattern id=\"c2bg\" patternUnits=\"userSpaceOnUse\" patternContentUnits=\"userSpaceOnUse\" x=\"-2.4\" y=\"0\" width=\"72\" height=\"36\">"
         );
         svg.ShouldContain(
             "<image href=\"background.png\" x=\"0\" y=\"0\" width=\"72\" height=\"36\" preserveAspectRatio=\"xMidYMid slice\"/>"

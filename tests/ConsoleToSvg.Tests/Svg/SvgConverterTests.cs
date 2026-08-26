@@ -1,12 +1,31 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using ConsoleToSvg.Svg;
 
 namespace ConsoleToSvg.Tests.Svg;
 
 public sealed class SvgConverterTests
 {
+    [Test]
+    public void ResolveFfmpegExecutableResolvesBareCommandFromPath()
+    {
+        var command = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "cmd.exe" : "sh";
+        var method = typeof(SvgConverter).GetMethod(
+            "ResolveFfmpegExecutable",
+            BindingFlags.NonPublic | BindingFlags.Static
+        );
+        method.ShouldNotBeNull();
+
+        var resolved = (string)method.Invoke(null, [command])!;
+
+        resolved.ShouldNotBeEmpty();
+        Path.IsPathFullyQualified(resolved).ShouldBeTrue();
+        File.Exists(resolved).ShouldBeTrue();
+    }
+
     [Test]
     public void FfmpegProcessRedirectsOutputAwayFromParentTerminal()
     {

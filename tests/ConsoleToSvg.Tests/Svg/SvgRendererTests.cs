@@ -49,9 +49,7 @@ public sealed partial class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        svg.ShouldContain(
-            "<rect class=\"cursor\" x=\"16.8\" y=\"0\" width=\"8.4\" height=\"18\""
-        );
+        svg.ShouldContain("<rect class=\"u\" x=\"16.8\" width=\"8.4\" height=\"18\"");
     }
 
     [Test]
@@ -65,7 +63,22 @@ public sealed partial class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        svg.ShouldNotContain("class=\"cursor\"");
+        svg.ShouldNotContain("class=\"u\"");
+    }
+
+    [Test]
+    public void RenderStaticSvgOmitsZeroRectCoordinates()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, " █\r\n█");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain("<rect class=\"q\" x=\"8.4\" width=\"8.4\" height=\"18\"");
+        svg.ShouldContain("<rect class=\"q\" y=\"18\" width=\"8.4\" height=\"18\"");
     }
 
     [Test]
@@ -81,7 +94,9 @@ public sealed partial class SvgRendererTests
 
         svg.ShouldContain(">VIM - Vi Improved<");
         svg.ShouldContain(">by Bram Moolenaar et al.<");
-        svg.ShouldContain("xml:space=\"preserve\"");
+        svg.ShouldContain(".c2 .w { white-space: pre; }");
+        svg.ShouldContain(" w\"");
+        svg.ShouldNotContain("xml:space=");
     }
 
     [Test]
@@ -100,7 +115,8 @@ public sealed partial class SvgRendererTests
         var expected = "This" + new string(' ', 3) + "is" + new string(' ', 4)
             + "a" + new string(' ', 10) + "Message";
         svg.ShouldContain($">{expected}<");
-        svg.ShouldContain("xml:space=\"preserve\"");
+        svg.ShouldContain(" w\"");
+        svg.ShouldNotContain("xml:space=");
     }
 
     [Test]
@@ -184,8 +200,8 @@ public sealed partial class SvgRendererTests
             session,
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
-        svg.ShouldContain("<path class=\"box\"");
-        svg.ShouldContain("<path class=\"box\"");
+        svg.ShouldContain("<path d=\"");
+        svg.ShouldContain("<path d=\"");
         svg.ShouldNotContain("shape-rendering=\"crispEdges\"");
         svg.ShouldNotContain(">┌");
         svg.ShouldNotContain(">─");
@@ -202,11 +218,12 @@ public sealed partial class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        svg.ShouldContain("<path class=\"box\"");
+        svg.ShouldContain("<path d=\"");
         // Horizontal line segments are merged into a single path
         svg.ShouldContain("M4.2 8.5H29.4V9.5H4.2Z");
         // Vertical line segments are also present
         svg.ShouldContain("M3.7 0H4.7V9H3.7Z");
+        svg.ShouldNotContain("id=\"c2e");
         svg.ShouldNotContain(">└");
         svg.ShouldNotContain(">─");
         svg.ShouldNotContain(">┘");
@@ -223,7 +240,7 @@ public sealed partial class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        svg.ShouldContain("<path class=\"box\"");
+        svg.ShouldContain("<path d=\"");
         svg.ShouldNotContain(">q<");
         svg.ShouldNotContain(">─<");
     }
@@ -239,8 +256,8 @@ public sealed partial class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        svg.ShouldContain("<path class=\"box\" d=\"M8.4 9Q4.2 9 4.2 18\"");
-        svg.ShouldContain("<path class=\"box\" d=\"M16.8 9Q21 9 21 18\"");
+        svg.ShouldContain("<path d=\"M8.4 9Q4.2 9 4.2 18\"");
+        svg.ShouldContain("<path d=\"M16.8 9Q21 9 21 18\"");
         svg.ShouldNotContain(">╭");
         svg.ShouldNotContain(">╮");
         svg.ShouldNotContain(">╰");
@@ -492,7 +509,7 @@ public sealed partial class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        svg.ShouldContain("fill=\"#e5e5e5\"");
+        svg.ShouldContain("fill:#e5e5e5");
     }
 
     [Test]
@@ -507,5 +524,66 @@ public sealed partial class SvgRendererTests
         );
 
         svg.ShouldContain("viewBox=\"0 0 71.2 40\"");
+    }
+
+    [Test]
+    public void RenderStaticSvgOmitsDefaultLengthAdjustAndPreservesCustomValue()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "AB");
+
+        var defaultSvg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+        var customSvg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                LengthAdjust = "spacingAndGlyphs",
+            }
+        );
+
+        defaultSvg.ShouldNotContain("lengthAdjust=");
+        customSvg.ShouldContain("lengthAdjust=\"spacingAndGlyphs\"");
+    }
+
+    [Test]
+    public void RenderStaticSvgHoistsFontAndDeduplicatesTextStyles()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "A\r\nB");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+        var foreground = ConsoleToSvg.Terminal.Theme.Resolve("dark").Foreground;
+
+        svg.ShouldContain("<g class=\"c2 c\"");
+        svg.ShouldNotContain("<text class=\"c");
+        System.Text.RegularExpressions.Regex.IsMatch(svg, "<text[^>]* x=\"0\"")
+            .ShouldBeFalse();
+        System.Text.RegularExpressions.Regex.IsMatch(svg, "<text[^>]+ fill=").ShouldBeFalse();
+        CountOccurrences(svg, $"{{fill:{foreground}}}").ShouldBe(1);
+        CountOccurrences(svg, "<style>").ShouldBe(1);
+        svg.ShouldContain($"\n.c2 .a{{fill:{foreground}}}\n");
+        svg.ShouldNotContain("transform=\"translate(0 0)\"");
+        svg.IndexOf(".c2 .a{", System.StringComparison.Ordinal)
+            .ShouldBeLessThan(svg.IndexOf("</style>", System.StringComparison.Ordinal));
+        System.Xml.Linq.XDocument.Parse(svg).Root.ShouldNotBeNull();
+    }
+
+    private static int CountOccurrences(string text, string token)
+    {
+        var count = 0;
+        var index = 0;
+        while ((index = text.IndexOf(token, index, System.StringComparison.Ordinal)) >= 0)
+        {
+            count++;
+            index += token.Length;
+        }
+        return count;
     }
 }

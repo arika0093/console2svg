@@ -10,18 +10,119 @@ namespace ConsoleToSvg.Svg;
 
 internal static partial class SvgDocumentBuilder
 {
+    public static void CollectTextStyles(
+        ScreenBuffer buffer,
+        in Context context,
+        SvgStyleRegistry styles,
+        bool includeScrollback = false
+    )
+    {
+        for (var row = context.StartRow; row < context.EndRowExclusive; row++)
+        {
+            CollectRowTextStyles(buffer, row, context, styles, includeScrollback);
+        }
+    }
+
+    public static void CollectTextStyles(
+        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
+        System.Collections.Generic.IReadOnlyList<int> frameIndices,
+        in Context context,
+        SvgStyleRegistry styles
+    )
+    {
+        var rowsBySignature =
+            new Dictionary<ulong, List<(ScreenBuffer Buffer, int Row)>>();
+        for (var framePosition = 0; framePosition < frameIndices.Count; framePosition++)
+        {
+            var buffer = frames[frameIndices[framePosition]].Buffer;
+            for (var row = context.StartRow; row < context.EndRowExclusive; row++)
+            {
+                var signature = buffer.GetRowVisualSignature(row);
+                if (rowsBySignature.TryGetValue(signature, out var candidates))
+                {
+                    var duplicate = false;
+                    for (var i = 0; i < candidates.Count; i++)
+                    {
+                        var candidate = candidates[i];
+                        if (buffer.HasSameVisualRow(row, candidate.Buffer, candidate.Row))
+                        {
+                            duplicate = true;
+                            break;
+                        }
+                    }
+
+                    if (duplicate)
+                    {
+                        continue;
+                    }
+                }
+
+                candidates ??= [];
+                candidates.Add((buffer, row));
+                rowsBySignature[signature] = candidates;
+                CollectRowTextStyles(buffer, row, context, styles, includeScrollback: false);
+            }
+        }
+    }
+
+    private static void CollectRowTextStyles(
+        ScreenBuffer buffer,
+        int row,
+        in Context context,
+        SvgStyleRegistry styles,
+        bool includeScrollback
+    )
+    {
+        var pendingWhitespace = false;
+        for (var col = context.StartCol; col < context.EndColExclusive; col++)
+        {
+            var cell = includeScrollback
+                ? buffer.GetCellFromTop(row, col)
+                : buffer.GetCell(row, col);
+            if (
+                cell.IsWideContinuation
+                || cell.Hidden
+                || IsBlockElement(cell.Text)
+                || IsSingleLineBoxDrawing(cell.Text)
+                || IsRoundedBoxDrawing(cell.Text)
+            )
+            {
+                pendingWhitespace = false;
+                continue;
+            }
+            if (cell.Text == " ")
+            {
+                pendingWhitespace = true;
+                continue;
+            }
+
+            if (pendingWhitespace)
+            {
+                styles.CollectPreservedWhitespace();
+                pendingWhitespace = false;
+            }
+            var effectiveFg = cell.Reversed ? cell.Background : cell.Foreground;
+            effectiveFg = ApplyIntensity(effectiveFg, cell.Bold, cell.Faint);
+            styles.CollectCellStyle(cell, effectiveFg);
+        }
+    }
+
     public static void AppendFrameGroup(
         SvgWriter sb,
         ScreenBuffer buffer,
         in Context context,
         Theme theme,
+        SvgStyleRegistry styles,
         string? id,
         string? @class,
         bool includeScrollback = false,
         double opacity = 1d,
         string lengthAdjust = "spacing",
         string[]? maskPatterns = null,
-        bool renderCursor = true
+        bool renderCursor = true,
+        bool applyFontClass = true,
+        bool applyContentTransform = true,
+        SvgElementRegistry? elements = null
     )
     {
         var effectiveLengthAdjust = string.IsNullOrWhiteSpace(lengthAdjust)
@@ -38,26 +139,56 @@ internal static partial class SvgDocumentBuilder
             sb.Append("\"");
         }
 
-        if (!string.IsNullOrWhiteSpace(@class))
+        if (applyFontClass || !string.IsNullOrWhiteSpace(@class))
         {
             sb.Append(" class=\"");
-            sb.Append(EscapeAttribute(@class));
+            if (applyFontClass)
+            {
+                sb.Append("c2 c");
+                if (!string.IsNullOrWhiteSpace(@class))
+                {
+                    sb.Append(' ');
+                }
+            }
+            if (!string.IsNullOrWhiteSpace(@class))
+            {
+                sb.Append(EscapeAttribute(@class));
+            }
             sb.Append("\"");
         }
 
-        sb.Append(" transform=\"translate(");
-        sb.Append(context.ContentOffsetX - context.PixelCropLeft);
-        sb.Append(' ');
-        sb.Append(context.ContentOffsetY - context.PixelCropTop);
-        sb.Append(")\">\n");
+        if (applyContentTransform)
+        {
+            AppendTranslateAttribute(
+                sb,
+                context.ContentOffsetX - context.PixelCropLeft,
+                context.ContentOffsetY - context.PixelCropTop
+            );
+        }
+        sb.Append(">\n");
 
-        sb.Append("<rect width=\"");
-        sb.Append(context.ContentWidth);
-        sb.Append("\" height=\"");
-        sb.Append(context.ContentHeight);
-        sb.Append("\" fill=\"");
-        sb.Append(theme.Background);
-        sb.Append("\"/>\n");
+        if (elements is null)
+        {
+            sb.Append("<rect width=\"");
+            sb.Append(context.ContentWidth);
+            sb.Append("\" height=\"");
+            sb.Append(context.ContentHeight);
+            sb.Append("\" fill=\"");
+            sb.Append(theme.Background);
+            sb.Append("\"/>\n");
+        }
+        else
+        {
+            elements.AppendRect(
+                sb,
+                @class: null,
+                x: null,
+                y: null,
+                context.ContentWidth,
+                context.ContentHeight,
+                theme.Background
+            );
+        }
 
         // Collect box drawing segments for merging
         var hSegments = new List<AxisSegment>();
@@ -101,17 +232,30 @@ internal static partial class SvgDocumentBuilder
                 {
                     var rx = (bgRunStart - context.StartCol) * context.CellWidth;
                     var rw = (col - bgRunStart) * context.CellWidth;
-                    sb.Append("<rect class=\"bg\" x=\"");
-                    sb.Append(rx);
-                    sb.Append("\" y=\"");
-                    sb.Append(y);
-                    sb.Append("\" width=\"");
-                    sb.Append(rw);
-                    sb.Append("\" height=\"");
-                    sb.Append(context.CellHeight);
-                    sb.Append("\" fill=\"");
-                    sb.Append(bgRunColor);
-                    sb.Append("\"/>\n");
+                    if (elements is null)
+                    {
+                        sb.Append("<rect class=\"q\"");
+                        AppendPositionAttributes(sb, rx, y);
+                        sb.Append(" width=\"");
+                        sb.Append(rw);
+                        sb.Append("\" height=\"");
+                        sb.Append(context.CellHeight);
+                        sb.Append("\" fill=\"");
+                        sb.Append(bgRunColor);
+                        sb.Append("\"/>\n");
+                    }
+                    else
+                    {
+                        elements.AppendRect(
+                            sb,
+                            "q",
+                            rx,
+                            y,
+                            rw,
+                            context.CellHeight,
+                            bgRunColor
+                        );
+                    }
                 }
 
                 bgRunColor = cellBg;
@@ -142,58 +286,46 @@ internal static partial class SvgDocumentBuilder
 
                 var tx = (fgRunStart - startCol) * cellWidth;
                 var tLen = fgRunCellCount * cellWidth;
-                sb.Append("<text class=\"crt");
+                var textClass = styles.GetTextClass(
+                    fgRunColor,
+                    fgBold,
+                    fgItalic,
+                    fgUnderline,
+                    fgStrikethrough,
+                    fgOverline,
+                    fgUnderlineColor
+                );
                 if (fgBlink)
                 {
-                    sb.Append(" blink");
+                    textClass += " i";
                 }
-                sb.Append("\"");
                 if (fgRunHasSpace)
                 {
-                    sb.Append(" xml:space=\"preserve\"");
+                    textClass += " w";
                 }
-                sb.Append(" x=\"");
-                sb.Append(tx);
-                sb.Append("\" y=\"");
+
+                var adjustedLength =
+                    string.Equals(effectiveLengthAdjust, "spacing", StringComparison.Ordinal)
+                        ? null
+                        : effectiveLengthAdjust;
+                sb.Append("<text class=\"");
+                sb.Append(textClass);
+                sb.Append("\"");
+                if (tx != 0d)
+                {
+                    sb.Append(" x=\"");
+                    sb.Append(tx);
+                    sb.Append('"');
+                }
+                sb.Append(" y=\"");
                 sb.Append(y + baselineOffset);
-                sb.Append("\" fill=\"");
-                sb.Append(fgRunColor);
                 sb.Append("\" textLength=\"");
                 sb.Append(tLen);
-                sb.Append("\" lengthAdjust=\"");
-                sb.Append(EscapeAttribute(effectiveLengthAdjust));
-                sb.Append("\"");
-                if (
-                    fgBold
-                    || fgItalic
-                    || fgUnderline
-                    || fgStrikethrough
-                    || fgOverline
-                    || fgUnderlineColor != null
-                )
+                sb.Append('"');
+                if (adjustedLength is not null)
                 {
-                    sb.Append(" style=\"");
-                    if (fgBold)
-                        sb.Append("font-weight:bold;");
-                    if (fgItalic)
-                        sb.Append("font-style:italic;");
-                    if (fgUnderline || fgStrikethrough || fgOverline)
-                    {
-                        sb.Append("text-decoration:");
-                        if (fgUnderline)
-                            sb.Append("underline ");
-                        if (fgStrikethrough)
-                            sb.Append("line-through ");
-                        if (fgOverline)
-                            sb.Append("overline ");
-                        sb.Append(';');
-                    }
-                    if (fgUnderlineColor != null)
-                    {
-                        sb.Append("text-decoration-color:");
-                        sb.Append(fgUnderlineColor);
-                        sb.Append(';');
-                    }
+                    sb.Append(" lengthAdjust=\"");
+                    sb.Append(EscapeAttribute(adjustedLength));
                     sb.Append("\"");
                 }
                 sb.Append('>');
@@ -285,7 +417,8 @@ internal static partial class SvgDocumentBuilder
                         y,
                         cellW,
                         context.CellHeight,
-                        effectiveFg
+                        effectiveFg,
+                        elements
                     );
                     fgRunStart = col + (cell.IsWide ? 2 : 1);
                     continue;
@@ -422,7 +555,14 @@ internal static partial class SvgDocumentBuilder
         }
 
         // Render merged box drawing segments
-        RenderMergedBoxSegments(sb, hSegments, vSegments, context.CellWidth, context.CellHeight);
+        RenderMergedBoxSegments(
+            sb,
+            hSegments,
+            vSegments,
+            context.CellWidth,
+            context.CellHeight,
+            elements
+        );
         RenderRoundedCorners(sb, roundedCorners);
         if (renderCursor)
         {
@@ -435,6 +575,54 @@ internal static partial class SvgDocumentBuilder
     public static string Format(double value)
     {
         return value.ToString("0.###", CultureInfo.InvariantCulture);
+    }
+
+    private static void AppendTranslateAttribute(SvgWriter sb, double x, double y)
+    {
+        if (x == 0d && y == 0d)
+        {
+            return;
+        }
+
+        sb.Append(" transform=\"translate(");
+        sb.Append(x);
+        if (y != 0d)
+        {
+            sb.Append(' ');
+            sb.Append(y);
+        }
+        sb.Append(")\"");
+    }
+
+    public static bool AppendContentTransformGroupOpen(SvgWriter sb, in Context context)
+    {
+        var x = context.ContentOffsetX - context.PixelCropLeft;
+        var y = context.ContentOffsetY - context.PixelCropTop;
+        if (x == 0d && y == 0d)
+        {
+            return false;
+        }
+
+        sb.Append("<g");
+        AppendTranslateAttribute(sb, x, y);
+        sb.Append(">\n");
+        return true;
+    }
+
+    private static void AppendPositionAttributes(SvgWriter sb, double x, double y)
+    {
+        if (x != 0d)
+        {
+            sb.Append(" x=\"");
+            sb.Append(x);
+            sb.Append('"');
+        }
+        if (y != 0d)
+        {
+            sb.Append(" y=\"");
+            sb.Append(y);
+            sb.Append('"');
+        }
     }
 
     private static bool IsBlockElement(string text)
@@ -491,7 +679,7 @@ internal static partial class SvgDocumentBuilder
             var centerX = corner.X + corner.Width / 2d;
             var centerY = corner.Y + corner.Height / 2d;
 
-            sb.Append("<path class=\"box\" d=\"");
+            sb.Append("<path d=\"");
             switch (corner.Character)
             {
                 case '\u256D': // ╭
@@ -568,11 +756,9 @@ internal static partial class SvgDocumentBuilder
 
         var x = (buffer.CursorCol - context.StartCol) * context.CellWidth;
         var y = (cursorRow - context.StartRow) * context.CellHeight;
-        sb.Append("<rect class=\"cursor\" x=\"");
-        sb.Append(x);
-        sb.Append("\" y=\"");
-        sb.Append(y);
-        sb.Append("\" width=\"");
+        sb.Append("<rect class=\"u\"");
+        AppendPositionAttributes(sb, x, y);
+        sb.Append(" width=\"");
         sb.Append(context.CellWidth);
         sb.Append("\" height=\"");
         sb.Append(context.CellHeight);
@@ -586,7 +772,8 @@ internal static partial class SvgDocumentBuilder
         List<AxisSegment> hSegments,
         List<AxisSegment> vSegments,
         double cellWidth,
-        double cellHeight
+        double cellHeight,
+        SvgElementRegistry? elements
     )
     {
         if (hSegments.Count == 0 && vSegments.Count == 0)
@@ -603,10 +790,15 @@ internal static partial class SvgDocumentBuilder
         mergedRects.Sort(static (left, right) =>
             string.CompareOrdinal(left.Color, right.Color)
         );
+        var pathData = elements is null ? null : new StringBuilder();
         for (var groupStart = 0; groupStart < mergedRects.Count;)
         {
             var color = mergedRects[groupStart].Color;
-            sb.Append("<path class=\"box\" d=\"");
+            pathData?.Clear();
+            if (elements is null)
+            {
+                sb.Append("<path d=\"");
+            }
             var groupEnd = groupStart;
             while (
                 groupEnd < mergedRects.Count
@@ -614,23 +806,73 @@ internal static partial class SvgDocumentBuilder
             )
             {
                 var rect = mergedRects[groupEnd];
-                sb.Append('M');
-                sb.Append(rect.X);
-                sb.Append(' ');
-                sb.Append(rect.Y);
-                sb.Append('H');
-                sb.Append(rect.X + rect.Width);
-                sb.Append('V');
-                sb.Append(rect.Y + rect.Height);
-                sb.Append('H');
-                sb.Append(rect.X);
-                sb.Append('Z');
+                if (pathData is null)
+                {
+                    AppendBoxPath(sb, rect);
+                }
+                else
+                {
+                    AppendBoxPath(pathData, rect);
+                }
                 groupEnd++;
             }
-            sb.Append("\" fill=\"");
-            sb.Append(color);
-            sb.Append("\"/>\n");
+            if (pathData is null)
+            {
+                sb.Append("\" fill=\"");
+                sb.Append(color);
+                sb.Append("\"/>\n");
+            }
+            else
+            {
+                elements!.AppendPath(sb, pathData.ToString(), color);
+            }
             groupStart = groupEnd;
+        }
+    }
+
+    private static void AppendBoxPath(SvgWriter sb, in BoxRect rect)
+    {
+        sb.Append('M');
+        sb.Append(rect.X);
+        sb.Append(' ');
+        sb.Append(rect.Y);
+        sb.Append('H');
+        sb.Append(rect.X + rect.Width);
+        sb.Append('V');
+        sb.Append(rect.Y + rect.Height);
+        sb.Append('H');
+        sb.Append(rect.X);
+        sb.Append('Z');
+    }
+
+    private static void AppendBoxPath(StringBuilder sb, in BoxRect rect)
+    {
+        AppendNumber('M', rect.X);
+        AppendNumber(' ', rect.Y);
+        AppendNumber('H', rect.X + rect.Width);
+        AppendNumber('V', rect.Y + rect.Height);
+        AppendNumber('H', rect.X);
+        sb.Append('Z');
+
+        void AppendNumber(char prefix, double value)
+        {
+            sb.Append(prefix);
+            Span<char> buffer = stackalloc char[32];
+            if (
+                value.TryFormat(
+                    buffer,
+                    out var charsWritten,
+                    "0.###",
+                    CultureInfo.InvariantCulture
+                )
+            )
+            {
+                sb.Append(buffer[..charsWritten]);
+            }
+            else
+            {
+                sb.Append(value.ToString("0.###", CultureInfo.InvariantCulture));
+            }
         }
     }
 
@@ -746,7 +988,8 @@ internal static partial class SvgDocumentBuilder
         double y,
         double cellRectWidth,
         double cellRectHeight,
-        string fill
+        string fill,
+        SvgElementRegistry? elements
     )
     {
         var cp = text.Length == 1 ? text[0] : char.ConvertToUtf32(text[0], text[1]);
@@ -856,17 +1099,22 @@ internal static partial class SvgDocumentBuilder
 
         void R(double rx, double ry, double rw, double rh)
         {
-            sb.Append("<rect class=\"bg\" x=\"");
-            sb.Append(rx);
-            sb.Append("\" y=\"");
-            sb.Append(ry);
-            sb.Append("\" width=\"");
-            sb.Append(rw);
-            sb.Append("\" height=\"");
-            sb.Append(rh);
-            sb.Append("\" fill=\"");
-            sb.Append(fill);
-            sb.Append("\"/>\n");
+            if (elements is null)
+            {
+                sb.Append("<rect class=\"q\"");
+                AppendPositionAttributes(sb, rx, ry);
+                sb.Append(" width=\"");
+                sb.Append(rw);
+                sb.Append("\" height=\"");
+                sb.Append(rh);
+                sb.Append("\" fill=\"");
+                sb.Append(fill);
+                sb.Append("\"/>\n");
+            }
+            else
+            {
+                elements.AppendRect(sb, "q", rx, ry, rw, rh, fill);
+            }
         }
     }
 

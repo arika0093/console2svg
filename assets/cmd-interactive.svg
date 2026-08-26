@@ -30,9 +30,9 @@
 .c2.f21 { animation:c2k21 6.167s linear infinite; }
 .c2.f22 { animation:c2k22 6.167s linear infinite; }
 @keyframes c2k0 { 0%, 0% { opacity: 0; } 0%, 10.811% { opacity: 1; } 10.812%, 100% { opacity: 0; } }
-@keyframes c2k1 { 0%, 10.81% { opacity: 0; } 10.811%, 18.919% { opacity: 1; } 18.92%, 100% { opacity: 0; } }
-@keyframes c2k2 { 0%, 18.918% { opacity: 0; } 18.919%, 43.243% { opacity: 1; } 43.244%, 100% { opacity: 0; } }
-@keyframes c2k3 { 0%, 43.242% { opacity: 0; } 43.243%, 52.703% { opacity: 1; } 52.704%, 100% { opacity: 0; } }
+@keyframes c2k1 { 0%, 10.81% { opacity: 0; } 10.811%, 20.27% { opacity: 1; } 20.271%, 100% { opacity: 0; } }
+@keyframes c2k2 { 0%, 20.269% { opacity: 0; } 20.27%, 44.595% { opacity: 1; } 44.596%, 100% { opacity: 0; } }
+@keyframes c2k3 { 0%, 44.594% { opacity: 0; } 44.595%, 52.703% { opacity: 1; } 52.704%, 100% { opacity: 0; } }
 @keyframes c2k4 { 0%, 52.702% { opacity: 0; } 52.703%, 54.054% { opacity: 1; } 54.055%, 100% { opacity: 0; } }
 @keyframes c2k5 { 0%, 54.053% { opacity: 0; } 54.054%, 55.405% { opacity: 1; } 55.406%, 100% { opacity: 0; } }
 @keyframes c2k6 { 0%, 55.404% { opacity: 0; } 55.405%, 56.757% { opacity: 1; } 56.758%, 100% { opacity: 0; } }

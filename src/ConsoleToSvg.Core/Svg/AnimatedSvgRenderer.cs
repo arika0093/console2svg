@@ -228,7 +228,8 @@ public static partial class AnimatedSvgRenderer
             commandHeader: options.CommandHeader,
             opacity: options.Opacity,
             background: options.Background,
-            maskPatterns: options.MaskPatterns
+            maskPatterns: options.MaskPatterns,
+            animateBlink: true
         );
 
         // Render each unique frame once in <defs>, then reference via <use>.

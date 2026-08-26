@@ -113,6 +113,7 @@ internal sealed class SvgStyleRegistry
 
     private static string GetClassName(int index)
     {
+        index += 26;
         Span<char> buffer = stackalloc char[8];
         var position = buffer.Length;
         do

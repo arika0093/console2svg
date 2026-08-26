@@ -234,6 +234,7 @@ internal static partial class Program
                     var useVideoPath = options.IsModeExplicit
                         ? options.Mode is OutputMode.Video or OutputMode.Repeat
                         : IsVideoFormat(outputExt);
+                    renderOptions.RenderCursor = useVideoPath;
 
                     // Resolve the SVG → raster converter once. This detects whether
                     // ffmpeg has librsvg support and falls back to rsvg-convert /

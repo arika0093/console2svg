@@ -426,9 +426,9 @@ public sealed class AnimatedSvgRendererTests
         svg.ShouldContain("href=\"#c2d");
         svg.ShouldContain("id=\"c2f0\" class=\"c2 f f0\"");
         svg.ShouldContain(".c2.f { opacity: 0; }");
-        svg.ShouldContain(".c2 .i { animation: c2b");
+        svg.ShouldContain(".c2 .c2b { animation: c2b");
         svg.ShouldContain(".c2 .q { shape-rendering:");
-        svg.ShouldContain("\n.c2 .a{fill:");
+        svg.ShouldContain("\n.c2 .aa{fill:");
         CountOccurrences(svg, "<style>").ShouldBe(1);
         svg.ShouldNotContain("\n.f {");
         svg.ShouldNotContain("\n.i {");
@@ -569,7 +569,7 @@ public sealed class AnimatedSvgRendererTests
         svg.ShouldNotContain("secret");
         svg.ShouldContain("******");
         svg.ShouldContain("lengthAdjust=\"spacingAndGlyphs\"");
-        svg.ShouldContain(" i\"");
+        svg.ShouldContain(" c2b\"");
         svg.ShouldContain("@keyframes c2b");
         svg.ShouldContain("<g class=\"c2 c\"><rect");
         svg.ShouldNotContain("<text class=\"c");

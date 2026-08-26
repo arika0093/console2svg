@@ -239,6 +239,7 @@ internal static partial class Program
     )
     {
         EnsureDirectory(outputPath);
+        renderOptions.RenderCursor = capture.IsVideo;
         var extension = Path.GetExtension(outputPath).TrimStart('.').ToLowerInvariant();
         if (string.IsNullOrEmpty(extension) || extension == "svg")
         {

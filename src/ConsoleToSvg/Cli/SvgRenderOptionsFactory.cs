@@ -55,6 +55,7 @@ public static class SvgRenderOptionsFactory
             VideoTiming = appOptions.VideoTiming,
             VideoSleep = appOptions.VideoSleep,
             VideoFadeOut = appOptions.VideoFadeOut,
+            RenderCursor = appOptions.Mode is OutputMode.Video or OutputMode.Repeat,
             HeightRows = appOptions.Height,
             Opacity = appOptions.Opacity,
             CommandHeader = commandHeader,

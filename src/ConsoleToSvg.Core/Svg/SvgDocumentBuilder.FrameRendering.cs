@@ -309,7 +309,7 @@ internal static partial class SvgDocumentBuilder
                 );
                 if (fgBlink)
                 {
-                    textClass += " i";
+                    textClass += " c2b";
                 }
                 if (fgRunHasSpace)
                 {

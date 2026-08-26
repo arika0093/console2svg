@@ -39,7 +39,7 @@ public sealed partial class SvgRendererTests
     }
 
     [Test]
-    public void RenderStaticSvgIncludesCursorAtTerminalPosition()
+    public void RenderStaticSvgOmitsCursor()
     {
         var session = new RecordingSession(width: 8, height: 2);
         session.AddEvent(0.01, "Hi");
@@ -47,6 +47,20 @@ public sealed partial class SvgRendererTests
         var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
             session,
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldNotContain("class=\"u\"");
+    }
+
+    [Test]
+    public void RenderVideoFrameIncludesCursorAtTerminalPosition()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "Hi");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", RenderCursor = true }
         );
 
         svg.ShouldContain("<rect class=\"u\" x=\"16.8\" width=\"8.4\" height=\"18\"");
@@ -64,6 +78,22 @@ public sealed partial class SvgRendererTests
         );
 
         svg.ShouldNotContain("class=\"u\"");
+    }
+
+    [Test]
+    public void RenderStaticSvgDoesNotAnimateBlinkingText()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "\u001b[5mA");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain("class=\"aa c2b\"");
+        svg.ShouldNotContain("animation: c2b");
+        svg.ShouldNotContain("@keyframes c2b");
     }
 
     [Test]
@@ -597,9 +627,9 @@ public sealed partial class SvgRendererTests
         System.Text.RegularExpressions.Regex.IsMatch(svg, "<text[^>]+ fill=").ShouldBeFalse();
         CountOccurrences(svg, $"{{fill:{foreground}}}").ShouldBe(1);
         CountOccurrences(svg, "<style>").ShouldBe(1);
-        svg.ShouldContain($"\n.c2 .a{{fill:{foreground}}}\n");
+        svg.ShouldContain($"\n.c2 .aa{{fill:{foreground}}}\n");
         svg.ShouldNotContain("transform=\"translate(0 0)\"");
-        svg.IndexOf(".c2 .a{", System.StringComparison.Ordinal)
+        svg.IndexOf(".c2 .aa{", System.StringComparison.Ordinal)
             .ShouldBeLessThan(svg.IndexOf("</style>", System.StringComparison.Ordinal));
         System.Xml.Linq.XDocument.Parse(svg).Root.ShouldNotBeNull();
     }

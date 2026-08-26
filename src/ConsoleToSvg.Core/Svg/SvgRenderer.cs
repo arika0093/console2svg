@@ -140,7 +140,8 @@ public static class SvgRenderer
             @class: null,
             includeScrollback,
             lengthAdjust: options.LengthAdjust,
-            maskPatterns: options.MaskPatterns
+            maskPatterns: options.MaskPatterns,
+            renderCursor: options.RenderCursor
         );
         SvgDocumentBuilder.EndSvg(svgWriter, options.Opacity);
     }

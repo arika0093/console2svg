@@ -18,7 +18,8 @@ internal static partial class SvgDocumentBuilder
         string? commandHeader = null,
         double opacity = 1d,
         string[]? background = null,
-        string[]? maskPatterns = null
+        string[]? maskPatterns = null,
+        bool animateBlink = false
     )
     {
         sb.Append("<svg xmlns=\"http://www.w3.org/2000/svg\" ");
@@ -44,11 +45,14 @@ internal static partial class SvgDocumentBuilder
             $$"""
             <style>
             .c2.c { font-family: {{effectiveFont}}; font-size: {{Format(context.FontSize)}}px; }
-            .c2 .i { animation: c2b 1s step-start infinite; }
             .c2 text { dominant-baseline: alphabetic; }
             .c2 .q { shape-rendering: crispEdges; }
             """
         );
+        if (animateBlink)
+        {
+            sb.Append("\n.c2 .c2b { animation: c2b 1s step-start infinite; }\n");
+        }
         if (!string.IsNullOrWhiteSpace(additionalCss))
         {
             sb.Append('\n');
@@ -60,12 +64,11 @@ internal static partial class SvgDocumentBuilder
         }
 
         styles.AppendCss(sb);
-        sb.Append(
-            """
-            @keyframes c2b { 50% { visibility: hidden; } }
-            </style>
-            """
-        );
+        if (animateBlink)
+        {
+            sb.Append("@keyframes c2b { 50% { visibility: hidden; } }\n");
+        }
+        sb.Append("</style>");
 
         AppendDefs(sb, context, chrome, background);
         AppendBackground(sb, context, chrome, background);

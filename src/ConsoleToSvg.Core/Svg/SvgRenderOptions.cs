@@ -36,6 +36,8 @@ public sealed class SvgRenderOptions
 
     public VideoTimingMode VideoTiming { get; set; } = VideoTimingMode.Deterministic;
 
+    public bool RenderCursor { get; set; }
+
     public double Opacity { get; set; } = 1d;
 
     public int? HeightRows { get; set; }

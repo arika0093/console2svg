@@ -146,7 +146,10 @@ internal sealed class SvgElementRegistry
         double? y,
         double width,
         double height,
-        string fill
+        string fill,
+        string? stroke = null,
+        double? strokeWidth = null,
+        bool nonScalingStroke = false
     )
     {
         var key = new ElementKey(
@@ -157,6 +160,9 @@ internal sealed class SvgElementRegistry
             width,
             height,
             fill,
+            stroke,
+            strokeWidth,
+            nonScalingStroke,
             null
         );
         if (TryAppendUse(sb, key))
@@ -182,6 +188,20 @@ internal sealed class SvgElementRegistry
         sb.Append(id);
         sb.Append("\" fill=\"");
         sb.Append(fill);
+        if (stroke is not null)
+        {
+            sb.Append("\" stroke=\"");
+            sb.Append(stroke);
+        }
+        if (strokeWidth is not null)
+        {
+            sb.Append("\" stroke-width=\"");
+            sb.Append(strokeWidth.Value);
+        }
+        if (nonScalingStroke)
+        {
+            sb.Append("\" vector-effect=\"non-scaling-stroke");
+        }
         sb.Append("\"/>\n");
     }
 
@@ -195,6 +215,9 @@ internal sealed class SvgElementRegistry
             0d,
             0d,
             fill,
+            null,
+            null,
+            false,
             pathData
         );
         if (TryAppendUse(sb, key))
@@ -261,6 +284,9 @@ internal sealed class SvgElementRegistry
         double Width,
         double Height,
         string Fill,
+        string? Stroke,
+        double? StrokeWidth,
+        bool NonScalingStroke,
         string? PathData
     );
 }

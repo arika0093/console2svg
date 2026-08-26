@@ -88,6 +88,7 @@ public sealed partial class SvgRendererTests
         session.AddEvent(
             0.01,
             "\u001b[48;2;255;0;0m \u001b[48;2;0;255;0m "
+                + "\r\n\u001b[48;2;0;0;255m "
         );
 
         var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
@@ -96,10 +97,16 @@ public sealed partial class SvgRendererTests
         );
 
         svg.ShouldContain(
-            "<rect class=\"q\" width=\"8.5\" height=\"18.1\" fill=\"#FF0000\""
+            "<rect class=\"q\" width=\"8.4\" height=\"18\" fill=\"#FF0000\""
+                + " stroke=\"#FF0000\" stroke-width=\"2\" vector-effect=\"non-scaling-stroke\""
         );
         svg.ShouldContain(
-            "<rect class=\"q\" x=\"8.4\" width=\"8.5\" height=\"18.1\" fill=\"#00FF00\""
+            "<rect class=\"q\" x=\"8.4\" width=\"8.4\" height=\"18\" fill=\"#00FF00\""
+                + " stroke=\"#00FF00\" stroke-width=\"2\" vector-effect=\"non-scaling-stroke\""
+        );
+        svg.ShouldContain(
+            "<rect class=\"q\" y=\"18\" width=\"8.4\" height=\"18\" fill=\"#0000FF\""
+                + " stroke=\"#0000FF\" stroke-width=\"2\" vector-effect=\"non-scaling-stroke\""
         );
     }
 

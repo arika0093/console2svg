@@ -10,7 +10,9 @@ namespace ConsoleToSvg.Svg;
 
 internal static partial class SvgDocumentBuilder
 {
-    private const double BackgroundSeamOverlap = 0.1d;
+    // Prevent subpixel gaps between adjacent background rects when viewers scale the SVG down.
+    // A non-scaling 2px stroke extends 1 device pixel beyond each edge at any zoom level.
+    private const double BackgroundSeamStrokeWidth = 2d;
 
     public static void CollectTextStyles(
         ScreenBuffer buffer,
@@ -233,9 +235,7 @@ internal static partial class SvgDocumentBuilder
                 if (bgRunColor != null && col > bgRunStart)
                 {
                     var rx = (bgRunStart - context.StartCol) * context.CellWidth;
-                    var rw =
-                        (col - bgRunStart) * context.CellWidth + BackgroundSeamOverlap;
-                    var rh = context.CellHeight + BackgroundSeamOverlap;
+                    var rw = (col - bgRunStart) * context.CellWidth;
                     if (elements is null)
                     {
                         sb.Append("<rect class=\"q\"");
@@ -243,9 +243,14 @@ internal static partial class SvgDocumentBuilder
                         sb.Append(" width=\"");
                         sb.Append(rw);
                         sb.Append("\" height=\"");
-                        sb.Append(rh);
+                        sb.Append(context.CellHeight);
                         sb.Append("\" fill=\"");
                         sb.Append(bgRunColor);
+                        sb.Append("\" stroke=\"");
+                        sb.Append(bgRunColor);
+                        sb.Append("\" stroke-width=\"");
+                        sb.Append(BackgroundSeamStrokeWidth);
+                        sb.Append("\" vector-effect=\"non-scaling-stroke");
                         sb.Append("\"/>\n");
                     }
                     else
@@ -256,8 +261,11 @@ internal static partial class SvgDocumentBuilder
                             rx,
                             y,
                             rw,
-                            rh,
-                            bgRunColor
+                            context.CellHeight,
+                            bgRunColor,
+                            stroke: bgRunColor,
+                            strokeWidth: BackgroundSeamStrokeWidth,
+                            nonScalingStroke: true
                         );
                     }
                 }

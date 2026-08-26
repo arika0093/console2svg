@@ -104,19 +104,6 @@ public sealed partial class AnsiParser
                     return;
                 }
 
-                if (parameter == 25)
-                {
-                    if (command == 'h')
-                    {
-                        _buffer.SetCursorVisible(true);
-                    }
-                    else if (command == 'l')
-                    {
-                        _buffer.SetCursorVisible(false);
-                    }
-
-                    return;
-                }
             }
         }
 

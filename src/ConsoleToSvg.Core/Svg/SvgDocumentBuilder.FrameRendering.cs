@@ -381,25 +381,6 @@ internal static partial class SvgDocumentBuilder
                     continue;
                 }
 
-                if (IsRoundedBoxDrawing(cell.Text))
-                {
-                    pendingSpaces = 0;
-                    FlushFgRun();
-                    roundedCorners.Add(
-                        new RoundedCorner(
-                            cell.Text[0],
-                            cellX,
-                            y,
-                            cellW,
-                            context.CellHeight,
-                            effectiveFg,
-                            context.FontSize / 14d
-                        )
-                    );
-                    fgRunStart = col + 1;
-                    continue;
-                }
-
                 var sameStyle = MatchesRunStyle(effectiveFg, cell) && !cell.IsWide;
 
                 if (!sameStyle)
@@ -736,16 +717,6 @@ internal static partial class SvgDocumentBuilder
         double Position,
         double Start,
         double End,
-        string Color,
-        double StrokeWidth
-    );
-
-    private readonly record struct RoundedCorner(
-        char Character,
-        double X,
-        double Y,
-        double Width,
-        double Height,
         string Color,
         double StrokeWidth
     );

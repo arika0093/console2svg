@@ -10,6 +10,8 @@ namespace ConsoleToSvg.Svg;
 
 internal static partial class SvgDocumentBuilder
 {
+    private const double BackgroundSeamOverlap = 0.1d;
+
     public static void CollectTextStyles(
         ScreenBuffer buffer,
         in Context context,
@@ -231,7 +233,9 @@ internal static partial class SvgDocumentBuilder
                 if (bgRunColor != null && col > bgRunStart)
                 {
                     var rx = (bgRunStart - context.StartCol) * context.CellWidth;
-                    var rw = (col - bgRunStart) * context.CellWidth;
+                    var rw =
+                        (col - bgRunStart) * context.CellWidth + BackgroundSeamOverlap;
+                    var rh = context.CellHeight + BackgroundSeamOverlap;
                     if (elements is null)
                     {
                         sb.Append("<rect class=\"q\"");
@@ -239,7 +243,7 @@ internal static partial class SvgDocumentBuilder
                         sb.Append(" width=\"");
                         sb.Append(rw);
                         sb.Append("\" height=\"");
-                        sb.Append(context.CellHeight);
+                        sb.Append(rh);
                         sb.Append("\" fill=\"");
                         sb.Append(bgRunColor);
                         sb.Append("\"/>\n");
@@ -252,7 +256,7 @@ internal static partial class SvgDocumentBuilder
                             rx,
                             y,
                             rw,
-                            context.CellHeight,
+                            rh,
                             bgRunColor
                         );
                     }

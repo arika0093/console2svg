@@ -82,6 +82,28 @@ public sealed partial class SvgRendererTests
     }
 
     [Test]
+    public void RenderStaticSvgOverlapsAdjacentCellBackgrounds()
+    {
+        var session = new RecordingSession(width: 4, height: 2);
+        session.AddEvent(
+            0.01,
+            "\u001b[48;2;255;0;0m \u001b[48;2;0;255;0m "
+        );
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain(
+            "<rect class=\"q\" width=\"8.5\" height=\"18.1\" fill=\"#FF0000\""
+        );
+        svg.ShouldContain(
+            "<rect class=\"q\" x=\"8.4\" width=\"8.5\" height=\"18.1\" fill=\"#00FF00\""
+        );
+    }
+
+    [Test]
     public void RenderStaticSvgMergesWhitespaceSeparatedWordsIntoSingleTextNode()
     {
         var session = new RecordingSession(width: 30, height: 3);

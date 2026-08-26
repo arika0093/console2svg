@@ -294,12 +294,15 @@ public static partial class OptionParser
         }
 
         if (
-            double.IsNaN(options.OutputCoalesceMs)
-            || double.IsInfinity(options.OutputCoalesceMs)
-            || options.OutputCoalesceMs < 0
+            options.OutputCoalesceMs.HasValue
+            && (
+                double.IsNaN(options.OutputCoalesceMs.Value)
+                || double.IsInfinity(options.OutputCoalesceMs.Value)
+                || options.OutputCoalesceMs.Value < 0
+            )
         )
         {
-            error = "--coalesce-ms must be a non-negative number.";
+            error = "--coalesce-ms must be auto or a non-negative number.";
             return false;
         }
 

@@ -123,13 +123,81 @@ public sealed class PtyRecorderTests
         session.Events[0].Data.ShouldBe(text);
     }
 
+    [Test]
+    public async Task ReadOutputAsync_AutomaticallyCoalescesImmediateChunks()
+    {
+        const string text = "fast updating output";
+        await using var input = new ChunkedReadStream(
+            Encoding.UTF8.GetBytes(text),
+            maxChunkSize: 1
+        );
+        var session = new RecordingSession(width: 40, height: 5);
+
+        await InvokeReadOutputAsync(
+            input,
+            session,
+            forwardOutput: null,
+            forwardOutputWriter: null,
+            outputEncoding: Encoding.UTF8,
+            outputCoalesceMs: null
+        );
+
+        session.Events.Count.ShouldBe(1);
+        session.Events[0].Data.ShouldBe(text);
+    }
+
+    [Test]
+    public async Task ReadOutputAsync_ZeroDisablesAutomaticCoalescing()
+    {
+        const string text = "chunks";
+        await using var input = new ChunkedReadStream(
+            Encoding.UTF8.GetBytes(text),
+            maxChunkSize: 1
+        );
+        var session = new RecordingSession(width: 40, height: 5);
+
+        await InvokeReadOutputAsync(
+            input,
+            session,
+            forwardOutput: null,
+            forwardOutputWriter: null,
+            outputEncoding: Encoding.UTF8,
+            outputCoalesceMs: 0d
+        );
+
+        session.Events.Count.ShouldBe(text.Length);
+        string.Concat(session.Events.Select(evt => evt.Data)).ShouldBe(text);
+    }
+
+    [Test]
+    public void ResolveOutputCoalescing_AutoScalesWithFpsAndCapsBatchAtOneFrame()
+    {
+        var method =
+            typeof(PtyRecorder).GetMethod(
+                "ResolveOutputCoalescing",
+                BindingFlags.NonPublic | BindingFlags.Static
+            )
+            ?? throw new InvalidOperationException(
+                "PtyRecorder.ResolveOutputCoalescing was not found."
+            );
+
+        var settings = ((double WindowSeconds, double MaxBatchSeconds))method.Invoke(
+            null,
+            [null, 20d]
+        )!;
+
+        settings.WindowSeconds.ShouldBe(0.0125d);
+        settings.MaxBatchSeconds.ShouldBe(0.05d);
+    }
+
     private static async Task InvokeReadOutputAsync(
         Stream readerStream,
         RecordingSession session,
         Stream? forwardOutput,
         TextWriter? forwardOutputWriter,
         Encoding outputEncoding,
-        double outputCoalesceMs = 0d
+        double? outputCoalesceMs = 0d,
+        double videoFps = 12d
     )
     {
         var method =
@@ -153,6 +221,7 @@ public sealed class PtyRecorderTests
                         forwardOutputWriter,
                         outputEncoding,
                         outputCoalesceMs,
+                        videoFps,
                     ]
                 )
             ?? throw new InvalidOperationException("PtyRecorder.ReadOutputAsync did not return a Task.");

@@ -118,7 +118,7 @@ public static partial class OptionParser
                 --fps <value>             Max FPS for animated SVG frame sampling (default: 12).
                 --sleep <sec>             Wait time after execution completes in video mode (default: 0).
                 --fadeout <sec>           Fade-out duration at end of video (default: 0).
-                --coalesce-ms <ms>        Coalesce output chunks within the given gap (default: 0=disabled).
+                --coalesce-ms <ms|auto>   Coalesce output chunks within the given gap (default: auto; 0 disables).
 
             Options (Interactive mode):
                 -i, --interactive         Run an interactive shell. F9 starts/stops an animation recording;

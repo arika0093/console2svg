@@ -81,6 +81,8 @@ internal static partial class Program
                     replaySavePath: options.ReplaySavePath,
                     replayPath: options.ReplayPath,
                     outputCoalesceMs: options.OutputCoalesceMs
+                        ?? (options.Mode == OutputMode.Video ? null : 0d),
+                    videoFps: options.VideoFps
                 )
                 .ConfigureAwait(false);
         }

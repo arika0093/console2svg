@@ -95,15 +95,20 @@ public static partial class PtyRecorder
         Stream? forwardOutput,
         TextWriter? forwardOutputWriter,
         Encoding outputEncoding,
-        double outputCoalesceMs
+        double? outputCoalesceMs,
+        double videoFps
     )
     {
         var bytes = new byte[4096];
         var chars = new char[8192];
         var decoder = outputEncoding.GetDecoder();
-        var pendingText = outputCoalesceMs > 0d ? new StringBuilder(4096) : null;
+        var (coalesceWindowSeconds, maxBatchSeconds) = ResolveOutputCoalescing(
+            outputCoalesceMs,
+            videoFps
+        );
+        var pendingText = coalesceWindowSeconds > 0d ? new StringBuilder(4096) : null;
+        var pendingFirstTime = 0d;
         var pendingLastTime = 0d;
-        var coalesceWindowSeconds = outputCoalesceMs > 0d ? outputCoalesceMs / 1000d : 0d;
 
         void FlushPending()
         {
@@ -139,15 +144,20 @@ public static partial class PtyRecorder
 
             if (pendingText.Length == 0)
             {
+                pendingFirstTime = elapsedSeconds;
                 pendingLastTime = elapsedSeconds;
                 pendingText.Append(textBuffer, 0, charCount);
                 return;
             }
 
             var gap = elapsedSeconds - pendingLastTime;
-            if (gap > coalesceWindowSeconds)
+            if (
+                gap > coalesceWindowSeconds
+                || elapsedSeconds - pendingFirstTime >= maxBatchSeconds
+            )
             {
                 FlushPending();
+                pendingFirstTime = elapsedSeconds;
             }
 
             pendingLastTime = elapsedSeconds;
@@ -252,6 +262,27 @@ public static partial class PtyRecorder
         }
 
         FlushPending();
+    }
+
+    private static (double WindowSeconds, double MaxBatchSeconds) ResolveOutputCoalescing(
+        double? outputCoalesceMs,
+        double videoFps
+    )
+    {
+        if (outputCoalesceMs.HasValue)
+        {
+            return outputCoalesceMs.Value > 0d
+                ? (outputCoalesceMs.Value / 1000d, double.PositiveInfinity)
+                : (0d, 0d);
+        }
+
+        var effectiveFps =
+            videoFps > 0d && !double.IsNaN(videoFps) && !double.IsInfinity(videoFps)
+                ? videoFps
+                : 12d;
+        var frameIntervalSeconds = 1d / effectiveFps;
+        var windowSeconds = Math.Clamp(frameIntervalSeconds / 4d, 0.002d, 0.020d);
+        return (windowSeconds, frameIntervalSeconds);
     }
 
     private static async Task WriteForwardOutputAsync(

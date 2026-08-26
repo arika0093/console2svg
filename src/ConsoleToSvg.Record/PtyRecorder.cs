@@ -34,7 +34,8 @@ public static partial class PtyRecorder
         bool noDeleteEnvs = false,
         string? replaySavePath = null,
         string? replayPath = null,
-        double outputCoalesceMs = 0d
+        double? outputCoalesceMs = null,
+        double videoFps = 12d
     )
     {
         logger ??= NullLogger.Instance;
@@ -58,6 +59,7 @@ public static partial class PtyRecorder
                         replaySavePath,
                         replayPath,
                         outputCoalesceMs,
+                        videoFps,
                         startupTimeoutMs: PtyStartupTimeoutMs
                     )
                     .ConfigureAwait(false);
@@ -87,7 +89,8 @@ public static partial class PtyRecorder
                         noDeleteEnvs,
                         replaySavePath,
                         replayPath,
-                        outputCoalesceMs
+                        outputCoalesceMs,
+                        videoFps
                     )
                     .ConfigureAwait(false);
             }
@@ -112,7 +115,8 @@ public static partial class PtyRecorder
                         noDeleteEnvs,
                         replaySavePath,
                         replayPath,
-                        outputCoalesceMs
+                        outputCoalesceMs,
+                        videoFps
                     )
                     .ConfigureAwait(false);
             }
@@ -132,7 +136,8 @@ public static partial class PtyRecorder
         bool noDeleteEnvs,
         string? replaySavePath,
         string? replayPath,
-        double outputCoalesceMs,
+        double? outputCoalesceMs,
+        double videoFps,
         int? startupTimeoutMs = null
     )
     {
@@ -214,7 +219,8 @@ public static partial class PtyRecorder
                 outputForward,
                 outputForwardWriter,
                 Encoding.UTF8,
-                outputCoalesceMs
+                outputCoalesceMs,
+                videoFps
             );
             var inputTask = inputForward is not null
                 ? PumpInputAsync(
@@ -439,7 +445,8 @@ public static partial class PtyRecorder
         bool noDeleteEnvs,
         string? replaySavePath,
         string? replayPath,
-        double outputCoalesceMs
+        double? outputCoalesceMs,
+        double videoFps
     )
     {
         var session = new RecordingSession(width, height);
@@ -568,7 +575,8 @@ public static partial class PtyRecorder
                         outputForward,
                         outputForwardWriter,
                         outputEncoding,
-                        outputCoalesceMs
+                        outputCoalesceMs,
+                        videoFps
                     )
                     .ConfigureAwait(false);
             }

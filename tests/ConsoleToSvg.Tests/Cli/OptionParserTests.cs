@@ -188,6 +188,37 @@ public sealed partial class OptionParserTests
     }
 
     [Test]
+    public void OutputCoalescingDefaultsToAuto()
+    {
+        var ok = OptionParser.TryParse(Array.Empty<string>(), out var options, out _, out _);
+
+        ok.ShouldBeTrue();
+        options!.OutputCoalesceMs.ShouldBeNull();
+    }
+
+    [Test]
+    public void OutputCoalescingAcceptsAutoAndNumericOverrides()
+    {
+        var autoOk = OptionParser.TryParse(
+            new[] { "--coalesce-ms", "auto" },
+            out var autoOptions,
+            out _,
+            out _
+        );
+        var numericOk = OptionParser.TryParse(
+            new[] { "--coalesce-ms", "0" },
+            out var numericOptions,
+            out _,
+            out _
+        );
+
+        autoOk.ShouldBeTrue();
+        autoOptions!.OutputCoalesceMs.ShouldBeNull();
+        numericOk.ShouldBeTrue();
+        numericOptions!.OutputCoalesceMs.ShouldBe(0d);
+    }
+
+    [Test]
     public void SvgConverterFfmpegParsed()
     {
         var ok = OptionParser.TryParse(

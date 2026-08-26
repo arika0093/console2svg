@@ -252,6 +252,12 @@ public static partial class OptionParser
                 options.VideoFadeOut = fadeout;
                 return true;
             case "--coalesce-ms":
+                if (string.Equals(value, "auto", StringComparison.OrdinalIgnoreCase))
+                {
+                    options.OutputCoalesceMs = null;
+                    return true;
+                }
+
                 if (!TryParseDouble(value, "--coalesce-ms", out var coalesceMs, out error))
                 {
                     return false;

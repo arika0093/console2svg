@@ -126,6 +126,7 @@ internal static partial class SvgDocumentBuilder
         bool renderCursor = true,
         bool applyFontClass = true,
         bool applyContentTransform = true,
+        bool overlapBaseBackground = false,
         SvgElementRegistry? elements = null
     )
     {
@@ -173,12 +174,25 @@ internal static partial class SvgDocumentBuilder
 
         if (elements is null)
         {
-            sb.Append("<rect width=\"");
+            sb.Append("<rect");
+            if (overlapBaseBackground)
+            {
+                sb.Append(" class=\"q\"");
+            }
+            sb.Append(" width=\"");
             sb.Append(context.ContentWidth);
             sb.Append("\" height=\"");
             sb.Append(context.ContentHeight);
             sb.Append("\" fill=\"");
             sb.Append(theme.Background);
+            if (overlapBaseBackground)
+            {
+                sb.Append("\" stroke=\"");
+                sb.Append(theme.Background);
+                sb.Append("\" stroke-width=\"");
+                sb.Append(BackgroundSeamStrokeWidth);
+                sb.Append("\" vector-effect=\"non-scaling-stroke");
+            }
             sb.Append("\"/>\n");
         }
         else
@@ -190,7 +204,10 @@ internal static partial class SvgDocumentBuilder
                 y: null,
                 context.ContentWidth,
                 context.ContentHeight,
-                theme.Background
+                theme.Background,
+                stroke: overlapBaseBackground ? theme.Background : null,
+                strokeWidth: overlapBaseBackground ? BackgroundSeamStrokeWidth : null,
+                nonScalingStroke: overlapBaseBackground
             );
         }
 
@@ -1121,11 +1138,26 @@ internal static partial class SvgDocumentBuilder
                 sb.Append(rh);
                 sb.Append("\" fill=\"");
                 sb.Append(fill);
-                sb.Append("\"/>\n");
+                sb.Append("\" stroke=\"");
+                sb.Append(fill);
+                sb.Append("\" stroke-width=\"");
+                sb.Append(BackgroundSeamStrokeWidth);
+                sb.Append("\" vector-effect=\"non-scaling-stroke\"/>\n");
             }
             else
             {
-                elements.AppendRect(sb, "q", rx, ry, rw, rh, fill);
+                elements.AppendRect(
+                    sb,
+                    "q",
+                    rx,
+                    ry,
+                    rw,
+                    rh,
+                    fill,
+                    stroke: fill,
+                    strokeWidth: BackgroundSeamStrokeWidth,
+                    nonScalingStroke: true
+                );
             }
         }
     }

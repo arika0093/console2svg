@@ -596,6 +596,28 @@ public sealed class AnimatedSvgRendererTests
     }
 
     [Test]
+    public void RenderAnimatedSvgDeltaBackgroundCoversPreviousBackgroundStroke()
+    {
+        var session = new RecordingSession(width: 80, height: 2);
+        session.AddEvent(0.01, "\u001b[60G\u001b[48;2;135;215;135m Saving... \u001b[0m");
+        session.AddEvent(
+            0.2,
+            "\u001b[60G\u001b[13X\u001b[64G\u001b[48;2;135;215;135m Saved \u001b[0m"
+        );
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain("class=\"c2 c\"><use href=\"#c2r");
+        svg.ShouldContain(
+            "fill=\"#1e1e1e\" stroke=\"#1e1e1e\" stroke-width=\"2\""
+                + " vector-effect=\"non-scaling-stroke\""
+        );
+    }
+
+    [Test]
     public void RenderAnimatedSvgLimitsColumnCacheDepth()
     {
         var session = new RecordingSession(width: 40, height: 2);

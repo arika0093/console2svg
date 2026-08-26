@@ -324,13 +324,13 @@ public static partial class InteractiveRecorder
         void ShowRecordingStartedNotification()
         {
             Interlocked.Exchange(ref startupIndicatorActive, 0);
-            ShowNotification("Started");
+            var startedNotification = ShowNotification("Started");
             _ = Task.Run(
                     async () =>
                     {
                         try
                         {
-                            await Task.Delay(TimeSpan.FromMilliseconds(1500), lifetime.Token)
+                            await startedNotification.Completion
                                 .ConfigureAwait(false);
                             lock (captureGate)
                             {
@@ -341,7 +341,6 @@ public static partial class InteractiveRecorder
                             }
 
                             Interlocked.Exchange(ref recordingIndicatorActive, 1);
-                            Interlocked.Increment(ref notificationVersion);
                             await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
                             try
                             {

@@ -667,6 +667,7 @@ internal static partial class SvgDocumentBuilder
                     maskPatterns: null,
                     renderCursor: false,
                     applyFontClass: false,
+                    overlapBaseBackground: true,
                     elements: elements
                 );
                 sb.Append("</g>\n");

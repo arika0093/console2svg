@@ -141,6 +141,27 @@ public sealed partial class SvgRendererTests
     }
 
     [Test]
+    public void RenderStaticSvgOverlapsAdjacentBlockElements()
+    {
+        var session = new RecordingSession(width: 4, height: 2);
+        session.AddEvent(0.01, "██");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain(
+            "<rect class=\"q\" width=\"8.4\" height=\"18\" fill=\"#d4d4d4\""
+                + " stroke=\"#d4d4d4\" stroke-width=\"2\" vector-effect=\"non-scaling-stroke\""
+        );
+        svg.ShouldContain(
+            "<rect class=\"q\" x=\"8.4\" width=\"8.4\" height=\"18\" fill=\"#d4d4d4\""
+                + " stroke=\"#d4d4d4\" stroke-width=\"2\" vector-effect=\"non-scaling-stroke\""
+        );
+    }
+
+    [Test]
     public void RenderStaticSvgMergesWhitespaceSeparatedWordsIntoSingleTextNode()
     {
         var session = new RecordingSession(width: 30, height: 3);

@@ -1,229 +1,102 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1066" height="589" viewBox="0 0 1066 589" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" width="1066" height="589" viewBox="0 0 1066 589" role="img" aria-label="console2svg output">
 <style>
-.crt {
-  font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace;
-  font-size: 14px;
-}
-.blink { animation: blink 1s step-start infinite; }
-@keyframes blink { 50% { visibility: hidden; } }
-text {
-  dominant-baseline: alphabetic;
-}
-.bg {
-  shape-rendering: crispEdges;
-}
-</style>
-<defs>
-<linearGradient id="desktop-bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1d2e"/><stop offset="100%" stop-color="#252840"/></linearGradient>
+.c2.c { font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace; font-size: 14px; }
+.c2 text { dominant-baseline: alphabetic; }
+.c2 .q { shape-rendering: crispEdges; }
+.c2 .w { white-space: pre; }
+.c2 .aa{fill:#d4d4d4}
+.c2 .ab{fill:#10E291;font-weight:bold}
+.c2 .ac{fill:#FFFF13;font-weight:bold}
+.c2 .ad{fill:#11a8cd}
+.c2 .ae{fill:#bc3fbc}
+.c2 .af{fill:#9F9F9F}
+</style><defs>
+<linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1d2e"/><stop offset="100%" stop-color="#252840"/></linearGradient>
 </defs>
-<rect width="1066" height="589" fill="url(#desktop-bg)"/>
+<rect width="1066" height="589" fill="url(#c2bg)"/>
 <rect x="20.5" y="20.5" rx="10" ry="10" width="1025" height="548" fill="#1f1f1f" stroke="#3a3a3a"/>
 <rect x="21" y="21" rx="9" ry="9" width="1024" height="27" fill="#2c2c2c"/>
 <circle cx="34" cy="34" r="5" fill="#ff5f57"/>
 <circle cx="50" cy="34" r="5" fill="#febc2e"/>
 <circle cx="66" cy="34" r="5" fill="#28c840"/>
 <rect x="21" y="48" width="1024" height="520" rx="9" ry="9" fill="#1e1e1e"/>
-<rect x="29" y="56" width="1008" height="18" fill="#1e1e1e"/>
-<text class="crt" x="29" y="70" fill="#d4d4d4">$ console2svg</text>
-<g transform="translate(29 74)">
+<g class="c2 c"><rect x="29" y="56" width="1008" height="18" fill="#1e1e1e"/>
+<text class="aa" x="29" y="70">$ console2svg</text></g>
+<g class="c2 c" transform="translate(29 74)">
 <rect width="1008" height="486" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="92.4" lengthAdjust="spacing" style="font-weight:bold;">console2svg</text>
-<text class="crt" x="100.8" y="14" fill="#10E291" textLength="8.4" lengthAdjust="spacing" style="font-weight:bold;">-</text>
-<text class="crt" x="117.6" y="14" fill="#10E291" textLength="58.8" lengthAdjust="spacing" style="font-weight:bold;">Convert</text>
-<text class="crt" x="184.8" y="14" fill="#10E291" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">terminal</text>
-<text class="crt" x="260.4" y="14" fill="#10E291" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">output</text>
-<text class="crt" x="319.2" y="14" fill="#10E291" textLength="16.8" lengthAdjust="spacing" style="font-weight:bold;">to</text>
-<text class="crt" x="344.4" y="14" fill="#10E291" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">SVG</text>
-<text class="crt" x="378" y="14" fill="#10E291" textLength="42" lengthAdjust="spacing" style="font-weight:bold;">[Ver:</text>
-<text class="crt" x="428.4" y="14" fill="#10E291" textLength="193.2" lengthAdjust="spacing" style="font-weight:bold;">0.8.0.0-rc3+09b0afffcd]</text>
-<text class="crt" x="0" y="50" fill="#FFFF13" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">Usage:</text>
-<text class="crt" x="33.6" y="68" fill="#d4d4d4" textLength="84" lengthAdjust="spacing">my-command</text>
-<text class="crt" x="126" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">|</text>
-<text class="crt" x="142.8" y="68" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">console2svg</text>
-<text class="crt" x="243.6" y="68" fill="#d4d4d4" textLength="75.6" lengthAdjust="spacing">[options]</text>
-<text class="crt" x="33.6" y="86" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">console2svg</text>
-<text class="crt" x="134.4" y="86" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">&quot;my-command</text>
-<text class="crt" x="235.2" y="86" fill="#d4d4d4" textLength="84" lengthAdjust="spacing">with-args&quot;</text>
-<text class="crt" x="327.6" y="86" fill="#d4d4d4" textLength="75.6" lengthAdjust="spacing">[options]</text>
-<text class="crt" x="33.6" y="104" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">console2svg</text>
-<text class="crt" x="134.4" y="104" fill="#d4d4d4" textLength="75.6" lengthAdjust="spacing">[options]</text>
-<text class="crt" x="218.4" y="104" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">--</text>
-<text class="crt" x="243.6" y="104" fill="#d4d4d4" textLength="84" lengthAdjust="spacing">my-command</text>
-<text class="crt" x="336" y="104" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">with</text>
-<text class="crt" x="378" y="104" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">args</text>
-<text class="crt" x="0" y="140" fill="#FFFF13" textLength="42" lengthAdjust="spacing" style="font-weight:bold;">Major</text>
-<text class="crt" x="50.4" y="140" fill="#FFFF13" textLength="67.2" lengthAdjust="spacing" style="font-weight:bold;">options:</text>
-<text class="crt" x="33.6" y="158" fill="#11a8cd" textLength="16.8" lengthAdjust="spacing">-o</text>
-<text class="crt" x="50.4" y="158" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">,</text>
-<text class="crt" x="67.2" y="158" fill="#11a8cd" textLength="42" lengthAdjust="spacing">--out</text>
-<text class="crt" x="117.6" y="158" fill="#bc3fbc" textLength="50.4" lengthAdjust="spacing">&lt;path&gt;</text>
-<text class="crt" x="252" y="158" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">Output</text>
-<text class="crt" x="310.8" y="158" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">file</text>
-<text class="crt" x="352.8" y="158" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">path</text>
-<text class="crt" x="394.8" y="158" fill="#9F9F9F" textLength="75.6" lengthAdjust="spacing">(default:</text>
-<text class="crt" x="478.8" y="158" fill="#9F9F9F" textLength="92.4" lengthAdjust="spacing">output.svg)</text>
-<text class="crt" x="571.2" y="158" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">.</text>
-<text class="crt" x="252" y="176" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Non-SVG</text>
-<text class="crt" x="319.2" y="176" fill="#d4d4d4" textLength="84" lengthAdjust="spacing">extensions</text>
-<text class="crt" x="411.6" y="176" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">trigger</text>
-<text class="crt" x="478.8" y="176" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">ffmpeg</text>
-<text class="crt" x="537.6" y="176" fill="#d4d4d4" textLength="84" lengthAdjust="spacing">conversion</text>
-<text class="crt" x="630" y="176" fill="#9F9F9F" textLength="42" lengthAdjust="spacing">(e.g.</text>
-<text class="crt" x="680.4" y="176" fill="#9F9F9F" textLength="92.4" lengthAdjust="spacing">output.png,</text>
-<text class="crt" x="781.2" y="176" fill="#9F9F9F" textLength="92.4" lengthAdjust="spacing">output.mp4)</text>
-<text class="crt" x="873.6" y="176" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">.</text>
-<text class="crt" x="33.6" y="194" fill="#11a8cd" textLength="16.8" lengthAdjust="spacing">-w</text>
-<text class="crt" x="50.4" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">,</text>
-<text class="crt" x="67.2" y="194" fill="#11a8cd" textLength="58.8" lengthAdjust="spacing">--width</text>
-<text class="crt" x="134.4" y="194" fill="#bc3fbc" textLength="100.8" lengthAdjust="spacing">&lt;int|adjust&gt;</text>
-<text class="crt" x="252" y="194" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">Terminal</text>
-<text class="crt" x="327.6" y="194" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">width</text>
-<text class="crt" x="378" y="194" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">in</text>
-<text class="crt" x="403.2" y="194" fill="#d4d4d4" textLength="84" lengthAdjust="spacing">characters</text>
-<text class="crt" x="495.6" y="194" fill="#9F9F9F" textLength="75.6" lengthAdjust="spacing">(default:</text>
-<text class="crt" x="579.6" y="194" fill="#9F9F9F" textLength="58.8" lengthAdjust="spacing">adjust)</text>
-<text class="crt" x="638.4" y="194" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">.</text>
-<text class="crt" x="252" y="212" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Specify</text>
-<text class="crt" x="319.2" y="212" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">an</text>
-<text class="crt" x="344.4" y="212" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">integer</text>
-<text class="crt" x="411.6" y="212" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">to</text>
-<text class="crt" x="436.8" y="212" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">use</text>
-<text class="crt" x="470.4" y="212" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">a</text>
-<text class="crt" x="487.2" y="212" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">fixed</text>
-<text class="crt" x="537.6" y="212" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">width.</text>
-<text class="crt" x="33.6" y="230" fill="#11a8cd" textLength="16.8" lengthAdjust="spacing">-h</text>
-<text class="crt" x="50.4" y="230" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">,</text>
-<text class="crt" x="67.2" y="230" fill="#11a8cd" textLength="67.2" lengthAdjust="spacing">--height</text>
-<text class="crt" x="142.8" y="230" fill="#bc3fbc" textLength="100.8" lengthAdjust="spacing">&lt;int|adjust&gt;</text>
-<text class="crt" x="252" y="230" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">Terminal</text>
-<text class="crt" x="327.6" y="230" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">height</text>
-<text class="crt" x="386.4" y="230" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">in</text>
-<text class="crt" x="411.6" y="230" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">rows</text>
-<text class="crt" x="453.6" y="230" fill="#9F9F9F" textLength="75.6" lengthAdjust="spacing">(default:</text>
-<text class="crt" x="537.6" y="230" fill="#9F9F9F" textLength="58.8" lengthAdjust="spacing">adjust)</text>
-<text class="crt" x="596.4" y="230" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">.</text>
-<text class="crt" x="252" y="248" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Specify</text>
-<text class="crt" x="319.2" y="248" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">an</text>
-<text class="crt" x="344.4" y="248" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">integer</text>
-<text class="crt" x="411.6" y="248" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">to</text>
-<text class="crt" x="436.8" y="248" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">use</text>
-<text class="crt" x="470.4" y="248" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">a</text>
-<text class="crt" x="487.2" y="248" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">fixed</text>
-<text class="crt" x="537.6" y="248" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">height.</text>
-<text class="crt" x="33.6" y="266" fill="#11a8cd" textLength="16.8" lengthAdjust="spacing">-v</text>
-<text class="crt" x="50.4" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">,</text>
-<text class="crt" x="67.2" y="266" fill="#11a8cd" textLength="58.8" lengthAdjust="spacing">--video</text>
-<text class="crt" x="252" y="266" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">Output</text>
-<text class="crt" x="310.8" y="266" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">animated</text>
-<text class="crt" x="386.4" y="266" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">SVG</text>
-<text class="crt" x="420" y="266" fill="#9F9F9F" textLength="50.4" lengthAdjust="spacing">(alias</text>
-<text class="crt" x="478.8" y="266" fill="#9F9F9F" textLength="25.2" lengthAdjust="spacing">for</text>
-<text class="crt" x="512.4" y="266" fill="#9F9F9F" textLength="50.4" lengthAdjust="spacing">--mode</text>
-<text class="crt" x="571.2" y="266" fill="#9F9F9F" textLength="50.4" lengthAdjust="spacing">video)</text>
-<text class="crt" x="621.6" y="266" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">.</text>
-<text class="crt" x="33.6" y="284" fill="#11a8cd" textLength="16.8" lengthAdjust="spacing">-i</text>
-<text class="crt" x="50.4" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">,</text>
-<text class="crt" x="67.2" y="284" fill="#11a8cd" textLength="109.2" lengthAdjust="spacing">--interactive</text>
-<text class="crt" x="252" y="284" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">Run</text>
-<text class="crt" x="285.6" y="284" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">an</text>
-<text class="crt" x="310.8" y="284" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">interactive</text>
-<text class="crt" x="411.6" y="284" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">shell;</text>
-<text class="crt" x="470.4" y="284" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">F9</text>
-<text class="crt" x="495.6" y="284" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">records,</text>
-<text class="crt" x="571.2" y="284" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">F12</text>
-<text class="crt" x="604.8" y="284" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">pauses,</text>
-<text class="crt" x="672" y="284" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">and</text>
-<text class="crt" x="705.6" y="284" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">F10</text>
-<text class="crt" x="739.2" y="284" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">takes</text>
-<text class="crt" x="789.6" y="284" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">a</text>
-<text class="crt" x="806.4" y="284" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">screenshot.</text>
-<text class="crt" x="252" y="302" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">Use</text>
-<text class="crt" x="285.6" y="302" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">--</text>
-<text class="crt" x="310.8" y="302" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">to</text>
-<text class="crt" x="336" y="302" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">start</text>
-<text class="crt" x="386.4" y="302" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">another</text>
-<text class="crt" x="453.6" y="302" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">interactive</text>
-<text class="crt" x="554.4" y="302" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">program</text>
-<text class="crt" x="621.6" y="302" fill="#9F9F9F" textLength="42" lengthAdjust="spacing">(e.g.</text>
-<text class="crt" x="672" y="302" fill="#9F9F9F" textLength="16.8" lengthAdjust="spacing">-i</text>
-<text class="crt" x="697.2" y="302" fill="#9F9F9F" textLength="16.8" lengthAdjust="spacing">--</text>
-<text class="crt" x="722.4" y="302" fill="#9F9F9F" textLength="42" lengthAdjust="spacing">pwsh)</text>
-<text class="crt" x="764.4" y="302" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">.</text>
-<text class="crt" x="33.6" y="320" fill="#11a8cd" textLength="16.8" lengthAdjust="spacing">-c</text>
-<text class="crt" x="50.4" y="320" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">,</text>
-<text class="crt" x="67.2" y="320" fill="#11a8cd" textLength="117.6" lengthAdjust="spacing">--with-command</text>
-<text class="crt" x="252" y="320" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Prepend</text>
-<text class="crt" x="319.2" y="320" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">the</text>
-<text class="crt" x="352.8" y="320" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">command</text>
-<text class="crt" x="420" y="320" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">line</text>
-<text class="crt" x="462" y="320" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">to</text>
-<text class="crt" x="487.2" y="320" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">the</text>
-<text class="crt" x="520.8" y="320" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">output.</text>
-<text class="crt" x="33.6" y="338" fill="#11a8cd" textLength="16.8" lengthAdjust="spacing">-d</text>
-<text class="crt" x="50.4" y="338" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">,</text>
-<text class="crt" x="67.2" y="338" fill="#11a8cd" textLength="67.2" lengthAdjust="spacing">--window</text>
-<text class="crt" x="142.8" y="338" fill="#bc3fbc" textLength="58.8" lengthAdjust="spacing">[style]</text>
-<text class="crt" x="252" y="338" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">Window</text>
-<text class="crt" x="310.8" y="338" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">chrome:</text>
-<text class="crt" x="378" y="338" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">none,</text>
-<text class="crt" x="428.4" y="338" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">macos,</text>
-<text class="crt" x="487.2" y="338" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">windows,</text>
-<text class="crt" x="562.8" y="338" fill="#d4d4d4" textLength="75.6" lengthAdjust="spacing">macos-pc,</text>
-<text class="crt" x="646.8" y="338" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">windows-pc,</text>
-<text class="crt" x="747.6" y="338" fill="#d4d4d4" textLength="100.8" lengthAdjust="spacing">transparent.</text>
-<text class="crt" x="33.6" y="356" fill="#11a8cd" textLength="100.8" lengthAdjust="spacing">--background</text>
-<text class="crt" x="142.8" y="356" fill="#bc3fbc" textLength="58.8" lengthAdjust="spacing">&lt;color&gt;</text>
-<text class="crt" x="210" y="356" fill="#bc3fbc" textLength="58.8" lengthAdjust="spacing">[color]</text>
-<text class="crt" x="285.6" y="356" fill="#d4d4d4" textLength="84" lengthAdjust="spacing">Background</text>
-<text class="crt" x="378" y="356" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">color,</text>
-<text class="crt" x="436.8" y="356" fill="#d4d4d4" textLength="75.6" lengthAdjust="spacing">gradient,</text>
-<text class="crt" x="520.8" y="356" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">or</text>
-<text class="crt" x="546" y="356" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">image</text>
-<text class="crt" x="596.4" y="356" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">path.</text>
-<text class="crt" x="33.6" y="374" fill="#11a8cd" textLength="235.2" lengthAdjust="spacing">--crop-top/bottom/left/right</text>
-<text class="crt" x="285.6" y="374" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">Crop</text>
-<text class="crt" x="327.6" y="374" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">by</text>
-<text class="crt" x="352.8" y="374" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">px,</text>
-<text class="crt" x="386.4" y="374" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">ch,</text>
-<text class="crt" x="420" y="374" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">or</text>
-<text class="crt" x="445.2" y="374" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">text</text>
-<text class="crt" x="487.2" y="374" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">pattern.</text>
-<text class="crt" x="33.6" y="392" fill="#11a8cd" textLength="67.2" lengthAdjust="spacing">--header</text>
-<text class="crt" x="109.2" y="392" fill="#bc3fbc" textLength="50.4" lengthAdjust="spacing">&lt;text&gt;</text>
-<text class="crt" x="252" y="392" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">Override</text>
-<text class="crt" x="327.6" y="392" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">command</text>
-<text class="crt" x="394.8" y="392" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">header</text>
-<text class="crt" x="453.6" y="392" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">text.</text>
-<text class="crt" x="33.6" y="410" fill="#11a8cd" textLength="67.2" lengthAdjust="spacing">--prompt</text>
-<text class="crt" x="109.2" y="410" fill="#bc3fbc" textLength="50.4" lengthAdjust="spacing">&lt;text&gt;</text>
-<text class="crt" x="252" y="410" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">Override</text>
-<text class="crt" x="327.6" y="410" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">prompt</text>
-<text class="crt" x="386.4" y="410" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">prefix</text>
-<text class="crt" x="445.2" y="410" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
-<text class="crt" x="478.8" y="410" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">-c</text>
-<text class="crt" x="504" y="410" fill="#9F9F9F" textLength="75.6" lengthAdjust="spacing">(default:</text>
-<text class="crt" x="588" y="410" fill="#9F9F9F" textLength="8.4" lengthAdjust="spacing">$</text>
-<text class="crt" x="604.8" y="410" fill="#9F9F9F" textLength="16.8" lengthAdjust="spacing">or</text>
-<text class="crt" x="630" y="410" fill="#9F9F9F" textLength="8.4" lengthAdjust="spacing">#</text>
-<text class="crt" x="646.8" y="410" fill="#9F9F9F" textLength="33.6" lengthAdjust="spacing">when</text>
-<text class="crt" x="688.8" y="410" fill="#9F9F9F" textLength="42" lengthAdjust="spacing">root)</text>
-<text class="crt" x="730.8" y="410" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">.</text>
-<text class="crt" x="33.6" y="428" fill="#11a8cd" textLength="75.6" lengthAdjust="spacing">--verbose</text>
-<text class="crt" x="117.6" y="428" fill="#bc3fbc" textLength="50.4" lengthAdjust="spacing">[path]</text>
-<text class="crt" x="252" y="428" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">Enable</text>
-<text class="crt" x="310.8" y="428" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">verbose</text>
-<text class="crt" x="378" y="428" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">logging</text>
-<text class="crt" x="445.2" y="428" fill="#9F9F9F" textLength="33.6" lengthAdjust="spacing">(log</text>
-<text class="crt" x="487.2" y="428" fill="#9F9F9F" textLength="16.8" lengthAdjust="spacing">to</text>
-<text class="crt" x="512.4" y="428" fill="#9F9F9F" textLength="42" lengthAdjust="spacing">path,</text>
-<text class="crt" x="562.8" y="428" fill="#9F9F9F" textLength="67.2" lengthAdjust="spacing">default:</text>
-<text class="crt" x="638.4" y="428" fill="#9F9F9F" textLength="134.4" lengthAdjust="spacing">console2svg.log)</text>
-<text class="crt" x="772.8" y="428" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">.</text>
-<text class="crt" x="0" y="464" fill="#FFFF13" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">For</text>
-<text class="crt" x="33.6" y="464" fill="#FFFF13" textLength="33.6" lengthAdjust="spacing" style="font-weight:bold;">full</text>
-<text class="crt" x="75.6" y="464" fill="#FFFF13" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">option</text>
-<text class="crt" x="134.4" y="464" fill="#FFFF13" textLength="42" lengthAdjust="spacing" style="font-weight:bold;">list,</text>
-<text class="crt" x="184.8" y="464" fill="#FFFF13" textLength="25.2" lengthAdjust="spacing" style="font-weight:bold;">see</text>
-<text class="crt" x="218.4" y="464" fill="#FFFF13" textLength="58.8" lengthAdjust="spacing" style="font-weight:bold;">--help.</text>
+<text class="ab w" y="14" textLength="621.6">console2svg - Convert terminal output to SVG [Ver: 0.8.0.0-rc3+c3de65f143]</text>
+<text class="ac" y="50" textLength="50.4">Usage:</text>
+<text class="aa w" x="33.6" y="68" textLength="285.6">my-command | console2svg [options]</text>
+<text class="aa w" x="33.6" y="86" textLength="369.6">console2svg &quot;my-command with-args&quot; [options]</text>
+<text class="aa w" x="33.6" y="104" textLength="378">console2svg [options] -- my-command with args</text>
+<text class="ac w" y="140" textLength="117.6">Major options:</text>
+<text class="ad" x="33.6" y="158" textLength="16.8">-o</text>
+<text class="aa" x="50.4" y="158" textLength="8.4">,</text>
+<text class="ad" x="67.2" y="158" textLength="42">--out</text>
+<text class="ae" x="117.6" y="158" textLength="50.4">&lt;path&gt;</text>
+<text class="aa w" x="252" y="158" textLength="134.4">Output file path</text>
+<text class="af w" x="394.8" y="158" textLength="176.4">(default: output.svg)</text>
+<text class="aa" x="571.2" y="158" textLength="8.4">.</text>
+<text class="aa w" x="252" y="176" textLength="369.6">Non-SVG extensions trigger ffmpeg conversion</text>
+<text class="af w" x="630" y="176" textLength="243.6">(e.g. output.png, output.mp4)</text>
+<text class="aa" x="873.6" y="176" textLength="8.4">.</text>
+<text class="ad" x="33.6" y="194" textLength="16.8">-w</text>
+<text class="aa" x="50.4" y="194" textLength="8.4">,</text>
+<text class="ad" x="67.2" y="194" textLength="58.8">--width</text>
+<text class="ae" x="134.4" y="194" textLength="100.8">&lt;int|adjust&gt;</text>
+<text class="aa w" x="252" y="194" textLength="235.2">Terminal width in characters</text>
+<text class="af w" x="495.6" y="194" textLength="142.8">(default: adjust)</text>
+<text class="aa" x="638.4" y="194" textLength="8.4">.</text>
+<text class="aa w" x="252" y="212" textLength="336">Specify an integer to use a fixed width.</text>
+<text class="ad" x="33.6" y="230" textLength="16.8">-h</text>
+<text class="aa" x="50.4" y="230" textLength="8.4">,</text>
+<text class="ad" x="67.2" y="230" textLength="67.2">--height</text>
+<text class="ae" x="142.8" y="230" textLength="100.8">&lt;int|adjust&gt;</text>
+<text class="aa w" x="252" y="230" textLength="193.2">Terminal height in rows</text>
+<text class="af w" x="453.6" y="230" textLength="142.8">(default: adjust)</text>
+<text class="aa" x="596.4" y="230" textLength="8.4">.</text>
+<text class="aa w" x="252" y="248" textLength="344.4">Specify an integer to use a fixed height.</text>
+<text class="ad" x="33.6" y="266" textLength="16.8">-v</text>
+<text class="aa" x="50.4" y="266" textLength="8.4">,</text>
+<text class="ad" x="67.2" y="266" textLength="58.8">--video</text>
+<text class="aa w" x="252" y="266" textLength="159.6">Output animated SVG</text>
+<text class="af w" x="420" y="266" textLength="201.6">(alias for --mode video)</text>
+<text class="aa" x="621.6" y="266" textLength="8.4">.</text>
+<text class="ad" x="33.6" y="284" textLength="16.8">-i</text>
+<text class="aa" x="50.4" y="284" textLength="8.4">,</text>
+<text class="ad" x="67.2" y="284" textLength="109.2">--interactive</text>
+<text class="aa w" x="252" y="284" textLength="646.8">Run an interactive shell; F9 records, F12 pauses, and F10 takes a screenshot.</text>
+<text class="aa w" x="252" y="302" textLength="361.2">Use -- to start another interactive program</text>
+<text class="af w" x="621.6" y="302" textLength="142.8">(e.g. -i -- pwsh)</text>
+<text class="aa" x="764.4" y="302" textLength="8.4">.</text>
+<text class="ad" x="33.6" y="320" textLength="16.8">-c</text>
+<text class="aa" x="50.4" y="320" textLength="8.4">,</text>
+<text class="ad" x="67.2" y="320" textLength="117.6">--with-command</text>
+<text class="aa w" x="252" y="320" textLength="327.6">Prepend the command line to the output.</text>
+<text class="ad" x="33.6" y="338" textLength="16.8">-d</text>
+<text class="aa" x="50.4" y="338" textLength="8.4">,</text>
+<text class="ad" x="67.2" y="338" textLength="67.2">--window</text>
+<text class="ae" x="142.8" y="338" textLength="58.8">[style]</text>
+<text class="aa w" x="252" y="338" textLength="596.4">Window chrome: none, macos, windows, macos-pc, windows-pc, transparent.</text>
+<text class="ad" x="33.6" y="356" textLength="100.8">--background</text>
+<text class="ae" x="142.8" y="356" textLength="58.8">&lt;color&gt;</text>
+<text class="ae" x="210" y="356" textLength="58.8">[color]</text>
+<text class="aa w" x="285.6" y="356" textLength="352.8">Background color, gradient, or image path.</text>
+<text class="ad" x="33.6" y="374" textLength="235.2">--crop-top/bottom/left/right</text>
+<text class="aa w" x="285.6" y="374" textLength="268.8">Crop by px, ch, or text pattern.</text>
+<text class="ad" x="33.6" y="392" textLength="67.2">--header</text>
+<text class="ae" x="109.2" y="392" textLength="50.4">&lt;text&gt;</text>
+<text class="aa w" x="252" y="392" textLength="243.6">Override command header text.</text>
+<text class="ad" x="33.6" y="410" textLength="67.2">--prompt</text>
+<text class="ae" x="109.2" y="410" textLength="50.4">&lt;text&gt;</text>
+<text class="aa w" x="252" y="410" textLength="243.6">Override prompt prefix for -c</text>
+<text class="af w" x="504" y="410" textLength="226.8">(default: $ or # when root)</text>
+<text class="aa" x="730.8" y="410" textLength="8.4">.</text>
+<text class="ad" x="33.6" y="428" textLength="75.6">--verbose</text>
+<text class="ae" x="117.6" y="428" textLength="50.4">[path]</text>
+<text class="aa w" x="252" y="428" textLength="184.8">Enable verbose logging</text>
+<text class="af w" x="445.2" y="428" textLength="327.6">(log to path, default: console2svg.log)</text>
+<text class="aa" x="772.8" y="428" textLength="8.4">.</text>
+<text class="ac w" y="464" textLength="277.2">For full option list, see --help.</text>
 </g>
 </svg>

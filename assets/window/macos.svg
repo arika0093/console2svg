@@ -1,28 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="354" height="135" viewBox="0 0 354 135" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" width="354" height="135" viewBox="0 0 354 135" role="img" aria-label="console2svg output">
 <style>
-.crt {
-  font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace;
-  font-size: 14px;
-}
-.blink { animation: blink 1s step-start infinite; }
-@keyframes blink { 50% { visibility: hidden; } }
-text {
-  dominant-baseline: alphabetic;
-}
-.bg {
-  shape-rendering: crispEdges;
-}
-</style>
-<rect x="0.5" y="0.5" rx="10" ry="10" width="353" height="134" fill="#1f1f1f" stroke="#3a3a3a"/>
+.c2.c { font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace; font-size: 14px; }
+.c2 text { dominant-baseline: alphabetic; }
+.c2 .q { shape-rendering: crispEdges; }
+.c2 .aa{fill:#d4d4d4}
+</style><rect x="0.5" y="0.5" rx="10" ry="10" width="353" height="134" fill="#1f1f1f" stroke="#3a3a3a"/>
 <rect x="1" y="1" rx="9" ry="9" width="352" height="27" fill="#2c2c2c"/>
 <circle cx="14" cy="14" r="5" fill="#ff5f57"/>
 <circle cx="30" cy="14" r="5" fill="#febc2e"/>
 <circle cx="46" cy="14" r="5" fill="#28c840"/>
 <rect x="1" y="28" width="352" height="106" rx="9" ry="9" fill="#1e1e1e"/>
-<rect x="9" y="36" width="336" height="18" fill="#1e1e1e"/>
-<text class="crt" x="9" y="50" fill="#d4d4d4">$ dotnet --version</text>
-<g transform="translate(9 54)">
+<g class="c2 c"><rect x="9" y="36" width="336" height="18" fill="#1e1e1e"/>
+<text class="aa" x="9" y="50">$ dotnet --version</text></g>
+<g class="c2 c" transform="translate(9 54)">
 <rect width="336" height="72" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">10.0.400</text>
+<text class="aa" y="14" textLength="67.2">10.0.400</text>
 </g>
 </svg>

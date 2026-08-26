@@ -1,22 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="400" height="188" viewBox="0 0 400 188" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="188" viewBox="0 0 400 188" role="img" aria-label="console2svg output">
 <style>
-.crt {
-  font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace;
-  font-size: 14px;
-}
-.blink { animation: blink 1s step-start infinite; }
-@keyframes blink { 50% { visibility: hidden; } }
-text {
-  dominant-baseline: alphabetic;
-}
-.bg {
-  shape-rendering: crispEdges;
-}
-</style>
-<defs>
-<linearGradient id="desktop-bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a2535"/><stop offset="100%" stop-color="#253345"/></linearGradient>
+.c2.c { font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace; font-size: 14px; }
+.c2 text { dominant-baseline: alphabetic; }
+.c2 .q { shape-rendering: crispEdges; }
+.c2 .aa{fill:#d4d4d4}
+</style><defs>
+<linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a2535"/><stop offset="100%" stop-color="#253345"/></linearGradient>
 </defs>
-<rect width="400" height="188" fill="url(#desktop-bg)"/>
+<rect width="400" height="188" fill="url(#c2bg)"/>
 <rect x="26" y="26" width="354" height="142" fill="black" fill-opacity="0.25"/>
 <rect x="20.5" y="20.5" width="353" height="141" fill="#333" stroke="#333"/>
 <rect x="21" y="21" width="352" height="34" fill="#333"/>
@@ -30,10 +21,10 @@ text {
 <line x1="346" y1="34.5" x2="356" y2="44.5" stroke="#cccccc" stroke-width="1.3"/>
 <line x1="356" y1="34.5" x2="346" y2="44.5" stroke="#cccccc" stroke-width="1.3"/>
 <rect x="21" y="55" width="352" height="106" fill="#0c0c0c"/>
-<rect x="29" y="63" width="336" height="18" fill="#0c0c0c"/>
-<text class="crt" x="29" y="77" fill="#d4d4d4">$ dotnet --version</text>
-<g transform="translate(29 81)">
+<g class="c2 c"><rect x="29" y="63" width="336" height="18" fill="#0c0c0c"/>
+<text class="aa" x="29" y="77">$ dotnet --version</text></g>
+<g class="c2 c" transform="translate(29 81)">
 <rect width="336" height="72" fill="#0c0c0c"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">10.0.400</text>
+<text class="aa" y="14" textLength="67.2">10.0.400</text>
 </g>
 </svg>

@@ -1,24 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="352" height="106" viewBox="0 0 352 106" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" width="352" height="106" viewBox="0 0 352 106" role="img" aria-label="console2svg output">
 <style>
-.crt {
-  font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace;
-  font-size: 14px;
-}
-.blink { animation: blink 1s step-start infinite; }
-@keyframes blink { 50% { visibility: hidden; } }
-text {
-  dominant-baseline: alphabetic;
-}
-.bg {
-  shape-rendering: crispEdges;
-}
+.c2.c { font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace; font-size: 14px; }
+.c2 text { dominant-baseline: alphabetic; }
+.c2 .q { shape-rendering: crispEdges; }
+.c2 .aa{fill:#d4d4d4}
 </style>
-
-<rect x="0" y="0" width="352" height="106" fill="transparent"/>
-<rect x="8" y="8" width="336" height="18" fill="transparent"/>
-<text class="crt" x="8" y="22" fill="#d4d4d4">$ dotnet --version</text>
-<g transform="translate(8 26)">
+<rect width="352" height="106" fill="transparent"/>
+<g class="c2 c"><rect x="8" y="8" width="336" height="18" fill="transparent"/>
+<text class="aa" x="8" y="22">$ dotnet --version</text></g>
+<g class="c2 c" transform="translate(8 26)">
 <rect width="336" height="72" fill="transparent"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">10.0.400</text>
+<text class="aa" y="14" textLength="67.2">10.0.400</text>
 </g>
 </svg>

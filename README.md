@@ -70,11 +70,11 @@ console2svg -v -c -d macos -- copilot --banner
 In interactive mode(`-i`), you can run your normal interactive shell in a PTY and capture its current screen on demand. Press `F10` to write a static SVG, or `F9` to start recording from the exact current terminal state.
 
 ```bash
-console2svg -i -d windows-pc -o ./captures/output.svg
+console2svg -i -d macos -o ./captures/output.svg
 # -> saves ./captures/output_yyyyMMdd_HHmmss.svg
 ```
 
-![console2svg -i -d windows-pc -o ./captures/output.svg](./assets/cmd-interactive.svg)
+![console2svg -i -d macos -o ./captures/output.svg](./assets/cmd-interactive.svg)
 
 
 ## Install

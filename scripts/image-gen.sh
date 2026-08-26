@@ -1,3 +1,10 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$repo_root"
+
 # --- install require packages ---
 sudo npm install -g oh-my-logo @github/copilot 
 sudo apt install -y librsvg2-bin sl nyancat vim tmux ffmpeg cmatrix btop
@@ -25,7 +32,9 @@ console2svg -o ./assets/window/transparent.svg -d transparent -w 40 -h 4 -c -- d
 console2svg -o ./assets/cmd-sl.svg            --verbose ./logs/cmd-sl.log           -w 120 -h 16 -c -d -v -- sl
 console2svg -o ./assets/cmd-nyancat.svg       --verbose ./logs/cmd-nyancat.log      -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat
 console2svg -o ./assets/cmd-bash-vim.svg      --verbose ./logs/cmd-bash-vim.log     -w 80 -h 20 -v -d --replay ./assets/cmd-bash-vim-replay.json -- bash
-console2svg -o ./assets/cmd-loop.svg          --verbose ./logs/cmd-loop.log         -w 100 -h 20 -v -d --timeout 3 -- copilot --banner
+bash ./scripts/demos/generate-loop.sh
+bash ./scripts/demos/generate-interactive.sh
+bash ./scripts/demos/generate-tmux.sh
 
 # --- video(gif) ---
 console2svg -o ./assets/cmd-matrix-video.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab

@@ -339,6 +339,21 @@ public static partial class OptionParser
             case "--save-cast":
                 options.SaveCastPath = value;
                 return true;
+            case "--embed-cast":
+                options.EmbedCast = true;
+                return true;
+            case "--embed-logs":
+                options.EmbedLogs = true;
+                return true;
+            case "--embed-replay":
+                options.EmbedReplay = true;
+                return true;
+            case "--embed-debug":
+                options.EmbedDebug = true;
+                options.EmbedCast = true;
+                options.EmbedLogs = true;
+                options.EmbedReplay = true;
+                return true;
             case "--replay-save":
                 options.ReplaySavePath = value;
                 return true;

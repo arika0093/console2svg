@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.IO;
 using ConsoleToSvg.Svg;
 
 namespace ConsoleToSvg.Cli;
@@ -377,6 +378,18 @@ public static partial class OptionParser
 
         if (options.Interactive)
         {
+            if (options.EmbedCast)
+            {
+                error = "--interactive cannot be used with --embed-cast.";
+                return false;
+            }
+
+            if (options.EmbedLogs || options.EmbedReplay)
+            {
+                error = "--interactive cannot be used with embed options.";
+                return false;
+            }
+
             if (!string.IsNullOrWhiteSpace(options.Command) && options.DelimitedCommand is null)
             {
                 error =
@@ -416,6 +429,35 @@ public static partial class OptionParser
                 error = "--interactive cannot be used with replay options.";
                 return false;
             }
+        }
+
+        if (
+            (options.EmbedCast || options.EmbedLogs || options.EmbedReplay)
+            && !options.StdOut
+            && !string.IsNullOrEmpty(Path.GetExtension(options.OutputPath))
+            && !string.Equals(Path.GetExtension(options.OutputPath), ".svg", StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            error = "Embed options require SVG output.";
+            return false;
+        }
+
+        if (options.EmbedReplay && string.IsNullOrWhiteSpace(options.Command))
+        {
+            error = "--embed-replay requires a command to be specified.";
+            return false;
+        }
+
+        if (options.EmbedReplay && !string.IsNullOrWhiteSpace(options.ReplayPath))
+        {
+            error = "--embed-replay and --replay cannot be used together.";
+            return false;
+        }
+
+        if (options.EmbedReplay && options.Mode == OutputMode.Repeat)
+        {
+            error = "--embed-replay cannot be used with --mode repeat.";
+            return false;
         }
 
         if (options.Mode == OutputMode.Repeat && string.IsNullOrWhiteSpace(options.Command))

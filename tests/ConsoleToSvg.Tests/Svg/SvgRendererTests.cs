@@ -1,10 +1,64 @@
+using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using ConsoleToSvg.Recording;
 
 namespace ConsoleToSvg.Tests.Svg;
 
 public sealed partial class SvgRendererTests
 {
+    [Test]
+    public async Task RenderEmbedsRecoverableAsciicastMetadata()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "Hi ]]> \u001b[31m世界");
+        var encodedCast = await AsciicastWriter.WriteBase64Async(session, CancellationToken.None);
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { EmbeddedAsciicast = encodedCast }
+        );
+
+        svg.ShouldContain("<metadata id=\"console2svg-asciicast\" data-format=\"asciicast-v2\" data-encoding=\"base64\">");
+        svg.ShouldContain(encodedCast);
+
+        await using var castStream = new MemoryStream(Convert.FromBase64String(encodedCast));
+        var restored = await AsciicastReader.ReadAsync(castStream, CancellationToken.None);
+        restored.Header.width.ShouldBe(8);
+        restored.Header.height.ShouldBe(2);
+        restored.Events.Count.ShouldBe(1);
+        restored.Events[0].Data.ShouldBe("Hi ]]> \u001b[31m世界");
+    }
+
+    [Test]
+    public void RenderDoesNotEmbedAsciicastByDefault()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(session, new ConsoleToSvg.Svg.SvgRenderOptions());
+
+        svg.ShouldNotContain("console2svg-asciicast");
+    }
+
+    [Test]
+    public void RenderEmbedsLogsAndReplayMetadata()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        var options = new ConsoleToSvg.Svg.SvgRenderOptions
+        {
+            EmbeddedLogs = Convert.ToBase64String("debug log"u8),
+            EmbeddedReplay = Convert.ToBase64String("{\"replay\":[]}"u8),
+        };
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(session, options);
+
+        svg.ShouldContain("id=\"console2svg-logs\" data-format=\"text/plain\" data-encoding=\"base64\"");
+        svg.ShouldContain("id=\"console2svg-replay\" data-format=\"console2svg-replay-v1\" data-encoding=\"base64\"");
+        svg.ShouldContain(options.EmbeddedLogs);
+        svg.ShouldContain(options.EmbeddedReplay);
+    }
+
     [Test]
     public void WriteMatchesStringRender()
     {

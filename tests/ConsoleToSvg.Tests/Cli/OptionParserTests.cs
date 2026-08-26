@@ -7,6 +7,47 @@ namespace ConsoleToSvg.Tests.Cli;
 public sealed partial class OptionParserTests
 {
     [Test]
+    public void EmbedCastOptionIsEnabledWithoutAValue()
+    {
+        var ok = OptionParser.TryParse(new[] { "--embed-cast", "echo hi" }, out var options, out _, out _);
+
+        ok.ShouldBeTrue();
+        options!.EmbedCast.ShouldBeTrue();
+        options.Command.ShouldBe("echo hi");
+    }
+
+    [Test]
+    public void EmbedLogsOptionIsEnabledWithoutVerbose()
+    {
+        var ok = OptionParser.TryParse(new[] { "--embed-logs", "echo hi" }, out var options, out _, out _);
+
+        ok.ShouldBeTrue();
+        options!.EmbedLogs.ShouldBeTrue();
+        options.Verbose.ShouldBeFalse();
+    }
+
+    [Test]
+    public void EmbedReplayOptionIsEnabledForACommand()
+    {
+        var ok = OptionParser.TryParse(new[] { "--embed-replay", "echo hi" }, out var options, out _, out _);
+
+        ok.ShouldBeTrue();
+        options!.EmbedReplay.ShouldBeTrue();
+    }
+
+    [Test]
+    public void EmbedDebugEnablesAllEmbedOptions()
+    {
+        var ok = OptionParser.TryParse(new[] { "--embed-debug", "echo hi" }, out var options, out _, out _);
+
+        ok.ShouldBeTrue();
+        options!.EmbedDebug.ShouldBeTrue();
+        options.EmbedCast.ShouldBeTrue();
+        options.EmbedLogs.ShouldBeTrue();
+        options.EmbedReplay.ShouldBeTrue();
+    }
+
+    [Test]
     public void InteractiveModeIsEnabled()
     {
         var ok = OptionParser.TryParse(new[] { "--interactive" }, out var options, out _, out _);
@@ -39,6 +80,31 @@ public sealed partial class OptionParserTests
     {
         OptionParser.HelpText.ShouldContain("F9 starts/stops an animation recording");
         OptionParser.HelpText.ShouldContain("F10 saves a static screenshot");
+    }
+
+    [Test]
+    public void FullHelpGroupsCastReplayAndVerboseOptions()
+    {
+        const string section = "Options (Recording and replay):";
+        var sectionStart = OptionParser.HelpText.IndexOf(section, StringComparison.Ordinal);
+        var nextSection = OptionParser.HelpText.IndexOf(
+            "Options (Appearance):",
+            sectionStart,
+            StringComparison.Ordinal
+        );
+
+        sectionStart.ShouldBeGreaterThanOrEqualTo(0);
+        nextSection.ShouldBeGreaterThan(sectionStart);
+        var recordingSection = OptionParser.HelpText[sectionStart..nextSection];
+        recordingSection.ShouldContain("--in <path>");
+        recordingSection.ShouldContain("--save-cast <path>");
+        recordingSection.ShouldContain("--embed-cast");
+        recordingSection.ShouldContain("--embed-logs");
+        recordingSection.ShouldContain("--embed-replay");
+        recordingSection.ShouldContain("--embed-debug");
+        recordingSection.ShouldContain("--replay <path>");
+        recordingSection.ShouldContain("--replay-save <path>");
+        recordingSection.ShouldContain("--verbose [path]");
     }
 
     [Test]
@@ -86,6 +152,20 @@ public sealed partial class OptionParserTests
 
         ok.ShouldBeFalse();
         error.ShouldBe(expectedError);
+    }
+
+    [Test]
+    public void InteractiveModeRejectsEmbedCast()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--interactive", "--embed-cast" },
+            out _,
+            out var error,
+            out _
+        );
+
+        ok.ShouldBeFalse();
+        error.ShouldBe("--interactive cannot be used with --embed-cast.");
     }
 
     [Test]

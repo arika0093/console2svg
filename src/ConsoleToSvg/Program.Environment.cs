@@ -18,7 +18,11 @@ namespace ConsoleToSvg;
 
 internal static partial class Program
 {
-    private static ILoggerFactory CreateLoggerFactory(bool verbose, string? logPath)
+    private static ILoggerFactory CreateLoggerFactory(
+        bool verbose,
+        string? logPath,
+        EmbeddedLogCollector? embeddedLogCollector = null
+    )
     {
         return LoggerFactory.Create(builder =>
         {
@@ -40,6 +44,14 @@ internal static partial class Program
                         });
                     }
                 );
+            }
+            if (embeddedLogCollector is not null)
+            {
+                builder.AddProvider(embeddedLogCollector);
+            }
+
+            if (verbose || embeddedLogCollector is not null)
+            {
                 builder.SetMinimumLevel(LogLevel.Debug);
             }
             else

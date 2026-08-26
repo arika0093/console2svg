@@ -143,7 +143,13 @@ public static class SvgRenderer
             maskPatterns: options.MaskPatterns,
             renderCursor: options.RenderCursor
         );
-        SvgDocumentBuilder.EndSvg(svgWriter, options.Opacity);
+        SvgDocumentBuilder.EndSvg(
+            svgWriter,
+            options.Opacity,
+            options.EmbeddedAsciicast,
+            options.EmbeddedLogs,
+            options.EmbeddedReplay
+        );
     }
 
     private static int ResolveDefaultTargetFrame(

@@ -60,7 +60,12 @@ internal static partial class Program
             options.Prompt = GetDefaultPrompt();
         }
 
-        using var loggerFactory = CreateLoggerFactory(options.Verbose, options.VerboseLogPath);
+        var embeddedLogCollector = options.EmbedLogs ? new EmbeddedLogCollector() : null;
+        using var loggerFactory = CreateLoggerFactory(
+            options.Verbose,
+            options.VerboseLogPath,
+            embeddedLogCollector
+        );
         var logger = loggerFactory.CreateLogger("ConsoleToSvg.Program");
         logger.ZLogDebug(
             $"Application started. Version={ThisAssembly.AssemblyInformationalVersion} OS={Environment.OSVersion.Platform} Arch={RuntimeInformation.ProcessArchitecture}"
@@ -106,6 +111,16 @@ internal static partial class Program
             };
             Console.SetOut(stderrWriter);
             logger.ZLogDebug($"Console.Out redirected to stderr for --stdout mode.");
+        }
+
+        string? embeddedReplayTempPath = null;
+        if (options.EmbedReplay && string.IsNullOrWhiteSpace(options.ReplaySavePath))
+        {
+            embeddedReplayTempPath = Path.Combine(
+                Path.GetTempPath(),
+                $"console2svg-replay-{Guid.NewGuid():N}.json"
+            );
+            options.ReplaySavePath = embeddedReplayTempPath;
         }
 
         try
@@ -174,6 +189,28 @@ internal static partial class Program
             }
 
             var renderOptions = SvgRenderOptionsFactory.Create(options);
+            if (options.EmbedCast)
+            {
+                logger.ZLogDebug($"Embedding asciicast data in SVG metadata.");
+                renderOptions.EmbeddedAsciicast = await AsciicastWriter
+                    .WriteBase64Async(session, outputToken)
+                    .ConfigureAwait(false);
+            }
+            if (options.EmbedReplay)
+            {
+                logger.ZLogDebug($"Embedding replay data in SVG metadata.");
+                var replayBytes = await File.ReadAllBytesAsync(
+                        options.ReplaySavePath!,
+                        outputToken
+                    )
+                    .ConfigureAwait(false);
+                renderOptions.EmbeddedReplay = Convert.ToBase64String(replayBytes);
+            }
+            if (embeddedLogCollector is not null)
+            {
+                logger.ZLogDebug($"Embedding verbose logs in SVG metadata.");
+                renderOptions.EmbeddedLogs = embeddedLogCollector.GetBase64();
+            }
 
             void WriteOutputSvg(TextWriter writer)
             {
@@ -455,6 +492,20 @@ internal static partial class Program
             logger.ZLogError(ex, $"Unhandled exception occurred: {ex.Message}");
             await Console.Error.WriteLineAsync(ex.Message);
             return 1;
+        }
+        finally
+        {
+            if (embeddedReplayTempPath is not null)
+            {
+                try
+                {
+                    File.Delete(embeddedReplayTempPath);
+                }
+                catch (Exception ex)
+                {
+                    logger.ZLogDebug(ex, $"Failed to delete temporary replay file.");
+                }
+            }
         }
     }
 }

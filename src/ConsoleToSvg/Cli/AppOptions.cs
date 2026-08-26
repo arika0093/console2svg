@@ -72,6 +72,18 @@ public sealed class AppOptions
 
     public string? SaveCastPath { get; set; }
 
+    /// <summary>Embed the captured asciicast source in SVG metadata.</summary>
+    public bool EmbedCast { get; set; }
+
+    /// <summary>Embed verbose diagnostic logs in SVG metadata.</summary>
+    public bool EmbedLogs { get; set; }
+
+    /// <summary>Embed recorded keyboard input in SVG metadata.</summary>
+    public bool EmbedReplay { get; set; }
+
+    /// <summary>True when all embeddable diagnostic sources were enabled together.</summary>
+    public bool EmbedDebug { get; set; }
+
     public string? ReplaySavePath { get; set; }
 
     public string? ReplayPath { get; set; }

@@ -69,4 +69,15 @@ public static class AsciicastWriter
 
         await stream.FlushAsync(cancellationToken).ConfigureAwait(false);
     }
+
+    /// <summary>Serializes an asciicast v2 stream and returns its UTF-8 bytes as Base64.</summary>
+    public static async Task<string> WriteBase64Async(
+        RecordingSession session,
+        CancellationToken cancellationToken
+    )
+    {
+        using var stream = new MemoryStream();
+        await WriteAsync(stream, session, cancellationToken).ConfigureAwait(false);
+        return Convert.ToBase64String(stream.GetBuffer(), 0, checked((int)stream.Length));
+    }
 }

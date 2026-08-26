@@ -66,4 +66,15 @@ public sealed class SvgRenderOptions
     /// </summary>
     public string[]? MaskPatterns { get; set; }
 
+    /// <summary>
+    /// Base64-encoded UTF-8 asciicast v2 data to include in the SVG metadata.
+    /// </summary>
+    public string? EmbeddedAsciicast { get; set; }
+
+    /// <summary>Base64-encoded UTF-8 diagnostic log text.</summary>
+    public string? EmbeddedLogs { get; set; }
+
+    /// <summary>Base64-encoded UTF-8 console2svg replay JSON.</summary>
+    public string? EmbeddedReplay { get; set; }
+
 }

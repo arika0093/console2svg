@@ -266,7 +266,13 @@ public static partial class AnimatedSvgRenderer
             svgWriter.Append("</g>\n");
         }
 
-        SvgDocumentBuilder.EndSvg(svgWriter, options.Opacity);
+        SvgDocumentBuilder.EndSvg(
+            svgWriter,
+            options.Opacity,
+            options.EmbeddedAsciicast,
+            options.EmbeddedLogs,
+            options.EmbeddedReplay
+        );
     }
 
     private static ulong GetVisualSignatureCached(

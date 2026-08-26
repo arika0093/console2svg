@@ -59,12 +59,24 @@ public static partial class OptionParser
                                           Uses the current terminal width. Specify an integer for a fixed width.
                 -h, --height <int|adjust> Terminal height in rows (default: adjust).
                                           Uses the current terminal height. Specify an integer for a fixed height.
-                --in <path>               Read existing asciicast file.
-                --save-cast <path>        Save captured output as asciicast file.
-                --verbose [path]          Enable verbose logging; write to path (default: console2svg.log).
                 --help                    Show help.
                 --version                 Show version and exit.
                 --timeout <sec>           Stop recording after specified seconds (e.g. 5, 0.5).
+
+            Options (Recording and replay):
+                --in <path>               Read an existing asciicast v2 file instead of recording a command.
+                --save-cast <path>        Save captured terminal output as an asciicast v2 file.
+                --replay <path>           Replay recorded keyboard input while running the specified command.
+                --replay-save <path>      Save keyboard input for later replay; requires a command.
+                --verbose [path]          Enable verbose logging; write to path (default: console2svg.log).
+                --embed-cast              Embed the asciicast v2 source in SVG metadata as Base64.
+                                          The embedded data may contain sensitive terminal input and output.
+                --embed-replay            Record and embed keyboard input in SVG metadata as Base64.
+                                          Like --replay-save, this requires a command and may contain sensitive input.
+                --embed-logs              Embed verbose diagnostic logs in SVG metadata as Base64.
+                                          Logs may contain commands, paths, and other sensitive diagnostic data.
+                --embed-debug             Enable --embed-cast, --embed-replay, and --embed-logs together.
+                                          All embedded sources may contain sensitive information.
 
             Options (Appearance):
                 -c, --with-command        Prepend the command line to the output as if typed in a terminal.
@@ -579,7 +591,11 @@ public static partial class OptionParser
             && !string.Equals(name, "--pcmode", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--stdout", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "-i", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--interactive", StringComparison.OrdinalIgnoreCase);
+            && !string.Equals(name, "--interactive", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--embed-cast", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--embed-logs", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--embed-replay", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--embed-debug", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsVerboseLogPathValue(string token) =>

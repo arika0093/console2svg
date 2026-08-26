@@ -470,10 +470,44 @@ internal static partial class SvgDocumentBuilder
         };
     }
 
-    public static void EndSvg(SvgWriter sb, double opacity = 1d)
+    public static void EndSvg(
+        SvgWriter sb,
+        double opacity = 1d,
+        string? embeddedAsciicast = null,
+        string? embeddedLogs = null,
+        string? embeddedReplay = null
+    )
     {
         AppendGroupClose(sb, opacity);
+        if (!string.IsNullOrEmpty(embeddedAsciicast))
+        {
+            AppendEmbeddedMetadata(sb, "console2svg-asciicast", "asciicast-v2", embeddedAsciicast);
+        }
+        if (!string.IsNullOrEmpty(embeddedLogs))
+        {
+            AppendEmbeddedMetadata(sb, "console2svg-logs", "text/plain", embeddedLogs);
+        }
+        if (!string.IsNullOrEmpty(embeddedReplay))
+        {
+            AppendEmbeddedMetadata(sb, "console2svg-replay", "console2svg-replay-v1", embeddedReplay);
+        }
         sb.Append("</svg>");
+    }
+
+    private static void AppendEmbeddedMetadata(
+        SvgWriter sb,
+        string id,
+        string format,
+        string base64Data
+    )
+    {
+        sb.Append("<metadata id=\"");
+        sb.Append(id);
+        sb.Append("\" data-format=\"");
+        sb.Append(format);
+        sb.Append("\" data-encoding=\"base64\">");
+        sb.Append(base64Data);
+        sb.Append("</metadata>\n");
     }
 
     /// <summary>

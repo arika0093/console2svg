@@ -7,6 +7,76 @@ namespace ConsoleToSvg.Tests.Cli;
 public sealed partial class OptionParserTests
 {
     [Test]
+    public void EmbedCastRejectsNonSvgOutput()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--embed-cast", "--out", "output.png" },
+            out _,
+            out var error,
+            out _
+        );
+
+        ok.ShouldBeFalse();
+        error.ShouldBe("Embed options require SVG output.");
+    }
+
+    [Test]
+    public void EmbedReplayRequiresCommand()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--embed-replay" },
+            out _,
+            out var error,
+            out _
+        );
+
+        ok.ShouldBeFalse();
+        error.ShouldBe("--embed-replay requires a command to be specified.");
+    }
+
+    [Test]
+    public void EmbedDebugInheritsEmbedReplayCommandRequirement()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--embed-debug" },
+            out _,
+            out var error,
+            out _
+        );
+
+        ok.ShouldBeFalse();
+        error.ShouldBe("--embed-replay requires a command to be specified.");
+    }
+
+    [Test]
+    public void EmbedReplayRejectsReplayInput()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--embed-replay", "--replay", "input.json", "echo hi" },
+            out _,
+            out var error,
+            out _
+        );
+
+        ok.ShouldBeFalse();
+        error.ShouldBe("--embed-replay and --replay cannot be used together.");
+    }
+
+    [Test]
+    public void EmbedReplayRejectsRepeatMode()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--embed-replay", "--mode", "repeat", "echo hi" },
+            out _,
+            out var error,
+            out _
+        );
+
+        ok.ShouldBeFalse();
+        error.ShouldBe("--embed-replay cannot be used with --mode repeat.");
+    }
+
+    [Test]
     public void InvalidWindowReturnsError()
     {
         // Unknown window values are now accepted at parse time and validated at load time.

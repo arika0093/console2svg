@@ -732,6 +732,15 @@ public static partial class InteractiveRecorder
                     recordingKey.Span,
                     pauseKey.Span
                 );
+                var maxForwardedLength = Math.Max(
+                    1,
+                    Math.Max(
+                        screenshotKey.Length,
+                        Math.Max(recordingKey.Length, pauseKey.Length)
+                    )
+                );
+                var forwarded = new List<byte>(maxForwardedLength);
+                var forwardedBytes = new byte[maxForwardedLength];
                 var inputGate = new SemaphoreSlim(1, 1);
                 long escapePendingVersion = 0;
                 logger.ZLogDebug($"Interactive input forwarding started.");
@@ -755,11 +764,16 @@ public static partial class InteractiveRecorder
                                         && router.HasStandaloneEscape
                                     )
                                     {
-                                        var forwarded = new List<byte>(1);
+                                        forwarded.Clear();
                                         router.ForwardPending(forwarded);
+                                        if (forwarded.Count > forwardedBytes.Length)
+                                        {
+                                            Array.Resize(ref forwardedBytes, forwarded.Count);
+                                        }
+                                        forwarded.CopyTo(forwardedBytes);
                                         await connection
                                             .WriterStream.WriteAsync(
-                                                forwarded.ToArray(),
+                                                forwardedBytes.AsMemory(0, forwarded.Count),
                                                 lifetime.Token
                                             )
                                             .ConfigureAwait(false);
@@ -817,13 +831,18 @@ public static partial class InteractiveRecorder
                             Interlocked.Increment(ref escapePendingVersion);
                             for (var i = 0; i < count; i++)
                             {
-                                var forwarded = new List<byte>();
+                                forwarded.Clear();
                                 var action = router.Process(bytes[i], forwarded);
                                 if (forwarded.Count > 0)
                                 {
+                                    if (forwarded.Count > forwardedBytes.Length)
+                                    {
+                                        Array.Resize(ref forwardedBytes, forwarded.Count);
+                                    }
+                                    forwarded.CopyTo(forwardedBytes);
                                     await connection
                                         .WriterStream.WriteAsync(
-                                            forwarded.ToArray(),
+                                            forwardedBytes.AsMemory(0, forwarded.Count),
                                             lifetime.Token
                                         )
                                         .ConfigureAwait(false);

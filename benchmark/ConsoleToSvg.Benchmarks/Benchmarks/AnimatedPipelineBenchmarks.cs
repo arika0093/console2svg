@@ -32,17 +32,20 @@ public class AnimatedPipelineBenchmarks
     public IReadOnlyList<TerminalFrame> ReplayWithSnapshots() =>
         CreateEmulator().ReplayFrames(_session);
 
+#if !CONSOLE_TO_SVG_BASELINE
     [Benchmark]
-    public ulong FrameSignatures()
+    public ulong ReplayWithFrameSignatures()
     {
+        var frames = CreateEmulator().ReplayFrames(_session);
         var signature = 0UL;
-        for (var i = 0; i < _frames.Count; i++)
+        for (var i = 0; i < frames.Count; i++)
         {
-            signature ^= _frames[i].Buffer.GetVisualSignature();
+            signature ^= frames[i].Buffer.GetVisualSignature();
         }
 
         return signature;
     }
+#endif
 
     [Benchmark]
     public string RenderFrames() =>

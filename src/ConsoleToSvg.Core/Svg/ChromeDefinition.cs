@@ -129,16 +129,26 @@ public sealed class ChromeDefinition
                 break;
             }
 
-            var expr = template.Substring(open + 1, close - open - 1);
-            sb.Append(EvaluateExpr(expr, winX, winY, winW, winH, totalW, totalH, themeBackground));
+            AppendEvaluatedExpr(
+                sb,
+                template.AsSpan(open + 1, close - open - 1),
+                winX,
+                winY,
+                winW,
+                winH,
+                totalW,
+                totalH,
+                themeBackground
+            );
             i = close + 1;
         }
 
         return sb.ToString();
     }
 
-    private static string EvaluateExpr(
-        string expr,
+    private static void AppendEvaluatedExpr(
+        StringBuilder output,
+        ReadOnlySpan<char> expr,
         double winX,
         double winY,
         double winW,
@@ -149,9 +159,10 @@ public sealed class ChromeDefinition
     )
     {
         // {bg} expands to the theme background color string
-        if (string.Equals(expr, "bg", StringComparison.OrdinalIgnoreCase))
+        if (expr.Equals("bg", StringComparison.OrdinalIgnoreCase))
         {
-            return themeBackground;
+            output.Append(themeBackground);
+            return;
         }
 
         // Parse "varName" or "varName+offset" or "varName-offset"
@@ -165,23 +176,24 @@ public sealed class ChromeDefinition
             }
         }
 
-        string varName;
+        ReadOnlySpan<char> varName;
         double offset = 0d;
 
         if (opIdx >= 0)
         {
-            varName = expr.Substring(0, opIdx);
-            var offsetStr = expr.Substring(opIdx); // includes the sign character
+            varName = expr[..opIdx];
+            var offsetText = expr[opIdx..];
             if (
                 !double.TryParse(
-                    offsetStr,
+                    offsetText,
                     NumberStyles.Float | NumberStyles.AllowLeadingSign,
                     CultureInfo.InvariantCulture,
                     out offset
                 )
             )
             {
-                return "{" + expr + "}"; // can't evaluate — keep as-is
+                AppendUnknownExpr(output, expr);
+                return;
             }
         }
         else
@@ -189,29 +201,63 @@ public sealed class ChromeDefinition
             varName = expr;
         }
 
-        double baseVal = varName switch
-        {
-            "winX" => winX,
-            "winY" => winY,
-            "winW" => winW,
-            "winH" => winH,
-            "winRight" => winX + winW,
-            "winBottom" => winY + winH,
-            "totalW" => totalW,
-            "totalH" => totalH,
-            _ => double.NaN,
-        };
+        var baseVal = ResolveBaseValue(
+            varName,
+            winX,
+            winY,
+            winW,
+            winH,
+            totalW,
+            totalH
+        );
 
         if (double.IsNaN(baseVal))
         {
-            return "{" + expr + "}"; // unknown variable — keep as-is
+            AppendUnknownExpr(output, expr);
+            return;
         }
 
-        return FormatNum(baseVal + offset);
+        output.Append(
+            CultureInfo.InvariantCulture,
+            $"{baseVal + offset:0.###}"
+        );
     }
 
-    private static string FormatNum(double value) =>
-        value.ToString("0.###", CultureInfo.InvariantCulture);
+    private static double ResolveBaseValue(
+        ReadOnlySpan<char> name,
+        double winX,
+        double winY,
+        double winW,
+        double winH,
+        double totalW,
+        double totalH
+    )
+    {
+        if (name.SequenceEqual("winX"))
+            return winX;
+        if (name.SequenceEqual("winY"))
+            return winY;
+        if (name.SequenceEqual("winW"))
+            return winW;
+        if (name.SequenceEqual("winH"))
+            return winH;
+        if (name.SequenceEqual("winRight"))
+            return winX + winW;
+        if (name.SequenceEqual("winBottom"))
+            return winY + winH;
+        if (name.SequenceEqual("totalW"))
+            return totalW;
+        if (name.SequenceEqual("totalH"))
+            return totalH;
+        return double.NaN;
+    }
+
+    private static void AppendUnknownExpr(StringBuilder output, ReadOnlySpan<char> expr)
+    {
+        output.Append('{');
+        output.Append(expr);
+        output.Append('}');
+    }
 }
 
 [JsonSourceGenerationOptions(WriteIndented = false)]

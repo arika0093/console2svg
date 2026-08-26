@@ -1,3 +1,4 @@
+using System;
 using ConsoleToSvg.Recording;
 
 namespace ConsoleToSvg.Tests.Svg;
@@ -55,6 +56,30 @@ public sealed partial class SvgRendererTests
 
         // Default opacity=1 should not add fill-opacity attribute
         svg.ShouldNotContain("fill-opacity");
+    }
+
+    [Test]
+    public void RenderChromeTemplatePreservesArithmeticAndUnknownExpressions()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "Hi");
+        var chrome = new ConsoleToSvg.Svg.ChromeDefinition
+        {
+            SvgTemplate =
+                "<path data-values=\"{winX+0.5},{winRight-1},{bg},{unknown},{winX+bad}\"/>",
+        };
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", Chrome = chrome }
+        );
+
+        var valuesStart = svg.IndexOf("data-values=", StringComparison.Ordinal);
+        valuesStart.ShouldBeGreaterThanOrEqualTo(0);
+        var valuesEnd = svg.IndexOf("\"/>", valuesStart, StringComparison.Ordinal);
+        svg[valuesStart..(valuesEnd + 1)].ShouldBe(
+            "data-values=\"0.5,66.2,#1e1e1e,{unknown},{winX+bad}\""
+        );
     }
 
     [Test]
@@ -122,6 +147,20 @@ public sealed partial class SvgRendererTests
         svg.ShouldContain("height=\"72\"");
         // viewBox stays at natural canvas dimensions
         svg.ShouldContain("viewBox=\"0 0 67.2 36\"");
+    }
+
+    [Test]
+    public void RenderWithLargeSizeWidthPreservesNumericOutput()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "Hi");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { SizeWidth = 1e40 }
+        );
+
+        svg.ShouldContain("width=\"10000000000000000000000000000000000000000\"");
     }
 
     [Test]

@@ -53,7 +53,7 @@ public static partial class InputReplayFile
         if (hasPrivatePrefix || hasIntermediateBytes)
             return (null, [], len);
 
-        string param = text.Substring(paramStart, paramEnd - paramStart);
+        var param = text.AsSpan(paramStart, paramEnd - paramStart);
 
         // Win32-input-mode: \x1b[Vk;Sc;Uc;Kd;Cs;Rc_
         if (fin == '_')
@@ -61,27 +61,27 @@ public static partial class InputReplayFile
 
         if (fin == '~')
         {
-            var parts = param.Split(';');
-            var mods = parts.Length >= 2 ? DecodeVtMods(parts[1]) : (string[])[];
+            var keyCode = GetField(param, 0);
+            var modifier = GetField(param, 1);
+            var mods = modifier.IsEmpty ? [] : DecodeVtMods(modifier);
             foreach (var (num, key) in s_csiTildeKeys)
-                if (parts[0] == num)
+                if (keyCode.SequenceEqual(num))
                     return (key, mods, len);
             return (text.Substring(start, len), [], len); // unknown
         }
 
         if (char.IsLetter(fin))
         {
-            var parts = param.Split(';');
-            string[] mods = parts.Length >= 2 ? DecodeVtMods(parts[1]) : [];
-            var finStr = fin.ToString();
+            var modifier = GetField(param, 1);
+            var mods = modifier.IsEmpty ? [] : DecodeVtMods(modifier);
             // Z = Back-Tab (Shift+Tab): carry any decoded modifiers plus an implied shift.
-            if (finStr == "Z")
+            if (fin == 'Z')
                 return ("Tab", PrependShift(mods), len);
             // Focus-in / focus-out events (xterm focus-tracking protocol) — skip silently.
             if ((fin == 'I' || fin == 'O') && param.Length == 0)
                 return (null, [], len);
             foreach (var (final, key) in s_csiLetterKeys)
-                if (final == finStr)
+                if (final.Length == 1 && final[0] == fin)
                     return (key, mods, len);
             return (text.Substring(start, len), [], len); // unknown
         }
@@ -94,16 +94,16 @@ public static partial class InputReplayFile
         // text[start] == ESC, text[start+1] == 'O'
         if (start + 2 >= text.Length)
             return ("Escape", 1);
-        var cStr = text[start + 2].ToString();
+        var final = text[start + 2];
         foreach (var (fin, key) in s_ss3Keys)
-            if (fin == cStr)
+            if (fin.Length == 1 && fin[0] == final)
                 return (key, 3);
         return (text.Substring(start, 3), 3);
     }
 
-    private static string[] DecodeVtMods(string s)
+    private static string[] DecodeVtMods(ReadOnlySpan<char> text)
     {
-        if (!int.TryParse(s, out int n))
+        if (!int.TryParse(text, out var n))
             return [];
         int bits = n - 1;
         var result = new List<string>(4);
@@ -193,15 +193,13 @@ public static partial class InputReplayFile
             return null;
 
         int len = i - pos + 1;
-        var parts = text.Substring(paramStart, i - paramStart).Split(';');
-        if (parts.Length < 6)
-            return null;
-
+        var parameters = text.AsSpan(paramStart, i - paramStart);
         if (
-            !int.TryParse(parts[0], out int vk)
+            !TryGetField(parameters, 5, out _)
+            || !int.TryParse(GetField(parameters, 0), out var vk)
             || vk != 0
-            || !int.TryParse(parts[2], out int uc)
-            || !int.TryParse(parts[3], out int kd)
+            || !int.TryParse(GetField(parameters, 2), out var uc)
+            || !int.TryParse(GetField(parameters, 3), out var kd)
         )
             return null;
 
@@ -213,19 +211,16 @@ public static partial class InputReplayFile
     /// Returns null key for key-up or unhandled events (caller skips them).
     /// </summary>
     private static (string? Key, string[] Mods, int Length) ParseWin32InputMode(
-        string param,
+        ReadOnlySpan<char> parameters,
         int len
     )
     {
-        var parts = param.Split(';');
-        if (parts.Length < 6)
-            return (null, [], len);
-
         if (
-            !int.TryParse(parts[0], out int vk)
-            || !int.TryParse(parts[2], out int uc)
-            || !int.TryParse(parts[3], out int kd)
-            || !int.TryParse(parts[4], out int cs)
+            !TryGetField(parameters, 5, out _)
+            || !int.TryParse(GetField(parameters, 0), out var vk)
+            || !int.TryParse(GetField(parameters, 2), out var uc)
+            || !int.TryParse(GetField(parameters, 3), out var kd)
+            || !int.TryParse(GetField(parameters, 4), out var cs)
         )
             return (null, [], len);
 
@@ -257,6 +252,38 @@ public static partial class InputReplayFile
 
         // Unhandled (NumLock, CapsLock, etc.) — skip.
         return (null, [], len);
+    }
+
+    private static ReadOnlySpan<char> GetField(ReadOnlySpan<char> text, int fieldIndex) =>
+        TryGetField(text, fieldIndex, out var field) ? field : [];
+
+    private static bool TryGetField(
+        ReadOnlySpan<char> text,
+        int fieldIndex,
+        out ReadOnlySpan<char> field
+    )
+    {
+        var start = 0;
+        var currentField = 0;
+        for (var i = 0; i <= text.Length; i++)
+        {
+            if (i < text.Length && text[i] != ';')
+            {
+                continue;
+            }
+
+            if (currentField == fieldIndex)
+            {
+                field = text[start..i];
+                return true;
+            }
+
+            currentField++;
+            start = i + 1;
+        }
+
+        field = default;
+        return false;
     }
 
     /// <summary>Decode Win32 control-key state bits into modifier names.</summary>

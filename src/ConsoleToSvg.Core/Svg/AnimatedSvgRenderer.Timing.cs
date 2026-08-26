@@ -2,7 +2,6 @@ using System;
 using System.Globalization;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
-using ConsoleToSvg.Utils;
 
 namespace ConsoleToSvg.Svg;
 

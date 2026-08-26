@@ -39,6 +39,7 @@ public class RealWorldBenchmarks
     [Benchmark]
     public string RenderAnimated() => AnimatedSvgRenderer.Render(_session, _options);
 
+#if !CONSOLE_TO_SVG_BASELINE
     /// <summary>Stream a static SVG without materializing the final string.</summary>
     [Benchmark]
     public void WriteStatic() => SvgRenderer.Write(TextWriter.Null, _session, _options);
@@ -46,4 +47,5 @@ public class RealWorldBenchmarks
     /// <summary>Stream an animated SVG without materializing the final string.</summary>
     [Benchmark]
     public void WriteAnimated() => AnimatedSvgRenderer.Write(TextWriter.Null, _session, _options);
+#endif
 }

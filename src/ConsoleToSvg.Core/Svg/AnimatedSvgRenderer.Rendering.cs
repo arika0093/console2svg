@@ -1,8 +1,8 @@
 using System;
 using System.Globalization;
+using System.Text;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
-using ConsoleToSvg.Utils;
 
 namespace ConsoleToSvg.Svg;
 
@@ -61,17 +61,19 @@ public static partial class AnimatedSvgRenderer
         bool loop
     )
     {
-        var sb = new LfStringBuilder();
+        var sb = new StringBuilder();
 
         // Static frame rule (single line).
-        sb.AppendLine(".frame { opacity: 0; }");
+        sb.Append(".frame { opacity: 0; }\n");
 
         // Per-frame animation rules (single line each), grouped before the keyframes.
         for (var i = 0; i < frames.Count; i++)
         {
-            sb.AppendLine(
-                $$""".frame-{{i}} { animation:k{{i}} {{Format(totalDuration)}}s linear {{(loop ? "infinite" : "forwards")}}; }"""
+            sb.Append(
+                CultureInfo.InvariantCulture,
+                $$""".frame-{{i}} { animation:k{{i}} {{totalDuration:0.###}}s linear {{(loop ? "infinite" : "forwards")}}; }"""
             );
+            sb.Append('\n');
         }
 
         // Keyframes (single line each), grouped after all frame rules.
@@ -93,27 +95,37 @@ public static partial class AnimatedSvgRenderer
             var fadeInPoint = Math.Max(0d, start - 0.001d);
             var fadeOutPoint = Math.Min(100d, end + 0.001d);
 
-            string segments;
+            sb.Append(
+                CultureInfo.InvariantCulture,
+                $$"""@keyframes k{{i}} { 0%, {{fadeInPoint:0.###}}% { opacity: 0; } """
+            );
             if (isLast && fadeOut <= 0d)
             {
-                segments = $$"""{{Format(start)}}% { opacity: 1; }""";
+                sb.Append(
+                    CultureInfo.InvariantCulture,
+                    $$"""{{start:0.###}}% { opacity: 1; }"""
+                );
                 if (start < 100d)
                 {
-                    segments += " 100% { opacity: 1; }";
+                    sb.Append(" 100% { opacity: 1; }");
                 }
             }
             else
             {
-                segments = $$"""{{Format(start)}}%, {{Format(end)}}% { opacity: 1; }""";
+                sb.Append(
+                    CultureInfo.InvariantCulture,
+                    $$"""{{start:0.###}}%, {{end:0.###}}% { opacity: 1; }"""
+                );
                 if (!isLast || fadeOut > 0d)
                 {
-                    segments += $$""" {{Format(fadeOutPoint)}}%, 100% { opacity: 0; }""";
+                    sb.Append(
+                        CultureInfo.InvariantCulture,
+                        $$""" {{fadeOutPoint:0.###}}%, 100% { opacity: 0; }"""
+                    );
                 }
             }
 
-            sb.AppendLine(
-                $$"""@keyframes k{{i}} { 0%, {{Format(fadeInPoint)}}% { opacity: 0; } {{segments}} }"""
-            );
+            sb.Append(" }\n");
         }
 
         return sb.ToString();
@@ -139,8 +151,4 @@ public static partial class AnimatedSvgRenderer
         return maxFps > 0d ? 1d / maxFps : 0.05d;
     }
 
-    private static string Format(double value)
-    {
-        return value.ToString("0.###", CultureInfo.InvariantCulture);
-    }
 }

@@ -12,7 +12,7 @@ internal static partial class SvgDocumentBuilder
         "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace
         """;
 
-    internal sealed class Context
+    internal struct Context
     {
         public int StartRow { get; set; }
 

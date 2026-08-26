@@ -4,7 +4,6 @@ using System.IO;
 using System.Text;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
-using ConsoleToSvg.Utils;
 
 namespace ConsoleToSvg.Svg;
 

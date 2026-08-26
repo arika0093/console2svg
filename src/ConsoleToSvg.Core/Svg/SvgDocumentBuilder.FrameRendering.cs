@@ -13,7 +13,7 @@ internal static partial class SvgDocumentBuilder
     public static void AppendFrameGroup(
         SvgWriter sb,
         ScreenBuffer buffer,
-        Context context,
+        in Context context,
         Theme theme,
         string? id,
         string? @class,
@@ -26,6 +26,9 @@ internal static partial class SvgDocumentBuilder
         var effectiveLengthAdjust = string.IsNullOrWhiteSpace(lengthAdjust)
             ? "spacing"
             : lengthAdjust;
+        var startCol = context.StartCol;
+        var cellWidth = context.CellWidth;
+        var baselineOffset = context.BaselineOffset;
         sb.Append("<g");
         if (!string.IsNullOrWhiteSpace(id))
         {
@@ -42,15 +45,15 @@ internal static partial class SvgDocumentBuilder
         }
 
         sb.Append(" transform=\"translate(");
-        sb.Append(Format(context.ContentOffsetX - context.PixelCropLeft));
+        sb.Append(context.ContentOffsetX - context.PixelCropLeft);
         sb.Append(' ');
-        sb.Append(Format(context.ContentOffsetY - context.PixelCropTop));
+        sb.Append(context.ContentOffsetY - context.PixelCropTop);
         sb.Append(")\">\n");
 
         sb.Append("<rect width=\"");
-        sb.Append(Format(context.ContentWidth));
+        sb.Append(context.ContentWidth);
         sb.Append("\" height=\"");
-        sb.Append(Format(context.ContentHeight));
+        sb.Append(context.ContentHeight);
         sb.Append("\" fill=\"");
         sb.Append(theme.Background);
         sb.Append("\"/>\n");
@@ -97,13 +100,13 @@ internal static partial class SvgDocumentBuilder
                     var rx = (bgRunStart - context.StartCol) * context.CellWidth;
                     var rw = (col - bgRunStart) * context.CellWidth;
                     sb.Append("<rect class=\"bg\" x=\"");
-                    sb.Append(Format(rx));
+                    sb.Append(rx);
                     sb.Append("\" y=\"");
-                    sb.Append(Format(y));
+                    sb.Append(y);
                     sb.Append("\" width=\"");
-                    sb.Append(Format(rw));
+                    sb.Append(rw);
                     sb.Append("\" height=\"");
-                    sb.Append(Format(context.CellHeight));
+                    sb.Append(context.CellHeight);
                     sb.Append("\" fill=\"");
                     sb.Append(bgRunColor);
                     sb.Append("\"/>\n");
@@ -135,8 +138,8 @@ internal static partial class SvgDocumentBuilder
                     return;
                 }
 
-                var tx = (fgRunStart - context.StartCol) * context.CellWidth;
-                var tLen = fgRunCellCount * context.CellWidth;
+                var tx = (fgRunStart - startCol) * cellWidth;
+                var tLen = fgRunCellCount * cellWidth;
                 sb.Append("<text class=\"crt");
                 if (fgBlink)
                 {
@@ -148,13 +151,13 @@ internal static partial class SvgDocumentBuilder
                     sb.Append(" xml:space=\"preserve\"");
                 }
                 sb.Append(" x=\"");
-                sb.Append(Format(tx));
+                sb.Append(tx);
                 sb.Append("\" y=\"");
-                sb.Append(Format(y + context.BaselineOffset));
+                sb.Append(y + baselineOffset);
                 sb.Append("\" fill=\"");
                 sb.Append(fgRunColor);
                 sb.Append("\" textLength=\"");
-                sb.Append(Format(tLen));
+                sb.Append(tLen);
                 sb.Append("\" lengthAdjust=\"");
                 sb.Append(EscapeAttribute(effectiveLengthAdjust));
                 sb.Append("\"");
@@ -207,7 +210,7 @@ internal static partial class SvgDocumentBuilder
                 fgRunHasSpace = false;
             }
 
-            bool MatchesRunStyle(string effectiveFg, ScreenCell cell) =>
+            bool MatchesRunStyle(string effectiveFg, in ScreenCell cell) =>
                 string.Equals(effectiveFg, fgRunColor, StringComparison.OrdinalIgnoreCase)
                 && cell.Bold == fgBold
                 && cell.Italic == fgItalic
@@ -482,15 +485,15 @@ internal static partial class SvgDocumentBuilder
             {
                 var rect = mergedRects[groupEnd];
                 sb.Append('M');
-                sb.Append(Format(rect.X));
+                sb.Append(rect.X);
                 sb.Append(' ');
-                sb.Append(Format(rect.Y));
+                sb.Append(rect.Y);
                 sb.Append('H');
-                sb.Append(Format(rect.X + rect.Width));
+                sb.Append(rect.X + rect.Width);
                 sb.Append('V');
-                sb.Append(Format(rect.Y + rect.Height));
+                sb.Append(rect.Y + rect.Height);
                 sb.Append('H');
-                sb.Append(Format(rect.X));
+                sb.Append(rect.X);
                 sb.Append('Z');
                 groupEnd++;
             }
@@ -548,13 +551,13 @@ internal static partial class SvgDocumentBuilder
         }
     }
 
-    private static bool IsSameAxisGroup(AxisSegment left, AxisSegment right) =>
+    private static bool IsSameAxisGroup(in AxisSegment left, in AxisSegment right) =>
         left.Position.CompareTo(right.Position) == 0
         && left.StrokeWidth.CompareTo(right.StrokeWidth) == 0
         && string.Equals(left.Color, right.Color, StringComparison.Ordinal);
 
     private static void AddRect(
-        AxisSegment segment,
+        in AxisSegment segment,
         double start,
         double end,
         bool horizontal,
@@ -714,13 +717,13 @@ internal static partial class SvgDocumentBuilder
         void R(double rx, double ry, double rw, double rh)
         {
             sb.Append("<rect class=\"bg\" x=\"");
-            sb.Append(Format(rx));
+            sb.Append(rx);
             sb.Append("\" y=\"");
-            sb.Append(Format(ry));
+            sb.Append(ry);
             sb.Append("\" width=\"");
-            sb.Append(Format(rw));
+            sb.Append(rw);
             sb.Append("\" height=\"");
-            sb.Append(Format(rh));
+            sb.Append(rh);
             sb.Append("\" fill=\"");
             sb.Append(fill);
             sb.Append("\"/>\n");

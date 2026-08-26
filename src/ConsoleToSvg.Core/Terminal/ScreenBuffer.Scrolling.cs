@@ -18,7 +18,9 @@ public sealed partial class ScreenBuffer
             _savedMainRow = CursorRow;
             _savedMainCol = CursorCol;
             _altCells = CreateBlankCells();
+            _altRowsShared = new bool[Height];
             _cells = _altCells;
+            _rowsShared = _altRowsShared;
             CursorRow = 0;
             CursorCol = 0;
             _scrollTop = 0;
@@ -34,6 +36,7 @@ public sealed partial class ScreenBuffer
         }
 
         _cells = _mainCells;
+        _rowsShared = _mainRowsShared;
         _isAltScreen = false;
         CursorRow = Clamp(_savedMainRow, 0, Height - 1);
         CursorCol = Clamp(_savedMainCol, 0, Width - 1);
@@ -53,6 +56,7 @@ public sealed partial class ScreenBuffer
         for (var i = 0; i < count; i++)
         {
             var topRow = _cells[top];
+            var topRowShared = _rowsShared[top];
             var topSignature = _rowSignatures[top];
             var topDirty = _rowSignatureDirty[top];
             if (includeScrollback && top == 0)
@@ -63,11 +67,13 @@ public sealed partial class ScreenBuffer
             for (var row = top + 1; row <= bottom; row++)
             {
                 _cells[row - 1] = _cells[row];
+                _rowsShared[row - 1] = _rowsShared[row];
                 _rowSignatures[row - 1] = _rowSignatures[row];
                 _rowSignatureDirty[row - 1] = _rowSignatureDirty[row];
             }
 
             _cells[bottom] = includeScrollback && top == 0 ? CreateBlankRow() : topRow;
+            _rowsShared[bottom] = !(includeScrollback && top == 0) && topRowShared;
             _rowSignatures[bottom] = topSignature;
             _rowSignatureDirty[bottom] = topDirty;
             ClearRow(bottom);
@@ -85,16 +91,19 @@ public sealed partial class ScreenBuffer
         for (var i = 0; i < count; i++)
         {
             var bottomRow = _cells[bottom];
+            var bottomRowShared = _rowsShared[bottom];
             var bottomSignature = _rowSignatures[bottom];
             var bottomDirty = _rowSignatureDirty[bottom];
             for (var row = bottom - 1; row >= top; row--)
             {
                 _cells[row + 1] = _cells[row];
+                _rowsShared[row + 1] = _rowsShared[row];
                 _rowSignatures[row + 1] = _rowSignatures[row];
                 _rowSignatureDirty[row + 1] = _rowSignatureDirty[row];
             }
 
             _cells[top] = bottomRow;
+            _rowsShared[top] = bottomRowShared;
             _rowSignatures[top] = bottomSignature;
             _rowSignatureDirty[top] = bottomDirty;
             ClearRow(top);
@@ -129,18 +138,6 @@ public sealed partial class ScreenBuffer
         }
 
         return row;
-    }
-
-    private static ScreenCell[][] CloneCells(ScreenCell[][] source)
-    {
-        var cloned = new ScreenCell[source.Length][];
-        for (var row = 0; row < source.Length; row++)
-        {
-            cloned[row] = new ScreenCell[source[row].Length];
-            Array.Copy(source[row], cloned[row], source[row].Length);
-        }
-
-        return cloned;
     }
 
     private static int Clamp(int value, int min, int max)

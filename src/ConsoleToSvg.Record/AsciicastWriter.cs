@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -9,6 +10,8 @@ namespace ConsoleToSvg.Recording;
 
 public static class AsciicastWriter
 {
+    private static readonly byte[] NewLineBytes = Encoding.UTF8.GetBytes(Environment.NewLine);
+
     public static async Task WriteToFileAsync(
         string path,
         RecordingSession session,
@@ -31,35 +34,39 @@ public static class AsciicastWriter
         CancellationToken cancellationToken
     )
     {
-        await using var writer = new StreamWriter(
-            stream,
-            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
-            4096,
-            leaveOpen: true
+        var buffer = new ArrayBufferWriter<byte>(4096);
+        using var jsonWriter = new Utf8JsonWriter(
+            buffer,
+            new JsonWriterOptions { SkipValidation = false }
         );
-
-        var headerLine = JsonSerializer.Serialize(
+        JsonSerializer.Serialize(
+            jsonWriter,
             session.Header,
             AsciicastJsonContext.Default.AsciicastHeader
         );
-        await writer.WriteLineAsync(headerLine.AsMemory(), cancellationToken).ConfigureAwait(false);
+        await jsonWriter.FlushAsync(cancellationToken).ConfigureAwait(false);
+        await stream
+            .WriteAsync(buffer.WrittenMemory, cancellationToken)
+            .ConfigureAwait(false);
+        await stream.WriteAsync(NewLineBytes, cancellationToken).ConfigureAwait(false);
 
-        using var ms = new MemoryStream();
         foreach (var outputEvent in session.Events)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            ms.SetLength(0);
-            using var jw = new Utf8JsonWriter(ms);
-            jw.WriteStartArray();
-            jw.WriteNumberValue(outputEvent.Time);
-            jw.WriteStringValue(outputEvent.Type);
-            jw.WriteStringValue(outputEvent.Data);
-            jw.WriteEndArray();
-            await jw.FlushAsync(cancellationToken).ConfigureAwait(false);
-            var line = Encoding.UTF8.GetString(ms.GetBuffer(), 0, (int)ms.Length);
-            await writer.WriteLineAsync(line.AsMemory(), cancellationToken).ConfigureAwait(false);
+            buffer.Clear();
+            jsonWriter.Reset(buffer);
+            jsonWriter.WriteStartArray();
+            jsonWriter.WriteNumberValue(outputEvent.Time);
+            jsonWriter.WriteStringValue(outputEvent.Type);
+            jsonWriter.WriteStringValue(outputEvent.Data);
+            jsonWriter.WriteEndArray();
+            await jsonWriter.FlushAsync(cancellationToken).ConfigureAwait(false);
+            await stream
+                .WriteAsync(buffer.WrittenMemory, cancellationToken)
+                .ConfigureAwait(false);
+            await stream.WriteAsync(NewLineBytes, cancellationToken).ConfigureAwait(false);
         }
 
-        await writer.FlushAsync(cancellationToken).ConfigureAwait(false);
+        await stream.FlushAsync(cancellationToken).ConfigureAwait(false);
     }
 }

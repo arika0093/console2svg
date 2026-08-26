@@ -30,6 +30,18 @@ public sealed class AnsiParserTests
     }
 
     [Test]
+    public void VisualSignatureChangesWhenOnlyCellStyleChanges()
+    {
+        var emulator = new TerminalEmulator(8, 2, Theme.Resolve("dark"));
+        emulator.Process("\u001b[31mA");
+        var redSignature = emulator.Buffer.GetVisualSignature();
+
+        emulator.Process("\r\u001b[32mA");
+
+        emulator.Buffer.GetVisualSignature().ShouldNotBe(redSignature);
+    }
+
+    [Test]
     public void ApplySgrColorAndReset()
     {
         var theme = Theme.Resolve("dark");

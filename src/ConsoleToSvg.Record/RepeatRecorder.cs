@@ -206,55 +206,52 @@ public static class RepeatRecorder
             return text;
         }
 
-        // Split by CRLF and remove trailing blank lines
-        var lines = text.Split(["\r\n"], StringSplitOptions.None);
-        var lastNonBlankIndex = lines.Length - 1;
-
-        // Find the last non-blank line
-        while (lastNonBlankIndex >= 0 && IsBlankLine(lines[lastNonBlankIndex]))
+        var content = text.AsSpan();
+        var lineStart = 0;
+        var lastNonBlankEnd = -1;
+        while (lineStart <= content.Length)
         {
-            lastNonBlankIndex--;
+            var remaining = content[lineStart..];
+            var separatorOffset = remaining.IndexOf("\r\n", StringComparison.Ordinal);
+            var lineEnd =
+                separatorOffset >= 0 ? lineStart + separatorOffset : content.Length;
+            if (!IsBlankLine(content[lineStart..lineEnd]))
+            {
+                lastNonBlankEnd = lineEnd;
+            }
+
+            if (separatorOffset < 0)
+            {
+                break;
+            }
+
+            lineStart = lineEnd + 2;
         }
 
-        // If all lines are blank, return empty string
-        if (lastNonBlankIndex < 0)
+        if (lastNonBlankEnd < 0)
         {
             return string.Empty;
         }
 
-        // Reconstruct the text up to the last non-blank line
-        if (lastNonBlankIndex == lines.Length - 1)
+        if (lastNonBlankEnd == text.Length)
         {
-            // No trailing blank lines
             return text;
         }
 
-        var sb = new StringBuilder();
-        for (var i = 0; i <= lastNonBlankIndex; i++)
-        {
-            sb.Append(lines[i]);
-            if (i < lastNonBlankIndex)
-            {
-                sb.Append("\r\n");
-            }
-        }
-
-        // Add final CRLF if the original text ended with one
-        if (text.EndsWith("\r\n", StringComparison.Ordinal))
-        {
-            sb.Append("\r\n");
-        }
-
-        return sb.ToString();
+        var resultEnd =
+            text.EndsWith("\r\n", StringComparison.Ordinal)
+                ? lastNonBlankEnd + 2
+                : lastNonBlankEnd;
+        return text[..resultEnd];
     }
 
     /// <summary>
     /// Determines whether a line is blank (contains only whitespace or non-printing
     /// ANSI escape sequences).
     /// </summary>
-    private static bool IsBlankLine(string line)
+    private static bool IsBlankLine(ReadOnlySpan<char> line)
     {
-        if (string.IsNullOrEmpty(line))
+        if (line.IsEmpty)
         {
             return true;
         }

@@ -359,6 +359,40 @@ public sealed class AnimatedSvgRendererTests
     }
 
     [Test]
+    public void RenderAnimatedSvgSharesUnchangedRowsBetweenFrames()
+    {
+        var session = new RecordingSession(width: 4, height: 2);
+        session.AddEvent(0.01, "AAAA");
+        session.AddEvent(0.2, "B");
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        CountOccurrences(svg, "id=\"fd-").ShouldBe(2);
+        CountOccurrences(svg, "id=\"rd-").ShouldBe(3);
+        CountOccurrences(svg, "<use href=\"#rd-").ShouldBe(4);
+    }
+
+    [Test]
+    public void RenderAnimatedSvgUsesFullFramesWhenRowsAreUnique()
+    {
+        var session = new RecordingSession(width: 4, height: 2);
+        session.AddEvent(0.01, "AAAA\r\nBBBB");
+        session.AddEvent(0.2, "\x1b[2J\x1b[HCCCC\r\nDDDD");
+
+        var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        CountOccurrences(svg, "id=\"fd-").ShouldBe(2);
+        CountOccurrences(svg, "id=\"rd-").ShouldBe(0);
+        CountOccurrences(svg, "<use href=\"#rd-").ShouldBe(0);
+    }
+
+    [Test]
     public void RenderAnimatedSvgColorOnlyChangesAreRateLimited()
     {
         // Simulate cmatrix-like output: 30 rapid color-changing frames over 1 second (30fps input).

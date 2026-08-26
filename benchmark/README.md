@@ -60,9 +60,13 @@ dotnet run -c Release --project benchmark/ConsoleToSvg.Benchmarks
 benchmark/run-baseline.sh v0.8.0-rc3
 ```
 
-This checks out the tag into `benchmark/worktrees/v0.8.0-rc3` and compiles the
-benchmark against that Core source tree. Both sides therefore get identical
-disassembly/memory/counter diagnostics.
+This checks out the tag under
+`../.console2svg-benchmark-worktrees/<repository>/` and compiles the benchmark against
+that Core source tree. Keeping baseline worktrees outside the repository avoids
+duplicate-project discovery failures in BenchmarkDotNet. Override the worktree root
+with `CONSOLE2SVG_BENCHMARK_WORKTREE_ROOT` when needed. Both sides therefore get
+identical disassembly/memory/counter diagnostics. Cases that depend on APIs absent from
+the selected release, such as streaming writes, are omitted from that baseline build.
 
 ### Comparing HEAD vs a release
 

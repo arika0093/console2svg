@@ -1,6 +1,9 @@
 using System;
+using System.Buffers;
+using System.Buffers.Binary;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO.Hashing;
+using System.Runtime.InteropServices;
 
 namespace ConsoleToSvg.Terminal;
 
@@ -41,7 +44,14 @@ internal sealed record CellStyle(
     TextStyleAttributes Attributes
 )
 {
-    public CellStyle(TextStyle style)
+    internal ulong VisualSignature { get; } = CreateVisualSignature(
+        Foreground,
+        Background,
+        UnderlineColor,
+        Attributes
+    );
+
+    public CellStyle(in TextStyle style)
         : this(
             style.Foreground,
             style.Background,
@@ -51,7 +61,7 @@ internal sealed record CellStyle(
     {
     }
 
-    private static TextStyleAttributes GetFlags(TextStyle style)
+    private static TextStyleAttributes GetFlags(in TextStyle style)
     {
         var flags = TextStyleAttributes.None;
         if (style.Bold)
@@ -75,6 +85,27 @@ internal sealed record CellStyle(
         return flags;
     }
 
+    private static ulong CreateVisualSignature(
+        string foreground,
+        string background,
+        string? underlineColor,
+        TextStyleAttributes attributes
+    )
+    {
+        Span<byte> fields = stackalloc byte[26];
+        BinaryPrimitives.WriteUInt64LittleEndian(fields, HashString(foreground));
+        BinaryPrimitives.WriteUInt64LittleEndian(fields[8..], HashString(background));
+        BinaryPrimitives.WriteUInt64LittleEndian(
+            fields[16..],
+            HashString(underlineColor ?? string.Empty)
+        );
+        BinaryPrimitives.WriteUInt16LittleEndian(fields[24..], (ushort)attributes);
+        return XxHash3.HashToUInt64(fields);
+    }
+
+    private static ulong HashString(string value) =>
+        XxHash3.HashToUInt64(MemoryMarshal.AsBytes(value.AsSpan()));
+
     public TextStyle ToTextStyle() =>
         new(
             Foreground,
@@ -92,7 +123,7 @@ internal sealed record CellStyle(
         );
 }
 
-public readonly struct ScreenCell
+public readonly struct ScreenCell : IEquatable<ScreenCell>
 {
     private const byte Wide = 1 << 0;
     private const byte WideContinuation = 1 << 1;
@@ -124,6 +155,8 @@ public readonly struct ScreenCell
     public string Text { get; }
 
     internal CellStyle Style => _style;
+
+    internal byte VisualFlags => _flags;
 
     public string Foreground => _style?.Foreground!;
 
@@ -164,6 +197,18 @@ public readonly struct ScreenCell
             UnderlineColor
         );
 
+    public bool Equals(ScreenCell other) =>
+        _flags == other._flags
+        && string.Equals(Text, other.Text, StringComparison.Ordinal)
+        && (
+            ReferenceEquals(_style, other._style)
+            || EqualityComparer<CellStyle>.Default.Equals(_style, other._style)
+        );
+
+    public override bool Equals(object? obj) => obj is ScreenCell other && Equals(other);
+
+    public override int GetHashCode() => HashCode.Combine(Text, _style, _flags);
+
     private bool HasStyle(TextStyleAttributes attribute) =>
         _style is not null && (_style.Attributes & attribute) != 0;
 }
@@ -174,6 +219,9 @@ public sealed partial class ScreenBuffer
     private ScreenCell[][] _mainCells;
     private ScreenCell[][] _altCells;
     private ScreenCell[][] _cells;
+    private bool[] _mainRowsShared;
+    private bool[] _altRowsShared;
+    private bool[] _rowsShared;
     private bool _isAltScreen;
     private int _savedRow;
     private int _savedCol;
@@ -207,6 +255,9 @@ public sealed partial class ScreenBuffer
         _mainCells = initializeCells ? CreateBlankCells() : null!;
         _altCells = initializeCells ? CreateBlankCells() : null!;
         _cells = _mainCells;
+        _mainRowsShared = new bool[Height];
+        _altRowsShared = new bool[Height];
+        _rowsShared = _mainRowsShared;
         _rowSignatures = new ulong[Height];
         _rowSignatureDirty = new bool[Height];
         Array.Fill(_rowSignatureDirty, true);
@@ -243,98 +294,127 @@ public sealed partial class ScreenBuffer
     /// </summary>
     public ulong GetVisualSignature()
     {
-        const ulong fnvOffset = 1469598103934665603UL;
-        const ulong fnvPrime = 1099511628211UL;
-
         for (var row = 0; row < Height; row++)
         {
-            if (!_rowSignatureDirty[row])
-            {
-                continue;
-            }
-
-            var rowSignature = fnvOffset;
-            for (var col = 0; col < Width; col++)
-            {
-                AddCell(ref rowSignature, _cells[row][col]);
-            }
-
-            _rowSignatures[row] = rowSignature;
-            _rowSignatureDirty[row] = false;
+            EnsureRowVisualSignature(row);
         }
 
-        var signature = fnvOffset;
-        AddInt(ref signature, CursorRow);
-        AddInt(ref signature, CursorCol);
+        var byteCount = checked(8 + Height * sizeof(ulong));
+        if (byteCount <= 4096)
+        {
+            Span<byte> fields = stackalloc byte[byteCount];
+            return ComputeVisualSignature(fields);
+        }
+
+        var rented = ArrayPool<byte>.Shared.Rent(byteCount);
+        try
+        {
+            return ComputeVisualSignature(rented.AsSpan(0, byteCount));
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(rented);
+        }
+    }
+
+    private ulong ComputeVisualSignature(Span<byte> fields)
+    {
+        BinaryPrimitives.WriteInt32LittleEndian(fields, CursorRow);
+        BinaryPrimitives.WriteInt32LittleEndian(fields[4..], CursorCol);
+        var offset = 8;
         for (var row = 0; row < Height; row++)
         {
-            AddUlong(ref signature, _rowSignatures[row]);
+            BinaryPrimitives.WriteUInt64LittleEndian(fields[offset..], _rowSignatures[row]);
+            offset += sizeof(ulong);
         }
 
-        return signature;
+        return XxHash3.HashToUInt64(fields);
+    }
 
-        static void AddCell(ref ulong hash, ScreenCell cell)
+    internal ulong GetRowVisualSignature(int row)
+    {
+        EnsureRowVisualSignature(row);
+        return _rowSignatures[row];
+    }
+
+    internal bool HasSameVisualRow(int row, ScreenBuffer other, int otherRow)
+    {
+        if (Width != other.Width)
         {
-            AddString(ref hash, cell.Text);
-            AddString(ref hash, cell.Foreground);
-            AddString(ref hash, cell.Background);
-            AddBool(ref hash, cell.Bold);
-            AddBool(ref hash, cell.Italic);
-            AddBool(ref hash, cell.Underline);
-            AddBool(ref hash, cell.Reversed);
-            AddBool(ref hash, cell.Faint);
-            AddBool(ref hash, cell.Hidden);
-            AddBool(ref hash, cell.Strikethrough);
-            AddBool(ref hash, cell.Overline);
-            AddBool(ref hash, cell.Blink);
-            AddString(ref hash, cell.UnderlineColor ?? string.Empty);
-            AddBool(ref hash, cell.IsWide);
-            AddBool(ref hash, cell.IsWideContinuation);
+            return false;
         }
 
-        static void AddString(ref ulong hash, string value)
+        for (var col = 0; col < Width; col++)
         {
-            for (var i = 0; i < value.Length; i++)
+            if (!_cells[row][col].Equals(other._cells[otherRow][col]))
             {
-                hash ^= value[i];
-                hash *= fnvPrime;
-            }
-            hash ^= 0xFF;
-            hash *= fnvPrime;
-        }
-
-        static void AddBool(ref ulong hash, bool value)
-        {
-            hash ^= value ? (byte)1 : (byte)0;
-            hash *= fnvPrime;
-        }
-
-        static void AddInt(ref ulong hash, int value)
-        {
-            unchecked
-            {
-                hash ^= (byte)value;
-                hash *= fnvPrime;
-                hash ^= (byte)(value >> 8);
-                hash *= fnvPrime;
-                hash ^= (byte)(value >> 16);
-                hash *= fnvPrime;
-                hash ^= (byte)(value >> 24);
-                hash *= fnvPrime;
+                return false;
             }
         }
 
-        static void AddUlong(ref ulong hash, ulong value)
+        return true;
+    }
+
+    private void EnsureRowVisualSignature(int row)
+    {
+        if (!_rowSignatureDirty[row])
         {
-            unchecked
+            return;
+        }
+
+        const int metadataByteCount = sizeof(ulong) + sizeof(byte) + sizeof(int);
+        var byteCount = checked(Width * metadataByteCount);
+        for (var col = 0; col < Width; col++)
+        {
+            byteCount = checked(byteCount + _cells[row][col].Text.Length * sizeof(char));
+        }
+
+        ulong signature;
+        if (byteCount <= 4096)
+        {
+            Span<byte> fields = stackalloc byte[byteCount];
+            signature = ComputeRowVisualSignature(row, fields);
+        }
+        else
+        {
+            var rented = ArrayPool<byte>.Shared.Rent(byteCount);
+            try
             {
-                for (var shift = 0; shift < 64; shift += 8)
-                {
-                    hash ^= (byte)(value >> shift);
-                    hash *= fnvPrime;
-                }
+                signature = ComputeRowVisualSignature(
+                    row,
+                    rented.AsSpan(0, byteCount)
+                );
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(rented);
             }
         }
+
+        _rowSignatures[row] = signature;
+        _rowSignatureDirty[row] = false;
+    }
+
+    private ulong ComputeRowVisualSignature(int row, Span<byte> fields)
+    {
+        var offset = 0;
+        for (var col = 0; col < Width; col++)
+        {
+            ref readonly var cell = ref _cells[row][col];
+            BinaryPrimitives.WriteUInt64LittleEndian(
+                fields[offset..],
+                cell.Style.VisualSignature
+            );
+            offset += sizeof(ulong);
+            fields[offset++] = cell.VisualFlags;
+            BinaryPrimitives.WriteInt32LittleEndian(fields[offset..], cell.Text.Length);
+            offset += sizeof(int);
+            var text = MemoryMarshal.AsBytes(cell.Text.AsSpan());
+            text.CopyTo(fields[offset..]);
+            offset += text.Length;
+        }
+
+        return XxHash3.HashToUInt64(fields);
     }
 
     public ScreenCell GetCell(int row, int col)
@@ -395,6 +475,9 @@ public sealed partial class ScreenBuffer
 
     public ScreenBuffer Clone()
     {
+        Array.Fill(_mainRowsShared, true);
+        Array.Fill(_altRowsShared, true);
+
         var cloned = new ScreenBuffer(Width, Height, _theme, initializeCells: false)
         {
             CursorRow = CursorRow,
@@ -409,8 +492,10 @@ public sealed partial class ScreenBuffer
             _pendingWrap = _pendingWrap,
             _originMode = _originMode,
             _insertMode = _insertMode,
-            _mainCells = CloneCells(_mainCells),
-            _altCells = CloneCells(_altCells),
+            _mainCells = (ScreenCell[][])_mainCells.Clone(),
+            _altCells = (ScreenCell[][])_altCells.Clone(),
+            _mainRowsShared = CreateSharedRowFlags(Height),
+            _altRowsShared = CreateSharedRowFlags(Height),
             _rowSignatures = (ulong[])_rowSignatures.Clone(),
             _rowSignatureDirty = (bool[])_rowSignatureDirty.Clone(),
         };
@@ -418,6 +503,8 @@ public sealed partial class ScreenBuffer
         cloned._tabStops.UnionWith(_tabStops);
 
         cloned._cells = cloned._isAltScreen ? cloned._altCells : cloned._mainCells;
+        cloned._rowsShared =
+            cloned._isAltScreen ? cloned._altRowsShared : cloned._mainRowsShared;
         return cloned;
     }
 
@@ -433,36 +520,80 @@ public sealed partial class ScreenBuffer
         _isAltScreen = source._isAltScreen;
         var sourceCells = source._cells;
         var targetCells = _isAltScreen ? _altCells : _mainCells;
+        var targetRowsShared = _isAltScreen ? _altRowsShared : _mainRowsShared;
         for (var row = 0; row < Height; row++)
         {
-            Array.Copy(sourceCells[row], targetCells[row], Width);
+            targetCells[row] = sourceCells[row];
+            targetRowsShared[row] = true;
         }
+        Array.Fill(source._rowsShared, true);
         Array.Copy(source._rowSignatures, _rowSignatures, Height);
         Array.Copy(source._rowSignatureDirty, _rowSignatureDirty, Height);
         _cells = targetCells;
+        _rowsShared = targetRowsShared;
     }
 
-    private void SetCell(int row, int col, ScreenCell cell)
+    private void SetCell(int row, int col, in ScreenCell cell)
     {
+        EnsureWritableRow(row);
         _cells[row][col] = cell;
         _rowSignatureDirty[row] = true;
     }
 
-    internal CellStyle ResolveCellStyle(TextStyle style)
+    private void EnsureWritableRow(int row)
+    {
+        if (!_rowsShared[row])
+        {
+            return;
+        }
+
+        _cells[row] = (ScreenCell[])_cells[row].Clone();
+        _rowsShared[row] = false;
+    }
+
+    private static bool[] CreateSharedRowFlags(int height)
+    {
+        var flags = new bool[height];
+        Array.Fill(flags, true);
+        return flags;
+    }
+
+    internal CellStyle ResolveCellStyle(in TextStyle style)
     {
         CellStyle cellStyle;
         if (_lastCellStyle is not null && style == _lastTextStyle)
         {
             cellStyle = _lastCellStyle;
         }
-        else if (!_styleCache.TryGetValue(style, out cellStyle!))
+        else
         {
-            cellStyle = new CellStyle(style);
-            if (_styleCache.Count >= 256)
+            ref var cachedStyle = ref CollectionsMarshal.GetValueRefOrAddDefault(
+                _styleCache,
+                style,
+                out var exists
+            );
+            if (exists)
             {
-                _styleCache.Clear();
+                cellStyle = cachedStyle!;
             }
-            _styleCache.Add(style, cellStyle);
+            else
+            {
+                cellStyle = new CellStyle(style);
+                if (_styleCache.Count > 256)
+                {
+                    _styleCache.Clear();
+                    ref var resetStyle = ref CollectionsMarshal.GetValueRefOrAddDefault(
+                        _styleCache,
+                        style,
+                        out _
+                    );
+                    resetStyle = cellStyle;
+                }
+                else
+                {
+                    cachedStyle = cellStyle;
+                }
+            }
         }
 
         _lastTextStyle = style;
@@ -472,7 +603,7 @@ public sealed partial class ScreenBuffer
 
     private ScreenCell CreateCell(
         string text,
-        TextStyle style,
+        in TextStyle style,
         bool isWide = false,
         bool isWideContinuation = false
     )
@@ -508,10 +639,17 @@ public sealed partial class ScreenBuffer
 
         if (value == '\t')
         {
-            var nextStop = _tabStops
-                .Where(stop => stop > CursorCol)
-                .DefaultIfEmpty(Width - 1)
-                .First();
+            var nextStop = Width - 1;
+            using var stops = _tabStops.GetEnumerator();
+            while (stops.MoveNext())
+            {
+                var stop = stops.Current;
+                if (stop > CursorCol)
+                {
+                    nextStop = stop;
+                    break;
+                }
+            }
 
             var spaces = Math.Max(1, nextStop - CursorCol);
             for (var i = 0; i < spaces; i++)

@@ -11,4 +11,7 @@
     <EmbeddedResource Include="Themes\transparent.json" LogicalName="chrome.transparent.json" />
     <EmbeddedResource Include="Themes\windows.json" LogicalName="chrome.windows.json" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.IO.Hashing" Version="10.0.0" />
+  </ItemGroup>
 </Project>

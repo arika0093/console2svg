@@ -120,10 +120,16 @@ public static partial class PtyRecorder
             );
         }
 
-        void AppendCapturedText(string text, double elapsedSeconds, int byteCount)
+        void AppendCapturedChars(
+            char[] textBuffer,
+            int charCount,
+            double elapsedSeconds,
+            int byteCount
+        )
         {
             if (pendingText is null)
             {
+                var text = new string(textBuffer, 0, charCount);
                 session.AddEvent(elapsedSeconds, text);
                 logger.ZLogDebug(
                     $"Captured chunk bytes={byteCount} chars={text.Length} elapsedMs={stopwatch.ElapsedMilliseconds} preview={ToPreview(text)}"
@@ -134,7 +140,7 @@ public static partial class PtyRecorder
             if (pendingText.Length == 0)
             {
                 pendingLastTime = elapsedSeconds;
-                pendingText.Append(text);
+                pendingText.Append(textBuffer, 0, charCount);
                 return;
             }
 
@@ -145,7 +151,7 @@ public static partial class PtyRecorder
             }
 
             pendingLastTime = elapsedSeconds;
-            pendingText.Append(text);
+            pendingText.Append(textBuffer, 0, charCount);
         }
 
         try
@@ -211,8 +217,7 @@ public static partial class PtyRecorder
                     continue;
                 }
 
-                var text = new string(chars, 0, charCount);
-                AppendCapturedText(text, stopwatch.Elapsed.TotalSeconds, count);
+                AppendCapturedChars(chars, charCount, stopwatch.Elapsed.TotalSeconds, count);
             }
         }
         catch (OperationCanceledException)
@@ -238,8 +243,12 @@ public static partial class PtyRecorder
                 }
             }
 
-            var trailing = new string(chars, 0, trailingCount);
-            AppendCapturedText(trailing, stopwatch.Elapsed.TotalSeconds, trailingCount);
+            AppendCapturedChars(
+                chars,
+                trailingCount,
+                stopwatch.Elapsed.TotalSeconds,
+                trailingCount
+            );
         }
 
         FlushPending();

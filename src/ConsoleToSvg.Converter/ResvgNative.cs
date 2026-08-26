@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -39,30 +40,42 @@ internal static class ResvgNative
             throw new ArgumentException("SVG must not be null or empty.", nameof(svg));
         }
 
-        var svgBytes = Encoding.UTF8.GetBytes(svg);
-        var status = c2s_resvg_render_png(
-            svgBytes,
-            (nuint)svgBytes.Length,
-            width ?? -1,
-            height ?? -1,
-            out var pngBuffer,
-            out var pngLength
-        );
-        ThrowForStatus(status);
-
+        var byteCount = Encoding.UTF8.GetByteCount(svg);
+        var svgBytes = ArrayPool<byte>.Shared.Rent(byteCount);
         try
         {
-            var length = checked((int)pngLength);
-            var png = new byte[length];
-            Marshal.Copy(pngBuffer, png, 0, length);
-            return png;
+            var bytesWritten = Encoding.UTF8.GetBytes(
+                svg.AsSpan(),
+                svgBytes.AsSpan(0, byteCount)
+            );
+            var status = c2s_resvg_render_png(
+                svgBytes,
+                (nuint)bytesWritten,
+                width ?? -1,
+                height ?? -1,
+                out var pngBuffer,
+                out var pngLength
+            );
+            ThrowForStatus(status);
+
+            try
+            {
+                var length = checked((int)pngLength);
+                var png = new byte[length];
+                Marshal.Copy(pngBuffer, png, 0, length);
+                return png;
+            }
+            finally
+            {
+                if (pngBuffer != IntPtr.Zero)
+                {
+                    c2s_resvg_free_buffer(pngBuffer, pngLength);
+                }
+            }
         }
         finally
         {
-            if (pngBuffer != IntPtr.Zero)
-            {
-                c2s_resvg_free_buffer(pngBuffer, pngLength);
-            }
+            ArrayPool<byte>.Shared.Return(svgBytes);
         }
     }
 

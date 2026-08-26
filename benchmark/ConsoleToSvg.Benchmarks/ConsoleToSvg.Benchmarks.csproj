@@ -29,6 +29,7 @@
       for the full comparison workflow.
     -->
     <ConsoleToSvgCoreProject Condition="'$(ConsoleToSvgCoreProject)' == ''">$(MSBuildThisFileDirectory)../../src/ConsoleToSvg.Core/ConsoleToSvg.Core.csproj</ConsoleToSvgCoreProject>
+    <DefineConstants Condition="'$(ConsoleToSvgBaseline)' == 'true'">$(DefineConstants);CONSOLE_TO_SVG_BASELINE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

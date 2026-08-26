@@ -9,7 +9,7 @@ internal static partial class SvgDocumentBuilder
 {
     public static void BeginSvg(
         SvgWriter sb,
-        Context context,
+        in Context context,
         Theme theme,
         string? additionalCss,
         string? font = null,
@@ -23,18 +23,18 @@ internal static partial class SvgDocumentBuilder
         sb.Append("<svg xmlns=\"http://www.w3.org/2000/svg\" ");
         sb.Append("xmlns:xlink=\"http://www.w3.org/1999/xlink\" ");
         sb.Append("width=\"");
-        sb.Append(Format(context.OutputWidth));
+        sb.Append(context.OutputWidth);
         sb.Append("\" height=\"");
-        sb.Append(Format(context.OutputHeight));
+        sb.Append(context.OutputHeight);
         sb.Append("\" ");
         sb.Append("viewBox=\"");
-        sb.Append(Format(context.ViewBoxX));
+        sb.Append(context.ViewBoxX);
         sb.Append(' ');
-        sb.Append(Format(context.ViewBoxY));
+        sb.Append(context.ViewBoxY);
         sb.Append(' ');
-        sb.Append(Format(context.ViewBoxWidth));
+        sb.Append(context.ViewBoxWidth);
         sb.Append(' ');
-        sb.Append(Format(context.ViewBoxHeight));
+        sb.Append(context.ViewBoxHeight);
         sb.Append("\" role=\"img\" aria-label=\"console2svg output\">\n");
 
         var effectiveFont = string.IsNullOrWhiteSpace(font)
@@ -79,7 +79,7 @@ internal static partial class SvgDocumentBuilder
 
     private static void AppendCommandHeader(
         SvgWriter sb,
-        Context context,
+        in Context context,
         Theme theme,
         string commandHeader,
         string[]? maskPatterns = null
@@ -89,20 +89,20 @@ internal static partial class SvgDocumentBuilder
         var bgY = context.HeaderOffsetY;
         var bgH = context.HeaderRows * context.CellHeight;
         sb.Append("<rect x=\"");
-        sb.Append(Format(x));
+        sb.Append(x);
         sb.Append("\" y=\"");
-        sb.Append(Format(bgY));
+        sb.Append(bgY);
         sb.Append("\" width=\"");
-        sb.Append(Format(context.ViewWidth));
+        sb.Append(context.ViewWidth);
         sb.Append("\" height=\"");
-        sb.Append(Format(bgH));
+        sb.Append(bgH);
         sb.Append("\" fill=\"");
         sb.Append(theme.Background);
         sb.Append("\"/>\n");
         sb.Append("<text class=\"crt\" x=\"");
-        sb.Append(Format(x));
+        sb.Append(x);
         sb.Append("\" y=\"");
-        sb.Append(Format(bgY + context.BaselineOffset));
+        sb.Append(bgY + context.BaselineOffset);
         sb.Append("\" fill=\"");
         sb.Append(theme.Foreground);
         sb.Append("\">");
@@ -113,7 +113,7 @@ internal static partial class SvgDocumentBuilder
     /// <summary>Renders the always-opaque background layer (desktop bg for desktop styles, canvas bg otherwise).</summary>
     private static void AppendBackground(
         SvgWriter sb,
-        Context context,
+        in Context context,
         ChromeDefinition? chrome,
         string[]? background = null
     )
@@ -125,16 +125,16 @@ internal static partial class SvgDocumentBuilder
             if (context.HasViewBoxOffset)
             {
                 sb.Append("x=\"");
-                sb.Append(Format(context.ViewBoxX));
+                sb.Append(context.ViewBoxX);
                 sb.Append("\" y=\"");
-                sb.Append(Format(context.ViewBoxY));
+                sb.Append(context.ViewBoxY);
                 sb.Append("\" ");
             }
 
             sb.Append("width=\"");
-            sb.Append(Format(context.ViewBoxWidth));
+            sb.Append(context.ViewBoxWidth);
             sb.Append("\" height=\"");
-            sb.Append(Format(context.ViewBoxHeight));
+            sb.Append(context.ViewBoxHeight);
             sb.Append("\" fill=\"");
             sb.Append(GetDesktopBgFill(background));
             sb.Append("\"/>\n");
@@ -148,7 +148,7 @@ internal static partial class SvgDocumentBuilder
     /// <summary>Renders chrome elements via the ChromeDefinition template. No opacity wrapper  Ecaller owns the outer g.</summary>
     private static void AppendChrome(
         SvgWriter sb,
-        Context context,
+        in Context context,
         Theme theme,
         ChromeDefinition? chrome
     )
@@ -197,7 +197,7 @@ internal static partial class SvgDocumentBuilder
     /// </summary>
     private static void AppendClientBackground(
         SvgWriter sb,
-        Context context,
+        in Context context,
         Theme theme,
         ChromeDefinition? chrome
     )
@@ -236,19 +236,19 @@ internal static partial class SvgDocumentBuilder
         }
 
         sb.Append("<rect x=\"");
-        sb.Append(Format(left));
+        sb.Append(left);
         sb.Append("\" y=\"");
-        sb.Append(Format(top));
+        sb.Append(top);
         sb.Append("\" width=\"");
-        sb.Append(Format(width));
+        sb.Append(width);
         sb.Append("\" height=\"");
-        sb.Append(Format(height));
+        sb.Append(height);
         if (chrome is { ClientCornerRadius: > 0 })
         {
             sb.Append("\" rx=\"");
-            sb.Append(Format(chrome.ClientCornerRadius));
+            sb.Append(chrome.ClientCornerRadius);
             sb.Append("\" ry=\"");
-            sb.Append(Format(chrome.ClientCornerRadius));
+            sb.Append(chrome.ClientCornerRadius);
         }
         sb.Append("\" fill=\"");
         sb.Append(theme.Background);
@@ -262,7 +262,7 @@ internal static partial class SvgDocumentBuilder
     /// </summary>
     private static void AppendCanvasBackground(
         SvgWriter sb,
-        Context context,
+        in Context context,
         ChromeDefinition? chrome,
         string[]? background
     )
@@ -287,16 +287,16 @@ internal static partial class SvgDocumentBuilder
         if (context.HasViewBoxOffset)
         {
             sb.Append("x=\"");
-            sb.Append(Format(context.ViewBoxX));
+            sb.Append(context.ViewBoxX);
             sb.Append("\" y=\"");
-            sb.Append(Format(context.ViewBoxY));
+            sb.Append(context.ViewBoxY);
             sb.Append("\" ");
         }
 
         sb.Append("width=\"");
-        sb.Append(Format(context.ViewBoxWidth));
+        sb.Append(context.ViewBoxWidth);
         sb.Append("\" height=\"");
-        sb.Append(Format(context.ViewBoxHeight));
+        sb.Append(context.ViewBoxHeight);
         sb.Append("\" fill=\"");
         sb.Append(fill);
         sb.Append("\"/>\n"); // always fully opaque
@@ -308,7 +308,7 @@ internal static partial class SvgDocumentBuilder
         if (opacity < 1d)
         {
             sb.Append("<g opacity=\"");
-            sb.Append(Format(opacity));
+            sb.Append(opacity);
             sb.Append("\">\n");
         }
     }
@@ -337,7 +337,7 @@ internal static partial class SvgDocumentBuilder
     /// <summary>Emits SVG &lt;defs&gt; containing gradient or image background definitions if needed.</summary>
     private static void AppendDefs(
         SvgWriter sb,
-        Context context,
+        in Context context,
         ChromeDefinition? chrome,
         string[]? background
     )
@@ -398,7 +398,11 @@ internal static partial class SvgDocumentBuilder
         sb.Append("</linearGradient>\n");
     }
 
-    private static void AppendImagePatternDef(SvgWriter sb, string imagePath, Context context)
+    private static void AppendImagePatternDef(
+        SvgWriter sb,
+        string imagePath,
+        in Context context
+    )
     {
         string href;
         var mimeType = GetImageMimeType(imagePath);
@@ -422,13 +426,13 @@ internal static partial class SvgDocumentBuilder
         sb.Append(
             "<pattern id=\"desktop-bg\" patternUnits=\"userSpaceOnUse\" patternContentUnits=\"userSpaceOnUse\" x=\""
         );
-        sb.Append(Format(context.ViewBoxX));
+        sb.Append(context.ViewBoxX);
         sb.Append("\" y=\"");
-        sb.Append(Format(context.ViewBoxY));
+        sb.Append(context.ViewBoxY);
         sb.Append("\" width=\"");
-        sb.Append(Format(context.ViewBoxWidth));
+        sb.Append(context.ViewBoxWidth);
         sb.Append("\" height=\"");
-        sb.Append(Format(context.ViewBoxHeight));
+        sb.Append(context.ViewBoxHeight);
         sb.Append("\">");
         sb.Append("<image href=\"");
         sb.Append(EscapeAttribute(href));
@@ -437,9 +441,9 @@ internal static partial class SvgDocumentBuilder
         sb.Append("\" y=\"");
         sb.Append("0");
         sb.Append("\" width=\"");
-        sb.Append(Format(context.ViewBoxWidth));
+        sb.Append(context.ViewBoxWidth);
         sb.Append("\" height=\"");
-        sb.Append(Format(context.ViewBoxHeight));
+        sb.Append(context.ViewBoxHeight);
         sb.Append("\" preserveAspectRatio=\"xMidYMid slice\"/>");
         sb.Append("</pattern>\n");
     }
@@ -490,22 +494,108 @@ internal static partial class SvgDocumentBuilder
         SvgWriter sb,
         System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
         System.Collections.Generic.IReadOnlyList<int> uniqueFrameIndices,
-        Context context,
+        in Context context,
         Theme theme,
         string lengthAdjust,
         double opacity = 1d,
         string[]? maskPatterns = null
     )
     {
-        sb.Append("<defs>\n");
-        foreach (var fi in uniqueFrameIndices)
+        var rowCount = context.EndRowExclusive - context.StartRow;
+        var totalRowReferences = uniqueFrameIndices.Count * (long)rowCount;
+        var rowSignatures = new System.Collections.Generic.HashSet<ulong>();
+        foreach (var frameIndex in uniqueFrameIndices)
         {
+            var buffer = frames[frameIndex].Buffer;
+            for (var row = context.StartRow; row < context.EndRowExclusive; row++)
+            {
+                rowSignatures.Add(buffer.GetRowVisualSignature(row));
+            }
+        }
+
+        if (rowSignatures.Count * 10L >= totalRowReferences * 9L)
+        {
+            sb.Append("<defs>\n");
+            foreach (var frameIndex in uniqueFrameIndices)
+            {
+                AppendFrameGroup(
+                    sb,
+                    frames[frameIndex].Buffer,
+                    context,
+                    theme,
+                    id: $"fd-{frameIndex}",
+                    @class: null,
+                    opacity: opacity,
+                    lengthAdjust: lengthAdjust,
+                    maskPatterns: maskPatterns
+                );
+            }
+            sb.Append("</defs>\n");
+            return;
+        }
+
+        var rowDefinitions =
+            new System.Collections.Generic.List<(int FrameIndex, int Row)>();
+        var hashToRowDefinitionIndices =
+            new System.Collections.Generic.Dictionary<
+                ulong,
+                System.Collections.Generic.List<int>
+            >();
+        var frameRowDefinitions = new int[uniqueFrameIndices.Count][];
+
+        for (var framePosition = 0; framePosition < uniqueFrameIndices.Count; framePosition++)
+        {
+            var frameIndex = uniqueFrameIndices[framePosition];
+            var buffer = frames[frameIndex].Buffer;
+            var rowMappings = new int[rowCount];
+            frameRowDefinitions[framePosition] = rowMappings;
+
+            for (var row = context.StartRow; row < context.EndRowExclusive; row++)
+            {
+                var signature = buffer.GetRowVisualSignature(row);
+                var definitionIndex = -1;
+                if (hashToRowDefinitionIndices.TryGetValue(signature, out var candidates))
+                {
+                    foreach (var candidateIndex in candidates)
+                    {
+                        var candidate = rowDefinitions[candidateIndex];
+                        if (
+                            buffer.HasSameVisualRow(
+                                row,
+                                frames[candidate.FrameIndex].Buffer,
+                                candidate.Row
+                            )
+                        )
+                        {
+                            definitionIndex = candidateIndex;
+                            break;
+                        }
+                    }
+                }
+
+                if (definitionIndex < 0)
+                {
+                    candidates ??= [];
+                    definitionIndex = rowDefinitions.Count;
+                    candidates.Add(definitionIndex);
+                    hashToRowDefinitionIndices[signature] = candidates;
+                    rowDefinitions.Add((frameIndex, row));
+                }
+
+                rowMappings[row - context.StartRow] = definitionIndex;
+            }
+        }
+
+        sb.Append("<defs>\n");
+        for (var definitionIndex = 0; definitionIndex < rowDefinitions.Count; definitionIndex++)
+        {
+            var definition = rowDefinitions[definitionIndex];
             AppendFrameGroup(
                 sb,
-                frames[fi].Buffer,
-                context,
+                frames[definition.FrameIndex].Buffer,
+                CreateRowContext(context, definition.Row),
                 theme,
-                id: $"fd-{fi}",
+                id: $"rd-{definitionIndex}",
                 @class: null,
                 opacity: opacity,
                 lengthAdjust: lengthAdjust,
@@ -513,8 +603,47 @@ internal static partial class SvgDocumentBuilder
             );
         }
 
+        for (var framePosition = 0; framePosition < uniqueFrameIndices.Count; framePosition++)
+        {
+            var frameIndex = uniqueFrameIndices[framePosition];
+            sb.Append("<g id=\"fd-");
+            sb.Append(frameIndex);
+            sb.Append("\" transform=\"translate(");
+            sb.Append(context.ContentOffsetX - context.PixelCropLeft);
+            sb.Append(' ');
+            sb.Append(context.ContentOffsetY - context.PixelCropTop);
+            sb.Append(")\">\n");
+            var rowMappings = frameRowDefinitions[framePosition];
+            for (var rowOffset = 0; rowOffset < rowMappings.Length; rowOffset++)
+            {
+                sb.Append("<use href=\"#rd-");
+                sb.Append(rowMappings[rowOffset]);
+                sb.Append("\" transform=\"translate(0 ");
+                sb.Append(rowOffset * context.CellHeight);
+                sb.Append(")\"/>\n");
+            }
+            sb.Append("</g>\n");
+        }
+
         sb.Append("</defs>\n");
     }
+
+    private static Context CreateRowContext(in Context context, int row) =>
+        new()
+        {
+            StartRow = row,
+            EndRowExclusive = row + 1,
+            StartCol = context.StartCol,
+            EndColExclusive = context.EndColExclusive,
+            ContentWidth = context.ContentWidth,
+            ContentHeight = context.CellHeight,
+            ContentOffsetX = 0d,
+            ContentOffsetY = 0d,
+            FontSize = context.FontSize,
+            CellWidth = context.CellWidth,
+            CellHeight = context.CellHeight,
+            BaselineOffset = context.BaselineOffset,
+        };
 
     /// <summary>
     /// Emits a &lt;use&gt; element that references a unique frame stored in &lt;defs&gt; by

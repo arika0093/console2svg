@@ -5,54 +5,6 @@
 .c2 .q { shape-rendering: crispEdges; }
 .c2 .c2b { animation: c2b 1s step-start infinite; }
 
-.c2.f { opacity: 0; }
-.c2.f0 { animation:c2k0 6.167s linear infinite; }
-.c2.f1 { animation:c2k1 6.167s linear infinite; }
-.c2.f2 { animation:c2k2 6.167s linear infinite; }
-.c2.f3 { animation:c2k3 6.167s linear infinite; }
-.c2.f4 { animation:c2k4 6.167s linear infinite; }
-.c2.f5 { animation:c2k5 6.167s linear infinite; }
-.c2.f6 { animation:c2k6 6.167s linear infinite; }
-.c2.f7 { animation:c2k7 6.167s linear infinite; }
-.c2.f8 { animation:c2k8 6.167s linear infinite; }
-.c2.f9 { animation:c2k9 6.167s linear infinite; }
-.c2.f10 { animation:c2k10 6.167s linear infinite; }
-.c2.f11 { animation:c2k11 6.167s linear infinite; }
-.c2.f12 { animation:c2k12 6.167s linear infinite; }
-.c2.f13 { animation:c2k13 6.167s linear infinite; }
-.c2.f14 { animation:c2k14 6.167s linear infinite; }
-.c2.f15 { animation:c2k15 6.167s linear infinite; }
-.c2.f16 { animation:c2k16 6.167s linear infinite; }
-.c2.f17 { animation:c2k17 6.167s linear infinite; }
-.c2.f18 { animation:c2k18 6.167s linear infinite; }
-.c2.f19 { animation:c2k19 6.167s linear infinite; }
-.c2.f20 { animation:c2k20 6.167s linear infinite; }
-.c2.f21 { animation:c2k21 6.167s linear infinite; }
-.c2.f22 { animation:c2k22 6.167s linear infinite; }
-@keyframes c2k0 { 0%, 0% { opacity: 0; } 0%, 10.811% { opacity: 1; } 10.812%, 100% { opacity: 0; } }
-@keyframes c2k1 { 0%, 10.81% { opacity: 0; } 10.811%, 20.27% { opacity: 1; } 20.271%, 100% { opacity: 0; } }
-@keyframes c2k2 { 0%, 20.269% { opacity: 0; } 20.27%, 44.595% { opacity: 1; } 44.596%, 100% { opacity: 0; } }
-@keyframes c2k3 { 0%, 44.594% { opacity: 0; } 44.595%, 52.703% { opacity: 1; } 52.704%, 100% { opacity: 0; } }
-@keyframes c2k4 { 0%, 52.702% { opacity: 0; } 52.703%, 54.054% { opacity: 1; } 54.055%, 100% { opacity: 0; } }
-@keyframes c2k5 { 0%, 54.053% { opacity: 0; } 54.054%, 55.405% { opacity: 1; } 55.406%, 100% { opacity: 0; } }
-@keyframes c2k6 { 0%, 55.404% { opacity: 0; } 55.405%, 56.757% { opacity: 1; } 56.758%, 100% { opacity: 0; } }
-@keyframes c2k7 { 0%, 56.756% { opacity: 0; } 56.757%, 58.108% { opacity: 1; } 58.109%, 100% { opacity: 0; } }
-@keyframes c2k8 { 0%, 58.107% { opacity: 0; } 58.108%, 58.784% { opacity: 1; } 58.785%, 100% { opacity: 0; } }
-@keyframes c2k9 { 0%, 58.783% { opacity: 0; } 58.784%, 59.459% { opacity: 1; } 59.46%, 100% { opacity: 0; } }
-@keyframes c2k10 { 0%, 59.458% { opacity: 0; } 59.459%, 60.811% { opacity: 1; } 60.812%, 100% { opacity: 0; } }
-@keyframes c2k11 { 0%, 60.81% { opacity: 0; } 60.811%, 62.162% { opacity: 1; } 62.163%, 100% { opacity: 0; } }
-@keyframes c2k12 { 0%, 62.161% { opacity: 0; } 62.162%, 62.838% { opacity: 1; } 62.839%, 100% { opacity: 0; } }
-@keyframes c2k13 { 0%, 62.837% { opacity: 0; } 62.838%, 63.514% { opacity: 1; } 63.515%, 100% { opacity: 0; } }
-@keyframes c2k14 { 0%, 63.513% { opacity: 0; } 63.514%, 64.865% { opacity: 1; } 64.866%, 100% { opacity: 0; } }
-@keyframes c2k15 { 0%, 64.864% { opacity: 0; } 64.865%, 66.216% { opacity: 1; } 66.217%, 100% { opacity: 0; } }
-@keyframes c2k16 { 0%, 66.215% { opacity: 0; } 66.216%, 67.568% { opacity: 1; } 67.569%, 100% { opacity: 0; } }
-@keyframes c2k17 { 0%, 67.567% { opacity: 0; } 67.568%, 68.919% { opacity: 1; } 68.92%, 100% { opacity: 0; } }
-@keyframes c2k18 { 0%, 68.918% { opacity: 0; } 68.919%, 70.27% { opacity: 1; } 70.271%, 100% { opacity: 0; } }
-@keyframes c2k19 { 0%, 70.269% { opacity: 0; } 70.27%, 71.622% { opacity: 1; } 71.623%, 100% { opacity: 0; } }
-@keyframes c2k20 { 0%, 71.621% { opacity: 0; } 71.622%, 74.324% { opacity: 1; } 74.325%, 100% { opacity: 0; } }
-@keyframes c2k21 { 0%, 74.323% { opacity: 0; } 74.324%, 91.892% { opacity: 1; } 91.893%, 100% { opacity: 0; } }
-@keyframes c2k22 { 0%, 91.891% { opacity: 0; } 91.892% { opacity: 1; } 100% { opacity: 1; } }
-
 .c2 .w { white-space: pre; }
 .c2 .aa{fill:#d4d4d4}
 .c2 .ab{fill:#1e1e1e}
@@ -98,14 +50,14 @@
 </g>
 <g id="c2r6" class="c2 c"><use href="#c2r5"/>
 <g transform="translate(25.2)">
-<rect width="16.8" height="18" id="c2e5" fill="#1e1e1e" stroke="#1e1e1e" stroke-width="2" vector-effect="non-scaling-stroke"/>
-<text class="aa" y="14" textLength="16.8">ch</text>
+<use href="#c2e4"/>
+<text class="aa" y="14" textLength="8.4">c</text>
 </g>
 </g>
 <g id="c2r7" class="c2 c"><use href="#c2r6"/>
-<g transform="translate(42)">
-<use href="#c2e4"/>
-<text class="aa" y="14" textLength="8.4">o</text>
+<g transform="translate(33.6)">
+<rect width="16.8" height="18" id="c2e5" fill="#1e1e1e" stroke="#1e1e1e" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<text class="aa" y="14" textLength="16.8">ho</text>
 </g>
 </g>
 <g id="c2r8" class="c2 c"><use href="#c2r7"/>
@@ -117,98 +69,92 @@
 <g id="c2r9" class="c2 c">
 <use href="#c2e0"/>
 <use href="#c2e3"/>
-<text class="aa w" y="14" textLength="84">$ echo &quot;in</text>
+<text class="aa w" y="14" textLength="75.6">$ echo &quot;i</text>
 <text class="ac w" x="604.8" y="14" textLength="210">● REC (F9:End, F12:Pause)</text>
 </g>
 <g id="c2r10" class="c2 c"><use href="#c2r9"/>
-<g transform="translate(84)">
-<use href="#c2e4"/>
-<text class="aa" y="14" textLength="8.4">t</text>
+<g transform="translate(75.6)">
+<rect width="25.2" height="18" id="c2e6" fill="#1e1e1e" stroke="#1e1e1e" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<text class="aa" y="14" textLength="25.2">nte</text>
 </g>
 </g>
 <g id="c2r11" class="c2 c"><use href="#c2r10"/>
-<g transform="translate(92.4)">
-<use href="#c2e4"/>
-<text class="aa" y="14" textLength="8.4">e</text>
-</g>
-</g>
-<g id="c2r12" class="c2 c"><use href="#c2r11"/>
 <g transform="translate(100.8)">
 <use href="#c2e4"/>
 <text class="aa" y="14" textLength="8.4">r</text>
 </g>
 </g>
-<g id="c2r13" class="c2 c"><use href="#c2r12"/>
+<g id="c2r12" class="c2 c"><use href="#c2r11"/>
 <g transform="translate(109.2)">
-<rect width="25.2" height="18" id="c2e6" fill="#1e1e1e" stroke="#1e1e1e" stroke-width="2" vector-effect="non-scaling-stroke"/>
-<text class="aa" y="14" textLength="25.2">act</text>
+<use href="#c2e4"/>
+<text class="aa" y="14" textLength="8.4">a</text>
+</g>
+</g>
+<g id="c2r13" class="c2 c"><use href="#c2r12"/>
+<g transform="translate(117.6)">
+<use href="#c2e4"/>
+<text class="aa" y="14" textLength="8.4">c</text>
 </g>
 </g>
 <g id="c2r14" class="c2 c">
 <use href="#c2e0"/>
 <use href="#c2e3"/>
-<text class="aa w" y="14" textLength="142.8">$ echo &quot;interacti</text>
+<text class="aa w" y="14" textLength="151.2">$ echo &quot;interactiv</text>
 <text class="ac w" x="604.8" y="14" textLength="210">● REC (F9:End, F12:Pause)</text>
 </g>
 <g id="c2r15" class="c2 c"><use href="#c2r14"/>
-<g transform="translate(142.8)">
-<use href="#c2e4"/>
-<text class="aa" y="14" textLength="8.4">v</text>
-</g>
-</g>
-<g id="c2r16" class="c2 c"><use href="#c2r15"/>
 <g transform="translate(151.2)">
 <use href="#c2e4"/>
 <text class="aa" y="14" textLength="8.4">e</text>
 </g>
 </g>
-<g id="c2r17" class="c2 c"><use href="#c2r16"/>
+<g id="c2r16" class="c2 c"><use href="#c2r15"/>
 <g transform="translate(168)">
 <use href="#c2e4"/>
 <text class="aa" y="14" textLength="8.4">c</text>
 </g>
 </g>
-<g id="c2r18" class="c2 c"><use href="#c2r17"/>
+<g id="c2r17" class="c2 c"><use href="#c2r16"/>
 <g transform="translate(176.4)">
 <use href="#c2e5"/>
 <text class="aa" y="14" textLength="16.8">ap</text>
 </g>
 </g>
+<g id="c2r18" class="c2 c"><use href="#c2r17"/>
+<g transform="translate(193.2)">
+<use href="#c2e5"/>
+<text class="aa" y="14" textLength="16.8">tu</text>
+</g>
+</g>
 <g id="c2r19" class="c2 c">
 <use href="#c2e0"/>
 <use href="#c2e3"/>
-<text class="aa w" y="14" textLength="201.6">$ echo &quot;interactive capt</text>
+<text class="aa w" y="14" textLength="218.4">$ echo &quot;interactive captur</text>
 <text class="ac w" x="604.8" y="14" textLength="210">● REC (F9:End, F12:Pause)</text>
 </g>
 <g id="c2r20" class="c2 c"><use href="#c2r19"/>
-<g transform="translate(201.6)">
-<use href="#c2e6"/>
-<text class="aa" y="14" textLength="25.2">ure</text>
+<g transform="translate(218.4)">
+<use href="#c2e5"/>
+<text class="aa" y="14" textLength="16.8">e&quot;</text>
 </g>
 </g>
-<g id="c2r21" class="c2 c"><use href="#c2r20"/>
-<g transform="translate(226.8)">
-<use href="#c2e4"/>
-<text class="aa" y="14" textLength="8.4">&quot;</text>
-</g>
-</g>
-<g id="c2r22" class="c2 c">
+<g id="c2r21" class="c2 c">
 <use href="#c2e0"/>
 <text class="aa w" y="14" textLength="159.6">interactive capture</text>
 </g>
-<g id="c2r23" class="c2 c">
+<g id="c2r22" class="c2 c">
 <use href="#c2e0"/>
 <rect class="q" x="756" width="75.6" height="18" id="c2e7" fill="#87D787" stroke="#87D787" stroke-width="2" vector-effect="non-scaling-stroke"/>
 <text class="aa w" y="14" textLength="235.2">$ echo &quot;interactive capture&quot;</text>
 <text class="ab" x="772.8" y="14" textLength="42">Saved</text>
 </g>
-<g id="c2r24" class="c2 c"><use href="#c2r1"/>
+<g id="c2r23" class="c2 c"><use href="#c2r1"/>
 <g>
 <rect width="33.6" height="18" id="c2e8" fill="#1e1e1e" stroke="#1e1e1e" stroke-width="2" vector-effect="non-scaling-stroke"/>
 <text class="aa" y="14" textLength="33.6">exit</text>
 </g>
 </g>
-<g id="c2r25" class="c2 c"><use href="#c2r1"/>
+<g id="c2r24" class="c2 c"><use href="#c2r1"/>
 <g>
 <rect width="117.6" height="18" id="c2e9" fill="#1e1e1e" stroke="#1e1e1e" stroke-width="2" vector-effect="non-scaling-stroke"/>
 <text class="aa w" y="14" textLength="117.6">Wait succeeded</text>
@@ -235,6 +181,7 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="16.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d1" class="c2">
 <use href="#c2r2"/>
@@ -257,6 +204,7 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="16.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d2" class="c2">
 <use href="#c2r3"/>
@@ -279,6 +227,7 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="16.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d3" class="c2">
 <use href="#c2r4"/>
@@ -301,6 +250,7 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="16.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d4" class="c2">
 <use href="#c2r5"/>
@@ -323,6 +273,7 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="25.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d5" class="c2">
 <use href="#c2r6"/>
@@ -345,6 +296,7 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="33.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d6" class="c2">
 <use href="#c2r7"/>
@@ -367,6 +319,7 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="50.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d7" class="c2">
 <use href="#c2r8"/>
@@ -389,6 +342,7 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="67.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d8" class="c2">
 <use href="#c2r9"/>
@@ -411,6 +365,7 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="75.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d9" class="c2">
 <use href="#c2r10"/>
@@ -433,6 +388,7 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="100.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d10" class="c2">
 <use href="#c2r11"/>
@@ -455,6 +411,7 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="109.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d11" class="c2">
 <use href="#c2r12"/>
@@ -477,6 +434,7 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="117.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d12" class="c2">
 <use href="#c2r13"/>
@@ -499,6 +457,7 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="126" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d13" class="c2">
 <use href="#c2r14"/>
@@ -521,6 +480,7 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="151.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d14" class="c2">
 <use href="#c2r15"/>
@@ -543,6 +503,7 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="159.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d15" class="c2">
 <use href="#c2r16"/>
@@ -565,6 +526,7 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="176.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d16" class="c2">
 <use href="#c2r17"/>
@@ -587,6 +549,7 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="193.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d17" class="c2">
 <use href="#c2r18"/>
@@ -609,6 +572,7 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="210" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d18" class="c2">
 <use href="#c2r19"/>
@@ -631,11 +595,12 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="218.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d19" class="c2">
 <use href="#c2r20"/>
-<use href="#c2r1" y="18"/>
-<use href="#c2r1" y="36"/>
+<use href="#c2r21" y="18"/>
+<use href="#c2r0" y="36"/>
 <use href="#c2r1" y="54"/>
 <use href="#c2r1" y="72"/>
 <use href="#c2r1" y="90"/>
@@ -653,10 +618,11 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="16.8" y="36" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d20" class="c2">
-<use href="#c2r21"/>
-<use href="#c2r22" y="18"/>
+<use href="#c2r22"/>
+<use href="#c2r21" y="18"/>
 <use href="#c2r0" y="36"/>
 <use href="#c2r1" y="54"/>
 <use href="#c2r1" y="72"/>
@@ -675,13 +641,14 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
+<rect class="u" x="16.8" y="36" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g id="c2d21" class="c2">
-<use href="#c2r23"/>
-<use href="#c2r22" y="18"/>
+<use href="#c2r22"/>
+<use href="#c2r21" y="18"/>
 <use href="#c2r0" y="36"/>
-<use href="#c2r1" y="54"/>
-<use href="#c2r1" y="72"/>
+<use href="#c2r23" y="54"/>
+<use href="#c2r24" y="72"/>
 <use href="#c2r1" y="90"/>
 <use href="#c2r1" y="108"/>
 <use href="#c2r1" y="126"/>
@@ -697,99 +664,12 @@
 <use href="#c2r1" y="306"/>
 <use href="#c2r1" y="324"/>
 <use href="#c2r1" y="342"/>
-</g>
-<g id="c2d22" class="c2">
-<use href="#c2r23"/>
-<use href="#c2r22" y="18"/>
-<use href="#c2r0" y="36"/>
-<use href="#c2r24" y="54"/>
-<use href="#c2r25" y="72"/>
-<use href="#c2r1" y="90"/>
-<use href="#c2r1" y="108"/>
-<use href="#c2r1" y="126"/>
-<use href="#c2r1" y="144"/>
-<use href="#c2r1" y="162"/>
-<use href="#c2r1" y="180"/>
-<use href="#c2r1" y="198"/>
-<use href="#c2r1" y="216"/>
-<use href="#c2r1" y="234"/>
-<use href="#c2r1" y="252"/>
-<use href="#c2r1" y="270"/>
-<use href="#c2r1" y="288"/>
-<use href="#c2r1" y="306"/>
-<use href="#c2r1" y="324"/>
-<use href="#c2r1" y="342"/>
+<rect class="u" x="117.6" y="90" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 </defs>
 <g transform="translate(9 36)">
-<g id="c2f0" class="c2 f f0"><use href="#c2d0"/>
-<rect class="u" x="16.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f1" class="c2 f f1"><use href="#c2d1"/>
-<rect class="u" x="16.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f2" class="c2 f f2"><use href="#c2d2"/>
-<rect class="u" x="16.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f3" class="c2 f f3"><use href="#c2d3"/>
-<rect class="u" x="16.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f4" class="c2 f f4"><use href="#c2d4"/>
-<rect class="u" x="25.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f5" class="c2 f f5"><use href="#c2d5"/>
-<rect class="u" x="42" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f6" class="c2 f f6"><use href="#c2d6"/>
-<rect class="u" x="50.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f7" class="c2 f f7"><use href="#c2d7"/>
-<rect class="u" x="67.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f8" class="c2 f f8"><use href="#c2d8"/>
-<rect class="u" x="84" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f9" class="c2 f f9"><use href="#c2d9"/>
-<rect class="u" x="92.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f10" class="c2 f f10"><use href="#c2d10"/>
-<rect class="u" x="100.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f11" class="c2 f f11"><use href="#c2d11"/>
-<rect class="u" x="109.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f12" class="c2 f f12"><use href="#c2d12"/>
-<rect class="u" x="134.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f13" class="c2 f f13"><use href="#c2d13"/>
-<rect class="u" x="142.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f14" class="c2 f f14"><use href="#c2d14"/>
-<rect class="u" x="151.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f15" class="c2 f f15"><use href="#c2d15"/>
-<rect class="u" x="159.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f16" class="c2 f f16"><use href="#c2d16"/>
-<rect class="u" x="176.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f17" class="c2 f f17"><use href="#c2d17"/>
-<rect class="u" x="193.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f18" class="c2 f f18"><use href="#c2d18"/>
-<rect class="u" x="201.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f19" class="c2 f f19"><use href="#c2d19"/>
-<rect class="u" x="226.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f20" class="c2 f f20"><use href="#c2d20"/>
-<rect class="u" x="16.8" y="36" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f21" class="c2 f f21"><use href="#c2d21"/>
-<rect class="u" x="16.8" y="36" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g id="c2f22" class="c2 f f22"><use href="#c2d22"/>
-<rect class="u" x="117.6" y="90" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
+<use id="c2f0" href="#c2d0">
+<animate attributeName="href" values="#c2d0;#c2d1;#c2d2;#c2d3;#c2d4;#c2d5;#c2d6;#c2d7;#c2d8;#c2d9;#c2d10;#c2d11;#c2d12;#c2d13;#c2d14;#c2d15;#c2d16;#c2d17;#c2d18;#c2d19;#c2d20;#c2d21" keyTimes="0;0.109589;0.191781;0.438356;0.520548;0.534247;0.547945;0.561644;0.575342;0.589041;0.59589;0.60274;0.616438;0.630137;0.643836;0.657534;0.671233;0.684932;0.69863;0.712329;0.739726;0.917808" dur="6.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
 </g>
 </svg>

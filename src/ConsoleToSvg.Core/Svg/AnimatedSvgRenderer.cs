@@ -139,8 +139,6 @@ public static partial class AnimatedSvgRenderer
             reducedFrames = filtered;
         }
 
-        // Frame content excludes the cursor so cursor-only differences can share
-        // the same <defs> entry. The cursor is emitted with each animated frame.
         var hashToDefsFrameIndices =
             new System.Collections.Generic.Dictionary<
                 ulong,
@@ -151,7 +149,7 @@ public static partial class AnimatedSvgRenderer
 
         for (var i = 0; i < reducedFrames.Count; i++)
         {
-            var hash = reducedFrames[i].Buffer.GetContentSignature();
+            var hash = GetVisualSignatureCached(reducedFrames[i].Buffer, signatureCache);
             var defsIdx = -1;
             if (hashToDefsFrameIndices.TryGetValue(hash, out var candidates))
             {
@@ -160,7 +158,7 @@ public static partial class AnimatedSvgRenderer
                     var candidate = candidates[candidateIndex];
                     if (
                         reducedFrames[i]
-                            .Buffer.HasSameContentState(
+                            .Buffer.HasSameVisualState(
                                 reducedFrames[uniqueFrameIndices[candidate]].Buffer
                             )
                     )
@@ -198,13 +196,6 @@ public static partial class AnimatedSvgRenderer
         );
         var totalDuration = lastFrameTime + finalFrameHold + options.VideoFadeOut;
 
-        var css = BuildAnimationCss(
-            reducedFrames,
-            totalDuration,
-            options.VideoFadeOut,
-            options.Loop
-        );
-
         var svgWriter = new SvgWriter(writer);
         var styles = new SvgStyleRegistry();
         if (context.HeaderRows > 0 && !string.IsNullOrEmpty(options.CommandHeader))
@@ -222,7 +213,7 @@ public static partial class AnimatedSvgRenderer
             context,
             theme,
             styles,
-            css,
+            additionalCss: null,
             font: options.Font,
             chrome: options.Chrome,
             commandHeader: options.CommandHeader,
@@ -248,19 +239,15 @@ public static partial class AnimatedSvgRenderer
             svgWriter,
             context
         );
-        for (var i = 0; i < reducedFrames.Count; i++)
-        {
-            var defsFrameIndex = uniqueFrameIndices[frameToDefsFrameIndex[i]];
-            SvgDocumentBuilder.AppendFrameUse(
-                svgWriter,
-                defsId: $"c2d{defsFrameIndex}",
-                frameId: $"c2f{i}",
-                frameClass: $"c2 f f{i}",
-                reducedFrames[i].Buffer,
-                context,
-                theme
-            );
-        }
+        SvgDocumentBuilder.AppendAnimatedFrameUse(
+            svgWriter,
+            reducedFrames,
+            frameToDefsFrameIndex,
+            uniqueFrameIndices,
+            totalDuration,
+            options.VideoFadeOut,
+            options.Loop
+        );
         if (hasContentTransform)
         {
             svgWriter.Append("</g>\n");

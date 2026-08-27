@@ -512,7 +512,7 @@ internal static partial class SvgDocumentBuilder
 
     /// <summary>
     /// Renders unique frame contents into a &lt;defs&gt; block so they can be referenced
-    /// by &lt;use&gt; elements emitted by <see cref="AppendFrameUse"/>. Each unique frame is stored
+    /// by the animated &lt;use&gt; emitted by <see cref="AppendAnimatedFrameUse"/>. Each unique frame is stored
     /// as <c>&lt;g id="c2d{frameIndex}"&gt;</c> with no animation class.
     /// </summary>
     public static void AppendFrameDefs(
@@ -555,7 +555,7 @@ internal static partial class SvgDocumentBuilder
                     opacity: opacity,
                     lengthAdjust: lengthAdjust,
                     maskPatterns: maskPatterns,
-                    renderCursor: false,
+                    renderCursor: true,
                     applyContentTransform: false
                 );
             }
@@ -730,6 +730,13 @@ internal static partial class SvgDocumentBuilder
                 }
                 sb.Append("/>\n");
             }
+            RenderCursor(
+                sb,
+                frames[frameIndex].Buffer,
+                context,
+                theme,
+                includeScrollback: false
+            );
             sb.Append("</g>\n");
         }
 
@@ -861,27 +868,75 @@ internal static partial class SvgDocumentBuilder
     );
 
     /// <summary>
-    /// Emits a &lt;use&gt; element that references a unique frame stored in &lt;defs&gt; by
-    /// <see cref="AppendFrameDefs"/>. The element carries the per-frame animation CSS class.
+    /// Emits one &lt;use&gt; whose reference is switched discretely between frame definitions.
     /// </summary>
-    public static void AppendFrameUse(
+    public static void AppendAnimatedFrameUse(
         SvgWriter sb,
-        string defsId,
-        string frameId,
-        string frameClass,
-        ScreenBuffer buffer,
-        in Context context,
-        Theme theme
+        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
+        System.Collections.Generic.IReadOnlyList<int> frameToDefsFrameIndex,
+        System.Collections.Generic.IReadOnlyList<int> uniqueFrameIndices,
+        double totalDuration,
+        double fadeOut,
+        bool loop
     )
     {
-        sb.Append("<g id=\"");
-        sb.Append(EscapeAttribute(frameId));
-        sb.Append("\" class=\"");
-        sb.Append(EscapeAttribute(frameClass));
-        sb.Append("\"><use href=\"#");
-        sb.Append(EscapeAttribute(defsId));
-        sb.Append("\"/>\n");
-        RenderCursor(sb, buffer, context, theme, includeScrollback: false);
-        sb.Append("</g>\n");
+        var firstDefinition = uniqueFrameIndices[frameToDefsFrameIndex[0]];
+        sb.Append("<use id=\"c2f0\" href=\"#c2d");
+        sb.Append(firstDefinition);
+        sb.Append("\">\n");
+
+        if (frames.Count > 1)
+        {
+            sb.Append("<animate attributeName=\"href\" values=\"");
+            for (var i = 0; i < frames.Count; i++)
+            {
+                if (i > 0)
+                {
+                    sb.Append(';');
+                }
+                sb.Append("#c2d");
+                sb.Append(uniqueFrameIndices[frameToDefsFrameIndex[i]]);
+            }
+            sb.Append("\" keyTimes=\"0");
+            for (var i = 1; i < frames.Count; i++)
+            {
+                sb.Append(';');
+                sb.Append(
+                    Math.Clamp(frames[i].Time / totalDuration, 0d, 1d)
+                        .ToString("0.######", CultureInfo.InvariantCulture)
+                );
+            }
+            sb.Append("\" dur=\"");
+            sb.Append(totalDuration);
+            sb.Append("s\" calcMode=\"discrete\"");
+            AppendSmilRepeatOrFreeze(sb, loop);
+            sb.Append("/>\n");
+        }
+
+        if (fadeOut > 0d)
+        {
+            var fadeStart = Math.Clamp((totalDuration - fadeOut) / totalDuration, 0d, 1d);
+            sb.Append("<animate attributeName=\"opacity\" values=\"1;1;0\" keyTimes=\"0;");
+            sb.Append(fadeStart.ToString("0.######", CultureInfo.InvariantCulture));
+            sb.Append(";1\" dur=\"");
+            sb.Append(totalDuration);
+            sb.Append("s\"");
+            AppendSmilRepeatOrFreeze(sb, loop);
+            sb.Append("/>\n");
+        }
+
+        sb.Append("</use>\n");
+    }
+
+    private static void AppendSmilRepeatOrFreeze(SvgWriter sb, bool loop)
+    {
+        if (loop)
+        {
+            sb.Append(" repeatCount=\"indefinite\"");
+        }
+        else
+        {
+            sb.Append(" fill=\"freeze\"");
+        }
     }
 }

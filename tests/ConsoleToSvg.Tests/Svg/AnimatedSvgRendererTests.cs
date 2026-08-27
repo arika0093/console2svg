@@ -47,7 +47,7 @@ public sealed class AnimatedSvgRendererTests
     }
 
     [Test]
-    public void RenderAnimatedSvgIncludesKeyframes()
+    public void RenderAnimatedSvgUsesSingleDiscreteFrameAnimation()
     {
         var session = new RecordingSession(width: 8, height: 2);
         session.AddEvent(0.01, "A");
@@ -63,10 +63,11 @@ public sealed class AnimatedSvgRendererTests
         );
 
         svg.ShouldContain("<svg");
-        svg.ShouldContain("@keyframes c2k0");
-        svg.ShouldContain("id=\"c2f0\"");
-        svg.ShouldContain("animation:c2k0");
-        svg.ShouldContain("linear forwards;");
+        svg.ShouldContain("<use id=\"c2f0\" href=\"#c2d0\">");
+        svg.ShouldContain("<animate attributeName=\"href\"");
+        svg.ShouldContain("calcMode=\"discrete\"");
+        svg.ShouldContain("fill=\"freeze\"");
+        CountOccurrences(svg, "id=\"c2f").ShouldBe(1);
     }
 
     [Test]
@@ -86,7 +87,7 @@ public sealed class AnimatedSvgRendererTests
     }
 
     [Test]
-    public void RenderAnimatedSvgSharesContentDefinitionsAcrossCursorPositions()
+    public void RenderAnimatedSvgIncludesCursorInEachVisualDefinition()
     {
         var emulator = new TerminalEmulator(8, 2, Theme.Resolve("dark"));
         emulator.Process("A");
@@ -99,8 +100,9 @@ public sealed class AnimatedSvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", VideoFps = 0 }
         );
 
-        CountOccurrences(svg, "id=\"c2d").ShouldBe(1);
-        CountOccurrences(svg, "<use href=\"#c2d0\"").ShouldBe(2);
+        CountOccurrences(svg, "id=\"c2d").ShouldBe(2);
+        CountOccurrences(svg, "<use id=\"c2f0\"").ShouldBe(1);
+        GetAnimatedFrameReferences(svg).Length.ShouldBe(2);
         svg.ShouldContain("<rect class=\"u\" x=\"8.4\"");
         svg.ShouldContain("<rect class=\"u\" x=\"25.2\"");
     }
@@ -119,7 +121,7 @@ public sealed class AnimatedSvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        CountOccurrences(svg, "id=\"c2f").ShouldBe(2);
+        GetAnimatedFrameReferences(svg).Length.ShouldBe(2);
         svg.ShouldContain("<rect class=\"u\" x=\"16.8\"");
     }
 
@@ -137,7 +139,7 @@ public sealed class AnimatedSvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        CountOccurrences(svg, "id=\"c2f").ShouldBe(2);
+        GetAnimatedFrameReferences(svg).Length.ShouldBe(2);
     }
 
     [Test]
@@ -152,14 +154,8 @@ public sealed class AnimatedSvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        // The last frame's keyframe should end at opacity:1 (stays visible)
-        // It should NOT contain a 100%{opacity:0} after the last frame's opacity:1 at 100%
-        // Specifically: last @keyframes block should end with opacity:1 at 100%, not opacity:0
-        var lastKeyframeIndex = svg.LastIndexOf("@keyframes c2k", StringComparison.Ordinal);
-        lastKeyframeIndex.ShouldBeGreaterThanOrEqualTo(0);
-        var lastKeyframeBlock = svg.Substring(lastKeyframeIndex);
-        // Last frame should not emit the fade-out rule (", 100% { opacity: 0; }")
-        lastKeyframeBlock.ShouldNotContain("%, 100% {");
+        svg.ShouldNotContain("attributeName=\"opacity\"");
+        svg.ShouldContain("fill=\"freeze\"");
     }
 
     [Test]
@@ -173,11 +169,9 @@ public sealed class AnimatedSvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        // Single frame animation: the frame should stay visible
-        svg.ShouldContain("@keyframes c2k0");
-        var keyframeStart = svg.IndexOf("@keyframes c2k0", StringComparison.Ordinal);
-        var keyframeBlock = svg.Substring(keyframeStart);
-        keyframeBlock.ShouldNotContain("%, 100% {");
+        GetAnimatedFrameReferences(svg).Length.ShouldBe(1);
+        svg.ShouldNotContain("attributeName=\"href\"");
+        svg.ShouldNotContain("attributeName=\"opacity\"");
     }
 
     [Test]
@@ -194,8 +188,7 @@ public sealed class AnimatedSvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        var frameTagCount = CountOccurrences(svg, "id=\"c2f");
-        frameTagCount.ShouldBeLessThan(20);
+        GetAnimatedFrameReferences(svg).Length.ShouldBeLessThan(20);
     }
 
     [Test]
@@ -210,8 +203,8 @@ public sealed class AnimatedSvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", Loop = true }
         );
 
-        svg.ShouldContain("linear infinite;");
-        svg.ShouldNotContain("linear forwards;");
+        svg.ShouldContain("repeatCount=\"indefinite\"");
+        svg.ShouldNotContain("fill=\"freeze\"");
     }
 
     [Test]
@@ -249,8 +242,8 @@ public sealed class AnimatedSvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", VideoFps = 30 }
         );
 
-        var lowCount = CountOccurrences(lowFpsSvg, "id=\"c2f");
-        var highCount = CountOccurrences(highFpsSvg, "id=\"c2f");
+        var lowCount = GetAnimatedFrameReferences(lowFpsSvg).Length;
+        var highCount = GetAnimatedFrameReferences(highFpsSvg).Length;
         highCount.ShouldBeGreaterThan(lowCount);
     }
 
@@ -294,12 +287,9 @@ public sealed class AnimatedSvgRendererTests
             }
         );
 
-        // With fadeout, the last frame should end with opacity:0 at 100%
-        var lastKeyframeIndex = svg.LastIndexOf("@keyframes c2k", StringComparison.Ordinal);
-        lastKeyframeIndex.ShouldBeGreaterThanOrEqualTo(0);
-        var lastKeyframeBlock = svg.Substring(lastKeyframeIndex);
-        lastKeyframeBlock.ShouldContain("%, 100% {");
-        lastKeyframeBlock.ShouldContain("opacity: 0;");
+        svg.ShouldContain(
+            "<animate attributeName=\"opacity\" values=\"1;1;0\" keyTimes=\"0;"
+        );
     }
 
     [Test]
@@ -319,11 +309,8 @@ public sealed class AnimatedSvgRendererTests
             }
         );
 
-        // Without fadeout, last frame should end at 100% opacity:1 (no fade)
-        var lastKeyframeIndex = svg.LastIndexOf("@keyframes c2k", StringComparison.Ordinal);
-        lastKeyframeIndex.ShouldBeGreaterThanOrEqualTo(0);
-        var lastKeyframeBlock = svg.Substring(lastKeyframeIndex);
-        lastKeyframeBlock.ShouldNotContain("%, 100% {");
+        svg.ShouldNotContain("attributeName=\"opacity\"");
+        svg.ShouldContain("fill=\"freeze\"");
     }
 
     [Test]
@@ -344,7 +331,7 @@ public sealed class AnimatedSvgRendererTests
             }
         );
 
-        GetFirstOpacityOnePercentage(GetKeyframeBlock(svg, 1)).ShouldBeLessThan(100d);
+        GetAnimatedFrameKeyTimes(svg)[1].ShouldBeLessThan(1d);
     }
 
     [Test]
@@ -367,13 +354,14 @@ public sealed class AnimatedSvgRendererTests
             }
         );
 
-        var frame1Start = GetFirstOpacityOnePercentage(GetKeyframeBlock(svg, 1));
-        var frame2Start = GetFirstOpacityOnePercentage(GetKeyframeBlock(svg, 2));
-        var frame3Start = GetFirstOpacityOnePercentage(GetKeyframeBlock(svg, 3));
+        var keyTimes = GetAnimatedFrameKeyTimes(svg);
+        var frame1Start = keyTimes[1];
+        var frame2Start = keyTimes[2];
+        var frame3Start = keyTimes[3];
 
         frame1Start.ShouldBeLessThan(frame2Start);
         frame2Start.ShouldBeLessThan(frame3Start);
-        frame3Start.ShouldBeLessThan(100d);
+        frame3Start.ShouldBeLessThan(1d);
     }
 
     [Test]
@@ -395,11 +383,11 @@ public sealed class AnimatedSvgRendererTests
         svg.ShouldContain("<defs>");
         svg.ShouldContain("id=\"c2d");
 
-        // All animation frames reference content via <use>
-        svg.ShouldContain("<use href=\"#c2d");
+        // A single rendered instance switches between the unique definitions.
+        svg.ShouldContain("<use id=\"c2f0\" href=\"#c2d");
         svg.ShouldContain("id=\"c2f0\"");
-        svg.ShouldContain("id=\"c2f1\"");
-        svg.ShouldContain("id=\"c2f2\"");
+        CountOccurrences(svg, "id=\"c2f").ShouldBe(1);
+        GetAnimatedFrameReferences(svg).Length.ShouldBe(3);
 
         // Only 2 unique visual states → only 2 frame defs entries
         CountOccurrences(svg, "id=\"c2d").ShouldBe(2);
@@ -424,8 +412,8 @@ public sealed class AnimatedSvgRendererTests
         svg.ShouldContain("<g id=\"d0\" class=\"f i q a\">");
         svg.ShouldContain("id=\"c2d");
         svg.ShouldContain("href=\"#c2d");
-        svg.ShouldContain("id=\"c2f0\" class=\"c2 f f0\"");
-        svg.ShouldContain(".c2.f { opacity: 0; }");
+        svg.ShouldContain("<use id=\"c2f0\" href=\"#c2d");
+        svg.ShouldNotContain(".c2.f { opacity: 0; }");
         svg.ShouldContain(".c2 .c2b { animation: c2b");
         svg.ShouldContain(".c2 .q { shape-rendering:");
         svg.ShouldContain("\n.c2 .aa{fill:");
@@ -470,8 +458,8 @@ public sealed class AnimatedSvgRendererTests
         // Only 2 unique visual states regardless of how many times they repeat
         CountOccurrences(svg, "id=\"c2d").ShouldBe(2);
 
-        // All animation frames use <use> elements (no <g class="frame"> outside defs)
-        svg.ShouldContain("<use href=\"#c2d");
+        GetAnimatedFrameReferences(svg).Length.ShouldBeGreaterThan(2);
+        CountOccurrences(svg, "<use id=\"c2f").ShouldBe(1);
     }
 
     [Test]
@@ -673,7 +661,7 @@ public sealed class AnimatedSvgRendererTests
 
         // At 12fps over ~1 second, at most 12 + 2 (first + last) frames should be kept.
         // The old code kept ALL 30 frames because every frame had a color change.
-        var frameCount = CountOccurrences(svg, "id=\"c2f");
+        var frameCount = GetAnimatedFrameReferences(svg).Length;
         frameCount.ShouldBeLessThan(20);
     }
 
@@ -689,8 +677,7 @@ public sealed class AnimatedSvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        svg.ShouldContain("id=\"c2f0\"");
-        svg.ShouldNotContain("id=\"c2f1\"");
+        GetAnimatedFrameReferences(svg).Length.ShouldBe(1);
     }
 
     [Test]
@@ -705,8 +692,7 @@ public sealed class AnimatedSvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
         );
 
-        svg.ShouldContain("id=\"c2f0\"");
-        svg.ShouldNotContain("id=\"c2f1\"");
+        GetAnimatedFrameReferences(svg).Length.ShouldBe(1);
     }
 
     [Test]
@@ -727,7 +713,7 @@ public sealed class AnimatedSvgRendererTests
             }
         );
 
-        svg.ShouldContain("id=\"c2f1\"");
+        GetAnimatedFrameReferences(svg).Length.ShouldBe(2);
     }
 
     [Test]
@@ -807,7 +793,7 @@ public sealed class AnimatedSvgRendererTests
     }
 
     [Test]
-    public void RenderAnimatedSvgUsesReadableSingleLineStyleBlock()
+    public void RenderAnimatedSvgKeepsFrameAnimationOutOfStyleBlock()
     {
         var session = new RecordingSession(width: 8, height: 2);
         session.AddEvent(0.01, "A");
@@ -819,14 +805,9 @@ public sealed class AnimatedSvgRendererTests
         );
 
         svg.ShouldContain("<style>\n");
-        svg.ShouldContain(".c2.f { opacity: 0; }");
-        svg.ShouldContain("@keyframes c2k0 { 0%, ");
-        svg.ShouldContain(".c2.f0 { animation:c2k0 ");
-
-        // Non-keyframe rules must be grouped before the keyframes.
-        var firstKeyframe = svg.IndexOf("@keyframes c2k0", StringComparison.Ordinal);
-        var lastFrameRule = svg.LastIndexOf(".c2.f1 { animation:", StringComparison.Ordinal);
-        firstKeyframe.ShouldBeGreaterThan(lastFrameRule);
+        svg.ShouldNotContain(".c2.f { opacity: 0; }");
+        svg.ShouldNotContain("@keyframes c2k");
+        svg.ShouldContain("<animate attributeName=\"href\"");
     }
 
     private static int CountOccurrences(string text, string token)
@@ -846,41 +827,37 @@ public sealed class AnimatedSvgRendererTests
         }
     }
 
-    private static string GetKeyframeBlock(string svg, int frameIndex)
+    private static string[] GetAnimatedFrameReferences(string svg)
     {
-        var token = $"@keyframes c2k{frameIndex} {{";
-        var start = svg.IndexOf(token, StringComparison.Ordinal);
-        start.ShouldBeGreaterThanOrEqualTo(0);
-
-        var next = svg.IndexOf(
-            $"@keyframes c2k{frameIndex + 1} {{",
-            start + token.Length,
-            StringComparison.Ordinal
-        );
-        if (next < 0)
-        {
-            next = svg.IndexOf("</style>", start, StringComparison.Ordinal);
-        }
-
-        next.ShouldBeGreaterThan(start);
-        return svg.Substring(start, next - start);
+        var document = System.Xml.Linq.XDocument.Parse(svg);
+        var frameUse = document
+            .Descendants()
+            .Single(element => (string?)element.Attribute("id") == "c2f0");
+        var hrefAnimation = frameUse
+            .Elements()
+            .SingleOrDefault(element => (string?)element.Attribute("attributeName") == "href");
+        return hrefAnimation is null
+            ? [(string)frameUse.Attribute("href")!]
+            : ((string)hrefAnimation.Attribute("values")!).Split(';');
     }
 
-    private static double GetFirstOpacityOnePercentage(string keyframeBlock)
+    private static double[] GetAnimatedFrameKeyTimes(string svg)
     {
-        var match = Regex.Match(
-            keyframeBlock,
-            @"(?<percent>\d+(?:\.\d+)?)%(?:,\s*\d+(?:\.\d+)?%)?\s*\{\s*opacity:\s*1;"
-        );
-        match.Success.ShouldBeTrue();
-        return double.Parse(match.Groups["percent"].Value, CultureInfo.InvariantCulture);
+        var document = System.Xml.Linq.XDocument.Parse(svg);
+        var animation = document
+            .Descendants()
+            .Single(element => (string?)element.Attribute("attributeName") == "href");
+        return ((string)animation.Attribute("keyTimes")!)
+            .Split(';')
+            .Select(value => double.Parse(value, CultureInfo.InvariantCulture))
+            .ToArray();
     }
 
     private static double GetFirstAnimationDurationSeconds(string svg)
     {
         var match = Regex.Match(
             svg,
-            @"animation:c2k\d+\s+(?<seconds>\d+(?:\.\d+)?)s\s+linear",
+            "<animate attributeName=\"href\"[^>]+dur=\"(?<seconds>\\d+(?:\\.\\d+)?)s\"",
             RegexOptions.IgnoreCase
         );
         match.Success.ShouldBeTrue();

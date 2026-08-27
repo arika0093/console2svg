@@ -92,7 +92,7 @@ irm https://raw.githubusercontent.com/arika0093/console2svg/main/install.ps1 | i
 You can also install via package managers.
 
 ```sh
-# dotnet global tool (bundles the platform-native binary for offline first use)
+# dotnet global tool (downloads the platform-native binary on first run)
 dotnet tool install -g ConsoleToSvg
 
 # npm global package (Windows / Linux / macOS)

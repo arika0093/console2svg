@@ -16,8 +16,6 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <NBGV_ThisAssemblyIncludesPackageVersion>true</NBGV_ThisAssemblyIncludesPackageVersion>
-    <ToolNativeAssetsDirectory Condition="'$(ToolNativeAssetsDirectory)' == ''">$(BaseIntermediateOutputPath)native-assets</ToolNativeAssetsDirectory>
-    <RequireToolNativeAssets Condition="'$(RequireToolNativeAssets)' == ''">false</RequireToolNativeAssets>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.*">
@@ -25,14 +23,5 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <None Include="../../README.md" Pack="true" PackagePath="\" />
-    <None Include="$(ToolNativeAssetsDirectory)/**/*" Pack="true" PackagePath="tools/$(TargetFramework)/any/native/" Visible="false" Condition="Exists('$(ToolNativeAssetsDirectory)')" />
   </ItemGroup>
-  <Target Name="ValidateToolNativeAssets" BeforeTargets="Pack" Condition="'$(RequireToolNativeAssets)' == 'true'">
-    <Error Condition="!Exists('$(ToolNativeAssetsDirectory)/linux-x64/console2svg')" Text="Missing native tool asset for linux-x64." />
-    <Error Condition="!Exists('$(ToolNativeAssetsDirectory)/linux-arm64/console2svg')" Text="Missing native tool asset for linux-arm64." />
-    <Error Condition="!Exists('$(ToolNativeAssetsDirectory)/win-x64/console2svg.exe')" Text="Missing native tool asset for win-x64." />
-    <Error Condition="!Exists('$(ToolNativeAssetsDirectory)/win-arm64/console2svg.exe')" Text="Missing native tool asset for win-arm64." />
-    <Error Condition="!Exists('$(ToolNativeAssetsDirectory)/osx-x64/console2svg')" Text="Missing native tool asset for osx-x64." />
-    <Error Condition="!Exists('$(ToolNativeAssetsDirectory)/osx-arm64/console2svg')" Text="Missing native tool asset for osx-arm64." />
-  </Target>
 </Project>

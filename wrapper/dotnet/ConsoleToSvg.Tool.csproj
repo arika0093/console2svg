@@ -25,7 +25,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <None Include="../../README.md" Pack="true" PackagePath="\" />
-    <None Include="$(ToolNativeAssetsDirectory)/**/*" Pack="true" PackagePath="tools/$(TargetFramework)/any/native/%(RecursiveDir)" Visible="false" Condition="Exists('$(ToolNativeAssetsDirectory)')" />
+    <None Include="$(ToolNativeAssetsDirectory)/**/*" Pack="true" PackagePath="tools/$(TargetFramework)/any/native/" Visible="false" Condition="Exists('$(ToolNativeAssetsDirectory)')" />
   </ItemGroup>
   <Target Name="ValidateToolNativeAssets" BeforeTargets="Pack" Condition="'$(RequireToolNativeAssets)' == 'true'">
     <Error Condition="!Exists('$(ToolNativeAssetsDirectory)/linux-x64/console2svg')" Text="Missing native tool asset for linux-x64." />

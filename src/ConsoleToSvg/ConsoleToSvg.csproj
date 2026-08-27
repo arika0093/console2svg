@@ -29,6 +29,10 @@
     <RuntimeHostConfigurationOption Include="System.Runtime.EnableWriteXorExecute" Value="false" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="ConsoleAppFramework" Version="5.7.13">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <ProjectReference Include="..\ConsoleToSvg.Core\ConsoleToSvg.Core.csproj" AdditionalProperties="PublishAot=false" />
     <ProjectReference Include="..\ConsoleToSvg.Pty\ConsoleToSvg.Pty.csproj" AdditionalProperties="PublishAot=false" />
     <ProjectReference Include="..\ConsoleToSvg.Record\ConsoleToSvg.Record.csproj" AdditionalProperties="PublishAot=false" />

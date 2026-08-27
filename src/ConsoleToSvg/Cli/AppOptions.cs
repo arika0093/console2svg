@@ -11,13 +11,24 @@ public enum OutputMode
     Repeat,
 }
 
+public enum CliVerb
+{
+    Capture,
+    Record,
+    Render,
+    Replay,
+    Shell,
+    Theme,
+    Check,
+}
+
 public sealed class AppOptions
 {
+    public CliVerb Verb { get; set; } = CliVerb.Capture;
+
     public bool Verbose { get; set; }
 
     public string? VerboseLogPath { get; set; }
-
-    public bool ShowVersion { get; set; }
 
     public string? Command { get; set; }
 
@@ -30,6 +41,10 @@ public sealed class AppOptions
     public string? InputCastPath { get; set; }
 
     public string OutputPath { get; set; } = "output.svg";
+
+    public bool IsOutputPathExplicit { get; set; }
+
+    public string? Format { get; set; }
 
     public OutputMode Mode { get; set; } = OutputMode.Image;
 
@@ -140,6 +155,10 @@ public sealed class AppOptions
 
     /// <summary>Run the user's shell in a PTY and capture the terminal on demand.</summary>
     public bool Interactive { get; set; }
+
+    public bool NoSuffix { get; set; }
+
+    public string[] ThemeArguments { get; set; } = [];
 
     /// <summary>Directory path to save individual static SVG frames (one per visual frame).</summary>
     public string? SaveFramesDir { get; set; }

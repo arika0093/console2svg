@@ -21,38 +21,22 @@ internal static partial class Program
     private const int DefaultWidth = 100;
     private const int DefaultHeight = 24;
 
-    public static async Task<int> Main(string[] args)
+    public static Task<int> Main(string[] args) => CliApplication.RunAsync(args);
+
+    internal static async Task<int> RunOptionsAsync(AppOptions options, string[] args)
     {
-        var parseResult = OptionParser.TryParse(
-            args,
-            out var options,
-            out var error,
-            out var showHelp
-        );
-        if (!parseResult)
+        if (options.Verb == CliVerb.Check)
         {
-            await Console.Error.WriteLineAsync(error);
-            await Console.Error.WriteLineAsync();
-            await Console.Error.WriteLineAsync(ColorizeIfSupported(OptionParser.ShortHelpText));
+            WriteCheckReport();
+            return 0;
+        }
+
+        if (options.Verb == CliVerb.Theme)
+        {
+            await Console.Error.WriteLineAsync(
+                "Theme pack management is reserved and is not available in this release."
+            );
             return 1;
-        }
-
-        if (showHelp || options is null)
-        {
-            WritePagedHelp(ColorizeIfSupported(OptionParser.HelpText));
-            return 0;
-        }
-
-        if (options.ShowVersion)
-        {
-            Console.WriteLine(ThisAssembly.AssemblyInformationalVersion);
-            return 0;
-        }
-
-        if (args.Length == 0 && !Console.IsInputRedirected)
-        {
-            Console.WriteLine(ColorizeIfSupported(OptionParser.ShortHelpText));
-            return 0;
         }
 
         if (string.IsNullOrWhiteSpace(options.Prompt))
@@ -131,11 +115,9 @@ internal static partial class Program
             // capture, where frames cannot be recovered after a failed save.
             // Only raster/video outputs need conversion tools; pure SVG output
             // (including --stdout) does not.
-            if (!options.StdOut)
+            if (!options.StdOut && options.Verb != CliVerb.Record)
             {
-                var preCheckExt = Path.GetExtension(options.OutputPath)
-                    .TrimStart('.')
-                    .ToLowerInvariant();
+                var preCheckExt = GetOutputFormat(options);
                 if (
                     !string.IsNullOrEmpty(preCheckExt)
                     && !string.Equals(preCheckExt, "svg", StringComparison.Ordinal)
@@ -178,6 +160,16 @@ internal static partial class Program
             logger.ZLogDebug(
                 $"Recording loaded. Events={session.Events.Count} Width={session.Header.width} Height={session.Header.height}"
             );
+
+            if (options.Verb == CliVerb.Record)
+            {
+                logger.ZLogDebug($"Saving asciicast to {options.OutputPath}");
+                await AsciicastWriter
+                    .WriteToFileAsync(options.OutputPath, session, outputToken)
+                    .ConfigureAwait(false);
+                await Console.Error.WriteLineAsync($"Recorded: {options.OutputPath}");
+                return 0;
+            }
 
             if (!string.IsNullOrWhiteSpace(options.SaveCastPath))
             {
@@ -245,9 +237,7 @@ internal static partial class Program
             }
             else
             {
-                var outputExt = Path.GetExtension(options.OutputPath)
-                    .TrimStart('.')
-                    .ToLowerInvariant();
+                var outputExt = GetOutputFormat(options);
 
                 if (string.IsNullOrEmpty(outputExt) || outputExt == "svg")
                 {
@@ -293,17 +283,29 @@ internal static partial class Program
                         if (string.IsNullOrWhiteSpace(options.SaveFramesDir))
                         {
                             EnsureDirectory(options.OutputPath);
-                            await SvgConverter.ConvertSvgFramesToVideoAsync(
-                                    RenderFrameSvgs(
-                                        session,
-                                        renderOptions,
-                                        options.VideoFps,
-                                        outputToken,
-                                        includeFallback: true
-                                    ),
-                                    options.VideoFps, options.OutputPath, converter, ffmpegPath,
-                                    options.SizeWidth, options.SizeHeight, logger, ConsoleProgressReporter.Instance, outputToken)
-                                .ConfigureAwait(false);
+                            var encodedPath = GetEncodedOutputPath(
+                                options.OutputPath,
+                                outputExt
+                            );
+                            try
+                            {
+                                await SvgConverter.ConvertSvgFramesToVideoAsync(
+                                        RenderFrameSvgs(
+                                            session,
+                                            renderOptions,
+                                            options.VideoFps,
+                                            outputToken,
+                                            includeFallback: true
+                                        ),
+                                        options.VideoFps, encodedPath, converter, ffmpegPath,
+                                        options.SizeWidth, options.SizeHeight, logger, ConsoleProgressReporter.Instance, outputToken)
+                                    .ConfigureAwait(false);
+                                CompleteEncodedOutput(encodedPath, options.OutputPath);
+                            }
+                            finally
+                            {
+                                CleanupEncodedOutput(encodedPath, options.OutputPath);
+                            }
                         }
                         else
                         {
@@ -341,20 +343,32 @@ internal static partial class Program
                                 }
 
                                 EnsureDirectory(options.OutputPath);
-                                await SvgConverter
-                                    .ConvertFramesToVideoAsync(
-                                        tempDir,
-                                        options.VideoFps,
-                                        options.OutputPath,
-                                        converter,
-                                        ffmpegPath,
-                                        options.SizeWidth,
-                                        options.SizeHeight,
-                                        logger,
-                                        ConsoleProgressReporter.Instance,
-                                        outputToken
-                                    )
-                                    .ConfigureAwait(false);
+                                var encodedPath = GetEncodedOutputPath(
+                                    options.OutputPath,
+                                    outputExt
+                                );
+                                try
+                                {
+                                    await SvgConverter
+                                        .ConvertFramesToVideoAsync(
+                                            tempDir,
+                                            options.VideoFps,
+                                            encodedPath,
+                                            converter,
+                                            ffmpegPath,
+                                            options.SizeWidth,
+                                            options.SizeHeight,
+                                            logger,
+                                            ConsoleProgressReporter.Instance,
+                                            outputToken
+                                        )
+                                        .ConfigureAwait(false);
+                                    CompleteEncodedOutput(encodedPath, options.OutputPath);
+                                }
+                                finally
+                                {
+                                    CleanupEncodedOutput(encodedPath, options.OutputPath);
+                                }
 
                                 // The temp SVGs are exactly the frames requested by
                                 // --save-frames. Copy them instead of rendering the
@@ -408,19 +422,31 @@ internal static partial class Program
                                 )
                                 .ConfigureAwait(false);
                             EnsureDirectory(options.OutputPath);
-                            await SvgConverter
-                                .ConvertSvgToImageAsync(
-                                    tempSvg,
-                                    options.OutputPath,
-                                    converter,
-                                    ffmpegPath,
-                                    options.SizeWidth,
-                                    options.SizeHeight,
-                                    logger,
-                                    ConsoleProgressReporter.Instance,
-                                    outputToken
-                                )
-                                .ConfigureAwait(false);
+                            var encodedPath = GetEncodedOutputPath(
+                                options.OutputPath,
+                                outputExt
+                            );
+                            try
+                            {
+                                await SvgConverter
+                                    .ConvertSvgToImageAsync(
+                                        tempSvg,
+                                        encodedPath,
+                                        converter,
+                                        ffmpegPath,
+                                        options.SizeWidth,
+                                        options.SizeHeight,
+                                        logger,
+                                        ConsoleProgressReporter.Instance,
+                                        outputToken
+                                    )
+                                    .ConfigureAwait(false);
+                                CompleteEncodedOutput(encodedPath, options.OutputPath);
+                            }
+                            finally
+                            {
+                                CleanupEncodedOutput(encodedPath, options.OutputPath);
+                            }
                         }
                         finally
                         {

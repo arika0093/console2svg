@@ -36,6 +36,8 @@ public enum SvgConverterMode
 /// </summary>
 public static partial class SvgConverter
 {
+    public const string BundledResvgVersion = "0.43.0";
+
     // Reuse ffmpeg discovery from Program. We pass the ffmpeg path in to avoid
     // duplicating logic; detection helpers here only need to know whether the
     // binary exists and what it supports.

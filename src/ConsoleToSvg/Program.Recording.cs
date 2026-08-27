@@ -34,6 +34,21 @@ internal static partial class Program
                 .ConfigureAwait(false);
         }
 
+        if (options.Verb == CliVerb.Render)
+        {
+            if (!Console.IsInputRedirected)
+            {
+                throw new InvalidOperationException(
+                    "No asciicast input specified. Pass a file path or redirect asciicast data to stdin."
+                );
+            }
+
+            logger.ZLogDebug($"Input source: asciicast from stdin.");
+            return await AsciicastReader
+                .ReadAsync(Console.OpenStandardInput(), cancellationToken)
+                .ConfigureAwait(false);
+        }
+
         if (!string.IsNullOrWhiteSpace(options.Command))
         {
             var ptyWidth = ResolveSize(
@@ -171,6 +186,7 @@ internal static partial class Program
                 {
                     var outputPath = GetInteractiveOutputPath(
                         options.OutputPath,
+                        options.NoSuffix,
                         capture.IsVideo ? null : Path.GetExtension(options.OutputPath)
                     );
                     await WriteInteractiveCaptureAsync(
@@ -193,6 +209,7 @@ internal static partial class Program
 
     private static string GetInteractiveOutputPath(
         string configuredPath,
+        bool noSuffix,
         string? extensionOverride = null
     )
     {
@@ -209,11 +226,51 @@ internal static partial class Program
         }
 
         var stamp = DateTime.Now.ToString(
-            "yyyyMMdd_HHmmssfff",
+            "yyyyMMdd_HHmmss",
             System.Globalization.CultureInfo.InvariantCulture
         );
-        var candidateName = $"{name}_{stamp}{extension}";
+        var candidateName = name
+            .Replace("{timestamp}", stamp, StringComparison.OrdinalIgnoreCase);
+        if (candidateName.Contains("{index}", StringComparison.OrdinalIgnoreCase))
+        {
+            var index = 1;
+            while (index <= int.MaxValue)
+            {
+                var indexedName = candidateName.Replace(
+                    "{index}",
+                    index.ToString("D4", CultureInfo.InvariantCulture),
+                    StringComparison.OrdinalIgnoreCase
+                );
+                var indexedPath = string.IsNullOrEmpty(directory)
+                    ? indexedName + extension
+                    : Path.Combine(directory, indexedName + extension);
+                if (!File.Exists(indexedPath))
+                {
+                    return indexedPath;
+                }
+                index++;
+            }
+
+            throw new IOException("No available index remains for the shell output path.");
+        }
+
+        if (!string.Equals(candidateName, name, StringComparison.Ordinal))
+        {
+            return string.IsNullOrEmpty(directory)
+                ? candidateName + extension
+                : Path.Combine(directory, candidateName + extension);
+        }
+
         var candidate = string.IsNullOrEmpty(directory)
+            ? candidateName + extension
+            : Path.Combine(directory, candidateName + extension);
+        if (noSuffix)
+        {
+            return candidate;
+        }
+
+        candidateName = $"{name}_{stamp}{extension}";
+        candidate = string.IsNullOrEmpty(directory)
             ? candidateName
             : Path.Combine(directory, candidateName);
         var suffix = 1;

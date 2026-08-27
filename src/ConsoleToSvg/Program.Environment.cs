@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -114,20 +115,12 @@ internal static partial class Program
     // Video file extensions that are handled by the frame-sequence → ffmpeg path.
     // GIF is included here because the primary use-case for terminal recordings is
     // an animated GIF; users who want a static GIF can specify --mode image separately.
-    private static readonly HashSet<string> VideoExtensions = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "mp4",
-        "webm",
-        "avi",
-        "mov",
-        "mkv",
-        "ogv",
-        "flv",
-        "ts",
-        "wmv",
-        "m4v",
-        "gif",
-    };
+    private static readonly HashSet<string> VideoExtensions = new(
+        OutputFormatCatalog.All
+            .Where(format => format.DefaultsToAnimation)
+            .SelectMany(format => format.Extensions),
+        StringComparer.OrdinalIgnoreCase
+    );
 
     private static bool IsVideoFormat(string extension) => VideoExtensions.Contains(extension);
 

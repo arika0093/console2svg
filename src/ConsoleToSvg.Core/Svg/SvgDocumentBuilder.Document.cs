@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
@@ -511,14 +512,12 @@ internal static partial class SvgDocumentBuilder
     }
 
     /// <summary>
-    /// Renders unique frame contents into a &lt;defs&gt; block so they can be referenced
-    /// by &lt;use&gt; elements emitted by <see cref="AppendFrameUse"/>. Each unique frame is stored
-    /// as <c>&lt;g id="c2d{frameIndex}"&gt;</c> with no animation class.
+    /// Renders unique row contents into a &lt;defs&gt; block and returns the row definition
+    /// used by each frame.
     /// </summary>
-    public static void AppendFrameDefs(
+    public static int[][] AppendAnimatedRowDefs(
         SvgWriter sb,
-        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
-        System.Collections.Generic.IReadOnlyList<int> uniqueFrameIndices,
+        ReadOnlySpan<TerminalFrame> frames,
         in Context context,
         Theme theme,
         SvgStyleRegistry styles,
@@ -528,58 +527,19 @@ internal static partial class SvgDocumentBuilder
     )
     {
         var rowCount = context.EndRowExclusive - context.StartRow;
-        var totalRowReferences = uniqueFrameIndices.Count * (long)rowCount;
-        var rowSignatures = new System.Collections.Generic.HashSet<ulong>();
-        foreach (var frameIndex in uniqueFrameIndices)
-        {
-            var buffer = frames[frameIndex].Buffer;
-            for (var row = context.StartRow; row < context.EndRowExclusive; row++)
-            {
-                rowSignatures.Add(buffer.GetRowVisualSignature(row));
-            }
-        }
-
-        if (rowSignatures.Count * 10L >= totalRowReferences * 9L)
-        {
-            sb.Append("<defs>\n");
-            foreach (var frameIndex in uniqueFrameIndices)
-            {
-                AppendFrameGroup(
-                    sb,
-                    frames[frameIndex].Buffer,
-                    context,
-                    theme,
-                    styles,
-                    id: $"c2d{frameIndex}",
-                    @class: null,
-                    opacity: opacity,
-                    lengthAdjust: lengthAdjust,
-                    maskPatterns: maskPatterns,
-                    renderCursor: false,
-                    applyContentTransform: false
-                );
-            }
-            sb.Append("</defs>\n");
-            return;
-        }
-
-        var rowDefinitions = new System.Collections.Generic.List<RowDefinition>();
+        var rowDefinitions = new List<RowDefinition>();
         var hashToRowDefinitionIndices =
-            new System.Collections.Generic.Dictionary<
-                ulong,
-                System.Collections.Generic.List<int>
-            >();
-        var frameRowDefinitions = new int[uniqueFrameIndices.Count][];
+            new Dictionary<ulong, List<int>>();
+        var frameRowDefinitions = new int[frames.Length][];
         var lastDefinitionByRow = new int[rowCount];
         var elements = new SvgElementRegistry();
         Array.Fill(lastDefinitionByRow, -1);
 
-        for (var framePosition = 0; framePosition < uniqueFrameIndices.Count; framePosition++)
+        for (var frameIndex = 0; frameIndex < frames.Length; frameIndex++)
         {
-            var frameIndex = uniqueFrameIndices[framePosition];
             var buffer = frames[frameIndex].Buffer;
             var rowMappings = new int[rowCount];
-            frameRowDefinitions[framePosition] = rowMappings;
+            frameRowDefinitions[frameIndex] = rowMappings;
 
             for (var row = context.StartRow; row < context.EndRowExclusive; row++)
             {
@@ -708,32 +668,8 @@ internal static partial class SvgDocumentBuilder
             }
         }
 
-        for (var framePosition = 0; framePosition < uniqueFrameIndices.Count; framePosition++)
-        {
-            var frameIndex = uniqueFrameIndices[framePosition];
-            sb.Append("<g id=\"c2d");
-            sb.Append(frameIndex);
-            sb.Append("\" class=\"c2\"");
-            sb.Append(">\n");
-            var rowMappings = frameRowDefinitions[framePosition];
-            for (var rowOffset = 0; rowOffset < rowMappings.Length; rowOffset++)
-            {
-                sb.Append("<use href=\"#c2r");
-                sb.Append(rowMappings[rowOffset]);
-                sb.Append('"');
-                var rowY = rowOffset * context.CellHeight;
-                if (rowY != 0d)
-                {
-                    sb.Append(" y=\"");
-                    sb.Append(rowY);
-                    sb.Append('"');
-                }
-                sb.Append("/>\n");
-            }
-            sb.Append("</g>\n");
-        }
-
         sb.Append("</defs>\n");
+        return frameRowDefinitions;
     }
 
     private static Context CreateRowContext(in Context context, int row) =>
@@ -778,8 +714,8 @@ internal static partial class SvgDocumentBuilder
     private static bool TryGetRowDelta(
         ScreenBuffer buffer,
         int row,
-        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
-        System.Collections.Generic.IReadOnlyList<RowDefinition> definitions,
+        ReadOnlySpan<TerminalFrame> frames,
+        List<RowDefinition> definitions,
         int baseDefinitionIndex,
         in Context context,
         out int startCol,
@@ -861,27 +797,185 @@ internal static partial class SvgDocumentBuilder
     );
 
     /// <summary>
-    /// Emits a &lt;use&gt; element that references a unique frame stored in &lt;defs&gt; by
-    /// <see cref="AppendFrameDefs"/>. The element carries the per-frame animation CSS class.
+    /// Emits independently animated row runs. Consecutive frames that reference the same
+    /// row definition share one &lt;use&gt; element.
     /// </summary>
-    public static void AppendFrameUse(
+    public static void AppendAnimatedRows(
         SvgWriter sb,
-        string defsId,
-        string frameId,
-        string frameClass,
-        ScreenBuffer buffer,
+        ReadOnlySpan<TerminalFrame> frames,
+        int[][] frameRowDefinitions,
         in Context context,
-        Theme theme
+        Theme theme,
+        double totalDuration,
+        double fadeOut,
+        bool loop
     )
     {
-        sb.Append("<g id=\"");
-        sb.Append(EscapeAttribute(frameId));
-        sb.Append("\" class=\"");
-        sb.Append(EscapeAttribute(frameClass));
-        sb.Append("\"><use href=\"#");
-        sb.Append(EscapeAttribute(defsId));
-        sb.Append("\"/>\n");
-        RenderCursor(sb, buffer, context, theme, includeScrollback: false);
+        sb.Append("<g>\n");
+        if (fadeOut > 0d)
+        {
+            var fadeStart = Math.Clamp((totalDuration - fadeOut) / totalDuration, 0d, 1d);
+            sb.Append("<animate attributeName=\"opacity\" values=\"1;1;0\" keyTimes=\"0;");
+            AppendKeyTime(sb, fadeStart);
+            sb.Append(";1\" dur=\"");
+            sb.Append(totalDuration);
+            sb.Append("s\"");
+            AppendSmilRepeatOrFreeze(sb, loop);
+            sb.Append("/>\n");
+        }
+
+        var rowCount = context.EndRowExclusive - context.StartRow;
+        for (var rowOffset = 0; rowOffset < rowCount; rowOffset++)
+        {
+            for (var runStart = 0; runStart < frames.Length;)
+            {
+                var definitionIndex = frameRowDefinitions[runStart][rowOffset];
+                var runEnd = runStart + 1;
+                while (
+                    runEnd < frames.Length
+                    && frameRowDefinitions[runEnd][rowOffset] == definitionIndex
+                )
+                {
+                    runEnd++;
+                }
+
+                sb.Append("<use href=\"#c2r");
+                sb.Append(definitionIndex);
+                sb.Append('"');
+                var rowY = rowOffset * context.CellHeight;
+                if (rowY != 0d)
+                {
+                    sb.Append(" y=\"");
+                    sb.Append(rowY);
+                    sb.Append('"');
+                }
+                AppendDisplayAnimation(
+                    sb,
+                    frames,
+                    runStart,
+                    runEnd,
+                    totalDuration,
+                    loop,
+                    selfClosing: true
+                );
+                runStart = runEnd;
+            }
+        }
+
+        AppendAnimatedCursors(sb, frames, context, theme, totalDuration, loop);
         sb.Append("</g>\n");
+    }
+
+    private static void AppendAnimatedCursors(
+        SvgWriter sb,
+        ReadOnlySpan<TerminalFrame> frames,
+        in Context context,
+        Theme theme,
+        double totalDuration,
+        bool loop
+    )
+    {
+        for (var runStart = 0; runStart < frames.Length;)
+        {
+            var buffer = frames[runStart].Buffer;
+            var runEnd = runStart + 1;
+            while (
+                runEnd < frames.Length
+                && HaveSameCursor(buffer, frames[runEnd].Buffer)
+            )
+            {
+                runEnd++;
+            }
+
+            if (buffer.CursorVisible)
+            {
+                sb.Append("<g");
+                AppendDisplayAnimation(
+                    sb,
+                    frames,
+                    runStart,
+                    runEnd,
+                    totalDuration,
+                    loop,
+                    selfClosing: false
+                );
+                RenderCursor(sb, buffer, context, theme, includeScrollback: false);
+                sb.Append("</g>\n");
+            }
+
+            runStart = runEnd;
+        }
+    }
+
+    private static bool HaveSameCursor(ScreenBuffer left, ScreenBuffer right) =>
+        left.CursorVisible == right.CursorVisible
+        && (
+            !left.CursorVisible
+            || (left.CursorRow == right.CursorRow && left.CursorCol == right.CursorCol)
+        );
+
+    private static void AppendDisplayAnimation(
+        SvgWriter sb,
+        ReadOnlySpan<TerminalFrame> frames,
+        int runStart,
+        int runEnd,
+        double totalDuration,
+        bool loop,
+        bool selfClosing
+    )
+    {
+        if (runStart == 0 && runEnd == frames.Length)
+        {
+            sb.Append(selfClosing ? " display=\"inline\"/>\n" : " display=\"inline\">\n");
+            return;
+        }
+
+        sb.Append(" display=\"none\">\n<animate attributeName=\"display\" values=\"");
+        if (runStart == 0)
+        {
+            sb.Append("inline;none\" keyTimes=\"0;");
+            AppendKeyTime(sb, frames[runEnd].Time / totalDuration);
+        }
+        else if (runEnd == frames.Length)
+        {
+            sb.Append("none;inline\" keyTimes=\"0;");
+            AppendKeyTime(sb, frames[runStart].Time / totalDuration);
+        }
+        else
+        {
+            sb.Append("none;inline;none\" keyTimes=\"0;");
+            AppendKeyTime(sb, frames[runStart].Time / totalDuration);
+            sb.Append(';');
+            AppendKeyTime(sb, frames[runEnd].Time / totalDuration);
+        }
+        sb.Append("\" dur=\"");
+        sb.Append(totalDuration);
+        sb.Append("s\" calcMode=\"discrete\"");
+        AppendSmilRepeatOrFreeze(sb, loop);
+        sb.Append("/>\n");
+        if (selfClosing)
+        {
+            sb.Append("</use>\n");
+        }
+    }
+
+    private static void AppendKeyTime(SvgWriter sb, double keyTime)
+    {
+        sb.Append(
+            Math.Clamp(keyTime, 0d, 1d)
+                .ToString("0.######", CultureInfo.InvariantCulture)
+        );
+    }
+
+    private static void AppendSmilRepeatOrFreeze(SvgWriter sb, bool loop)
+    {
+        if (loop)
+        {
+            sb.Append(" repeatCount=\"indefinite\"");
+        }
+        else
+        {
+            sb.Append(" fill=\"freeze\"");
+        }
     }
 }

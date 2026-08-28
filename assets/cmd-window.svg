@@ -24,7 +24,7 @@
 <text class="aa" x="29" y="70">$ console2svg</text></g>
 <g class="c2 c" transform="translate(29 74)">
 <rect width="1008" height="486" fill="#1e1e1e"/>
-<text class="ab w" y="14" textLength="596.4">console2svg - Convert terminal output to SVG [Ver: 0.8.0.72+8c9a5612f6]</text>
+<text class="ab w" y="14" textLength="588">console2svg - Convert terminal output to SVG [Ver: 0.8.0.0+63365a416d]</text>
 <text class="ac" y="50" textLength="50.4">Usage:</text>
 <text class="aa w" x="33.6" y="68" textLength="285.6">my-command | console2svg [options]</text>
 <text class="aa w" x="33.6" y="86" textLength="369.6">console2svg &quot;my-command with-args&quot; [options]</text>

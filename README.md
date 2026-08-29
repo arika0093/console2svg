@@ -60,10 +60,10 @@ In video mode(`-v`), you can capture the animation of the command execution and 
 By using the [replay feature](#replay-input), you can save the command execution record and later regenerate the SVG based on that record.
 
 ```bash
-console2svg -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab
+console2svg -w 150 -h 32 -v -c -d macos-pc --timeout 7 --fps 30 -- btop -u 500
 ```
 
-![console2svg -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab](./assets/cmd-loop.svg)
+![console2svg -w 150 -h 32 -v -c -d macos-pc --timeout 7 --fps 30 -- btop -u 500](./assets/cmd-loop.svg)
 
 ---
 

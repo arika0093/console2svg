@@ -258,14 +258,14 @@
 </g>
 <g id="c2r44" class="c2 c"><use href="#c2r43"/>
 <g transform="translate(378)">
-<use href="#c2e2"/>
-<text class="aa" y="14" textLength="8.4">h</text>
+<use href="#c2e5"/>
+<text class="aa w" y="14" textLength="25.2">h 1</text>
 </g>
 </g>
 <g id="c2r45" class="c2 c"><use href="#c2r44"/>
-<g transform="translate(394.8)">
-<use href="#c2e3"/>
-<text class="aa" y="14" textLength="16.8">12</text>
+<g transform="translate(403.2)">
+<use href="#c2e2"/>
+<text class="aa" y="14" textLength="8.4">2</text>
 </g>
 </g>
 <g id="c2r46" class="c2 c"><use href="#c2r45"/>
@@ -467,10 +467,10 @@
 <animate attributeName="display" values="none;inline;none" keyTimes="0;0.142857;0.380952" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r1" y="18" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.380952;0.845238" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.380952;0.833333" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r54" y="18" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.845238;0.928571" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.833333;0.928571" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r11" y="18" display="none">
 <animate attributeName="display" values="none;inline" keyTimes="0;0.928571" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
@@ -506,10 +506,10 @@
 <animate attributeName="display" values="none;inline;none" keyTimes="0;0.297619;0.380952" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r1" y="36" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.380952;0.845238" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.380952;0.833333" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r0" y="36" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.845238;0.928571" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.833333;0.928571" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r15" y="36" display="none">
 <animate attributeName="display" values="none;inline" keyTimes="0;0.928571" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
@@ -697,7 +697,7 @@
 </g>
 <g display="none">
 <animate attributeName="display" values="none;inline;none" keyTimes="0;0.595238;0.607143" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="218.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+<rect class="u" x="226.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
 <animate attributeName="display" values="none;inline;none" keyTimes="0;0.607143;0.619048" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
@@ -741,7 +741,7 @@
 </g>
 <g display="none">
 <animate attributeName="display" values="none;inline;none" keyTimes="0;0.72619;0.738095" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="394.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+<rect class="u" x="403.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
 <animate attributeName="display" values="none;inline;none" keyTimes="0;0.738095;0.75" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
@@ -776,11 +776,7 @@
 <rect class="u" x="520.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.833333;0.845238" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="537.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.845238;0.928571" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.833333;0.928571" dur="7s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="16.8" y="36" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">

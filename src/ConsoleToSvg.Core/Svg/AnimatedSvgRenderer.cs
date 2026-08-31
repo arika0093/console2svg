@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
@@ -46,7 +48,7 @@ public static partial class AnimatedSvgRenderer
 
     /// <summary>Renders terminal frames captured from an already-running interactive terminal.</summary>
     public static string RenderFrames(
-        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
+        IReadOnlyList<TerminalFrame> frames,
         SvgRenderOptions options
     )
     {
@@ -58,7 +60,7 @@ public static partial class AnimatedSvgRenderer
 
     public static void WriteFrames(
         TextWriter writer,
-        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
+        IReadOnlyList<TerminalFrame> frames,
         SvgRenderOptions options
     )
     {
@@ -69,7 +71,7 @@ public static partial class AnimatedSvgRenderer
         }
 
         var theme = SvgRenderShared.ResolveTheme(options);
-        var signatureCache = new System.Collections.Generic.Dictionary<ScreenBuffer, ulong>();
+        var signatureCache = new Dictionary<ScreenBuffer, ulong>();
         var reducedFrames =
             frames[0].EventIndex >= 0
                 ? frames
@@ -85,7 +87,7 @@ public static partial class AnimatedSvgRenderer
         {
             var rangeStart = options.TimeStart ?? double.MinValue;
             var rangeEnd = options.TimeEnd ?? double.MaxValue;
-            var filtered = new System.Collections.Generic.List<TerminalFrame>(reducedFrames.Count);
+            var filtered = new List<TerminalFrame>(reducedFrames.Count);
 
             // Keep track of the last frame before rangeStart so the clip
             // starts with the terminal state visible at rangeStart.
@@ -139,71 +141,40 @@ public static partial class AnimatedSvgRenderer
             reducedFrames = filtered;
         }
 
-        // Frame content excludes the cursor so cursor-only differences can share
-        // the same <defs> entry. The cursor is emitted with each animated frame.
-        var hashToDefsFrameIndices =
-            new System.Collections.Generic.Dictionary<
-                ulong,
-                System.Collections.Generic.List<int>
-            >();
-        var frameToDefsFrameIndex = new int[reducedFrames.Count];
-        var uniqueFrameIndices = new System.Collections.Generic.List<int>(reducedFrames.Count);
-
-        for (var i = 0; i < reducedFrames.Count; i++)
+        TerminalFrame[]? copiedFrames = null;
+        ReadOnlySpan<TerminalFrame> animationFrames;
+        if (reducedFrames is TerminalFrame[] frameArray)
         {
-            var hash = reducedFrames[i].Buffer.GetContentSignature();
-            var defsIdx = -1;
-            if (hashToDefsFrameIndices.TryGetValue(hash, out var candidates))
+            animationFrames = frameArray;
+        }
+        else if (reducedFrames is List<TerminalFrame> frameList)
+        {
+            animationFrames = CollectionsMarshal.AsSpan(frameList);
+        }
+        else
+        {
+            copiedFrames = new TerminalFrame[reducedFrames.Count];
+            for (var i = 0; i < reducedFrames.Count; i++)
             {
-                for (var candidateIndex = 0; candidateIndex < candidates.Count; candidateIndex++)
-                {
-                    var candidate = candidates[candidateIndex];
-                    if (
-                        reducedFrames[i]
-                            .Buffer.HasSameContentState(
-                                reducedFrames[uniqueFrameIndices[candidate]].Buffer
-                            )
-                    )
-                    {
-                        defsIdx = candidate;
-                        break;
-                    }
-                }
+                copiedFrames[i] = reducedFrames[i];
             }
-
-            if (defsIdx < 0)
-            {
-                candidates ??= [];
-                defsIdx = uniqueFrameIndices.Count;
-                candidates.Add(defsIdx);
-                hashToDefsFrameIndices[hash] = candidates;
-                uniqueFrameIndices.Add(i);
-            }
-
-            frameToDefsFrameIndex[i] = defsIdx;
+            animationFrames = copiedFrames;
         }
 
         var commandHeaderRows = string.IsNullOrEmpty(options.CommandHeader) ? 0 : 1;
         var context = SvgRenderShared.CreateContext(
-            reducedFrames[0].Buffer,
+            animationFrames[0].Buffer,
             options,
             includeScrollback: false,
             commandHeaderRows
         );
-        var lastFrameTime = Math.Max(0.05d, reducedFrames[reducedFrames.Count - 1].Time);
+        var lastFrameTime = Math.Max(0.05d, animationFrames[^1].Time);
         var finalFrameHold = GetFinalFrameHoldDuration(
             options.VideoSleep,
             options.VideoFadeOut,
             options.VideoFps
         );
         var totalDuration = lastFrameTime + finalFrameHold + options.VideoFadeOut;
-
-        var css = BuildAnimationCss(
-            reducedFrames,
-            totalDuration,
-            options.VideoFadeOut,
-            options.Loop
-        );
 
         var svgWriter = new SvgWriter(writer);
         var styles = new SvgStyleRegistry();
@@ -212,8 +183,7 @@ public static partial class AnimatedSvgRenderer
             styles.GetTextClass(theme.Foreground);
         }
         SvgDocumentBuilder.CollectTextStyles(
-            reducedFrames,
-            uniqueFrameIndices,
+            animationFrames,
             context,
             styles
         );
@@ -222,7 +192,7 @@ public static partial class AnimatedSvgRenderer
             context,
             theme,
             styles,
-            css,
+            additionalCss: null,
             font: options.Font,
             chrome: options.Chrome,
             commandHeader: options.CommandHeader,
@@ -232,11 +202,9 @@ public static partial class AnimatedSvgRenderer
             animateBlink: true
         );
 
-        // Render each unique frame once in <defs>, then reference via <use>.
-        SvgDocumentBuilder.AppendFrameDefs(
+        var frameRowDefinitions = SvgDocumentBuilder.AppendAnimatedRowDefs(
             svgWriter,
-            reducedFrames,
-            uniqueFrameIndices,
+            animationFrames,
             context,
             theme,
             styles,
@@ -248,19 +216,16 @@ public static partial class AnimatedSvgRenderer
             svgWriter,
             context
         );
-        for (var i = 0; i < reducedFrames.Count; i++)
-        {
-            var defsFrameIndex = uniqueFrameIndices[frameToDefsFrameIndex[i]];
-            SvgDocumentBuilder.AppendFrameUse(
-                svgWriter,
-                defsId: $"c2d{defsFrameIndex}",
-                frameId: $"c2f{i}",
-                frameClass: $"c2 f f{i}",
-                reducedFrames[i].Buffer,
-                context,
-                theme
-            );
-        }
+        SvgDocumentBuilder.AppendAnimatedRows(
+            svgWriter,
+            animationFrames,
+            frameRowDefinitions,
+            context,
+            theme,
+            totalDuration,
+            options.VideoFadeOut,
+            options.Loop
+        );
         if (hasContentTransform)
         {
             svgWriter.Append("</g>\n");
@@ -277,7 +242,7 @@ public static partial class AnimatedSvgRenderer
 
     private static ulong GetVisualSignatureCached(
         ScreenBuffer buffer,
-        System.Collections.Generic.Dictionary<ScreenBuffer, ulong> cache
+        Dictionary<ScreenBuffer, ulong> cache
     )
     {
         if (!cache.TryGetValue(buffer, out var signature))
@@ -289,10 +254,10 @@ public static partial class AnimatedSvgRenderer
         return signature;
     }
 
-    private static System.Collections.Generic.IReadOnlyList<TerminalFrame> ReduceFrames(
-        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
+    private static IReadOnlyList<TerminalFrame> ReduceFrames(
+        IReadOnlyList<TerminalFrame> frames,
         double maxFps,
-        System.Collections.Generic.Dictionary<ScreenBuffer, ulong> signatureCache
+        Dictionary<ScreenBuffer, ulong> signatureCache
     )
     {
         if (frames.Count <= 2 || maxFps <= 0)
@@ -301,7 +266,7 @@ public static partial class AnimatedSvgRenderer
         }
 
         var minimumInterval = 1d / maxFps;
-        var reduced = new System.Collections.Generic.List<TerminalFrame>(frames.Count);
+        var reduced = new List<TerminalFrame>(frames.Count);
         reduced.Add(frames[0]);
         var lastKeptTime = frames[0].Time;
         var lastKeptVisualSignature = GetVisualSignatureCached(frames[0].Buffer, signatureCache);
@@ -372,8 +337,8 @@ public static partial class AnimatedSvgRenderer
         return reduced;
     }
 
-    private static System.Collections.Generic.IReadOnlyList<TerminalFrame> NormalizeTiming(
-        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
+    private static IReadOnlyList<TerminalFrame> NormalizeTiming(
+        IReadOnlyList<TerminalFrame> frames,
         double maxFps,
         VideoTimingMode timingMode
     )
@@ -384,7 +349,7 @@ public static partial class AnimatedSvgRenderer
         }
 
         var interval = 1d / maxFps;
-        var normalized = new System.Collections.Generic.List<TerminalFrame>(frames.Count);
+        var normalized = new List<TerminalFrame>(frames.Count);
         var lastTime = 0d;
 
         for (var i = 0; i < frames.Count; i++)

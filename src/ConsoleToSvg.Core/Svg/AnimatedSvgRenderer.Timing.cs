@@ -1,5 +1,5 @@
 using System;
-using System.Globalization;
+using System.Collections.Generic;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
 
@@ -7,8 +7,8 @@ namespace ConsoleToSvg.Svg;
 
 public static partial class AnimatedSvgRenderer
 {
-    private static System.Collections.Generic.IReadOnlyList<TerminalFrame> SpreadCollapsedFrameTimes(
-        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
+    private static IReadOnlyList<TerminalFrame> SpreadCollapsedFrameTimes(
+        IReadOnlyList<TerminalFrame> frames,
         double maxFps
     )
     {
@@ -17,8 +17,8 @@ public static partial class AnimatedSvgRenderer
             return frames;
         }
 
-        System.Collections.Generic.List<TerminalFrame>? adjusted = null;
-        for (var runStart = 0; runStart < frames.Count; )
+        List<TerminalFrame>? adjusted = null;
+        for (var runStart = 0; runStart < frames.Count;)
         {
             var runEnd = runStart;
             while (
@@ -40,7 +40,7 @@ public static partial class AnimatedSvgRenderer
                 continue;
             }
 
-            adjusted ??= new System.Collections.Generic.List<TerminalFrame>(frames.Count);
+            adjusted ??= new List<TerminalFrame>(frames.Count);
             if (adjusted.Count == 0)
             {
                 for (var copyIndex = 0; copyIndex < runStart; copyIndex++)

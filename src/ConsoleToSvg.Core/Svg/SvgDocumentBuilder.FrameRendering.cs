@@ -28,17 +28,16 @@ internal static partial class SvgDocumentBuilder
     }
 
     public static void CollectTextStyles(
-        System.Collections.Generic.IReadOnlyList<TerminalFrame> frames,
-        System.Collections.Generic.IReadOnlyList<int> frameIndices,
+        ReadOnlySpan<TerminalFrame> frames,
         in Context context,
         SvgStyleRegistry styles
     )
     {
         var rowsBySignature =
             new Dictionary<ulong, List<(ScreenBuffer Buffer, int Row)>>();
-        for (var framePosition = 0; framePosition < frameIndices.Count; framePosition++)
+        for (var frameIndex = 0; frameIndex < frames.Length; frameIndex++)
         {
-            var buffer = frames[frameIndices[framePosition]].Buffer;
+            var buffer = frames[frameIndex].Buffer;
             for (var row = context.StartRow; row < context.EndRowExclusive; row++)
             {
                 var signature = buffer.GetRowVisualSignature(row);

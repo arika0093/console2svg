@@ -30,7 +30,7 @@ tmux -L "$socket" set-option -t "$session" status-right ""
 wait_for_pane "$socket" "$session:0.0" "$"
 
 "$CONSOLE2SVG_BIN" \
-    -o "$work_dir/cmd-tmux-replay.svg" \
+    capture -o "$work_dir/cmd-tmux-replay.svg" \
     --verbose "$DEMO_ROOT/logs/cmd-tmux-replay.log" \
     -w 80 -h 14 -v --sleep 0.5 \
     -- tmux -L "$socket" attach-session -t "$session" &
@@ -56,7 +56,7 @@ tmux -L "$socket" new-window \
 wait_for_pane "$socket" "$session:capture.0" "$"
 sleep 0.5
 
-capture_command='tmux capture-pane -pe -t :0 | console2svg -h 12 -o capture.svg'
+capture_command='tmux capture-pane -pe -t :0 | console2svg capture -h 12 -o capture.svg'
 type_slowly "$socket" "$session:capture.0" "$capture_command"
 tmux -L "$socket" send-keys -t "$session:capture.0" Enter
 wait_for_file "$work_dir/capture.svg"

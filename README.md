@@ -38,22 +38,22 @@ There are similar tools, but console2svg stands out for:
 
 ## Overview
 
-The simplest way to use it is to just put the command you want to run after `console2svg`. For example, the following command converts the description text of `console2svg` into SVG (oh, how meta).
+The simplest way to use it is to put the command you want to run after `console2svg capture --`. For example, the following command converts the description text of `console2svg` into SVG (oh, how meta).
 
 ```bash
-console2svg console2svg
+console2svg capture -- console2svg
 ```
 
-![console2svg console2svg](./assets/cmd.svg)
+![console2svg capture -- console2svg](./assets/cmd.svg)
 
 You can also generate SVG with a window frame. and some options to customize the appearance.  
 For example, `-w` specifies the width, `-c` is an option to display the command at the beginning of the output, and `-d` is an option to specify the style of the window frame, where we specify a macOS-like frame. If the command is long, you can also write it together after `--`.
 
 ```bash
-console2svg -w 100 -c -d macos-pc -- fastfetch
+console2svg capture -w 100 -c -d macos-pc -- fastfetch
 ```
 
-![console2svg -w 100 -c -d macos-pc -- fastfetch](./assets/cmd-window.svg)
+![console2svg capture -w 100 -c -d macos-pc -- fastfetch](./assets/cmd-window.svg)
 
 ---
 
@@ -61,21 +61,21 @@ In video mode(`-v`), you can capture the animation of the command execution and 
 By using the [replay feature](#replay-input), you can save the command execution record and later regenerate the SVG based on that record.
 
 ```bash
-console2svg -w 90 -h 24 -v -d windows --timeout 7 -- /usr/games/pipes -t 1 -f 35
+console2svg capture -w 90 -h 24 -v -d windows --timeout 7 -- /usr/games/pipes -t 1 -f 35
 ```
 
-![console2svg -w 90 -h 24 -v -d windows --timeout 7 -- pipes.sh](./assets/cmd-loop.svg)
+![console2svg capture -w 90 -h 24 -v -d windows --timeout 7 -- pipes.sh](./assets/cmd-loop.svg)
 
 ---
 
-In interactive mode(`-i`), you can run your normal interactive shell in a PTY and capture its current screen on demand. Press `F10` to write a static SVG, or `F9` to start recording from the exact current terminal state.
+With `console2svg interactive`, you can run your normal interactive shell in a PTY and capture its current screen on demand. Press `F10` to write a static SVG, or `F9` to start recording from the exact current terminal state.
 
 ```bash
-console2svg -i -d macos -o ./captures/output.svg
+console2svg interactive -d macos -o ./captures/output.svg
 # -> saves ./captures/output_yyyyMMdd_HHmmss.svg
 ```
 
-![console2svg -i -d macos -o ./captures/output.svg](./assets/cmd-interactive.svg)
+![console2svg interactive -d macos -o ./captures/output.svg](./assets/cmd-interactive.svg)
 
 
 ## Install
@@ -147,7 +147,7 @@ jobs:
         uses: arika0093/console2svg@main
 
       - name: Generate SVG
-        run: console2svg -w 120 -c -d macos-pc -o output.svg -- dotnet --version
+        run: console2svg capture -w 120 -c -d macos-pc -o output.svg -- dotnet --version
 
       - name: Commit Changes
         uses: stefanzweifel/git-auto-commit-action@v7
@@ -175,24 +175,34 @@ To disable this behavior, use the `--no-colorenv` and `--no-delete-envs` options
 > This repository uses this action itself to automatically regenerate all the SVG images in the [`assets/`](assets/) directory whenever a new release is published.
 
 ## Usage
+
+console2svg groups workflows under explicit commands. Options belong to the workflow shown below; common output and appearance options are accepted by capture, interactive, replay, and convert.
+
+| Command | Input | Workflow-specific options |
+| --- | --- | --- |
+| `capture [options] -- <command>` | command or piped stdin | `--save-cast`, `--replay-save`, `--timeout` |
+| `interactive [options] [-- <program>]` | interactive shell/program | interactive recording controls |
+| `replay <replay.json> [options] -- <command>` | keyboard replay plus command | replay input path |
+| `convert <input.cast or input.svg> [options]` | asciicast v2 recording or SVG | rendering/export options |
+
 ### Pipe mode
 
 ```sh
-my-command | console2svg
+my-command | console2svg capture
 ```
 
 ### PTY command mode
 
 ```sh
-console2svg "git log --oneline"
+console2svg capture "git log --oneline"
 # or 
-console2svg -- git log --oneline
+console2svg capture -- git log --oneline
 ```
 
 If you want to set a fixed width and height, you can use the `-w` and `-h` options.
 
 ```sh
-console2svg -w 120 -h 20 -- git log --oneline
+console2svg capture -w 120 -h 20 -- git log --oneline
 ```
 
 ### Interactive capture
@@ -203,7 +213,7 @@ The shell's output is forwarded live to your terminal. Press `F10` to write a
 static SVG; the capture notification is printed by the host and is not sent to the shell.
 
 ```sh
-console2svg -i -o ./captures/output.svg
+console2svg interactive -o ./captures/output.svg
 # -> writes ./captures/output_yyyyMMdd_HHmmss.svg (image)
 ```
 
@@ -211,7 +221,7 @@ Press `F9` to start recording from the exact current terminal state, `F12` to pa
 The output format controls whether the capture is written as animated SVG or converted to the requested video format.
 
 ```sh
-console2svg -i -o ./captures/session.svg
+console2svg interactive -o ./captures/session.svg
 # -> writes ./captures/session_yyyyMMdd_HHmmss.svg (animation)
 ```
 
@@ -221,7 +231,7 @@ You can crop the output by specifying the number of pixels or characters to crop
 
 ```sh
 # ch: character width, px: pixel
-console2svg --crop-top 1ch --crop-left 5px --crop-right 30px -- your-command
+console2svg capture --crop-top 1ch --crop-left 5px --crop-right 30px -- your-command
 ```
 
 You can also crop at the position where a specific character appears.
@@ -230,12 +240,12 @@ When specifying a character, you can specify it like `:(number)`, which crops at
 For example, the following example crops from the line where the character `Host` is located to 2 lines above the line where the character `.NET runtimes installed:` is located.
 
 ```sh
-console2svg --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -- dotnet --info
+console2svg capture --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -- dotnet --info
 ```
 
 The result will look like this.
 
-![console2svg --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -- dotnet --info](./assets/cmd-crop-word.svg)
+![console2svg capture --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -- dotnet --info](./assets/cmd-crop-word.svg)
 
 ### Animated SVG
 
@@ -243,10 +253,10 @@ use `-m video` or `-v` to capture the animation of the command execution and sav
 
 ```sh
 # apt install sl
-console2svg -c -d -v -- sl
+console2svg capture -c -d -v -- sl
 ```
 
-![console2svg -c -d -v -- sl](./assets/cmd-sl.svg)
+![console2svg capture -c -d -v -- sl](./assets/cmd-sl.svg)
 
 You can specify the `--timeout` option to output SVG after a certain time has elapsed.
 This is useful for converting commands that do not terminate, such as `nyancat`, into SVG.
@@ -255,17 +265,17 @@ There is also a `--sleep` option to specify the stop time after playback. This a
 
 ```sh
 # apt install nyancat
-console2svg -w 160 -h 32 -c -d -v --timeout 5 --sleep 0.5 -- nyancat -d 10
+console2svg capture -w 160 -h 32 -c -d -v --timeout 5 --sleep 0.5 -- nyancat -d 10
 ```
 
-![console2svg -w 160 -h 32 -c -d -v --timeout 5 --sleep 0.5 -- nyancat -d 10](./assets/cmd-nyancat.svg)
+![console2svg capture -w 160 -h 32 -c -d -v --timeout 5 --sleep 0.5 -- nyancat -d 10](./assets/cmd-nyancat.svg)
 
 You can also write sequential SVG files starting with `frame-0000.svg` to a specific folder.
 This is useful for cherry-picking your favorite frames or converting them into a video using software like ffmpeg. 
 
 ```sh
 # apt install cmatrix
-console2svg -c -d -v --timeout 5 --fps 30 --save-frames ./frames-dir -- cmatrix -ab
+console2svg capture -c -d -v --timeout 5 --fps 30 --save-frames ./frames-dir -- cmatrix -ab
 ```
 
 ### Replay input
@@ -273,7 +283,7 @@ You can also save the command execution record and later regenerate the SVG base
 To save the record, use the `--replay-save` option to save the command execution.
 
 ```sh
-console2svg --replay-save ./replay.json -- bash
+console2svg capture --replay-save ./replay.json -- bash
 # save key inputs to replay.json
 ```
 
@@ -281,10 +291,10 @@ Then, generate the SVG based on the saved key input.
 By using this feature, you can generate an SVG that records terminal operations as shown below.
 
 ```sh
-console2svg -w 80 -h 20 -v -c -d macos --replay ./replay.json -- bash
+console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash
 ```
 
-![console2svg -w 80 -h 20 -v -c -d macos --replay ./replay.json -- bash](./assets/cmd-bash-vim.svg)
+![console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash](./assets/cmd-bash-vim.svg)
 
 The replay file is in a simple JSON format. If you make a mistake in the input, you can directly edit this file (or of course, you can ask AI to fix it for you).
 
@@ -342,10 +352,10 @@ Then, you can specify the output file with the desired extension. For example, t
 
 ```bash
 # apt install cmatrix
-console2svg -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab
+console2svg capture -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab
 ```
 
-![console2svg -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab](./assets/cmd-matrix-video.gif)
+![console2svg capture -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab](./assets/cmd-matrix-video.gif)
 
 You can also output as MP4, WebM, or a static PNG/JPG by changing the extension.
 
@@ -355,26 +365,26 @@ You can also output as MP4, WebM, or a static PNG/JPG by changing the extension.
 You can set the background color or image of the output SVG, and adjust the opacity of the background fill.
 
 ```sh
-console2svg -h 10 -c -d macos-pc --background "#003060" --opacity 0.85 -- dotnet --version
+console2svg capture -h 10 -c -d macos-pc --background "#003060" --opacity 0.85 -- dotnet --version
 ```
 
-![console2svg -h 10 -c -d macos-pc --background "#003060" --opacity 0.85 -- dotnet --version](./assets/cmd-bg1.svg)
+![console2svg capture -h 10 -c -d macos-pc --background "#003060" --opacity 0.85 -- dotnet --version](./assets/cmd-bg1.svg)
 
 You can also set a gradient background.
 
 ```sh
-console2svg -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.85 -- dotnet --version
+console2svg capture -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.85 -- dotnet --version
 ```
 
-![console2svg -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.85 -- dotnet --version](./assets/cmd-bg2.svg)
+![console2svg capture -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.85 -- dotnet --version](./assets/cmd-bg2.svg)
 
 Image background is also supported.
 
 ```sh
-console2svg -h 10 -c -d macos-pc --background image.png --opacity 0.85  -- dotnet --version
+console2svg capture -h 10 -c -d macos-pc --background image.png --opacity 0.85  -- dotnet --version
 ```
 
-![console2svg -h 10 -c -d macos-pc --background image.png --opacity 0.85  -- dotnet --version](./assets/cmd-bg3.svg)
+![console2svg capture -h 10 -c -d macos-pc --background image.png --opacity 0.85  -- dotnet --version](./assets/cmd-bg3.svg)
 
 ### Terminal Appearance
 
@@ -383,10 +393,10 @@ For example, in the following example, the prompt (the string displayed at the b
 the command header is changed to `my-custom-header`, and the text color is changed to `#00f040`.
 
 ```sh
-console2svg -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" --backcolor "#042515" -- echo "hi"
+console2svg capture -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" --backcolor "#042515" -- echo "hi"
 ```
 
-![console2svg -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" --backcolor "#042515" -- echo "hi"](./assets/cmd-term-custom.svg)
+![console2svg capture -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" --backcolor "#042515" -- echo "hi"](./assets/cmd-term-custom.svg)
 
 
 ### Window chrome
@@ -425,7 +435,7 @@ $ echo "say hello"
 $ echo "say goodbye"
 ```
 
-After completing the command execution you want to record, open a new window with `ctrl+b c`. Then, run `tmux capture-pane | console2svg` to save the content of the original window as SVG.
+After completing the command execution you want to record, open a new window with `ctrl+b c`. Then, run `tmux capture-pane | console2svg capture` to save the content of the original window as SVG.
 
 ```sh
 # tmux options:
@@ -434,7 +444,7 @@ After completing the command execution you want to record, open a new window wit
 #   -t :0: target the first pane (you can specify other panes as needed)
 # console2svg options:
 #   -h 12: set the height of the output SVG to 12 lines (adjust as needed)
-tmux capture-pane -pe -t :0 | console2svg -h 12 -o capture-$(date +%s).svg
+tmux capture-pane -pe -t :0 | console2svg capture -h 12 -o capture-$(date +%s).svg
 ```
 
 <details>
@@ -449,7 +459,7 @@ With the power of `console2svg`, you can even record and explain how to use `con
 <details>
 <summary>tmux capture-pane result example</summary>
 
-![tmux capture-pane -pe -t :0 | console2svg -h 12](./assets/cmd-tmux-cap.svg)
+![tmux capture-pane -pe -t :0 | console2svg capture -h 12](./assets/cmd-tmux-cap.svg)
 
 </details>
 
@@ -458,7 +468,7 @@ Then repeat the workflow: press `ctrl+b p` to return to the original window, wor
 Of course, you can also save all lines (useful for evidence). In that case, specify the `-S -` option on the tmux side to capture the entire screen.
 
 ```sh
-tmux capture-pane -pe -S - -t :0 | console2svg -o full-capture-$(date +%s).svg
+tmux capture-pane -pe -S - -t :0 | console2svg capture -o full-capture-$(date +%s).svg
 ```
 
 ### Repeat capture mode
@@ -470,7 +480,7 @@ Each result is treated as a full-screen update, so content from the previous cap
 The command runs at the interval specified by `--fps` until you stop `console2svg` with `Ctrl+C`.
 
 ```sh
-console2svg -m repeat --fps 2 -- tmux capture-pane -pe -t :0
+console2svg capture -m repeat --fps 2 -- tmux capture-pane -pe -t :0
 ```
 
 ## Supported platforms

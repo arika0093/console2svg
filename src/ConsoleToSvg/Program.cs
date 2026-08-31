@@ -39,7 +39,7 @@ internal static partial class Program
 
         if (showHelp || options is null)
         {
-            WritePagedHelp(ColorizeIfSupported(OptionParser.HelpText));
+            WritePagedHelp(ColorizeIfSupported(OptionParser.GetHelpText(options?.Workflow ?? Workflow.Legacy)));
             return 0;
         }
 
@@ -165,6 +165,38 @@ internal static partial class Program
                         cancellationTokenSource.Token
                     )
                     .ConfigureAwait(false);
+            }
+
+            if (!string.IsNullOrWhiteSpace(options.InputSvgPath))
+            {
+                EnsureDirectory(options.OutputPath);
+                if (string.Equals(Path.GetExtension(options.OutputPath), ".svg", StringComparison.OrdinalIgnoreCase))
+                {
+                    File.Copy(options.InputSvgPath, options.OutputPath, overwrite: true);
+                }
+                else
+                {
+                    var ffmpegPath = FindFfmpegExecutable();
+                    SvgConverter.SetFfmpegPath(ffmpegPath);
+                    var converter = SvgConverter.ResolveConverter(
+                        options.SvgConverter,
+                        !string.IsNullOrWhiteSpace(ffmpegPath),
+                        logger
+                    );
+                    await SvgConverter.ConvertSvgToImageAsync(
+                        options.InputSvgPath,
+                        options.OutputPath,
+                        converter,
+                        ffmpegPath,
+                        options.SizeWidth,
+                        options.SizeHeight,
+                        logger,
+                        ConsoleProgressReporter.Instance,
+                        cancellationTokenSource.Token
+                    ).ConfigureAwait(false);
+                }
+                Console.WriteLine($"Generated: {options.OutputPath}");
+                return 0;
             }
 
             var session = await LoadOrRecordAsync(

@@ -236,7 +236,7 @@ internal static partial class Program
             .Replace("{timestamp}", stamp, StringComparison.OrdinalIgnoreCase);
         if (candidateName.Contains("{index}", StringComparison.OrdinalIgnoreCase))
         {
-            for (var index = 1; index < 10000; index++)
+            for (long index = 1; index <= int.MaxValue; index++)
             {
                 var indexedName = candidateName.Replace(
                     "{index}",

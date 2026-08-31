@@ -142,9 +142,20 @@ internal static class LegacyArgumentAdapter
                     normalized.Add(name);
                     normalized.Add(value);
                 }
-                else
+                else if (name.StartsWith("-", StringComparison.Ordinal))
                 {
                     normalized.Add(token);
+                }
+                else
+                {
+                    if (positionalCommand is null)
+                    {
+                        positionalCommand = token;
+                    }
+                    else
+                    {
+                        normalized.Add(token);
+                    }
                 }
                 continue;
             }
@@ -242,6 +253,7 @@ internal static class LegacyArgumentAdapter
         !value.StartsWith("-", StringComparison.Ordinal)
         && (
             value.EndsWith(".log", StringComparison.OrdinalIgnoreCase)
+            || value.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)
             || value.Contains('/', StringComparison.Ordinal)
             || value.Contains('\\', StringComparison.Ordinal)
         );
@@ -249,7 +261,10 @@ internal static class LegacyArgumentAdapter
     private static bool IsWindowValue(string value) =>
         !value.StartsWith("-", StringComparison.Ordinal)
         && (
-            value is "none" or "macos" or "windows" or "transparent"
+            value.Equals("none", StringComparison.OrdinalIgnoreCase)
+            || value.Equals("macos", StringComparison.OrdinalIgnoreCase)
+            || value.Equals("windows", StringComparison.OrdinalIgnoreCase)
+            || value.Equals("transparent", StringComparison.OrdinalIgnoreCase)
             || value.EndsWith("-pc", StringComparison.OrdinalIgnoreCase)
             || value.EndsWith(".json", StringComparison.OrdinalIgnoreCase)
         );

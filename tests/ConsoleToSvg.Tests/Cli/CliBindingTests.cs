@@ -102,6 +102,8 @@ public sealed class CliBindingTests
             var record = await RunCliAsync(
                 "record",
                 castPath,
+                "--timeout",
+                "5",
                 "--",
                 "printf",
                 "workflow"

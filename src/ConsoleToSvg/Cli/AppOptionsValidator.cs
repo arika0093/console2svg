@@ -174,8 +174,11 @@ internal static class AppOptionsValidator
                 error = $"Format {options.Format} does not support image output.";
                 return false;
             }
-            options.Mode = OutputMode.Video;
-            options.IsModeExplicit = true;
+            if (options.Mode != OutputMode.Repeat)
+            {
+                options.Mode = OutputMode.Video;
+                options.IsModeExplicit = true;
+            }
         }
         else if (
             options.IsModeExplicit

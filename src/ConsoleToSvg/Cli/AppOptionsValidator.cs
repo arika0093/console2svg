@@ -80,7 +80,7 @@ internal static class AppOptionsValidator
         }
         if (!IsFiniteGreaterThan(options.FontSize, 0))
         {
-            error = "--font-size must be greater than 0.";
+            error = "--fontsize must be greater than 0.";
             return false;
         }
         if (!IsFiniteGreaterThan(options.Timeout, 0))
@@ -107,6 +107,15 @@ internal static class AppOptionsValidator
             error = "Embed options require SVG output.";
             return false;
         }
+        if (
+            (options.EmbedCast || options.EmbedLogs || options.EmbedReplay)
+            && !string.IsNullOrWhiteSpace(options.Format)
+            && !string.Equals(options.Format, "svg", StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            error = "Embed options require SVG format.";
+            return false;
+        }
         if (options.EmbedReplay && string.IsNullOrWhiteSpace(options.Command))
         {
             error = "--embed-replay requires a command after --.";
@@ -120,6 +129,11 @@ internal static class AppOptionsValidator
         if (options.Mode == OutputMode.Repeat && string.IsNullOrWhiteSpace(options.Command))
         {
             error = "--mode repeat requires a command after --.";
+            return false;
+        }
+        if (options.Mode == OutputMode.Repeat && options.EmbedReplay)
+        {
+            error = "--embed-replay cannot be used with --mode repeat.";
             return false;
         }
         if (options.Verb == CliVerb.Replay && string.IsNullOrWhiteSpace(options.Command))
@@ -155,6 +169,11 @@ internal static class AppOptionsValidator
         options.Format = format!.Extension;
         if (!format.SupportsImage)
         {
+            if (options.IsModeExplicit && options.Mode == OutputMode.Image)
+            {
+                error = $"Format {options.Format} does not support image output.";
+                return false;
+            }
             options.Mode = OutputMode.Video;
             options.IsModeExplicit = true;
         }

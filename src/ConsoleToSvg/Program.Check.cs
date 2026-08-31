@@ -54,7 +54,14 @@ internal static partial class Program
             && File.Exists(encodedPath)
         )
         {
-            File.Delete(encodedPath);
+            try
+            {
+                File.Delete(encodedPath);
+            }
+            catch (IOException)
+            {
+                // Ignore cleanup failures
+            }
         }
     }
 

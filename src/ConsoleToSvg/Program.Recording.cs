@@ -184,10 +184,13 @@ internal static partial class Program
                 !IsVideoFormat(Path.GetExtension(options.OutputPath).TrimStart('.')),
                 async (capture, progressReporter) =>
                 {
+                    var format = !string.IsNullOrWhiteSpace(options.Format)
+                        ? options.Format
+                        : Path.GetExtension(options.OutputPath).TrimStart('.');
                     var outputPath = GetInteractiveOutputPath(
                         options.OutputPath,
                         options.NoSuffix,
-                        capture.IsVideo ? null : Path.GetExtension(options.OutputPath)
+                        capture.IsVideo ? null : $".{format}"
                     );
                     await WriteInteractiveCaptureAsync(
                             capture,
@@ -233,8 +236,7 @@ internal static partial class Program
             .Replace("{timestamp}", stamp, StringComparison.OrdinalIgnoreCase);
         if (candidateName.Contains("{index}", StringComparison.OrdinalIgnoreCase))
         {
-            var index = 1;
-            while (index <= int.MaxValue)
+            for (var index = 1; index < 10000; index++)
             {
                 var indexedName = candidateName.Replace(
                     "{index}",
@@ -248,7 +250,6 @@ internal static partial class Program
                 {
                     return indexedPath;
                 }
-                index++;
             }
 
             throw new IOException("No available index remains for the shell output path.");
@@ -256,9 +257,23 @@ internal static partial class Program
 
         if (!string.Equals(candidateName, name, StringComparison.Ordinal))
         {
-            return string.IsNullOrEmpty(directory)
+            var timestampCandidate = string.IsNullOrEmpty(directory)
                 ? candidateName + extension
                 : Path.Combine(directory, candidateName + extension);
+            if (!File.Exists(timestampCandidate))
+            {
+                return timestampCandidate;
+            }
+            var timestampSuffix = 1;
+            while (File.Exists(timestampCandidate))
+            {
+                candidateName = $"{name}_{stamp}_{timestampSuffix}{extension}";
+                timestampCandidate = string.IsNullOrEmpty(directory)
+                    ? candidateName
+                    : Path.Combine(directory, candidateName);
+                timestampSuffix++;
+            }
+            return timestampCandidate;
         }
 
         var candidate = string.IsNullOrEmpty(directory)

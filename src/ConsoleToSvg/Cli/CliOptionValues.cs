@@ -85,7 +85,7 @@ public sealed class TimeSelectionParserAttribute : Attribute, IArgumentParser<Ti
     }
 
     private static bool TryNonNegativeDouble(ReadOnlySpan<char> value, out double result) =>
-        double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out result)
+        double.TryParse(value, NumberStyles.AllowExponent | NumberStyles.Float, CultureInfo.InvariantCulture, out result)
         && double.IsFinite(result)
         && result >= 0;
 }

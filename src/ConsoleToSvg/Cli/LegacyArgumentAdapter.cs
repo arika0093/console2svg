@@ -134,13 +134,17 @@ internal static class LegacyArgumentAdapter
             {
                 var name = token[..equalsIndex];
                 var value = token[(equalsIndex + 1)..];
-                normalized.Add(name);
                 if (
                     RequiresValue(name)
                     || name is "--background" or "--mask" or "-d" or "--window"
                 )
                 {
+                    normalized.Add(name);
                     normalized.Add(value);
+                }
+                else
+                {
+                    normalized.Add(token);
                 }
                 continue;
             }

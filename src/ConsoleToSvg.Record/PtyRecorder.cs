@@ -457,6 +457,11 @@ public static partial class PtyRecorder
             logger.ZLogDebug(
                 $"PTY output reader did not stop within {PtyCleanupTimeoutMs}ms; continuing shutdown."
             );
+            // Observe exceptions from the read task in the background to prevent unobserved task exceptions
+            _ = readTask.ContinueWith(
+                t => logger.ZLogDebug(t.Exception?.InnerException ?? t.Exception, $"PTY output reader faulted after timeout"),
+                TaskContinuationOptions.OnlyOnFaulted
+            );
             return false;
         }
 

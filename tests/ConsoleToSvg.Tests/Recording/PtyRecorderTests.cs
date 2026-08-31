@@ -35,7 +35,7 @@ public sealed class PtyRecorderTests
                 Task.Delay(TimeSpan.FromSeconds(3))
             );
             completed.ShouldBe(disposeTask);
-            await disposeTask.ConfigureAwait(false);
+            await disposeTask.WaitAsync(TimeSpan.FromSeconds(3)).ConfigureAwait(false);
         }
         finally
         {

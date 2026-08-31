@@ -273,7 +273,7 @@ public static partial class PtyRecorder
 
                     if (
                         startupTimeoutMs.HasValue
-                        && session.Events.Count == 0
+                        && session.GetEventCount() == 0
                         && stopwatch.ElapsedMilliseconds > startupTimeoutMs.Value
                     )
                     {
@@ -360,7 +360,7 @@ public static partial class PtyRecorder
                 await DisposeConnectionWithTimeoutAsync(connection, logger).ConfigureAwait(false);
             }
 
-            await FinishReadTaskAsync(readTask, logger).ConfigureAwait(false);
+            var readerCompleted = await FinishReadTaskAsync(readTask, logger).ConfigureAwait(false);
 
             if (!canceled && !eofReached && !processExited && !disposed)
             {
@@ -386,7 +386,7 @@ public static partial class PtyRecorder
             }
 
             logger.ZLogDebug(
-                $"PTY recording completed. Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds}"
+                $"PTY recording completed. Events={session.GetEventCount()} ElapsedMs={stopwatch.ElapsedMilliseconds}"
             );
 
             if (replayTimeoutExceeded is double exceededDurationFinal)
@@ -401,6 +401,11 @@ public static partial class PtyRecorder
                 throw new PtyStartupHangException(
                     $"PTY process did not produce any output within {startupTimeoutMs!.Value}ms of starting."
                 );
+            }
+
+            if (!readerCompleted)
+            {
+                return SnapshotSession(session);
             }
 
             return session;
@@ -440,7 +445,7 @@ public static partial class PtyRecorder
         }
     }
 
-    private static async Task FinishReadTaskAsync(Task readTask, ILogger logger)
+    private static async Task<bool> FinishReadTaskAsync(Task readTask, ILogger logger)
     {
         var completed = await Task.WhenAny(
                 readTask,
@@ -452,7 +457,7 @@ public static partial class PtyRecorder
             logger.ZLogDebug(
                 $"PTY output reader did not stop within {PtyCleanupTimeoutMs}ms; continuing shutdown."
             );
-            return;
+            return false;
         }
 
         try
@@ -468,6 +473,24 @@ public static partial class PtyRecorder
             // On Unix PTY, child exit can surface as EIO ("Input/output error")
             // when reading after the slave side is closed. Treat as EOF.
         }
+
+        return true;
+    }
+
+    private static RecordingSession SnapshotSession(RecordingSession source)
+    {
+        var snapshot = new RecordingSession(source.Header.width, source.Header.height)
+        {
+            Header =
+            {
+                timestamp = source.Header.timestamp,
+            },
+        };
+        lock (source.EventsLock)
+        {
+            snapshot.Events.AddRange(source.Events);
+        }
+        return snapshot;
     }
 
     private static async Task<RecordingSession> RecordWithProcessFallbackAsync(
@@ -651,7 +674,7 @@ public static partial class PtyRecorder
             }
 
             logger.ZLogDebug(
-                $"Fallback recording completed. ExitCode={process.ExitCode} Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds} Canceled={canceled}"
+                $"Fallback recording completed. ExitCode={process.ExitCode} Events={session.GetEventCount()} ElapsedMs={stopwatch.ElapsedMilliseconds} Canceled={canceled}"
             );
 
             if (replayTimedOut && replayData?.TotalDuration is double exceededDuration)

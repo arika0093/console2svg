@@ -26,18 +26,21 @@ public sealed class PtyRecorderTests
             _ => false,
             () => releaseDispose.Wait()
         );
-        var stopwatch = Stopwatch.StartNew();
+        var disposeTask = InvokeDisposeConnectionWithTimeoutAsync(connection);
 
         try
         {
-            await InvokeDisposeConnectionWithTimeoutAsync(connection);
+            var completed = await Task.WhenAny(
+                disposeTask,
+                Task.Delay(TimeSpan.FromSeconds(3))
+            );
+            completed.ShouldBe(disposeTask);
+            await disposeTask.ConfigureAwait(false);
         }
         finally
         {
             releaseDispose.Set();
         }
-
-        stopwatch.Elapsed.ShouldBeLessThan(TimeSpan.FromSeconds(3));
     }
 
     [Test]

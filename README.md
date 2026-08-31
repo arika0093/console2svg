@@ -60,7 +60,6 @@ In video mode(`-v`), you can capture the animation of the command execution and 
 By using the [replay feature](#replay-input), you can save the command execution record and later regenerate the SVG based on that record.
 
 ```bash
-# Install `btop` with your platform's package manager (e.g. apt, brew, winget).
 console2svg -w 150 -h 32 -v -c -d macos-pc --timeout 7 -- btop -u 200
 ```
 

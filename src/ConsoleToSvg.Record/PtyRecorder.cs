@@ -19,6 +19,8 @@ public static partial class PtyRecorder
     private const string DisableMouseTrackingSequence =
         "\u001b[?9l\u001b[?1000l\u001b[?1002l\u001b[?1003l\u001b[?1004l\u001b[?1005l\u001b[?1006l\u001b[?1015l\u001b[?1016l\u001b[?9001l";
 
+    private const int PtyCleanupTimeoutMs = 1000;
+
     // remove some CI environments to avoid apps switching to no-color mode.
     // for example: chalk(Node.js) checks "CI" to disable colors on CI environments:
     // see: https://github.com/chalk/chalk/blob/aa06bb5ac3f14df9fda8cfb54274dfc165ddfdef/source/vendor/supports-color/index.js#L114
@@ -271,7 +273,7 @@ public static partial class PtyRecorder
 
                     if (
                         startupTimeoutMs.HasValue
-                        && session.Events.Count == 0
+                        && session.GetEventCount() == 0
                         && stopwatch.ElapsedMilliseconds > startupTimeoutMs.Value
                     )
                     {
@@ -326,6 +328,13 @@ public static partial class PtyRecorder
                 }
             }
 
+            if (canceled)
+            {
+                await readCancellation.CancelAsync().ConfigureAwait(false);
+            }
+
+            await inputCancellation.CancelAsync().ConfigureAwait(false);
+
             if (canceled || eofReached || processExited)
             {
                 string msg;
@@ -347,48 +356,15 @@ public static partial class PtyRecorder
                     msg = "PTY process exited. Finalizing recording.";
                 }
                 logger.ZLogDebug($"{msg}");
-                try
-                {
-                    connection.Dispose();
-                    disposed = true;
-                }
-                catch
-                {
-                    // Ignore disposal errors during cancellation cleanup.
-                }
+                disposed = true;
+                await DisposeConnectionWithTimeoutAsync(connection, logger).ConfigureAwait(false);
             }
 
-            if (canceled)
-            {
-                await readCancellation.CancelAsync().ConfigureAwait(false);
-            }
-
-            await inputCancellation.CancelAsync().ConfigureAwait(false);
-
-            try
-            {
-                await readTask.ConfigureAwait(false);
-            }
-            catch (OperationCanceledException)
-            {
-                // Read task cancellation is treated as graceful completion for partial output.
-            }
-            catch (IOException ex) when (IsExpectedPtyEof(ex))
-            {
-                // On Unix PTY, child exit can surface as EIO ("Input/output error")
-                // when reading after the slave side is closed. Treat as EOF.
-            }
+            var readerCompleted = await FinishReadTaskAsync(readTask, logger).ConfigureAwait(false);
 
             if (!canceled && !eofReached && !processExited && !disposed)
             {
-                try
-                {
-                    connection.Dispose();
-                }
-                catch
-                {
-                    // Ignore disposal errors when the process has already exited
-                }
+                await DisposeConnectionWithTimeoutAsync(connection, logger).ConfigureAwait(false);
             }
 
             if (inputTask is not null)
@@ -410,7 +386,7 @@ public static partial class PtyRecorder
             }
 
             logger.ZLogDebug(
-                $"PTY recording completed. Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds}"
+                $"PTY recording completed. Events={session.GetEventCount()} ElapsedMs={stopwatch.ElapsedMilliseconds}"
             );
 
             if (replayTimeoutExceeded is double exceededDurationFinal)
@@ -427,12 +403,99 @@ public static partial class PtyRecorder
                 );
             }
 
+            if (!readerCompleted)
+            {
+                return SnapshotSession(session);
+            }
+
             return session;
         }
         finally
         {
             TryDisableTerminalMouseTracking(forwardToConsole, logger);
         }
+    }
+
+    private static async Task DisposeConnectionWithTimeoutAsync(
+        NativePtyConnection connection,
+        ILogger logger
+    )
+    {
+        var disposeTask = Task.Run(connection.Dispose);
+        var completed = await Task.WhenAny(
+                disposeTask,
+                Task.Delay(PtyCleanupTimeoutMs, CancellationToken.None)
+            )
+            .ConfigureAwait(false);
+        if (completed != disposeTask)
+        {
+            logger.ZLogDebug(
+                $"PTY cleanup did not complete within {PtyCleanupTimeoutMs}ms; continuing shutdown."
+            );
+            return;
+        }
+
+        try
+        {
+            await disposeTask.ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            logger.ZLogDebug(ex, $"PTY cleanup failed; continuing shutdown.");
+        }
+    }
+
+    private static async Task<bool> FinishReadTaskAsync(Task readTask, ILogger logger)
+    {
+        var completed = await Task.WhenAny(
+                readTask,
+                Task.Delay(PtyCleanupTimeoutMs, CancellationToken.None)
+            )
+            .ConfigureAwait(false);
+        if (completed != readTask)
+        {
+            logger.ZLogDebug(
+                $"PTY output reader did not stop within {PtyCleanupTimeoutMs}ms; continuing shutdown."
+            );
+            // Observe exceptions from the read task in the background to prevent unobserved task exceptions
+            _ = readTask.ContinueWith(
+                t => logger.ZLogDebug(t.Exception?.InnerException ?? t.Exception, $"PTY output reader faulted after timeout"),
+                TaskContinuationOptions.OnlyOnFaulted
+            );
+            return false;
+        }
+
+        try
+        {
+            await readTask.ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            // Read task cancellation is treated as graceful completion for partial output.
+        }
+        catch (IOException ex) when (IsExpectedPtyEof(ex))
+        {
+            // On Unix PTY, child exit can surface as EIO ("Input/output error")
+            // when reading after the slave side is closed. Treat as EOF.
+        }
+
+        return true;
+    }
+
+    private static RecordingSession SnapshotSession(RecordingSession source)
+    {
+        var snapshot = new RecordingSession(source.Header.width, source.Header.height)
+        {
+            Header =
+            {
+                timestamp = source.Header.timestamp,
+            },
+        };
+        lock (source.EventsLock)
+        {
+            snapshot.Events.AddRange(source.Events);
+        }
+        return snapshot;
     }
 
     private static async Task<RecordingSession> RecordWithProcessFallbackAsync(
@@ -616,7 +679,7 @@ public static partial class PtyRecorder
             }
 
             logger.ZLogDebug(
-                $"Fallback recording completed. ExitCode={process.ExitCode} Events={session.Events.Count} ElapsedMs={stopwatch.ElapsedMilliseconds} Canceled={canceled}"
+                $"Fallback recording completed. ExitCode={process.ExitCode} Events={session.GetEventCount()} ElapsedMs={stopwatch.ElapsedMilliseconds} Canceled={canceled}"
             );
 
             if (replayTimedOut && replayData?.TotalDuration is double exceededDuration)

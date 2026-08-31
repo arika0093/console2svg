@@ -25,6 +25,8 @@ public sealed class AsciicastEvent
 
 public sealed class RecordingSession
 {
+    private readonly object _eventsLock = new();
+
     public RecordingSession(int width, int height)
     {
         Header = new AsciicastHeader
@@ -46,6 +48,16 @@ public sealed class RecordingSession
 
     public List<AsciicastEvent> Events { get; }
 
+    public object EventsLock => _eventsLock;
+
+    public int GetEventCount()
+    {
+        lock (_eventsLock)
+        {
+            return Events.Count;
+        }
+    }
+
     public void AddEvent(double timeSeconds, string data)
     {
         if (string.IsNullOrEmpty(data))
@@ -53,13 +65,16 @@ public sealed class RecordingSession
             return;
         }
 
-        Events.Add(
-            new AsciicastEvent
-            {
-                Time = timeSeconds,
-                Type = "o",
-                Data = data,
-            }
-        );
+        lock (_eventsLock)
+        {
+            Events.Add(
+                new AsciicastEvent
+                {
+                    Time = timeSeconds,
+                    Type = "o",
+                    Data = data,
+                }
+            );
+        }
     }
 }

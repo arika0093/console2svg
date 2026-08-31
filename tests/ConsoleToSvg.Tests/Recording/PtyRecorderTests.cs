@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -14,6 +14,35 @@ namespace ConsoleToSvg.Tests.Recording;
 
 public sealed class PtyRecorderTests
 {
+    [Test]
+    public async Task DisposeConnectionWithTimeoutAsync_ReturnsWhenDisposeBlocks()
+    {
+        using var releaseDispose = new ManualResetEventSlim();
+        using var reader = new MemoryStream();
+        using var writer = new MemoryStream();
+        using var connection = new NativePtyConnection(
+            reader,
+            writer,
+            _ => false,
+            () => releaseDispose.Wait()
+        );
+        var disposeTask = InvokeDisposeConnectionWithTimeoutAsync(connection);
+
+        try
+        {
+            var completed = await Task.WhenAny(
+                disposeTask,
+                Task.Delay(TimeSpan.FromSeconds(3))
+            );
+            completed.ShouldBe(disposeTask);
+            await disposeTask.WaitAsync(TimeSpan.FromSeconds(3)).ConfigureAwait(false);
+        }
+        finally
+        {
+            releaseDispose.Set();
+        }
+    }
+
     [Test]
     public async Task ReadOutputAsync_ForwardsRawBytesWithoutTransform()
     {
@@ -181,10 +210,8 @@ public sealed class PtyRecorderTests
                 "PtyRecorder.ResolveOutputCoalescing was not found."
             );
 
-        var settings = ((double WindowSeconds, double MaxBatchSeconds))method.Invoke(
-            null,
-            [null, 20d]
-        )!;
+        var settings = ((double WindowSeconds, double MaxBatchSeconds))
+            method.Invoke(null, [null, 20d])!;
 
         settings.WindowSeconds.ShouldBe(0.0125d);
         settings.MaxBatchSeconds.ShouldBe(0.05d);
@@ -224,7 +251,29 @@ public sealed class PtyRecorderTests
                         videoFps,
                     ]
                 )
-            ?? throw new InvalidOperationException("PtyRecorder.ReadOutputAsync did not return a Task.");
+            ?? throw new InvalidOperationException(
+                "PtyRecorder.ReadOutputAsync did not return a Task."
+            );
+        await task.ConfigureAwait(false);
+    }
+
+    private static async Task InvokeDisposeConnectionWithTimeoutAsync(
+        NativePtyConnection connection
+    )
+    {
+        var method =
+            typeof(PtyRecorder).GetMethod(
+                "DisposeConnectionWithTimeoutAsync",
+                BindingFlags.NonPublic | BindingFlags.Static
+            )
+            ?? throw new InvalidOperationException(
+                "PtyRecorder.DisposeConnectionWithTimeoutAsync was not found."
+            );
+        var task =
+            (Task?)method.Invoke(null, [connection, NullLogger.Instance])
+            ?? throw new InvalidOperationException(
+                "PtyRecorder.DisposeConnectionWithTimeoutAsync did not return a Task."
+            );
         await task.ConfigureAwait(false);
     }
 
@@ -280,8 +329,11 @@ public sealed class PtyRecorderTests
             return _inner.ReadAsync(buffer[..max], cancellationToken);
         }
 
-        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override long Seek(long offset, SeekOrigin origin) =>
+            throw new NotSupportedException();
+
         public override void SetLength(long value) => throw new NotSupportedException();
+
         public override void Write(byte[] buffer, int offset, int count) =>
             throw new NotSupportedException();
 

@@ -257,7 +257,7 @@ You can also write sequential SVG files starting with `frame-0000.svg` to a spec
 This is useful for cherry-picking your favorite frames or converting them into a video using software like ffmpeg. 
 
 ```sh
-# Install `cmatrix` with your platform's package manager (e.g. apt, brew, winget).
+# apt install cmatrix
 console2svg -c -d -v --timeout 5 --fps 30 --save-frames ./frames-dir -- cmatrix -ab
 ```
 
@@ -334,7 +334,7 @@ brew install ffmpeg
 Then, you can specify the output file with the desired extension. For example, to convert an animated command to any format, you can use the following command:
 
 ```bash
-# Install `cmatrix` with your platform's package manager (e.g. apt, brew, winget).
+# apt install cmatrix
 console2svg -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab
 ```
 

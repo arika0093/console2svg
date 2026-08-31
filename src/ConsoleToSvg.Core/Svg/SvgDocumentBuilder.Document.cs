@@ -933,18 +933,8 @@ internal static partial class SvgDocumentBuilder
         sb.Append(" display=\"none\">\n<animate attributeName=\"display\" values=\"");
         if (runStart == 0)
         {
-            if (frames[0].Time > 0)
-            {
-                sb.Append("none;inline;none\" keyTimes=\"0;");
-                AppendKeyTime(sb, frames[0].Time / totalDuration);
-                sb.Append(';');
-                AppendKeyTime(sb, frames[runEnd].Time / totalDuration);
-            }
-            else
-            {
-                sb.Append("inline;none\" keyTimes=\"0;");
-                AppendKeyTime(sb, frames[runEnd].Time / totalDuration);
-            }
+            sb.Append("inline;none\" keyTimes=\"0;");
+            AppendKeyTime(sb, frames[runEnd].Time / totalDuration);
         }
         else if (runEnd == frames.Length)
         {

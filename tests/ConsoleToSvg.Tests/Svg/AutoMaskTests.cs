@@ -64,6 +64,93 @@ public sealed class AutoMaskTests
     }
 
     [Test]
+    public void StaticSvgMasksKeyedSecretAcrossSoftWrappedRows()
+    {
+        var session = new RecordingSession(width: 12, height: 3);
+        session.AddEvent(0.01, "TOKEN=abcdefghijk");
+
+        var svg = SvgRenderer.Render(
+            session,
+            new SvgRenderOptions { AutoMask = AutoMaskCategory.Token }
+        );
+
+        svg.ShouldNotContain("abcdef");
+        svg.ShouldNotContain("ghijk");
+        svg.ShouldContain("TOKEN=******");
+        svg.ShouldContain("*****");
+    }
+
+    [Test]
+    public void AnimatedSvgMasksKeyedSecretAcrossSoftWrappedRows()
+    {
+        var session = new RecordingSession(width: 12, height: 3);
+        session.AddEvent(0.01, "TOKEN=abcdef");
+        session.AddEvent(0.10, "g");
+        session.AddEvent(0.20, "hijk");
+
+        var svg = AnimatedSvgRenderer.Render(
+            session,
+            new SvgRenderOptions { AutoMask = AutoMaskCategory.Token, VideoFps = 0 }
+        );
+
+        svg.ShouldNotContain("abcdef");
+        svg.ShouldNotContain("ghijk");
+        svg.ShouldContain("TOKEN=******");
+    }
+
+    [Test]
+    public void AnimatedSvgMasksWrappedContinuationAfterKeyScrollsOutOfView()
+    {
+        var session = new RecordingSession(width: 12, height: 2);
+        session.AddEvent(0.01, "first line!\r\n");
+        session.AddEvent(0.10, "TOKEN=abcdef");
+        session.AddEvent(0.20, "ghijk");
+        session.AddEvent(0.30, "\r\nend");
+
+        var svg = AnimatedSvgRenderer.Render(
+            session,
+            new SvgRenderOptions { AutoMask = AutoMaskCategory.Token, VideoFps = 0 }
+        );
+
+        svg.ShouldNotContain("abcdef");
+        svg.ShouldNotContain("ghijk");
+    }
+
+    [Test]
+    public void AutoMaskDoesNotContinueAcrossHardLineBreaks()
+    {
+        var session = new RecordingSession(width: 12, height: 2);
+        session.AddEvent(0.01, "TOKEN=\r\npublic");
+
+        var svg = SvgRenderer.Render(
+            session,
+            new SvgRenderOptions { AutoMask = AutoMaskCategory.Token }
+        );
+
+        svg.ShouldContain("public");
+    }
+
+    [Test]
+    public void AutoMaskIgnoresEscapedAndDoubledQuoteDelimiters()
+    {
+        var session = new RecordingSession(width: 50, height: 2);
+        session.AddEvent(
+            0.01,
+            "\"FOO_TOKEN\": \"abc\\\"def\"\r\n\"BAR_TOKEN\": \"ghi\"\"jkl\""
+        );
+
+        var svg = SvgRenderer.Render(
+            session,
+            new SvgRenderOptions { AutoMask = AutoMaskCategory.Token }
+        );
+
+        svg.ShouldNotContain("abc");
+        svg.ShouldNotContain("def");
+        svg.ShouldNotContain("ghi");
+        svg.ShouldNotContain("jkl");
+    }
+
+    [Test]
     public void AutoMaskWorksAcrossTerminalTextStyles()
     {
         var session = new RecordingSession(width: 40, height: 1);

@@ -96,6 +96,16 @@ internal sealed class AutoMasker
                 {
                     if (current == quote)
                     {
+                        if (IsBackslashEscaped(text, valueEnd))
+                        {
+                            valueEnd++;
+                            continue;
+                        }
+                        if (valueEnd + 1 < text.Length && text[valueEnd + 1] == quote)
+                        {
+                            valueEnd += 2;
+                            continue;
+                        }
                         break;
                     }
                 }
@@ -217,6 +227,16 @@ internal sealed class AutoMasker
 
     private static bool IsUserNameCharacter(char value) =>
         char.IsLetterOrDigit(value) || value is '_' or '-' or '.';
+
+    private static bool IsBackslashEscaped(string text, int index)
+    {
+        var backslashCount = 0;
+        for (var current = index - 1; current >= 0 && text[current] == '\\'; current--)
+        {
+            backslashCount++;
+        }
+        return (backslashCount & 1) != 0;
+    }
 
     private static bool CharactersEqual(char left, char right, StringComparison comparison) =>
         comparison == StringComparison.Ordinal

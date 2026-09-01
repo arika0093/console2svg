@@ -625,35 +625,67 @@ internal static partial class SvgDocumentBuilder
             return null;
         }
 
-        var rowText = new StringBuilder(buffer.Width);
-        var textColumns = new List<int>(buffer.Width);
-        for (var col = 0; col < buffer.Width; col++)
+        var firstRow = row;
+        while (
+            firstRow > 0
+            && buffer.IsRowWrappedFromPrevious(firstRow, includeScrollback)
+        )
         {
-            var cell = includeScrollback
-                ? buffer.GetCellFromTop(row, col)
-                : buffer.GetCell(row, col);
-            if (cell.IsWideContinuation)
-            {
-                continue;
-            }
+            firstRow--;
+        }
+        var startsBeforeVisibleBuffer =
+            !includeScrollback
+            && firstRow == 0
+            && buffer.IsRowWrappedFromPrevious(0, includeScrollback: false);
 
-            rowText.Append(cell.Text);
-            for (var textIndex = 0; textIndex < cell.Text.Length; textIndex++)
+        var rowCount = includeScrollback ? buffer.TotalHeight : buffer.Height;
+        var lastRowExclusive = row + 1;
+        while (
+            lastRowExclusive < rowCount
+            && buffer.IsRowWrappedFromPrevious(lastRowExclusive, includeScrollback)
+        )
+        {
+            lastRowExclusive++;
+        }
+
+        var logicalLine = new StringBuilder(
+            buffer.Width * (lastRowExclusive - firstRow)
+        );
+        var textCells = new List<(int Row, int Col)>(logicalLine.Capacity);
+        for (var logicalRow = firstRow; logicalRow < lastRowExclusive; logicalRow++)
+        {
+            for (var col = 0; col < buffer.Width; col++)
             {
-                textColumns.Add(col);
+                var cell = includeScrollback
+                    ? buffer.GetCellFromTop(logicalRow, col)
+                    : buffer.GetCell(logicalRow, col);
+                if (cell.IsWideContinuation)
+                {
+                    continue;
+                }
+
+                logicalLine.Append(cell.Text);
+                for (var textIndex = 0; textIndex < cell.Text.Length; textIndex++)
+                {
+                    textCells.Add((logicalRow, col));
+                }
             }
         }
 
-        var textMask = autoMasker.CreateMask(rowText.ToString());
+        var logicalText = logicalLine.ToString();
+        var textMask = startsBeforeVisibleBuffer
+            ? CreateConservativeContinuationMask(logicalText)
+            : autoMasker.CreateMask(logicalText);
         var columnMask = new bool[buffer.Width];
         for (var textIndex = 0; textIndex < textMask.Length; textIndex++)
         {
-            if (!textMask[textIndex])
+            var textCell = textCells[textIndex];
+            if (!textMask[textIndex] || textCell.Row != row)
             {
                 continue;
             }
 
-            var col = textColumns[textIndex];
+            var col = textCell.Col;
             columnMask[col] = true;
             var cell = includeScrollback
                 ? buffer.GetCellFromTop(row, col)
@@ -664,6 +696,18 @@ internal static partial class SvgDocumentBuilder
             }
         }
         return columnMask;
+    }
+
+    private static bool[] CreateConservativeContinuationMask(string text)
+    {
+        var mask = new bool[text.Length];
+        var end = text.Length;
+        while (end > 0 && char.IsWhiteSpace(text[end - 1]))
+        {
+            end--;
+        }
+        Array.Fill(mask, true, 0, end);
+        return mask;
     }
 
     public static string Format(double value)

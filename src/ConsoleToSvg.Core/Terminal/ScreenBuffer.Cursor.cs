@@ -62,12 +62,11 @@ public sealed partial class ScreenBuffer
         CursorCol = 0;
     }
 
-    public void LineFeed()
-    {
-        Index();
-    }
+    public void LineFeed() => Index();
 
-    public void Index()
+    public void Index() => Index(wrappedFromPrevious: false);
+
+    private void Index(bool wrappedFromPrevious)
     {
         _pendingWrap = false;
         if (CursorRow == _scrollBottom)
@@ -78,10 +77,12 @@ public sealed partial class ScreenBuffer
                 1,
                 includeScrollback: !_isAltScreen && _scrollTop == 0 && _scrollBottom == Height - 1
             );
+            SetRowWrappedFromPrevious(CursorRow, wrappedFromPrevious);
             return;
         }
 
         CursorRow = Math.Min(Height - 1, CursorRow + 1);
+        SetRowWrappedFromPrevious(CursorRow, wrappedFromPrevious);
     }
 
     public void NextLine()
@@ -132,6 +133,10 @@ public sealed partial class ScreenBuffer
         switch (mode)
         {
             case 1:
+                if (CursorCol == Width - 1)
+                {
+                    SetRowWrappedFromPrevious(CursorRow, false);
+                }
                 for (var col = 0; col <= CursorCol; col++)
                 {
                     SetCell(CursorRow, col, CreateCell(" ", eraseStyle));
@@ -139,6 +144,7 @@ public sealed partial class ScreenBuffer
 
                 return;
             case 2:
+                SetRowWrappedFromPrevious(CursorRow, false);
                 for (var col = 0; col < Width; col++)
                 {
                     SetCell(CursorRow, col, CreateCell(" ", eraseStyle));
@@ -146,6 +152,10 @@ public sealed partial class ScreenBuffer
 
                 return;
             default:
+                if (CursorCol == 0)
+                {
+                    SetRowWrappedFromPrevious(CursorRow, false);
+                }
                 for (var col = CursorCol; col < Width; col++)
                 {
                     SetCell(CursorRow, col, CreateCell(" ", eraseStyle));
@@ -276,12 +286,17 @@ public sealed partial class ScreenBuffer
                     {
                         SetCell(row, col, CreateCell(" ", eraseStyle));
                     }
+                    if (row < CursorRow || CursorCol == Width - 1)
+                    {
+                        SetRowWrappedFromPrevious(row, false);
+                    }
                 }
 
                 return;
             case 2:
                 for (var row = 0; row < Height; row++)
                 {
+                    SetRowWrappedFromPrevious(row, false);
                     for (var col = 0; col < Width; col++)
                     {
                         SetCell(row, col, CreateCell(" ", eraseStyle));
@@ -296,6 +311,10 @@ public sealed partial class ScreenBuffer
                     for (var col = start; col < Width; col++)
                     {
                         SetCell(row, col, CreateCell(" ", eraseStyle));
+                    }
+                    if (row > CursorRow || CursorCol == 0)
+                    {
+                        SetRowWrappedFromPrevious(row, false);
                     }
                 }
 

@@ -253,6 +253,9 @@ public sealed partial class ScreenBuffer
     private ScreenCell[][] _mainCells;
     private ScreenCell[][] _altCells;
     private ScreenCell[][] _cells;
+    private bool[] _mainWrappedRows;
+    private bool[] _altWrappedRows;
+    private bool[] _wrappedRows;
     private bool[] _mainRowsShared;
     private bool[] _altRowsShared;
     private bool[] _rowsShared;
@@ -270,6 +273,7 @@ public sealed partial class ScreenBuffer
     private bool _trackVisualSignatures;
     private readonly SortedSet<int> _tabStops = new();
     private readonly List<ScreenCell[]> _scrollbackRows = new();
+    private readonly List<bool> _scrollbackWrappedRows = new();
     private readonly Dictionary<TextStyle, CellStyle> _styleCache = new();
     private TextStyle _lastTextStyle;
     private CellStyle? _lastCellStyle;
@@ -291,6 +295,9 @@ public sealed partial class ScreenBuffer
         _mainCells = initializeCells ? CreateBlankCells() : null!;
         _altCells = initializeCells ? CreateBlankCells() : null!;
         _cells = _mainCells;
+        _mainWrappedRows = new bool[Height];
+        _altWrappedRows = new bool[Height];
+        _wrappedRows = _mainWrappedRows;
         _mainRowsShared = initializeCells ? new bool[Height] : null!;
         _altRowsShared = initializeCells ? new bool[Height] : null!;
         _rowsShared = _mainRowsShared;
@@ -413,7 +420,7 @@ public sealed partial class ScreenBuffer
 
     internal bool HasSameVisualRow(int row, ScreenBuffer other, int otherRow)
     {
-        if (Width != other.Width)
+        if (Width != other.Width || _wrappedRows[row] != other._wrappedRows[otherRow])
         {
             return false;
         }
@@ -440,6 +447,10 @@ public sealed partial class ScreenBuffer
         for (var col = 0; col < Width; col++)
         {
             signature ^= GetPositionedCellSignature(col, _cells[row][col]);
+        }
+        if (_wrappedRows[row])
+        {
+            signature ^= 0xD6E8FEB86659FD93UL;
         }
 
         _rowSignatures[row] = signature;
@@ -494,6 +505,10 @@ public sealed partial class ScreenBuffer
 
         for (var row = 0; row < Height; row++)
         {
+            if (_wrappedRows[row] != other._wrappedRows[row])
+            {
+                return false;
+            }
             for (var col = 0; col < Width; col++)
             {
                 if (!_cells[row][col].Equals(other._cells[row][col]))
@@ -515,6 +530,10 @@ public sealed partial class ScreenBuffer
 
         for (var row = 0; row < Height; row++)
         {
+            if (_wrappedRows[row] != other._wrappedRows[row])
+            {
+                return false;
+            }
             for (var col = 0; col < Width; col++)
             {
                 if (!_cells[row][col].Equals(other._cells[row][col]))
@@ -547,6 +566,22 @@ public sealed partial class ScreenBuffer
         return GetCell(row - _scrollbackRows.Count, col);
     }
 
+    internal bool IsRowWrappedFromPrevious(int row, bool includeScrollback)
+    {
+        if (!includeScrollback)
+        {
+            return row >= 0 && row < Height && _wrappedRows[row];
+        }
+
+        if (row < 0 || row >= TotalHeight)
+        {
+            return false;
+        }
+        return row < _scrollbackWrappedRows.Count
+            ? _scrollbackWrappedRows[row]
+            : _wrappedRows[row - _scrollbackWrappedRows.Count];
+    }
+
     public ScreenBuffer Clone()
     {
         Array.Fill(_mainRowsShared, true);
@@ -570,6 +605,8 @@ public sealed partial class ScreenBuffer
             _trackVisualSignatures = _trackVisualSignatures,
             _mainCells = (ScreenCell[][])_mainCells.Clone(),
             _altCells = (ScreenCell[][])_altCells.Clone(),
+            _mainWrappedRows = (bool[])_mainWrappedRows.Clone(),
+            _altWrappedRows = (bool[])_altWrappedRows.Clone(),
             _mainRowsShared = CreateSharedRowFlags(Height),
             _altRowsShared = CreateSharedRowFlags(Height),
             _rowSignatures = (ulong[])_rowSignatures.Clone(),
@@ -579,6 +616,9 @@ public sealed partial class ScreenBuffer
         cloned._tabStops.UnionWith(_tabStops);
 
         cloned._cells = cloned._isAltScreen ? cloned._altCells : cloned._mainCells;
+        cloned._wrappedRows = cloned._isAltScreen
+            ? cloned._altWrappedRows
+            : cloned._mainWrappedRows;
         cloned._rowsShared =
             cloned._isAltScreen ? cloned._altRowsShared : cloned._mainRowsShared;
         return cloned;
@@ -594,6 +634,7 @@ public sealed partial class ScreenBuffer
 
         Array.Fill(_rowsShared, true);
         var cells = (ScreenCell[][])_cells.Clone();
+        var wrappedRows = (bool[])_wrappedRows.Clone();
         var sharedRows = CreateSharedRowFlags(Height);
         var snapshot = new ScreenBuffer(Width, Height, _theme, initializeCells: false)
         {
@@ -604,6 +645,9 @@ public sealed partial class ScreenBuffer
             _mainCells = cells,
             _altCells = cells,
             _cells = cells,
+            _mainWrappedRows = wrappedRows,
+            _altWrappedRows = wrappedRows,
+            _wrappedRows = wrappedRows,
             _mainRowsShared = sharedRows,
             _altRowsShared = sharedRows,
             _rowsShared = sharedRows,
@@ -627,6 +671,7 @@ public sealed partial class ScreenBuffer
         _isAltScreen = source._isAltScreen;
         var sourceCells = source._cells;
         var targetCells = _isAltScreen ? _altCells : _mainCells;
+        var targetWrappedRows = _isAltScreen ? _altWrappedRows : _mainWrappedRows;
         var targetRowsShared = _isAltScreen ? _altRowsShared : _mainRowsShared;
         for (var row = 0; row < Height; row++)
         {
@@ -636,8 +681,21 @@ public sealed partial class ScreenBuffer
         Array.Fill(source._rowsShared, true);
         Array.Copy(source._rowSignatures, _rowSignatures, Height);
         Array.Copy(source._rowSignatureDirty, _rowSignatureDirty, Height);
+        Array.Copy(source._wrappedRows, targetWrappedRows, Height);
         _cells = targetCells;
+        _wrappedRows = targetWrappedRows;
         _rowsShared = targetRowsShared;
+    }
+
+    private void SetRowWrappedFromPrevious(int row, bool wrapped)
+    {
+        if (_wrappedRows[row] == wrapped)
+        {
+            return;
+        }
+
+        _wrappedRows[row] = wrapped;
+        _rowSignatureDirty[row] = true;
     }
 
     private void SetCell(int row, int col, in ScreenCell cell)
@@ -935,7 +993,7 @@ public sealed partial class ScreenBuffer
         {
             _pendingWrap = false;
             CursorCol = 0;
-            Index();
+            Index(wrappedFromPrevious: true);
         }
 
         var isWide = IsWideCharacter(text);
@@ -948,7 +1006,7 @@ public sealed partial class ScreenBuffer
         {
             SetCell(CursorRow, CursorCol, CreateCell(" ", DefaultStyle));
             CursorCol = 0;
-            Index();
+            Index(wrappedFromPrevious: true);
         }
 
         SetCell(CursorRow, CursorCol, new ScreenCell(text, cellStyle, isWide));

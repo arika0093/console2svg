@@ -490,4 +490,7 @@ console2svg -m repeat --fps 2 -- tmux capture-pane -pe -t :0
 * `--header`: override command header text (shown even without `-c`)
 * `--prompt`: override prompt prefix for `-c` (default: `$` or `#` when root)
 * `--verbose`: enable verbose logging
+* `--mask-auto password,token,homedir`: control automatic masking of values whose keys
+  end in `PASSWORD` or `TOKEN`, and the current username in its home-directory path.
+  All three categories are enabled by default; use `--mask-auto none` to disable them.
 * `--crop-*`: crop the output by specified pixels, characters, or text patterns

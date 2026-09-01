@@ -108,6 +108,10 @@ public static partial class OptionParser
                 --mask <text> [text...]   Mask sensitive strings in the output by replacing them with ***.
                                           Useful for hiding PC names, directories, credentials, etc.
                                           Multiple patterns can be specified: --mask "MyPC" "secret-dir"
+                --mask-auto <categories> Automatically mask sensitive values. Comma-separated categories:
+                                          password, token, homedir, or none.
+                                          Default: password,token,homedir.
+                                          Example: --mask-auto password,token,homedir
 
             Options (Image mode):
                 --frame <int>             Frame index for image mode.
@@ -190,10 +194,12 @@ public static partial class OptionParser
             }
 
             // Section headers
-            if (line.StartsWith("Usage:", StringComparison.Ordinal)
+            if (
+                line.StartsWith("Usage:", StringComparison.Ordinal)
                 || line.StartsWith("Major options:", StringComparison.Ordinal)
                 || line.StartsWith("Options (", StringComparison.Ordinal)
-                || line.StartsWith("For full option list", StringComparison.Ordinal))
+                || line.StartsWith("For full option list", StringComparison.Ordinal)
+            )
             {
                 result.Append(Bold).Append(Yellow).Append(line).Append(Reset);
                 continue;
@@ -314,7 +320,14 @@ public static partial class OptionParser
             if (text[i] == '-' && (i == 0 || text[i - 1] == ' ' || text[i - 1] == ','))
             {
                 var start = i;
-                while (i < text.Length && text[i] != ' ' && text[i] != ',' && text[i] != '=' && text[i] != '[' && text[i] != '<')
+                while (
+                    i < text.Length
+                    && text[i] != ' '
+                    && text[i] != ','
+                    && text[i] != '='
+                    && text[i] != '['
+                    && text[i] != '<'
+                )
                 {
                     i++;
                 }
@@ -383,8 +396,10 @@ public static partial class OptionParser
                 var j = i + 1;
                 while (j < text.Length && depth > 0)
                 {
-                    if (text[j] == '(') depth++;
-                    else if (text[j] == ')') depth--;
+                    if (text[j] == '(')
+                        depth++;
+                    else if (text[j] == ')')
+                        depth--;
                     j++;
                 }
                 if (depth == 0)

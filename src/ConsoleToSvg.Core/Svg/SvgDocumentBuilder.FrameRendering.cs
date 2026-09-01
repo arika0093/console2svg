@@ -33,8 +33,7 @@ internal static partial class SvgDocumentBuilder
         SvgStyleRegistry styles
     )
     {
-        var rowsBySignature =
-            new Dictionary<ulong, List<(ScreenBuffer Buffer, int Row)>>();
+        var rowsBySignature = new Dictionary<ulong, List<(ScreenBuffer Buffer, int Row)>>();
         for (var frameIndex = 0; frameIndex < frames.Length; frameIndex++)
         {
             var buffer = frames[frameIndex].Buffer;
@@ -122,6 +121,7 @@ internal static partial class SvgDocumentBuilder
         double opacity = 1d,
         string lengthAdjust = "spacing",
         string[]? maskPatterns = null,
+        AutoMasker? autoMasker = null,
         bool renderCursor = true,
         bool applyFontClass = true,
         bool applyContentTransform = true,
@@ -219,6 +219,7 @@ internal static partial class SvgDocumentBuilder
         for (var row = context.StartRow; row < context.EndRowExclusive; row++)
         {
             var y = (row - context.StartRow) * context.CellHeight;
+            var autoMaskColumns = CreateAutoMaskColumns(buffer, row, includeScrollback, autoMasker);
 
             // --- Background pass: merge consecutive cells of the same bg color ---
             var bgRunStart = context.StartCol;
@@ -332,10 +333,13 @@ internal static partial class SvgDocumentBuilder
                     textClass += " w";
                 }
 
-                var adjustedLength =
-                    string.Equals(effectiveLengthAdjust, "spacing", StringComparison.Ordinal)
-                        ? null
-                        : effectiveLengthAdjust;
+                var adjustedLength = string.Equals(
+                    effectiveLengthAdjust,
+                    "spacing",
+                    StringComparison.Ordinal
+                )
+                    ? null
+                    : effectiveLengthAdjust;
                 sb.Append("<text class=\"");
                 sb.Append(textClass);
                 sb.Append("\"");
@@ -397,6 +401,8 @@ internal static partial class SvgDocumentBuilder
                     continue;
                 }
 
+                var cellIsAutoMasked = autoMaskColumns is not null && autoMaskColumns[col];
+
                 if (cell.Hidden)
                 {
                     pendingSpaces = 0;
@@ -405,7 +411,7 @@ internal static partial class SvgDocumentBuilder
                     continue;
                 }
 
-                if (cell.Text == " ")
+                if (cell.Text == " " && !cellIsAutoMasked)
                 {
                     // Buffer whitespace-only gaps. A space is merged into the
                     // current run only when a later non-space cell of the same
@@ -434,7 +440,7 @@ internal static partial class SvgDocumentBuilder
 
                 // Unicode Block Elements (U+2580–U+259F): render as calibrated rects so that
                 // adjacent cells always tile seamlessly regardless of font metrics.
-                if (IsBlockElement(cell.Text))
+                if (IsBlockElement(cell.Text) && !cellIsAutoMasked)
                 {
                     pendingSpaces = 0;
                     FlushFgRun();
@@ -452,7 +458,7 @@ internal static partial class SvgDocumentBuilder
                     continue;
                 }
 
-                if (IsSingleLineBoxDrawing(cell.Text))
+                if (IsSingleLineBoxDrawing(cell.Text) && !cellIsAutoMasked)
                 {
                     pendingSpaces = 0;
                     FlushFgRun();
@@ -523,7 +529,7 @@ internal static partial class SvgDocumentBuilder
                     continue;
                 }
 
-                if (IsRoundedBoxDrawing(cell.Text))
+                if (IsRoundedBoxDrawing(cell.Text) && !cellIsAutoMasked)
                 {
                     pendingSpaces = 0;
                     FlushFgRun();
@@ -567,7 +573,14 @@ internal static partial class SvgDocumentBuilder
                     pendingSpaces = 0;
                 }
 
-                fgRunText.Append(EscapeText(cell.Text));
+                if (cellIsAutoMasked)
+                {
+                    fgRunText.Append('*', cell.IsWide ? 2 : 1);
+                }
+                else
+                {
+                    fgRunText.Append(EscapeText(cell.Text));
+                }
                 fgRunCellCount += cell.IsWide ? 2 : 1;
 
                 // Wide chars must always be emitted immediately so the next char
@@ -598,6 +611,59 @@ internal static partial class SvgDocumentBuilder
         }
 
         sb.Append("</g>\n");
+    }
+
+    private static bool[]? CreateAutoMaskColumns(
+        ScreenBuffer buffer,
+        int row,
+        bool includeScrollback,
+        AutoMasker? autoMasker
+    )
+    {
+        if (autoMasker is null || !autoMasker.IsEnabled)
+        {
+            return null;
+        }
+
+        var rowText = new StringBuilder(buffer.Width);
+        var textColumns = new List<int>(buffer.Width);
+        for (var col = 0; col < buffer.Width; col++)
+        {
+            var cell = includeScrollback
+                ? buffer.GetCellFromTop(row, col)
+                : buffer.GetCell(row, col);
+            if (cell.IsWideContinuation)
+            {
+                continue;
+            }
+
+            rowText.Append(cell.Text);
+            for (var textIndex = 0; textIndex < cell.Text.Length; textIndex++)
+            {
+                textColumns.Add(col);
+            }
+        }
+
+        var textMask = autoMasker.CreateMask(rowText.ToString());
+        var columnMask = new bool[buffer.Width];
+        for (var textIndex = 0; textIndex < textMask.Length; textIndex++)
+        {
+            if (!textMask[textIndex])
+            {
+                continue;
+            }
+
+            var col = textColumns[textIndex];
+            columnMask[col] = true;
+            var cell = includeScrollback
+                ? buffer.GetCellFromTop(row, col)
+                : buffer.GetCell(row, col);
+            if (cell.IsWide && col + 1 < columnMask.Length)
+            {
+                columnMask[col + 1] = true;
+            }
+        }
+        return columnMask;
     }
 
     public static string Format(double value)
@@ -815,11 +881,9 @@ internal static partial class SvgDocumentBuilder
         MergeAxis(hSegments, horizontal: true, mergeTolerance, mergedRects);
         MergeAxis(vSegments, horizontal: false, mergeTolerance, mergedRects);
 
-        mergedRects.Sort(static (left, right) =>
-            string.CompareOrdinal(left.Color, right.Color)
-        );
+        mergedRects.Sort(static (left, right) => string.CompareOrdinal(left.Color, right.Color));
         var pathData = elements is null ? null : new StringBuilder();
-        for (var groupStart = 0; groupStart < mergedRects.Count;)
+        for (var groupStart = 0; groupStart < mergedRects.Count; )
         {
             var color = mergedRects[groupStart].Color;
             pathData?.Clear();
@@ -887,12 +951,7 @@ internal static partial class SvgDocumentBuilder
             sb.Append(prefix);
             Span<char> buffer = stackalloc char[32];
             if (
-                value.TryFormat(
-                    buffer,
-                    out var charsWritten,
-                    "0.###",
-                    CultureInfo.InvariantCulture
-                )
+                value.TryFormat(buffer, out var charsWritten, "0.###", CultureInfo.InvariantCulture)
             )
             {
                 sb.Append(buffer[..charsWritten]);
@@ -911,19 +970,21 @@ internal static partial class SvgDocumentBuilder
         List<BoxRect> output
     )
     {
-        segments.Sort(static (left, right) =>
-        {
-            var comparison = left.Position.CompareTo(right.Position);
-            if (comparison != 0)
-                return comparison;
-            comparison = string.CompareOrdinal(left.Color, right.Color);
-            if (comparison != 0)
-                return comparison;
-            comparison = left.StrokeWidth.CompareTo(right.StrokeWidth);
-            return comparison != 0 ? comparison : left.Start.CompareTo(right.Start);
-        });
+        segments.Sort(
+            static (left, right) =>
+            {
+                var comparison = left.Position.CompareTo(right.Position);
+                if (comparison != 0)
+                    return comparison;
+                comparison = string.CompareOrdinal(left.Color, right.Color);
+                if (comparison != 0)
+                    return comparison;
+                comparison = left.StrokeWidth.CompareTo(right.StrokeWidth);
+                return comparison != 0 ? comparison : left.Start.CompareTo(right.Start);
+            }
+        );
 
-        for (var groupStart = 0; groupStart < segments.Count;)
+        for (var groupStart = 0; groupStart < segments.Count; )
         {
             var first = segments[groupStart];
             var currentStart = first.Start;

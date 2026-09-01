@@ -7,9 +7,76 @@ namespace ConsoleToSvg.Tests.Cli;
 public sealed partial class OptionParserTests
 {
     [Test]
+    public void MaskAutoEnablesAllCategoriesByDefault()
+    {
+        var ok = OptionParser.TryParse([], out var options, out _, out _);
+
+        ok.ShouldBeTrue();
+        options!.AutoMask.ShouldBe(
+            AutoMaskCategory.Password | AutoMaskCategory.Token | AutoMaskCategory.HomeDirectory
+        );
+        SvgRenderOptionsFactory
+            .Create(options)
+            .AutoMaskHomeDirectory.ShouldBe(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+            );
+    }
+
+    [Test]
+    public void MaskAutoParsesCommaSeparatedCategories()
+    {
+        var ok = OptionParser.TryParse(
+            new[] { "--mask-auto", "password,token,homedir" },
+            out var options,
+            out _,
+            out _
+        );
+
+        ok.ShouldBeTrue();
+        options!.AutoMask.ShouldBe(
+            AutoMaskCategory.Password | AutoMaskCategory.Token | AutoMaskCategory.HomeDirectory
+        );
+        var renderOptions = SvgRenderOptionsFactory.Create(options);
+        renderOptions.AutoMask.ShouldBe(options.AutoMask);
+        renderOptions.AutoMaskHomeDirectory.ShouldBe(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+        );
+    }
+
+    [Test]
+    public void MaskAutoNoneDisablesAllCategories()
+    {
+        var ok = OptionParser.TryParse(new[] { "--mask-auto=none" }, out var options, out _, out _);
+
+        ok.ShouldBeTrue();
+        options!.AutoMask.ShouldBe(AutoMaskCategory.None);
+        SvgRenderOptionsFactory.Create(options).AutoMaskHomeDirectory.ShouldBeNull();
+    }
+
+    [Test]
+    public void MaskAutoRejectsUnknownOrMixedNoneCategories()
+    {
+        OptionParser
+            .TryParse(new[] { "--mask-auto", "email" }, out _, out var unknownError, out _)
+            .ShouldBeFalse();
+        unknownError.ShouldNotBeNull();
+        unknownError.ShouldContain("Unknown --mask-auto category");
+
+        OptionParser
+            .TryParse(new[] { "--mask-auto", "none,token" }, out _, out var mixedError, out _)
+            .ShouldBeFalse();
+        mixedError.ShouldBe("--mask-auto none cannot be combined with other categories.");
+    }
+
+    [Test]
     public void EmbedCastOptionIsEnabledWithoutAValue()
     {
-        var ok = OptionParser.TryParse(new[] { "--embed-cast", "echo hi" }, out var options, out _, out _);
+        var ok = OptionParser.TryParse(
+            new[] { "--embed-cast", "echo hi" },
+            out var options,
+            out _,
+            out _
+        );
 
         ok.ShouldBeTrue();
         options!.EmbedCast.ShouldBeTrue();
@@ -19,7 +86,12 @@ public sealed partial class OptionParserTests
     [Test]
     public void EmbedLogsOptionIsEnabledWithoutVerbose()
     {
-        var ok = OptionParser.TryParse(new[] { "--embed-logs", "echo hi" }, out var options, out _, out _);
+        var ok = OptionParser.TryParse(
+            new[] { "--embed-logs", "echo hi" },
+            out var options,
+            out _,
+            out _
+        );
 
         ok.ShouldBeTrue();
         options!.EmbedLogs.ShouldBeTrue();
@@ -29,7 +101,12 @@ public sealed partial class OptionParserTests
     [Test]
     public void EmbedReplayOptionIsEnabledForACommand()
     {
-        var ok = OptionParser.TryParse(new[] { "--embed-replay", "echo hi" }, out var options, out _, out _);
+        var ok = OptionParser.TryParse(
+            new[] { "--embed-replay", "echo hi" },
+            out var options,
+            out _,
+            out _
+        );
 
         ok.ShouldBeTrue();
         options!.EmbedReplay.ShouldBeTrue();
@@ -38,7 +115,12 @@ public sealed partial class OptionParserTests
     [Test]
     public void EmbedDebugEnablesAllEmbedOptions()
     {
-        var ok = OptionParser.TryParse(new[] { "--embed-debug", "echo hi" }, out var options, out _, out _);
+        var ok = OptionParser.TryParse(
+            new[] { "--embed-debug", "echo hi" },
+            out var options,
+            out _,
+            out _
+        );
 
         ok.ShouldBeTrue();
         options!.EmbedDebug.ShouldBeTrue();

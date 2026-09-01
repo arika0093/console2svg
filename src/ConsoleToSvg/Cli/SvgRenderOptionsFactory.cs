@@ -41,7 +41,12 @@ public static class SvgRenderOptionsFactory
         return new SvgRenderOptions
         {
             Theme = appOptions.Theme,
-            Crop = CropOptions.Parse(appOptions.CropTop, appOptions.CropRight, appOptions.CropBottom, appOptions.CropLeft),
+            Crop = CropOptions.Parse(
+                appOptions.CropTop,
+                appOptions.CropRight,
+                appOptions.CropBottom,
+                appOptions.CropLeft
+            ),
             Frame = appOptions.Frame,
             Time = appOptions.Time,
             TimeStart = appOptions.TimeStart,
@@ -65,7 +70,12 @@ public static class SvgRenderOptionsFactory
             BackColor = appOptions.BackColor,
             SizeWidth = appOptions.SizeWidth,
             SizeHeight = appOptions.SizeHeight,
-            MaskPatterns = appOptions.MaskPatterns.Count > 0 ? appOptions.MaskPatterns.ToArray() : null,
+            MaskPatterns =
+                appOptions.MaskPatterns.Count > 0 ? appOptions.MaskPatterns.ToArray() : null,
+            AutoMask = appOptions.AutoMask,
+            AutoMaskHomeDirectory = appOptions.AutoMask.HasFlag(AutoMaskCategory.HomeDirectory)
+                ? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+                : null,
         };
     }
 }

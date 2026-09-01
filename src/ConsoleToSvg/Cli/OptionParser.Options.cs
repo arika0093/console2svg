@@ -29,6 +29,8 @@ public static partial class OptionParser
                 }
                 options.MaskPatterns.Add(value);
                 return true;
+            case "--mask-auto":
+                return TryParseAutoMask(value, options, out error);
 
             case "--verbose":
                 options.Verbose = true;
@@ -439,5 +441,58 @@ public static partial class OptionParser
                 error = $"Unknown option: {name}";
                 return false;
         }
+    }
+
+    private static bool TryParseAutoMask(string? value, AppOptions options, out string? error)
+    {
+        error = null;
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            error = "--mask-auto requires password, token, homedir, or none.";
+            return false;
+        }
+
+        var categories = AutoMaskCategory.None;
+        var hasNone = false;
+        foreach (var item in value.Split(',', StringSplitOptions.TrimEntries))
+        {
+            if (item.Length == 0)
+            {
+                error = "--mask-auto contains an empty category.";
+                return false;
+            }
+
+            if (string.Equals(item, "password", StringComparison.OrdinalIgnoreCase))
+            {
+                categories |= AutoMaskCategory.Password;
+            }
+            else if (string.Equals(item, "token", StringComparison.OrdinalIgnoreCase))
+            {
+                categories |= AutoMaskCategory.Token;
+            }
+            else if (string.Equals(item, "homedir", StringComparison.OrdinalIgnoreCase))
+            {
+                categories |= AutoMaskCategory.HomeDirectory;
+            }
+            else if (string.Equals(item, "none", StringComparison.OrdinalIgnoreCase))
+            {
+                hasNone = true;
+            }
+            else
+            {
+                error =
+                    $"Unknown --mask-auto category: {item}. Expected password, token, homedir, or none.";
+                return false;
+            }
+        }
+
+        if (hasNone && categories != AutoMaskCategory.None)
+        {
+            error = "--mask-auto none cannot be combined with other categories.";
+            return false;
+        }
+
+        options.AutoMask = hasNone ? AutoMaskCategory.None : categories;
+        return true;
     }
 }

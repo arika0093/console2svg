@@ -36,6 +36,10 @@ public sealed class AppOptions
     /// <summary>Patterns to mask in output (replaced with asterisks).</summary>
     public List<string> MaskPatterns { get; } = [];
 
+    /// <summary>Categories of sensitive values to detect and mask automatically.</summary>
+    public AutoMaskCategory AutoMask { get; set; } =
+        AutoMaskCategory.Password | AutoMaskCategory.Token | AutoMaskCategory.HomeDirectory;
+
     /// <summary>True when --mode (or -v) was explicitly supplied on the command line.</summary>
     public bool IsModeExplicit { get; set; }
 

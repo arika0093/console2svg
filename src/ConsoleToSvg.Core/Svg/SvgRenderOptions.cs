@@ -1,5 +1,14 @@
 namespace ConsoleToSvg.Svg;
 
+[System.Flags]
+public enum AutoMaskCategory
+{
+    None = 0,
+    Password = 1 << 0,
+    Token = 1 << 1,
+    HomeDirectory = 1 << 2,
+}
+
 public sealed class SvgRenderOptions
 {
     public string Theme { get; set; } = "dark";
@@ -66,6 +75,15 @@ public sealed class SvgRenderOptions
     /// </summary>
     public string[]? MaskPatterns { get; set; }
 
+    /// <summary>Categories of sensitive values to detect and mask automatically.</summary>
+    public AutoMaskCategory AutoMask { get; set; }
+
+    /// <summary>
+    /// Home directory used by <see cref="AutoMaskCategory.HomeDirectory"/>.
+    /// The CLI populates this from the current user's profile directory.
+    /// </summary>
+    public string? AutoMaskHomeDirectory { get; set; }
+
     /// <summary>
     /// Base64-encoded UTF-8 asciicast v2 data to include in the SVG metadata.
     /// </summary>
@@ -76,5 +94,4 @@ public sealed class SvgRenderOptions
 
     /// <summary>Base64-encoded UTF-8 console2svg replay JSON.</summary>
     public string? EmbeddedReplay { get; set; }
-
 }

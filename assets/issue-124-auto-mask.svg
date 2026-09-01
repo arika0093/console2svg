@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="872.8" height="160" viewBox="0 0 872.8 160" role="img" aria-label="console2svg output">
+<style>
+.c2.c { font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace; font-size: 14px; }
+.c2 text { dominant-baseline: alphabetic; }
+.c2 .q { shape-rendering: crispEdges; }
+.c2 .w { white-space: pre; }
+.c2 .aa{fill:#14CAF6;font-weight:bold}
+.c2 .ab{fill:#d4d4d4}
+.c2 .ac{fill:#E24CE2;font-weight:bold}
+.c2 .ad{fill:#F63B3B;font-weight:bold}
+.c2 .ae{fill:#2B89F0;font-weight:bold}
+.c2 .af{fill:#10E291;font-weight:bold}
+.c2 .ag{fill:#00FF00;font-weight:bold}
+.c2 .ah{fill:#666666}
+.c2 .ai{fill:#1e1e1e}
+</style><rect width="872.8" height="160" fill="#1e1e1e"/>
+<g class="c2 c" transform="translate(8 8)">
+<rect width="856.8" height="144" fill="#1e1e1e"/>
+<text class="aa" y="32" textLength="100.8">ConsoleToSvg</text>
+<text class="ab" x="109.2" y="32" textLength="16.8">on</text>
+<text class="ac w" x="134.4" y="32" textLength="193.2"> feature/124-auto-mask</text>
+<text class="ad" x="336" y="32" textLength="42">[$!?]</text>
+<text class="ab" x="386.4" y="32" textLength="25.2">via</text>
+<text class="ae w" x="420" y="32" textLength="117.6">.NET v10.0.201</text>
+<rect class="q" x="680.4" y="36" width="42" height="18" fill="#666666" stroke="#666666" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="789.6" y="36" width="16.8" height="18" fill="#666666" stroke="#666666" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<text class="af" y="50" textLength="8.4">❯</text>
+<text class="ag" x="16.8" y="50" textLength="16.8">cd</text>
+<text class="ah" x="42" y="50" textLength="117.6">C:\Users\*****</text>
+<text class="ai" x="680.4" y="50" textLength="42">Right</text>
+<text class="ah" x="722.4" y="50" textLength="58.8">=Insert</text>
+<text class="ai" x="789.6" y="50" textLength="16.8">F2</text>
+<text class="ah" x="806.4" y="50" textLength="42">=List</text>
+</g>
+</svg>

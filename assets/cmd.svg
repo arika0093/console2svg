@@ -13,7 +13,7 @@
 </style><rect width="1024" height="502" fill="#1e1e1e"/>
 <g class="c2 c" transform="translate(8 8)">
 <rect width="1008" height="486" fill="#1e1e1e"/>
-<text class="aa w" y="14" textLength="588">console2svg - Convert terminal output to SVG [Ver: 0.8.1.0+baf8d520f4]</text>
+<text class="aa w" y="14" textLength="588">console2svg - Convert terminal output to SVG [Ver: 0.8.1.0+58d468b6b9]</text>
 <text class="ab" y="50" textLength="50.4">Usage:</text>
 <text class="ac w" x="33.6" y="68" textLength="285.6">my-command | console2svg [options]</text>
 <text class="ac w" x="33.6" y="86" textLength="369.6">console2svg &quot;my-command with-args&quot; [options]</text>

@@ -16,6 +16,7 @@ console2svg -o ./assets/cmd.svg             --verbose ./logs/cmd.log            
 console2svg -o ./assets/cmd-window.svg      --verbose ./logs/cmd-window.log       -w 120 -c -d macos-pc  -- console2svg
 console2svg -o ./assets/cmd-crop-word.svg   --verbose ./logs/cmd-crop-word.log    -w 100 --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -- dotnet --info
 console2svg -o ./assets/cmd-term-custom.svg --verbose ./logs/cmd-term-custom.log  -w 100 -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" --backcolor "#042515" -- echo "hi"
+console2svg -o ./assets/cmd-mask-auto.svg   --verbose ./logs/cmd-mask-auto.log    -w 60 -h 6 -d -- printf "MY_PASSWORD=correct-horse-battery-staple\nSAMPLE_ACCESS_TOKEN:ghp_example123456"
 ## background
 console2svg -o ./assets/cmd-bg1.svg       --verbose ./logs/cmd-bg1.log  -w 100 -h 10 -c -d macos-pc --background "#003060" --opacity 0.85 -- dotnet --version
 console2svg -o ./assets/cmd-bg2.svg       --verbose ./logs/cmd-bg2.log  -w 100 -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.85 -- dotnet --version

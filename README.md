@@ -411,10 +411,10 @@ console2svg -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "
 Use `--mask` to replace specific text with asterisks in the generated SVG. You can pass multiple values when you need to hide machine names, directory names, credentials, or other known strings.
 
 ```sh
-console2svg --mask "MyPC" "secret-directory" -- command-that-may-print-secrets
+console2svg --mask "YourTruthName" -- command-that-may-print-secrets
 ```
 
-`--mask-auto` detects common sensitive values without requiring you to specify the exact text. The following categories are enabled by default:
+`--mask-auto` detects common sensitive values without requiring you to specify the exact text. You can combine `--mask` and `--mask-auto`.
 
 * `password`: values whose keys end in `PASSWORD`
 * `token`: values whose keys end in `TOKEN`
@@ -423,17 +423,22 @@ console2svg --mask "MyPC" "secret-directory" -- command-that-may-print-secrets
 For example, values in `PASSWORD=...`, `MY_PASSWORD: ...`, `TOKEN=...`, and `ACCESS_TOKEN: ...` are masked. Detection also follows values across wrapped terminal rows in static and animated SVGs.
 
 ```sh
-# The default is password,token,homedir.
-console2svg --mask-auto password,token,homedir -- command-that-may-print-secrets
-
-# Enable only password masking.
-console2svg --mask-auto password -- command-that-may-print-secrets
-
-# Disable automatic masking.
-console2svg --mask-auto none -- command-that-may-print-secrets
+console2svg -w 60 -h 6 -d -- \
+printf "MY_PASSWORD=correct-horse-battery-staple\nSAMPLE_ACCESS_TOKEN:ghp_example123456"
 ```
 
-You can combine `--mask` and `--mask-auto`. Because automatic detection is intentionally limited to recognizable patterns, use explicit `--mask` values as well when the output may contain secrets in another format.
+![console2svg -w 60 -h 6 -d -- printf "MY_PASSWORD=correct-horse-battery-staple\nSAMPLE_ACCESS_TOKEN:ghp_example123456"](./assets/cmd-mask-auto.svg)
+
+You can specify the target of automatic masking with the `--mask-auto` option as follows.
+
+```sh
+# The default is password,token,homedir.
+console2svg --mask-auto password,token,homedir -- command
+# Enable only password masking.
+console2svg --mask-auto password -- command
+# Disable automatic masking.
+console2svg --mask-auto none -- command
+```
 
 ### Using with `tmux`
 By combining with `tmux`, you can save the step-by-step execution process of commands as SVG images.

@@ -628,7 +628,13 @@ internal static partial class SvgDocumentBuilder
         var firstRow = row;
         while (
             firstRow > 0
-            && buffer.IsRowWrappedFromPrevious(firstRow, includeScrollback)
+            && (
+                buffer.IsRowWrappedFromPrevious(firstRow, includeScrollback)
+                || (
+                    !includeScrollback
+                    && CanContinueAtNextPhysicalRow(buffer, firstRow - 1)
+                )
+            )
         )
         {
             firstRow--;
@@ -642,7 +648,16 @@ internal static partial class SvgDocumentBuilder
         var lastRowExclusive = row + 1;
         while (
             lastRowExclusive < rowCount
-            && buffer.IsRowWrappedFromPrevious(lastRowExclusive, includeScrollback)
+            && (
+                buffer.IsRowWrappedFromPrevious(lastRowExclusive, includeScrollback)
+                || (
+                    !includeScrollback
+                    && CanContinueAtNextPhysicalRow(
+                        buffer,
+                        lastRowExclusive - 1
+                    )
+                )
+            )
         )
         {
             lastRowExclusive++;
@@ -702,6 +717,17 @@ internal static partial class SvgDocumentBuilder
             }
         }
         return columnMask;
+    }
+
+    private static bool CanContinueAtNextPhysicalRow(
+        ScreenBuffer buffer,
+        int row
+    )
+    {
+        var lastCell = buffer.GetCell(row, buffer.Width - 1);
+        return lastCell.IsWideContinuation
+            || lastCell.IsWideWrapPadding
+            || !string.IsNullOrWhiteSpace(lastCell.Text);
     }
 
     public static string Format(double value)

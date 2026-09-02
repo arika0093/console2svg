@@ -100,6 +100,23 @@ public sealed class AutoMaskTests
     }
 
     [Test]
+    public void AnimatedSvgMasksRedrawnContinuationWithoutSoftWrapMarker()
+    {
+        var session = new RecordingSession(width: 12, height: 2);
+        session.AddEvent(0.01, "TOKEN=abcdef");
+        session.AddEvent(0.10, "\u001b[2;1H\u001b[2Kghijk");
+
+        var svg = AnimatedSvgRenderer.Render(
+            session,
+            new SvgRenderOptions { AutoMask = AutoMaskCategory.Token, VideoFps = 0 }
+        );
+
+        svg.ShouldNotContain("abcdef");
+        svg.ShouldNotContain("ghijk");
+        svg.ShouldContain("TOKEN=******");
+    }
+
+    [Test]
     public void AnimatedSvgMasksWrappedContinuationAfterKeyScrollsOutOfView()
     {
         var session = new RecordingSession(width: 12, height: 2);

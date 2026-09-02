@@ -18,35 +18,87 @@
 <circle cx="66" cy="34" r="5" fill="#28c840"/>
 <rect x="21" y="48" width="856" height="466" rx="9" ry="9" fill="#1e1e1e"/>
 <g class="c2 c"><rect x="29" y="56" width="840" height="18" fill="#1e1e1e"/>
-<text class="aa" x="29" y="70">$ fastfetch -l small -s os:kernel:uptime:packages:shell:cpu:memory</text></g>
+<text class="aa" x="29" y="70">$ fastfetch</text></g>
 <g class="c2 c" transform="translate(29 74)">
 <rect width="840" height="432" fill="#1e1e1e"/>
-<text class="ab w" x="58.8" y="14" textLength="92.4">..;,; .,;,.</text>
-<text class="ab" x="218.4" y="14" textLength="16.8">OS</text>
-<text class="aa w" x="235.2" y="14" textLength="352.8">: Ubuntu 24.04.4 LTS (Noble Numbat) x86_64</text>
-<text class="ab w" x="33.6" y="32" textLength="126">.,lool: .ooooo,</text>
-<text class="ab" x="218.4" y="32" textLength="50.4">Kernel</text>
-<text class="aa w" x="268.8" y="32" textLength="210">: Linux 6.17.0-1022-azure</text>
-<text class="ab w" x="25.2" y="50" textLength="134.4">;oo;:    .coool.</text>
-<text class="ab" x="218.4" y="50" textLength="50.4">Uptime</text>
-<text class="aa w" x="268.8" y="50" textLength="67.2">: 5 mins</text>
-<text class="ab w" x="8.4" y="68" textLength="168">....         &apos;&apos;&apos; ,l;</text>
-<text class="ab" x="218.4" y="68" textLength="67.2">Packages</text>
-<text class="aa w" x="285.6" y="68" textLength="109.2">: 1310 (dpkg)</text>
-<text class="ab w" y="86" textLength="184.8">:oooo,            &apos;oo.</text>
-<text class="ab" x="218.4" y="86" textLength="42">Shell</text>
-<text class="aa w" x="260.4" y="86" textLength="109.2">: console2svg</text>
-<text class="ab w" y="104" textLength="184.8">looooc            :oo&apos;</text>
-<text class="ab" x="218.4" y="104" textLength="25.2">CPU</text>
-<text class="aa w" x="243.6" y="104" textLength="319.2">: AMD EPYC 7763 64-Core (4) @ 3.25 GHz</text>
-<text class="ab w" x="8.4" y="122" textLength="176.4">&apos;::&apos;             ,oo:</text>
-<text class="ab" x="218.4" y="122" textLength="50.4">Memory</text>
-<text class="aa w" x="268.8" y="122" textLength="201.6">: 1.57 GiB / 15.61 GiB (</text>
-<text class="ac" x="470.4" y="122" textLength="25.2">10%</text>
-<text class="aa" x="495.6" y="122" textLength="8.4">)</text>
-<text class="ab w" x="25.2" y="140" textLength="151.2">,.,       .... co,</text>
-<text class="ab w" x="33.6" y="158" textLength="134.4">lo:;.   :oooo; .</text>
-<text class="ab w" x="42" y="176" textLength="109.2">&apos;:ooo; cooooc</text>
-<text class="ab w" x="67.2" y="194" textLength="75.6">&apos;&apos;&apos;  &apos;&apos;&apos;&apos;</text>
+<text class="ab" x="243.6" y="14" textLength="33.6">....</text>
+<text class="ab" x="394.8" y="14" textLength="50.4">runner</text>
+<text class="aa" x="445.2" y="14" textLength="8.4">@</text>
+<text class="ab" x="453.6" y="14" textLength="109.2">runnervmgx7h7</text>
+<text class="ab w" x="117.6" y="32" textLength="184.8">.&apos;,:clooo:  .:looooo:.</text>
+<text class="aa" x="394.8" y="32" textLength="168">--------------------</text>
+<text class="ab w" x="92.4" y="50" textLength="218.4">.;looooooooc  .oooooooooo&apos;</text>
+<text class="ab" x="394.8" y="50" textLength="16.8">OS</text>
+<text class="aa w" x="411.6" y="50" textLength="352.8">: Ubuntu 24.04.4 LTS (Noble Numbat) x86_64</text>
+<text class="ab w" x="67.2" y="68" textLength="243.6">.;looooool:,&apos;&apos;.  :ooooooooooc</text>
+<text class="ab" x="394.8" y="68" textLength="33.6">Host</text>
+<text class="aa w" x="428.4" y="68" textLength="378">: Virtual Machine (Hyper-V UEFI Release v4.1)</text>
+<text class="ab w" x="58.8" y="86" textLength="252">;looool;.         &apos;oooooooooo,</text>
+<text class="ab" x="394.8" y="86" textLength="50.4">Kernel</text>
+<text class="aa w" x="445.2" y="86" textLength="210">: Linux 6.17.0-1022-azure</text>
+<text class="ab w" x="50.4" y="104" textLength="285.6">;clool&apos;             .cooooooc.  ,,</text>
+<text class="ab" x="394.8" y="104" textLength="50.4">Uptime</text>
+<text class="aa w" x="445.2" y="104" textLength="67.2">: 4 mins</text>
+<text class="ab w" x="75.6" y="122" textLength="268.8">...                ......  .:oo,</text>
+<text class="ab" x="394.8" y="122" textLength="67.2">Packages</text>
+<text class="aa w" x="462" y="122" textLength="109.2">: 1310 (dpkg)</text>
+<text class="ab w" x="16.8" y="140" textLength="336">.;clol:,.                        .loooo&apos;</text>
+<text class="ab" x="394.8" y="140" textLength="42">Shell</text>
+<text class="aa w" x="436.8" y="140" textLength="109.2">: console2svg</text>
+<text class="ab w" x="8.4" y="158" textLength="344.4">:ooooooooo,                        &apos;ooool</text>
+<text class="ab w" x="394.8" y="158" textLength="159.6">Display (Virtual-1)</text>
+<text class="aa w" x="554.4" y="158" textLength="84">: 1024x768</text>
+<text class="ab w" y="176" textLength="361.2">&apos;ooooooooooo.                        loooo.</text>
+<text class="ab" x="394.8" y="176" textLength="42">Theme</text>
+<text class="aa w" x="436.8" y="176" textLength="109.2">: Yaru [GTK3]</text>
+<text class="ab w" y="194" textLength="361.2">&apos;ooooooooool                         coooo.</text>
+<text class="ab" x="394.8" y="194" textLength="42">Icons</text>
+<text class="aa w" x="436.8" y="194" textLength="109.2">: Yaru [GTK3]</text>
+<text class="ab w" x="8.4" y="212" textLength="352.8">,loooooooc.                        .loooo.</text>
+<text class="ab" x="394.8" y="212" textLength="50.4">Cursor</text>
+<text class="aa w" x="445.2" y="212" textLength="75.6">: Adwaita</text>
+<text class="ab w" x="25.2" y="230" textLength="327.6">.,;;;&apos;.                          ;ooooc</text>
+<text class="ab" x="394.8" y="230" textLength="67.2">Terminal</text>
+<text class="aa w" x="462" y="230" textLength="126">: Runner.Worker</text>
+<text class="ab w" x="58.8" y="248" textLength="294">...                         ,ooool.</text>
+<text class="ab" x="394.8" y="248" textLength="25.2">CPU</text>
+<text class="aa w" x="420" y="248" textLength="319.2">: AMD EPYC 7763 64-Core (4) @ 3.25 GHz</text>
+<text class="ab w" x="33.6" y="266" textLength="310.8">.cooooc.              ..&apos;,,&apos;.  .cooo.</text>
+<text class="ab" x="394.8" y="266" textLength="50.4">Memory</text>
+<text class="aa w" x="445.2" y="266" textLength="201.6">: 1.62 GiB / 15.61 GiB (</text>
+<text class="ac" x="646.8" y="266" textLength="25.2">10%</text>
+<text class="aa" x="672" y="266" textLength="8.4">)</text>
+<text class="ab w" x="50.4" y="284" textLength="285.6">;ooooo:.           ;oooooooc.  :l.</text>
+<text class="ab" x="394.8" y="284" textLength="33.6">Swap</text>
+<text class="aa w" x="428.4" y="284" textLength="151.2">: 0 B / 3.00 GiB (</text>
+<text class="ac" x="579.6" y="284" textLength="16.8">0%</text>
+<text class="aa" x="596.4" y="284" textLength="8.4">)</text>
+<text class="ab w" x="58.8" y="302" textLength="243.6">.coooooc,..      coooooooooo.</text>
+<text class="ab w" x="394.8" y="302" textLength="67.2">Disk (/)</text>
+<text class="aa w" x="462" y="302" textLength="218.4">: 59.93 GiB / 144.26 GiB (</text>
+<text class="ac" x="680.4" y="302" textLength="25.2">42%</text>
+<text class="aa w" x="705.6" y="302" textLength="67.2">) - ext4</text>
+<text class="ab w" x="75.6" y="320" textLength="226.8">.:ooooooolc:. .ooooooooooo&apos;</text>
+<text class="ab w" x="394.8" y="320" textLength="126">Local IP (eth0)</text>
+<text class="aa w" x="520.8" y="320" textLength="126">: 10.1.0.152/20</text>
+<text class="ab w" x="92.4" y="338" textLength="201.6">.&apos;:loooooo;  ,oooooooooc</text>
+<text class="ab" x="394.8" y="338" textLength="50.4">Locale</text>
+<text class="aa w" x="445.2" y="338" textLength="75.6">: C.UTF-8</text>
+<text class="ab w" x="126" y="356" textLength="159.6">..&apos;;::c&apos;  .;loooo:&apos;</text>
+<rect class="q" x="420" y="360" width="25.2" height="18" fill="#cd3131" stroke="#cd3131" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="445.2" y="360" width="25.2" height="18" fill="#0dbc79" stroke="#0dbc79" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="470.4" y="360" width="25.2" height="18" fill="#e5e510" stroke="#e5e510" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="495.6" y="360" width="25.2" height="18" fill="#2472c8" stroke="#2472c8" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="520.8" y="360" width="25.2" height="18" fill="#bc3fbc" stroke="#bc3fbc" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="546" y="360" width="25.2" height="18" fill="#11a8cd" stroke="#11a8cd" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="571.2" y="360" width="25.2" height="18" fill="#e5e5e5" stroke="#e5e5e5" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="394.8" y="378" width="25.2" height="18" fill="#666666" stroke="#666666" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="420" y="378" width="25.2" height="18" fill="#f14c4c" stroke="#f14c4c" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="445.2" y="378" width="25.2" height="18" fill="#23d18b" stroke="#23d18b" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="470.4" y="378" width="25.2" height="18" fill="#f5f543" stroke="#f5f543" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="495.6" y="378" width="25.2" height="18" fill="#3b8eea" stroke="#3b8eea" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="520.8" y="378" width="25.2" height="18" fill="#d670d6" stroke="#d670d6" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="546" y="378" width="25.2" height="18" fill="#29b8db" stroke="#29b8db" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="571.2" y="378" width="25.2" height="18" fill="#ffffff" stroke="#ffffff" stroke-width="2" vector-effect="non-scaling-stroke"/>
 </g>
 </svg>

@@ -7,6 +7,7 @@ cd "$repo_root"
 
 # --- install require packages ---
 sudo npm install -g oh-my-logo
+sudo apt update
 sudo apt install -y librsvg2-bin sl nyancat vim tmux ffmpeg cmatrix btop
 
 # --- image ---

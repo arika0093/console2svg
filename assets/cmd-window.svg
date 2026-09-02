@@ -1,102 +1,52 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1066" height="589" viewBox="0 0 1066 589" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" width="898" height="535" viewBox="0 0 898 535" role="img" aria-label="console2svg output">
 <style>
 .c2.c { font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace; font-size: 14px; }
 .c2 text { dominant-baseline: alphabetic; }
 .c2 .q { shape-rendering: crispEdges; }
 .c2 .w { white-space: pre; }
 .c2 .aa{fill:#d4d4d4}
-.c2 .ab{fill:#10E291;font-weight:bold}
-.c2 .ac{fill:#FFFF13;font-weight:bold}
-.c2 .ad{fill:#11a8cd}
-.c2 .ae{fill:#bc3fbc}
-.c2 .af{fill:#9F9F9F}
+.c2 .ab{fill:#F63B3B;font-weight:bold}
+.c2 .ac{fill:#0dbc79}
 </style><defs>
 <linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1d2e"/><stop offset="100%" stop-color="#252840"/></linearGradient>
 </defs>
-<rect width="1066" height="589" fill="url(#c2bg)"/>
-<rect x="20.5" y="20.5" rx="10" ry="10" width="1025" height="548" fill="#1f1f1f" stroke="#3a3a3a"/>
-<rect x="21" y="21" rx="9" ry="9" width="1024" height="27" fill="#2c2c2c"/>
+<rect width="898" height="535" fill="url(#c2bg)"/>
+<rect x="20.5" y="20.5" rx="10" ry="10" width="857" height="494" fill="#1f1f1f" stroke="#3a3a3a"/>
+<rect x="21" y="21" rx="9" ry="9" width="856" height="27" fill="#2c2c2c"/>
 <circle cx="34" cy="34" r="5" fill="#ff5f57"/>
 <circle cx="50" cy="34" r="5" fill="#febc2e"/>
 <circle cx="66" cy="34" r="5" fill="#28c840"/>
-<rect x="21" y="48" width="1024" height="520" rx="9" ry="9" fill="#1e1e1e"/>
-<g class="c2 c"><rect x="29" y="56" width="1008" height="18" fill="#1e1e1e"/>
-<text class="aa" x="29" y="70">$ console2svg</text></g>
+<rect x="21" y="48" width="856" height="466" rx="9" ry="9" fill="#1e1e1e"/>
+<g class="c2 c"><rect x="29" y="56" width="840" height="18" fill="#1e1e1e"/>
+<text class="aa" x="29" y="70">$ fastfetch -l small -s os:kernel:uptime:packages:shell:cpu:memory</text></g>
 <g class="c2 c" transform="translate(29 74)">
-<rect width="1008" height="486" fill="#1e1e1e"/>
-<text class="ab w" y="14" textLength="588">console2svg - Convert terminal output to SVG [Ver: 0.8.1.0+58d468b6b9]</text>
-<text class="ac" y="50" textLength="50.4">Usage:</text>
-<text class="aa w" x="33.6" y="68" textLength="285.6">my-command | console2svg [options]</text>
-<text class="aa w" x="33.6" y="86" textLength="369.6">console2svg &quot;my-command with-args&quot; [options]</text>
-<text class="aa w" x="33.6" y="104" textLength="378">console2svg [options] -- my-command with args</text>
-<text class="ac w" y="140" textLength="117.6">Major options:</text>
-<text class="ad" x="33.6" y="158" textLength="16.8">-o</text>
-<text class="aa" x="50.4" y="158" textLength="8.4">,</text>
-<text class="ad" x="67.2" y="158" textLength="42">--out</text>
-<text class="ae" x="117.6" y="158" textLength="50.4">&lt;path&gt;</text>
-<text class="aa w" x="252" y="158" textLength="134.4">Output file path</text>
-<text class="af w" x="394.8" y="158" textLength="176.4">(default: output.svg)</text>
-<text class="aa" x="571.2" y="158" textLength="8.4">.</text>
-<text class="aa w" x="252" y="176" textLength="369.6">Non-SVG extensions trigger ffmpeg conversion</text>
-<text class="af w" x="630" y="176" textLength="243.6">(e.g. output.png, output.mp4)</text>
-<text class="aa" x="873.6" y="176" textLength="8.4">.</text>
-<text class="ad" x="33.6" y="194" textLength="16.8">-w</text>
-<text class="aa" x="50.4" y="194" textLength="8.4">,</text>
-<text class="ad" x="67.2" y="194" textLength="58.8">--width</text>
-<text class="ae" x="134.4" y="194" textLength="100.8">&lt;int|adjust&gt;</text>
-<text class="aa w" x="252" y="194" textLength="235.2">Terminal width in characters</text>
-<text class="af w" x="495.6" y="194" textLength="142.8">(default: adjust)</text>
-<text class="aa" x="638.4" y="194" textLength="8.4">.</text>
-<text class="aa w" x="252" y="212" textLength="336">Specify an integer to use a fixed width.</text>
-<text class="ad" x="33.6" y="230" textLength="16.8">-h</text>
-<text class="aa" x="50.4" y="230" textLength="8.4">,</text>
-<text class="ad" x="67.2" y="230" textLength="67.2">--height</text>
-<text class="ae" x="142.8" y="230" textLength="100.8">&lt;int|adjust&gt;</text>
-<text class="aa w" x="252" y="230" textLength="193.2">Terminal height in rows</text>
-<text class="af w" x="453.6" y="230" textLength="142.8">(default: adjust)</text>
-<text class="aa" x="596.4" y="230" textLength="8.4">.</text>
-<text class="aa w" x="252" y="248" textLength="344.4">Specify an integer to use a fixed height.</text>
-<text class="ad" x="33.6" y="266" textLength="16.8">-v</text>
-<text class="aa" x="50.4" y="266" textLength="8.4">,</text>
-<text class="ad" x="67.2" y="266" textLength="58.8">--video</text>
-<text class="aa w" x="252" y="266" textLength="159.6">Output animated SVG</text>
-<text class="af w" x="420" y="266" textLength="201.6">(alias for --mode video)</text>
-<text class="aa" x="621.6" y="266" textLength="8.4">.</text>
-<text class="ad" x="33.6" y="284" textLength="16.8">-i</text>
-<text class="aa" x="50.4" y="284" textLength="8.4">,</text>
-<text class="ad" x="67.2" y="284" textLength="109.2">--interactive</text>
-<text class="aa w" x="252" y="284" textLength="646.8">Run an interactive shell; F9 records, F12 pauses, and F10 takes a screenshot.</text>
-<text class="aa w" x="252" y="302" textLength="361.2">Use -- to start another interactive program</text>
-<text class="af w" x="621.6" y="302" textLength="142.8">(e.g. -i -- pwsh)</text>
-<text class="aa" x="764.4" y="302" textLength="8.4">.</text>
-<text class="ad" x="33.6" y="320" textLength="16.8">-c</text>
-<text class="aa" x="50.4" y="320" textLength="8.4">,</text>
-<text class="ad" x="67.2" y="320" textLength="117.6">--with-command</text>
-<text class="aa w" x="252" y="320" textLength="327.6">Prepend the command line to the output.</text>
-<text class="ad" x="33.6" y="338" textLength="16.8">-d</text>
-<text class="aa" x="50.4" y="338" textLength="8.4">,</text>
-<text class="ad" x="67.2" y="338" textLength="67.2">--window</text>
-<text class="ae" x="142.8" y="338" textLength="58.8">[style]</text>
-<text class="aa w" x="252" y="338" textLength="596.4">Window chrome: none, macos, windows, macos-pc, windows-pc, transparent.</text>
-<text class="ad" x="33.6" y="356" textLength="100.8">--background</text>
-<text class="ae" x="142.8" y="356" textLength="58.8">&lt;color&gt;</text>
-<text class="ae" x="210" y="356" textLength="58.8">[color]</text>
-<text class="aa w" x="285.6" y="356" textLength="352.8">Background color, gradient, or image path.</text>
-<text class="ad" x="33.6" y="374" textLength="235.2">--crop-top/bottom/left/right</text>
-<text class="aa w" x="285.6" y="374" textLength="268.8">Crop by px, ch, or text pattern.</text>
-<text class="ad" x="33.6" y="392" textLength="67.2">--header</text>
-<text class="ae" x="109.2" y="392" textLength="50.4">&lt;text&gt;</text>
-<text class="aa w" x="252" y="392" textLength="243.6">Override command header text.</text>
-<text class="ad" x="33.6" y="410" textLength="67.2">--prompt</text>
-<text class="ae" x="109.2" y="410" textLength="50.4">&lt;text&gt;</text>
-<text class="aa w" x="252" y="410" textLength="243.6">Override prompt prefix for -c</text>
-<text class="af w" x="504" y="410" textLength="226.8">(default: $ or # when root)</text>
-<text class="aa" x="730.8" y="410" textLength="8.4">.</text>
-<text class="ad" x="33.6" y="428" textLength="75.6">--verbose</text>
-<text class="ae" x="117.6" y="428" textLength="50.4">[path]</text>
-<text class="aa w" x="252" y="428" textLength="184.8">Enable verbose logging</text>
-<text class="af w" x="445.2" y="428" textLength="327.6">(log to path, default: console2svg.log)</text>
-<text class="aa" x="772.8" y="428" textLength="8.4">.</text>
-<text class="ac w" y="464" textLength="277.2">For full option list, see --help.</text>
+<rect width="840" height="432" fill="#1e1e1e"/>
+<text class="ab w" x="58.8" y="14" textLength="92.4">..;,; .,;,.</text>
+<text class="ab" x="218.4" y="14" textLength="16.8">OS</text>
+<text class="aa w" x="235.2" y="14" textLength="352.8">: Ubuntu 24.04.4 LTS (Noble Numbat) x86_64</text>
+<text class="ab w" x="33.6" y="32" textLength="126">.,lool: .ooooo,</text>
+<text class="ab" x="218.4" y="32" textLength="50.4">Kernel</text>
+<text class="aa w" x="268.8" y="32" textLength="210">: Linux 6.17.0-1022-azure</text>
+<text class="ab w" x="25.2" y="50" textLength="134.4">;oo;:    .coool.</text>
+<text class="ab" x="218.4" y="50" textLength="50.4">Uptime</text>
+<text class="aa w" x="268.8" y="50" textLength="67.2">: 5 mins</text>
+<text class="ab w" x="8.4" y="68" textLength="168">....         &apos;&apos;&apos; ,l;</text>
+<text class="ab" x="218.4" y="68" textLength="67.2">Packages</text>
+<text class="aa w" x="285.6" y="68" textLength="109.2">: 1310 (dpkg)</text>
+<text class="ab w" y="86" textLength="184.8">:oooo,            &apos;oo.</text>
+<text class="ab" x="218.4" y="86" textLength="42">Shell</text>
+<text class="aa w" x="260.4" y="86" textLength="109.2">: console2svg</text>
+<text class="ab w" y="104" textLength="184.8">looooc            :oo&apos;</text>
+<text class="ab" x="218.4" y="104" textLength="25.2">CPU</text>
+<text class="aa w" x="243.6" y="104" textLength="319.2">: AMD EPYC 7763 64-Core (4) @ 3.25 GHz</text>
+<text class="ab w" x="8.4" y="122" textLength="176.4">&apos;::&apos;             ,oo:</text>
+<text class="ab" x="218.4" y="122" textLength="50.4">Memory</text>
+<text class="aa w" x="268.8" y="122" textLength="201.6">: 1.57 GiB / 15.61 GiB (</text>
+<text class="ac" x="470.4" y="122" textLength="25.2">10%</text>
+<text class="aa" x="495.6" y="122" textLength="8.4">)</text>
+<text class="ab w" x="25.2" y="140" textLength="151.2">,.,       .... co,</text>
+<text class="ab w" x="33.6" y="158" textLength="134.4">lo:;.   :oooo; .</text>
+<text class="ab w" x="42" y="176" textLength="109.2">&apos;:ooo; cooooc</text>
+<text class="ab w" x="67.2" y="194" textLength="75.6">&apos;&apos;&apos;  &apos;&apos;&apos;&apos;</text>
 </g>
 </svg>

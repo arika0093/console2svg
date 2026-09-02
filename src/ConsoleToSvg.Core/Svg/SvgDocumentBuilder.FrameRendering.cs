@@ -654,7 +654,22 @@ internal static partial class SvgDocumentBuilder
         var textCells = new List<(int Row, int Col)>(logicalLine.Capacity);
         for (var logicalRow = firstRow; logicalRow < lastRowExclusive; logicalRow++)
         {
-            for (var col = 0; col < buffer.Width; col++)
+            var endColExclusive = buffer.Width;
+            if (
+                logicalRow + 1 < lastRowExclusive
+                && buffer.IsRowWrappedFromPrevious(logicalRow + 1, includeScrollback)
+            )
+            {
+                var lastCell = includeScrollback
+                    ? buffer.GetCellFromTop(logicalRow, buffer.Width - 1)
+                    : buffer.GetCell(logicalRow, buffer.Width - 1);
+                if (lastCell.Text == " " && !lastCell.IsWideContinuation)
+                {
+                    endColExclusive--;
+                }
+            }
+
+            for (var col = 0; col < endColExclusive; col++)
             {
                 var cell = includeScrollback
                     ? buffer.GetCellFromTop(logicalRow, col)

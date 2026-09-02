@@ -418,6 +418,61 @@ public sealed partial class ScreenBuffer
         return _rowSignatures[row];
     }
 
+    internal ulong GetRowMaskingSignature(int row)
+    {
+        var signature = GetRowVisualSignature(row);
+        var start = GetLogicalLineStart(row);
+        var end = GetLogicalLineEndExclusive(row);
+        for (var logicalRow = start; logicalRow < end; logicalRow++)
+        {
+            signature ^= BitOperations.RotateLeft(
+                GetRowVisualSignature(logicalRow) + 0x9E3779B97F4A7C15UL,
+                (logicalRow - start + 1) & 63
+            );
+        }
+        return signature;
+    }
+
+    internal bool HasSameMaskingContext(int row, ScreenBuffer other, int otherRow)
+    {
+        var start = GetLogicalLineStart(row);
+        var otherStart = other.GetLogicalLineStart(otherRow);
+        var length = GetLogicalLineEndExclusive(row) - start;
+        var otherLength = other.GetLogicalLineEndExclusive(otherRow) - otherStart;
+        if (length != otherLength || row - start != otherRow - otherStart)
+        {
+            return false;
+        }
+
+        for (var offset = 0; offset < length; offset++)
+        {
+            if (!HasSameVisualRow(start + offset, other, otherStart + offset))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private int GetLogicalLineStart(int row)
+    {
+        while (row > 0 && _wrappedRows[row])
+        {
+            row--;
+        }
+        return row;
+    }
+
+    private int GetLogicalLineEndExclusive(int row)
+    {
+        row++;
+        while (row < Height && _wrappedRows[row])
+        {
+            row++;
+        }
+        return row;
+    }
+
     internal bool HasSameVisualRow(int row, ScreenBuffer other, int otherRow)
     {
         if (Width != other.Width || _wrappedRows[row] != other._wrappedRows[otherRow])

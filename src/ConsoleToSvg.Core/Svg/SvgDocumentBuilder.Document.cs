@@ -555,18 +555,25 @@ internal static partial class SvgDocumentBuilder
 
             for (var row = context.StartRow; row < context.EndRowExclusive; row++)
             {
-                var signature = buffer.GetRowVisualSignature(row);
+                var signature = autoMasker is null
+                    ? buffer.GetRowVisualSignature(row)
+                    : buffer.GetRowMaskingSignature(row);
                 var definitionIndex = -1;
                 if (hashToRowDefinitionIndices.TryGetValue(signature, out var candidates))
                 {
                     foreach (var candidateIndex in candidates)
                     {
                         var candidate = rowDefinitions[candidateIndex];
+                        var candidateBuffer = frames[candidate.FrameIndex].Buffer;
                         if (
-                            buffer.HasSameVisualRow(
-                                row,
-                                frames[candidate.FrameIndex].Buffer,
-                                candidate.Row
+                            buffer.HasSameVisualRow(row, candidateBuffer, candidate.Row)
+                            && (
+                                autoMasker is null
+                                || buffer.HasSameMaskingContext(
+                                    row,
+                                    candidateBuffer,
+                                    candidate.Row
+                                )
                             )
                         )
                         {

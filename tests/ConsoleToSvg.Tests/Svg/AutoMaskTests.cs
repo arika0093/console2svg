@@ -1,3 +1,4 @@
+using System.Linq;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;
 
@@ -128,6 +129,40 @@ public sealed class AutoMaskTests
         );
 
         svg.ShouldContain("public");
+    }
+
+    [Test]
+    public void AutoMaskIgnoresWideCharacterWrapPadding()
+    {
+        var session = new RecordingSession(width: 10, height: 2);
+        session.AddEvent(0.01, "TOKEN=abc山続");
+
+        var svg = SvgRenderer.Render(
+            session,
+            new SvgRenderOptions { AutoMask = AutoMaskCategory.Token }
+        );
+
+        svg.ShouldNotContain("abc");
+        svg.ShouldNotContain("山");
+        svg.ShouldNotContain("続");
+    }
+
+    [Test]
+    public void AnimatedSvgDoesNotReuseRowWhenWrappedMaskingContextChanges()
+    {
+        var session = new RecordingSession(width: 12, height: 2);
+        session.AddEvent(0.01, "VALUE=abcdefghijk");
+        session.AddEvent(0.20, "\u001b[1;1HTOKEN");
+
+        var svg = AnimatedSvgRenderer.Render(
+            session,
+            new SvgRenderOptions { AutoMask = AutoMaskCategory.Token, VideoFps = 0 }
+        );
+        var document = System.Xml.Linq.XDocument.Parse(svg);
+        var ns = document.Root!.Name.Namespace;
+
+        svg.ShouldContain("ghijk");
+        document.Descendants(ns + "text").Any(node => node.Value == "*****").ShouldBeTrue();
     }
 
     [Test]

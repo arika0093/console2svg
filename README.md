@@ -50,7 +50,7 @@ You can also generate SVG with a window frame. and some options to customize the
 For example, `-w` specifies the width, `-c` is an option to display the command at the beginning of the output, and `-d` is an option to specify the style of the window frame, where we specify a macOS-like frame. If the command is long, you can also write it together after `--`.
 
 ```bash
-console2svg -w 100 -c -d macos-pc -- fastfetch -l small -s os:kernel:uptime:packages:shell:cpu:memory
+console2svg -w 100 -c -d macos-pc -- fastfetch
 ```
 
 ![console2svg -w 100 -c -d macos-pc -- fastfetch](./assets/cmd-window.svg)
@@ -61,7 +61,7 @@ In video mode(`-v`), you can capture the animation of the command execution and 
 By using the [replay feature](#replay-input), you can save the command execution record and later regenerate the SVG based on that record.
 
 ```bash
-console2svg -w 90 -h 24 -v -d windows --timeout 7 -- pipes.sh -t 1 -f 35
+console2svg -w 90 -h 24 -v -d windows --timeout 7 -- bash -c 'pipes.sh -t 1 -f 35 </dev/null'
 ```
 
 ![console2svg -w 90 -h 24 -v -d windows --timeout 7 -- pipes.sh](./assets/cmd-loop.svg)

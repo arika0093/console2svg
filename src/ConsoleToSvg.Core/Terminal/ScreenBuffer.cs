@@ -128,6 +128,7 @@ public readonly struct ScreenCell : IEquatable<ScreenCell>
 {
     private const byte Wide = 1 << 0;
     private const byte WideContinuation = 1 << 1;
+    private const byte WideWrapPadding = 1 << 2;
     private static readonly ulong[] AsciiTextSignatures = CreateAsciiTextSignatures();
     private readonly CellStyle _style;
     private readonly byte _flags;
@@ -146,15 +147,22 @@ public readonly struct ScreenCell : IEquatable<ScreenCell>
         string text,
         CellStyle style,
         bool isWide = false,
-        bool isWideContinuation = false
+        bool isWideContinuation = false,
+        bool isWideWrapPadding = false
     )
     {
         Text = text;
         _style = style;
-        _flags = (byte)((isWide ? Wide : 0) | (isWideContinuation ? WideContinuation : 0));
+        _flags = (byte)(
+            (isWide ? Wide : 0)
+            | (isWideContinuation ? WideContinuation : 0)
+            | (isWideWrapPadding ? WideWrapPadding : 0)
+        );
     }
 
     public string Text { get; }
+
+    internal bool IsWideWrapPadding => (_flags & WideWrapPadding) != 0;
 
     internal CellStyle Style => _style;
 
@@ -274,6 +282,7 @@ public sealed partial class ScreenBuffer
     private readonly SortedSet<int> _tabStops = new();
     private readonly List<ScreenCell[]> _scrollbackRows = new();
     private readonly List<bool> _scrollbackWrappedRows = new();
+    private string? _clippedWrappedPrefix;
     private readonly Dictionary<TextStyle, CellStyle> _styleCache = new();
     private TextStyle _lastTextStyle;
     private CellStyle? _lastCellStyle;
@@ -422,6 +431,12 @@ public sealed partial class ScreenBuffer
     {
         var signature = GetRowVisualSignature(row);
         var start = GetLogicalLineStart(row);
+        if (start == 0 && _wrappedRows[0])
+        {
+            signature ^= XxHash3.HashToUInt64(
+                MemoryMarshal.AsBytes(GetClippedWrappedPrefix().AsSpan())
+            );
+        }
         var end = GetLogicalLineEndExclusive(row);
         for (var logicalRow = start; logicalRow < end; logicalRow++)
         {
@@ -437,6 +452,18 @@ public sealed partial class ScreenBuffer
     {
         var start = GetLogicalLineStart(row);
         var otherStart = other.GetLogicalLineStart(otherRow);
+        if (
+            start == 0
+            && _wrappedRows[0]
+            && (
+                otherStart != 0
+                || !other._wrappedRows[0]
+                || GetClippedWrappedPrefix() != other.GetClippedWrappedPrefix()
+            )
+        )
+        {
+            return false;
+        }
         var length = GetLogicalLineEndExclusive(row) - start;
         var otherLength = other.GetLogicalLineEndExclusive(otherRow) - otherStart;
         if (length != otherLength || row - start != otherRow - otherStart)
@@ -637,6 +664,39 @@ public sealed partial class ScreenBuffer
             : _wrappedRows[row - _scrollbackWrappedRows.Count];
     }
 
+    internal string GetClippedWrappedPrefix()
+    {
+        if (_clippedWrappedPrefix is not null)
+        {
+            return _clippedWrappedPrefix;
+        }
+        if (!_wrappedRows[0] || _scrollbackRows.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var firstRow = _scrollbackRows.Count - 1;
+        while (firstRow > 0 && _scrollbackWrappedRows[firstRow])
+        {
+            firstRow--;
+        }
+
+        var text = new System.Text.StringBuilder(
+            Width * (_scrollbackRows.Count - firstRow)
+        );
+        for (var row = firstRow; row < _scrollbackRows.Count; row++)
+        {
+            foreach (var cell in _scrollbackRows[row])
+            {
+                if (!cell.IsWideContinuation && !cell.IsWideWrapPadding)
+                {
+                    text.Append(cell.Text);
+                }
+            }
+        }
+        return text.ToString();
+    }
+
     public ScreenBuffer Clone()
     {
         Array.Fill(_mainRowsShared, true);
@@ -666,6 +726,7 @@ public sealed partial class ScreenBuffer
             _altRowsShared = CreateSharedRowFlags(Height),
             _rowSignatures = (ulong[])_rowSignatures.Clone(),
             _rowSignatureDirty = (bool[])_rowSignatureDirty.Clone(),
+            _clippedWrappedPrefix = GetClippedWrappedPrefix(),
         };
         cloned._tabStops.Clear();
         cloned._tabStops.UnionWith(_tabStops);
@@ -708,6 +769,7 @@ public sealed partial class ScreenBuffer
             _rowsShared = sharedRows,
             _rowSignatures = (ulong[])_rowSignatures.Clone(),
             _rowSignatureDirty = new bool[Height],
+            _clippedWrappedPrefix = GetClippedWrappedPrefix(),
         };
         return snapshot;
     }
@@ -722,6 +784,7 @@ public sealed partial class ScreenBuffer
         CursorRow = source.CursorRow;
         CursorCol = source.CursorCol;
         _cursorVisible = source._cursorVisible;
+        _clippedWrappedPrefix = source._clippedWrappedPrefix;
         _trackVisualSignatures = true;
         _isAltScreen = source._isAltScreen;
         var sourceCells = source._cells;
@@ -858,11 +921,12 @@ public sealed partial class ScreenBuffer
         string text,
         in TextStyle style,
         bool isWide = false,
-        bool isWideContinuation = false
+        bool isWideContinuation = false,
+        bool isWideWrapPadding = false
     )
     {
         var cellStyle = ResolveCellStyle(style);
-        return new ScreenCell(text, cellStyle, isWide, isWideContinuation);
+        return new ScreenCell(text, cellStyle, isWide, isWideContinuation, isWideWrapPadding);
     }
 
     public void PutChar(char value, TextStyle style)
@@ -1059,7 +1123,11 @@ public sealed partial class ScreenBuffer
 
         if (isWide && CursorCol + 1 >= Width)
         {
-            SetCell(CursorRow, CursorCol, CreateCell(" ", DefaultStyle));
+            SetCell(
+                CursorRow,
+                CursorCol,
+                CreateCell(" ", DefaultStyle, isWideWrapPadding: true)
+            );
             CursorCol = 0;
             Index(wrappedFromPrevious: true);
         }

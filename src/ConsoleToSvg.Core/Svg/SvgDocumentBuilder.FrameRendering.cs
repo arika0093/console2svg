@@ -652,29 +652,22 @@ internal static partial class SvgDocumentBuilder
             buffer.Width * (lastRowExclusive - firstRow)
         );
         var textCells = new List<(int Row, int Col)>(logicalLine.Capacity);
+        if (startsBeforeVisibleBuffer)
+        {
+            logicalLine.Append(buffer.GetClippedWrappedPrefix());
+            while (textCells.Count < logicalLine.Length)
+            {
+                textCells.Add((-1, -1));
+            }
+        }
         for (var logicalRow = firstRow; logicalRow < lastRowExclusive; logicalRow++)
         {
-            var endColExclusive = buffer.Width;
-            if (
-                logicalRow + 1 < lastRowExclusive
-                && buffer.IsRowWrappedFromPrevious(logicalRow + 1, includeScrollback)
-            )
-            {
-                var lastCell = includeScrollback
-                    ? buffer.GetCellFromTop(logicalRow, buffer.Width - 1)
-                    : buffer.GetCell(logicalRow, buffer.Width - 1);
-                if (lastCell.Text == " " && !lastCell.IsWideContinuation)
-                {
-                    endColExclusive--;
-                }
-            }
-
-            for (var col = 0; col < endColExclusive; col++)
+            for (var col = 0; col < buffer.Width; col++)
             {
                 var cell = includeScrollback
                     ? buffer.GetCellFromTop(logicalRow, col)
                     : buffer.GetCell(logicalRow, col);
-                if (cell.IsWideContinuation)
+                if (cell.IsWideContinuation || cell.IsWideWrapPadding)
                 {
                     continue;
                 }
@@ -688,9 +681,7 @@ internal static partial class SvgDocumentBuilder
         }
 
         var logicalText = logicalLine.ToString();
-        var textMask = startsBeforeVisibleBuffer
-            ? CreateConservativeContinuationMask(logicalText)
-            : autoMasker.CreateMask(logicalText);
+        var textMask = autoMasker.CreateMask(logicalText);
         var columnMask = new bool[buffer.Width];
         for (var textIndex = 0; textIndex < textMask.Length; textIndex++)
         {
@@ -711,18 +702,6 @@ internal static partial class SvgDocumentBuilder
             }
         }
         return columnMask;
-    }
-
-    private static bool[] CreateConservativeContinuationMask(string text)
-    {
-        var mask = new bool[text.Length];
-        var end = text.Length;
-        while (end > 0 && char.IsWhiteSpace(text[end - 1]))
-        {
-            end--;
-        }
-        Array.Fill(mask, true, 0, end);
-        return mask;
     }
 
     public static string Format(double value)

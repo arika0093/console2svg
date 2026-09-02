@@ -148,6 +148,42 @@ public sealed class AutoMaskTests
     }
 
     [Test]
+    public void AutoMaskPreservesRealTrailingSpaceAcrossSoftWrap()
+    {
+        var session = new RecordingSession(width: 10, height: 2);
+        session.AddEvent(0.01, "TOKEN=abc public");
+
+        var svg = SvgRenderer.Render(
+            session,
+            new SvgRenderOptions { AutoMask = AutoMaskCategory.Token }
+        );
+
+        svg.ShouldNotContain("abc");
+        svg.ShouldContain("public");
+    }
+
+    [Test]
+    public void AnimatedSvgDoesNotMaskOrdinaryClippedWrappedLine()
+    {
+        var session = new RecordingSession(width: 5, height: 2);
+        session.AddEvent(0.01, "abcdefghijklmnop");
+
+        var svg = AnimatedSvgRenderer.Render(
+            session,
+            new SvgRenderOptions
+            {
+                AutoMask = AutoMaskCategory.Password
+                    | AutoMaskCategory.Token
+                    | AutoMaskCategory.HomeDirectory,
+                VideoFps = 0,
+            }
+        );
+
+        svg.ShouldContain("klmno");
+        svg.ShouldContain("p");
+    }
+
+    [Test]
     public void AnimatedSvgDoesNotReuseRowWhenWrappedMaskingContextChanges()
     {
         var session = new RecordingSession(width: 12, height: 2);

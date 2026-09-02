@@ -405,6 +405,36 @@ console2svg -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "
 | <img src="./assets/window/windows-pc.svg" width="400" alt="windows-pc">    | `windows-pc`  |
 
 ## Tips
+
+### Masking sensitive information
+
+Use `--mask` to replace specific text with asterisks in the generated SVG. You can pass multiple values when you need to hide machine names, directory names, credentials, or other known strings.
+
+```sh
+console2svg --mask "MyPC" "secret-directory" -- command-that-may-print-secrets
+```
+
+`--mask-auto` detects common sensitive values without requiring you to specify the exact text. The following categories are enabled by default:
+
+* `password`: values whose keys end in `PASSWORD`
+* `token`: values whose keys end in `TOKEN`
+* `homedir`: the username portion of Windows and Unix home-directory paths
+
+For example, values in `PASSWORD=...`, `MY_PASSWORD: ...`, `TOKEN=...`, and `ACCESS_TOKEN: ...` are masked. Detection also follows values across wrapped terminal rows in static and animated SVGs.
+
+```sh
+# The default is password,token,homedir.
+console2svg --mask-auto password,token,homedir -- command-that-may-print-secrets
+
+# Enable only password masking.
+console2svg --mask-auto password -- command-that-may-print-secrets
+
+# Disable automatic masking.
+console2svg --mask-auto none -- command-that-may-print-secrets
+```
+
+You can combine `--mask` and `--mask-auto`. Because automatic detection is intentionally limited to recognizable patterns, use explicit `--mask` values as well when the output may contain secrets in another format.
+
 ### Using with `tmux`
 By combining with `tmux`, you can save the step-by-step execution process of commands as SVG images.
 

@@ -2,7 +2,7 @@
 
 ![console2svg hero image with oh-my-logo](./assets/cmd-hero.svg)
 
-[![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest) [![WinGet Package Version](https://img.shields.io/winget/v/arika0093.console2svg?style=flat-square&logo=gitlfs&label=WinGet)](https://winget.run/pkg/arika0093.console2svg)
+[![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest) ![WinGet Package Version](https://img.shields.io/winget/v/arika0093.console2svg?style=flat-square&logo=gitlfs&label=WinGet&color=%230080CC)
 
 
 Easily convert terminal output into SVG images.  

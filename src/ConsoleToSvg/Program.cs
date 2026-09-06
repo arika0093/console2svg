@@ -157,16 +157,6 @@ internal static partial class Program
                 }
             }
 
-            if (options.Interactive)
-            {
-                return await RunInteractiveAsync(
-                        options,
-                        loggerFactory,
-                        cancellationTokenSource.Token
-                    )
-                    .ConfigureAwait(false);
-            }
-
             if (!string.IsNullOrWhiteSpace(options.InputSvgPath))
             {
                 if (options.StdOut)
@@ -181,9 +171,20 @@ internal static partial class Program
                 }
 
                 EnsureDirectory(options.OutputPath);
-                if (string.Equals(Path.GetExtension(options.OutputPath), ".svg", StringComparison.OrdinalIgnoreCase))
+                var outputExtension = Path.GetExtension(options.OutputPath);
+                if (string.IsNullOrEmpty(outputExtension)
+                    || string.Equals(outputExtension, ".svg", StringComparison.OrdinalIgnoreCase))
                 {
-                    File.Copy(options.InputSvgPath, options.OutputPath, overwrite: true);
+                    if (!string.Equals(
+                            Path.GetFullPath(options.InputSvgPath),
+                            Path.GetFullPath(options.OutputPath),
+                            OperatingSystem.IsWindows()
+                                ? StringComparison.OrdinalIgnoreCase
+                                : StringComparison.Ordinal
+                        ))
+                    {
+                        File.Copy(options.InputSvgPath, options.OutputPath, overwrite: true);
+                    }
                 }
                 else
                 {
@@ -208,6 +209,16 @@ internal static partial class Program
                 }
                 Console.WriteLine($"Generated: {options.OutputPath}");
                 return 0;
+            }
+
+            if (options.Interactive)
+            {
+                return await RunInteractiveAsync(
+                        options,
+                        loggerFactory,
+                        cancellationTokenSource.Token
+                    )
+                    .ConfigureAwait(false);
             }
 
             var session = await LoadOrRecordAsync(

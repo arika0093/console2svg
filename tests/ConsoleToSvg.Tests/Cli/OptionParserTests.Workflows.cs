@@ -60,6 +60,20 @@ public sealed partial class OptionParserTests
     }
 
     [Test]
+    public void ConvertSvgRejectsInteractiveMode()
+    {
+        OptionParser.TryParse(["convert", "demo.svg", "--interactive"], out _, out var error, out _).ShouldBeFalse();
+        error.ShouldBe("--interactive cannot be used with SVG input.");
+    }
+
+    [Test]
+    public void ConvertSvgRejectsVideoOutput()
+    {
+        OptionParser.TryParse(["convert", "demo.svg", "-o", "demo.mp4"], out _, out var error, out _).ShouldBeFalse();
+        error.ShouldBe("SVG input cannot be converted to video output.");
+    }
+
+    [Test]
     public void LegacyInvocationStillWorks()
     {
         OptionParser.TryParse(["-w", "80", "--", "echo", "hello"], out var options, out _, out _).ShouldBeTrue();

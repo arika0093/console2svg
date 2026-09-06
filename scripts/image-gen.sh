@@ -36,7 +36,7 @@ console2svg capture -o ./assets/window/transparent.svg -d transparent -w 40 -h 4
 console2svg capture -o ./assets/cmd-sl.svg            --verbose ./logs/cmd-sl.log           -w 120 -h 16 -c -d -v -- sl
 console2svg capture -o ./assets/cmd-nyancat.svg       --verbose ./logs/cmd-nyancat.log      -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat
 console2svg capture -o ./assets/cmd-loop.svg          --verbose ./logs/cmd-loop.log         -w 80 -h 20 -v -d windows --timeout 10 -- /usr/games/pipes -t 0 -f 35
-# console2svg replay -o ./assets/cmd-bash-vim.svg      --verbose ./logs/cmd-bash-vim.log     -w 80 -h 20 -v -d --replay ./assets/cmd-bash-vim-replay.json -- bash
+# console2svg replay ./assets/cmd-bash-vim-replay.json -o ./assets/cmd-bash-vim.svg --verbose ./logs/cmd-bash-vim.log -w 80 -h 20 -v -d -- bash
 bash ./scripts/demos/generate-interactive.sh
 bash ./scripts/demos/generate-tmux.sh
 

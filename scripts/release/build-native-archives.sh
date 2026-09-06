@@ -3,6 +3,8 @@ set -euo pipefail
 
 sudo apt-get install -y unzip tar
 
+mkdir -p ./release-upload
+
 for dir in ./native-artifacts/native-*/; do
   rid=$(basename "$dir" | sed 's/^native-//')
   bundle_dir="./bundle-${rid}"

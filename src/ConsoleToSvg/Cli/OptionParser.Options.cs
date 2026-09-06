@@ -37,6 +37,14 @@ public static partial class OptionParser
             case "--version":
                 options.ShowVersion = true;
                 return true;
+            case "--file":
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    error = "--file requires a path.";
+                    return false;
+                }
+                options.ConfigPath = value;
+                return true;
             case "-c":
             case "--with-command":
                 options.WithCommand = true;

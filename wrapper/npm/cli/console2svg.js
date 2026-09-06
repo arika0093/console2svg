@@ -11,7 +11,7 @@ const binPath = path.join(__dirname, '..', 'dist', `console2svg${ext}`);
 
 if (!fs.existsSync(binPath)) {
   console.error('console2svg: binary not found.');
-  console.error('Reinstall the package or use the .NET tool.');
+  console.error('Reinstall the package or use a release archive.');
   process.exit(1);
 }
 

@@ -21,7 +21,7 @@ const archSuffix =
 
 if (!archSuffix) {
   console.error(`console2svg: unsupported architecture: ${arch}`);
-  console.error('Use the .NET tool or build from source for this platform.');
+  console.error('Use a release archive or build from source for this platform.');
   process.exit(1);
 }
 
@@ -34,7 +34,7 @@ if (platform === 'win32') {
   rid = `osx-${archSuffix}`;
 } else {
   console.error(`console2svg: unsupported platform: ${platform}`);
-  console.error('Use the .NET tool or build from source for this platform.');
+  console.error('Use a release archive or build from source for this platform.');
   process.exit(1);
 }
 

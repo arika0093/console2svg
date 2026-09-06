@@ -24,6 +24,7 @@ env:
 jobs:
   test:
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
@@ -42,7 +43,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore --disable-parallel
 
       - name: Build
         run: dotnet build tests/ConsoleToSvg.Tests/ConsoleToSvg.Tests.csproj --no-restore -f net10.0 -p:PublishAot=false

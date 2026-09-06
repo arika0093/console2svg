@@ -15,10 +15,10 @@ trap cleanup EXIT
 TMUX="" tmux -L "$socket" -f /dev/null new-session \
     -d -x 100 -y 20 -s "$session" -c "$work_dir" \
     "env PS1='$ ' TERM=xterm-256color '$CONSOLE2SVG_BIN' \
-        -w 100 -h 20 -v -d macos --sleep 0.5 \
+        capture -w 100 -h 20 -v -d macos --sleep 0.5 \
         --verbose '$DEMO_ROOT/logs/cmd-interactive.log' \
         -o '$work_dir/cmd-interactive.svg' \
-        -- '$CONSOLE2SVG_BIN' -i -w 100 -h 20 \
+        -- '$CONSOLE2SVG_BIN' interactive -w 100 -h 20 \
         -o '$work_dir/interactive-inner.svg' \
         -- bash --noprofile --norc"
 

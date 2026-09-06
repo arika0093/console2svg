@@ -11,8 +11,20 @@ public enum OutputMode
     Repeat,
 }
 
+public enum Workflow
+{
+    Legacy,
+    Capture,
+    Interactive,
+    Replay,
+    Convert,
+    Theme,
+}
+
 public sealed class AppOptions
 {
+    public Workflow Workflow { get; set; }
+
     public bool Verbose { get; set; }
 
     public string? VerboseLogPath { get; set; }
@@ -28,6 +40,8 @@ public sealed class AppOptions
     public string[]? DelimitedCommand { get; set; }
 
     public string? InputCastPath { get; set; }
+
+    public string? InputSvgPath { get; set; }
 
     public string OutputPath { get; set; } = "output.svg";
 

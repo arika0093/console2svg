@@ -1,19 +1,56 @@
 using System;
 using System.Globalization;
+using System.IO;
 using ConsoleToSvg.Svg;
 
 namespace ConsoleToSvg.Cli;
 
 public static partial class OptionParser
 {
+    public static string GetHelpText(Workflow workflow) => workflow switch
+    {
+        Workflow.Capture => """
+            Usage: console2svg capture [options] [-- <command> [args...]]
+                   <command> | console2svg capture [options]
+
+            Capture options: --save-cast, --replay-save, --timeout.
+            Output and appearance options are also accepted.
+            """,
+        Workflow.Interactive => """
+            Usage: console2svg interactive [options] [-- <program> [args...]]
+
+            Starts an interactive shell or program.
+            F9 records, F12 pauses, and F10 takes a screenshot.
+            """,
+        Workflow.Replay => """
+            Usage: console2svg replay <replay.json> [options] -- <command> [args...]
+
+            Replays recorded keyboard input while capturing the command.
+            """,
+        Workflow.Convert => """
+            Usage: console2svg convert <input.cast|input.svg> [options]
+
+            Renders an existing recording or converts an SVG.
+            Use -o/--out to select the output format.
+            """,
+        Workflow.Theme => """
+            The 'theme' command is reserved for theme management planned in issue #115.
+            Use the existing --theme option to select a rendering color theme.
+            """,
+        _ => HelpText,
+    };
+
     public static string ShortHelpText =>
         $"""
             console2svg - Convert terminal output to SVG [Ver: {ThisAssembly.AssemblyInformationalVersion}]
 
             Usage:
-                my-command | console2svg [options]
-                console2svg "my-command with-args" [options]
-                console2svg [options] -- my-command with args
+                my-command | console2svg capture [options]
+                console2svg capture [options] -- my-command with args
+                console2svg interactive [options] [-- program args...]
+                console2svg replay <replay.json> [options] -- my-command with args
+                console2svg convert <input.cast|input.svg> [options]
+                console2svg theme              # Reserved for theme management (#115)
 
             Major options:
                 -o, --out <path>          Output file path (default: output.svg).
@@ -41,9 +78,12 @@ public static partial class OptionParser
             console2svg - Convert terminal output to SVG [Ver: {ThisAssembly.AssemblyInformationalVersion}]
 
             Usage:
-                my-command | console2svg [options]
-                console2svg "my-command with-args" [options]
-                console2svg [options] -- my-command with args
+                my-command | console2svg capture [options]
+                console2svg capture [options] -- my-command with args
+                console2svg interactive [options] [-- program args...]
+                console2svg replay <replay.json> [options] -- my-command with args
+                console2svg convert <input.cast|input.svg> [options]
+                console2svg theme              # Reserved for theme management (#115)
 
             Options (Common):
                 -o, --out <path>          Output file path (default: output.svg).
@@ -426,6 +466,16 @@ public static partial class OptionParser
         error = null;
         showHelp = false;
 
+        if (!TryNormalizeWorkflow(args, options, out args, out error, out showHelp))
+        {
+            return false;
+        }
+
+        if (options.Workflow == Workflow.Theme)
+        {
+            return true;
+        }
+
         var i = 0;
         while (i < args.Length)
         {
@@ -555,6 +605,88 @@ public static partial class OptionParser
         }
 
         return true;
+    }
+
+    private static bool TryNormalizeWorkflow(
+        string[] originalArgs,
+        AppOptions options,
+        out string[] args,
+        out string? error,
+        out bool showHelp
+    )
+    {
+        args = originalArgs;
+        error = null;
+        showHelp = false;
+        if (args.Length == 0 || args[0].StartsWith("-", StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        var verb = args[0].ToLowerInvariant();
+        switch (verb)
+        {
+            case "capture":
+                options.Workflow = Workflow.Capture;
+                args = args[1..];
+                return true;
+            case "interactive":
+                options.Workflow = Workflow.Interactive;
+                options.Interactive = true;
+                args = args[1..];
+                return true;
+            case "replay":
+                options.Workflow = Workflow.Replay;
+                if (args.Length == 2 && args[1] is "--help" or "-h")
+                {
+                    showHelp = true;
+                    args = [];
+                    return true;
+                }
+                if (args.Length < 2 || args[1].StartsWith("-", StringComparison.Ordinal))
+                {
+                    error = "replay requires a replay file: console2svg replay <replay.json> [options] -- <command>.";
+                    return false;
+                }
+                options.ReplayPath = args[1];
+                args = args[2..];
+                return true;
+            case "convert":
+                options.Workflow = Workflow.Convert;
+                if (args.Length == 2 && args[1] is "--help" or "-h")
+                {
+                    showHelp = true;
+                    args = [];
+                    return true;
+                }
+                if (args.Length < 2 || args[1].StartsWith("-", StringComparison.Ordinal))
+                {
+                    error = "convert requires an input: console2svg convert <input.cast|input.svg> [options].";
+                    return false;
+                }
+                if (string.Equals(Path.GetExtension(args[1]), ".svg", StringComparison.OrdinalIgnoreCase))
+                {
+                    options.InputSvgPath = args[1];
+                }
+                else
+                {
+                    options.InputCastPath = args[1];
+                }
+                args = args[2..];
+                return true;
+            case "theme":
+                options.Workflow = Workflow.Theme;
+                if (args.Length == 1 || (args.Length == 2 && args[1] is "--help" or "-h"))
+                {
+                    showHelp = true;
+                    args = [];
+                    return true;
+                }
+                error = "The 'theme' command is reserved for issue #115 and is not implemented yet. The existing --theme option remains available.";
+                return false;
+            default:
+                return true;
+        }
     }
 
     private static bool TrySplitToken(string token, out string name, out string? inlineValue)

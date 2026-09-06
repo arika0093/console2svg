@@ -39,7 +39,7 @@ internal static partial class Program
 
         if (showHelp || options is null)
         {
-            WritePagedHelp(ColorizeIfSupported(OptionParser.HelpText));
+            WritePagedHelp(ColorizeIfSupported(OptionParser.GetHelpText(options?.Workflow ?? Workflow.Legacy)));
             return 0;
         }
 
@@ -155,6 +155,60 @@ internal static partial class Program
                         $"Pre-conversion check passed: converter verified for .{preCheckExt} output."
                     );
                 }
+            }
+
+            if (!string.IsNullOrWhiteSpace(options.InputSvgPath))
+            {
+                if (options.StdOut)
+                {
+                    await using var input = File.OpenRead(options.InputSvgPath);
+                    await input.CopyToAsync(
+                        Console.OpenStandardOutput(),
+                        cancellationTokenSource.Token
+                    ).ConfigureAwait(false);
+                    await Console.Error.WriteLineAsync("Generated: (stdout)");
+                    return 0;
+                }
+
+                EnsureDirectory(options.OutputPath);
+                var outputExtension = Path.GetExtension(options.OutputPath);
+                if (string.IsNullOrEmpty(outputExtension)
+                    || string.Equals(outputExtension, ".svg", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!string.Equals(
+                            Path.GetFullPath(options.InputSvgPath),
+                            Path.GetFullPath(options.OutputPath),
+                            OperatingSystem.IsWindows()
+                                ? StringComparison.OrdinalIgnoreCase
+                                : StringComparison.Ordinal
+                        ))
+                    {
+                        File.Copy(options.InputSvgPath, options.OutputPath, overwrite: true);
+                    }
+                }
+                else
+                {
+                    var ffmpegPath = FindFfmpegExecutable();
+                    SvgConverter.SetFfmpegPath(ffmpegPath);
+                    var converter = SvgConverter.ResolveConverter(
+                        options.SvgConverter,
+                        !string.IsNullOrWhiteSpace(ffmpegPath),
+                        logger
+                    );
+                    await SvgConverter.ConvertSvgToImageAsync(
+                        options.InputSvgPath,
+                        options.OutputPath,
+                        converter,
+                        ffmpegPath,
+                        options.SizeWidth,
+                        options.SizeHeight,
+                        logger,
+                        ConsoleProgressReporter.Instance,
+                        cancellationTokenSource.Token
+                    ).ConfigureAwait(false);
+                }
+                Console.WriteLine($"Generated: {options.OutputPath}");
+                return 0;
             }
 
             if (options.Interactive)

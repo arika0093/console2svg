@@ -2,7 +2,7 @@
 
 ![console2svg hero image with oh-my-logo](./assets/cmd-hero.svg)
 
-[![NuGet Version](https://img.shields.io/nuget/v/ConsoleToSvg?style=flat-square&logo=NuGet&color=0080CC)](https://www.nuget.org/packages/ConsoleToSvg/) [![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest) [![WinGet Package Version](https://img.shields.io/winget/v/arika0093.console2svg?style=flat-square&logo=gitlfs&label=WinGet)](https://winget.run/pkg/arika0093.console2svg)
+[![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest) [![WinGet Package Version](https://img.shields.io/winget/v/arika0093.console2svg?style=flat-square&logo=gitlfs&label=WinGet)](https://winget.run/pkg/arika0093.console2svg)
 
 
 Easily convert terminal output into SVG images.  
@@ -79,28 +79,19 @@ console2svg -i -d macos -o ./captures/output.svg
 
 
 ## Install
+### Linux/macOS
 
 The easiest way is the install script.
 
 ```sh
-# Linux / macOS
 curl -sSL https://raw.githubusercontent.com/arika0093/console2svg/main/install.sh | bash
-
-# Windows (PowerShell)
-irm https://raw.githubusercontent.com/arika0093/console2svg/main/install.ps1 | iex
 ```
 
 You can also install via package managers.
 
 ```sh
-# dotnet global tool (downloads the platform-native binary on first run)
-dotnet tool install -g ConsoleToSvg
-
 # npm global package (Windows / Linux / macOS)
 npm install -g console2svg
-
-# Windows Package Manager (WinGet)
-winget install arika0093.console2svg
 ```
 
 You can also install from the [release archives](https://github.com/arika0093/console2svg/releases/latest) manually, or use the `.deb` / `.rpm` packages on Linux.
@@ -115,6 +106,19 @@ curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/cons
 tar -xzf console2svg.tar.gz
 chmod +x console2svg
 ```
+
+### Windows
+
+The easiest way is to use `winget` or `npm`.
+
+```powershell
+# Windows Package Manager (WinGet)
+winget install arika0093.console2svg
+
+# npm global package (Windows / Linux / macOS)
+npm install -g console2svg
+```
+
 
 ### GitHub Actions
 

@@ -67,8 +67,7 @@ jobs:
             !./native-publish/${{ matrix.rid }}/**/*.dbg
             !./native-publish/${{ matrix.rid }}/**/*.pdb
 
-  build-nupkg:
-    needs: build-aot
+  build-metadata:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.nbgv.outputs.SemVer2 }}
@@ -86,52 +85,17 @@ jobs:
       - uses: dotnet/nbgv@v0.5
         id: nbgv
 
-      - name: Download native runtime assets
-        uses: actions/download-artifact@v8
-        with:
-          pattern: native-*
-          path: ./native-artifacts
-          merge-multiple: false
-
-      - name: Stage native runtime assets for NuGet
-        shell: bash
-        run: bash scripts/release/stage-native-assets.sh
-
       - name: Export package iteration
         id: package-iteration
         shell: bash
         run: bash scripts/release/export-package-iteration.sh '${{ steps.nbgv.outputs.PrereleaseVersionNoLeadingHyphen }}' '${{ steps.nbgv.outputs.BuildMetadataFragment }}'
 
-      - name: Restore dependencies
-        run: dotnet restore --locked-mode
-
-      - name: Build
-        run: dotnet build --no-restore -c Release -p:BuildResvgNative=false
-
-      - name: Pack ConsoleToSvg.Converter
-        run: dotnet pack src/ConsoleToSvg.Converter/ConsoleToSvg.Converter.csproj --no-build -c Release --output ./nuget-artifacts -p:ResvgNativeAssetsDirectory="$GITHUB_WORKSPACE/native-assets" -p:RequireResvgNativeAssets=true
-
-      - name: Pack ConsoleToSvg tool
-        run: dotnet pack wrapper/dotnet/ConsoleToSvg.Tool.csproj --no-build -c Release --output ./nuget-artifacts
-
-      - name: Upload NuGet artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: nuget-packages
-          path: ./nuget-artifacts/*.nupkg
-
   build-assets:
-    needs: [build-nupkg, build-aot]
+    needs: [build-metadata, build-aot]
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v7
-
-      - name: Download NuGet artifacts
-        uses: actions/download-artifact@v8
-        with:
-          name: nuget-packages
-          path: ./release-upload
 
       - name: Download all native publish artifacts
         uses: actions/download-artifact@v8
@@ -150,7 +114,7 @@ jobs:
 
       - name: Build Linux packages
         shell: bash
-        run: bash scripts/release/build-linux-packages.sh '${{ needs.build-nupkg.outputs.package-version }}' '${{ needs.build-nupkg.outputs.package-iteration }}'
+        run: bash scripts/release/build-linux-packages.sh '${{ needs.build-metadata.outputs.package-version }}' '${{ needs.build-metadata.outputs.package-iteration }}'
 
       - name: Delete internal artifacts
         shell: bash
@@ -160,7 +124,7 @@ jobs:
           run_id="${{ github.run_id }}"
           # Get artifact IDs to delete
           artifact_ids=$(gh api "repos/${{ github.repository }}/actions/runs/${run_id}/artifacts" \
-            --jq '.artifacts[] | select(.name == "nuget-packages" or (.name | startswith("native-"))) | .id')
+            --jq '.artifacts[] | select(.name | startswith("native-")) | .id')
           for id in $artifact_ids; do
             gh api --method DELETE "repos/${{ github.repository }}/actions/artifacts/${id}" || true
           done

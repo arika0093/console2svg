@@ -49,6 +49,18 @@ internal static partial class Program
             return 0;
         }
 
+        if (options.Workflow == Workflow.Completion)
+        {
+            var script = ShellCompletion.GetScript(options.CompletionShell);
+            if (script is null)
+            {
+                await Console.Error.WriteLineAsync("completion shell must be bash, zsh, fish, or powershell.");
+                return 1;
+            }
+            await Console.Out.WriteAsync(script);
+            return 0;
+        }
+
         if (args.Length == 0 && !Console.IsInputRedirected)
         {
             Console.WriteLine(ColorizeIfSupported(OptionParser.ShortHelpText));

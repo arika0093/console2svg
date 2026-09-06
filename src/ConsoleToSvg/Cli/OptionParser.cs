@@ -37,6 +37,11 @@ public static partial class OptionParser
             The 'theme' command is reserved for theme management planned in issue #115.
             Use the existing --theme option to select a rendering color theme.
             """,
+        Workflow.Completion => """
+            Usage: console2svg completion <bash|zsh|fish|powershell>
+
+            Print shell completion code to standard output.
+            """,
         _ => HelpText,
     };
 
@@ -51,6 +56,7 @@ public static partial class OptionParser
                 console2svg replay <replay.json> [options] -- my-command with args
                 console2svg convert <input.cast|input.svg> [options]
                 console2svg theme              # Reserved for theme management (#115)
+                console2svg completion <shell> # Print shell completion code
 
             Major options:
                 -o, --out <path>          Output file path (default: output.svg).
@@ -684,6 +690,13 @@ public static partial class OptionParser
                 }
                 error = "The 'theme' command is reserved for issue #115 and is not implemented yet. The existing --theme option remains available.";
                 return false;
+            case "completion":
+                options.Workflow = Workflow.Completion;
+                if (args.Length == 2 && args[1] is "--help" or "-h") { showHelp = true; args = []; return true; }
+                if (args.Length != 2) { error = "completion requires a shell: bash, zsh, fish, or powershell."; return false; }
+                options.CompletionShell = args[1];
+                args = [];
+                return true;
             default:
                 return true;
         }

@@ -57,6 +57,7 @@ public static partial class OptionParser
                 console2svg convert <input.cast|input.svg> [options]
                 console2svg theme              # Reserved for theme management (#115)
                 console2svg completion <shell> # Print shell completion code
+                console2svg completion <shell> # Print shell completion code
 
             Major options:
                 -o, --out <path>          Output file path (default: output.svg).
@@ -90,6 +91,7 @@ public static partial class OptionParser
                 console2svg replay <replay.json> [options] -- my-command with args
                 console2svg convert <input.cast|input.svg> [options]
                 console2svg theme              # Reserved for theme management (#115)
+                console2svg completion <shell> # Print shell completion code
 
             Options (Common):
                 -o, --out <path>          Output file path (default: output.svg).

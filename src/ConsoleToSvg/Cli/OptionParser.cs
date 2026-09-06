@@ -37,6 +37,11 @@ public static partial class OptionParser
             The 'theme' command is reserved for theme management planned in issue #115.
             Use the existing --theme option to select a rendering color theme.
             """,
+        Workflow.LiveServer => """
+            Usage: console2svg live-server [port] --width <columns> --height <rows> -- <command> [args...]
+
+            Serve a live terminal SVG at http://127.0.0.1:38473/.
+            """,
         _ => HelpText,
     };
 
@@ -51,6 +56,7 @@ public static partial class OptionParser
                 console2svg replay <replay.json> [options] -- my-command with args
                 console2svg convert <input.cast|input.svg> [options]
                 console2svg theme              # Reserved for theme management (#115)
+                console2svg live-server [port] --width <columns> --height <rows> -- command
 
             Major options:
                 -o, --out <path>          Output file path (default: output.svg).
@@ -684,6 +690,15 @@ public static partial class OptionParser
                 }
                 error = "The 'theme' command is reserved for issue #115 and is not implemented yet. The existing --theme option remains available.";
                 return false;
+            case "live-server":
+                options.Workflow = Workflow.LiveServer;
+                args = args[1..];
+                if (args.Length > 0 && int.TryParse(args[0], out var port))
+                {
+                    options.LiveServerPort = port;
+                    args = args[1..];
+                }
+                return true;
             default:
                 return true;
         }

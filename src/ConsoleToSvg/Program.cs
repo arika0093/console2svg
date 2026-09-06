@@ -49,6 +49,13 @@ internal static partial class Program
             return 0;
         }
 
+        if (options.Workflow == Workflow.LiveServer)
+        {
+            using var liveCancellation = new CancellationTokenSource();
+            Console.CancelKeyPress += (_, eventArgs) => { eventArgs.Cancel = true; liveCancellation.Cancel(); };
+            return await RunLiveServerAsync(options, liveCancellation.Token).ConfigureAwait(false);
+        }
+
         if (args.Length == 0 && !Console.IsInputRedirected)
         {
             Console.WriteLine(ColorizeIfSupported(OptionParser.ShortHelpText));

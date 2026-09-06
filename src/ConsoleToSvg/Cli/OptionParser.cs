@@ -37,6 +37,11 @@ public static partial class OptionParser
             The 'theme' command is reserved for theme management planned in issue #115.
             Use the existing --theme option to select a rendering color theme.
             """,
+        Workflow.Config => """
+            Usage: console2svg config [--file <path>] <options>
+
+            Save only the supplied options in a JSON configuration file.
+            """,
         _ => HelpText,
     };
 
@@ -51,6 +56,7 @@ public static partial class OptionParser
                 console2svg replay <replay.json> [options] -- my-command with args
                 console2svg convert <input.cast|input.svg> [options]
                 console2svg theme              # Reserved for theme management (#115)
+                console2svg config [options]   # Save specified options to a file
 
             Major options:
                 -o, --out <path>          Output file path (default: output.svg).
@@ -684,6 +690,10 @@ public static partial class OptionParser
                 }
                 error = "The 'theme' command is reserved for issue #115 and is not implemented yet. The existing --theme option remains available.";
                 return false;
+            case "config":
+                options.Workflow = Workflow.Config;
+                args = args[1..];
+                return true;
             default:
                 return true;
         }

@@ -49,6 +49,11 @@ internal static partial class Program
             return 0;
         }
 
+        if (options.Workflow == Workflow.Config)
+        {
+            return await RunConfigAsync(args, options).ConfigureAwait(false);
+        }
+
         if (args.Length == 0 && !Console.IsInputRedirected)
         {
             Console.WriteLine(ColorizeIfSupported(OptionParser.ShortHelpText));

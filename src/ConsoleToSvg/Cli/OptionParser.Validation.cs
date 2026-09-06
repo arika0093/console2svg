@@ -403,6 +403,12 @@ public static partial class OptionParser
                 return false;
             }
 
+            if (!string.IsNullOrWhiteSpace(options.InputSvgPath))
+            {
+                error = "--interactive cannot be used with SVG input.";
+                return false;
+            }
+
             if (options.StdOut)
             {
                 error = "--interactive cannot be used with --stdout.";
@@ -466,10 +472,29 @@ public static partial class OptionParser
             return false;
         }
 
-        if (
-            !string.IsNullOrWhiteSpace(options.Command)
-            && !string.IsNullOrWhiteSpace(options.InputCastPath)
-        )
+        if (!string.IsNullOrWhiteSpace(options.InputSvgPath)
+            && !string.IsNullOrWhiteSpace(options.InputCastPath))
+        {
+            error = "SVG input and --in cannot be used together.";
+            return false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(options.InputSvgPath))
+        {
+            var outputExtension = Path.GetExtension(options.OutputPath).TrimStart('.');
+            var usesVideoOutput = options.IsModeExplicit
+                ? options.Mode is OutputMode.Video or OutputMode.Repeat
+                : IsVideoFormat(outputExtension);
+            if (usesVideoOutput)
+            {
+                error = "SVG input cannot be converted to video output.";
+                return false;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(options.Command)
+            && (!string.IsNullOrWhiteSpace(options.InputCastPath)
+                || !string.IsNullOrWhiteSpace(options.InputSvgPath)))
         {
             error = "--command and --in cannot be used together.";
             return false;
@@ -504,4 +529,10 @@ public static partial class OptionParser
 
         return true;
     }
+
+    private static bool IsVideoFormat(string extension) => extension.ToLowerInvariant() switch
+    {
+        "mp4" or "webm" or "avi" or "mov" or "mkv" or "ogv" or "flv" or "ts" or "wmv" or "m4v" or "gif" => true,
+        _ => false,
+    };
 }

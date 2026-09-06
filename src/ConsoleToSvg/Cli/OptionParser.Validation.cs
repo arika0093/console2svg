@@ -466,10 +466,16 @@ public static partial class OptionParser
             return false;
         }
 
-        if (
-            !string.IsNullOrWhiteSpace(options.Command)
-            && !string.IsNullOrWhiteSpace(options.InputCastPath)
-        )
+        if (!string.IsNullOrWhiteSpace(options.InputSvgPath)
+            && !string.IsNullOrWhiteSpace(options.InputCastPath))
+        {
+            error = "SVG input and --in cannot be used together.";
+            return false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(options.Command)
+            && (!string.IsNullOrWhiteSpace(options.InputCastPath)
+                || !string.IsNullOrWhiteSpace(options.InputSvgPath)))
         {
             error = "--command and --in cannot be used together.";
             return false;

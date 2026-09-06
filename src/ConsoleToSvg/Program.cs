@@ -169,6 +169,17 @@ internal static partial class Program
 
             if (!string.IsNullOrWhiteSpace(options.InputSvgPath))
             {
+                if (options.StdOut)
+                {
+                    await using var input = File.OpenRead(options.InputSvgPath);
+                    await input.CopyToAsync(
+                        Console.OpenStandardOutput(),
+                        cancellationTokenSource.Token
+                    ).ConfigureAwait(false);
+                    await Console.Error.WriteLineAsync("Generated: (stdout)");
+                    return 0;
+                }
+
                 EnsureDirectory(options.OutputPath);
                 if (string.Equals(Path.GetExtension(options.OutputPath), ".svg", StringComparison.OrdinalIgnoreCase))
                 {

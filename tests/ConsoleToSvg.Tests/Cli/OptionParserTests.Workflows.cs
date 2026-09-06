@@ -46,11 +46,38 @@ public sealed partial class OptionParserTests
     }
 
     [Test]
+    public void ConvertSvgRejectsACommand()
+    {
+        OptionParser.TryParse(["convert", "demo.svg", "--", "echo", "hello"], out _, out var error, out _).ShouldBeFalse();
+        error.ShouldBe("--command and --in cannot be used together.");
+    }
+
+    [Test]
+    public void ConvertSvgRejectsAnAsciicastInput()
+    {
+        OptionParser.TryParse(["convert", "demo.svg", "--in", "other.cast"], out _, out var error, out _).ShouldBeFalse();
+        error.ShouldBe("SVG input and --in cannot be used together.");
+    }
+
+    [Test]
     public void LegacyInvocationStillWorks()
     {
         OptionParser.TryParse(["-w", "80", "--", "echo", "hello"], out var options, out _, out _).ShouldBeTrue();
         options!.Workflow.ShouldBe(Workflow.Legacy);
         options.Command.ShouldBe("echo hello");
+    }
+
+    [Test]
+    public void LegacyInputAndReplayOptionsStillWork()
+    {
+        OptionParser.TryParse(["--in", "demo.cast", "-o", "demo.svg"], out var inputOptions, out _, out _).ShouldBeTrue();
+        inputOptions!.Workflow.ShouldBe(Workflow.Legacy);
+        inputOptions.InputCastPath.ShouldBe("demo.cast");
+
+        OptionParser.TryParse(["--replay", "keys.json", "--", "bash", "-l"], out var replayOptions, out _, out _).ShouldBeTrue();
+        replayOptions!.Workflow.ShouldBe(Workflow.Legacy);
+        replayOptions.ReplayPath.ShouldBe("keys.json");
+        replayOptions.DelimitedCommand.ShouldBe(["bash", "-l"]);
     }
 
     [Test]

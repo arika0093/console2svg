@@ -24,7 +24,7 @@
 <text class="ab" x="243.6" y="14" textLength="33.6">....</text>
 <text class="ab" x="394.8" y="14" textLength="50.4">runner</text>
 <text class="aa" x="445.2" y="14" textLength="8.4">@</text>
-<text class="ab" x="453.6" y="14" textLength="109.2">runnervmgx7h7</text>
+<text class="ab" x="453.6" y="14" textLength="109.2">runnervmejwal</text>
 <text class="ab w" x="117.6" y="32" textLength="184.8">.&apos;,:clooo:  .:looooo:.</text>
 <text class="aa" x="394.8" y="32" textLength="168">--------------------</text>
 <text class="ab w" x="92.4" y="50" textLength="218.4">.;looooooooc  .oooooooooo&apos;</text>
@@ -38,10 +38,10 @@
 <text class="aa w" x="445.2" y="86" textLength="210">: Linux 6.17.0-1022-azure</text>
 <text class="ab w" x="50.4" y="104" textLength="285.6">;clool&apos;             .cooooooc.  ,,</text>
 <text class="ab" x="394.8" y="104" textLength="50.4">Uptime</text>
-<text class="aa w" x="445.2" y="104" textLength="67.2">: 4 mins</text>
+<text class="aa w" x="445.2" y="104" textLength="67.2">: 3 mins</text>
 <text class="ab w" x="75.6" y="122" textLength="268.8">...                ......  .:oo,</text>
 <text class="ab" x="394.8" y="122" textLength="67.2">Packages</text>
-<text class="aa w" x="462" y="122" textLength="109.2">: 1310 (dpkg)</text>
+<text class="aa w" x="462" y="122" textLength="109.2">: 1316 (dpkg)</text>
 <text class="ab w" x="16.8" y="140" textLength="336">.;clol:,.                        .loooo&apos;</text>
 <text class="ab" x="394.8" y="140" textLength="42">Shell</text>
 <text class="aa w" x="436.8" y="140" textLength="109.2">: console2svg</text>
@@ -62,11 +62,11 @@
 <text class="aa w" x="462" y="230" textLength="126">: Runner.Worker</text>
 <text class="ab w" x="58.8" y="248" textLength="294">...                         ,ooool.</text>
 <text class="ab" x="394.8" y="248" textLength="25.2">CPU</text>
-<text class="aa w" x="420" y="248" textLength="319.2">: AMD EPYC 7763 64-Core (4) @ 3.25 GHz</text>
+<text class="aa w" x="420" y="248" textLength="344.4">: Intel(R) Xeon(R) 6973P-C (4) @ 2.60 GHz</text>
 <text class="ab w" x="33.6" y="266" textLength="310.8">.cooooc.              ..&apos;,,&apos;.  .cooo.</text>
 <text class="ab" x="394.8" y="266" textLength="50.4">Memory</text>
-<text class="aa w" x="445.2" y="266" textLength="201.6">: 1.62 GiB / 15.61 GiB (</text>
-<text class="ac" x="646.8" y="266" textLength="25.2">10%</text>
+<text class="aa w" x="445.2" y="266" textLength="201.6">: 1.64 GiB / 15.61 GiB (</text>
+<text class="ac" x="646.8" y="266" textLength="25.2">11%</text>
 <text class="aa" x="672" y="266" textLength="8.4">)</text>
 <text class="ab w" x="50.4" y="284" textLength="285.6">;ooooo:.           ;oooooooc.  :l.</text>
 <text class="ab" x="394.8" y="284" textLength="33.6">Swap</text>
@@ -75,12 +75,12 @@
 <text class="aa" x="596.4" y="284" textLength="8.4">)</text>
 <text class="ab w" x="58.8" y="302" textLength="243.6">.coooooc,..      coooooooooo.</text>
 <text class="ab w" x="394.8" y="302" textLength="67.2">Disk (/)</text>
-<text class="aa w" x="462" y="302" textLength="218.4">: 59.93 GiB / 144.26 GiB (</text>
-<text class="ac" x="680.4" y="302" textLength="25.2">42%</text>
+<text class="aa w" x="462" y="302" textLength="218.4">: 59.34 GiB / 144.26 GiB (</text>
+<text class="ac" x="680.4" y="302" textLength="25.2">41%</text>
 <text class="aa w" x="705.6" y="302" textLength="67.2">) - ext4</text>
 <text class="ab w" x="75.6" y="320" textLength="226.8">.:ooooooolc:. .ooooooooooo&apos;</text>
 <text class="ab w" x="394.8" y="320" textLength="126">Local IP (eth0)</text>
-<text class="aa w" x="520.8" y="320" textLength="126">: 10.1.0.152/20</text>
+<text class="aa w" x="520.8" y="320" textLength="126">: 10.1.0.219/20</text>
 <text class="ab w" x="92.4" y="338" textLength="201.6">.&apos;:loooooo;  ,oooooooooc</text>
 <text class="ab" x="394.8" y="338" textLength="50.4">Locale</text>
 <text class="aa w" x="445.2" y="338" textLength="75.6">: C.UTF-8</text>

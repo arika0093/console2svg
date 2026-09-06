@@ -62,11 +62,11 @@
 <text class="aa w" x="462" y="230" textLength="126">: Runner.Worker</text>
 <text class="ab w" x="58.8" y="248" textLength="294">...                         ,ooool.</text>
 <text class="ab" x="394.8" y="248" textLength="25.2">CPU</text>
-<text class="aa w" x="420" y="248" textLength="344.4">: Intel(R) Xeon(R) 6973P-C (4) @ 2.60 GHz</text>
+<text class="aa w" x="420" y="248" textLength="403.2">: Intel(R) Xeon(R) Platinum 8370C (4) @ 2.80 GHz</text>
 <text class="ab w" x="33.6" y="266" textLength="310.8">.cooooc.              ..&apos;,,&apos;.  .cooo.</text>
 <text class="ab" x="394.8" y="266" textLength="50.4">Memory</text>
-<text class="aa w" x="445.2" y="266" textLength="201.6">: 1.64 GiB / 15.61 GiB (</text>
-<text class="ac" x="646.8" y="266" textLength="25.2">11%</text>
+<text class="aa w" x="445.2" y="266" textLength="201.6">: 1.63 GiB / 15.61 GiB (</text>
+<text class="ac" x="646.8" y="266" textLength="25.2">10%</text>
 <text class="aa" x="672" y="266" textLength="8.4">)</text>
 <text class="ab w" x="50.4" y="284" textLength="285.6">;ooooo:.           ;oooooooc.  :l.</text>
 <text class="ab" x="394.8" y="284" textLength="33.6">Swap</text>
@@ -75,12 +75,12 @@
 <text class="aa" x="596.4" y="284" textLength="8.4">)</text>
 <text class="ab w" x="58.8" y="302" textLength="243.6">.coooooc,..      coooooooooo.</text>
 <text class="ab w" x="394.8" y="302" textLength="67.2">Disk (/)</text>
-<text class="aa w" x="462" y="302" textLength="218.4">: 59.34 GiB / 144.26 GiB (</text>
+<text class="aa w" x="462" y="302" textLength="218.4">: 59.32 GiB / 144.26 GiB (</text>
 <text class="ac" x="680.4" y="302" textLength="25.2">41%</text>
 <text class="aa w" x="705.6" y="302" textLength="67.2">) - ext4</text>
 <text class="ab w" x="75.6" y="320" textLength="226.8">.:ooooooolc:. .ooooooooooo&apos;</text>
 <text class="ab w" x="394.8" y="320" textLength="126">Local IP (eth0)</text>
-<text class="aa w" x="520.8" y="320" textLength="126">: 10.1.0.219/20</text>
+<text class="aa w" x="520.8" y="320" textLength="126">: 10.1.0.221/20</text>
 <text class="ab w" x="92.4" y="338" textLength="201.6">.&apos;:loooooo;  ,oooooooooc</text>
 <text class="ab" x="394.8" y="338" textLength="50.4">Locale</text>
 <text class="aa w" x="445.2" y="338" textLength="75.6">: C.UTF-8</text>

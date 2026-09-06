@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <IsPackable>true</IsPackable>
+    <IsPackable>false</IsPackable>
     <PackageId>ConsoleToSvg.Converter</PackageId>
     <PackageDescription>SVG raster and video conversion APIs for ConsoleToSvg.</PackageDescription>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

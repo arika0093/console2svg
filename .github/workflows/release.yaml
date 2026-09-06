@@ -16,8 +16,7 @@ env:
   DOTNET_VERSION: '10.0.x'
 
 jobs:
-  build-nupkg:
-    needs: build-aot
+  build-metadata:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.nbgv.outputs.SemVer2 }}
@@ -36,39 +35,10 @@ jobs:
       - uses: dotnet/nbgv@v0.5
         id: nbgv
 
-      - name: Download native runtime assets
-        uses: actions/download-artifact@v8
-        with:
-          pattern: native-*
-          path: ./native-artifacts
-          merge-multiple: false
-
-      - name: Stage native runtime assets for NuGet
-        shell: bash
-        run: bash scripts/release/stage-native-assets.sh
-
       - name: Export package iteration
         id: package-iteration
         shell: bash
         run: bash scripts/release/export-package-iteration.sh '${{ steps.nbgv.outputs.PrereleaseVersionNoLeadingHyphen }}' '${{ steps.nbgv.outputs.BuildMetadataFragment }}'
-
-      - name: Restore dependencies
-        run: dotnet restore --locked-mode
-
-      - name: Build
-        run: dotnet build --no-restore -c Release -p:BuildResvgNative=false
-
-      - name: Pack ConsoleToSvg.Converter
-        run: dotnet pack src/ConsoleToSvg.Converter/ConsoleToSvg.Converter.csproj --no-build -c Release --output ./nuget-artifacts -p:ResvgNativeAssetsDirectory="$GITHUB_WORKSPACE/native-assets" -p:RequireResvgNativeAssets=true
-
-      - name: Pack ConsoleToSvg tool
-        run: dotnet pack wrapper/dotnet/ConsoleToSvg.Tool.csproj --no-build -c Release --output ./nuget-artifacts
-
-      - name: Upload NuGet artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: nuget-packages
-          path: ./nuget-artifacts/*.nupkg
 
   build-aot:
     strategy:
@@ -127,17 +97,11 @@ jobs:
             !./native-publish/${{ matrix.rid }}/**/*.pdb
 
   release-github:
-    needs: [build-nupkg, build-aot]
+    needs: [build-metadata, build-aot]
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v7
-
-      - name: Download NuGet artifacts
-        uses: actions/download-artifact@v8
-        with:
-          name: nuget-packages
-          path: ./release-upload
 
       - name: Download all native publish artifacts
         uses: actions/download-artifact@v8
@@ -155,49 +119,20 @@ jobs:
 
       - name: Build Linux packages
         shell: bash
-        run: bash scripts/release/build-linux-packages.sh '${{ needs.build-nupkg.outputs.package-version }}' '${{ needs.build-nupkg.outputs.package-iteration }}'
+        run: bash scripts/release/build-linux-packages.sh '${{ needs.build-metadata.outputs.package-version }}' '${{ needs.build-metadata.outputs.package-iteration }}'
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: v${{ needs.build-nupkg.outputs.version }}
-          name: ${{ needs.build-nupkg.outputs.version }}
+          tag_name: v${{ needs.build-metadata.outputs.version }}
+          name: ${{ needs.build-metadata.outputs.version }}
           generate_release_notes: true
-          prerelease: ${{ needs.build-nupkg.outputs.prerelease == 'true' }}
+          prerelease: ${{ needs.build-metadata.outputs.prerelease == 'true' }}
           files: ./release-upload/*
 
-  release-nuget:
-    needs: [build-nupkg, release-github]
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Download NuGet artifacts
-        uses: actions/download-artifact@v8
-        with:
-          name: nuget-packages
-          path: ./nuget-artifacts
-
-      - name: NuGet login
-        uses: NuGet/login@v1
-        id: login
-        with:
-          user: arika0093
-
-      - name: Publish ConsoleToSvg.Converter Package
-        env:
-          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
-        run: dotnet nuget push ./nuget-artifacts/ConsoleToSvg.Converter.*.nupkg --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY"
-
-      - name: Publish ConsoleToSvg Tool Package
-        env:
-          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
-        run: dotnet nuget push ./nuget-artifacts/ConsoleToSvg.[0-9]*.nupkg --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY"
-
   release-npm:
-    needs: [build-nupkg, release-github]
-    if: ${{ needs.build-nupkg.outputs.prerelease != 'true' }}
+    needs: [build-metadata, release-github]
+    if: ${{ needs.build-metadata.outputs.prerelease != 'true' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -213,15 +148,15 @@ jobs:
 
       - name: Set npm package version
         working-directory: wrapper/npm
-        run: npm pkg set version="${{ needs.build-nupkg.outputs.version }}"
+        run: npm pkg set version="${{ needs.build-metadata.outputs.version }}"
 
       - name: Publish npm package
         working-directory: wrapper/npm
         run: npm publish --provenance --access public
 
   release-winget:
-    needs: [build-nupkg, release-github]
-    if: ${{ needs.build-nupkg.outputs.prerelease != 'true' }}
+    needs: [build-metadata, release-github]
+    if: ${{ needs.build-metadata.outputs.prerelease != 'true' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -232,7 +167,7 @@ jobs:
         with:
           identifier: arika0093.console2svg
           installers-regex: '^console2svg-win-(x64|arm64)\.zip$'
-          release-tag: v${{ needs.build-nupkg.outputs.version }}
+          release-tag: v${{ needs.build-metadata.outputs.version }}
           token: ${{ secrets.WINGET_TOKEN }}
 
   image-gen:

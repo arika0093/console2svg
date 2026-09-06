@@ -14,7 +14,4 @@
   <Folder Name="/tests/">
     <Project Path="tests/ConsoleToSvg.Tests/ConsoleToSvg.Tests.csproj" />
   </Folder>
-  <Folder Name="/wrapper/">
-    <Project Path="wrapper/dotnet/ConsoleToSvg.Tool.csproj" />
-  </Folder>
 </Solution>

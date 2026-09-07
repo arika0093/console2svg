@@ -38,6 +38,21 @@ public sealed class SvgRenderOptions
 
     public bool RenderCursor { get; set; }
 
+    /// <summary>Include static presentation layers such as chrome and custom backgrounds.</summary>
+    public bool IncludeStaticLayers { get; set; } = true;
+
+    /// <summary>Include the canvas background layer.</summary>
+    public bool IncludeBackground { get; set; } = true;
+
+    /// <summary>Include the window chrome layer.</summary>
+    public bool IncludeChrome { get; set; } = true;
+
+    /// <summary>Include the terminal screen frame.</summary>
+    public bool IncludeTerminalFrame { get; set; } = true;
+
+    /// <summary>Include the terminal client background behind the screen frame.</summary>
+    public bool IncludeClientBackground { get; set; } = true;
+
     public double Opacity { get; set; } = 1d;
 
     public int? HeightRows { get; set; }

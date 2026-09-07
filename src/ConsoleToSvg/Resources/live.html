@@ -11,7 +11,9 @@
     background: transparent;
   }
 
-  #screen { position: relative; }
+  #screen {
+    position: relative;
+  }
 
   #layers,
   #background,
@@ -22,13 +24,37 @@
     inset: 0;
   }
 
-  #window { opacity: {opacity}; }
-  #screen svg { display: block; }
+  #window {
+    opacity: {opacity};
+  }
+
+  #screen svg {
+    display: block;
+  }
+
   #background svg,
-  #screen.width svg { width: 100%; height: auto; }
-  #screen.height svg { width: auto; height: 100%; }
-  #screen.actual svg { width: auto; height: auto; }
-  #screen.contain { display: grid; align-content: stretch; justify-content: stretch; align-items: start; justify-items: start; }
+  #screen.width svg {
+    width: 100%;
+    height: auto;
+  }
+
+  #screen.height svg {
+    width: auto;
+    height: 100%;
+  }
+
+  #screen.actual svg {
+    width: auto;
+    height: auto;
+  }
+
+  #screen.contain {
+    display: grid;
+    align-content: stretch;
+    justify-content: stretch;
+    align-items: start;
+    justify-items: start;
+  }
 
   #settings {
     position: absolute;
@@ -47,7 +73,9 @@
 
   #screen.show-settings #settings,
   #screen:hover #settings,
-  #settings:hover { display: block; }
+  #settings:hover {
+    display: block;
+  }
 
   #status {
     position: fixed;
@@ -60,7 +88,9 @@
     font: 16px system-ui, sans-serif;
   }
 
-  #status.visible { display: grid; }
+  #status.visible {
+    display: grid;
+  }
 </style>
 <div id="screen">
   <div id="layers">
@@ -88,14 +118,24 @@
 
   function applyMode() {
     const svg = terminal.querySelector('svg');
-    if (!svg) return;
+    if (!svg) {
+      return;
+    }
     const svgs = s.querySelectorAll('#background svg,#chrome svg,#terminal svg');
-    svgs.forEach(svg => { svg.style.width = ''; svg.style.height = ''; });
-    if (mode !== 'contain') return;
+    svgs.forEach(svg => {
+      svg.style.width = '';
+      svg.style.height = '';
+    });
+    if (mode !== 'contain') {
+      return;
+    }
     const box = svg.viewBox.baseVal;
     const ratio = (box.width || svg.width.baseVal.value) / (box.height || svg.height.baseVal.value);
     const width = ratio > s.clientWidth / s.clientHeight;
-    svgs.forEach(svg => { svg.style.width = width ? '100%' : 'auto'; svg.style.height = width ? 'auto' : '100%'; });
+    svgs.forEach(svg => {
+      svg.style.width = width ? '100%' : 'auto';
+      svg.style.height = width ? 'auto' : '100%';
+    });
   }
 
   function setMode(value) {
@@ -108,17 +148,41 @@
   function connect() {
     clearTimeout(reconnectTimer);
     events = new EventSource('/events');
-    events.addEventListener('window-opacity', e => document.querySelector('#window').style.opacity = e.data);
-    events.addEventListener('background', e => { background.innerHTML = e.data; applyMode(); });
-    events.addEventListener('chrome', e => { chromeLayer.innerHTML = e.data; applyMode(); });
-    events.addEventListener('frame', e => { terminal.innerHTML = e.data; applyMode(); status.classList.remove('visible'); });
-    events.onopen = () => status.classList.remove('visible');
-    events.onerror = () => { status.classList.add('visible'); events.close(); reconnectTimer = setTimeout(connect, 1000); };
+    events.addEventListener('window-opacity', e => {
+      document.querySelector('#window').style.opacity = e.data;
+    });
+    events.addEventListener('background', e => {
+      background.innerHTML = e.data;
+      applyMode();
+    });
+    events.addEventListener('chrome', e => {
+      chromeLayer.innerHTML = e.data;
+      applyMode();
+    });
+    events.addEventListener('frame', e => {
+      terminal.innerHTML = e.data;
+      applyMode();
+      status.classList.remove('visible');
+    });
+    events.onopen = () => {
+      status.classList.remove('visible');
+    };
+    events.onerror = () => {
+      status.classList.add('visible');
+      events.close();
+      reconnectTimer = setTimeout(connect, 1000);
+    };
   }
 
-  terminal.onpointermove = e => s.classList.toggle('show-settings', e.target instanceof SVGElement);
-  terminal.onpointerleave = () => s.classList.remove('show-settings');
-  settings.onclick = () => window.open('/settings', 'console2svg-live-settings', 'popup,width=260,height=230,resizable=no');
+  terminal.onpointermove = e => {
+    s.classList.toggle('show-settings', e.target instanceof SVGElement);
+  };
+  terminal.onpointerleave = () => {
+    s.classList.remove('show-settings');
+  };
+  settings.onclick = () => {
+    window.open('/settings', 'console2svg-live-settings', 'popup,width=260,height=230,resizable=no');
+  };
   window.addEventListener('message', e => {
     if (e.origin === location.origin && e.data?.type === 'console2svg-live-fit') setMode(e.data.mode);
   });

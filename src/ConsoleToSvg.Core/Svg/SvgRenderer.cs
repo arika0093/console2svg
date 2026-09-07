@@ -129,21 +129,28 @@ public static class SvgRenderer
             commandHeader: options.CommandHeader,
             opacity: options.Opacity,
             background: options.Background,
-            maskPatterns: options.MaskPatterns
-        );
-        SvgDocumentBuilder.AppendFrameGroup(
-            svgWriter,
-            buffer,
-            context,
-            theme,
-            styles,
-            id: null,
-            @class: null,
-            includeScrollback,
-            lengthAdjust: options.LengthAdjust,
             maskPatterns: options.MaskPatterns,
-            renderCursor: options.RenderCursor
+            includeStaticLayers: options.IncludeStaticLayers,
+            includeBackground: options.IncludeBackground,
+            includeChrome: options.IncludeChrome,
+            includeClientBackground: options.IncludeClientBackground
         );
+        if (options.IncludeTerminalFrame)
+        {
+            SvgDocumentBuilder.AppendFrameGroup(
+                svgWriter,
+                buffer,
+                context,
+                theme,
+                styles,
+                id: null,
+                @class: null,
+                includeScrollback,
+                lengthAdjust: options.LengthAdjust,
+                maskPatterns: options.MaskPatterns,
+                renderCursor: options.RenderCursor
+            );
+        }
         SvgDocumentBuilder.EndSvg(
             svgWriter,
             options.Opacity,

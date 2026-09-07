@@ -20,7 +20,11 @@ internal static partial class SvgDocumentBuilder
         double opacity = 1d,
         string[]? background = null,
         string[]? maskPatterns = null,
-        bool animateBlink = false
+        bool animateBlink = false,
+        bool includeStaticLayers = true,
+        bool includeBackground = true,
+        bool includeChrome = true,
+        bool includeClientBackground = true
     )
     {
         sb.Append("<svg xmlns=\"http://www.w3.org/2000/svg\" ");
@@ -71,14 +75,26 @@ internal static partial class SvgDocumentBuilder
         }
         sb.Append("</style>");
 
-        AppendDefs(sb, context, chrome, background);
-        AppendBackground(sb, context, chrome, background);
-        AppendGroupOpen(sb, opacity);
-        AppendChrome(sb, context, theme, chrome);
-        AppendClientBackground(sb, context, theme, chrome);
-        if (context.HeaderRows > 0 && !string.IsNullOrEmpty(commandHeader))
+        if (includeStaticLayers && includeBackground)
         {
-            AppendCommandHeader(sb, context, theme, styles, commandHeader, maskPatterns);
+            AppendDefs(sb, context, chrome, background);
+            AppendBackground(sb, context, chrome, background);
+        }
+        AppendGroupOpen(sb, opacity);
+        if (includeStaticLayers)
+        {
+            if (includeChrome)
+            {
+                AppendChrome(sb, context, theme, chrome);
+            }
+            if (includeClientBackground)
+            {
+                AppendClientBackground(sb, context, theme, chrome);
+            }
+            if (context.HeaderRows > 0 && !string.IsNullOrEmpty(commandHeader))
+            {
+                AppendCommandHeader(sb, context, theme, styles, commandHeader, maskPatterns);
+            }
         }
     }
 

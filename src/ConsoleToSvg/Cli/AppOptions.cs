@@ -19,6 +19,7 @@ public enum Workflow
     Replay,
     Convert,
     Theme,
+    Completion,
 }
 
 public sealed class AppOptions
@@ -32,6 +33,8 @@ public sealed class AppOptions
     public bool ShowVersion { get; set; }
 
     public string? Command { get; set; }
+
+    public string? CompletionShell { get; set; }
 
     /// <summary>
     /// Unmodified arguments following <c>--</c>. Interactive mode uses these to

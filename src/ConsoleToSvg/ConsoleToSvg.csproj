@@ -33,7 +33,10 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\live.html" LogicalName="console2svg.live.html" />
-    <EmbeddedResource Include="Resources\live-settings.html" LogicalName="console2svg.live-settings.html" />
+    <EmbeddedResource
+      Include="Resources\live-settings.html"
+      LogicalName="console2svg.live-settings.html"
+    />
     <RuntimeHostConfigurationOption Include="System.Runtime.EnableWriteXorExecute" Value="false" />
   </ItemGroup>
   <ItemGroup>

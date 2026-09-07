@@ -21,9 +21,7 @@ public sealed class AnimatedSvgRendererTests
 
         ConsoleToSvg.Svg.AnimatedSvgRenderer.Write(writer, session, options);
 
-        writer.ToString().ShouldBe(
-            ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(session, options)
-        );
+        writer.ToString().ShouldBe(ConsoleToSvg.Svg.AnimatedSvgRenderer.Render(session, options));
     }
 
     [Test]
@@ -35,10 +33,7 @@ public sealed class AnimatedSvgRendererTests
         emulator.Process("\rafter");
 
         var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.RenderFrames(
-            [
-                new TerminalFrame(0, initial),
-                new TerminalFrame(0.2, emulator.Buffer.Clone()),
-            ],
+            [new TerminalFrame(0, initial), new TerminalFrame(0.2, emulator.Buffer.Clone())],
             new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", VideoFps = 30 }
         );
 
@@ -112,8 +107,7 @@ public sealed class AnimatedSvgRendererTests
         cursorRects.Length.ShouldBe(2);
         cursorRects
             .All(rect =>
-                rect.Parent
-                    ?.Elements()
+                rect.Parent?.Elements()
                     .Any(element =>
                         element.Name.LocalName == "animate"
                         && (string?)element.Attribute("attributeName") == "display"
@@ -301,9 +295,7 @@ public sealed class AnimatedSvgRendererTests
             }
         );
 
-        svg.ShouldContain(
-            "<animate attributeName=\"opacity\" values=\"1;1;0\""
-        );
+        svg.ShouldContain("<animate attributeName=\"opacity\" values=\"1;1;0\"");
         svg.ShouldContain(";1\" dur=\"");
     }
 
@@ -433,9 +425,11 @@ public sealed class AnimatedSvgRendererTests
         svg.ShouldNotContain("<style>.a{");
 
         var document = System.Xml.Linq.XDocument.Parse(svg);
-        var chromeNode = document.Descendants().Single(element =>
-            string.Equals((string?)element.Attribute("id"), "d0", StringComparison.Ordinal)
-        );
+        var chromeNode = document
+            .Descendants()
+            .Single(element =>
+                string.Equals((string?)element.Attribute("id"), "d0", StringComparison.Ordinal)
+            );
         chromeNode
             .Ancestors()
             .Any(element =>
@@ -517,11 +511,7 @@ public sealed class AnimatedSvgRendererTests
 
         var svg = ConsoleToSvg.Svg.AnimatedSvgRenderer.RenderFrames(
             [new TerminalFrame(0d, first), new TerminalFrame(0.2d, second)],
-            new ConsoleToSvg.Svg.SvgRenderOptions
-            {
-                Theme = "dark",
-                VideoFps = 0,
-            }
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark", VideoFps = 0 }
         );
 
         var document = System.Xml.Linq.XDocument.Parse(svg);
@@ -816,10 +806,7 @@ public sealed class AnimatedSvgRendererTests
         svg.ShouldContain("<style>\n");
         svg.ShouldNotContain(".c2.f");
         var styleEnd = svg.IndexOf("</style>", StringComparison.Ordinal);
-        var animation = svg.IndexOf(
-            "<animate attributeName=\"display\"",
-            StringComparison.Ordinal
-        );
+        var animation = svg.IndexOf("<animate attributeName=\"display\"", StringComparison.Ordinal);
         animation.ShouldBeGreaterThan(styleEnd);
     }
 
@@ -842,15 +829,9 @@ public sealed class AnimatedSvgRendererTests
 
     private static double[] GetDisplayStartKeyTimes(string svg) =>
         Regex
-            .Matches(
-                svg,
-                """values="none;inline(?:;none)?" keyTimes="0;(?<start>\d+(?:\.\d+)?)"""
-            )
+            .Matches(svg, """values="none;inline(?:;none)?" keyTimes="0;(?<start>\d+(?:\.\d+)?)""")
             .Select(match =>
-                double.Parse(
-                    match.Groups["start"].Value,
-                    CultureInfo.InvariantCulture
-                )
+                double.Parse(match.Groups["start"].Value, CultureInfo.InvariantCulture)
             )
             .Distinct()
             .Order()

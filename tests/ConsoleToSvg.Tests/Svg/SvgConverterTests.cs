@@ -35,10 +35,7 @@ public sealed class SvgConverterTests
         );
         method.ShouldNotBeNull();
 
-        var startInfo = (ProcessStartInfo)method.Invoke(
-            null,
-            ["ffmpeg", new[] { "-version" }]
-        )!;
+        var startInfo = (ProcessStartInfo)method.Invoke(null, ["ffmpeg", new[] { "-version" }])!;
 
         startInfo.UseShellExecute.ShouldBeFalse();
         startInfo.RedirectStandardOutput.ShouldBeTrue();

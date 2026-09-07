@@ -9,7 +9,12 @@ public sealed partial class OptionParserTests
     [Test]
     public void EmbedCastOptionIsEnabledWithoutAValue()
     {
-        var ok = OptionParser.TryParse(new[] { "--embed-cast", "echo hi" }, out var options, out _, out _);
+        var ok = OptionParser.TryParse(
+            new[] { "--embed-cast", "echo hi" },
+            out var options,
+            out _,
+            out _
+        );
 
         ok.ShouldBeTrue();
         options!.EmbedCast.ShouldBeTrue();
@@ -19,7 +24,12 @@ public sealed partial class OptionParserTests
     [Test]
     public void EmbedLogsOptionIsEnabledWithoutVerbose()
     {
-        var ok = OptionParser.TryParse(new[] { "--embed-logs", "echo hi" }, out var options, out _, out _);
+        var ok = OptionParser.TryParse(
+            new[] { "--embed-logs", "echo hi" },
+            out var options,
+            out _,
+            out _
+        );
 
         ok.ShouldBeTrue();
         options!.EmbedLogs.ShouldBeTrue();
@@ -29,7 +39,12 @@ public sealed partial class OptionParserTests
     [Test]
     public void EmbedReplayOptionIsEnabledForACommand()
     {
-        var ok = OptionParser.TryParse(new[] { "--embed-replay", "echo hi" }, out var options, out _, out _);
+        var ok = OptionParser.TryParse(
+            new[] { "--embed-replay", "echo hi" },
+            out var options,
+            out _,
+            out _
+        );
 
         ok.ShouldBeTrue();
         options!.EmbedReplay.ShouldBeTrue();
@@ -38,7 +53,12 @@ public sealed partial class OptionParserTests
     [Test]
     public void EmbedDebugEnablesAllEmbedOptions()
     {
-        var ok = OptionParser.TryParse(new[] { "--embed-debug", "echo hi" }, out var options, out _, out _);
+        var ok = OptionParser.TryParse(
+            new[] { "--embed-debug", "echo hi" },
+            out var options,
+            out _,
+            out _
+        );
 
         ok.ShouldBeTrue();
         options!.EmbedDebug.ShouldBeTrue();

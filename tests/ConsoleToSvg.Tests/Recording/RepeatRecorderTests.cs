@@ -68,7 +68,9 @@ public sealed class RepeatRecorderTests
         emulator.Replay(session, frameIndex: session.Events.Count - 1);
 
         // "hello" should appear somewhere in the first row.
-        var row0 = string.Concat(Enumerable.Range(0, 40).Select(c => emulator.Buffer.GetCell(0, c).Text));
+        var row0 = string.Concat(
+            Enumerable.Range(0, 40).Select(c => emulator.Buffer.GetCell(0, c).Text)
+        );
         row0.ShouldContain("hello");
     }
 

@@ -23,12 +23,7 @@ public sealed partial class OptionParserTests
     [Test]
     public void EmbedReplayRequiresCommand()
     {
-        var ok = OptionParser.TryParse(
-            new[] { "--embed-replay" },
-            out _,
-            out var error,
-            out _
-        );
+        var ok = OptionParser.TryParse(new[] { "--embed-replay" }, out _, out var error, out _);
 
         ok.ShouldBeFalse();
         error.ShouldBe("--embed-replay requires a command to be specified.");
@@ -37,12 +32,7 @@ public sealed partial class OptionParserTests
     [Test]
     public void EmbedDebugInheritsEmbedReplayCommandRequirement()
     {
-        var ok = OptionParser.TryParse(
-            new[] { "--embed-debug" },
-            out _,
-            out var error,
-            out _
-        );
+        var ok = OptionParser.TryParse(new[] { "--embed-debug" }, out _, out var error, out _);
 
         ok.ShouldBeFalse();
         error.ShouldBe("--embed-replay requires a command to be specified.");

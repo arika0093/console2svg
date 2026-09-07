@@ -86,7 +86,8 @@ public sealed class InteractiveRecorderTests
         var router = new InteractiveInputRouter(ScreenshotKey, RecordingKey, PauseKey);
         var forwarded = new List<byte>();
 
-        router.Process(0x04, forwarded, captureControlsEnabled: false)
+        router
+            .Process(0x04, forwarded, captureControlsEnabled: false)
             .ShouldBe(InteractiveInputAction.Exit);
         forwarded.ToArray().ShouldBe(new byte[] { 0x04 });
     }
@@ -99,7 +100,8 @@ public sealed class InteractiveRecorderTests
 
         foreach (var value in ScreenshotKey)
         {
-            router.Process(value, forwarded, captureControlsEnabled: false)
+            router
+                .Process(value, forwarded, captureControlsEnabled: false)
                 .ShouldBe(InteractiveInputAction.None);
         }
 
@@ -117,9 +119,11 @@ public sealed class InteractiveRecorderTests
         var router = new InteractiveInputRouter(ScreenshotKey, RecordingKey, PauseKey);
         var forwarded = new List<byte>();
 
-        router.Process(0xE0, forwarded, captureControlsEnabled: false)
+        router
+            .Process(0xE0, forwarded, captureControlsEnabled: false)
             .ShouldBe(InteractiveInputAction.None);
-        router.Process(0x4D, forwarded, captureControlsEnabled: false)
+        router
+            .Process(0x4D, forwarded, captureControlsEnabled: false)
             .ShouldBe(InteractiveInputAction.None);
 
         forwarded.ToArray().ShouldBe(Encoding.ASCII.GetBytes("\u001b[C"));

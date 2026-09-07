@@ -20,7 +20,9 @@ public sealed partial class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { EmbeddedAsciicast = encodedCast }
         );
 
-        svg.ShouldContain("<metadata id=\"console2svg-asciicast\" data-format=\"asciicast-v2\" data-encoding=\"base64\">");
+        svg.ShouldContain(
+            "<metadata id=\"console2svg-asciicast\" data-format=\"asciicast-v2\" data-encoding=\"base64\">"
+        );
         svg.ShouldContain(encodedCast);
 
         await using var castStream = new MemoryStream(Convert.FromBase64String(encodedCast));
@@ -36,7 +38,10 @@ public sealed partial class SvgRendererTests
     {
         var session = new RecordingSession(width: 8, height: 2);
 
-        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(session, new ConsoleToSvg.Svg.SvgRenderOptions());
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions()
+        );
 
         svg.ShouldNotContain("console2svg-asciicast");
     }
@@ -53,8 +58,12 @@ public sealed partial class SvgRendererTests
 
         var svg = ConsoleToSvg.Svg.SvgRenderer.Render(session, options);
 
-        svg.ShouldContain("id=\"console2svg-logs\" data-format=\"text/plain\" data-encoding=\"base64\"");
-        svg.ShouldContain("id=\"console2svg-replay\" data-format=\"console2svg-replay-v1\" data-encoding=\"base64\"");
+        svg.ShouldContain(
+            "id=\"console2svg-logs\" data-format=\"text/plain\" data-encoding=\"base64\""
+        );
+        svg.ShouldContain(
+            "id=\"console2svg-replay\" data-format=\"console2svg-replay-v1\" data-encoding=\"base64\""
+        );
         svg.ShouldContain(options.EmbeddedLogs);
         svg.ShouldContain(options.EmbeddedReplay);
     }
@@ -171,8 +180,7 @@ public sealed partial class SvgRendererTests
         var session = new RecordingSession(width: 4, height: 2);
         session.AddEvent(
             0.01,
-            "\u001b[48;2;255;0;0m \u001b[48;2;0;255;0m "
-                + "\r\n\u001b[48;2;0;0;255m "
+            "\u001b[48;2;255;0;0m \u001b[48;2;0;255;0m " + "\r\n\u001b[48;2;0;0;255m "
         );
 
         var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
@@ -246,8 +254,14 @@ public sealed partial class SvgRendererTests
 
         // Tabs expand to spaces (2 + 8 = 10 cells) in the terminal; the whole
         // run merges into a single <text> node with preserved whitespace.
-        var expected = "This" + new string(' ', 3) + "is" + new string(' ', 4)
-            + "a" + new string(' ', 10) + "Message";
+        var expected =
+            "This"
+            + new string(' ', 3)
+            + "is"
+            + new string(' ', 4)
+            + "a"
+            + new string(' ', 10)
+            + "Message";
         svg.ShouldContain($">{expected}<");
         svg.ShouldContain(" w\"");
         svg.ShouldNotContain("xml:space=");
@@ -697,8 +711,7 @@ public sealed partial class SvgRendererTests
 
         svg.ShouldContain("<g class=\"c2 c\"");
         svg.ShouldNotContain("<text class=\"c");
-        System.Text.RegularExpressions.Regex.IsMatch(svg, "<text[^>]* x=\"0\"")
-            .ShouldBeFalse();
+        System.Text.RegularExpressions.Regex.IsMatch(svg, "<text[^>]* x=\"0\"").ShouldBeFalse();
         System.Text.RegularExpressions.Regex.IsMatch(svg, "<text[^>]+ fill=").ShouldBeFalse();
         CountOccurrences(svg, $"{{fill:{foreground}}}").ShouldBe(1);
         CountOccurrences(svg, "<style>").ShouldBe(1);

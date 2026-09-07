@@ -26,9 +26,9 @@ public static class AnsiWorkload
     /// <summary>Small, medium, and large workloads, indexed by <see cref="WorkloadSize"/>.</summary>
     public static readonly Preset[] Presets =
     [
-        new(80, 24, 50),    // small  (~96K cells,  ~0.1MB of ANSI)
-        new(120, 40, 100),  // medium (~480K cells, ~0.5MB of ANSI)
-        new(160, 50, 200),  // large  (~1.6M cells, ~1.7MB of ANSI)
+        new(80, 24, 50), // small  (~96K cells,  ~0.1MB of ANSI)
+        new(120, 40, 100), // medium (~480K cells, ~0.5MB of ANSI)
+        new(160, 50, 200), // large  (~1.6M cells, ~1.7MB of ANSI)
     ];
 
     private static readonly string[] SgrPalette =

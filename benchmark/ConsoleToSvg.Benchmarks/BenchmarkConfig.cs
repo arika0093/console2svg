@@ -32,7 +32,8 @@ public static class BenchmarkConfig
     {
         // DefaultConfig already ships Markdown (console + GitHub), HTML, and CSV
         // exporters; add only the full JSON export to keep results diffable.
-        var config = ManualConfig.Create(DefaultConfig.Instance)
+        var config = ManualConfig
+            .Create(DefaultConfig.Instance)
             .AddExporter(JsonExporter.Full)
             .AddDiagnoser(MemoryDiagnoser.Default)
             .AddDiagnoser(CreateDisassemblyDiagnoser())
@@ -46,7 +47,8 @@ public static class BenchmarkConfig
                     HardwareCounter.InstructionRetired,
                     HardwareCounter.TotalCycles,
                     HardwareCounter.BranchInstructions,
-                    HardwareCounter.CacheMisses)
+                    HardwareCounter.CacheMisses
+                )
                 .AddDiagnoser(PerfCollectProfiler.Default);
         }
 
@@ -65,7 +67,9 @@ public static class BenchmarkConfig
                 exportGithubMarkdown: true,
                 exportHtml: false,
                 exportCombinedDisassemblyReport: true,
-                exportDiff: false));
+                exportDiff: false
+            )
+        );
 
     private static string? FindInPath(string name)
     {

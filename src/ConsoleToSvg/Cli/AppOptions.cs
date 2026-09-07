@@ -20,6 +20,7 @@ public enum Workflow
     Convert,
     Theme,
     Completion,
+    LiveServer,
 }
 
 public sealed class AppOptions
@@ -35,6 +36,10 @@ public sealed class AppOptions
     public string? Command { get; set; }
 
     public string? CompletionShell { get; set; }
+
+    public string? ListenAddress { get; set; }
+
+    public int LiveServerPort { get; set; } = 38473;
 
     /// <summary>
     /// Unmodified arguments following <c>--</c>. Interactive mode uses these to

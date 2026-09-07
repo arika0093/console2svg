@@ -36,7 +36,7 @@ internal static partial class Program
         var width = ResolveSize(options.Width, options.WidthAdjust, TryGetConsoleWidth, DefaultWidth);
         var height = ResolveSize(options.Height, options.HeightAdjust, TryGetConsoleHeight, DefaultHeight);
         var command = options.DelimitedCommand ?? Array.Empty<string>();
-        var ptyOptions = BuildLivePtyOptions(width, height, command);
+        var ptyOptions = BuildLivePtyOptions(width, height, command, options.NoDeleteEnvs);
 
         var theme = Theme.Resolve(options.Theme);
         if (!string.IsNullOrWhiteSpace(options.ForeColor)) theme = theme.WithForeground(options.ForeColor);
@@ -47,22 +47,23 @@ internal static partial class Program
         string latestSvg = "";
         var clients = new ConcurrentDictionary<int, LiveSseClient>();
         var listener = new TcpListener(address, options.LiveServerPort);
+        var hostDisplay = FormatHost(address);
         try { listener.Start(); }
-        catch (SocketException ex) { await Console.Error.WriteLineAsync($"Unable to listen on http://{address}:{options.LiveServerPort}/: {ex.Message}"); return 1; }
-        await Console.Error.WriteLineAsync($"Live terminal: http://{address}:{options.LiveServerPort}/");
+        catch (SocketException ex) { await Console.Error.WriteLineAsync($"Unable to listen on http://{hostDisplay}:{options.LiveServerPort}/: {ex.Message}"); return 1; }
+        await Console.Error.WriteLineAsync($"Live terminal: http://{hostDisplay}:{options.LiveServerPort}/");
         using var listenerRegistration = cancellationToken.Register(listener.Stop);
+        var acceptTask = AcceptLiveClientsAsync(listener, clients, () => latestSvg, cancellationToken);
         try
         {
             using var connection = await NativePty.SpawnAsync(ptyOptions, cancellationToken).ConfigureAwait(false);
             latestSvg = SvgRenderer.Render(terminal.Buffer, renderOptions);
-            var acceptTask = AcceptLiveClientsAsync(listener, clients, () => latestSvg, cancellationToken);
             var readTask = ReadLiveOutputAsync(connection.ReaderStream, terminal, renderOptions, svg =>
             {
                 latestSvg = svg;
                 BroadcastSvg(clients, svg);
             }, errorMessage =>
             {
-                latestSvg = RenderErrorSvg(terminal, renderOptions, errorMessage);
+                latestSvg = RenderErrorSvg(width, height, theme, renderOptions, errorMessage);
                 BroadcastSvg(clients, latestSvg);
             }, cancellationToken);
             while (!readTask.IsCompleted && !cancellationToken.IsCancellationRequested)
@@ -82,9 +83,9 @@ internal static partial class Program
         catch (Exception ex)
         {
             await Console.Error.WriteLineAsync($"live-server error: {ex.Message}");
-            latestSvg = RenderErrorSvg(terminal, renderOptions, ex.Message);
+            latestSvg = RenderErrorSvg(width, height, theme, renderOptions, ex.Message);
             BroadcastSvg(clients, latestSvg);
-            try { await Task.Delay(Timeout.Infinite, cancellationToken).ConfigureAwait(false); }
+            try { await acceptTask.ConfigureAwait(false); }
             catch (OperationCanceledException) { /* shutdown requested */ }
             return 0;
         }
@@ -95,7 +96,7 @@ internal static partial class Program
         }
     }
 
-    private static NativePtyOptions BuildLivePtyOptions(int width, int height, string[]? command)
+    private static NativePtyOptions BuildLivePtyOptions(int width, int height, string[]? command, bool noDeleteEnvs)
     {
         var environment = new Dictionary<string, string>(StringComparer.Ordinal);
         foreach (System.Collections.DictionaryEntry entry in Environment.GetEnvironmentVariables())
@@ -108,8 +109,11 @@ internal static partial class Program
 
         environment["COLUMNS"] = width.ToString(System.Globalization.CultureInfo.InvariantCulture);
         environment["LINES"] = height.ToString(System.Globalization.CultureInfo.InvariantCulture);
-        environment.Remove("CI");
-        environment.Remove("TF_BUILD");
+        if (!noDeleteEnvs)
+        {
+            environment.Remove("CI");
+            environment.Remove("TF_BUILD");
+        }
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
@@ -184,13 +188,14 @@ internal static partial class Program
         };
     }
 
-    private static string RenderErrorSvg(TerminalEmulator terminal, SvgRenderOptions renderOptions, string message)
+    private static string RenderErrorSvg(int width, int height, Theme theme, SvgRenderOptions renderOptions, string message)
     {
-        terminal.Process("\u001b[2J\u001b[H");
-        terminal.Process("\u001b[31;1mlive-server error:\u001b[0m\r\n");
-        foreach (var ch in message) terminal.Process(ch.ToString());
-        terminal.Process("\r\n\u001b[33mCheck console2svg output for details.\u001b[0m");
-        return SvgRenderer.Render(terminal.Buffer, renderOptions);
+        var errorTerminal = new TerminalEmulator(width, height, theme);
+        errorTerminal.Process("\u001b[2J\u001b[H");
+        errorTerminal.Process("\u001b[31;1mlive-server error:\u001b[0m\r\n");
+        foreach (var ch in message) errorTerminal.Process(ch.ToString());
+        errorTerminal.Process("\r\n\u001b[33mCheck console2svg output for details.\u001b[0m");
+        return SvgRenderer.Render(errorTerminal.Buffer, renderOptions);
     }
 
     private static async Task AcceptLiveClientsAsync(TcpListener listener, ConcurrentDictionary<int, LiveSseClient> clients, Func<string> latest, CancellationToken cancellationToken)
@@ -222,7 +227,7 @@ internal static partial class Program
                 var sseClient = new LiveSseClient(stream, () => clients.TryRemove(id, out _));
                 clients[id] = sseClient;
                 await sseClient.SendInitialAsync(latest(), cancellationToken).ConfigureAwait(false);
-                try { await Task.Delay(Timeout.Infinite, cancellationToken).ConfigureAwait(false); }
+                try { await Task.Delay(Timeout.Infinite, sseClient.ClientToken).ConfigureAwait(false); }
                 catch (OperationCanceledException) { clients.TryRemove(id, out _); }
                 clients.TryRemove(id, out _);
                 return;
@@ -279,6 +284,8 @@ internal static partial class Program
     private sealed class LiveSseClient(NetworkStream stream, Action disconnected) : IAsyncDisposable
     {
         private int _sending;
+        private readonly CancellationTokenSource _clientCts = new();
+        public CancellationToken ClientToken => _clientCts.Token;
         public async Task SendInitialAsync(string svg, CancellationToken cancellationToken) => await WriteSseAsync(stream, svg, cancellationToken).ConfigureAwait(false);
         public void TrySend(string svg)
         {
@@ -289,15 +296,19 @@ internal static partial class Program
         {
             using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
             try { await WriteSseAsync(stream, svg, timeout.Token).ConfigureAwait(false); }
-            catch { disconnected(); await stream.DisposeAsync().ConfigureAwait(false); }
+            catch { disconnected(); Cancel(); await stream.DisposeAsync().ConfigureAwait(false); }
             finally { Interlocked.Exchange(ref _sending, 0); }
         }
-        public ValueTask DisposeAsync() => stream.DisposeAsync();
+        public void Cancel() { try { _clientCts.Cancel(); } catch (ObjectDisposedException) { /* already disposed */ } }
+        public async ValueTask DisposeAsync() { _clientCts.Dispose(); await stream.DisposeAsync(); }
     }
 
     private static async Task WriteSseAsync(NetworkStream stream, string svg, CancellationToken token) => await WriteBytesAsync(stream, "event: svg\ndata: " + svg.Replace("\r", "").Replace("\n", "\ndata: ") + "\n\n", token).ConfigureAwait(false);
     private static async Task WriteHttpAsync(NetworkStream stream, string status, string contentType, string? body, string extra = "") => await WriteBytesAsync(stream, $"HTTP/1.1 {status}\r\nContent-Type: {contentType}\r\n{extra}Content-Length: {Encoding.UTF8.GetByteCount(body ?? string.Empty)}\r\n\r\n{body}", CancellationToken.None).ConfigureAwait(false);
     private static async Task WriteBytesAsync(NetworkStream stream, string text, CancellationToken token) { var bytes = Encoding.UTF8.GetBytes(text); await stream.WriteAsync(bytes, token).ConfigureAwait(false); await stream.FlushAsync(token).ConfigureAwait(false); }
 
-    private const string LiveHtml = """<!doctype html><meta charset="utf-8"><style>html,body,#screen{margin:0;width:100%;height:100%;background:transparent;overflow:hidden}#screen svg{width:100%;height:100%;object-fit:contain}.width svg{width:100%;height:auto}.height svg{width:auto;height:100%}.actual svg{width:auto;height:auto}#menu{display:none;position:fixed;background:#222;color:#fff;padding:4px;font:13px sans-serif;z-index:1}#menu button{display:block;width:100%;border:0;background:transparent;color:inherit;text-align:left;padding:4px}</style><div id=screen></div><div id=menu><button data-mode=width>Fit to width</button><button data-mode=height>Fit to height</button><button data-mode=contain>Contain</button><button data-mode=actual>1:1 display</button></div><script>const s=document.querySelector('#screen'),m=document.querySelector('#menu');new EventSource('/events').addEventListener('svg',e=>s.innerHTML=e.data);document.oncontextmenu=e=>{e.preventDefault();m.style.cssText+=';display:block;left:'+e.clientX+'px;top:'+e.clientY+'px'};m.onclick=e=>{let b=e.target.closest('button');if(b){s.className=b.dataset.mode==='contain'?'':b.dataset.mode;m.style.display='none'}};document.onclick=e=>{if(!m.contains(e.target))m.style.display='none'};</script>""";
+    private static string FormatHost(IPAddress address)
+        => address.AddressFamily == AddressFamily.InterNetworkV6 ? $"[{address}]" : address.ToString();
+
+    private const string LiveHtml = """<!doctype html><meta charset="utf-8"><style>html,body,#screen{margin:0;width:100%;height:100%;background:transparent;overflow:hidden}#screen svg{width:100%;height:100%;object-fit:contain}#screen.width svg{width:100%;height:auto}#screen.height svg{width:auto;height:100%}#screen.actual svg{width:auto;height:auto}#menu{display:none;position:fixed;background:#222;color:#fff;padding:4px;font:13px sans-serif;z-index:1}#menu button{display:block;width:100%;border:0;background:transparent;color:inherit;text-align:left;padding:4px}</style><div id=screen></div><div id=menu><button data-mode=width>Fit to width</button><button data-mode=height>Fit to height</button><button data-mode=contain>Contain</button><button data-mode=actual>1:1 display</button></div><script>const s=document.querySelector('#screen'),m=document.querySelector('#menu');new EventSource('/events').addEventListener('svg',e=>s.innerHTML=e.data);document.oncontextmenu=e=>{e.preventDefault();m.style.cssText+=';display:block;left:'+e.clientX+'px;top:'+e.clientY+'px'};m.onclick=e=>{let b=e.target.closest('button');if(b){s.className=b.dataset.mode==='contain'?'':b.dataset.mode;m.style.display='none'}};document.onclick=e=>{if(!m.contains(e.target))m.style.display='none'};</script>""";
 }

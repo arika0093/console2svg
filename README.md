@@ -77,6 +77,16 @@ console2svg interactive -d macos -o ./captures/output.svg
 
 ![console2svg interactive -d macos -o ./captures/output.svg](./assets/cmd-interactive.svg)
 
+---
+
+By starting a Live Server, you can also display the terminal in a browser. This is mainly useful for streaming.
+
+```bash
+console2svg live-server -d --background your-bg.png
+# -> Live terminal: http://127.0.0.1:38473/
+```
+
+![console2svg live-server -d macos-pc --background assets/image3.png --opacity 0.9](./assets/cmd-liveserver.png)
 
 ## Install
 ### Linux/macOS

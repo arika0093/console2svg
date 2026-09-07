@@ -76,9 +76,7 @@ public static partial class InteractiveRecorder
             .SpawnAsync(options, cancellationToken)
             .ConfigureAwait(false);
         onScreenUpdated?.Invoke(emulator.Buffer.Clone());
-        var rawInput = forwardToConsole
-            ? PtyRecorder.ConsoleInputMode.TryEnableRaw(logger)
-            : null;
+        var rawInput = forwardToConsole ? PtyRecorder.ConsoleInputMode.TryEnableRaw(logger) : null;
         using var utf8OutputScope = PtyRecorder.TryUseUtf8ConsoleOutputEncoding(
             forwardToConsole,
             logger
@@ -743,45 +741,124 @@ public static partial class InteractiveRecorder
 
         var inputTask = forwardToConsole
             ? Task.Run(
-            async () =>
-            {
-                var bytes = new byte[256];
-                var router = new InteractiveInputRouter(
-                    screenshotKey.Span,
-                    recordingKey.Span,
-                    pauseKey.Span
-                );
-                var maxForwardedLength = Math.Max(
-                    1,
-                    Math.Max(screenshotKey.Length, Math.Max(recordingKey.Length, pauseKey.Length))
-                );
-                var forwarded = new List<byte>(maxForwardedLength);
-                var forwardedBytes = new byte[maxForwardedLength];
-                var inputGate = new SemaphoreSlim(1, 1);
-                long escapePendingVersion = 0;
-                logger.ZLogDebug($"Interactive input forwarding started.");
-
-                void ScheduleStandaloneEscape(long version)
+                async () =>
                 {
-                    _ = Task.Run(
-                        async () =>
-                        {
-                            try
+                    var bytes = new byte[256];
+                    var router = new InteractiveInputRouter(
+                        screenshotKey.Span,
+                        recordingKey.Span,
+                        pauseKey.Span
+                    );
+                    var maxForwardedLength = Math.Max(
+                        1,
+                        Math.Max(
+                            screenshotKey.Length,
+                            Math.Max(recordingKey.Length, pauseKey.Length)
+                        )
+                    );
+                    var forwarded = new List<byte>(maxForwardedLength);
+                    var forwardedBytes = new byte[maxForwardedLength];
+                    var inputGate = new SemaphoreSlim(1, 1);
+                    long escapePendingVersion = 0;
+                    logger.ZLogDebug($"Interactive input forwarding started.");
+
+                    void ScheduleStandaloneEscape(long version)
+                    {
+                        _ = Task.Run(
+                            async () =>
                             {
-                                // Some WSL terminal stacks deliver a function-key
-                                // sequence in separate reads. Keep ESC long enough
-                                // for the remaining CSI bytes to arrive.
-                                await Task.Delay(100, lifetime.Token).ConfigureAwait(false);
-                                await inputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
                                 try
                                 {
-                                    if (
-                                        Volatile.Read(ref escapePendingVersion) == version
-                                        && router.HasStandaloneEscape
-                                    )
+                                    // Some WSL terminal stacks deliver a function-key
+                                    // sequence in separate reads. Keep ESC long enough
+                                    // for the remaining CSI bytes to arrive.
+                                    await Task.Delay(100, lifetime.Token).ConfigureAwait(false);
+                                    await inputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
+                                    try
                                     {
-                                        forwarded.Clear();
-                                        router.ForwardPending(forwarded);
+                                        if (
+                                            Volatile.Read(ref escapePendingVersion) == version
+                                            && router.HasStandaloneEscape
+                                        )
+                                        {
+                                            forwarded.Clear();
+                                            router.ForwardPending(forwarded);
+                                            if (forwarded.Count > forwardedBytes.Length)
+                                            {
+                                                Array.Resize(ref forwardedBytes, forwarded.Count);
+                                            }
+                                            forwarded.CopyTo(forwardedBytes);
+                                            await connection
+                                                .WriterStream.WriteAsync(
+                                                    forwardedBytes.AsMemory(0, forwarded.Count),
+                                                    lifetime.Token
+                                                )
+                                                .ConfigureAwait(false);
+                                            await connection
+                                                .WriterStream.FlushAsync(lifetime.Token)
+                                                .ConfigureAwait(false);
+                                        }
+                                    }
+                                    finally
+                                    {
+                                        inputGate.Release();
+                                    }
+                                }
+                                catch (OperationCanceledException)
+                                {
+                                    // The session ended before a standalone Escape was due.
+                                }
+                            },
+                            CancellationToken.None
+                        );
+                    }
+
+                    try
+                    {
+                        while (!lifetime.IsCancellationRequested)
+                        {
+                            var count = input is not null
+                                ? await input
+                                    .ReadAsync(bytes, 0, bytes.Length, lifetime.Token)
+                                    .ConfigureAwait(false)
+                                : await Task.Run(
+                                        () =>
+                                            ReadUnixTerminalInput(bytes, timeoutMilliseconds: 100),
+                                        CancellationToken.None
+                                    )
+                                    .ConfigureAwait(false);
+                            if (count < 0)
+                            {
+                                // Poll timeout; check cancellation and continue.
+                                continue;
+                            }
+                            if (count <= 0)
+                            {
+                                // An EOF from the outer terminal is another form of
+                                // Ctrl+D. Do not leave the child shell running after its
+                                // input owner has gone away.
+                                await lifetime.CancelAsync().ConfigureAwait(false);
+                                break;
+                            }
+
+                            await inputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
+                            var captures = new List<InteractiveCapture>();
+                            try
+                            {
+                                // A new byte invalidates any pending standalone-Escape timer.
+                                Interlocked.Increment(ref escapePendingVersion);
+                                for (var i = 0; i < count; i++)
+                                {
+                                    forwarded.Clear();
+                                    var action = captureControlsEnabled
+                                        ? router.Process(bytes[i], forwarded)
+                                        : InteractiveInputAction.None;
+                                    if (!captureControlsEnabled)
+                                    {
+                                        forwarded.Add(bytes[i]);
+                                    }
+                                    if (forwarded.Count > 0)
+                                    {
                                         if (forwarded.Count > forwardedBytes.Length)
                                         {
                                             Array.Resize(ref forwardedBytes, forwarded.Count);
@@ -793,231 +870,162 @@ public static partial class InteractiveRecorder
                                                 lifetime.Token
                                             )
                                             .ConfigureAwait(false);
-                                        await connection
-                                            .WriterStream.FlushAsync(lifetime.Token)
-                                            .ConfigureAwait(false);
                                     }
-                                }
-                                finally
-                                {
-                                    inputGate.Release();
-                                }
-                            }
-                            catch (OperationCanceledException)
-                            {
-                                // The session ended before a standalone Escape was due.
-                            }
-                        },
-                        CancellationToken.None
-                    );
-                }
 
-                try
-                {
-                    while (!lifetime.IsCancellationRequested)
-                    {
-                        var count = input is not null
-                            ? await input
-                                .ReadAsync(bytes, 0, bytes.Length, lifetime.Token)
-                                .ConfigureAwait(false)
-                            : await Task.Run(
-                                    () => ReadUnixTerminalInput(bytes, timeoutMilliseconds: 100),
-                                    CancellationToken.None
-                                )
-                                .ConfigureAwait(false);
-                        if (count < 0)
-                        {
-                            // Poll timeout; check cancellation and continue.
-                            continue;
-                        }
-                        if (count <= 0)
-                        {
-                            // An EOF from the outer terminal is another form of
-                            // Ctrl+D. Do not leave the child shell running after its
-                            // input owner has gone away.
-                            await lifetime.CancelAsync().ConfigureAwait(false);
-                            break;
-                        }
-
-                        await inputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
-                        var captures = new List<InteractiveCapture>();
-                        try
-                        {
-                            // A new byte invalidates any pending standalone-Escape timer.
-                            Interlocked.Increment(ref escapePendingVersion);
-                            for (var i = 0; i < count; i++)
-                            {
-                                forwarded.Clear();
-                                var action = captureControlsEnabled
-                                    ? router.Process(bytes[i], forwarded)
-                                    : InteractiveInputAction.None;
-                                if (!captureControlsEnabled)
-                                {
-                                    forwarded.Add(bytes[i]);
-                                }
-                                if (forwarded.Count > 0)
-                                {
-                                    if (forwarded.Count > forwardedBytes.Length)
+                                    switch (action)
                                     {
-                                        Array.Resize(ref forwardedBytes, forwarded.Count);
-                                    }
-                                    forwarded.CopyTo(forwardedBytes);
-                                    await connection
-                                        .WriterStream.WriteAsync(
-                                            forwardedBytes.AsMemory(0, forwarded.Count),
-                                            lifetime.Token
-                                        )
-                                        .ConfigureAwait(false);
-                                }
-
-                                switch (action)
-                                {
-                                    case InteractiveInputAction.Exit:
-                                        if (
-                                            exitOnCtrlD
-                                            && RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                                        )
-                                        {
-                                            await lifetime.CancelAsync().ConfigureAwait(false);
-                                            return;
-                                        }
-
-                                        // Bash receives the EOT byte above and exits;
-                                        // wait for the PTY's normal process-exit path.
-                                        break;
-                                    case InteractiveInputAction.Screenshot:
-                                        if (!screenshotEnabled)
-                                        {
-                                            ShowNotification(
-                                                "Screenshots are not supported for video formats",
-                                                isError: true
-                                            );
-                                            break;
-                                        }
-                                        try
-                                        {
-                                            captures.Add(
-                                                await CaptureScreenshotAsync().ConfigureAwait(false)
-                                            );
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            logger.ZLogError(ex, $"Interactive capture failed.");
-                                        }
-                                        break;
-                                    case InteractiveInputAction.ToggleRecording:
-                                        try
-                                        {
-                                            var capture = await ToggleRecordingAsync()
-                                                .ConfigureAwait(false);
-                                            if (capture is not null)
+                                        case InteractiveInputAction.Exit:
+                                            if (
+                                                exitOnCtrlD
+                                                && RuntimeInformation.IsOSPlatform(
+                                                    OSPlatform.Windows
+                                                )
+                                            )
                                             {
-                                                captures.Add(capture);
+                                                await lifetime.CancelAsync().ConfigureAwait(false);
+                                                return;
                                             }
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            logger.ZLogError(
-                                                ex,
-                                                $"Interactive recording capture failed."
-                                            );
-                                        }
-                                        break;
-                                    case InteractiveInputAction.TogglePause:
-                                        try
-                                        {
-                                            await TogglePauseAsync().ConfigureAwait(false);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            logger.ZLogError(
-                                                ex,
-                                                $"Interactive recording pause failed."
-                                            );
-                                        }
-                                        break;
+
+                                            // Bash receives the EOT byte above and exits;
+                                            // wait for the PTY's normal process-exit path.
+                                            break;
+                                        case InteractiveInputAction.Screenshot:
+                                            if (!screenshotEnabled)
+                                            {
+                                                ShowNotification(
+                                                    "Screenshots are not supported for video formats",
+                                                    isError: true
+                                                );
+                                                break;
+                                            }
+                                            try
+                                            {
+                                                captures.Add(
+                                                    await CaptureScreenshotAsync()
+                                                        .ConfigureAwait(false)
+                                                );
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                logger.ZLogError(
+                                                    ex,
+                                                    $"Interactive capture failed."
+                                                );
+                                            }
+                                            break;
+                                        case InteractiveInputAction.ToggleRecording:
+                                            try
+                                            {
+                                                var capture = await ToggleRecordingAsync()
+                                                    .ConfigureAwait(false);
+                                                if (capture is not null)
+                                                {
+                                                    captures.Add(capture);
+                                                }
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                logger.ZLogError(
+                                                    ex,
+                                                    $"Interactive recording capture failed."
+                                                );
+                                            }
+                                            break;
+                                        case InteractiveInputAction.TogglePause:
+                                            try
+                                            {
+                                                await TogglePauseAsync().ConfigureAwait(false);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                logger.ZLogError(
+                                                    ex,
+                                                    $"Interactive recording pause failed."
+                                                );
+                                            }
+                                            break;
+                                    }
                                 }
-                            }
 
-                            // Function keys and other VT input can arrive across reads.
-                            // Give a lone Escape a short grace period before forwarding it.
-                            if (captureControlsEnabled && router.HasStandaloneEscape)
+                                // Function keys and other VT input can arrive across reads.
+                                // Give a lone Escape a short grace period before forwarding it.
+                                if (captureControlsEnabled && router.HasStandaloneEscape)
+                                {
+                                    var version = Interlocked.Increment(ref escapePendingVersion);
+                                    ScheduleStandaloneEscape(version);
+                                }
+
+                                await connection
+                                    .WriterStream.FlushAsync(lifetime.Token)
+                                    .ConfigureAwait(false);
+                            }
+                            finally
                             {
-                                var version = Interlocked.Increment(ref escapePendingVersion);
-                                ScheduleStandaloneEscape(version);
+                                inputGate.Release();
                             }
 
-                            await connection
-                                .WriterStream.FlushAsync(lifetime.Token)
-                                .ConfigureAwait(false);
-                        }
-                        finally
-                        {
-                            inputGate.Release();
-                        }
-
-                        // Rendering and conversion run after input forwarding releases
-                        // its gate, so an expensive save cannot hold terminal input.
-                        foreach (var capture in captures)
-                        {
-                            QueueSaveCapture(capture);
+                            // Rendering and conversion run after input forwarding releases
+                            // its gate, so an expensive save cannot hold terminal input.
+                            foreach (var capture in captures)
+                            {
+                                QueueSaveCapture(capture);
+                            }
                         }
                     }
-                }
-                catch (OperationCanceledException)
-                {
-                    // Normal shutdown.
-                }
-                catch (IOException)
-                {
-                    // The shell exited while input was being forwarded.
-                }
-                catch (Exception ex)
-                {
-                    logger.ZLogError(ex, $"Interactive input or capture failed.");
-                    await Console.Error.WriteLineAsync(
-                        $"Interactive capture failed: {ex.Message}".AsMemory(),
-                        CancellationToken.None
-                    );
-                }
-            },
-            CancellationToken.None
+                    catch (OperationCanceledException)
+                    {
+                        // Normal shutdown.
+                    }
+                    catch (IOException)
+                    {
+                        // The shell exited while input was being forwarded.
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.ZLogError(ex, $"Interactive input or capture failed.");
+                        await Console.Error.WriteLineAsync(
+                            $"Interactive capture failed: {ex.Message}".AsMemory(),
+                            CancellationToken.None
+                        );
+                    }
+                },
+                CancellationToken.None
             )
             : Task.CompletedTask;
 
         if (forwardToConsole)
         {
             _ = Task.Run(
-            async () =>
-            {
-                try
+                async () =>
                 {
-                    var initialNotificationVersion = Volatile.Read(ref notificationVersion);
-                    // cmd/Clink and Starship often clear the terminal while their
-                    // startup scripts run. Wait for that output to finish before
-                    // drawing the host-only key guide.
-                    await Task.Delay(500, lifetime.Token).ConfigureAwait(false);
-                    await WaitForOutputToSettleAsync().ConfigureAwait(false);
-                    if (Volatile.Read(ref notificationVersion) == initialNotificationVersion)
+                    try
                     {
-                        Interlocked.Exchange(ref startupIndicatorActive, 1);
-                        await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
-                        try
+                        var initialNotificationVersion = Volatile.Read(ref notificationVersion);
+                        // cmd/Clink and Starship often clear the terminal while their
+                        // startup scripts run. Wait for that output to finish before
+                        // drawing the host-only key guide.
+                        await Task.Delay(500, lifetime.Token).ConfigureAwait(false);
+                        await WaitForOutputToSettleAsync().ConfigureAwait(false);
+                        if (Volatile.Read(ref notificationVersion) == initialNotificationVersion)
                         {
-                            await RenderPersistentIndicatorAsync().ConfigureAwait(false);
-                        }
-                        finally
-                        {
-                            hostOutputGate.Release();
+                            Interlocked.Exchange(ref startupIndicatorActive, 1);
+                            await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
+                            try
+                            {
+                                await RenderPersistentIndicatorAsync().ConfigureAwait(false);
+                            }
+                            finally
+                            {
+                                hostOutputGate.Release();
+                            }
                         }
                     }
-                }
-                catch (OperationCanceledException)
-                {
-                    // The shell exited before its startup hint was needed.
-                }
-            },
-            CancellationToken.None
+                    catch (OperationCanceledException)
+                    {
+                        // The shell exited before its startup hint was needed.
+                    }
+                },
+                CancellationToken.None
             );
         }
 

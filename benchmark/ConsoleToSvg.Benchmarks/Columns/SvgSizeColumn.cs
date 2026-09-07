@@ -70,26 +70,23 @@ public abstract class SvgSizeColumn : IColumn
 public sealed class StaticSvgSizeColumn : SvgSizeColumn
 {
     public StaticSvgSizeColumn()
-        : base(animated: false)
-    {
-    }
+        : base(animated: false) { }
 
     public override string Id => "StaticSvgBytes";
 
     public override string ColumnName => "SVG size (static)";
 
     public override bool IsDefault(Summary summary, BenchmarkCase benchmarkCase) =>
-        benchmarkCase.Descriptor.WorkloadMethod.Name is nameof(SvgGenerationBenchmarks.RenderSvg)
-            or nameof(RealWorldBenchmarks.RenderStatic);
+        benchmarkCase.Descriptor.WorkloadMethod.Name
+            is nameof(SvgGenerationBenchmarks.RenderSvg)
+                or nameof(RealWorldBenchmarks.RenderStatic);
 }
 
 /// <summary>SVG size for animated render benchmarks.</summary>
 public sealed class AnimatedSvgSizeColumn : SvgSizeColumn
 {
     public AnimatedSvgSizeColumn()
-        : base(animated: true)
-    {
-    }
+        : base(animated: true) { }
 
     public override string Id => "AnimatedSvgBytes";
 

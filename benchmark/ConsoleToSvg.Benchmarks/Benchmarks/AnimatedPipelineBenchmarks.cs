@@ -51,15 +51,12 @@ public class AnimatedPipelineBenchmarks
     public string RenderFrames() =>
         AnimatedSvgRenderer.RenderFrames(
             _frames,
-            new SvgRenderOptions { Loop = true, VideoFps = 0 });
+            new SvgRenderOptions { Loop = true, VideoFps = 0 }
+        );
 
     [Benchmark]
-    public string CompleteAnimatedRender() =>
-        AnimatedSvgRenderer.Render(_session, _options);
+    public string CompleteAnimatedRender() => AnimatedSvgRenderer.Render(_session, _options);
 
     private TerminalEmulator CreateEmulator() =>
-        new(
-            _session.Header.width,
-            _session.Header.height,
-            Theme.Resolve("dark"));
+        new(_session.Header.width, _session.Header.height, Theme.Resolve("dark"));
 }

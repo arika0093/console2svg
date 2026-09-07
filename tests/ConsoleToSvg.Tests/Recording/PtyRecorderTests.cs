@@ -30,10 +30,7 @@ public sealed class PtyRecorderTests
 
         try
         {
-            var completed = await Task.WhenAny(
-                disposeTask,
-                Task.Delay(TimeSpan.FromSeconds(3))
-            );
+            var completed = await Task.WhenAny(disposeTask, Task.Delay(TimeSpan.FromSeconds(3)));
             completed.ShouldBe(disposeTask);
             await disposeTask.WaitAsync(TimeSpan.FromSeconds(3)).ConfigureAwait(false);
         }

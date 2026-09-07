@@ -30,7 +30,11 @@ public static class AsciicastFixture
             RealFixture.Nyancat => "nyancat.cast",
             RealFixture.Cmatrix => "cmatrix.cast",
             RealFixture.Btop => "btop.cast",
-            _ => throw new ArgumentOutOfRangeException(nameof(fixture), fixture, "Unknown fixture."),
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(fixture),
+                fixture,
+                "Unknown fixture."
+            ),
         };
 
     public static RecordingSession Load(RealFixture fixture)
@@ -50,9 +54,11 @@ public static class AsciicastFixture
             leaveOpen: true
         );
 
-        var headerLine = reader.ReadLine()
+        var headerLine =
+            reader.ReadLine()
             ?? throw new InvalidDataException($"Invalid asciicast: missing header in '{path}'.");
-        var header = JsonSerializer.Deserialize<AsciicastHeader>(headerLine)
+        var header =
+            JsonSerializer.Deserialize<AsciicastHeader>(headerLine)
             ?? throw new InvalidDataException($"Invalid asciicast header in '{path}'.");
 
         var session = new RecordingSession(header);

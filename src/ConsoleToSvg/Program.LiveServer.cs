@@ -565,8 +565,11 @@ internal static partial class Program
 
     private static string LoadEmbeddedText(string resourceName)
     {
-        using var stream = typeof(Program).Assembly.GetManifestResourceStream(resourceName)
-            ?? throw new InvalidOperationException($"Embedded resource '{resourceName}' was not found.");
+        using var stream =
+            typeof(Program).Assembly.GetManifestResourceStream(resourceName)
+            ?? throw new InvalidOperationException(
+                $"Embedded resource '{resourceName}' was not found."
+            );
         using var reader = new StreamReader(stream, Encoding.UTF8);
         return reader.ReadToEnd();
     }

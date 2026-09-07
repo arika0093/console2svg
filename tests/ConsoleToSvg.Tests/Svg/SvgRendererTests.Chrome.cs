@@ -77,9 +77,8 @@ public sealed partial class SvgRendererTests
         var valuesStart = svg.IndexOf("data-values=", StringComparison.Ordinal);
         valuesStart.ShouldBeGreaterThanOrEqualTo(0);
         var valuesEnd = svg.IndexOf("\"/>", valuesStart, StringComparison.Ordinal);
-        svg[valuesStart..(valuesEnd + 1)].ShouldBe(
-            "data-values=\"0.5,66.2,#1e1e1e,{unknown},{winX+bad}\""
-        );
+        svg[valuesStart..(valuesEnd + 1)]
+            .ShouldBe("data-values=\"0.5,66.2,#1e1e1e,{unknown},{winX+bad}\"");
     }
 
     [Test]

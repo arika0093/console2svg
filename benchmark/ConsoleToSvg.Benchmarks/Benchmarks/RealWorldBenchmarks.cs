@@ -1,5 +1,5 @@
-using BenchmarkDotNet.Attributes;
 using System.IO;
+using BenchmarkDotNet.Attributes;
 using ConsoleToSvg.Benchmarks.Workloads;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;

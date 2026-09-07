@@ -67,6 +67,10 @@ internal static partial class Program
 
         if (options.Workflow == Workflow.LiveServer)
         {
+            using var liveEnvironmentScope = ApplyProcessEnvironmentOverrides(
+                options,
+                Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance
+            );
             using var liveCancellation = new CancellationTokenSource();
             Console.CancelKeyPress += (_, eventArgs) =>
             {

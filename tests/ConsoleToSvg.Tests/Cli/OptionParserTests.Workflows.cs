@@ -21,6 +21,21 @@ public sealed partial class OptionParserTests
     }
 
     [Test]
+    public void LiveServerAcceptsMaskPatterns()
+    {
+        OptionParser.TryParse(
+            ["live-server", "--mask", "token", "password", "--", "sh"],
+            out var options,
+            out _,
+            out _
+        ).ShouldBeTrue();
+
+        options!.Workflow.ShouldBe(Workflow.LiveServer);
+        options.MaskPatterns.ShouldBe(["token", "password"]);
+        options.DelimitedCommand.ShouldBe(["sh"]);
+    }
+
+    [Test]
     public void ReplayVerbOwnsReplayFile()
     {
         OptionParser.TryParse(["replay", "keys.json", "--", "bash", "-l"], out var options, out _, out _).ShouldBeTrue();

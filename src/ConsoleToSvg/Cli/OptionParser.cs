@@ -774,7 +774,6 @@ public static partial class OptionParser
             && !string.Equals(name, "--with-command", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "-v", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--video", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--mask", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--verbose", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--no-colorenv", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--no-delete-envs", StringComparison.OrdinalIgnoreCase)

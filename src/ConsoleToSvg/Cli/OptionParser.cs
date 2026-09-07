@@ -43,9 +43,11 @@ public static partial class OptionParser
             Print shell completion code to standard output.
             """,
         Workflow.LiveServer => """
-            Usage: console2svg live-server [port] --width <columns> --height <rows> -- <command> [args...]
+            Usage: console2svg live-server [port] [options] [-- <command> [args...]]
 
             Serve a live terminal SVG at http://127.0.0.1:38473/.
+            Options: --width, --height, --theme, --forecolor, --backcolor, etc.
+            If no command is specified, the default shell is used.
             """,
         _ => HelpText,
     };
@@ -62,7 +64,7 @@ public static partial class OptionParser
                 console2svg convert <input.cast|input.svg> [options]
                 console2svg theme              # Reserved for theme management (#115)
                 console2svg completion <shell> # Print shell completion code
-                console2svg live-server [port] --width <columns> --height <rows> -- command
+                console2svg live-server [port] [options] [-- command]
 
             Major options:
                 -o, --out <path>          Output file path (default: output.svg).

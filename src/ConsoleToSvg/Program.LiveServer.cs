@@ -18,15 +18,25 @@ internal static partial class Program
 {
     private static async Task<int> RunLiveServerAsync(AppOptions options, CancellationToken cancellationToken)
     {
-        var width = options.Width ?? 0;
-        var height = options.Height ?? 0;
-        if (width <= 0 || height <= 0 || options.DelimitedCommand is null || options.DelimitedCommand.Length == 0)
-        {
-            await Console.Error.WriteLineAsync("live-server requires fixed --width, --height, and a command after --.");
-            return 1;
-        }
         if (options.LiveServerPort is < 1 or > 65535) { await Console.Error.WriteLineAsync("live-server port must be between 1 and 65535."); return 1; }
         if (!IPAddress.TryParse(options.ListenAddress ?? "127.0.0.1", out var address)) { await Console.Error.WriteLineAsync("--listen must be an IP address."); return 1; }
+
+        var width = ResolveSize(options.Width, options.WidthAdjust, TryGetConsoleWidth, DefaultWidth);
+        var height = ResolveSize(options.Height, options.HeightAdjust, TryGetConsoleHeight, DefaultHeight);
+        var command = options.DelimitedCommand ?? Array.Empty<string>();
+        var useShell = command.Length == 0;
+        string app;
+        string[] args;
+        if (useShell)
+        {
+            app = GetDefaultShell();
+            args = Array.Empty<string>();
+        }
+        else
+        {
+            app = command[0];
+            args = command[1..];
+        }
 
         var theme = Theme.Resolve(options.Theme);
         if (!string.IsNullOrWhiteSpace(options.ForeColor)) theme = theme.WithForeground(options.ForeColor);
@@ -43,7 +53,7 @@ internal static partial class Program
         using var listenerRegistration = cancellationToken.Register(listener.Stop);
         try
         {
-            var ptyOptions = new NativePtyOptions { Name = "console2svg-live", Cols = width, Rows = height, Cwd = Environment.CurrentDirectory, App = options.DelimitedCommand[0], Args = options.DelimitedCommand[1..], Environment = CreateLiveEnvironment(width, height) };
+            var ptyOptions = new NativePtyOptions { Name = "console2svg-live", Cols = width, Rows = height, Cwd = Environment.CurrentDirectory, App = app, Args = args, Environment = CreateLiveEnvironment(width, height) };
             using var connection = await NativePty.SpawnAsync(ptyOptions, cancellationToken).ConfigureAwait(false);
             var acceptTask = AcceptLiveClientsAsync(listener, clients, () => latestSvg, cancellationToken);
             var readTask = ReadLiveOutputAsync(connection.ReaderStream, terminal, renderOptions, svg =>
@@ -65,11 +75,40 @@ internal static partial class Program
             return 0;
         }
         catch (OperationCanceledException) { return 0; }
+        catch (Exception ex)
+        {
+            await Console.Error.WriteLineAsync($"live-server error: {ex.Message}");
+            latestSvg = RenderErrorSvg(terminal, renderOptions, ex.Message);
+            BroadcastSvg(clients, latestSvg);
+            try { await Task.Delay(Timeout.Infinite, cancellationToken).ConfigureAwait(false); }
+            catch (OperationCanceledException) { /* shutdown requested */ }
+            return 0;
+        }
         finally
         {
             listener.Stop();
             foreach (var client in clients.Values) await client.DisposeAsync().ConfigureAwait(false);
         }
+    }
+
+    private static string GetDefaultShell()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            var comSpec = Environment.GetEnvironmentVariable("COMSPEC");
+            return string.IsNullOrWhiteSpace(comSpec) ? "cmd.exe" : comSpec;
+        }
+        var shell = Environment.GetEnvironmentVariable("SHELL");
+        return string.IsNullOrWhiteSpace(shell) ? "/bin/sh" : shell;
+    }
+
+    private static string RenderErrorSvg(TerminalEmulator terminal, SvgRenderOptions renderOptions, string message)
+    {
+        terminal.Process("\u001b[2J\u001b[H");
+        terminal.Process("\u001b[31;1mlive-server error:\u001b[0m\r\n");
+        foreach (var ch in message) terminal.Process(ch.ToString());
+        terminal.Process("\r\n\u001b[33mCheck console2svg output for details.\u001b[0m");
+        return SvgRenderer.Render(terminal.Buffer, renderOptions);
     }
 
     private static Dictionary<string, string> CreateLiveEnvironment(int width, int height)

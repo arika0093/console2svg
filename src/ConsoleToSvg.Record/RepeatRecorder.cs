@@ -130,23 +130,25 @@ public static class RepeatRecorder
             // before cancelling its process tree. This also prevents a timer that
             // fires during process startup from turning a valid snapshot into an
             // empty frame.
-            _ = Task.Run(async () =>
-            {
-                await Task
-                    .Delay(TimeSpan.FromMilliseconds(100), CancellationToken.None)
-                    .ConfigureAwait(false);
-                try
+            _ = Task.Run(
+                async () =>
                 {
-                    if (!process.HasExited)
+                    await Task.Delay(TimeSpan.FromMilliseconds(100), CancellationToken.None)
+                        .ConfigureAwait(false);
+                    try
                     {
-                        process.Kill(entireProcessTree: true);
+                        if (!process.HasExited)
+                        {
+                            process.Kill(entireProcessTree: true);
+                        }
                     }
-                }
-                catch
-                {
-                    // Ignore errors killing the process.
-                }
-            }, CancellationToken.None);
+                    catch
+                    {
+                        // Ignore errors killing the process.
+                    }
+                },
+                CancellationToken.None
+            );
         });
 
         // The process-tree cancellation registration above owns shutdown. Do not cancel
@@ -213,8 +215,7 @@ public static class RepeatRecorder
         {
             var remaining = content[lineStart..];
             var separatorOffset = remaining.IndexOf("\r\n", StringComparison.Ordinal);
-            var lineEnd =
-                separatorOffset >= 0 ? lineStart + separatorOffset : content.Length;
+            var lineEnd = separatorOffset >= 0 ? lineStart + separatorOffset : content.Length;
             if (!IsBlankLine(content[lineStart..lineEnd]))
             {
                 lastNonBlankEnd = lineEnd;
@@ -238,10 +239,9 @@ public static class RepeatRecorder
             return text;
         }
 
-        var resultEnd =
-            text.EndsWith("\r\n", StringComparison.Ordinal)
-                ? lastNonBlankEnd + 2
-                : lastNonBlankEnd;
+        var resultEnd = text.EndsWith("\r\n", StringComparison.Ordinal)
+            ? lastNonBlankEnd + 2
+            : lastNonBlankEnd;
         return text[..resultEnd];
     }
 

@@ -21,18 +21,36 @@
          Single quotes around the rpath value prevent shell expansion of $ORIGIN
          during the NativeAOT link step. -->
     <LinkerArg Include="-Wl,-rpath,'$ORIGIN'" Condition="$([MSBuild]::IsOSPlatform('Linux'))" />
-    <LinkerArg Include="-Wl,-rpath,'$ORIGIN/../lib/console2svg'" Condition="$([MSBuild]::IsOSPlatform('Linux'))" />
+    <LinkerArg
+      Include="-Wl,-rpath,'$ORIGIN/../lib/console2svg'"
+      Condition="$([MSBuild]::IsOSPlatform('Linux'))"
+    />
     <LinkerArg Include="-Wl,-rpath,'@loader_path'" Condition="$([MSBuild]::IsOSPlatform('OSX'))" />
-    <LinkerArg Include="-Wl,-rpath,'@loader_path/../lib/console2svg'" Condition="$([MSBuild]::IsOSPlatform('OSX'))" />
+    <LinkerArg
+      Include="-Wl,-rpath,'@loader_path/../lib/console2svg'"
+      Condition="$([MSBuild]::IsOSPlatform('OSX'))"
+    />
   </ItemGroup>
   <ItemGroup>
     <RuntimeHostConfigurationOption Include="System.Runtime.EnableWriteXorExecute" Value="false" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ConsoleToSvg.Core\ConsoleToSvg.Core.csproj" AdditionalProperties="PublishAot=false" />
-    <ProjectReference Include="..\ConsoleToSvg.Pty\ConsoleToSvg.Pty.csproj" AdditionalProperties="PublishAot=false" />
-    <ProjectReference Include="..\ConsoleToSvg.Record\ConsoleToSvg.Record.csproj" AdditionalProperties="PublishAot=false" />
-    <ProjectReference Include="..\ConsoleToSvg.Converter\ConsoleToSvg.Converter.csproj" AdditionalProperties="PublishAot=false" />
+    <ProjectReference
+      Include="..\ConsoleToSvg.Core\ConsoleToSvg.Core.csproj"
+      AdditionalProperties="PublishAot=false"
+    />
+    <ProjectReference
+      Include="..\ConsoleToSvg.Pty\ConsoleToSvg.Pty.csproj"
+      AdditionalProperties="PublishAot=false"
+    />
+    <ProjectReference
+      Include="..\ConsoleToSvg.Record\ConsoleToSvg.Record.csproj"
+      AdditionalProperties="PublishAot=false"
+    />
+    <ProjectReference
+      Include="..\ConsoleToSvg.Converter\ConsoleToSvg.Converter.csproj"
+      AdditionalProperties="PublishAot=false"
+    />
     <PackageReference Include="ZLogger" Version="2.5.10" />
   </ItemGroup>
   <Import Project="..\ConsoleToSvg.Converter\ConsoleToSvg.Converter.Native.targets" />

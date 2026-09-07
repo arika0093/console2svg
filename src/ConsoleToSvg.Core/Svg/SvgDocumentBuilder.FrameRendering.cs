@@ -33,8 +33,7 @@ internal static partial class SvgDocumentBuilder
         SvgStyleRegistry styles
     )
     {
-        var rowsBySignature =
-            new Dictionary<ulong, List<(ScreenBuffer Buffer, int Row)>>();
+        var rowsBySignature = new Dictionary<ulong, List<(ScreenBuffer Buffer, int Row)>>();
         for (var frameIndex = 0; frameIndex < frames.Length; frameIndex++)
         {
             var buffer = frames[frameIndex].Buffer;
@@ -332,10 +331,13 @@ internal static partial class SvgDocumentBuilder
                     textClass += " w";
                 }
 
-                var adjustedLength =
-                    string.Equals(effectiveLengthAdjust, "spacing", StringComparison.Ordinal)
-                        ? null
-                        : effectiveLengthAdjust;
+                var adjustedLength = string.Equals(
+                    effectiveLengthAdjust,
+                    "spacing",
+                    StringComparison.Ordinal
+                )
+                    ? null
+                    : effectiveLengthAdjust;
                 sb.Append("<text class=\"");
                 sb.Append(textClass);
                 sb.Append("\"");
@@ -815,11 +817,9 @@ internal static partial class SvgDocumentBuilder
         MergeAxis(hSegments, horizontal: true, mergeTolerance, mergedRects);
         MergeAxis(vSegments, horizontal: false, mergeTolerance, mergedRects);
 
-        mergedRects.Sort(static (left, right) =>
-            string.CompareOrdinal(left.Color, right.Color)
-        );
+        mergedRects.Sort(static (left, right) => string.CompareOrdinal(left.Color, right.Color));
         var pathData = elements is null ? null : new StringBuilder();
-        for (var groupStart = 0; groupStart < mergedRects.Count;)
+        for (var groupStart = 0; groupStart < mergedRects.Count; )
         {
             var color = mergedRects[groupStart].Color;
             pathData?.Clear();
@@ -887,12 +887,7 @@ internal static partial class SvgDocumentBuilder
             sb.Append(prefix);
             Span<char> buffer = stackalloc char[32];
             if (
-                value.TryFormat(
-                    buffer,
-                    out var charsWritten,
-                    "0.###",
-                    CultureInfo.InvariantCulture
-                )
+                value.TryFormat(buffer, out var charsWritten, "0.###", CultureInfo.InvariantCulture)
             )
             {
                 sb.Append(buffer[..charsWritten]);
@@ -911,19 +906,21 @@ internal static partial class SvgDocumentBuilder
         List<BoxRect> output
     )
     {
-        segments.Sort(static (left, right) =>
-        {
-            var comparison = left.Position.CompareTo(right.Position);
-            if (comparison != 0)
-                return comparison;
-            comparison = string.CompareOrdinal(left.Color, right.Color);
-            if (comparison != 0)
-                return comparison;
-            comparison = left.StrokeWidth.CompareTo(right.StrokeWidth);
-            return comparison != 0 ? comparison : left.Start.CompareTo(right.Start);
-        });
+        segments.Sort(
+            static (left, right) =>
+            {
+                var comparison = left.Position.CompareTo(right.Position);
+                if (comparison != 0)
+                    return comparison;
+                comparison = string.CompareOrdinal(left.Color, right.Color);
+                if (comparison != 0)
+                    return comparison;
+                comparison = left.StrokeWidth.CompareTo(right.StrokeWidth);
+                return comparison != 0 ? comparison : left.Start.CompareTo(right.Start);
+            }
+        );
 
-        for (var groupStart = 0; groupStart < segments.Count;)
+        for (var groupStart = 0; groupStart < segments.Count; )
         {
             var first = segments[groupStart];
             var currentStart = first.Start;

@@ -459,7 +459,11 @@ public static partial class PtyRecorder
             );
             // Observe exceptions from the read task in the background to prevent unobserved task exceptions
             _ = readTask.ContinueWith(
-                t => logger.ZLogDebug(t.Exception?.InnerException ?? t.Exception, $"PTY output reader faulted after timeout"),
+                t =>
+                    logger.ZLogDebug(
+                        t.Exception?.InnerException ?? t.Exception,
+                        $"PTY output reader faulted after timeout"
+                    ),
                 TaskContinuationOptions.OnlyOnFaulted
             );
             return false;
@@ -486,10 +490,7 @@ public static partial class PtyRecorder
     {
         var snapshot = new RecordingSession(source.Header.width, source.Header.height)
         {
-            Header =
-            {
-                timestamp = source.Header.timestamp,
-            },
+            Header = { timestamp = source.Header.timestamp },
         };
         lock (source.EventsLock)
         {

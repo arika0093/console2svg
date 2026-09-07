@@ -151,10 +151,7 @@ public static partial class PtyRecorder
             }
 
             var gap = elapsedSeconds - pendingLastTime;
-            if (
-                gap > coalesceWindowSeconds
-                || elapsedSeconds - pendingFirstTime >= maxBatchSeconds
-            )
+            if (gap > coalesceWindowSeconds || elapsedSeconds - pendingFirstTime >= maxBatchSeconds)
             {
                 FlushPending();
                 pendingFirstTime = elapsedSeconds;

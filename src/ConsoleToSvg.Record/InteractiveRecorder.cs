@@ -312,7 +312,8 @@ public static partial class InteractiveRecorder
             // Clear the previous indicator if one exists
             if (notificationLength > 0)
             {
-                var clearSequence = $"\u001b7\u001b[1;{notificationColumn}H{new string(' ', notificationLength)}\u001b8";
+                var clearSequence =
+                    $"\u001b7\u001b[1;{notificationColumn}H{new string(' ', notificationLength)}\u001b8";
                 await output
                     .WriteAsync(Encoding.UTF8.GetBytes(clearSequence), lifetime.Token)
                     .ConfigureAwait(false);
@@ -330,8 +331,7 @@ public static partial class InteractiveRecorder
                     {
                         try
                         {
-                            await startedNotification.Completion
-                                .ConfigureAwait(false);
+                            await startedNotification.Completion.ConfigureAwait(false);
                             lock (captureGate)
                             {
                                 if (videoFrames is null)
@@ -390,16 +390,15 @@ public static partial class InteractiveRecorder
         async Task SaveCaptureAsync(InteractiveCapture capture)
         {
             ShowPersistentNotification("Saving...");
-            var conversionProgressReporter = new InteractiveConversionProgressReporter(
-                message =>
-                {
-                    _ = ShowNotification(message);
-                    return Task.CompletedTask;
-                }
-            );
+            var conversionProgressReporter = new InteractiveConversionProgressReporter(message =>
+            {
+                _ = ShowNotification(message);
+                return Task.CompletedTask;
+            });
             try
             {
-                var message = await onCapture(capture, conversionProgressReporter).ConfigureAwait(false);
+                var message = await onCapture(capture, conversionProgressReporter)
+                    .ConfigureAwait(false);
                 if (!string.IsNullOrWhiteSpace(message))
                 {
                     var savedNotification = ShowNotification(message);
@@ -733,10 +732,7 @@ public static partial class InteractiveRecorder
                 );
                 var maxForwardedLength = Math.Max(
                     1,
-                    Math.Max(
-                        screenshotKey.Length,
-                        Math.Max(recordingKey.Length, pauseKey.Length)
-                    )
+                    Math.Max(screenshotKey.Length, Math.Max(recordingKey.Length, pauseKey.Length))
                 );
                 var forwarded = new List<byte>(maxForwardedLength);
                 var forwardedBytes = new byte[maxForwardedLength];
@@ -1040,10 +1036,10 @@ public static partial class InteractiveRecorder
                 Interlocked.Exchange(ref recordingIndicatorActive, 0);
                 Interlocked.Exchange(ref recordingPaused, 0);
                 Interlocked.Increment(ref notificationVersion);
-                
+
                 // Clear the recording indicator from the screen
                 await ClearPersistentIndicatorAsync().ConfigureAwait(false);
-                
+
                 QueueSaveCapture(capture);
             }
 

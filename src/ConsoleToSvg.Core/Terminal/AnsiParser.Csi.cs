@@ -103,7 +103,6 @@ public sealed partial class AnsiParser
 
                     return;
                 }
-
             }
         }
 
@@ -146,25 +145,25 @@ public sealed partial class AnsiParser
                 return;
             case 'G':
             case '`':
-                {
-                    var col = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
-                    _buffer.MoveCursorTo(_buffer.CursorRow, col);
-                    return;
-                }
+            {
+                var col = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
+                _buffer.MoveCursorTo(_buffer.CursorRow, col);
+                return;
+            }
             case 'H':
             case 'f':
-                {
-                    var row = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
-                    var col = Math.Max(1, GetParameter(parameters, 1, 1)) - 1;
-                    _buffer.MoveCursorToOriginRelative(row, col);
-                    return;
-                }
+            {
+                var row = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
+                var col = Math.Max(1, GetParameter(parameters, 1, 1)) - 1;
+                _buffer.MoveCursorToOriginRelative(row, col);
+                return;
+            }
             case 'd':
-                {
-                    var row = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
-                    _buffer.MoveCursorToOriginRelative(row, _buffer.CursorCol);
-                    return;
-                }
+            {
+                var row = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
+                _buffer.MoveCursorToOriginRelative(row, _buffer.CursorCol);
+                return;
+            }
             case 'J':
                 _buffer.ClearDisplay(GetParameter(parameters, 0, 0), _style);
                 return;
@@ -190,12 +189,12 @@ public sealed partial class AnsiParser
                 _buffer.ScrollDownLines(Math.Max(1, GetParameter(parameters, 0, 1)));
                 return;
             case 'r':
-                {
-                    var top = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
-                    var bottom = Math.Max(1, GetParameter(parameters, 1, _buffer.Height)) - 1;
-                    _buffer.SetScrollRegion(top, bottom);
-                    return;
-                }
+            {
+                var top = Math.Max(1, GetParameter(parameters, 0, 1)) - 1;
+                var bottom = Math.Max(1, GetParameter(parameters, 1, _buffer.Height)) - 1;
+                _buffer.SetScrollRegion(top, bottom);
+                return;
+            }
             case 'g':
                 _buffer.ClearTabStops(GetParameter(parameters, 0, 0));
                 return;

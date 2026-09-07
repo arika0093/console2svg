@@ -45,22 +45,11 @@ internal sealed record CellStyle(
     TextStyleAttributes Attributes
 )
 {
-    internal ulong VisualSignature { get; } = CreateVisualSignature(
-        Foreground,
-        Background,
-        UnderlineColor,
-        Attributes
-    );
+    internal ulong VisualSignature { get; } =
+        CreateVisualSignature(Foreground, Background, UnderlineColor, Attributes);
 
     public CellStyle(in TextStyle style)
-        : this(
-            style.Foreground,
-            style.Background,
-            style.UnderlineColor,
-            GetFlags(style)
-        )
-    {
-    }
+        : this(style.Foreground, style.Background, style.UnderlineColor, GetFlags(style)) { }
 
     private static TextStyleAttributes GetFlags(in TextStyle style)
     {
@@ -138,9 +127,7 @@ public readonly struct ScreenCell : IEquatable<ScreenCell>
         bool isWide = false,
         bool isWideContinuation = false
     )
-        : this(text, new CellStyle(style), isWide, isWideContinuation)
-    {
-    }
+        : this(text, new CellStyle(style), isWide, isWideContinuation) { }
 
     internal ScreenCell(
         string text,
@@ -277,9 +264,7 @@ public sealed partial class ScreenBuffer
     private bool[] _rowSignatureDirty;
 
     public ScreenBuffer(int width, int height, Theme theme)
-        : this(width, height, theme, initializeCells: true)
-    {
-    }
+        : this(width, height, theme, initializeCells: true) { }
 
     private ScreenBuffer(int width, int height, Theme theme, bool initializeCells)
     {
@@ -344,10 +329,7 @@ public sealed partial class ScreenBuffer
         var rented = ArrayPool<byte>.Shared.Rent(byteCount);
         try
         {
-            return ComputeVisualSignature(
-                rented.AsSpan(0, byteCount),
-                includeCursor: true
-            );
+            return ComputeVisualSignature(rented.AsSpan(0, byteCount), includeCursor: true);
         }
         finally
         {
@@ -367,10 +349,7 @@ public sealed partial class ScreenBuffer
         var rented = ArrayPool<byte>.Shared.Rent(byteCount);
         try
         {
-            return ComputeVisualSignature(
-                rented.AsSpan(0, byteCount),
-                includeCursor: false
-            );
+            return ComputeVisualSignature(rented.AsSpan(0, byteCount), includeCursor: false);
         }
         finally
         {
@@ -483,10 +462,7 @@ public sealed partial class ScreenBuffer
             Width != other.Width
             || Height != other.Height
             || _cursorVisible != other._cursorVisible
-            || (
-                _cursorVisible
-                && (CursorRow != other.CursorRow || CursorCol != other.CursorCol)
-            )
+            || (_cursorVisible && (CursorRow != other.CursorRow || CursorCol != other.CursorCol))
         )
         {
             return false;
@@ -579,8 +555,7 @@ public sealed partial class ScreenBuffer
         cloned._tabStops.UnionWith(_tabStops);
 
         cloned._cells = cloned._isAltScreen ? cloned._altCells : cloned._mainCells;
-        cloned._rowsShared =
-            cloned._isAltScreen ? cloned._altRowsShared : cloned._mainRowsShared;
+        cloned._rowsShared = cloned._isAltScreen ? cloned._altRowsShared : cloned._mainRowsShared;
         return cloned;
     }
 
@@ -654,8 +629,7 @@ public sealed partial class ScreenBuffer
             EnsureRowVisualSignature(row);
             signature =
                 _rowSignatures[row]
-                ^
-                GetPositionedCellSignature(col, previous)
+                ^ GetPositionedCellSignature(col, previous)
                 ^ GetPositionedCellSignature(col, cell);
         }
 
@@ -877,12 +851,16 @@ public sealed partial class ScreenBuffer
             return;
         }
 
-        SetCell(row, col, CreateCell(
-            prev.Text + ToSingleCharString(combining),
-            prev.ToTextStyle(),
-            prev.IsWide,
-            prev.IsWideContinuation
-        ));
+        SetCell(
+            row,
+            col,
+            CreateCell(
+                prev.Text + ToSingleCharString(combining),
+                prev.ToTextStyle(),
+                prev.IsWide,
+                prev.IsWideContinuation
+            )
+        );
 
         if (combining == '\uFE0F' && !prev.IsWide && !prev.IsWideContinuation)
         {
@@ -904,18 +882,16 @@ public sealed partial class ScreenBuffer
         }
 
         var cell = _cells[row][col];
-        SetCell(row, col, CreateCell(
-            cell.Text,
-            cell.ToTextStyle(),
-            isWide: true,
-            isWideContinuation: false
-        ));
-        SetCell(row, col + 1, CreateCell(
-            " ",
-            cell.ToTextStyle(),
-            isWide: false,
-            isWideContinuation: true
-        ));
+        SetCell(
+            row,
+            col,
+            CreateCell(cell.Text, cell.ToTextStyle(), isWide: true, isWideContinuation: false)
+        );
+        SetCell(
+            row,
+            col + 1,
+            CreateCell(" ", cell.ToTextStyle(), isWide: false, isWideContinuation: true)
+        );
 
         if (CursorRow == row && CursorCol == col + 1)
         {
@@ -956,11 +932,7 @@ public sealed partial class ScreenBuffer
 
         if (isWide && CursorCol < Width)
         {
-            SetCell(
-                CursorRow,
-                CursorCol,
-                new ScreenCell(" ", cellStyle, false, true)
-            );
+            SetCell(CursorRow, CursorCol, new ScreenCell(" ", cellStyle, false, true));
             CursorCol++;
         }
 
@@ -986,9 +958,7 @@ public sealed partial class ScreenBuffer
     }
 
     private static string ToSingleCharString(char value) =>
-        value < AsciiSingleCharStrings.Length
-            ? AsciiSingleCharStrings[value]
-            : value.ToString();
+        value < AsciiSingleCharStrings.Length ? AsciiSingleCharStrings[value] : value.ToString();
 
     private static bool IsWideCharacter(string text)
     {

@@ -33,16 +33,27 @@ internal static partial class Program
         foreach (var frameSvg in RenderFrameSvgs(session, baseOptions, fps, cancellationToken))
         {
             await File.WriteAllTextAsync(
-                    Path.Combine(directory, $"frame-{savedCount:D4}.svg"), frameSvg, utf8, cancellationToken)
+                    Path.Combine(directory, $"frame-{savedCount:D4}.svg"),
+                    frameSvg,
+                    utf8,
+                    cancellationToken
+                )
                 .ConfigureAwait(false);
             savedCount++;
         }
         logger.ZLogDebug($"Saved {savedCount} frames to {directory}");
-        await Console.Error.WriteLineAsync($"Saved {savedCount} frames to {directory}".AsMemory(), CancellationToken.None);
+        await Console.Error.WriteLineAsync(
+            $"Saved {savedCount} frames to {directory}".AsMemory(),
+            CancellationToken.None
+        );
         return savedCount;
     }
 
-    private static void CopyRenderedFrameSvgs(string sourceDirectory, string destinationDirectory, ILogger logger)
+    private static void CopyRenderedFrameSvgs(
+        string sourceDirectory,
+        string destinationDirectory,
+        ILogger logger
+    )
     {
         Directory.CreateDirectory(destinationDirectory);
         var copiedCount = 0;
@@ -127,9 +138,15 @@ internal static partial class Program
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     var t = f / fps;
-                    if (t < rangeStart - 1e-9) continue;
-                    if (t > rangeEnd + 1e-9) break;
-                    while (eventIndex + 1 < eventCount && session.Events[eventIndex + 1].Time <= t + 1e-9) eventIndex++;
+                    if (t < rangeStart - 1e-9)
+                        continue;
+                    if (t > rangeEnd + 1e-9)
+                        break;
+                    while (
+                        eventIndex + 1 < eventCount
+                        && session.Events[eventIndex + 1].Time <= t + 1e-9
+                    )
+                        eventIndex++;
                     yielded = true;
                     yield return RenderThrough(eventIndex);
                 }
@@ -140,8 +157,10 @@ internal static partial class Program
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     var time = session.Events[i].Time;
-                    if (baseOptions.TimeStart.HasValue && time < baseOptions.TimeStart.Value - 1e-9) continue;
-                    if (baseOptions.TimeEnd.HasValue && time > baseOptions.TimeEnd.Value + 1e-9) break;
+                    if (baseOptions.TimeStart.HasValue && time < baseOptions.TimeStart.Value - 1e-9)
+                        continue;
+                    if (baseOptions.TimeEnd.HasValue && time > baseOptions.TimeEnd.Value + 1e-9)
+                        break;
                     var frameSvg = RenderThrough(i);
                     if (hasPreviousEmittedSignature && currentSignature == previousEmittedSignature)
                     {
@@ -160,7 +179,10 @@ internal static partial class Program
                 yield return SvgRenderer.Render(session, baseOptions);
             }
         }
-        finally { baseOptions.Frame = null; }
+        finally
+        {
+            baseOptions.Frame = null;
+        }
     }
 
     private static string GetDefaultPrompt()
@@ -239,7 +261,10 @@ internal static partial class Program
 
         // Write to temp file so less can read keyboard from terminal
         // Create a private subdirectory to avoid publicly writable directory issues
-        var privateTempDir = Path.Combine(Path.GetTempPath(), $"console2svg-{Environment.ProcessId}");
+        var privateTempDir = Path.Combine(
+            Path.GetTempPath(),
+            $"console2svg-{Environment.ProcessId}"
+        );
         Directory.CreateDirectory(privateTempDir);
         var tempFile = Path.Combine(privateTempDir, Path.GetRandomFileName());
         try

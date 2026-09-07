@@ -39,7 +39,9 @@ internal static partial class Program
 
         if (showHelp || options is null)
         {
-            WritePagedHelp(ColorizeIfSupported(OptionParser.GetHelpText(options?.Workflow ?? Workflow.Legacy)));
+            WritePagedHelp(
+                ColorizeIfSupported(OptionParser.GetHelpText(options?.Workflow ?? Workflow.Legacy))
+            );
             return 0;
         }
 
@@ -54,7 +56,9 @@ internal static partial class Program
             var script = ShellCompletion.GetScript(options.CompletionShell);
             if (script is null)
             {
-                await Console.Error.WriteLineAsync("completion shell must be bash, zsh, fish, or powershell.");
+                await Console.Error.WriteLineAsync(
+                    "completion shell must be bash, zsh, fish, or powershell."
+                );
                 return 1;
             }
             await Console.Out.WriteAsync(script);
@@ -64,7 +68,11 @@ internal static partial class Program
         if (options.Workflow == Workflow.LiveServer)
         {
             using var liveCancellation = new CancellationTokenSource();
-            Console.CancelKeyPress += (_, eventArgs) => { eventArgs.Cancel = true; liveCancellation.Cancel(); };
+            Console.CancelKeyPress += (_, eventArgs) =>
+            {
+                eventArgs.Cancel = true;
+                liveCancellation.Cancel();
+            };
             return await RunLiveServerAsync(options, liveCancellation.Token).ConfigureAwait(false);
         }
 
@@ -181,26 +189,29 @@ internal static partial class Program
                 if (options.StdOut)
                 {
                     await using var input = File.OpenRead(options.InputSvgPath);
-                    await input.CopyToAsync(
-                        Console.OpenStandardOutput(),
-                        cancellationTokenSource.Token
-                    ).ConfigureAwait(false);
+                    await input
+                        .CopyToAsync(Console.OpenStandardOutput(), cancellationTokenSource.Token)
+                        .ConfigureAwait(false);
                     await Console.Error.WriteLineAsync("Generated: (stdout)");
                     return 0;
                 }
 
                 EnsureDirectory(options.OutputPath);
                 var outputExtension = Path.GetExtension(options.OutputPath);
-                if (string.IsNullOrEmpty(outputExtension)
-                    || string.Equals(outputExtension, ".svg", StringComparison.OrdinalIgnoreCase))
+                if (
+                    string.IsNullOrEmpty(outputExtension)
+                    || string.Equals(outputExtension, ".svg", StringComparison.OrdinalIgnoreCase)
+                )
                 {
-                    if (!string.Equals(
+                    if (
+                        !string.Equals(
                             Path.GetFullPath(options.InputSvgPath),
                             Path.GetFullPath(options.OutputPath),
                             OperatingSystem.IsWindows()
                                 ? StringComparison.OrdinalIgnoreCase
                                 : StringComparison.Ordinal
-                        ))
+                        )
+                    )
                     {
                         File.Copy(options.InputSvgPath, options.OutputPath, overwrite: true);
                     }
@@ -214,17 +225,19 @@ internal static partial class Program
                         !string.IsNullOrWhiteSpace(ffmpegPath),
                         logger
                     );
-                    await SvgConverter.ConvertSvgToImageAsync(
-                        options.InputSvgPath,
-                        options.OutputPath,
-                        converter,
-                        ffmpegPath,
-                        options.SizeWidth,
-                        options.SizeHeight,
-                        logger,
-                        ConsoleProgressReporter.Instance,
-                        cancellationTokenSource.Token
-                    ).ConfigureAwait(false);
+                    await SvgConverter
+                        .ConvertSvgToImageAsync(
+                            options.InputSvgPath,
+                            options.OutputPath,
+                            converter,
+                            ffmpegPath,
+                            options.SizeWidth,
+                            options.SizeHeight,
+                            logger,
+                            ConsoleProgressReporter.Instance,
+                            cancellationTokenSource.Token
+                        )
+                        .ConfigureAwait(false);
                 }
                 Console.WriteLine($"Generated: {options.OutputPath}");
                 return 0;
@@ -272,10 +285,7 @@ internal static partial class Program
             if (options.EmbedReplay)
             {
                 logger.ZLogDebug($"Embedding replay data in SVG metadata.");
-                var replayBytes = await File.ReadAllBytesAsync(
-                        options.ReplaySavePath!,
-                        outputToken
-                    )
+                var replayBytes = await File.ReadAllBytesAsync(options.ReplaySavePath!, outputToken)
                     .ConfigureAwait(false);
                 renderOptions.EmbeddedReplay = Convert.ToBase64String(replayBytes);
             }
@@ -366,7 +376,8 @@ internal static partial class Program
                         if (string.IsNullOrWhiteSpace(options.SaveFramesDir))
                         {
                             EnsureDirectory(options.OutputPath);
-                            await SvgConverter.ConvertSvgFramesToVideoAsync(
+                            await SvgConverter
+                                .ConvertSvgFramesToVideoAsync(
                                     RenderFrameSvgs(
                                         session,
                                         renderOptions,
@@ -374,17 +385,30 @@ internal static partial class Program
                                         outputToken,
                                         includeFallback: true
                                     ),
-                                    options.VideoFps, options.OutputPath, converter, ffmpegPath,
-                                    options.SizeWidth, options.SizeHeight, logger, ConsoleProgressReporter.Instance, outputToken)
+                                    options.VideoFps,
+                                    options.OutputPath,
+                                    converter,
+                                    ffmpegPath,
+                                    options.SizeWidth,
+                                    options.SizeHeight,
+                                    logger,
+                                    ConsoleProgressReporter.Instance,
+                                    outputToken
+                                )
                                 .ConfigureAwait(false);
                         }
                         else
                         {
                             // Video format: save frames to a temp dir, then invoke ffmpeg.
-                            var tempDir = Path.Combine(Path.GetTempPath(), $"c2s-{Guid.NewGuid():N}");
+                            var tempDir = Path.Combine(
+                                Path.GetTempPath(),
+                                $"c2s-{Guid.NewGuid():N}"
+                            );
                             try
                             {
-                                logger.ZLogDebug($"Video output: saving frames to temp dir {tempDir}");
+                                logger.ZLogDebug(
+                                    $"Video output: saving frames to temp dir {tempDir}"
+                                );
                                 var frameCount = await SaveFramesAsync(
                                         session,
                                         renderOptions,
@@ -399,7 +423,9 @@ internal static partial class Program
                                 // so ffmpeg receives valid input (e.g. commands that exit without output).
                                 if (frameCount == 0)
                                 {
-                                    var utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+                                    var utf8 = new UTF8Encoding(
+                                        encoderShouldEmitUTF8Identifier: false
+                                    );
                                     var fallbackSvg = SvgRenderer.Render(session, renderOptions);
                                     await File.WriteAllTextAsync(
                                             Path.Combine(tempDir, "frame-0000.svg"),
@@ -516,7 +542,10 @@ internal static partial class Program
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(options.SaveFramesDir) && !savedFramesDuringVideoConversion)
+            if (
+                !string.IsNullOrWhiteSpace(options.SaveFramesDir)
+                && !savedFramesDuringVideoConversion
+            )
             {
                 await SaveFramesAsync(
                         session,

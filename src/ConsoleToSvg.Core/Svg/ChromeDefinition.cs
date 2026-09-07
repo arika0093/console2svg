@@ -201,15 +201,7 @@ public sealed class ChromeDefinition
             varName = expr;
         }
 
-        var baseVal = ResolveBaseValue(
-            varName,
-            winX,
-            winY,
-            winW,
-            winH,
-            totalW,
-            totalH
-        );
+        var baseVal = ResolveBaseValue(varName, winX, winY, winW, winH, totalW, totalH);
 
         if (double.IsNaN(baseVal))
         {
@@ -217,10 +209,7 @@ public sealed class ChromeDefinition
             return;
         }
 
-        output.Append(
-            CultureInfo.InvariantCulture,
-            $"{baseVal + offset:0.###}"
-        );
+        output.Append(CultureInfo.InvariantCulture, $"{baseVal + offset:0.###}");
     }
 
     private static double ResolveBaseValue(

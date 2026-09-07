@@ -62,5 +62,4 @@ public static partial class AnimatedSvgRenderer
     {
         return maxFps > 0d ? 1d / maxFps : 0.05d;
     }
-
 }

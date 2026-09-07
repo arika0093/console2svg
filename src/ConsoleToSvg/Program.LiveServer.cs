@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,25 +19,24 @@ internal static partial class Program
 {
     private static async Task<int> RunLiveServerAsync(AppOptions options, CancellationToken cancellationToken)
     {
+        var stderrWriter = new StreamWriter(
+            Console.OpenStandardError(),
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+            bufferSize: 4096,
+            leaveOpen: true
+        )
+        {
+            AutoFlush = true,
+        };
+        Console.SetOut(stderrWriter);
+
         if (options.LiveServerPort is < 1 or > 65535) { await Console.Error.WriteLineAsync("live-server port must be between 1 and 65535."); return 1; }
         if (!IPAddress.TryParse(options.ListenAddress ?? "127.0.0.1", out var address)) { await Console.Error.WriteLineAsync("--listen must be an IP address."); return 1; }
 
         var width = ResolveSize(options.Width, options.WidthAdjust, TryGetConsoleWidth, DefaultWidth);
         var height = ResolveSize(options.Height, options.HeightAdjust, TryGetConsoleHeight, DefaultHeight);
         var command = options.DelimitedCommand ?? Array.Empty<string>();
-        var useShell = command.Length == 0;
-        string app;
-        string[] args;
-        if (useShell)
-        {
-            app = GetDefaultShell();
-            args = Array.Empty<string>();
-        }
-        else
-        {
-            app = command[0];
-            args = command[1..];
-        }
+        var ptyOptions = BuildLivePtyOptions(width, height, command);
 
         var theme = Theme.Resolve(options.Theme);
         if (!string.IsNullOrWhiteSpace(options.ForeColor)) theme = theme.WithForeground(options.ForeColor);
@@ -44,7 +44,7 @@ internal static partial class Program
         var terminal = new TerminalEmulator(width, height, theme);
         var renderOptions = SvgRenderOptionsFactory.Create(options);
         renderOptions.RenderCursor = true;
-        var latestSvg = SvgRenderer.Render(terminal.Buffer, renderOptions);
+        string latestSvg = "";
         var clients = new ConcurrentDictionary<int, LiveSseClient>();
         var listener = new TcpListener(address, options.LiveServerPort);
         try { listener.Start(); }
@@ -53,13 +53,17 @@ internal static partial class Program
         using var listenerRegistration = cancellationToken.Register(listener.Stop);
         try
         {
-            var ptyOptions = new NativePtyOptions { Name = "console2svg-live", Cols = width, Rows = height, Cwd = Environment.CurrentDirectory, App = app, Args = args, Environment = CreateLiveEnvironment(width, height) };
             using var connection = await NativePty.SpawnAsync(ptyOptions, cancellationToken).ConfigureAwait(false);
+            latestSvg = SvgRenderer.Render(terminal.Buffer, renderOptions);
             var acceptTask = AcceptLiveClientsAsync(listener, clients, () => latestSvg, cancellationToken);
             var readTask = ReadLiveOutputAsync(connection.ReaderStream, terminal, renderOptions, svg =>
             {
                 latestSvg = svg;
                 BroadcastSvg(clients, svg);
+            }, errorMessage =>
+            {
+                latestSvg = RenderErrorSvg(terminal, renderOptions, errorMessage);
+                BroadcastSvg(clients, latestSvg);
             }, cancellationToken);
             while (!readTask.IsCompleted && !cancellationToken.IsCancellationRequested)
             {
@@ -91,15 +95,93 @@ internal static partial class Program
         }
     }
 
-    private static string GetDefaultShell()
+    private static NativePtyOptions BuildLivePtyOptions(int width, int height, string[]? command)
     {
-        if (OperatingSystem.IsWindows())
+        var environment = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (System.Collections.DictionaryEntry entry in Environment.GetEnvironmentVariables())
         {
-            var comSpec = Environment.GetEnvironmentVariable("COMSPEC");
-            return string.IsNullOrWhiteSpace(comSpec) ? "cmd.exe" : comSpec;
+            if (entry.Key is string key && entry.Value is string value)
+            {
+                environment[key] = value;
+            }
         }
-        var shell = Environment.GetEnvironmentVariable("SHELL");
-        return string.IsNullOrWhiteSpace(shell) ? "/bin/sh" : shell;
+
+        environment["COLUMNS"] = width.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        environment["LINES"] = height.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        environment.Remove("CI");
+        environment.Remove("TF_BUILD");
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            if (command is { Length: > 0 })
+            {
+                return new NativePtyOptions
+                {
+                    Name = "console2svg-live",
+                    Cols = width,
+                    Rows = height,
+                    Cwd = Environment.CurrentDirectory,
+                    App = command[0],
+                    Args = command[1..],
+                    Environment = environment,
+                    DisableInputEcho = false,
+                };
+            }
+
+            var shell = Environment.GetEnvironmentVariable("COMSPEC");
+            if (string.IsNullOrWhiteSpace(shell))
+            {
+                shell = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.System),
+                    "cmd.exe"
+                );
+            }
+
+            return new NativePtyOptions
+            {
+                Name = "console2svg-live",
+                Cols = width,
+                Rows = height,
+                Cwd = Environment.CurrentDirectory,
+                App = shell,
+                Args = ["/k"],
+                Environment = environment,
+                DisableInputEcho = false,
+            };
+        }
+
+        var unixShell = Environment.GetEnvironmentVariable("SHELL");
+        if (string.IsNullOrWhiteSpace(unixShell))
+        {
+            unixShell = File.Exists("/bin/bash") ? "/bin/bash" : "/bin/sh";
+        }
+
+        if (command is { Length: > 0 })
+        {
+            return new NativePtyOptions
+            {
+                Name = "console2svg-live",
+                Cols = width,
+                Rows = height,
+                Cwd = Environment.CurrentDirectory,
+                App = command[0],
+                Args = command[1..],
+                Environment = environment,
+                DisableInputEcho = false,
+            };
+        }
+
+        return new NativePtyOptions
+        {
+            Name = "console2svg-live",
+            Cols = width,
+            Rows = height,
+            Cwd = Environment.CurrentDirectory,
+            App = unixShell,
+            Args = ["-i"],
+            Environment = environment,
+            DisableInputEcho = false,
+        };
     }
 
     private static string RenderErrorSvg(TerminalEmulator terminal, SvgRenderOptions renderOptions, string message)
@@ -109,15 +191,6 @@ internal static partial class Program
         foreach (var ch in message) terminal.Process(ch.ToString());
         terminal.Process("\r\n\u001b[33mCheck console2svg output for details.\u001b[0m");
         return SvgRenderer.Render(terminal.Buffer, renderOptions);
-    }
-
-    private static Dictionary<string, string> CreateLiveEnvironment(int width, int height)
-    {
-        var env = new Dictionary<string, string>(StringComparer.Ordinal);
-        foreach (System.Collections.DictionaryEntry entry in Environment.GetEnvironmentVariables()) if (entry.Key is string key && entry.Value is string value) env[key] = value;
-        env["COLUMNS"] = width.ToString(System.Globalization.CultureInfo.InvariantCulture);
-        env["LINES"] = height.ToString(System.Globalization.CultureInfo.InvariantCulture);
-        return env;
     }
 
     private static async Task AcceptLiveClientsAsync(TcpListener listener, ConcurrentDictionary<int, LiveSseClient> clients, Func<string> latest, CancellationToken cancellationToken)
@@ -166,15 +239,30 @@ internal static partial class Program
         foreach (var client in clients.Values) client.TrySend(svg);
     }
 
-    private static async Task ReadLiveOutputAsync(Stream input, TerminalEmulator terminal, SvgRenderOptions renderOptions, Action<string> publish, CancellationToken cancellationToken)
+    private static async Task ReadLiveOutputAsync(Stream input, TerminalEmulator terminal, SvgRenderOptions renderOptions, Action<string> publish, Action<string> publishError, CancellationToken cancellationToken)
     {
+        const int StartupTimeoutMs = 3000;
         var bytes = new byte[8192];
         var chars = new char[Encoding.UTF8.GetMaxCharCount(bytes.Length)];
         var decoder = Encoding.UTF8.GetDecoder();
+        var dataReceived = false;
+        var startupTimeoutTask = Task.Delay(StartupTimeoutMs, cancellationToken);
+        
         while (true)
         {
-            var read = await input.ReadAsync(bytes, cancellationToken).ConfigureAwait(false);
+            var readTask = input.ReadAsync(bytes, cancellationToken).AsTask();
+            var completedTask = await Task.WhenAny(readTask, startupTimeoutTask).ConfigureAwait(false);
+            
+            if (completedTask == startupTimeoutTask && !dataReceived)
+            {
+                publishError($"No data received from PTY within {StartupTimeoutMs}ms.\nThe command may be hanging or not producing output.");
+                startupTimeoutTask = Task.Delay(Timeout.Infinite, cancellationToken);
+            }
+            
+            var read = await readTask.ConfigureAwait(false);
             if (read == 0) break;
+            
+            dataReceived = true;
             var count = decoder.GetChars(bytes, 0, read, chars, 0, flush: false);
             if (count == 0) continue;
             terminal.Process(new string(chars, 0, count));
@@ -211,5 +299,5 @@ internal static partial class Program
     private static async Task WriteHttpAsync(NetworkStream stream, string status, string contentType, string? body, string extra = "") => await WriteBytesAsync(stream, $"HTTP/1.1 {status}\r\nContent-Type: {contentType}\r\n{extra}Content-Length: {Encoding.UTF8.GetByteCount(body ?? string.Empty)}\r\n\r\n{body}", CancellationToken.None).ConfigureAwait(false);
     private static async Task WriteBytesAsync(NetworkStream stream, string text, CancellationToken token) { var bytes = Encoding.UTF8.GetBytes(text); await stream.WriteAsync(bytes, token).ConfigureAwait(false); await stream.FlushAsync(token).ConfigureAwait(false); }
 
-    private const string LiveHtml = """<!doctype html><meta charset=\"utf-8\"><style>html,body,#screen{margin:0;width:100%;height:100%;background:transparent;overflow:hidden}#screen svg{width:100%;height:100%;object-fit:contain}.width svg{width:100%;height:auto}.height svg{width:auto;height:100%}.actual svg{width:auto;height:auto}#menu{display:none;position:fixed;background:#222;color:#fff;padding:4px;font:13px sans-serif;z-index:1}#menu button{display:block;width:100%;border:0;background:transparent;color:inherit;text-align:left;padding:4px}</style><div id=screen></div><div id=menu><button data-mode=width>Fit to width</button><button data-mode=height>Fit to height</button><button data-mode=contain>Contain</button><button data-mode=actual>1:1 display</button></div><script>const s=document.querySelector('#screen'),m=document.querySelector('#menu');new EventSource('/events').addEventListener('svg',e=>s.innerHTML=e.data);document.oncontextmenu=e=>{e.preventDefault();m.style.cssText+=';display:block;left:'+e.clientX+'px;top:'+e.clientY+'px'};m.onclick=e=>{let b=e.target.closest('button');if(b){s.className=b.dataset.mode==='contain'?'':b.dataset.mode;m.style.display='none'}};document.onclick=e=>{if(!m.contains(e.target))m.style.display='none'};</script>""";
+    private const string LiveHtml = """<!doctype html><meta charset="utf-8"><style>html,body,#screen{margin:0;width:100%;height:100%;background:transparent;overflow:hidden}#screen svg{width:100%;height:100%;object-fit:contain}.width svg{width:100%;height:auto}.height svg{width:auto;height:100%}.actual svg{width:auto;height:auto}#menu{display:none;position:fixed;background:#222;color:#fff;padding:4px;font:13px sans-serif;z-index:1}#menu button{display:block;width:100%;border:0;background:transparent;color:inherit;text-align:left;padding:4px}</style><div id=screen></div><div id=menu><button data-mode=width>Fit to width</button><button data-mode=height>Fit to height</button><button data-mode=contain>Contain</button><button data-mode=actual>1:1 display</button></div><script>const s=document.querySelector('#screen'),m=document.querySelector('#menu');new EventSource('/events').addEventListener('svg',e=>s.innerHTML=e.data);document.oncontextmenu=e=>{e.preventDefault();m.style.cssText+=';display:block;left:'+e.clientX+'px;top:'+e.clientY+'px'};m.onclick=e=>{let b=e.target.closest('button');if(b){s.className=b.dataset.mode==='contain'?'':b.dataset.mode;m.style.display='none'}};document.onclick=e=>{if(!m.contains(e.target))m.style.display='none'};</script>""";
 }

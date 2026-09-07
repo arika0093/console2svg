@@ -49,9 +49,7 @@ public static partial class SvgConverter
     }
 
     internal static string ResolveFfmpegExecutable(string ffmpegPath) =>
-        string.IsNullOrEmpty(ffmpegPath)
-            ? FindFfmpegForDetection()
-            : FindExecutable(ffmpegPath);
+        string.IsNullOrEmpty(ffmpegPath) ? FindFfmpegForDetection() : FindExecutable(ffmpegPath);
 
     /// <summary>
     /// Probes whether ffmpeg can actually decode SVG (rasterize via librsvg)

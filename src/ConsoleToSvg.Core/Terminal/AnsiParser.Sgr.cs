@@ -206,10 +206,7 @@ public sealed partial class AnsiParser
         return count;
     }
 
-    private static void ParseParameters(
-        ReadOnlySpan<char> parameterText,
-        Span<int> parameters
-    )
+    private static void ParseParameters(ReadOnlySpan<char> parameterText, Span<int> parameters)
     {
         if (parameterText.IsEmpty)
         {
@@ -247,11 +244,7 @@ public sealed partial class AnsiParser
         }
     }
 
-    private static int GetParameter(
-        ReadOnlySpan<int> parameters,
-        int index,
-        int defaultValue
-    )
+    private static int GetParameter(ReadOnlySpan<int> parameters, int index, int defaultValue)
     {
         if (index < 0 || index >= parameters.Length)
         {

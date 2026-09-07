@@ -76,5 +76,4 @@ public sealed class SvgRenderOptions
 
     /// <summary>Base64-encoded UTF-8 console2svg replay JSON.</summary>
     public string? EmbeddedReplay { get; set; }
-
 }

@@ -222,7 +222,9 @@ public static partial class SvgConverter
 
         if (converter != SvgConverterMode.RsvgConvert)
         {
-            throw new InvalidOperationException($"Converter {converter} cannot directly produce PNG.");
+            throw new InvalidOperationException(
+                $"Converter {converter} cannot directly produce PNG."
+            );
         }
 
         var exe = FindRsvgConvertExecutable();
@@ -282,14 +284,18 @@ public static partial class SvgConverter
         var errorTask = process.StandardError.ReadToEndAsync(cancellationToken);
         await using var output = new MemoryStream();
         var outputTask = process.StandardOutput.BaseStream.CopyToAsync(output, cancellationToken);
-        await process.StandardInput.WriteAsync(svg.AsMemory(), cancellationToken).ConfigureAwait(false);
+        await process
+            .StandardInput.WriteAsync(svg.AsMemory(), cancellationToken)
+            .ConfigureAwait(false);
         await process.StandardInput.DisposeAsync().ConfigureAwait(false);
         await outputTask.ConfigureAwait(false);
         await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
         var error = await errorTask.ConfigureAwait(false);
         if (process.ExitCode != 0)
         {
-            throw new InvalidOperationException($"rsvg-convert exited with code {process.ExitCode}. {error}".TrimEnd());
+            throw new InvalidOperationException(
+                $"rsvg-convert exited with code {process.ExitCode}. {error}".TrimEnd()
+            );
         }
         return output.ToArray();
     }

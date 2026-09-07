@@ -441,7 +441,11 @@ public static partial class OptionParser
             (options.EmbedCast || options.EmbedLogs || options.EmbedReplay)
             && !options.StdOut
             && !string.IsNullOrEmpty(Path.GetExtension(options.OutputPath))
-            && !string.Equals(Path.GetExtension(options.OutputPath), ".svg", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(
+                Path.GetExtension(options.OutputPath),
+                ".svg",
+                StringComparison.OrdinalIgnoreCase
+            )
         )
         {
             error = "Embed options require SVG output.";
@@ -472,8 +476,10 @@ public static partial class OptionParser
             return false;
         }
 
-        if (!string.IsNullOrWhiteSpace(options.InputSvgPath)
-            && !string.IsNullOrWhiteSpace(options.InputCastPath))
+        if (
+            !string.IsNullOrWhiteSpace(options.InputSvgPath)
+            && !string.IsNullOrWhiteSpace(options.InputCastPath)
+        )
         {
             error = "SVG input and --in cannot be used together.";
             return false;
@@ -492,9 +498,13 @@ public static partial class OptionParser
             }
         }
 
-        if (!string.IsNullOrWhiteSpace(options.Command)
-            && (!string.IsNullOrWhiteSpace(options.InputCastPath)
-                || !string.IsNullOrWhiteSpace(options.InputSvgPath)))
+        if (
+            !string.IsNullOrWhiteSpace(options.Command)
+            && (
+                !string.IsNullOrWhiteSpace(options.InputCastPath)
+                || !string.IsNullOrWhiteSpace(options.InputSvgPath)
+            )
+        )
         {
             error = "--command and --in cannot be used together.";
             return false;
@@ -530,9 +540,20 @@ public static partial class OptionParser
         return true;
     }
 
-    private static bool IsVideoFormat(string extension) => extension.ToLowerInvariant() switch
-    {
-        "mp4" or "webm" or "avi" or "mov" or "mkv" or "ogv" or "flv" or "ts" or "wmv" or "m4v" or "gif" => true,
-        _ => false,
-    };
+    private static bool IsVideoFormat(string extension) =>
+        extension.ToLowerInvariant() switch
+        {
+            "mp4"
+            or "webm"
+            or "avi"
+            or "mov"
+            or "mkv"
+            or "ogv"
+            or "flv"
+            or "ts"
+            or "wmv"
+            or "m4v"
+            or "gif" => true,
+            _ => false,
+        };
 }

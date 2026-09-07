@@ -390,11 +390,7 @@ internal static partial class SvgDocumentBuilder
         sb.Append("</linearGradient>\n");
     }
 
-    private static void AppendImagePatternDef(
-        SvgWriter sb,
-        string imagePath,
-        in Context context
-    )
+    private static void AppendImagePatternDef(SvgWriter sb, string imagePath, in Context context)
     {
         string href;
         var mimeType = GetImageMimeType(imagePath);
@@ -490,7 +486,12 @@ internal static partial class SvgDocumentBuilder
         }
         if (!string.IsNullOrEmpty(embeddedReplay))
         {
-            AppendEmbeddedMetadata(sb, "console2svg-replay", "console2svg-replay-v1", embeddedReplay);
+            AppendEmbeddedMetadata(
+                sb,
+                "console2svg-replay",
+                "console2svg-replay-v1",
+                embeddedReplay
+            );
         }
         sb.Append("</svg>");
     }
@@ -528,8 +529,7 @@ internal static partial class SvgDocumentBuilder
     {
         var rowCount = context.EndRowExclusive - context.StartRow;
         var rowDefinitions = new List<RowDefinition>();
-        var hashToRowDefinitionIndices =
-            new Dictionary<ulong, List<int>>();
+        var hashToRowDefinitionIndices = new Dictionary<ulong, List<int>>();
         var frameRowDefinitions = new int[frames.Length][];
         var lastDefinitionByRow = new int[rowCount];
         var elements = new SvgElementRegistry();
@@ -738,9 +738,9 @@ internal static partial class SvgDocumentBuilder
         var baseBuffer = frames[baseDefinition.FrameIndex].Buffer;
         while (
             startCol < endColExclusive
-            && buffer.GetCell(row, startCol).Equals(
-                baseBuffer.GetCell(baseDefinition.Row, startCol)
-            )
+            && buffer
+                .GetCell(row, startCol)
+                .Equals(baseBuffer.GetCell(baseDefinition.Row, startCol))
         )
         {
             startCol++;
@@ -753,7 +753,8 @@ internal static partial class SvgDocumentBuilder
 
         while (
             endColExclusive > startCol
-            && buffer.GetCell(row, endColExclusive - 1)
+            && buffer
+                .GetCell(row, endColExclusive - 1)
                 .Equals(baseBuffer.GetCell(baseDefinition.Row, endColExclusive - 1))
         )
         {
@@ -827,7 +828,7 @@ internal static partial class SvgDocumentBuilder
         var rowCount = context.EndRowExclusive - context.StartRow;
         for (var rowOffset = 0; rowOffset < rowCount; rowOffset++)
         {
-            for (var runStart = 0; runStart < frames.Length;)
+            for (var runStart = 0; runStart < frames.Length; )
             {
                 var definitionIndex = frameRowDefinitions[runStart][rowOffset];
                 var runEnd = runStart + 1;
@@ -875,14 +876,11 @@ internal static partial class SvgDocumentBuilder
         bool loop
     )
     {
-        for (var runStart = 0; runStart < frames.Length;)
+        for (var runStart = 0; runStart < frames.Length; )
         {
             var buffer = frames[runStart].Buffer;
             var runEnd = runStart + 1;
-            while (
-                runEnd < frames.Length
-                && HaveSameCursor(buffer, frames[runEnd].Buffer)
-            )
+            while (runEnd < frames.Length && HaveSameCursor(buffer, frames[runEnd].Buffer))
             {
                 runEnd++;
             }
@@ -961,10 +959,7 @@ internal static partial class SvgDocumentBuilder
 
     private static void AppendKeyTime(SvgWriter sb, double keyTime)
     {
-        sb.Append(
-            Math.Clamp(keyTime, 0d, 1d)
-                .ToString("0.######", CultureInfo.InvariantCulture)
-        );
+        sb.Append(Math.Clamp(keyTime, 0d, 1d).ToString("0.######", CultureInfo.InvariantCulture));
     }
 
     private static void AppendSmilRepeatOrFreeze(SvgWriter sb, bool loop)

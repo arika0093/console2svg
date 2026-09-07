@@ -101,8 +101,8 @@ public static partial class SvgConverter
                 if (pendingRenders.Count >= maxParallelRenders)
                 {
                     var bytes = await pendingRenders.Dequeue().ConfigureAwait(false);
-                    await process.StandardInput.BaseStream
-                        .WriteAsync(bytes, cancellationToken)
+                    await process
+                        .StandardInput.BaseStream.WriteAsync(bytes, cancellationToken)
                         .ConfigureAwait(false);
                     frameCount++;
                 }
@@ -111,8 +111,8 @@ public static partial class SvgConverter
             while (pendingRenders.Count > 0)
             {
                 var bytes = await pendingRenders.Dequeue().ConfigureAwait(false);
-                await process.StandardInput.BaseStream
-                    .WriteAsync(bytes, cancellationToken)
+                await process
+                    .StandardInput.BaseStream.WriteAsync(bytes, cancellationToken)
                     .ConfigureAwait(false);
                 frameCount++;
             }
@@ -146,7 +146,10 @@ public static partial class SvgConverter
                     + FormatFfmpegError(standardError)
             );
         }
-        await progressReporter.ReportAsync($"Encoded {frameCount} frames to video.", CancellationToken.None);
+        await progressReporter.ReportAsync(
+            $"Encoded {frameCount} frames to video.",
+            CancellationToken.None
+        );
     }
 
     private static int GetVideoRenderParallelism() => Math.Clamp(Environment.ProcessorCount, 1, 8);

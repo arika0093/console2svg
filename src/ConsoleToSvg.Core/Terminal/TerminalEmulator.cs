@@ -94,9 +94,7 @@ public sealed class TerminalEmulator
             {
                 if (pendingBuffer is not null)
                 {
-                    frames.Add(
-                        new TerminalFrame(pendingTime, pendingBuffer, pendingEventIndex)
-                    );
+                    frames.Add(new TerminalFrame(pendingTime, pendingBuffer, pendingEventIndex));
                 }
 
                 frames.Add(new TerminalFrame(time, Buffer.CreateVisibleSnapshot(), i));
@@ -182,9 +180,7 @@ public sealed class TerminalEmulator
 public sealed class TerminalFrame
 {
     public TerminalFrame(double time, ScreenBuffer buffer)
-        : this(time, buffer, -1)
-    {
-    }
+        : this(time, buffer, -1) { }
 
     internal TerminalFrame(double time, ScreenBuffer buffer, int eventIndex)
     {

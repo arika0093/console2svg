@@ -44,10 +44,7 @@ internal static class ResvgNative
         var svgBytes = ArrayPool<byte>.Shared.Rent(byteCount);
         try
         {
-            var bytesWritten = Encoding.UTF8.GetBytes(
-                svg.AsSpan(),
-                svgBytes.AsSpan(0, byteCount)
-            );
+            var bytesWritten = Encoding.UTF8.GetBytes(svg.AsSpan(), svgBytes.AsSpan(0, byteCount));
             var status = c2s_resvg_render_png(
                 svgBytes,
                 (nuint)bytesWritten,

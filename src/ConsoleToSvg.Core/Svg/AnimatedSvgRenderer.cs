@@ -19,11 +19,7 @@ public static partial class AnimatedSvgRenderer
         return builder.ToString();
     }
 
-    public static void Write(
-        TextWriter writer,
-        RecordingSession session,
-        SvgRenderOptions options
-    )
+    public static void Write(TextWriter writer, RecordingSession session, SvgRenderOptions options)
     {
         if (session.Events.Count == 0)
         {
@@ -47,10 +43,7 @@ public static partial class AnimatedSvgRenderer
     }
 
     /// <summary>Renders terminal frames captured from an already-running interactive terminal.</summary>
-    public static string RenderFrames(
-        IReadOnlyList<TerminalFrame> frames,
-        SvgRenderOptions options
-    )
+    public static string RenderFrames(IReadOnlyList<TerminalFrame> frames, SvgRenderOptions options)
     {
         var builder = new StringBuilder(128 * 1024);
         using var writer = new StringWriter(builder, CultureInfo.InvariantCulture);
@@ -182,11 +175,7 @@ public static partial class AnimatedSvgRenderer
         {
             styles.GetTextClass(theme.Foreground);
         }
-        SvgDocumentBuilder.CollectTextStyles(
-            animationFrames,
-            context,
-            styles
-        );
+        SvgDocumentBuilder.CollectTextStyles(animationFrames, context, styles);
         SvgDocumentBuilder.BeginSvg(
             svgWriter,
             context,
@@ -384,8 +373,7 @@ public static partial class AnimatedSvgRenderer
         return time =>
         {
             var quantizedTime =
-                Math.Round(Math.Max(0d, time) / interval, MidpointRounding.AwayFromZero)
-                * interval;
+                Math.Round(Math.Max(0d, time) / interval, MidpointRounding.AwayFromZero) * interval;
             if (quantizedTime < lastTime)
             {
                 quantizedTime = lastTime;

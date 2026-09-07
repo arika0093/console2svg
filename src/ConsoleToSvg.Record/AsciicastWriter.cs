@@ -45,9 +45,7 @@ public static class AsciicastWriter
             AsciicastJsonContext.Default.AsciicastHeader
         );
         await jsonWriter.FlushAsync(cancellationToken).ConfigureAwait(false);
-        await stream
-            .WriteAsync(buffer.WrittenMemory, cancellationToken)
-            .ConfigureAwait(false);
+        await stream.WriteAsync(buffer.WrittenMemory, cancellationToken).ConfigureAwait(false);
         await stream.WriteAsync(NewLineBytes, cancellationToken).ConfigureAwait(false);
 
         foreach (var outputEvent in session.Events)
@@ -61,9 +59,7 @@ public static class AsciicastWriter
             jsonWriter.WriteStringValue(outputEvent.Data);
             jsonWriter.WriteEndArray();
             await jsonWriter.FlushAsync(cancellationToken).ConfigureAwait(false);
-            await stream
-                .WriteAsync(buffer.WrittenMemory, cancellationToken)
-                .ConfigureAwait(false);
+            await stream.WriteAsync(buffer.WrittenMemory, cancellationToken).ConfigureAwait(false);
             await stream.WriteAsync(NewLineBytes, cancellationToken).ConfigureAwait(false);
         }
 

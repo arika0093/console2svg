@@ -11,7 +11,10 @@ public static class SvgRenderer
     public static string Render(RecordingSession session, SvgRenderOptions options)
     {
         var builder = new StringBuilder(32 * 1024);
-        using var writer = new StringWriter(builder, System.Globalization.CultureInfo.InvariantCulture);
+        using var writer = new StringWriter(
+            builder,
+            System.Globalization.CultureInfo.InvariantCulture
+        );
         Write(writer, session, options);
         return builder.ToString();
     }
@@ -24,16 +27,15 @@ public static class SvgRenderer
     )
     {
         var builder = new StringBuilder(32 * 1024);
-        using var writer = new StringWriter(builder, System.Globalization.CultureInfo.InvariantCulture);
+        using var writer = new StringWriter(
+            builder,
+            System.Globalization.CultureInfo.InvariantCulture
+        );
         Write(writer, buffer, options, includeScrollback);
         return builder.ToString();
     }
 
-    public static void Write(
-        TextWriter writer,
-        RecordingSession session,
-        SvgRenderOptions options
-    )
+    public static void Write(TextWriter writer, RecordingSession session, SvgRenderOptions options)
     {
         var theme = SvgRenderShared.ResolveTheme(options);
         var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
@@ -80,7 +82,11 @@ public static class SvgRenderer
             else
             {
                 // Rare: trailing blank frames to trim; replay to the target frame.
-                var target = new TerminalEmulator(session.Header.width, session.Header.height, theme);
+                var target = new TerminalEmulator(
+                    session.Header.width,
+                    session.Header.height,
+                    theme
+                );
                 target.Replay(session, targetFrame);
                 renderBuffer = target.Buffer;
             }
@@ -111,12 +117,7 @@ public static class SvgRenderer
         {
             styles.GetTextClass(theme.Foreground);
         }
-        SvgDocumentBuilder.CollectTextStyles(
-            buffer,
-            context,
-            styles,
-            includeScrollback
-        );
+        SvgDocumentBuilder.CollectTextStyles(buffer, context, styles, includeScrollback);
         SvgDocumentBuilder.BeginSvg(
             svgWriter,
             context,
@@ -152,10 +153,7 @@ public static class SvgRenderer
         );
     }
 
-    private static int ResolveDefaultTargetFrame(
-        RecordingSession session,
-        int lastNonBlankIndex
-    )
+    private static int ResolveDefaultTargetFrame(RecordingSession session, int lastNonBlankIndex)
     {
         var lastIndex = session.Events.Count - 1;
         if (lastIndex <= 0)

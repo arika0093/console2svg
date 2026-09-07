@@ -7,50 +7,51 @@ namespace ConsoleToSvg.Cli;
 
 public static partial class OptionParser
 {
-    public static string GetHelpText(Workflow workflow) => workflow switch
-    {
-        Workflow.Capture => """
-            Usage: console2svg capture [options] [-- <command> [args...]]
-                   <command> | console2svg capture [options]
+    public static string GetHelpText(Workflow workflow) =>
+        workflow switch
+        {
+            Workflow.Capture => """
+                Usage: console2svg capture [options] [-- <command> [args...]]
+                       <command> | console2svg capture [options]
 
-            Capture options: --save-cast, --replay-save, --timeout.
-            Output and appearance options are also accepted.
-            """,
-        Workflow.Interactive => """
-            Usage: console2svg interactive [options] [-- <program> [args...]]
+                Capture options: --save-cast, --replay-save, --timeout.
+                Output and appearance options are also accepted.
+                """,
+            Workflow.Interactive => """
+                Usage: console2svg interactive [options] [-- <program> [args...]]
 
-            Starts an interactive shell or program.
-            F9 records, F12 pauses, and F10 takes a screenshot.
-            """,
-        Workflow.Replay => """
-            Usage: console2svg replay <replay.json> [options] -- <command> [args...]
+                Starts an interactive shell or program.
+                F9 records, F12 pauses, and F10 takes a screenshot.
+                """,
+            Workflow.Replay => """
+                Usage: console2svg replay <replay.json> [options] -- <command> [args...]
 
-            Replays recorded keyboard input while capturing the command.
-            """,
-        Workflow.Convert => """
-            Usage: console2svg convert <input.cast|input.svg> [options]
+                Replays recorded keyboard input while capturing the command.
+                """,
+            Workflow.Convert => """
+                Usage: console2svg convert <input.cast|input.svg> [options]
 
-            Renders an existing recording or converts an SVG.
-            Use -o/--out to select the output format.
-            """,
-        Workflow.Theme => """
-            The 'theme' command is reserved for theme management planned in issue #115.
-            Use the existing --theme option to select a rendering color theme.
-            """,
-        Workflow.Completion => """
-            Usage: console2svg completion <bash|zsh|fish|powershell>
+                Renders an existing recording or converts an SVG.
+                Use -o/--out to select the output format.
+                """,
+            Workflow.Theme => """
+                The 'theme' command is reserved for theme management planned in issue #115.
+                Use the existing --theme option to select a rendering color theme.
+                """,
+            Workflow.Completion => """
+                Usage: console2svg completion <bash|zsh|fish|powershell>
 
-            Print shell completion code to standard output.
-            """,
-        Workflow.LiveServer => """
-            Usage: console2svg live-server [port] [options] [-- <command> [args...]]
+                Print shell completion code to standard output.
+                """,
+            Workflow.LiveServer => """
+                Usage: console2svg live-server [port] [options] [-- <command> [args...]]
 
-            Serve a live terminal SVG at http://127.0.0.1:38473/.
-            Options: --width, --height, --theme, --forecolor, --backcolor, etc.
-            If no command is specified, the default shell is used.
-            """,
-        _ => HelpText,
-    };
+                Serve a live terminal SVG at http://127.0.0.1:38473/.
+                Options: --width, --height, --theme, --forecolor, --backcolor, etc.
+                If no command is specified, the default shell is used.
+                """,
+            _ => HelpText,
+        };
 
     public static string ShortHelpText =>
         $"""
@@ -245,10 +246,12 @@ public static partial class OptionParser
             }
 
             // Section headers
-            if (line.StartsWith("Usage:", StringComparison.Ordinal)
+            if (
+                line.StartsWith("Usage:", StringComparison.Ordinal)
                 || line.StartsWith("Major options:", StringComparison.Ordinal)
                 || line.StartsWith("Options (", StringComparison.Ordinal)
-                || line.StartsWith("For full option list", StringComparison.Ordinal))
+                || line.StartsWith("For full option list", StringComparison.Ordinal)
+            )
             {
                 result.Append(Bold).Append(Yellow).Append(line).Append(Reset);
                 continue;
@@ -369,7 +372,14 @@ public static partial class OptionParser
             if (text[i] == '-' && (i == 0 || text[i - 1] == ' ' || text[i - 1] == ','))
             {
                 var start = i;
-                while (i < text.Length && text[i] != ' ' && text[i] != ',' && text[i] != '=' && text[i] != '[' && text[i] != '<')
+                while (
+                    i < text.Length
+                    && text[i] != ' '
+                    && text[i] != ','
+                    && text[i] != '='
+                    && text[i] != '['
+                    && text[i] != '<'
+                )
                 {
                     i++;
                 }
@@ -438,8 +448,10 @@ public static partial class OptionParser
                 var j = i + 1;
                 while (j < text.Length && depth > 0)
                 {
-                    if (text[j] == '(') depth++;
-                    else if (text[j] == ')') depth--;
+                    if (text[j] == '(')
+                        depth++;
+                    else if (text[j] == ')')
+                        depth--;
                     j++;
                 }
                 if (depth == 0)
@@ -660,7 +672,8 @@ public static partial class OptionParser
                 }
                 if (args.Length < 2 || args[1].StartsWith("-", StringComparison.Ordinal))
                 {
-                    error = "replay requires a replay file: console2svg replay <replay.json> [options] -- <command>.";
+                    error =
+                        "replay requires a replay file: console2svg replay <replay.json> [options] -- <command>.";
                     return false;
                 }
                 options.ReplayPath = args[1];
@@ -676,10 +689,17 @@ public static partial class OptionParser
                 }
                 if (args.Length < 2 || args[1].StartsWith("-", StringComparison.Ordinal))
                 {
-                    error = "convert requires an input: console2svg convert <input.cast|input.svg> [options].";
+                    error =
+                        "convert requires an input: console2svg convert <input.cast|input.svg> [options].";
                     return false;
                 }
-                if (string.Equals(Path.GetExtension(args[1]), ".svg", StringComparison.OrdinalIgnoreCase))
+                if (
+                    string.Equals(
+                        Path.GetExtension(args[1]),
+                        ".svg",
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
                 {
                     options.InputSvgPath = args[1];
                 }
@@ -697,12 +717,22 @@ public static partial class OptionParser
                     args = [];
                     return true;
                 }
-                error = "The 'theme' command is reserved for issue #115 and is not implemented yet. The existing --theme option remains available.";
+                error =
+                    "The 'theme' command is reserved for issue #115 and is not implemented yet. The existing --theme option remains available.";
                 return false;
             case "completion":
                 options.Workflow = Workflow.Completion;
-                if (args.Length == 2 && args[1] is "--help" or "-h") { showHelp = true; args = []; return true; }
-                if (args.Length != 2) { error = "completion requires a shell: bash, zsh, fish, or powershell."; return false; }
+                if (args.Length == 2 && args[1] is "--help" or "-h")
+                {
+                    showHelp = true;
+                    args = [];
+                    return true;
+                }
+                if (args.Length != 2)
+                {
+                    error = "completion requires a shell: bash, zsh, fish, or powershell.";
+                    return false;
+                }
                 options.CompletionShell = args[1];
                 args = [];
                 return true;

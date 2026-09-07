@@ -18,7 +18,7 @@ public static partial class AnimatedSvgRenderer
         }
 
         List<TerminalFrame>? adjusted = null;
-        for (var runStart = 0; runStart < frames.Count;)
+        for (var runStart = 0; runStart < frames.Count; )
         {
             var runEnd = runStart;
             while (
@@ -109,5 +109,4 @@ public static partial class AnimatedSvgRenderer
 
         return GetMinimumFrameInterval(maxFps);
     }
-
 }

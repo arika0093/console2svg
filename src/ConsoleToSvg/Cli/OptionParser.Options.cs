@@ -37,6 +37,14 @@ public static partial class OptionParser
             case "--version":
                 options.ShowVersion = true;
                 return true;
+            case "--listen":
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    error = "--listen requires an IP address.";
+                    return false;
+                }
+                options.ListenAddress = value;
+                return true;
             case "-c":
             case "--with-command":
                 options.WithCommand = true;

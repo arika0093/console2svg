@@ -107,6 +107,25 @@ public sealed class InteractiveRecorderTests
     }
 
     [Test]
+    public void WindowsExtendedRightArrowIsForwardedAsVtInput()
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return;
+        }
+
+        var router = new InteractiveInputRouter(ScreenshotKey, RecordingKey, PauseKey);
+        var forwarded = new List<byte>();
+
+        router.Process(0xE0, forwarded, captureControlsEnabled: false)
+            .ShouldBe(InteractiveInputAction.None);
+        router.Process(0x4D, forwarded, captureControlsEnabled: false)
+            .ShouldBe(InteractiveInputAction.None);
+
+        forwarded.ToArray().ShouldBe(Encoding.ASCII.GetBytes("\u001b[C"));
+    }
+
+    [Test]
     public async Task ExitedInteractiveChildIsObservedWithoutHanging()
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

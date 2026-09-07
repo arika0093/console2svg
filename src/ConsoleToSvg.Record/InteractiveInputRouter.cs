@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace ConsoleToSvg.Recording;
 
@@ -20,6 +21,7 @@ public sealed class InteractiveInputRouter
     private readonly byte[] _pauseKey;
     private readonly List<byte> _pending;
     private bool _discardingSgrMouseReport;
+    private byte? _pendingWindowsExtendedKey;
 
     public InteractiveInputRouter(
         ReadOnlySpan<byte> screenshotKey,
@@ -47,6 +49,11 @@ public sealed class InteractiveInputRouter
         bool captureControlsEnabled = true
     )
     {
+        if (TryProcessWindowsExtendedKey(value, forwarded))
+        {
+            return InteractiveInputAction.None;
+        }
+
         if (value == 0x04)
         {
             // Let Unix shells receive EOT so Bash can close normally. Windows
@@ -139,4 +146,47 @@ public sealed class InteractiveInputRouter
 
     private static bool IsSgrMouseReportPrefix(List<byte> value) =>
         value.Count == 3 && value[0] == 0x1b && value[1] == (byte)'[' && value[2] == (byte)'<';
+
+    private bool TryProcessWindowsExtendedKey(byte value, List<byte> forwarded)
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return false;
+        }
+
+        if (_pendingWindowsExtendedKey is { } prefix)
+        {
+            _pendingWindowsExtendedKey = null;
+            var sequence = value switch
+            {
+                0x48 => "\u001b[A", // Up
+                0x50 => "\u001b[B", // Down
+                0x4D => "\u001b[C", // Right
+                0x4B => "\u001b[D", // Left
+                0x47 => "\u001b[H", // Home
+                0x4F => "\u001b[F", // End
+                0x49 => "\u001b[5~", // Page Up
+                0x51 => "\u001b[6~", // Page Down
+                0x52 => "\u001b[2~", // Insert
+                0x53 => "\u001b[3~", // Delete
+                _ => null,
+            };
+            if (sequence is not null)
+            {
+                forwarded.AddRange(System.Text.Encoding.ASCII.GetBytes(sequence));
+                return true;
+            }
+
+            forwarded.Add(prefix);
+            return false;
+        }
+
+        if (value is 0x00 or 0xE0)
+        {
+            _pendingWindowsExtendedKey = value;
+            return true;
+        }
+
+        return false;
+    }
 }

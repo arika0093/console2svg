@@ -30,7 +30,10 @@ public static partial class InteractiveRecorder
         bool screenshotEnabled,
         Func<InteractiveCapture, IProgressReporter, Task<string?>> onCapture,
         CancellationToken cancellationToken,
-        ILogger? logger = null
+        ILogger? logger = null,
+        Action<ScreenBuffer>? onScreenUpdated = null,
+        bool forwardToConsole = true,
+        bool captureControlsEnabled = true
     )
     {
         if (screenshotKey.IsEmpty || recordingKey.IsEmpty || pauseKey.IsEmpty)
@@ -64,25 +67,36 @@ public static partial class InteractiveRecorder
         var input = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
             ? Console.OpenStandardInput()
             : null;
-        PtyRecorder.TryDisableTerminalMouseTracking(forwardToConsole: true, logger);
+        if (forwardToConsole)
+        {
+            PtyRecorder.TryDisableTerminalMouseTracking(forwardToConsole: true, logger);
+        }
 
         var connection = await NativePty
             .SpawnAsync(options, cancellationToken)
             .ConfigureAwait(false);
-        var rawInput = PtyRecorder.ConsoleInputMode.TryEnableRaw(logger);
+        onScreenUpdated?.Invoke(emulator.Buffer.Clone());
+        var rawInput = forwardToConsole
+            ? PtyRecorder.ConsoleInputMode.TryEnableRaw(logger)
+            : null;
         using var utf8OutputScope = PtyRecorder.TryUseUtf8ConsoleOutputEncoding(
-            forwardToConsole: true,
+            forwardToConsole,
             logger
         );
         // Console.Out is recreated when the console encoding changes. Acquire it
         // after entering the UTF-8 scope so its writer matches the console.
         var outputWriter =
-            RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !Console.IsOutputRedirected
+            forwardToConsole
+            && RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            && !Console.IsOutputRedirected
                 ? Console.Out
                 : null;
         try
         {
-            await ClearHostTerminalAsync(output, hostOutputGate).ConfigureAwait(false);
+            if (forwardToConsole)
+            {
+                await ClearHostTerminalAsync(output, hostOutputGate).ConfigureAwait(false);
+            }
         }
         catch
         {
@@ -602,6 +616,7 @@ public static partial class InteractiveRecorder
                         }
 
                         var charCount = decoder.GetChars(bytes, 0, count, chars, 0, flush: false);
+                        ScreenBuffer? updatedScreen = null;
                         lock (captureGate)
                         {
                             if (charCount > 0)
@@ -621,7 +636,12 @@ public static partial class InteractiveRecorder
                                         )
                                     );
                                 }
+                                updatedScreen = emulator.Buffer.Clone();
                             }
+                        }
+                        if (updatedScreen is not null)
+                        {
+                            onScreenUpdated?.Invoke(updatedScreen);
                         }
 
                         if (outputWriter is not null)
@@ -654,7 +674,7 @@ public static partial class InteractiveRecorder
                                 }
                             }
                         }
-                        else
+                        else if (forwardToConsole)
                         {
                             var text =
                                 charCount > 0
@@ -721,7 +741,8 @@ public static partial class InteractiveRecorder
             }
         }
 
-        var inputTask = Task.Run(
+        var inputTask = forwardToConsole
+            ? Task.Run(
             async () =>
             {
                 var bytes = new byte[256];
@@ -827,7 +848,13 @@ public static partial class InteractiveRecorder
                             for (var i = 0; i < count; i++)
                             {
                                 forwarded.Clear();
-                                var action = router.Process(bytes[i], forwarded);
+                                var action = captureControlsEnabled
+                                    ? router.Process(bytes[i], forwarded)
+                                    : InteractiveInputAction.None;
+                                if (!captureControlsEnabled)
+                                {
+                                    forwarded.Add(bytes[i]);
+                                }
                                 if (forwarded.Count > 0)
                                 {
                                     if (forwarded.Count > forwardedBytes.Length)
@@ -914,7 +941,7 @@ public static partial class InteractiveRecorder
 
                             // Function keys and other VT input can arrive across reads.
                             // Give a lone Escape a short grace period before forwarding it.
-                            if (router.HasStandaloneEscape)
+                            if (captureControlsEnabled && router.HasStandaloneEscape)
                             {
                                 var version = Interlocked.Increment(ref escapePendingVersion);
                                 ScheduleStandaloneEscape(version);
@@ -955,9 +982,12 @@ public static partial class InteractiveRecorder
                 }
             },
             CancellationToken.None
-        );
+            )
+            : Task.CompletedTask;
 
-        _ = Task.Run(
+        if (forwardToConsole)
+        {
+            _ = Task.Run(
             async () =>
             {
                 try
@@ -988,7 +1018,8 @@ public static partial class InteractiveRecorder
                 }
             },
             CancellationToken.None
-        );
+            );
+        }
 
         try
         {
@@ -1056,21 +1087,30 @@ public static partial class InteractiveRecorder
             // A child application can leave the outer terminal in mouse-reporting
             // mode. Reset it before restoring the host input mode so selection is
             // available after an interactive session ends.
-            PtyRecorder.TryDisableTerminalMouseTracking(forwardToConsole: true, logger);
+            if (forwardToConsole)
+            {
+                PtyRecorder.TryDisableTerminalMouseTracking(forwardToConsole: true, logger);
+            }
             try
             {
-                await ClearHostTerminalAsync(output, hostOutputGate).ConfigureAwait(false);
+                if (forwardToConsole)
+                {
+                    await ClearHostTerminalAsync(output, hostOutputGate).ConfigureAwait(false);
+                }
             }
             finally
             {
                 rawInput?.Dispose();
             }
-            await Console
-                .Out.WriteLineAsync(
-                    "console2svg interactive mode finished".AsMemory(),
-                    CancellationToken.None
-                )
-                .ConfigureAwait(false);
+            if (forwardToConsole)
+            {
+                await Console
+                    .Out.WriteLineAsync(
+                        "console2svg interactive mode finished".AsMemory(),
+                        CancellationToken.None
+                    )
+                    .ConfigureAwait(false);
+            }
         }
     }
 

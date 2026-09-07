@@ -204,6 +204,7 @@ public static partial class InteractiveRecorder
 
         environment["COLUMNS"] = width.ToString(System.Globalization.CultureInfo.InvariantCulture);
         environment["LINES"] = height.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        environment["DOTNET_EnableWriteXorExecute"] = "0";
         if (!noDeleteEnvs)
         {
             environment.Remove("CI");

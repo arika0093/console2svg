@@ -1,0 +1,129 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+  html,
+  body,
+  #screen {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  #screen { position: relative; }
+
+  #layers,
+  #background,
+  #window,
+  #chrome,
+  #terminal {
+    position: absolute;
+    inset: 0;
+  }
+
+  #window { opacity: {opacity}; }
+  #screen svg { display: block; }
+  #background svg,
+  #screen.width svg { width: 100%; height: auto; }
+  #screen.height svg { width: auto; height: 100%; }
+  #screen.actual svg { width: auto; height: auto; }
+  #screen.contain { display: grid; align-content: stretch; justify-content: stretch; align-items: start; justify-items: start; }
+
+  #settings {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 1;
+    display: none;
+    padding: 7px 10px;
+    color: #fff;
+    cursor: pointer;
+    background: #333c;
+    border: 0;
+    border-radius: 4px;
+    font: 13px sans-serif;
+  }
+
+  #screen.show-settings #settings,
+  #screen:hover #settings,
+  #settings:hover { display: block; }
+
+  #status {
+    position: fixed;
+    inset: 0;
+    display: none;
+    place-items: center;
+    color: #fff;
+    pointer-events: none;
+    background: #0009;
+    font: 16px system-ui, sans-serif;
+  }
+
+  #status.visible { display: grid; }
+</style>
+<div id="screen">
+  <div id="layers">
+    <div id="background"></div>
+    <div id="window">
+      <div id="chrome"></div>
+      <div id="terminal"></div>
+    </div>
+  </div>
+  <button id="settings" type="button" aria-label="Display settings">Settings</button>
+</div>
+<div id="status" role="status">Connection to the server was lost. Reconnecting...</div>
+<script>
+  const s = document.querySelector('#screen');
+  const background = document.querySelector('#background');
+  const chromeLayer = document.querySelector('#chrome');
+  const terminal = document.querySelector('#terminal');
+  const settings = document.querySelector('#settings');
+  const status = document.querySelector('#status');
+  const modes = new Set(['width', 'height', 'contain', 'actual']);
+  const key = 'console2svg.live.fit';
+  let mode = 'contain';
+  let events;
+  let reconnectTimer;
+
+  function applyMode() {
+    const svg = terminal.querySelector('svg');
+    if (!svg) return;
+    const svgs = s.querySelectorAll('#background svg,#chrome svg,#terminal svg');
+    svgs.forEach(svg => { svg.style.width = ''; svg.style.height = ''; });
+    if (mode !== 'contain') return;
+    const box = svg.viewBox.baseVal;
+    const ratio = (box.width || svg.width.baseVal.value) / (box.height || svg.height.baseVal.value);
+    const width = ratio > s.clientWidth / s.clientHeight;
+    svgs.forEach(svg => { svg.style.width = width ? '100%' : 'auto'; svg.style.height = width ? 'auto' : '100%'; });
+  }
+
+  function setMode(value) {
+    mode = modes.has(value) ? value : 'contain';
+    s.className = mode;
+    localStorage.setItem(key, mode);
+    applyMode();
+  }
+
+  function connect() {
+    clearTimeout(reconnectTimer);
+    events = new EventSource('/events');
+    events.addEventListener('window-opacity', e => document.querySelector('#window').style.opacity = e.data);
+    events.addEventListener('background', e => { background.innerHTML = e.data; applyMode(); });
+    events.addEventListener('chrome', e => { chromeLayer.innerHTML = e.data; applyMode(); });
+    events.addEventListener('frame', e => { terminal.innerHTML = e.data; applyMode(); status.classList.remove('visible'); });
+    events.onopen = () => status.classList.remove('visible');
+    events.onerror = () => { status.classList.add('visible'); events.close(); reconnectTimer = setTimeout(connect, 1000); };
+  }
+
+  terminal.onpointermove = e => s.classList.toggle('show-settings', e.target instanceof SVGElement);
+  terminal.onpointerleave = () => s.classList.remove('show-settings');
+  settings.onclick = () => window.open('/settings', 'console2svg-live-settings', 'popup,width=260,height=230,resizable=no');
+  window.addEventListener('message', e => {
+    if (e.origin === location.origin && e.data?.type === 'console2svg-live-fit') setMode(e.data.mode);
+  });
+  window.onresize = applyMode;
+
+  setMode(localStorage.getItem(key) || 'contain');
+  connect();
+</script>

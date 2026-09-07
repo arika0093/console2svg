@@ -1,0 +1,64 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Terminal display settings</title>
+<style>
+  body {
+    margin: 20px;
+    color: #222;
+    font: 14px system-ui, sans-serif;
+  }
+
+  fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  label {
+    display: block;
+    margin: 12px 0;
+  }
+
+  button {
+    float: right;
+    padding: 5px 12px;
+  }
+</style>
+<fieldset>
+  <legend>Terminal display</legend>
+  <label>
+    <input type="radio" name="fit" value="contain">
+    Contain
+  </label>
+  <label>
+    <input type="radio" name="fit" value="width">
+    Fit to width
+  </label>
+  <label>
+    <input type="radio" name="fit" value="height">
+    Fit to height
+  </label>
+  <label>
+    <input type="radio" name="fit" value="actual">
+    1:1 display
+  </label>
+</fieldset>
+<button type="button" onclick="window.close()">Close</button>
+<script>
+  const key = 'console2svg.live.fit';
+  const modes = new Set(['width', 'height', 'contain', 'actual']);
+
+  function setMode(mode) {
+    if (!modes.has(mode)) {
+      mode = 'contain';
+    }
+    localStorage.setItem(key, mode);
+    opener?.postMessage({ type: 'console2svg-live-fit', mode }, location.origin);
+    document.querySelector(`input[value="${mode}"]`).checked = true;
+  }
+
+  document.querySelectorAll('input[name=fit]').forEach(input => {
+    input.onchange = () => setMode(input.value);
+  });
+  setMode(localStorage.getItem(key) || 'contain');
+</script>

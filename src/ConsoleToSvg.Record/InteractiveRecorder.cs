@@ -850,13 +850,11 @@ public static partial class InteractiveRecorder
                                 for (var i = 0; i < count; i++)
                                 {
                                     forwarded.Clear();
-                                    var action = captureControlsEnabled
-                                        ? router.Process(bytes[i], forwarded)
-                                        : InteractiveInputAction.None;
-                                    if (!captureControlsEnabled)
-                                    {
-                                        forwarded.Add(bytes[i]);
-                                    }
+                                    var action = router.Process(
+                                        bytes[i],
+                                        forwarded,
+                                        captureControlsEnabled
+                                    );
                                     if (forwarded.Count > 0)
                                     {
                                         if (forwarded.Count > forwardedBytes.Length)
@@ -1031,7 +1029,7 @@ public static partial class InteractiveRecorder
 
         try
         {
-            while (!cancellationToken.IsCancellationRequested && !outputTask.IsCompleted)
+            while (!lifetime.IsCancellationRequested && !outputTask.IsCompleted)
             {
                 if (connection.WaitForExit(50))
                 {

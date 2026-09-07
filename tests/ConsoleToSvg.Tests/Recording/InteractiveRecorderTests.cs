@@ -81,6 +81,32 @@ public sealed class InteractiveRecorderTests
     }
 
     [Test]
+    public void CtrlDRequestsExitWhenCaptureControlsAreDisabled()
+    {
+        var router = new InteractiveInputRouter(ScreenshotKey, RecordingKey, PauseKey);
+        var forwarded = new List<byte>();
+
+        router.Process(0x04, forwarded, captureControlsEnabled: false)
+            .ShouldBe(InteractiveInputAction.Exit);
+        forwarded.ToArray().ShouldBe(new byte[] { 0x04 });
+    }
+
+    [Test]
+    public void CaptureKeysAreForwardedWhenCaptureControlsAreDisabled()
+    {
+        var router = new InteractiveInputRouter(ScreenshotKey, RecordingKey, PauseKey);
+        var forwarded = new List<byte>();
+
+        foreach (var value in ScreenshotKey)
+        {
+            router.Process(value, forwarded, captureControlsEnabled: false)
+                .ShouldBe(InteractiveInputAction.None);
+        }
+
+        forwarded.ToArray().ShouldBe(ScreenshotKey);
+    }
+
+    [Test]
     public async Task ExitedInteractiveChildIsObservedWithoutHanging()
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

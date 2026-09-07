@@ -41,7 +41,11 @@ public sealed class InteractiveInputRouter
     /// Routes one byte. Non-capture sequences are appended to <paramref name="forwarded"/>
     /// unchanged and as a single sequence.
     /// </summary>
-    public InteractiveInputAction Process(byte value, List<byte> forwarded)
+    public InteractiveInputAction Process(
+        byte value,
+        List<byte> forwarded,
+        bool captureControlsEnabled = true
+    )
     {
         if (value == 0x04)
         {
@@ -50,6 +54,14 @@ public sealed class InteractiveInputRouter
             // explicit Exit action and can close the recording session there.
             forwarded.Add(value);
             return InteractiveInputAction.Exit;
+        }
+
+        // live-server does not reserve F9/F10/F12, but Ctrl+D must remain an
+        // application-level exit request on Windows, where cmd.exe ignores EOT.
+        if (!captureControlsEnabled)
+        {
+            forwarded.Add(value);
+            return InteractiveInputAction.None;
         }
 
         if (_discardingSgrMouseReport)

@@ -77,6 +77,11 @@ internal static partial class Program
             );
             return 1;
         }
+        if (!Console.IsOutputRedirected)
+        {
+            await Console.Out.WriteAsync("\u001b[2J\u001b[H");
+            await Console.Out.FlushAsync(cancellationToken);
+        }
         await Console.Error.WriteLineAsync(
             $"Live terminal: http://{address}:{options.LiveServerPort}/"
         );

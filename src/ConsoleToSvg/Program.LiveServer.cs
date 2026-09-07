@@ -570,49 +570,4 @@ internal static partial class Program
         using var reader = new StreamReader(stream, Encoding.UTF8);
         return reader.ReadToEnd();
     }
-
-    /* Legacy compact template retained temporarily for reference while the formatted
-       template below is adopted.
-    private const string LegacyLiveHtml =
-        """<!doctype html><meta charset="utf-8"><style>html,body,#screen{margin:0;width:100%;height:100%;background:transparent;overflow:hidden}#screen{position:relative}#layers,#background,#window,#chrome,#terminal{position:absolute;inset:0}#window{opacity:{opacity}}#screen svg{display:block}#background svg{width:100%;height:auto}#screen.contain{display:grid;align-content:stretch;justify-content:stretch;align-items:start;justify-items:start}#screen.width svg{width:100%;height:auto}#screen.height svg{width:auto;height:100%}#screen.actual svg{width:auto;height:auto}#settings{position:absolute;right:12px;top:12px;z-index:1;display:none;border:0;border-radius:4px;background:#333c;color:#fff;cursor:pointer;font:13px sans-serif;padding:7px 10px}#screen.show-settings #settings,#settings:hover{display:block}#status{display:none;position:fixed;inset:0;place-items:center;background:#0009;color:#fff;font:16px system-ui,sans-serif;pointer-events:none}#status.visible{display:grid}</style><div id=screen><div id=layers><div id=background></div><div id=window><div id=chrome></div><div id=terminal></div></div></div><button id=settings type=button aria-label="Display settings">Settings</button></div><div id=status role=status>Connection to the server was lost. Reconnecting...</div><script>const s=document.querySelector('#screen'),background=document.querySelector('#background'),chromeLayer=document.querySelector('#chrome'),terminal=document.querySelector('#terminal'),settings=document.querySelector('#settings'),status=document.querySelector('#status'),modes=new Set(['width','height','contain','actual']),key='console2svg.live.fit';let mode='contain',events,reconnectTimer;function applyMode(){const svg=terminal.querySelector('svg');if(!svg)return;const svgs=s.querySelectorAll('#background svg,#chrome svg,#terminal svg');svgs.forEach(svg=>{svg.style.width='';svg.style.height=''});if(mode!=='contain')return;const box=svg.viewBox.baseVal,ratio=(box.width||svg.width.baseVal.value)/(box.height||svg.height.baseVal.value),width=ratio>s.clientWidth/s.clientHeight;svgs.forEach(svg=>{svg.style.width=width?'100%':'auto';svg.style.height=width?'auto':'100%'})}function setMode(value){mode=modes.has(value)?value:'contain';s.className=mode;localStorage.setItem(key,mode);applyMode()}function connect(){clearTimeout(reconnectTimer);events=new EventSource('/events');events.addEventListener('window-opacity',e=>document.querySelector('#window').style.opacity=e.data);events.addEventListener('background',e=>{background.innerHTML=e.data;applyMode()});events.addEventListener('chrome',e=>{chromeLayer.innerHTML=e.data;applyMode()});events.addEventListener('frame',e=>{terminal.innerHTML=e.data;applyMode();status.classList.remove('visible')});events.onopen=()=>status.classList.remove('visible');events.onerror=()=>{status.classList.add('visible');events.close();reconnectTimer=setTimeout(connect,1000)}}terminal.onpointermove=e=>s.classList.toggle('show-settings',e.target instanceof SVGElement);terminal.onpointerleave=()=>s.classList.remove('show-settings');setMode(localStorage.getItem(key)||'contain');connect();settings.onclick=()=>window.open('/settings','console2svg-live-settings','popup,width=260,height=230,resizable=no');window.addEventListener('message',e=>{if(e.origin===location.origin&&e.data?.type==='console2svg-live-fit')setMode(e.data.mode)});window.onresize=applyMode;</script>""";
-
-    */
-
-    private const string LiveHtml = """
-        <!doctype html>
-        <meta charset="utf-8">
-        <style>
-          html, body, #screen { margin: 0; width: 100%; height: 100%; background: transparent; overflow: hidden; }
-          #screen { position: relative; }
-          #layers, #background, #window, #chrome, #terminal { position: absolute; inset: 0; }
-          #window { opacity: {opacity}; }
-          #screen svg { display: block; }
-          #background svg, #screen.width svg { width: 100%; height: auto; }
-          #screen.height svg { width: auto; height: 100%; }
-          #screen.actual svg { width: auto; height: auto; }
-          #screen.contain { display: grid; align-content: stretch; justify-content: stretch; align-items: start; justify-items: start; }
-          #settings { position: absolute; right: 12px; top: 12px; z-index: 1; display: none; border: 0; border-radius: 4px; background: #333c; color: #fff; cursor: pointer; font: 13px sans-serif; padding: 7px 10px; }
-          #screen.show-settings #settings, #screen:hover #settings, #settings:hover { display: block; }
-          #status { display: none; position: fixed; inset: 0; place-items: center; background: #0009; color: #fff; font: 16px system-ui, sans-serif; pointer-events: none; }
-          #status.visible { display: grid; }
-        </style>
-        <div id="screen"><div id="layers"><div id="background"></div><div id="window"><div id="chrome"></div><div id="terminal"></div></div></div><button id="settings" type="button" aria-label="Display settings">Settings</button></div>
-        <div id="status" role="status">Connection to the server was lost. Reconnecting...</div>
-        <script>
-          const s=document.querySelector('#screen'),background=document.querySelector('#background'),chromeLayer=document.querySelector('#chrome'),terminal=document.querySelector('#terminal'),settings=document.querySelector('#settings'),status=document.querySelector('#status'),modes=new Set(['width','height','contain','actual']),key='console2svg.live.fit';
-          let mode='contain',events,reconnectTimer;
-          function applyMode(){const svg=terminal.querySelector('svg');if(!svg)return;const svgs=s.querySelectorAll('#background svg,#chrome svg,#terminal svg');svgs.forEach(svg=>{svg.style.width='';svg.style.height=''});if(mode!=='contain')return;const box=svg.viewBox.baseVal,ratio=(box.width||svg.width.baseVal.value)/(box.height||svg.height.baseVal.value),width=ratio>s.clientWidth/s.clientHeight;svgs.forEach(svg=>{svg.style.width=width?'100%':'auto';svg.style.height=width?'auto':'100%'})}
-          function setMode(value){mode=modes.has(value)?value:'contain';s.className=mode;localStorage.setItem(key,mode);applyMode()}
-          function connect(){clearTimeout(reconnectTimer);events=new EventSource('/events');events.addEventListener('window-opacity',e=>document.querySelector('#window').style.opacity=e.data);events.addEventListener('background',e=>{background.innerHTML=e.data;applyMode()});events.addEventListener('chrome',e=>{chromeLayer.innerHTML=e.data;applyMode()});events.addEventListener('frame',e=>{terminal.innerHTML=e.data;applyMode();status.classList.remove('visible')});events.onopen=()=>status.classList.remove('visible');events.onerror=()=>{status.classList.add('visible');events.close();reconnectTimer=setTimeout(connect,1000)}}
-          terminal.onpointermove=e=>s.classList.toggle('show-settings',e.target instanceof SVGElement);
-          terminal.onpointerleave=()=>s.classList.remove('show-settings');
-          setMode(localStorage.getItem(key)||'contain');connect();
-          settings.onclick=()=>window.open('/settings','console2svg-live-settings','popup,width=260,height=230,resizable=no');
-          window.addEventListener('message',e=>{if(e.origin===location.origin&&e.data?.type==='console2svg-live-fit')setMode(e.data.mode)});
-          window.onresize=applyMode;
-        </script>
-        """;
-
-    private const string LiveSettingsHtml =
-        """<!doctype html><meta charset="utf-8"><title>Terminal display settings</title><style>body{font:14px system-ui,sans-serif;margin:20px;color:#222}fieldset{border:0;margin:0;padding:0}label{display:block;margin:12px 0}button{float:right;padding:5px 12px}</style><fieldset><legend>Terminal display</legend><label><input type=radio name=fit value=contain> Contain</label><label><input type=radio name=fit value=width> Fit to width</label><label><input type=radio name=fit value=height> Fit to height</label><label><input type=radio name=fit value=actual> 1:1 display</label></fieldset><button type=button onclick="window.close()">Close</button><script>const key='console2svg.live.fit',modes=new Set(['width','height','contain','actual']);function setMode(mode){if(!modes.has(mode))mode='contain';localStorage.setItem(key,mode);opener?.postMessage({type:'console2svg-live-fit',mode},location.origin);document.querySelector(`input[value="${mode}"]`).checked=true}document.querySelectorAll('input[name=fit]').forEach(input=>input.onchange=()=>setMode(input.value));setMode(localStorage.getItem(key)||'contain');</script>""";
 }

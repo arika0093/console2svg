@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "github-light",
+  "name": "GitHub Light",
+  "version": "1.0.0",
+  "description": "A light terminal palette inspired by GitHub.",
+  "appearance": {
+    "normal": {
+      "id": "github-light",
+      "background": [
+        "#d0d7de",
+        "#f6f8fa"
+      ]
+    }
+  },
+  "terminal": {
+    "foreground": "#24292f",
+    "background": "#ffffff",
+    "ansiPalette": [
+      "#24292f",
+      "#cf222e",
+      "#116329",
+      "#4d2d00",
+      "#0969da",
+      "#8250df",
+      "#1b7c83",
+      "#57606a",
+      "#6e7781",
+      "#a40e26",
+      "#1a7f37",
+      "#633c01",
+      "#218bff",
+      "#a475f9",
+      "#3192aa",
+      "#8c959f"
+    ]
+  }
+}

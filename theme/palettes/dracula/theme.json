@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "dracula",
+  "name": "Dracula",
+  "version": "1.0.0",
+  "description": "The Dracula terminal palette.",
+  "appearance": {
+    "normal": {
+      "id": "dracula",
+      "background": [
+        "#21222c",
+        "#44475a"
+      ]
+    }
+  },
+  "terminal": {
+    "foreground": "#f8f8f2",
+    "background": "#282a36",
+    "ansiPalette": [
+      "#21222c",
+      "#ff5555",
+      "#50fa7b",
+      "#f1fa8c",
+      "#bd93f9",
+      "#ff79c6",
+      "#8be9fd",
+      "#f8f8f2",
+      "#6272a4",
+      "#ff6e6e",
+      "#69ff94",
+      "#ffffa5",
+      "#d6acff",
+      "#ff92df",
+      "#a4ffff",
+      "#ffffff"
+    ]
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "one-light",
+  "name": "One Light",
+  "version": "1.0.0",
+  "description": "A clean light terminal palette inspired by One Light.",
+  "appearance": {
+    "normal": {
+      "id": "one-light",
+      "background": [
+        "#dfe4ea",
+        "#fafafa"
+      ]
+    }
+  },
+  "terminal": {
+    "foreground": "#383a42",
+    "background": "#fafafa",
+    "ansiPalette": [
+      "#383a42",
+      "#e45649",
+      "#50a14f",
+      "#c18401",
+      "#4078f2",
+      "#a626a4",
+      "#0184bc",
+      "#a0a1a7",
+      "#696c77",
+      "#e45649",
+      "#50a14f",
+      "#c18401",
+      "#4078f2",
+      "#a626a4",
+      "#0184bc",
+      "#ffffff"
+    ]
+  }
+}

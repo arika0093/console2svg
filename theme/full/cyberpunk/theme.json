@@ -10,8 +10,7 @@
       "window": "chrome.json",
       "margin": 3,
       "padding": 11,
-      "opacity": 0.85,
-      "font": "monospace"
+      "opacity": 0.85
     },
     "pc": {
       "id": "cyberpunk-pc",
@@ -23,8 +22,7 @@
       "background": [
         "#09051a",
         "#17104a"
-      ],
-      "font": "monospace"
+      ]
     }
   },
   "terminal": {

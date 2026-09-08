@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using ConsoleToSvg.Svg;
@@ -10,30 +11,6 @@ public static partial class OptionParser
     public static string GetHelpText(Workflow workflow) =>
         workflow switch
         {
-            Workflow.Capture => """
-                Usage: console2svg capture [options] [-- <command> [args...]]
-                       <command> | console2svg capture [options]
-
-                Capture options: --save-cast, --replay-save, --timeout.
-                Output and appearance options are also accepted.
-                """,
-            Workflow.Interactive => """
-                Usage: console2svg interactive [options] [-- <program> [args...]]
-
-                Starts an interactive shell or program.
-                F9 records, F12 pauses, and F10 takes a screenshot.
-                """,
-            Workflow.Replay => """
-                Usage: console2svg replay <replay.json> [options] -- <command> [args...]
-
-                Replays recorded keyboard input while capturing the command.
-                """,
-            Workflow.Convert => """
-                Usage: console2svg convert <input.cast|input.svg> [options]
-
-                Renders an existing recording or converts an SVG.
-                Use -o/--out to select the output format.
-                """,
             Workflow.Theme => """
                 Usage: console2svg theme list
                        console2svg theme install <source>
@@ -45,49 +22,144 @@ public static partial class OptionParser
 
                 Print shell completion code to standard output.
                 """,
-            Workflow.LiveServer => """
-                Usage: console2svg live-server [port] [options] [-- <command> [args...]]
-
-                Serve a live terminal SVG at http://127.0.0.1:38473/.
-                Options: --width, --height, --theme, --forecolor, --backcolor, etc.
-                If no command is specified, the default shell is used.
-                """,
+            Workflow.Capture => WithWorkflowUsage(
+                Workflow.Capture,
+                """
+                Usage: console2svg capture [options] [-- <command> [args...]]
+                       <command> | console2svg capture [options]
+                """
+            ),
+            Workflow.Interactive => WithWorkflowUsage(
+                Workflow.Interactive,
+                "Usage: console2svg interactive [options] [-- <program> [args...]]"
+            ),
+            Workflow.Replay => WithWorkflowUsage(
+                Workflow.Replay,
+                "Usage: console2svg replay <replay.json> [options] -- <command> [args...]"
+            ),
+            Workflow.Convert => WithWorkflowUsage(
+                Workflow.Convert,
+                "Usage: console2svg convert <input.cast|input.svg> [options]"
+            ),
+            Workflow.LiveServer => WithWorkflowUsage(
+                Workflow.LiveServer,
+                "Usage: console2svg live-server [port] [options] [-- <command> [args...]]"
+            ),
             _ => HelpText,
         };
+
+    private static string WithWorkflowUsage(Workflow workflow, string usage)
+    {
+        var usageStart = HelpText.IndexOf("Usage:", StringComparison.Ordinal);
+        var optionsStart = HelpText.IndexOf("Options (Common):", StringComparison.Ordinal);
+        var help = HelpText[..usageStart] + usage + "\n\n" + HelpText[optionsStart..];
+        return FilterWorkflowHelp(workflow, help);
+    }
+
+    private static string FilterWorkflowHelp(Workflow workflow, string help)
+    {
+        var skippedSections = workflow switch
+        {
+            Workflow.Capture or Workflow.Replay => new[] { "Options (Interactive" },
+            Workflow.Interactive => new[] { "Options (Recording" },
+            Workflow.Convert => new[] { "Options (Recording", "Options (Interactive" },
+            Workflow.LiveServer => new[]
+            {
+                "Options (Recording",
+                "Options (Image",
+                "Options (Video",
+                "Options (Interactive",
+            },
+            _ => Array.Empty<string>(),
+        };
+        var lines = help.Split('\n');
+        var filtered = new List<string>(lines.Length);
+        var skipSection = false;
+        var skipOptionContinuation = false;
+        foreach (var line in lines)
+        {
+            var trimmed = line.TrimStart();
+            if (skipOptionContinuation)
+            {
+                if (string.IsNullOrWhiteSpace(trimmed))
+                {
+                    skipOptionContinuation = false;
+                }
+                else if (trimmed.StartsWith("-", StringComparison.Ordinal))
+                {
+                    skipOptionContinuation = false;
+                }
+                else
+                {
+                    continue;
+                }
+            }
+
+            if (line.StartsWith("Options (", StringComparison.Ordinal))
+            {
+                skipSection = Array.Exists(
+                    skippedSections,
+                    prefix => line.StartsWith(prefix, StringComparison.Ordinal)
+                );
+                if (!skipSection)
+                    filtered.Add(line);
+                continue;
+            }
+
+            if (skipSection)
+                continue;
+
+            if (
+                workflow == Workflow.Interactive
+                && (
+                    trimmed.Contains("--frame", StringComparison.Ordinal)
+                    || trimmed.Contains("--time", StringComparison.Ordinal)
+                )
+            )
+                continue;
+
+            if (
+                workflow == Workflow.LiveServer
+                && (
+                    trimmed.Contains("--frame", StringComparison.Ordinal)
+                    || trimmed.Contains("--time", StringComparison.Ordinal)
+                    || trimmed.StartsWith("--crop-", StringComparison.Ordinal)
+                    || trimmed.StartsWith("--stdout", StringComparison.Ordinal)
+                    || trimmed.StartsWith("-m, --mode", StringComparison.Ordinal)
+                    || trimmed.StartsWith("-v, --video", StringComparison.Ordinal)
+                    || trimmed.StartsWith("--timeout", StringComparison.Ordinal)
+                    || trimmed.StartsWith("--timing", StringComparison.Ordinal)
+                    || trimmed.StartsWith("--svg-converter", StringComparison.Ordinal)
+                )
+            )
+            {
+                skipOptionContinuation = true;
+                continue;
+            }
+
+            filtered.Add(line);
+        }
+
+        return string.Join('\n', filtered);
+    }
 
     public static string ShortHelpText =>
         $"""
             console2svg - Convert terminal output to SVG [Ver: {ThisAssembly.AssemblyInformationalVersion}]
 
             Usage:
-                my-command | console2svg capture [options]
-                console2svg capture [options] -- my-command with args
-                console2svg interactive [options] [-- program args...]
-                console2svg replay <replay.json> [options] -- my-command with args
-                console2svg convert <input.cast|input.svg> [options]
-                console2svg                 theme list|install|remove|update
-                console2svg completion <shell> # Print shell completion code
-                console2svg live-server [port] [options] [-- command]
+                console2svg <verb> [options]
 
-            Major options:
-                -o, --out <path>          Output file path (default: output.svg).
-                                          Non-SVG extensions trigger ffmpeg conversion (e.g. output.png, output.mp4).
-                -w, --width <int|adjust>  Terminal width in characters (default: adjust).
-                                          Specify an integer to use a fixed width.
-                -h, --height <int|adjust> Terminal height in rows (default: adjust).
-                                          Specify an integer to use a fixed height.
-                -v, --video               Output animated SVG (alias for --mode video).
-                -i, --interactive         Run an interactive shell; F9 records, F12 pauses, and F10 takes a screenshot.
-                                          Use -- to start another interactive program (e.g. -i -- pwsh).
-                -c, --with-command        Prepend the command line to the output.
-                -d, --window [style]      Window chrome: none, macos, windows, macos-pc, windows-pc, transparent.
-                --background <color> [color]  Background color, gradient, or image path.
-                --crop-top/bottom/left/right  Crop by px, ch, or text pattern.
-                --header <text>           Override command header text.
-                --prompt <text>           Override prompt prefix for -c (default: $ or # when root).
-                --verbose [path]          Enable verbose logging (log to path, default: console2svg.log).
+            Verbs:
+                capture      Capture terminal output as SVG.
+                interactive  Capture an interactive shell or program.
+                replay       Replay keyboard input while capturing a command.
+                convert      Render an existing recording or convert an SVG.
+                theme        List, install, remove, or update themes.
+                completion   Print shell completion code.
+                live-server  Serve a live terminal SVG.
 
-            For full option list, see --help.
+            Use "console2svg <verb> --help" for detailed options.
             """;
 
     public static string HelpText =>
@@ -100,8 +172,9 @@ public static partial class OptionParser
                 console2svg interactive [options] [-- program args...]
                 console2svg replay <replay.json> [options] -- my-command with args
                 console2svg convert <input.cast|input.svg> [options]
-                console2svg                 theme list|install|remove|update
-                console2svg completion <shell> # Print shell completion code
+                console2svg theme list|install|remove|update
+                console2svg completion <shell>
+                console2svg live-server [port] [options] [-- command]
 
             Options (Common):
                 -o, --out <path>          Output file path (default: output.svg).
@@ -248,20 +321,53 @@ public static partial class OptionParser
             }
 
             // Section headers
+            if (line.StartsWith("Usage:", StringComparison.Ordinal))
+            {
+                result.Append(Bold).Append(Yellow).Append("Usage:").Append(Reset);
+                result.Append(ColorizeOptionPart(line["Usage:".Length..]));
+                continue;
+            }
+
             if (
-                line.StartsWith("Usage:", StringComparison.Ordinal)
-                || line.StartsWith("Major options:", StringComparison.Ordinal)
+                line.StartsWith("Major options:", StringComparison.Ordinal)
                 || line.StartsWith("Options (", StringComparison.Ordinal)
                 || line.StartsWith("For full option list", StringComparison.Ordinal)
+                || line.StartsWith("Verbs:", StringComparison.Ordinal)
             )
             {
                 result.Append(Bold).Append(Yellow).Append(line).Append(Reset);
                 continue;
             }
 
-            // Option lines: must have the standard option indentation and start with -
             var leadingSpaces = CountLeadingSpaces(line);
             var trimmed = line.TrimStart();
+
+            if (leadingSpaces > 0 && IsVerbLine(trimmed))
+            {
+                var separator = trimmed.IndexOf(' ');
+                result
+                    .Append(line[..leadingSpaces])
+                    .Append(Cyan)
+                    .Append(trimmed[..separator])
+                    .Append(Reset)
+                    .Append(trimmed[separator..]);
+                continue;
+            }
+
+            // Colorize command syntax immediately below a Usage heading.
+            if (
+                leadingSpaces > 0
+                && (
+                    trimmed.StartsWith("console2svg ", StringComparison.Ordinal)
+                    || trimmed.StartsWith("<command> | console2svg", StringComparison.Ordinal)
+                )
+            )
+            {
+                result.Append(line[..leadingSpaces]).Append(ColorizeOptionPart(trimmed));
+                continue;
+            }
+
+            // Option lines: must have the standard option indentation and start with -
             if (leadingSpaces == optionIndent && trimmed.StartsWith("-", StringComparison.Ordinal))
             {
                 result.Append(ColorizeOptionLine(line));
@@ -280,6 +386,22 @@ public static partial class OptionParser
         }
 
         return result.ToString();
+    }
+
+    private static bool IsVerbLine(string line)
+    {
+        var separator = line.IndexOf(' ');
+        if (separator <= 0)
+            return false;
+
+        return line[..separator]
+            is "capture"
+                or "interactive"
+                or "replay"
+                or "convert"
+                or "theme"
+                or "completion"
+                or "live-server";
     }
 
     private static int DetectOptionIndent(string[] lines)

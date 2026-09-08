@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using ConsoleToSvg.Terminal;
 
 namespace ConsoleToSvg;
@@ -13,11 +14,7 @@ internal static partial class Program
             switch (action)
             {
                 case Cli.ThemeAction.List:
-                    Console.WriteLine("ID\tName\tVersion\tSource");
-                    foreach (var entry in new ThemeCatalog().Entries)
-                        Console.WriteLine(
-                            $"{entry.Manifest.Id}\t{entry.Manifest.Name}\t{entry.Manifest.Version ?? ""}\t{(entry.IsBuiltIn ? "built-in" : "installed")}"
-                        );
+                    WriteThemeList(new ThemeCatalog());
                     return 0;
                 case Cli.ThemeAction.Install:
                     ThemeManager.Install(options.ThemeArgument!);
@@ -46,4 +43,41 @@ internal static partial class Program
             return 1;
         }
     }
+
+    private static void WriteThemeList(ThemeCatalog catalog)
+    {
+        var rows = catalog
+            .Entries.Select(entry =>
+                new[]
+                {
+                    entry.Manifest.Id ?? "",
+                    entry.Manifest.Name ?? "",
+                    entry.Manifest.Version ?? "",
+                    entry.IsBuiltIn ? "built-in" : "installed",
+                }
+            )
+            .ToArray();
+        var headers = new[] { "ID", "Name", "Version", "Source" };
+        var widths = headers
+            .Select(
+                (header, index) => rows.Select(row => row[index].Length).Append(header.Length).Max()
+            )
+            .ToArray();
+
+        WriteRow(headers, widths);
+        WriteRow(widths.Select(width => new string('-', width)).ToArray(), widths);
+        foreach (var row in rows)
+            WriteRow(row, widths);
+    }
+
+    private static void WriteRow(string[] columns, int[] widths) =>
+        Console.WriteLine(
+            string.Join(
+                "  ",
+                columns.Select(
+                    (column, index) =>
+                        index == 2 ? column.PadLeft(widths[index]) : column.PadRight(widths[index])
+                )
+            )
+        );
 }

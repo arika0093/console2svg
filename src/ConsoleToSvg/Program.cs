@@ -33,14 +33,24 @@ internal static partial class Program
         {
             await Console.Error.WriteLineAsync(error);
             await Console.Error.WriteLineAsync();
-            await Console.Error.WriteLineAsync(ColorizeIfSupported(OptionParser.ShortHelpText));
+            await Console.Error.WriteLineAsync(
+                ColorizeIfSupported(
+                    options?.Workflow is Workflow.Legacy
+                        ? OptionParser.ShortHelpText
+                        : OptionParser.GetHelpText(options!.Workflow)
+                )
+            );
             return 1;
         }
 
         if (showHelp || options is null)
         {
             WritePagedHelp(
-                ColorizeIfSupported(OptionParser.GetHelpText(options?.Workflow ?? Workflow.Legacy))
+                ColorizeIfSupported(
+                    options?.Workflow is Workflow.Legacy
+                        ? OptionParser.ShortHelpText
+                        : OptionParser.GetHelpText(options!.Workflow)
+                )
             );
             return 0;
         }
@@ -68,6 +78,17 @@ internal static partial class Program
 
         if (options.Workflow == Workflow.Theme)
             return RunThemeCommand(options);
+
+        if (
+            options.Workflow == Workflow.Capture
+            && string.IsNullOrWhiteSpace(options.Command)
+            && string.IsNullOrWhiteSpace(options.InputCastPath)
+            && !Console.IsInputRedirected
+        )
+        {
+            WritePagedHelp(ColorizeIfSupported(OptionParser.GetHelpText(Workflow.Capture)));
+            return 0;
+        }
 
         if (options.Workflow == Workflow.LiveServer)
         {

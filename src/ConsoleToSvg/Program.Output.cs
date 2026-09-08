@@ -251,6 +251,12 @@ internal static partial class Program
             return;
         }
 
+        if (text.Split('\n').Length <= Console.WindowHeight)
+        {
+            Console.WriteLine(text);
+            return;
+        }
+
         // Try to find less
         var lessPath = FindLess();
         if (lessPath == null)

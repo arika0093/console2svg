@@ -1,0 +1,10 @@
+{
+  "paddingTop": 38,
+  "paddingRight": 7,
+  "paddingBottom": 7,
+  "paddingLeft": 7,
+  "shadowOffset": 10,
+  "clientCornerRadius": 0,
+  "themeBackgroundOverride": "#090b1a",
+  "svgTemplate": "window.svg"
+}

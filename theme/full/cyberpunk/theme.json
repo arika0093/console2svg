@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "id": "cyberpunk",
+  "name": "Cyberpunk HUD",
+  "version": "1.0.0",
+  "description": "A neon HUD frame with a high-contrast cyberpunk terminal palette.",
+  "appearance": {
+    "normal": {
+      "id": "cyberpunk",
+      "window": "chrome.json",
+      "margin": 3,
+      "padding": 11,
+      "opacity": 0.85,
+      "font": "monospace"
+    },
+    "pc": {
+      "id": "cyberpunk-pc",
+      "window": "chrome.json",
+      "pcPadding": 30,
+      "margin": 3,
+      "padding": 11,
+      "opacity": 0.85,
+      "background": [
+        "#09051a",
+        "#17104a"
+      ],
+      "font": "monospace"
+    }
+  },
+  "terminal": {
+    "foreground": "#d8f9ff",
+    "background": "#090b1a",
+    "ansiPalette": [
+      "#090b1a",
+      "#ff3c9e",
+      "#55f7bd",
+      "#f6e05e",
+      "#55b8ff",
+      "#d56dff",
+      "#4deeff",
+      "#d8f9ff",
+      "#35406d",
+      "#ff72b8",
+      "#8dffd1",
+      "#fff59b",
+      "#8bd2ff",
+      "#e7a1ff",
+      "#8df6ff",
+      "#ffffff"
+    ]
+  }
+}

@@ -35,8 +35,10 @@ public static partial class OptionParser
                 Use -o/--out to select the output format.
                 """,
             Workflow.Theme => """
-                The 'theme' command is reserved for theme management planned in issue #115.
-                Use the existing --theme option to select a rendering color theme.
+                Usage: console2svg theme list
+                       console2svg theme install <source>
+                       console2svg theme remove <id>
+                       console2svg theme update [<id>]
                 """,
             Workflow.Completion => """
                 Usage: console2svg completion <bash|zsh|fish|powershell>
@@ -63,7 +65,7 @@ public static partial class OptionParser
                 console2svg interactive [options] [-- program args...]
                 console2svg replay <replay.json> [options] -- my-command with args
                 console2svg convert <input.cast|input.svg> [options]
-                console2svg theme              # Reserved for theme management (#115)
+                console2svg                 theme list|install|remove|update
                 console2svg completion <shell> # Print shell completion code
                 console2svg live-server [port] [options] [-- command]
 
@@ -98,7 +100,7 @@ public static partial class OptionParser
                 console2svg interactive [options] [-- program args...]
                 console2svg replay <replay.json> [options] -- my-command with args
                 console2svg convert <input.cast|input.svg> [options]
-                console2svg theme              # Reserved for theme management (#115)
+                console2svg                 theme list|install|remove|update
                 console2svg completion <shell> # Print shell completion code
 
             Options (Common):
@@ -138,16 +140,14 @@ public static partial class OptionParser
                 -c, --with-command        Prepend the command line to the output as if typed in a terminal.
                 --header <text>           Override command header text (shown even without -c).
                 --prompt <text>           Prompt prefix for -c (default: $ or # when root).
-                -d, --window [none|macos|windows|macos-pc|windows-pc|transparent|path/to/chrome.json]
+                -d, --window [none|macos|windows|macos-pc|windows-pc|transparent]
                     Terminal window chrome style (default: none, or macos if specified without a value).
                     Built-in styles: none, macos, windows, transparent.
                     Any built-in style can be suffixed with -pc to enable desktop (floating window) mode.
                     Custom: provide a path to a .json chrome definition file.
-                --pcmode                  Enable PC (desktop) mode for the selected window style.
-                                          Appends -pc to any window style that does not already end in -pc.
                 --pc-padding <px>         Override the outer desktop padding in PC mode (default: 20).
                 --opacity <0-1>           Background fill opacity (default: 1).
-                --theme <dark|light>      Color theme (default: dark).
+                --theme <id>              Repeatable appearance theme ID (default: dark).
                 --forecolor <color>       Override default foreground color.
                 --backcolor <color>       Override the terminal's own background color.
                                           Unlike --background, this affects the terminal interior rather than the outer canvas.
@@ -567,6 +567,21 @@ public static partial class OptionParser
                 )
                 && i + 1 < args.Length
                 && IsWindowStyleValue(args[i + 1]);
+            if (
+                value is null
+                && (
+                    string.Equals(name, "-d", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase)
+                )
+                && i + 1 < args.Length
+                && !args[i + 1].StartsWith("-", StringComparison.Ordinal)
+                && !IsWindowStyleValue(args[i + 1])
+            )
+            {
+                error =
+                    "--window accepts only none, macos, macos-pc, windows, windows-pc, or transparent.";
+                return false;
+            }
 
             var optionalVerboseValue =
                 value is null
@@ -713,15 +728,39 @@ public static partial class OptionParser
                 return true;
             case "theme":
                 options.Workflow = Workflow.Theme;
-                if (args.Length == 1 || (args.Length == 2 && args[1] is "--help" or "-h"))
+                if (args.Length < 2 || (args.Length == 2 && args[1] is "--help" or "-h"))
                 {
+                    options.RequestedThemeAction = ThemeAction.List;
                     showHelp = true;
                     args = [];
                     return true;
                 }
-                error =
-                    "The 'theme' command is reserved for issue #115 and is not implemented yet. The existing --theme option remains available.";
-                return false;
+                var action = args[1].ToLowerInvariant();
+                options.RequestedThemeAction = action switch
+                {
+                    "list" => ThemeAction.List,
+                    "install" => ThemeAction.Install,
+                    "remove" => ThemeAction.Remove,
+                    "update" => ThemeAction.Update,
+                    _ => null,
+                };
+                if (options.RequestedThemeAction is null)
+                {
+                    error = "theme requires list, install, remove, or update.";
+                    return false;
+                }
+                if (args.Length > 2)
+                    options.ThemeArgument = args[2];
+                if (
+                    options.RequestedThemeAction is ThemeAction.Install or ThemeAction.Remove
+                    && string.IsNullOrWhiteSpace(options.ThemeArgument)
+                )
+                {
+                    error = $"theme {action} requires an argument.";
+                    return false;
+                }
+                args = [];
+                return true;
             case "completion":
                 options.Workflow = Workflow.Completion;
                 if (args.Length == 2 && args[1] is "--help" or "-h")
@@ -782,7 +821,6 @@ public static partial class OptionParser
             // -d/--window is optional-value; handled separately in the main loop
             && !string.Equals(name, "-d", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--window", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--pcmode", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--stdout", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "-i", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--interactive", StringComparison.OrdinalIgnoreCase)
@@ -810,10 +848,7 @@ public static partial class OptionParser
         || string.Equals(token, "windows", StringComparison.OrdinalIgnoreCase)
         || string.Equals(token, "macos-pc", StringComparison.OrdinalIgnoreCase)
         || string.Equals(token, "windows-pc", StringComparison.OrdinalIgnoreCase)
-        || string.Equals(token, "transparent", StringComparison.OrdinalIgnoreCase)
-        || token.EndsWith(".json", StringComparison.OrdinalIgnoreCase)
-        || token.Contains('/')
-        || token.Contains('\\');
+        || string.Equals(token, "transparent", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// Returns true when a token looks like a color value or image path that can

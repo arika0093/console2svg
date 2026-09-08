@@ -8,7 +8,7 @@ internal static class SvgRenderShared
 {
     internal static Theme ResolveTheme(SvgRenderOptions options)
     {
-        var theme = Theme.Resolve(options.Theme);
+        var theme = options.TerminalTheme ?? Theme.Resolve(options.Theme);
         if (options.Chrome?.ThemeBackgroundOverride is string bgOverride)
         {
             theme = theme.WithBackground(bgOverride);

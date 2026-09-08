@@ -144,7 +144,7 @@ internal static partial class Program
             TryGetConsoleHeight,
             DefaultHeight
         );
-        var theme = Theme.Resolve(renderOptions.Theme);
+        var theme = renderOptions.TerminalTheme ?? Theme.Resolve(renderOptions.Theme);
         if (renderOptions.Chrome?.ThemeBackgroundOverride is string chromeBackground)
         {
             theme = theme.WithBackground(chromeBackground);

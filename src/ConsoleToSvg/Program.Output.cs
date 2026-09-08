@@ -86,7 +86,7 @@ internal static partial class Program
         // Advance one emulator through the recording instead of replaying from
         // event zero for every sampled frame. This keeps replay work linear in
         // the number of input events.
-        var theme = Theme.Resolve(baseOptions.Theme);
+        var theme = baseOptions.TerminalTheme ?? Theme.Resolve(baseOptions.Theme);
         if (baseOptions.Chrome?.ThemeBackgroundOverride is string chromeBackground)
         {
             theme = theme.WithBackground(chromeBackground);

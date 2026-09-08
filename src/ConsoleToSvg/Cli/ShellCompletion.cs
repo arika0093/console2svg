@@ -13,7 +13,7 @@ internal static class ShellCompletion
     // They intentionally offer only options that make sense for each verb; validation
     // remains the source of truth for combinations of otherwise valid options.
     private const string CommonOptions =
-        "--help --version -o --out -w --width -h --height -m --mode -v --video -c --with-command --mask --verbose --frame --time --crop-top --crop-right --crop-bottom --crop-left --theme --forecolor -d --window --margin --padding --no-loop --no-colorenv --no-delete-envs --fps --timing --sleep --fadeout --coalesce-ms --opacity --adjust --background --timeout --font --fontsize --embed-logs --header --prompt --pcmode --pc-padding --backcolor --save-frames --size --svg-converter --no-resize";
+        "--help --version -o --out -w --width -h --height -m --mode -v --video -c --with-command --mask --verbose --frame --time --crop-top --crop-right --crop-bottom --crop-left --theme --forecolor -d --window --margin --padding --no-loop --no-colorenv --no-delete-envs --fps --timing --sleep --fadeout --coalesce-ms --opacity --adjust --background --timeout --font --fontsize --embed-logs --header --prompt --pc-padding --backcolor --save-frames --size --svg-converter --no-resize";
     private const string CaptureOptions =
         CommonOptions
         + " --in --save-cast --embed-cast --embed-replay --embed-debug --replay-save --replay --stdout";
@@ -22,7 +22,7 @@ internal static class ShellCompletion
         CommonOptions + " --save-cast --embed-cast --embed-replay --embed-debug --stdout";
     private const string ConvertOptions = CommonOptions + " --stdout";
     private const string LiveServerOptions =
-        "--help --version -w --width -h --height -c --with-command --mask --verbose --theme --forecolor -d --window --margin --padding --no-colorenv --no-delete-envs --opacity --adjust --background --font --fontsize --header --prompt --pcmode --pc-padding --backcolor --listen --no-resize";
+        "--help --version -w --width -h --height -c --with-command --mask --verbose --theme --forecolor -d --window --margin --padding --no-colorenv --no-delete-envs --opacity --adjust --background --font --fontsize --header --prompt --pc-padding --backcolor --listen --no-resize";
 
     public static string? GetScript(string? shell) =>
         shell?.ToLowerInvariant() switch
@@ -52,7 +52,7 @@ internal static class ShellCompletion
                     case "$workflow" in
                       capture) candidates="$capture" ;; interactive) candidates="$interactive" ;;
                       replay) candidates="$replay" ;; convert) candidates="$convert" ;;
-                      live-server) candidates="$live_server" ;; theme) candidates='--help --version' ;;
+                      live-server) candidates="$live_server" ;; theme) candidates='list install remove update --help --version' ;;
                       *) candidates="$commands" ;;
                     esac
                   fi
@@ -78,7 +78,7 @@ internal static class ShellCompletion
                     case $workflow in
                       capture) candidates=({{CaptureOptions}}) ;; interactive) candidates=({{InteractiveOptions}}) ;;
                       replay) candidates=({{ReplayOptions}}) ;; convert) candidates=({{ConvertOptions}}) ;;
-                      live-server) candidates=({{LiveServerOptions}}) ;; theme) candidates=(--help --version) ;;
+                      live-server) candidates=({{LiveServerOptions}}) ;; theme) candidates=(list install remove update --help --version) ;;
                       *) candidates=({{Commands}}) ;;
                     esac
                   fi
@@ -105,7 +105,7 @@ internal static class ShellCompletion
                         complete -c console2svg -f -n '__fish_seen_subcommand_from replay' -a '{{ReplayOptions}}'
                         complete -c console2svg -f -n '__fish_seen_subcommand_from convert' -a '{{ConvertOptions}}'
                         complete -c console2svg -f -n '__fish_seen_subcommand_from live-server' -a '{{LiveServerOptions}}'
-                    complete -c console2svg -f -n '__fish_seen_subcommand_from theme' -a '--help --version'
+                    complete -c console2svg -f -n '__fish_seen_subcommand_from theme' -a 'list install remove update --help --version'
                     complete -c console2svg -l out -r
                     complete -c console2svg -s o -r
                     complete -c console2svg -l in -r
@@ -138,7 +138,7 @@ internal static class ShellCompletion
                     'replay' { '{{ReplayOptions}}'.Split(' ') }
                     'convert' { '{{ConvertOptions}}'.Split(' ') }
                     'live-server' { '{{LiveServerOptions}}'.Split(' ') }
-                    'theme' { '--help', '--version' }
+                    'theme' { 'list', 'install', 'remove', 'update', '--help', '--version' }
                     'completion' { $shells }
                     default { $commands }
                   }

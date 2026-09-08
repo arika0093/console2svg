@@ -1,8 +1,11 @@
 namespace ConsoleToSvg.Svg;
 
+using ConsoleToSvg.Terminal;
+
 public sealed class SvgRenderOptions
 {
     public string Theme { get; set; } = "dark";
+    public Theme? TerminalTheme { get; set; }
 
     public CropOptions Crop { get; set; } = CropOptions.Parse("0", "0", "0", "0");
 

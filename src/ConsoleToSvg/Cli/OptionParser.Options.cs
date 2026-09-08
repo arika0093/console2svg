@@ -185,7 +185,12 @@ public static partial class OptionParser
                 options.CropLeft = value ?? "0";
                 return true;
             case "--theme":
-                options.Theme = string.IsNullOrWhiteSpace(value) ? "dark" : value;
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    error = "--theme requires a theme ID.";
+                    return false;
+                }
+                options.Themes.Add(value);
                 return true;
             case "--forecolor":
                 if (string.IsNullOrWhiteSpace(value))
@@ -195,6 +200,7 @@ public static partial class OptionParser
                 }
 
                 options.ForeColor = value;
+                options.IsForeColorExplicit = true;
                 return true;
             case "-d":
             case "--window":
@@ -202,6 +208,7 @@ public static partial class OptionParser
                 // or a path to a custom .json chrome definition file.
                 // Validation of the value happens at load time via ChromeLoader.
                 options.Window = string.IsNullOrWhiteSpace(value) ? "macos" : value;
+                options.IsWindowExplicit = true;
                 return true;
             case "--margin":
                 if (!TryParseDouble(value, "--margin", out var margin, out error))
@@ -210,6 +217,7 @@ public static partial class OptionParser
                 }
 
                 options.Margin = margin;
+                options.IsMarginExplicit = true;
                 return true;
             case "--padding":
                 if (!TryParseDouble(value, "--padding", out var padding, out error))
@@ -218,6 +226,7 @@ public static partial class OptionParser
                 }
 
                 options.Padding = padding;
+                options.IsPaddingExplicit = true;
                 return true;
             case "--no-resize":
                 options.LiveServerResize = false;
@@ -291,6 +300,7 @@ public static partial class OptionParser
                 }
 
                 options.Opacity = opacity;
+                options.IsOpacityExplicit = true;
                 return true;
             case "--adjust":
                 if (string.IsNullOrWhiteSpace(value))
@@ -314,6 +324,7 @@ public static partial class OptionParser
                         "--background can be specified at most twice (start color and end color).";
                     return false;
                 }
+                options.IsBackgroundExplicit = true;
 
                 // Support "#from:#to" colon-separated gradient shorthand.
                 // Skip split when the value is a URL (contains "://").
@@ -333,7 +344,6 @@ public static partial class OptionParser
                         return true;
                     }
                 }
-
                 options.Background.Add(value);
                 return true;
             case "--timeout":
@@ -346,6 +356,7 @@ public static partial class OptionParser
                 return true;
             case "--font":
                 options.Font = value;
+                options.IsFontExplicit = true;
                 return true;
             case "--fontsize":
                 if (!TryParseDouble(value, "--fontsize", out var fontsize, out error))
@@ -354,6 +365,7 @@ public static partial class OptionParser
                 }
 
                 options.FontSize = fontsize;
+                options.IsFontSizeExplicit = true;
                 return true;
             case "--save-cast":
                 options.SaveCastPath = value;
@@ -398,8 +410,8 @@ public static partial class OptionParser
                 options.Prompt = value;
                 return true;
             case "--pcmode":
-                options.PcMode = true;
-                return true;
+                error = "Unknown option: --pcmode";
+                return false;
             case "--stdout":
                 options.StdOut = true;
                 return true;
@@ -423,6 +435,7 @@ public static partial class OptionParser
                 }
 
                 options.BackColor = value;
+                options.IsBackColorExplicit = true;
                 return true;
             case "--save-frames":
                 if (string.IsNullOrWhiteSpace(value))

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "matrix",
+  "name": "Matrix",
+  "version": "1.0.0",
+  "description": "A high-contrast green-on-black terminal palette.",
+  "appearance": {
+    "normal": {
+      "id": "matrix",
+      "background": [
+        "#001a08",
+        "#003d14"
+      ]
+    }
+  },
+  "terminal": {
+    "foreground": "#00ff41",
+    "background": "#000000",
+    "ansiPalette": [
+      "#000000",
+      "#00aa00",
+      "#00cc33",
+      "#aacc00",
+      "#008844",
+      "#00aa66",
+      "#00cc88",
+      "#bbffbb",
+      "#004d1a",
+      "#00ff41",
+      "#33ff66",
+      "#ccff33",
+      "#00bb55",
+      "#33ff99",
+      "#66ffbb",
+      "#e6ffe6"
+    ]
+  }
+}

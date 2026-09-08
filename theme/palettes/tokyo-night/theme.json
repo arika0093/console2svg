@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "tokyo-night",
+  "name": "Tokyo Night",
+  "version": "1.0.0",
+  "description": "A dark blue Tokyo Night terminal palette.",
+  "appearance": {
+    "normal": {
+      "id": "tokyo-night",
+      "background": [
+        "#16161e",
+        "#1f2335"
+      ]
+    }
+  },
+  "terminal": {
+    "foreground": "#c0caf5",
+    "background": "#1a1b26",
+    "ansiPalette": [
+      "#15161e",
+      "#f7768e",
+      "#9ece6a",
+      "#e0af68",
+      "#7aa2f7",
+      "#bb9af7",
+      "#7dcfff",
+      "#a9b1d6",
+      "#414868",
+      "#f7768e",
+      "#9ece6a",
+      "#e0af68",
+      "#7aa2f7",
+      "#bb9af7",
+      "#7dcfff",
+      "#c0caf5"
+    ]
+  }
+}

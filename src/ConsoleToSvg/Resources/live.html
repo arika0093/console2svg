@@ -119,19 +119,21 @@
       return;
     }
     const svgs = s.querySelectorAll('#background svg,#window-paint svg,#text svg');
-    svgs.forEach(svg => {
-      svg.style.width = '';
-      svg.style.height = '';
-    });
     if (mode !== 'contain') {
+      svgs.forEach(svg => {
+        if (svg.style.width) svg.style.width = '';
+        if (svg.style.height) svg.style.height = '';
+      });
       return;
     }
     const box = svg.viewBox.baseVal;
     const ratio = (box.width || svg.width.baseVal.value) / (box.height || svg.height.baseVal.value);
     const width = ratio > s.clientWidth / s.clientHeight;
     svgs.forEach(svg => {
-      svg.style.width = width ? '100%' : 'auto';
-      svg.style.height = width ? 'auto' : '100%';
+      const styleWidth = width ? '100%' : 'auto';
+      const styleHeight = width ? 'auto' : '100%';
+      if (svg.style.width !== styleWidth) svg.style.width = styleWidth;
+      if (svg.style.height !== styleHeight) svg.style.height = styleHeight;
     });
   }
 

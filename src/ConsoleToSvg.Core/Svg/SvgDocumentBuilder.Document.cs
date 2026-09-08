@@ -78,9 +78,7 @@ internal static partial class SvgDocumentBuilder
         if (includeStaticLayers && includeBackground)
         {
             AppendDefs(sb, context, chrome, background);
-            AppendGroupOpen(sb, opacity);
             AppendBackground(sb, context, chrome, background);
-            AppendGroupClose(sb, opacity);
         }
         if (includeStaticLayers)
         {

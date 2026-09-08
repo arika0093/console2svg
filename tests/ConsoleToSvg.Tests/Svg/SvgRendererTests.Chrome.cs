@@ -44,6 +44,28 @@ public sealed partial class SvgRendererTests
     }
 
     [Test]
+    public void RenderStaticSvgKeepsCanvasBackgroundOpaque()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "Hi");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = "dark",
+                Opacity = 0.5d,
+                Background = ["#123456"],
+            }
+        );
+
+        var backgroundIndex = svg.IndexOf("fill=\"#123456\"", StringComparison.Ordinal);
+        var opacityIndex = svg.IndexOf("opacity=\"0.5\"", StringComparison.Ordinal);
+        backgroundIndex.ShouldBeGreaterThanOrEqualTo(0);
+        opacityIndex.ShouldBeGreaterThan(backgroundIndex);
+    }
+
+    [Test]
     public void RenderStaticSvgSeparatesTerminalBackgroundFromOpaqueForeground()
     {
         var session = new RecordingSession(width: 8, height: 2);

@@ -123,6 +123,8 @@ public sealed class AppOptions
 
     public string Window { get; set; } = "none";
 
+    public double? Margin { get; set; }
+
     public double? Padding { get; set; }
 
     public bool Loop { get; set; } = true;

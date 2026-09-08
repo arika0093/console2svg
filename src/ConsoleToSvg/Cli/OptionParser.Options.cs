@@ -203,6 +203,14 @@ public static partial class OptionParser
                 // Validation of the value happens at load time via ChromeLoader.
                 options.Window = string.IsNullOrWhiteSpace(value) ? "macos" : value;
                 return true;
+            case "--margin":
+                if (!TryParseDouble(value, "--margin", out var margin, out error))
+                {
+                    return false;
+                }
+
+                options.Margin = margin;
+                return true;
             case "--padding":
                 if (!TryParseDouble(value, "--padding", out var padding, out error))
                 {

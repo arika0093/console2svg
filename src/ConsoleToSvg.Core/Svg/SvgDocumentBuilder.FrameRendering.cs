@@ -125,7 +125,10 @@ internal static partial class SvgDocumentBuilder
         bool applyFontClass = true,
         bool applyContentTransform = true,
         bool overlapBaseBackground = false,
-        SvgElementRegistry? elements = null
+        SvgElementRegistry? elements = null,
+        bool renderBackground = true,
+        bool renderBaseBackground = true,
+        bool renderForeground = true
     )
     {
         var effectiveLengthAdjust = string.IsNullOrWhiteSpace(lengthAdjust)
@@ -170,7 +173,7 @@ internal static partial class SvgDocumentBuilder
         }
         sb.Append(">\n");
 
-        if (elements is null)
+        if (renderBackground && renderBaseBackground && elements is null)
         {
             sb.Append("<rect");
             if (overlapBaseBackground)
@@ -193,9 +196,9 @@ internal static partial class SvgDocumentBuilder
             }
             sb.Append("\"/>\n");
         }
-        else
+        else if (renderBackground && renderBaseBackground)
         {
-            elements.AppendRect(
+            elements!.AppendRect(
                 sb,
                 @class: null,
                 x: null,
@@ -219,77 +222,89 @@ internal static partial class SvgDocumentBuilder
         {
             var y = (row - context.StartRow) * context.CellHeight;
 
-            // --- Background pass: merge consecutive cells of the same bg color ---
-            var bgRunStart = context.StartCol;
-            string? bgRunColor = null;
-            for (var col = context.StartCol; col <= context.EndColExclusive; col++)
+            if (renderBackground)
             {
-                string? cellBg = null;
-                if (col < context.EndColExclusive)
+                // Merge consecutive cells with the same background color.
+                var bgRunStart = context.StartCol;
+                string? bgRunColor = null;
+                for (var col = context.StartCol; col <= context.EndColExclusive; col++)
                 {
-                    var c = includeScrollback
-                        ? buffer.GetCellFromTop(row, col)
-                        : buffer.GetCell(row, col);
-                    var eBg = c.Reversed ? c.Foreground : c.Background;
-                    if (!string.Equals(eBg, theme.Background, StringComparison.OrdinalIgnoreCase))
+                    string? cellBg = null;
+                    if (col < context.EndColExclusive)
                     {
-                        cellBg = eBg;
+                        var c = includeScrollback
+                            ? buffer.GetCellFromTop(row, col)
+                            : buffer.GetCell(row, col);
+                        var eBg = c.Reversed ? c.Foreground : c.Background;
+                        if (
+                            !string.Equals(
+                                eBg,
+                                theme.Background,
+                                StringComparison.OrdinalIgnoreCase
+                            )
+                        )
+                        {
+                            cellBg = eBg;
+                        }
                     }
-                }
 
-                if (
-                    cellBg != null
-                    && string.Equals(cellBg, bgRunColor, StringComparison.OrdinalIgnoreCase)
-                )
-                {
-                    // extend current run
-                    continue;
-                }
-
-                // flush previous run
-                if (bgRunColor != null && col > bgRunStart)
-                {
-                    var rx = (bgRunStart - context.StartCol) * context.CellWidth;
-                    var rw = (col - bgRunStart) * context.CellWidth;
-                    if (elements is null)
+                    if (
+                        cellBg != null
+                        && string.Equals(cellBg, bgRunColor, StringComparison.OrdinalIgnoreCase)
+                    )
                     {
-                        sb.Append("<rect class=\"q\"");
-                        AppendPositionAttributes(sb, rx, y);
-                        sb.Append(" width=\"");
-                        sb.Append(rw);
-                        sb.Append("\" height=\"");
-                        sb.Append(context.CellHeight);
-                        sb.Append("\" fill=\"");
-                        sb.Append(bgRunColor);
-                        sb.Append("\" stroke=\"");
-                        sb.Append(bgRunColor);
-                        sb.Append("\" stroke-width=\"");
-                        sb.Append(BackgroundSeamStrokeWidth);
-                        sb.Append("\" vector-effect=\"non-scaling-stroke");
-                        sb.Append("\"/>\n");
+                        continue;
                     }
-                    else
-                    {
-                        elements.AppendRect(
-                            sb,
-                            "q",
-                            rx,
-                            y,
-                            rw,
-                            context.CellHeight,
-                            bgRunColor,
-                            stroke: bgRunColor,
-                            strokeWidth: BackgroundSeamStrokeWidth,
-                            nonScalingStroke: true
-                        );
-                    }
-                }
 
-                bgRunColor = cellBg;
-                bgRunStart = col;
+                    if (bgRunColor != null && col > bgRunStart)
+                    {
+                        var rx = (bgRunStart - context.StartCol) * context.CellWidth;
+                        var rw = (col - bgRunStart) * context.CellWidth;
+                        if (elements is null)
+                        {
+                            sb.Append("<rect class=\"q\"");
+                            AppendPositionAttributes(sb, rx, y);
+                            sb.Append(" width=\"");
+                            sb.Append(rw);
+                            sb.Append("\" height=\"");
+                            sb.Append(context.CellHeight);
+                            sb.Append("\" fill=\"");
+                            sb.Append(bgRunColor);
+                            sb.Append("\" stroke=\"");
+                            sb.Append(bgRunColor);
+                            sb.Append("\" stroke-width=\"");
+                            sb.Append(BackgroundSeamStrokeWidth);
+                            sb.Append("\" vector-effect=\"non-scaling-stroke");
+                            sb.Append("\"/>\n");
+                        }
+                        else
+                        {
+                            elements.AppendRect(
+                                sb,
+                                "q",
+                                rx,
+                                y,
+                                rw,
+                                context.CellHeight,
+                                bgRunColor,
+                                stroke: bgRunColor,
+                                strokeWidth: BackgroundSeamStrokeWidth,
+                                nonScalingStroke: true
+                            );
+                        }
+                    }
+
+                    bgRunColor = cellBg;
+                    bgRunStart = col;
+                }
             }
 
-            // --- Foreground pass: group consecutive cells with identical style ---
+            if (!renderForeground)
+            {
+                continue;
+            }
+
+            // Group consecutive cells with identical foreground style.
             var fgRunStart = context.StartCol;
             fgRunText.Clear();
             string? fgRunColor = null;
@@ -584,19 +599,21 @@ internal static partial class SvgDocumentBuilder
             FlushFgRun();
         }
 
-        // Render merged box drawing segments
-        RenderMergedBoxSegments(
-            sb,
-            hSegments,
-            vSegments,
-            context.CellWidth,
-            context.CellHeight,
-            elements
-        );
-        RenderRoundedCorners(sb, roundedCorners);
-        if (renderCursor)
+        if (renderForeground)
         {
-            RenderCursor(sb, buffer, context, theme, includeScrollback);
+            RenderMergedBoxSegments(
+                sb,
+                hSegments,
+                vSegments,
+                context.CellWidth,
+                context.CellHeight,
+                elements
+            );
+            RenderRoundedCorners(sb, roundedCorners);
+            if (renderCursor)
+            {
+                RenderCursor(sb, buffer, context, theme, includeScrollback);
+            }
         }
 
         sb.Append("</g>\n");

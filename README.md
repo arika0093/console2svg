@@ -421,7 +421,7 @@ console2svg capture -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --for
 | <img src="./assets/window/windows.svg" width="400" alt="windows">          | `windows`     | Windows Terminal style window frame |
 
 
-`*-pc` styles are designed for use with a background, and include padding and shadows to create a "window" effect. You can also customize the padding with the `--pc-padding` option.
+`*-pc` styles are designed for use with a background, and include padding and shadows to create a "window" effect. You can customize the spacing between the window chrome and shell with `--margin`, the terminal's inner spacing with `--padding`, and the desktop padding with `--pc-padding`.
 
 | Image                                                                      | Style(`-d`)   |
 |----------------------------------------------------------------------------|---------------|

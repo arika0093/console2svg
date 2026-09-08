@@ -190,6 +190,7 @@ public static partial class AnimatedSvgRenderer
             maskPatterns: options.MaskPatterns,
             animateBlink: true
         );
+        SvgDocumentBuilder.EndStaticLayers(svgWriter, options.Opacity);
 
         var frameRowDefinitions = SvgDocumentBuilder.AppendAnimatedRowDefs(
             svgWriter,
@@ -198,7 +199,7 @@ public static partial class AnimatedSvgRenderer
             theme,
             styles,
             lengthAdjust: options.LengthAdjust,
-            opacity: options.Opacity,
+            opacity: 1d,
             maskPatterns: options.MaskPatterns
         );
         var hasContentTransform = SvgDocumentBuilder.AppendContentTransformGroupOpen(

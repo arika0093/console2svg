@@ -135,7 +135,7 @@ public static class SvgRenderer
             includeChrome: options.IncludeChrome,
             includeClientBackground: options.IncludeClientBackground
         );
-        if (options.IncludeTerminalFrame)
+        if (options.IncludeTerminalFrame && options.IncludeTerminalBackground)
         {
             SvgDocumentBuilder.AppendFrameGroup(
                 svgWriter,
@@ -148,7 +148,29 @@ public static class SvgRenderer
                 includeScrollback,
                 lengthAdjust: options.LengthAdjust,
                 maskPatterns: options.MaskPatterns,
-                renderCursor: options.RenderCursor
+                renderCursor: false,
+                renderBackground: true,
+                renderBaseBackground: options.IncludeTerminalBaseBackground,
+                renderForeground: false
+            );
+        }
+        SvgDocumentBuilder.EndStaticLayers(svgWriter, options.Opacity);
+        if (options.IncludeTerminalFrame && options.IncludeTerminalForeground)
+        {
+            SvgDocumentBuilder.AppendFrameGroup(
+                svgWriter,
+                buffer,
+                context,
+                theme,
+                styles,
+                id: null,
+                @class: null,
+                includeScrollback,
+                lengthAdjust: options.LengthAdjust,
+                maskPatterns: options.MaskPatterns,
+                renderCursor: options.RenderCursor,
+                renderBackground: false,
+                renderForeground: true
             );
         }
         SvgDocumentBuilder.EndSvg(

@@ -218,7 +218,7 @@ public sealed partial class SvgRendererTests
     }
 
     [Test]
-    public void DefaultPaddingIsEightWhenWindowIsSet()
+    public void DefaultMarginAndPaddingAreAppliedWhenWindowIsSet()
     {
         var ok = ConsoleToSvg.Cli.OptionParser.TryParse(
             new[] { "--window", "macos" },
@@ -228,11 +228,12 @@ public sealed partial class SvgRendererTests
         );
         ok.ShouldBeTrue();
         var renderOptions = ConsoleToSvg.Cli.SvgRenderOptionsFactory.Create(options!);
+        renderOptions.Margin.ShouldBe(0d);
         renderOptions.Padding.ShouldBe(8d);
     }
 
     [Test]
-    public void ExplicitPaddingOverridesWindowDefault()
+    public void ExplicitPaddingIsIndependentFromWindowMargin()
     {
         var ok = ConsoleToSvg.Cli.OptionParser.TryParse(
             new[] { "--window", "macos", "--padding", "3" },
@@ -242,6 +243,7 @@ public sealed partial class SvgRendererTests
         );
         ok.ShouldBeTrue();
         var renderOptions = ConsoleToSvg.Cli.SvgRenderOptionsFactory.Create(options!);
+        renderOptions.Margin.ShouldBe(0d);
         renderOptions.Padding.ShouldBe(3d);
     }
 

@@ -37,6 +37,7 @@ internal static class SvgRenderShared
             options.Crop,
             includeScrollback,
             options.Chrome,
+            options.Margin,
             options.Padding,
             options.HeightRows,
             commandHeaderRows,

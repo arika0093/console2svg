@@ -46,6 +46,8 @@ internal static partial class SvgDocumentBuilder
 
         public double ContentOffsetY { get; set; }
 
+        public double Margin { get; set; }
+
         public int HeaderRows { get; set; }
 
         public double HeaderOffsetX { get; set; }
@@ -84,6 +86,7 @@ internal static partial class SvgDocumentBuilder
         CropOptions crop,
         bool includeScrollback = false,
         ChromeDefinition? chrome = null,
+        double margin = 0d,
         double padding = 0d,
         int? heightRows = null,
         int commandHeaderRows = 0,
@@ -178,6 +181,7 @@ internal static partial class SvgDocumentBuilder
             viewHeight = Math.Max(viewHeight, heightRows.Value * cellHeight);
         }
 
+        var normalizedMargin = Math.Max(0d, margin);
         var normalizedPadding = Math.Max(0d, padding);
         var chromeLeft = 0d;
         var chromeTop = 0d;
@@ -203,19 +207,29 @@ internal static partial class SvgDocumentBuilder
         }
 
         var headerHeight = commandHeaderRows * cellHeight;
-        var headerOffsetX = chromeLeft + normalizedPadding;
-        var headerOffsetY = chromeTop + normalizedPadding;
-        var contentOffsetX = chromeLeft + normalizedPadding;
-        var contentOffsetY = chromeTop + normalizedPadding + headerHeight;
+        var shellOffsetX = chromeLeft + normalizedMargin + normalizedPadding;
+        var shellOffsetY = chromeTop + normalizedMargin + normalizedPadding;
+        var headerOffsetX = shellOffsetX;
+        var headerOffsetY = shellOffsetY;
+        var contentOffsetX = shellOffsetX;
+        var contentOffsetY = shellOffsetY + headerHeight;
         var canvasWidth =
-            chromeLeft + chromeRight + normalizedPadding + viewWidth + normalizedPadding;
+            chromeLeft
+            + chromeRight
+            + normalizedMargin
+            + normalizedPadding
+            + viewWidth
+            + normalizedPadding
+            + normalizedMargin;
         var canvasHeight =
             chromeTop
             + chromeBottom
+            + normalizedMargin
             + normalizedPadding
             + headerHeight
             + viewHeight
             + normalizedPadding;
+        canvasHeight += normalizedMargin;
 
         var naturalCanvasWidth = Math.Max(1d, canvasWidth);
         var naturalCanvasHeight = Math.Max(1d, canvasHeight);
@@ -300,6 +314,7 @@ internal static partial class SvgDocumentBuilder
             CanvasHeight = naturalCanvasHeight,
             ContentOffsetX = contentOffsetX,
             ContentOffsetY = contentOffsetY,
+            Margin = normalizedMargin,
             HeaderRows = commandHeaderRows,
             HeaderOffsetX = headerOffsetX,
             HeaderOffsetY = headerOffsetY,

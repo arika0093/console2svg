@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -273,6 +274,7 @@ public static class RepeatRecorder
             if (ch == '\x1b' && i + 1 < line.Length && line[i + 1] == '[')
             {
                 i += 2;
+                var parameterStart = i;
                 // Skip parameter bytes (0x30-0x3F)
                 while (i < line.Length && line[i] >= 0x30 && line[i] <= 0x3F)
                 {
@@ -286,6 +288,11 @@ public static class RepeatRecorder
                 // Skip final byte (0x40-0x7E)
                 if (i < line.Length && line[i] >= 0x40 && line[i] <= 0x7E)
                 {
+                    if (line[i] == 'm' && SetsBackgroundColor(line[parameterStart..i]))
+                    {
+                        return false;
+                    }
+
                     i++;
                 }
                 continue;
@@ -296,6 +303,38 @@ public static class RepeatRecorder
         }
 
         return true;
+    }
+
+    private static bool SetsBackgroundColor(ReadOnlySpan<char> parameters)
+    {
+        if (parameters.IsEmpty)
+        {
+            return false;
+        }
+
+        var partStart = 0;
+        for (var i = 0; i <= parameters.Length; i++)
+        {
+            if (i < parameters.Length && parameters[i] is not (';' or ':'))
+            {
+                continue;
+            }
+
+            var part = parameters[partStart..i];
+            if (
+                int.TryParse(part, NumberStyles.Integer, CultureInfo.InvariantCulture, out var code)
+                && (code is >= 40 and <= 49 or >= 100 and <= 107)
+            )
+            {
+                return code != 49;
+            }
+
+            partStart = i + 1;
+        }
+
+        // Extended background colors use 48;5;n or 48;2;r;g;b.
+        return parameters.StartsWith("48;", StringComparison.Ordinal)
+            || parameters.StartsWith("48:", StringComparison.Ordinal);
     }
 
     /// <summary>

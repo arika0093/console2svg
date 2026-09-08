@@ -55,7 +55,8 @@ internal static partial class Program
         var textRenderOptions = SvgRenderOptionsFactory.Create(options);
         textRenderOptions.RenderCursor = true;
         textRenderOptions.IncludeStaticLayers = false;
-        textRenderOptions.IncludeTerminalBackground = false;
+        textRenderOptions.IncludeTerminalBackground = true;
+        textRenderOptions.IncludeTerminalBaseBackground = false;
         textRenderOptions.Opacity = 1d;
         string latestBackgroundSvg = "";
         string latestWindowSvg = "";

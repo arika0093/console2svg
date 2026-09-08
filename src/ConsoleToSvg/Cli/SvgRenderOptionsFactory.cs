@@ -54,6 +54,7 @@ public static class SvgRenderOptionsFactory
             Font = appOptions.Font,
             FontSize = appOptions.FontSize ?? 14d,
             Chrome = chrome,
+            Margin = appOptions.Margin ?? 0d,
             Padding = appOptions.Padding ?? 8d,
             Loop = appOptions.Loop,
             VideoFps = appOptions.VideoFps,

@@ -145,6 +145,10 @@ internal static partial class Program
             DefaultHeight
         );
         var theme = Theme.Resolve(renderOptions.Theme);
+        if (renderOptions.Chrome?.ThemeBackgroundOverride is string chromeBackground)
+        {
+            theme = theme.WithBackground(chromeBackground);
+        }
         if (!string.IsNullOrWhiteSpace(renderOptions.BackColor))
         {
             theme = theme.WithBackground(renderOptions.BackColor);

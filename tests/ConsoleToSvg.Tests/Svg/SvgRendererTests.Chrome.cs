@@ -44,6 +44,47 @@ public sealed partial class SvgRendererTests
     }
 
     [Test]
+    public void RenderStaticSvgSeparatesTerminalBackgroundFromOpaqueForeground()
+    {
+        var session = new RecordingSession(width: 8, height: 2);
+        session.AddEvent(0.01, "Hi");
+        var options = new ConsoleToSvg.Svg.SvgRenderOptions
+        {
+            Theme = "dark",
+            Opacity = 0.5d,
+            RenderCursor = false,
+        };
+
+        var backgroundOnly = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = options.Theme,
+                Opacity = options.Opacity,
+                RenderCursor = false,
+                IncludeTerminalForeground = false,
+            }
+        );
+        var foregroundOnly = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions
+            {
+                Theme = options.Theme,
+                RenderCursor = false,
+                IncludeStaticLayers = false,
+                IncludeTerminalBackground = false,
+            }
+        );
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(session, options);
+
+        backgroundOnly.ShouldNotContain(">Hi</text>");
+        foregroundOnly.ShouldContain(">Hi</text>");
+        foregroundOnly.ShouldNotContain("<rect");
+        svg.LastIndexOf("opacity=\"0.5\"", StringComparison.Ordinal)
+            .ShouldBeLessThan(svg.IndexOf(">Hi</text>", StringComparison.Ordinal));
+    }
+
+    [Test]
     public void RenderStaticSvgWithFullOpacityDoesNotAddFillOpacity()
     {
         var session = new RecordingSession(width: 8, height: 2);

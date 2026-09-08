@@ -13,7 +13,7 @@ internal static class ShellCompletion
     // They intentionally offer only options that make sense for each verb; validation
     // remains the source of truth for combinations of otherwise valid options.
     private const string CommonOptions =
-        "--help --version -o --out -w --width -h --height -m --mode -v --video -c --with-command --mask --verbose --frame --time --crop-top --crop-right --crop-bottom --crop-left --theme --forecolor -d --window --padding --no-loop --no-colorenv --no-delete-envs --fps --timing --sleep --fadeout --coalesce-ms --opacity --adjust --background --timeout --font --fontsize --embed-logs --header --prompt --pcmode --pc-padding --backcolor --save-frames --size --svg-converter";
+        "--help --version -o --out -w --width -h --height -m --mode -v --video -c --with-command --mask --verbose --frame --time --crop-top --crop-right --crop-bottom --crop-left --theme --forecolor -d --window --margin --padding --no-loop --no-colorenv --no-delete-envs --fps --timing --sleep --fadeout --coalesce-ms --opacity --adjust --background --timeout --font --fontsize --embed-logs --header --prompt --pcmode --pc-padding --backcolor --save-frames --size --svg-converter --no-resize";
     private const string CaptureOptions =
         CommonOptions
         + " --in --save-cast --embed-cast --embed-replay --embed-debug --replay-save --replay --stdout";
@@ -22,7 +22,7 @@ internal static class ShellCompletion
         CommonOptions + " --save-cast --embed-cast --embed-replay --embed-debug --stdout";
     private const string ConvertOptions = CommonOptions + " --stdout";
     private const string LiveServerOptions =
-        "--help --version -w --width -h --height -c --with-command --mask --verbose --theme --forecolor -d --window --padding --no-colorenv --no-delete-envs --opacity --adjust --background --font --fontsize --header --prompt --pcmode --pc-padding --backcolor --listen";
+        "--help --version -w --width -h --height -c --with-command --mask --verbose --theme --forecolor -d --window --margin --padding --no-colorenv --no-delete-envs --opacity --adjust --background --font --fontsize --header --prompt --pcmode --pc-padding --backcolor --listen --no-resize";
 
     public static string? GetScript(string? shell) =>
         shell?.ToLowerInvariant() switch

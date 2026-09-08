@@ -18,14 +18,10 @@
   #layers,
   #background,
   #window,
-  #chrome,
-  #terminal {
+  #window-paint,
+  #text {
     position: absolute;
     inset: 0;
-  }
-
-  #window {
-    opacity: {opacity};
   }
 
   #screen svg {
@@ -96,8 +92,8 @@
   <div id="layers">
     <div id="background"></div>
     <div id="window">
-      <div id="chrome"></div>
-      <div id="terminal"></div>
+      <div id="window-paint"></div>
+      <div id="text"></div>
     </div>
   </div>
   <button id="settings" type="button" aria-label="Display settings">Settings</button>
@@ -106,8 +102,9 @@
 <script>
   const s = document.querySelector('#screen');
   const background = document.querySelector('#background');
-  const chromeLayer = document.querySelector('#chrome');
-  const terminal = document.querySelector('#terminal');
+  const windowLayer = document.querySelector('#window');
+  const windowPaintLayer = document.querySelector('#window-paint');
+  const textLayer = document.querySelector('#text');
   const settings = document.querySelector('#settings');
   const status = document.querySelector('#status');
   const modes = new Set(['width', 'height', 'contain', 'actual']);
@@ -117,11 +114,11 @@
   let reconnectTimer;
 
   function applyMode() {
-    const svg = terminal.querySelector('svg');
+    const svg = textLayer.querySelector('svg');
     if (!svg) {
       return;
     }
-    const svgs = s.querySelectorAll('#background svg,#chrome svg,#terminal svg');
+    const svgs = s.querySelectorAll('#background svg,#window-paint svg,#text svg');
     svgs.forEach(svg => {
       svg.style.width = '';
       svg.style.height = '';
@@ -148,19 +145,16 @@
   function connect() {
     clearTimeout(reconnectTimer);
     events = new EventSource('/events');
-    events.addEventListener('window-opacity', e => {
-      document.querySelector('#window').style.opacity = e.data;
-    });
     events.addEventListener('background', e => {
       background.innerHTML = e.data;
       applyMode();
     });
-    events.addEventListener('chrome', e => {
-      chromeLayer.innerHTML = e.data;
+    events.addEventListener('window', e => {
+      windowPaintLayer.innerHTML = e.data;
       applyMode();
     });
-    events.addEventListener('frame', e => {
-      terminal.innerHTML = e.data;
+    events.addEventListener('text', e => {
+      textLayer.innerHTML = e.data;
       applyMode();
       status.classList.remove('visible');
     });
@@ -174,10 +168,10 @@
     };
   }
 
-  terminal.onpointermove = e => {
+  windowLayer.onpointermove = e => {
     s.classList.toggle('show-settings', e.target instanceof SVGElement);
   };
-  terminal.onpointerleave = () => {
+  windowLayer.onpointerleave = () => {
     s.classList.remove('show-settings');
   };
   settings.onclick = () => {

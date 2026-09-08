@@ -49,18 +49,18 @@ internal static partial class Program
         backgroundRenderOptions.IncludeChrome = false;
         backgroundRenderOptions.IncludeClientBackground = false;
         backgroundRenderOptions.Opacity = 1d;
-        var chromeRenderOptions = SvgRenderOptionsFactory.Create(options);
-        chromeRenderOptions.IncludeTerminalFrame = false;
-        chromeRenderOptions.IncludeBackground = false;
-        chromeRenderOptions.IncludeClientBackground = false;
-        chromeRenderOptions.Opacity = 1d;
-        var frameRenderOptions = SvgRenderOptionsFactory.Create(options);
-        frameRenderOptions.RenderCursor = true;
-        frameRenderOptions.IncludeStaticLayers = false;
-        frameRenderOptions.Opacity = 1d;
+        var windowRenderOptions = SvgRenderOptionsFactory.Create(options);
+        windowRenderOptions.IncludeBackground = false;
+        windowRenderOptions.IncludeTerminalForeground = false;
+        windowRenderOptions.IncludeTerminalBaseBackground = false;
+        var textRenderOptions = SvgRenderOptionsFactory.Create(options);
+        textRenderOptions.RenderCursor = true;
+        textRenderOptions.IncludeStaticLayers = false;
+        textRenderOptions.IncludeTerminalBackground = false;
+        textRenderOptions.Opacity = 1d;
         string latestBackgroundSvg = "";
-        string latestChromeSvg = "";
-        string latestFrameSvg = "";
+        string latestWindowSvg = "";
+        string latestTextSvg = "";
         var screenGate = new object();
         ScreenBuffer? latestScreen = null;
         var screenVersion = 0L;
@@ -95,9 +95,8 @@ internal static partial class Program
             var acceptTask = AcceptLiveClientsAsync(
                 listener,
                 clients,
-                () => (latestBackgroundSvg, latestChromeSvg, latestFrameSvg),
-                GetLiveHtml(options.Opacity),
-                options.Opacity,
+                () => (latestBackgroundSvg, latestWindowSvg, latestTextSvg),
+                GetLiveHtml(),
                 liveLifetime.Token
             );
             var renderTask = RenderLiveFramesAsync(
@@ -108,35 +107,31 @@ internal static partial class Program
                         return (latestScreen, screenVersion);
                     }
                 },
-                (backgroundSvg, chromeSvg, frameSvg) =>
+                (backgroundSvg, windowSvg, textSvg) =>
                 {
-                    if (backgroundSvg is not null && chromeSvg is not null)
+                    if (backgroundSvg is not null && windowSvg is not null)
                     {
                         latestBackgroundSvg = backgroundSvg;
-                        latestChromeSvg = chromeSvg;
-                        latestFrameSvg = frameSvg;
-                        BroadcastInitialSvg(
-                            clients,
-                            backgroundSvg,
-                            chromeSvg,
-                            frameSvg,
-                            options.Opacity
-                        );
+                        latestWindowSvg = windowSvg;
+                        latestTextSvg = textSvg;
+                        BroadcastInitialSvg(clients, backgroundSvg, windowSvg, textSvg);
                         return;
                     }
-                    latestFrameSvg = frameSvg;
-                    BroadcastFrameSvg(clients, frameSvg);
+                    latestTextSvg = textSvg;
+                    BroadcastTextSvg(clients, textSvg);
                 },
                 backgroundRenderOptions,
-                chromeRenderOptions,
-                frameRenderOptions,
+                windowRenderOptions,
+                textRenderOptions,
                 liveLifetime.Token
             );
-            var theme = Theme.Resolve(frameRenderOptions.Theme);
-            if (!string.IsNullOrWhiteSpace(frameRenderOptions.BackColor))
-                theme = theme.WithBackground(frameRenderOptions.BackColor);
-            if (!string.IsNullOrWhiteSpace(frameRenderOptions.ForeColor))
-                theme = theme.WithForeground(frameRenderOptions.ForeColor);
+            var theme = Theme.Resolve(textRenderOptions.Theme);
+            if (textRenderOptions.Chrome?.ThemeBackgroundOverride is string chromeBackground)
+                theme = theme.WithBackground(chromeBackground);
+            if (!string.IsNullOrWhiteSpace(textRenderOptions.BackColor))
+                theme = theme.WithBackground(textRenderOptions.BackColor);
+            if (!string.IsNullOrWhiteSpace(textRenderOptions.ForeColor))
+                theme = theme.WithForeground(textRenderOptions.ForeColor);
             await InteractiveRecorder
                 .RunAsync(
                     width,
@@ -215,9 +210,8 @@ internal static partial class Program
     private static async Task AcceptLiveClientsAsync(
         TcpListener listener,
         ConcurrentDictionary<int, LiveSseClient> clients,
-        Func<(string BackgroundSvg, string ChromeSvg, string FrameSvg)> latest,
+        Func<(string BackgroundSvg, string WindowSvg, string TextSvg)> latest,
         string liveHtml,
-        double opacity,
         CancellationToken cancellationToken
     )
     {
@@ -250,7 +244,6 @@ internal static partial class Program
                 clients,
                 latest,
                 liveHtml,
-                opacity,
                 cancellationToken
             );
         }
@@ -260,9 +253,8 @@ internal static partial class Program
         TcpClient client,
         int id,
         ConcurrentDictionary<int, LiveSseClient> clients,
-        Func<(string BackgroundSvg, string ChromeSvg, string FrameSvg)> latest,
+        Func<(string BackgroundSvg, string WindowSvg, string TextSvg)> latest,
         string liveHtml,
-        double opacity,
         CancellationToken cancellationToken
     )
     {
@@ -293,15 +285,9 @@ internal static partial class Program
                     .ConfigureAwait(false);
                 var sseClient = new LiveSseClient(stream, () => clients.TryRemove(id, out _));
                 clients[id] = sseClient;
-                var (backgroundSvg, chromeSvg, frameSvg) = latest();
+                var (backgroundSvg, windowSvg, textSvg) = latest();
                 await sseClient
-                    .SendInitialAsync(
-                        backgroundSvg,
-                        chromeSvg,
-                        frameSvg,
-                        opacity,
-                        cancellationToken
-                    )
+                    .SendInitialAsync(backgroundSvg, windowSvg, textSvg, cancellationToken)
                     .ConfigureAwait(false);
                 try
                 {
@@ -320,7 +306,7 @@ internal static partial class Program
                         stream,
                         "200 OK",
                         "image/svg+xml; charset=utf-8",
-                        latest().FrameSvg
+                        latest().TextSvg
                     )
                     .ConfigureAwait(false);
                 return;
@@ -356,40 +342,53 @@ internal static partial class Program
     private static void BroadcastInitialSvg(
         ConcurrentDictionary<int, LiveSseClient> clients,
         string backgroundSvg,
-        string chromeSvg,
-        string frameSvg,
-        double opacity
+        string windowSvg,
+        string textSvg
     )
     {
         foreach (var client in clients.Values)
-            client.TrySendInitial(backgroundSvg, chromeSvg, frameSvg, opacity);
+            client.TrySendInitial(backgroundSvg, windowSvg, textSvg);
     }
 
-    private static void BroadcastFrameSvg(
+    private static void BroadcastTextSvg(
         ConcurrentDictionary<int, LiveSseClient> clients,
         string svg
     )
     {
         foreach (var client in clients.Values)
-            client.TrySendFrame(svg);
+            client.TrySendText(svg);
     }
 
     private static async Task RenderLiveFramesAsync(
         Func<(ScreenBuffer? Screen, long Version)> getLatestScreen,
         Action<string?, string?, string> publish,
         SvgRenderOptions backgroundRenderOptions,
-        SvgRenderOptions chromeRenderOptions,
-        SvgRenderOptions frameRenderOptions,
+        SvgRenderOptions windowRenderOptions,
+        SvgRenderOptions textRenderOptions,
         CancellationToken cancellationToken
     )
     {
         using var timer = new PeriodicTimer(TimeSpan.FromSeconds(1d / 60d));
         var renderedVersion = -1L;
         var staticRendered = false;
+        var renderedWidth = 0;
+        var renderedHeight = 0;
         while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
         {
             var (screen, version) = getLatestScreen();
-            if (screen is null || version == renderedVersion)
+            if (screen is null)
+            {
+                continue;
+            }
+
+            if (screen.Width != renderedWidth || screen.Height != renderedHeight)
+            {
+                staticRendered = false;
+                renderedWidth = screen.Width;
+                renderedHeight = screen.Height;
+            }
+
+            if (version == renderedVersion && staticRendered)
             {
                 continue;
             }
@@ -397,8 +396,8 @@ internal static partial class Program
             var backgroundSvg = staticRendered
                 ? null
                 : SvgRenderer.Render(screen, backgroundRenderOptions);
-            var chromeSvg = staticRendered ? null : SvgRenderer.Render(screen, chromeRenderOptions);
-            publish(backgroundSvg, chromeSvg, SvgRenderer.Render(screen, frameRenderOptions));
+            var windowSvg = staticRendered ? null : SvgRenderer.Render(screen, windowRenderOptions);
+            publish(backgroundSvg, windowSvg, SvgRenderer.Render(screen, textRenderOptions));
             staticRendered = true;
             renderedVersion = version;
         }
@@ -410,63 +409,56 @@ internal static partial class Program
 
         public async Task SendInitialAsync(
             string backgroundSvg,
-            string chromeSvg,
-            string frameSvg,
-            double opacity,
+            string windowSvg,
+            string textSvg,
             CancellationToken cancellationToken
         )
         {
-            await WriteSseAsync(
-                    stream,
-                    "window-opacity",
-                    opacity.ToString(CultureInfo.InvariantCulture),
-                    cancellationToken
-                )
-                .ConfigureAwait(false);
             if (!string.IsNullOrEmpty(backgroundSvg))
             {
                 await WriteSseAsync(stream, "background", backgroundSvg, cancellationToken)
                     .ConfigureAwait(false);
             }
-            if (!string.IsNullOrEmpty(chromeSvg))
+            if (!string.IsNullOrEmpty(windowSvg))
             {
-                await WriteSseAsync(stream, "chrome", chromeSvg, cancellationToken)
+                await WriteSseAsync(stream, "window", windowSvg, cancellationToken)
                     .ConfigureAwait(false);
             }
-            if (!string.IsNullOrEmpty(frameSvg))
+            if (!string.IsNullOrEmpty(textSvg))
             {
-                await WriteSseAsync(stream, "frame", frameSvg, cancellationToken)
+                await WriteSseAsync(stream, "text", textSvg, cancellationToken)
                     .ConfigureAwait(false);
             }
         }
 
-        public void TrySendInitial(
+        public void TrySendInitial(string backgroundSvg, string windowSvg, string textSvg)
+        {
+            if (Interlocked.Exchange(ref _sending, 1) != 0)
+                return;
+            _ = SendInitialAndTextAsync(backgroundSvg, windowSvg, textSvg);
+        }
+
+        public void TrySendText(string textSvg)
+        {
+            if (Interlocked.Exchange(ref _sending, 1) != 0)
+                return;
+            _ = SendAsync("text", textSvg);
+        }
+
+        private async Task SendInitialAndTextAsync(
             string backgroundSvg,
-            string chromeSvg,
-            string frameSvg,
-            double opacity
+            string windowSvg,
+            string textSvg
         )
-        {
-            if (Interlocked.Exchange(ref _sending, 1) != 0)
-                return;
-            _ = SendInitialAndFrameAsync(backgroundSvg, chromeSvg, frameSvg, opacity);
-        }
-
-        public void TrySendFrame(string svg) => TrySend("frame", svg);
-
-        private void TrySend(string eventName, string svg)
-        {
-            if (Interlocked.Exchange(ref _sending, 1) != 0)
-                return;
-            _ = SendAsync(eventName, svg);
-        }
-
-        private async Task SendAsync(string eventName, string svg)
         {
             using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
             try
             {
-                await WriteSseAsync(stream, eventName, svg, timeout.Token).ConfigureAwait(false);
+                await WriteSseAsync(stream, "background", backgroundSvg, timeout.Token)
+                    .ConfigureAwait(false);
+                await WriteSseAsync(stream, "window", windowSvg, timeout.Token)
+                    .ConfigureAwait(false);
+                await WriteSseAsync(stream, "text", textSvg, timeout.Token).ConfigureAwait(false);
             }
             catch
             {
@@ -479,28 +471,12 @@ internal static partial class Program
             }
         }
 
-        private async Task SendInitialAndFrameAsync(
-            string backgroundSvg,
-            string chromeSvg,
-            string frameSvg,
-            double opacity
-        )
+        private async Task SendAsync(string eventName, string svg)
         {
             using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
             try
             {
-                await WriteSseAsync(
-                        stream,
-                        "window-opacity",
-                        opacity.ToString(CultureInfo.InvariantCulture),
-                        timeout.Token
-                    )
-                    .ConfigureAwait(false);
-                await WriteSseAsync(stream, "background", backgroundSvg, timeout.Token)
-                    .ConfigureAwait(false);
-                await WriteSseAsync(stream, "chrome", chromeSvg, timeout.Token)
-                    .ConfigureAwait(false);
-                await WriteSseAsync(stream, "frame", frameSvg, timeout.Token).ConfigureAwait(false);
+                await WriteSseAsync(stream, eventName, svg, timeout.Token).ConfigureAwait(false);
             }
             catch
             {
@@ -564,12 +540,7 @@ internal static partial class Program
         "console2svg.live-settings.html"
     );
 
-    private static string GetLiveHtml(double opacity) =>
-        EmbeddedLiveHtml.Replace(
-            "{opacity}",
-            opacity.ToString(CultureInfo.InvariantCulture),
-            StringComparison.Ordinal
-        );
+    private static string GetLiveHtml() => EmbeddedLiveHtml;
 
     private static string LoadEmbeddedText(string resourceName)
     {

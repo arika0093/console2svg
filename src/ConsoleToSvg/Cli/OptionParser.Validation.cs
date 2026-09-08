@@ -252,6 +252,19 @@ public static partial class OptionParser
         }
 
         if (
+            options.Margin.HasValue
+            && (
+                double.IsNaN(options.Margin.Value)
+                || double.IsInfinity(options.Margin.Value)
+                || options.Margin.Value < 0
+            )
+        )
+        {
+            error = "--margin must be a non-negative finite number.";
+            return false;
+        }
+
+        if (
             options.Padding.HasValue
             && (
                 double.IsNaN(options.Padding.Value)

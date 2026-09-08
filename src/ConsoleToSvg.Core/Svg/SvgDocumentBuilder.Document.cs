@@ -80,9 +80,9 @@ internal static partial class SvgDocumentBuilder
             AppendDefs(sb, context, chrome, background);
             AppendBackground(sb, context, chrome, background);
         }
-        AppendGroupOpen(sb, opacity);
         if (includeStaticLayers)
         {
+            AppendGroupOpen(sb, opacity);
             if (includeChrome)
             {
                 AppendChrome(sb, context, theme, chrome);
@@ -96,6 +96,11 @@ internal static partial class SvgDocumentBuilder
                 AppendCommandHeader(sb, context, theme, styles, commandHeader, maskPatterns);
             }
         }
+    }
+
+    public static void EndStaticLayers(SvgWriter sb, double opacity)
+    {
+        AppendGroupClose(sb, opacity);
     }
 
     private static void AppendCommandHeader(
@@ -229,17 +234,19 @@ internal static partial class SvgDocumentBuilder
         }
         else if (chrome.IsDesktop)
         {
-            left = chrome.DesktopPadding + chrome.PaddingLeft;
-            top = chrome.DesktopPadding + chrome.PaddingTop;
-            right = chrome.DesktopPadding + chrome.PaddingRight + chrome.ShadowOffset;
-            bottom = chrome.DesktopPadding + chrome.PaddingBottom + chrome.ShadowOffset;
+            left = context.Margin + chrome.DesktopPadding + chrome.PaddingLeft;
+            top = context.Margin + chrome.DesktopPadding + chrome.PaddingTop;
+            right =
+                context.Margin + chrome.DesktopPadding + chrome.PaddingRight + chrome.ShadowOffset;
+            bottom =
+                context.Margin + chrome.DesktopPadding + chrome.PaddingBottom + chrome.ShadowOffset;
         }
         else
         {
-            left = chrome.PaddingLeft;
-            top = chrome.PaddingTop;
-            right = chrome.PaddingRight;
-            bottom = chrome.PaddingBottom;
+            left = context.Margin + chrome.PaddingLeft;
+            top = context.Margin + chrome.PaddingTop;
+            right = context.Margin + chrome.PaddingRight;
+            bottom = context.Margin + chrome.PaddingBottom;
         }
 
         var width = Math.Max(0d, context.CanvasWidth - left - right);
@@ -491,7 +498,6 @@ internal static partial class SvgDocumentBuilder
         string? embeddedReplay = null
     )
     {
-        AppendGroupClose(sb, opacity);
         if (!string.IsNullOrEmpty(embeddedAsciicast))
         {
             AppendEmbeddedMetadata(sb, "console2svg-asciicast", "asciicast-v2", embeddedAsciicast);

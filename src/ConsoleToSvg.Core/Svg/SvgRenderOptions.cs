@@ -24,6 +24,10 @@ public sealed class SvgRenderOptions
     /// <summary>Window chrome definition. null = no chrome (transparent/plain).</summary>
     public ChromeDefinition? Chrome { get; set; }
 
+    /// <summary>Space between the window chrome and the terminal shell.</summary>
+    public double Margin { get; set; }
+
+    /// <summary>Inner space between the window chrome and terminal content.</summary>
     public double Padding { get; set; }
 
     public bool Loop { get; set; }
@@ -49,6 +53,15 @@ public sealed class SvgRenderOptions
 
     /// <summary>Include the terminal screen frame.</summary>
     public bool IncludeTerminalFrame { get; set; } = true;
+
+    /// <summary>Include the terminal frame's base and cell backgrounds.</summary>
+    public bool IncludeTerminalBackground { get; set; } = true;
+
+    /// <summary>Include the terminal frame's base background behind individual cell backgrounds.</summary>
+    public bool IncludeTerminalBaseBackground { get; set; } = true;
+
+    /// <summary>Include the terminal frame's text, drawing characters, and cursor.</summary>
+    public bool IncludeTerminalForeground { get; set; } = true;
 
     /// <summary>Include the terminal client background behind the screen frame.</summary>
     public bool IncludeClientBackground { get; set; } = true;

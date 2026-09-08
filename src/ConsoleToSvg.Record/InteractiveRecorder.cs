@@ -33,7 +33,8 @@ public static partial class InteractiveRecorder
         ILogger? logger = null,
         Action<ScreenBuffer>? onScreenUpdated = null,
         bool forwardToConsole = true,
-        bool captureControlsEnabled = true
+        bool captureControlsEnabled = true,
+        Func<(int Width, int Height)>? terminalSizeProvider = null
     )
     {
         if (screenshotKey.IsEmpty || recordingKey.IsEmpty || pauseKey.IsEmpty)
@@ -76,6 +77,60 @@ public static partial class InteractiveRecorder
             .SpawnAsync(options, cancellationToken)
             .ConfigureAwait(false);
         onScreenUpdated?.Invoke(emulator.Buffer.Clone());
+        var resizeTask = terminalSizeProvider is null
+            ? null
+            : Task.Run(
+                async () =>
+                {
+                    var currentWidth = width;
+                    var currentHeight = height;
+                    var pendingWidth = 0;
+                    var pendingHeight = 0;
+                    var pendingSince = 0L;
+                    while (!lifetime.IsCancellationRequested)
+                    {
+                        await Task.Delay(50, lifetime.Token).ConfigureAwait(false);
+                        var (newWidth, newHeight) = terminalSizeProvider();
+                        newWidth = Math.Max(1, newWidth);
+                        newHeight = Math.Max(1, newHeight);
+                        if (newWidth == currentWidth && newHeight == currentHeight)
+                        {
+                            pendingWidth = 0;
+                            pendingHeight = 0;
+                            pendingSince = 0;
+                            continue;
+                        }
+
+                        if (newWidth != pendingWidth || newHeight != pendingHeight)
+                        {
+                            pendingWidth = newWidth;
+                            pendingHeight = newHeight;
+                            pendingSince = Stopwatch.GetTimestamp();
+                            continue;
+                        }
+
+                        if (Stopwatch.GetElapsedTime(pendingSince) < TimeSpan.FromMilliseconds(150))
+                        {
+                            continue;
+                        }
+
+                        connection.Resize(pendingWidth, pendingHeight);
+                        ScreenBuffer resizedScreen;
+                        lock (captureGate)
+                        {
+                            emulator = new TerminalEmulator(pendingWidth, pendingHeight, theme);
+                            resizedScreen = emulator.Buffer.Clone();
+                        }
+                        currentWidth = pendingWidth;
+                        currentHeight = pendingHeight;
+                        pendingWidth = 0;
+                        pendingHeight = 0;
+                        pendingSince = 0;
+                        onScreenUpdated?.Invoke(resizedScreen);
+                    }
+                },
+                CancellationToken.None
+            );
         var rawInput = forwardToConsole ? PtyRecorder.ConsoleInputMode.TryEnableRaw(logger) : null;
         using var utf8OutputScope = PtyRecorder.TryUseUtf8ConsoleOutputEncoding(
             forwardToConsole,
@@ -1081,6 +1136,10 @@ public static partial class InteractiveRecorder
             }
 
             await lifetime.CancelAsync().ConfigureAwait(false);
+            if (resizeTask is not null)
+            {
+                await IgnoreFailureAsync(resizeTask).ConfigureAwait(false);
+            }
             connection.Dispose();
             await IgnoreFailureAsync(outputTask).ConfigureAwait(false);
             await IgnoreFailureAsync(inputTask).ConfigureAwait(false);

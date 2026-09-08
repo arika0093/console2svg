@@ -787,7 +787,8 @@ public static partial class OptionParser
             && !string.Equals(name, "--embed-cast", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--embed-logs", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--embed-replay", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--embed-debug", StringComparison.OrdinalIgnoreCase);
+            && !string.Equals(name, "--embed-debug", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--no-resize", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsVerboseLogPathValue(string token) =>

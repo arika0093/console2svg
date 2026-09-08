@@ -44,23 +44,28 @@ public static class NativePty
 public sealed class NativePtyConnection : IDisposable
 {
     private readonly Action _dispose;
+    private readonly Action<int, int> _resize;
     private readonly Func<int, bool> _waitForExit;
 
     public NativePtyConnection(
         Stream readerStream,
         Stream writerStream,
         Func<int, bool> waitForExit,
-        Action dispose
+        Action dispose,
+        Action<int, int>? resize = null
     )
     {
         ReaderStream = readerStream;
         WriterStream = writerStream;
         _waitForExit = waitForExit;
         _dispose = dispose;
+        _resize = resize ?? ((_, _) => { });
     }
 
     public Stream ReaderStream { get; }
     public Stream WriterStream { get; }
+
+    public void Resize(int cols, int rows) => _resize(cols, rows);
 
     public bool WaitForExit(int milliseconds) => _waitForExit(milliseconds);
 
@@ -208,7 +213,20 @@ internal static class NativePtyWindows
                 CloseHandle(processInfo.hProcess);
             }
 
-            return new NativePtyConnection(reader, writer, WaitForExit, Dispose);
+            return new NativePtyConnection(
+                reader,
+                writer,
+                WaitForExit,
+                Dispose,
+                (cols, rows) =>
+                {
+                    var result = ResizePseudoConsole(hPC, new Coord((short)cols, (short)rows));
+                    if (result != 0)
+                    {
+                        ThrowWin32("ResizePseudoConsole failed", result);
+                    }
+                }
+            );
         }
         catch
         {
@@ -502,6 +520,9 @@ internal static class NativePtyWindows
     private static extern void ClosePseudoConsole(IntPtr hPC);
 
     [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern int ResizePseudoConsole(IntPtr hPC, Coord size);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
     private static extern bool CreatePipe(
         out IntPtr hReadPipe,
         out IntPtr hWritePipe,
@@ -671,7 +692,13 @@ internal static class NativePtyUnix
             }
         }
 
-        return new NativePtyConnection(pty.ReaderStream, pty.WriterStream, WaitForExit, Dispose);
+        return new NativePtyConnection(
+            pty.ReaderStream,
+            pty.WriterStream,
+            WaitForExit,
+            Dispose,
+            (cols, rows) => pty.Resize(cols, rows)
+        );
     }
 
     // Attempt to set PTY slave ECHO state so that input bytes forwarded from the outer

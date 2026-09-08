@@ -1,14 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Formats.Tar;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace ConsoleToSvg.Terminal;
 
 public static class ThemeManager
 {
+    private static readonly HttpClient HttpClient = new()
+    {
+        DefaultRequestHeaders = { UserAgent = { ProductInfoHeaderValue.Parse("console2svg") } },
+    };
+
     public static ThemeEntry Install(string sourceText)
     {
         var temporary = Path.Combine(
@@ -134,9 +143,13 @@ public static class ThemeManager
     {
         var clone = Path.Combine(temporary, Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(clone);
-        RunGit("clone", "--quiet", source.CloneUrl, clone);
-        if (!string.IsNullOrWhiteSpace(source.Ref))
-            RunGit("-C", clone, "checkout", "--quiet", source.Ref);
+        if (TryRunGit("clone", "--quiet", source.CloneUrl, clone))
+        {
+            if (!string.IsNullOrWhiteSpace(source.Ref))
+                RunGit("-C", clone, "checkout", "--quiet", source.Ref);
+        }
+        else
+            DownloadArchive(source, clone);
         var root = string.IsNullOrEmpty(source.Subdirectory)
             ? clone
             : Path.Combine(clone, source.Subdirectory);
@@ -264,9 +277,13 @@ public static class ThemeManager
         Directory.CreateDirectory(temporary);
         try
         {
-            RunGit("clone", "--quiet", installation.Source.CloneUrl, temporary);
-            if (!string.IsNullOrWhiteSpace(installation.Source.Ref))
-                RunGit("-C", temporary, "checkout", "--quiet", installation.Source.Ref);
+            if (TryRunGit("clone", "--quiet", installation.Source.CloneUrl, temporary))
+            {
+                if (!string.IsNullOrWhiteSpace(installation.Source.Ref))
+                    RunGit("-C", temporary, "checkout", "--quiet", installation.Source.Ref);
+            }
+            else
+                DownloadArchive(installation.Source, temporary);
             var root = string.IsNullOrEmpty(installation.Source.Subdirectory)
                 ? temporary
                 : Path.Combine(temporary, installation.Source.Subdirectory);
@@ -361,20 +378,44 @@ public static class ThemeManager
 
     private static string ReadCommit(string repository)
     {
-        using var process = Process.Start(
-            new ProcessStartInfo("/usr/bin/git", $"-C \"{repository}\" rev-parse HEAD")
-            {
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-            }
-        )!;
-        process.WaitForExit();
-        return process.StandardOutput.ReadToEnd().Trim();
+        try
+        {
+            using var process = Process.Start(
+#pragma warning disable S4036
+                new ProcessStartInfo("git", $"-C \"{repository}\" rev-parse HEAD")
+#pragma warning restore S4036
+                {
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                }
+            )!;
+            process.WaitForExit();
+            return process.ExitCode == 0 ? process.StandardOutput.ReadToEnd().Trim() : string.Empty;
+        }
+        catch (System.ComponentModel.Win32Exception)
+        {
+            return string.Empty;
+        }
+    }
+
+    private static bool TryRunGit(params string[] arguments)
+    {
+        try
+        {
+            RunGit(arguments);
+            return true;
+        }
+        catch (System.ComponentModel.Win32Exception)
+        {
+            return false;
+        }
     }
 
     private static void RunGit(params string[] arguments)
     {
-        var psi = new ProcessStartInfo("/usr/bin/git")
+#pragma warning disable S4036
+        var psi = new ProcessStartInfo("git")
+#pragma warning restore S4036
         {
             RedirectStandardError = true,
             UseShellExecute = false,
@@ -386,6 +427,75 @@ public static class ThemeManager
         process.WaitForExit();
         if (process.ExitCode != 0)
             throw new InvalidOperationException(process.StandardError.ReadToEnd().Trim());
+    }
+
+    private static void DownloadArchive(ThemeSource source, string destination)
+    {
+        var archiveUrl = GetArchiveUrl(source);
+        using var response = HttpClient.GetAsync(archiveUrl).GetAwaiter().GetResult();
+        response.EnsureSuccessStatusCode();
+        using var archive = response.Content.ReadAsStream();
+        using var gzip = new GZipStream(archive, CompressionMode.Decompress);
+        using var reader = new TarReader(gzip);
+        var root = string.Empty;
+        TarEntry? entry;
+        while ((entry = reader.GetNextEntry()) is not null)
+        {
+            var relativePath = NormalizeArchivePath(entry.Name, ref root);
+            if (relativePath.Length == 0)
+                continue;
+            var target = Path.GetFullPath(Path.Combine(destination, relativePath));
+            if (
+                !target.StartsWith(
+                    Path.GetFullPath(destination) + Path.DirectorySeparatorChar,
+                    StringComparison.Ordinal
+                )
+            )
+                throw new InvalidDataException("Theme archive contains an unsafe path.");
+            if (entry.EntryType is TarEntryType.Directory)
+                Directory.CreateDirectory(target);
+            else if (entry.DataStream is not null)
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+                using var output = File.Create(target);
+                entry.DataStream.CopyTo(output);
+            }
+        }
+    }
+
+    private static string GetArchiveUrl(ThemeSource source)
+    {
+        var repository = source.CloneUrl;
+        if (repository.StartsWith("git@github.com:", StringComparison.OrdinalIgnoreCase))
+            repository = "https://github.com/" + repository["git@github.com:".Length..];
+        if (!Uri.TryCreate(repository, UriKind.Absolute, out var uri))
+            throw new InvalidOperationException(
+                "Git is unavailable and archive fallback is only supported for GitHub sources."
+            );
+        if (!string.Equals(uri.Host, "github.com", StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException(
+                "Git is unavailable and archive fallback is only supported for GitHub sources."
+            );
+        var path = uri.AbsolutePath.Trim('/').TrimEnd('/');
+        if (path.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
+            path = path[..^4];
+        var suffix = string.IsNullOrWhiteSpace(source.Ref)
+            ? string.Empty
+            : "/" + Uri.EscapeDataString(source.Ref);
+        return $"https://api.github.com/repos/{path}/tarball{suffix}";
+    }
+
+    private static string NormalizeArchivePath(string path, ref string root)
+    {
+        path = path.Replace('\\', '/').Trim('/');
+        var separator = path.IndexOf('/');
+        if (separator < 0)
+            return string.Empty;
+        if (root.Length == 0)
+            root = path[..separator];
+        if (!path.StartsWith(root + "/", StringComparison.Ordinal))
+            throw new InvalidDataException("Theme archive contains multiple roots.");
+        return path[(root.Length + 1)..];
     }
 
     private sealed record StagedTheme(

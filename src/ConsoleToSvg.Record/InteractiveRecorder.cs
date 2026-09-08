@@ -118,7 +118,7 @@ public static partial class InteractiveRecorder
                         ScreenBuffer resizedScreen;
                         lock (captureGate)
                         {
-                            emulator = new TerminalEmulator(pendingWidth, pendingHeight, theme);
+                            emulator.Resize(pendingWidth, pendingHeight);
                             resizedScreen = emulator.Buffer.Clone();
                         }
                         currentWidth = pendingWidth;

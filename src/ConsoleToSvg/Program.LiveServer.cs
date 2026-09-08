@@ -405,7 +405,9 @@ internal static partial class Program
 
     private sealed class LiveSseClient(NetworkStream stream, Action disconnected) : IAsyncDisposable
     {
+        private readonly object _sendGate = new();
         private int _sending;
+        private string? _pendingText;
 
         public async Task SendInitialAsync(
             string backgroundSvg,
@@ -414,42 +416,67 @@ internal static partial class Program
             CancellationToken cancellationToken
         )
         {
-            if (!string.IsNullOrEmpty(backgroundSvg))
+            lock (_sendGate)
             {
-                await WriteSseAsync(stream, "background", backgroundSvg, cancellationToken)
-                    .ConfigureAwait(false);
+                _sending = 1;
             }
-            if (!string.IsNullOrEmpty(windowSvg))
+
+            try
             {
-                await WriteSseAsync(stream, "window", windowSvg, cancellationToken)
-                    .ConfigureAwait(false);
+                if (!string.IsNullOrEmpty(backgroundSvg))
+                {
+                    await WriteSseAsync(stream, "background", backgroundSvg, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                if (!string.IsNullOrEmpty(windowSvg))
+                {
+                    await WriteSseAsync(stream, "window", windowSvg, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                if (!string.IsNullOrEmpty(textSvg))
+                {
+                    await WriteSseAsync(stream, "text", textSvg, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                await SendPendingTextAsync(cancellationToken).ConfigureAwait(false);
             }
-            if (!string.IsNullOrEmpty(textSvg))
+            finally
             {
-                await WriteSseAsync(stream, "text", textSvg, cancellationToken)
-                    .ConfigureAwait(false);
+                CompleteSend();
             }
         }
 
         public void TrySendInitial(string backgroundSvg, string windowSvg, string textSvg)
         {
-            if (Interlocked.Exchange(ref _sending, 1) != 0)
-                return;
-            _ = SendInitialAndTextAsync(backgroundSvg, windowSvg, textSvg);
+            lock (_sendGate)
+            {
+                _pendingText = textSvg;
+                if (_sending != 0)
+                {
+                    return;
+                }
+
+                _sending = 1;
+            }
+            _ = SendInitialAndTextAsync(backgroundSvg, windowSvg);
         }
 
         public void TrySendText(string textSvg)
         {
-            if (Interlocked.Exchange(ref _sending, 1) != 0)
-                return;
-            _ = SendAsync("text", textSvg);
+            lock (_sendGate)
+            {
+                _pendingText = textSvg;
+                if (_sending != 0)
+                {
+                    return;
+                }
+
+                _sending = 1;
+            }
+            _ = SendAsync();
         }
 
-        private async Task SendInitialAndTextAsync(
-            string backgroundSvg,
-            string windowSvg,
-            string textSvg
-        )
+        private async Task SendInitialAndTextAsync(string backgroundSvg, string windowSvg)
         {
             using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
             try
@@ -458,7 +485,7 @@ internal static partial class Program
                     .ConfigureAwait(false);
                 await WriteSseAsync(stream, "window", windowSvg, timeout.Token)
                     .ConfigureAwait(false);
-                await WriteSseAsync(stream, "text", textSvg, timeout.Token).ConfigureAwait(false);
+                await SendPendingTextAsync(timeout.Token).ConfigureAwait(false);
             }
             catch
             {
@@ -467,16 +494,37 @@ internal static partial class Program
             }
             finally
             {
-                Interlocked.Exchange(ref _sending, 0);
+                CompleteSend();
             }
         }
 
-        private async Task SendAsync(string eventName, string svg)
+        private async Task SendPendingTextAsync(CancellationToken cancellationToken)
+        {
+            while (true)
+            {
+                string? textSvg;
+                lock (_sendGate)
+                {
+                    textSvg = _pendingText;
+                    _pendingText = null;
+                }
+
+                if (textSvg is null)
+                {
+                    return;
+                }
+
+                await WriteSseAsync(stream, "text", textSvg, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+        }
+
+        private async Task SendAsync()
         {
             using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
             try
             {
-                await WriteSseAsync(stream, eventName, svg, timeout.Token).ConfigureAwait(false);
+                await SendPendingTextAsync(timeout.Token).ConfigureAwait(false);
             }
             catch
             {
@@ -485,8 +533,22 @@ internal static partial class Program
             }
             finally
             {
-                Interlocked.Exchange(ref _sending, 0);
+                CompleteSend();
             }
+        }
+
+        private void CompleteSend()
+        {
+            lock (_sendGate)
+            {
+                if (_pendingText is null)
+                {
+                    _sending = 0;
+                    return;
+                }
+            }
+
+            _ = SendAsync();
         }
 
         public ValueTask DisposeAsync() => stream.DisposeAsync();

@@ -293,9 +293,9 @@ public sealed partial class ScreenBuffer
         }
     }
 
-    public int Width { get; }
+    public int Width { get; private set; }
 
-    public int Height { get; }
+    public int Height { get; private set; }
 
     public int CursorRow { get; private set; }
 
@@ -310,6 +310,59 @@ public sealed partial class ScreenBuffer
     public int ScrollbackCount => _scrollbackRows.Count;
 
     public int TotalHeight => _scrollbackRows.Count + Height;
+
+    public void Resize(int width, int height)
+    {
+        width = Math.Max(1, width);
+        height = Math.Max(1, height);
+        if (width == Width && height == Height)
+        {
+            return;
+        }
+
+        var oldWidth = Width;
+        var oldHeight = Height;
+        var oldMainCells = _mainCells;
+        var oldAltCells = _altCells;
+        Width = width;
+        Height = height;
+        _mainCells = ResizeCells(oldMainCells, oldWidth, oldHeight);
+        _altCells = ResizeCells(oldAltCells, oldWidth, oldHeight);
+        _cells = _isAltScreen ? _altCells : _mainCells;
+        _mainRowsShared = new bool[Height];
+        _altRowsShared = new bool[Height];
+        _rowsShared = _isAltScreen ? _altRowsShared : _mainRowsShared;
+        _rowSignatures = new ulong[Height];
+        _rowSignatureDirty = new bool[Height];
+        Array.Fill(_rowSignatureDirty, true);
+        _scrollbackRows.Clear();
+        _scrollTop = 0;
+        _scrollBottom = Height - 1;
+        CursorRow = Clamp(CursorRow, 0, Height - 1);
+        CursorCol = Clamp(CursorCol, 0, Width - 1);
+        _savedRow = Clamp(_savedRow, 0, Height - 1);
+        _savedCol = Clamp(_savedCol, 0, Width - 1);
+        _savedMainRow = Clamp(_savedMainRow, 0, Height - 1);
+        _savedMainCol = Clamp(_savedMainCol, 0, Width - 1);
+        _tabStops.Clear();
+        for (var col = 8; col < Width; col += 8)
+        {
+            _tabStops.Add(col);
+        }
+    }
+
+    private ScreenCell[][] ResizeCells(ScreenCell[][] cells, int oldWidth, int oldHeight)
+    {
+        var resized = CreateBlankCells();
+        var rows = Math.Min(oldHeight, Height);
+        var columns = Math.Min(oldWidth, Width);
+        for (var row = 0; row < rows; row++)
+        {
+            Array.Copy(cells[row], resized[row], columns);
+        }
+
+        return resized;
+    }
 
     /// <summary>
     /// Returns a stable signature of the visible terminal state. This is useful

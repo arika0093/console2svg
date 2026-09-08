@@ -1,5 +1,7 @@
 using System;
 using System.Buffers;
+using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -9,6 +11,58 @@ namespace ConsoleToSvg.Svg;
 internal static class ResvgNative
 {
     private const string LibraryName = "console2svg_resvg";
+
+    static ResvgNative()
+    {
+        NativeLibrary.SetDllImportResolver(typeof(ResvgNative).Assembly, ResolveNativeLibrary);
+    }
+
+    /// <summary>
+    /// Explicitly probes the bundled asset directories (see <see
+    /// cref="AppPaths"/>) before falling back to the default probing order.
+    /// The default OS/CLR search alone is not enough: WinGet's portable
+    /// installer runs console2svg through a symlink, and the implicit
+    /// "next to the executable" search then looks in the symlink's
+    /// directory instead of the directory the DLL actually ships in.
+    /// </summary>
+    private static IntPtr ResolveNativeLibrary(
+        string libraryName,
+        Assembly assembly,
+        DllImportSearchPath? searchPath
+    )
+    {
+        if (!string.Equals(libraryName, LibraryName, StringComparison.Ordinal))
+        {
+            return IntPtr.Zero;
+        }
+
+        var fileName = GetPlatformLibraryFileName(libraryName);
+        foreach (var dir in AppPaths.GetBundledAssetDirectories())
+        {
+            var candidate = Path.Combine(dir, fileName);
+            if (File.Exists(candidate) && NativeLibrary.TryLoad(candidate, out var handle))
+            {
+                return handle;
+            }
+        }
+
+        return NativeLibrary.TryLoad(libraryName, assembly, searchPath, out var fallback)
+            ? fallback
+            : IntPtr.Zero;
+    }
+
+    private static string GetPlatformLibraryFileName(string libraryName)
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return $"{libraryName}.dll";
+        }
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            return $"lib{libraryName}.dylib";
+        }
+        return $"lib{libraryName}.so";
+    }
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int c2s_resvg_warm_system_fonts();

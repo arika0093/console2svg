@@ -160,7 +160,15 @@ internal static partial class Program
                             screenVersion++;
                         }
                     },
-                    captureControlsEnabled: false
+                    captureControlsEnabled: false,
+                    terminalSizeProvider: options.LiveServerResize
+                        ? new Func<(int Width, int Height)>(() =>
+                            (
+                                TryGetConsoleWidth() ?? DefaultWidth,
+                                TryGetConsoleHeight() ?? DefaultHeight
+                            )
+                        )
+                        : null
                 )
                 .ConfigureAwait(false);
             await liveLifetime.CancelAsync().ConfigureAwait(false);

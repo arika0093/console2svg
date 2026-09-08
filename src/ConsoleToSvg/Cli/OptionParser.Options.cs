@@ -211,6 +211,9 @@ public static partial class OptionParser
 
                 options.Padding = padding;
                 return true;
+            case "--no-resize":
+                options.LiveServerResize = false;
+                return true;
             case "--no-loop":
                 options.Loop = false;
                 return true;

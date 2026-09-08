@@ -41,6 +41,9 @@ public sealed class AppOptions
 
     public int LiveServerPort { get; set; } = 38473;
 
+    /// <summary>Resize the live terminal when the host TTY size changes.</summary>
+    public bool LiveServerResize { get; set; } = true;
+
     /// <summary>
     /// Unmodified arguments following <c>--</c>. Interactive mode uses these to
     /// start the requested program without losing argument boundaries.

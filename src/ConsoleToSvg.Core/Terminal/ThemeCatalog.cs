@@ -67,9 +67,7 @@ public sealed class ThemeCatalog
         }
         else
         {
-            var stream =
-                typeof(ThemeCatalog).Assembly.GetManifestResourceStream(resource)
-                ?? throw new InvalidDataException($"Theme asset not found: {path}");
+            var stream = OpenBuiltInResource(resource, path);
             using (stream)
                 chrome = ChromeLoader.Load(stream);
             assetRoot = resource[..resource.LastIndexOf('/')];
@@ -94,9 +92,7 @@ public sealed class ThemeCatalog
         if (!entry.IsBuiltIn)
             return Path.GetFullPath(Path.Combine(entry.Root, value));
         var resource = entry.Root + "/" + value.TrimStart('.', '/').Replace('\\', '/');
-        var stream =
-            typeof(ThemeCatalog).Assembly.GetManifestResourceStream(resource)
-            ?? throw new InvalidDataException($"Theme asset not found: {value}");
+        var stream = OpenBuiltInResource(resource, value);
         using (stream)
         using (var data = new MemoryStream())
         {
@@ -140,9 +136,7 @@ public sealed class ThemeCatalog
         if (!entry.IsBuiltIn)
             return File.ReadAllText(Path.Combine(assetRoot, path));
         var resource = assetRoot + "/" + path;
-        var stream =
-            typeof(ThemeCatalog).Assembly.GetManifestResourceStream(resource)
-            ?? throw new InvalidDataException($"Theme asset not found: {path}");
+        var stream = OpenBuiltInResource(resource, path);
         using (stream)
         using (var reader = new StreamReader(stream))
             return reader.ReadToEnd();
@@ -169,8 +163,10 @@ public sealed class ThemeCatalog
             var resource in assembly
                 .GetManifestResourceNames()
                 .Where(x =>
-                    x.StartsWith("theme/", StringComparison.OrdinalIgnoreCase)
-                    && x.EndsWith("/theme.json", StringComparison.OrdinalIgnoreCase)
+                    NormalizeResourceName(x)
+                        .StartsWith("theme/", StringComparison.OrdinalIgnoreCase)
+                    && NormalizeResourceName(x)
+                        .EndsWith("/theme.json", StringComparison.OrdinalIgnoreCase)
                 )
         )
         {
@@ -178,13 +174,33 @@ public sealed class ThemeCatalog
             var manifest =
                 JsonSerializer.Deserialize<ThemeManifest>(stream)
                 ?? throw new InvalidDataException(resource);
-            var root = resource[
-                ..resource.LastIndexOf("/theme.json", StringComparison.OrdinalIgnoreCase)
+            var normalizedResource = NormalizeResourceName(resource);
+            var root = normalizedResource[
+                ..normalizedResource.LastIndexOf("/theme.json", StringComparison.OrdinalIgnoreCase)
             ];
             ThemeManifestValidator.Validate(manifest, root, validateAssets: false);
             _entries.Add(manifest.Id!, new ThemeEntry(manifest, root, true));
         }
     }
+
+    private static Stream OpenBuiltInResource(string resource, string assetPath)
+    {
+        var assembly = typeof(ThemeCatalog).Assembly;
+        var actualName = assembly
+            .GetManifestResourceNames()
+            .FirstOrDefault(name =>
+                string.Equals(
+                    NormalizeResourceName(name),
+                    resource,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            );
+        return actualName is null
+            ? throw new InvalidDataException($"Theme asset not found: {assetPath}")
+            : assembly.GetManifestResourceStream(actualName)!;
+    }
+
+    private static string NormalizeResourceName(string value) => value.Replace('\\', '/');
 
     private ThemeEntry Resolve(string id, HashSet<string> resolving)
     {

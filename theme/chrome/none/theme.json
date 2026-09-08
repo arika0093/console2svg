@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "none",
+  "name": "No chrome",
+  "version": "1.0.0",
+  "appearance": {
+    "normal": {
+      "id": "none",
+      "window": "none"
+    }
+  }
+}

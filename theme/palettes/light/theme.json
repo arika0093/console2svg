@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "light",
+  "name": "Light",
+  "version": "1.0.0",
+  "appearance": {
+    "normal": {
+      "id": "light",
+      "background": [
+        "#dce5f2",
+        "#f6f8fc"
+      ]
+    }
+  },
+  "terminal": {
+    "foreground": "#1e1e1e",
+    "background": "#ffffff",
+    "ansiPalette": [
+      "#000000",
+      "#cd3131",
+      "#00bc00",
+      "#949800",
+      "#0451a5",
+      "#bc05bc",
+      "#0598bc",
+      "#555555",
+      "#666666",
+      "#cd3131",
+      "#14ce14",
+      "#b5ba00",
+      "#0451a5",
+      "#bc05bc",
+      "#0598bc",
+      "#a5a5a5"
+    ]
+  }
+}

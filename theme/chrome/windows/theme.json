@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "windows",
+  "name": "Windows",
+  "version": "1.0.0",
+  "appearance": {
+    "normal": {
+      "id": "windows",
+      "window": "chrome.json"
+    },
+    "pc": {
+      "id": "windows-pc",
+      "window": "chrome.json",
+      "pcPadding": 20
+    }
+  }
+}

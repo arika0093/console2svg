@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "transparent",
+  "name": "Transparent",
+  "version": "1.0.0",
+  "appearance": {
+    "normal": {
+      "id": "transparent",
+      "window": "chrome.json"
+    }
+  }
+}

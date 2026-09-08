@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "macos",
+  "name": "macOS",
+  "version": "1.0.0",
+  "appearance": {
+    "normal": {
+      "id": "macos",
+      "window": "chrome.json"
+    },
+    "pc": {
+      "id": "macos-pc",
+      "window": "chrome.json",
+      "pcPadding": 20
+    }
+  }
+}

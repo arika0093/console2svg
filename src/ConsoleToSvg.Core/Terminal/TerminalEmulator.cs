@@ -23,6 +23,11 @@ public sealed class TerminalEmulator
         _parser.Process(text);
     }
 
+    public void Resize(int width, int height)
+    {
+        Buffer.Resize(width, height);
+    }
+
     public ScreenBuffer Replay(RecordingSession session, int frameIndex)
     {
         var upper = frameIndex;

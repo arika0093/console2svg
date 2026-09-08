@@ -31,6 +31,21 @@ public sealed class AnsiParserTests
     }
 
     [Test]
+    public void ResizePreservesVisibleContentWithinNewBounds()
+    {
+        var emulator = new TerminalEmulator(8, 2, Theme.Resolve("dark"));
+        emulator.Process("AB\r\nCD");
+
+        emulator.Resize(4, 3);
+
+        emulator.Buffer.GetCell(0, 0).Text.ShouldBe("A");
+        emulator.Buffer.GetCell(0, 1).Text.ShouldBe("B");
+        emulator.Buffer.GetCell(1, 0).Text.ShouldBe("C");
+        emulator.Buffer.GetCell(1, 1).Text.ShouldBe("D");
+        emulator.Buffer.GetCell(2, 0).Text.ShouldBe(" ");
+    }
+
+    [Test]
     public void VisualSignatureChangesWhenOnlyCellStyleChanges()
     {
         var emulator = new TerminalEmulator(8, 2, Theme.Resolve("dark"));

@@ -51,16 +51,31 @@ public static partial class OptionParser
     public static string GetHelpText(Workflow workflow) =>
         workflow switch
         {
-            Workflow.Theme => """
-                Usage: console2svg theme list
-                       console2svg theme install <source>
-                       console2svg theme remove <id>
-                       console2svg theme update [<id>]
-                """,
-            Workflow.Completion => """
-                Usage: console2svg completion <bash|zsh|fish|powershell>
+            Workflow.Theme => $"""
+                console2svg - Convert terminal output to SVG [Ver: {ThisAssembly.AssemblyInformationalVersion}]
 
-                Print shell completion code to standard output.
+                Usage:
+                    console2svg theme <command> [args]
+
+                Commands:
+                    list              List installed themes.
+                    install <source>  Install a theme from a directory, archive, or URL.
+                    remove <id>       Remove an installed theme.
+                    update [<id>]     Update one theme, or all installed themes.
+
+                Use "console2svg theme <command> --help" for command details.
+                """,
+            Workflow.Completion => $"""
+                console2svg - Convert terminal output to SVG [Ver: {ThisAssembly.AssemblyInformationalVersion}]
+
+                Usage:
+                    console2svg completion <shell>
+
+                Shells:
+                    bash              Generate Bash completion code.
+                    zsh               Generate Zsh completion code.
+                    fish              Generate Fish completion code.
+                    powershell        Generate PowerShell completion code.
                 """,
             Workflow.Capture => WithWorkflowUsage(
                 Workflow.Capture,

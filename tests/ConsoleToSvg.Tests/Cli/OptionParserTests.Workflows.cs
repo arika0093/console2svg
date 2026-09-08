@@ -208,7 +208,31 @@ public sealed partial class OptionParserTests
         OptionParser.TryParse(["theme"], out var options, out _, out var showHelp).ShouldBeTrue();
         options!.Workflow.ShouldBe(Workflow.Theme);
         showHelp.ShouldBeTrue();
-        OptionParser.GetHelpText(Workflow.Theme).ShouldContain("theme list");
+        OptionParser.GetHelpText(Workflow.Theme).ShouldContain("list              List installed themes.");
+    }
+
+    [Test]
+    public void ThemeWithoutActionUsesTheStandardShortHelpFormat()
+    {
+        OptionParser.TryParse(["theme"], out var options, out _, out var showHelp).ShouldBeTrue();
+
+        showHelp.ShouldBeTrue();
+        var help = OptionParser.GetHelpText(options!);
+        help.ShouldContain("console2svg - Convert terminal output to SVG");
+        help.ShouldContain("Usage:");
+        help.ShouldContain("Commands:");
+        help.ShouldContain("console2svg theme <command> --help");
+    }
+
+    [Test]
+    public void CompletionHelpUsesTheStandardShortHelpFormat()
+    {
+        var help = OptionParser.GetHelpText(Workflow.Completion);
+
+        help.ShouldContain("console2svg - Convert terminal output to SVG");
+        help.ShouldContain("Usage:");
+        help.ShouldContain("Shells:");
+        help.ShouldContain("console2svg completion <shell>");
     }
 
     [Test]

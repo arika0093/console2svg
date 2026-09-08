@@ -119,6 +119,31 @@ public sealed class RepeatRecorderTests
     }
 
     [Test]
+    public async Task RecordAsync_PreservesTrailingBackgroundColorOnlyLine()
+    {
+        using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(450));
+
+        var session = await RepeatRecorder.RecordAsync(
+            "printf '\\033[101m   \\033[0m\\n'",
+            width: 10,
+            height: 3,
+            fps: 4,
+            cts.Token
+        );
+
+        session.Events.Count.ShouldBeGreaterThanOrEqualTo(1);
+
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(10, 3, theme);
+        emulator.Replay(session, frameIndex: session.Events.Count - 1);
+
+        for (var col = 0; col < 3; col++)
+        {
+            emulator.Buffer.GetCell(0, col).Background.ShouldBe(theme.AnsiPalette[9]);
+        }
+    }
+
+    [Test]
     public async Task RecordAsync_ImmediateCancellationReturnsEmptySession()
     {
         using var cts = new CancellationTokenSource();

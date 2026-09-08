@@ -178,4 +178,65 @@ public sealed partial class OptionParserTests
         OptionParser.HelpText.ShouldNotContain("Legacy:");
         OptionParser.HelpText.ShouldNotContain("console2svg [options]");
     }
+
+    [Test]
+    public void ShortHelpListsVerbsInsteadOfDetailedOptions()
+    {
+        OptionParser.ShortHelpText.ShouldContain("Verbs:");
+        OptionParser.ShortHelpText.ShouldContain("capture");
+        OptionParser.ShortHelpText.ShouldNotContain("Major options:");
+    }
+
+    [Test]
+    public void VerbHelpUsesDetailedOptionsWithVerbSpecificUsage()
+    {
+        var help = OptionParser.GetHelpText(Workflow.Capture);
+
+        help.ShouldContain("Usage: console2svg capture [options]");
+        help.ShouldContain("Options (Common):");
+        help.ShouldContain("--stdout");
+        help.ShouldNotContain("my-command | console2svg capture [options]");
+    }
+
+    [Test]
+    public void LiveServerHelpOmitsUnsupportedCaptureOptions()
+    {
+        var help = OptionParser.GetHelpText(Workflow.LiveServer);
+
+        help.ShouldNotContain("--interactive");
+        help.ShouldNotContain("--frame");
+        help.ShouldNotContain("--crop-top");
+        help.ShouldNotContain("--crop-bottom");
+        help.ShouldNotContain("--crop-left");
+        help.ShouldNotContain("--crop-right");
+    }
+
+    [Test]
+    public void InteractiveHelpOmitsRecordingInputAndFrameSelectionOptions()
+    {
+        var help = OptionParser.GetHelpText(Workflow.Interactive);
+
+        help.ShouldNotContain("--in <path>");
+        help.ShouldNotContain("--frame");
+        help.ShouldNotContain("--time");
+        help.ShouldContain("--save-frames");
+    }
+
+    [Test]
+    public void ConvertHelpOmitsCaptureAndInteractiveOptions()
+    {
+        var help = OptionParser.GetHelpText(Workflow.Convert);
+
+        help.ShouldNotContain("--save-cast");
+        help.ShouldNotContain("--replay <path>");
+        help.ShouldNotContain("--interactive");
+        help.ShouldContain("--svg-converter");
+    }
+
+    [Test]
+    public void CaptureAndReplayHelpOmitInteractiveOptions()
+    {
+        OptionParser.GetHelpText(Workflow.Capture).ShouldNotContain("--interactive");
+        OptionParser.GetHelpText(Workflow.Replay).ShouldNotContain("--interactive");
+    }
 }

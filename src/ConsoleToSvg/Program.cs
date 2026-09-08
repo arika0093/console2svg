@@ -61,9 +61,13 @@ internal static partial class Program
                 );
                 return 1;
             }
+
             await Console.Out.WriteAsync(script);
             return 0;
         }
+
+        if (options.Workflow == Workflow.Theme)
+            return RunThemeCommand(options);
 
         if (options.Workflow == Workflow.LiveServer)
         {

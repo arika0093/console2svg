@@ -18,6 +18,7 @@ public sealed partial class OptionParserTests
         ok.ShouldBeTrue();
         options!.Background.Count.ShouldBe(1);
         options.Background[0].ShouldBe("https://example.com/bg.png");
+        options.IsBackgroundExplicit.ShouldBeTrue();
     }
 
     [Test]

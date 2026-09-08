@@ -48,7 +48,6 @@ internal static partial class Program
         backgroundRenderOptions.IncludeTerminalFrame = false;
         backgroundRenderOptions.IncludeChrome = false;
         backgroundRenderOptions.IncludeClientBackground = false;
-        backgroundRenderOptions.Opacity = 1d;
         var windowRenderOptions = SvgRenderOptionsFactory.Create(options);
         windowRenderOptions.IncludeBackground = false;
         windowRenderOptions.IncludeTerminalForeground = false;
@@ -125,7 +124,7 @@ internal static partial class Program
                 textRenderOptions,
                 liveLifetime.Token
             );
-            var theme = Theme.Resolve(textRenderOptions.Theme);
+            var theme = textRenderOptions.TerminalTheme ?? Theme.Resolve(textRenderOptions.Theme);
             if (textRenderOptions.Chrome?.ThemeBackgroundOverride is string chromeBackground)
                 theme = theme.WithBackground(chromeBackground);
             if (!string.IsNullOrWhiteSpace(textRenderOptions.BackColor))

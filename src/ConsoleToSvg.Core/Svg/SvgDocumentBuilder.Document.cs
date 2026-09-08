@@ -78,7 +78,9 @@ internal static partial class SvgDocumentBuilder
         if (includeStaticLayers && includeBackground)
         {
             AppendDefs(sb, context, chrome, background);
+            AppendGroupOpen(sb, opacity);
             AppendBackground(sb, context, chrome, background);
+            AppendGroupClose(sb, opacity);
         }
         if (includeStaticLayers)
         {
@@ -464,7 +466,8 @@ internal static partial class SvgDocumentBuilder
         if (string.IsNullOrWhiteSpace(value))
             return false;
         var lower = value.ToLowerInvariant();
-        return lower.EndsWith(".png", StringComparison.Ordinal)
+        return lower.StartsWith("data:image/", StringComparison.Ordinal)
+            || lower.EndsWith(".png", StringComparison.Ordinal)
             || lower.EndsWith(".jpg", StringComparison.Ordinal)
             || lower.EndsWith(".jpeg", StringComparison.Ordinal)
             || lower.EndsWith(".gif", StringComparison.Ordinal)

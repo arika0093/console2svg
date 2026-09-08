@@ -23,9 +23,19 @@ public enum Workflow
     LiveServer,
 }
 
+public enum ThemeAction
+{
+    List,
+    Install,
+    Remove,
+    Update,
+}
+
 public sealed class AppOptions
 {
     public Workflow Workflow { get; set; }
+    public ThemeAction? RequestedThemeAction { get; set; }
+    public string? ThemeArgument { get; set; }
 
     public bool Verbose { get; set; }
 
@@ -91,9 +101,12 @@ public sealed class AppOptions
 
     public string CropLeft { get; set; } = "0";
 
-    public string Theme { get; set; } = "dark";
+    public List<string> Themes { get; } = [];
+
+    public string Theme => Themes.Count == 0 ? "dark" : Themes[^1];
 
     public string? ForeColor { get; set; }
+    public bool IsForeColorExplicit { get; set; }
 
     public string? SaveCastPath { get; set; }
 
@@ -118,14 +131,19 @@ public sealed class AppOptions
     public bool NoDeleteEnvs { get; set; }
 
     public string? Font { get; set; }
+    public bool IsFontExplicit { get; set; }
 
     public double? FontSize { get; set; } = null;
+    public bool IsFontSizeExplicit { get; set; }
 
     public string Window { get; set; } = "none";
+    public bool IsWindowExplicit { get; set; }
 
     public double? Margin { get; set; }
+    public bool IsMarginExplicit { get; set; }
 
     public double? Padding { get; set; }
+    public bool IsPaddingExplicit { get; set; }
 
     public bool Loop { get; set; } = true;
 
@@ -140,6 +158,7 @@ public sealed class AppOptions
     public double? OutputCoalesceMs { get; set; }
 
     public double Opacity { get; set; } = 1d;
+    public bool IsOpacityExplicit { get; set; }
 
     public bool WithCommand { get; set; }
 
@@ -150,17 +169,18 @@ public sealed class AppOptions
     public string LengthAdjust { get; set; } = "spacing";
 
     public System.Collections.Generic.List<string> Background { get; set; } = [];
+    public bool IsBackgroundExplicit { get; set; }
 
     public double? Timeout { get; set; } = null;
-
-    /// <summary>Enable PC (desktop) mode for the selected window style.</summary>
-    public bool PcMode { get; set; }
 
     /// <summary>Override the desktop padding value when PC mode is active.</summary>
     public double? PcPadding { get; set; }
 
+    public bool PcMode { get; set; }
+
     /// <summary>Override the terminal's own background color (e.g. "#0c0c0c").</summary>
     public string? BackColor { get; set; }
+    public bool IsBackColorExplicit { get; set; }
 
     /// <summary>Write SVG output to stdout instead of a file. PTY forwarding is suppressed.</summary>
     public bool StdOut { get; set; }

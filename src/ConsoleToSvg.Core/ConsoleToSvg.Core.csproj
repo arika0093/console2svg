@@ -7,9 +7,10 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Themes\macos.json" LogicalName="chrome.macos.json" />
-    <EmbeddedResource Include="Themes\transparent.json" LogicalName="chrome.transparent.json" />
-    <EmbeddedResource Include="Themes\windows.json" LogicalName="chrome.windows.json" />
+    <EmbeddedResource
+      Include="..\..\theme\**\*"
+      LogicalName="theme\%(RecursiveDir)%(Filename)%(Extension)"
+    />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.IO.Hashing" Version="10.0.11" />

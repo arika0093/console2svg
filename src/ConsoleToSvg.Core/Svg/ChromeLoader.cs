@@ -1,7 +1,7 @@
 using System;
 using System.IO;
-using System.Reflection;
 using System.Text.Json;
+using ConsoleToSvg.Terminal;
 
 namespace ConsoleToSvg.Svg;
 
@@ -10,18 +10,12 @@ namespace ConsoleToSvg.Svg;
 /// </summary>
 public static class ChromeLoader
 {
-    private static readonly string[] BuiltinNames = ["macos", "transparent", "windows"];
-
     /// <summary>
-    /// Loads a <see cref="ChromeDefinition"/> from a built-in name or a file path.
+    /// Loads a <see cref="ChromeDefinition"/> from a built-in theme ID.
     /// Returns <c>null</c> for <c>"none"</c>, <c>null</c>, or empty input.
     /// </summary>
     /// <param name="value">
-    /// A built-in style name (<c>macos</c>, <c>windows</c>, <c>transparent</c>),
-    /// a built-in name with the <c>-pc</c> suffix to enable desktop mode (<c>macos-pc</c>, <c>windows-pc</c>),
-    /// a path to a custom <c>.json</c> chrome definition file,
-    /// or <c>"none"</c> / empty to disable chrome.
-    /// Any built-in style name followed by <c>-pc</c> loads the base style with <see cref="ChromeDefinition.IsDesktop"/> set to <c>true</c>.
+    /// A built-in Chrome theme ID, or <c>"none"</c> / empty to disable chrome.
     /// </param>
     public static ChromeDefinition? Load(string? value)
     {
@@ -33,60 +27,19 @@ public static class ChromeLoader
             return null;
         }
 
-        var isPcMode = value.EndsWith("-pc", StringComparison.OrdinalIgnoreCase);
-        var baseName = isPcMode ? value.Substring(0, value.Length - 3) : value;
-
-        var builtinName = Array.Find(
-            BuiltinNames,
-            name => string.Equals(baseName, name, StringComparison.OrdinalIgnoreCase)
-        );
-        if (builtinName is not null)
-        {
-            var chrome = LoadBuiltin(builtinName);
-            if (isPcMode)
-            {
-                chrome.IsDesktop = true;
-            }
-            return chrome;
-        }
-
-        return LoadFromFile(value);
+        var entry = new ThemeCatalog().Resolve(value);
+        var appearance = entry.IsPcVariant
+            ? entry.Manifest.Appearance?.Pc
+            : entry.Manifest.Appearance?.Normal;
+        if (string.IsNullOrWhiteSpace(appearance?.Window))
+            throw new InvalidOperationException($"Theme '{value}' does not define window chrome.");
+        var chrome = ThemeCatalog.ResolveChrome(entry, appearance.Window);
+        if (chrome is not null && entry.IsPcVariant)
+            chrome.IsDesktop = true;
+        return chrome;
     }
 
-    private static ChromeDefinition LoadBuiltin(string name)
-    {
-        var assembly = Assembly.GetExecutingAssembly();
-        var resourceName = $"chrome.{name}.json";
-        using var stream =
-            assembly.GetManifestResourceStream(resourceName)
-            ?? throw new InvalidOperationException(
-                $"Built-in chrome theme '{name}' could not be found. "
-                    + $"Expected embedded resource: {resourceName}"
-            );
-
-        return JsonSerializer.Deserialize(
-                stream,
-                ChromeDefinitionJsonContext.Default.ChromeDefinition
-            )
-            ?? throw new InvalidOperationException(
-                $"Failed to parse built-in chrome theme '{name}'."
-            );
-    }
-
-    private static ChromeDefinition LoadFromFile(string path)
-    {
-        if (!File.Exists(path))
-        {
-            throw new FileNotFoundException($"Chrome definition file not found: '{path}'.", path);
-        }
-
-        using var stream = File.OpenRead(path);
-        return JsonSerializer.Deserialize(
-                stream,
-                ChromeDefinitionJsonContext.Default.ChromeDefinition
-            )
-            ?? throw new InvalidOperationException(
-                $"Failed to parse chrome definition file: '{path}'."
-            );
-    }
+    internal static ChromeDefinition Load(Stream stream) =>
+        JsonSerializer.Deserialize(stream, ChromeDefinitionJsonContext.Default.ChromeDefinition)
+        ?? throw new InvalidOperationException("Failed to parse chrome definition.");
 }

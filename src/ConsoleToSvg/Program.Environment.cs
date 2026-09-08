@@ -163,8 +163,7 @@ internal static partial class Program
     {
         var exeName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "ffmpeg.exe" : "ffmpeg";
 
-        var appDir = AppContext.BaseDirectory;
-        if (!string.IsNullOrEmpty(appDir))
+        foreach (var appDir in AppPaths.GetBundledAssetDirectories())
         {
             // 1. ffmpeg bundled in a subdirectory. This keeps ffmpeg off the user's PATH
             //    while still making it available to console2svg.
@@ -173,13 +172,9 @@ internal static partial class Program
             {
                 return bundledSubDir;
             }
-        }
 
-        var exeDir = Path.GetDirectoryName(Environment.ProcessPath ?? string.Empty);
-        if (!string.IsNullOrEmpty(exeDir))
-        {
             // 2. Legacy bundled layout: ffmpeg next to the process executable.
-            var bundled = Path.Combine(exeDir, exeName);
+            var bundled = Path.Combine(appDir, exeName);
             if (File.Exists(bundled))
             {
                 return bundled;

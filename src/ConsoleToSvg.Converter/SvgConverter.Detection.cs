@@ -34,8 +34,7 @@ public static partial class SvgConverter
         var exeName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "ffmpeg.exe" : "ffmpeg";
 
         // Check next to this binary (bundled / npm layout)
-        var exeDir = Path.GetDirectoryName(Environment.ProcessPath ?? string.Empty);
-        if (!string.IsNullOrEmpty(exeDir))
+        foreach (var exeDir in AppPaths.GetBundledAssetDirectories())
         {
             var bundled = Path.Combine(exeDir, exeName);
             if (File.Exists(bundled))
@@ -201,8 +200,7 @@ public static partial class SvgConverter
             : "rsvg-convert";
 
         // 1. next to this binary (bundled layout)
-        var exeDir = Path.GetDirectoryName(Environment.ProcessPath ?? string.Empty);
-        if (!string.IsNullOrEmpty(exeDir))
+        foreach (var exeDir in AppPaths.GetBundledAssetDirectories())
         {
             var bundled = Path.Combine(exeDir, exeName);
             if (File.Exists(bundled))

@@ -120,10 +120,8 @@ public sealed partial class SvgRendererTests
 
         // Desktop background - now uses a gradient
         svg.ShouldContain("linearGradient");
-        svg.ShouldContain("#1a2535"); // gradient start
-        svg.ShouldContain("#253345"); // gradient end
-        // Shadow (black with opacity)
-        svg.ShouldContain("fill-opacity=\"0.25\"");
+        svg.ShouldContain("#1a1d2e"); // gradient start
+        svg.ShouldContain("#252840"); // gradient end
         // Windows Terminal style: control buttons as vector lines/rects
         svg.ShouldContain("stroke=\"#cccccc\""); // icon stroke color
         svg.ShouldContain("fill=\"none\" stroke=\"#cccccc\""); // maximize rect

@@ -62,9 +62,12 @@ public sealed class ThemeIncludeConverter : JsonConverter<ThemeInclude>
         string? source = null;
         while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
         {
-            if (reader.TokenType != JsonTokenType.PropertyName || !reader.Read())
+            if (reader.TokenType != JsonTokenType.PropertyName)
                 throw new JsonException("Invalid $include entry.");
-            switch (reader.GetString())
+            var propertyName = reader.GetString();
+            if (!reader.Read())
+                throw new JsonException("Invalid $include entry.");
+            switch (propertyName)
             {
                 case "id":
                     id = reader.GetString();

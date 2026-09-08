@@ -151,15 +151,14 @@ public sealed partial class OptionParserTests
         OptionParser.TryParse(["theme"], out var options, out _, out var showHelp).ShouldBeTrue();
         options!.Workflow.ShouldBe(Workflow.Theme);
         showHelp.ShouldBeTrue();
-        OptionParser.GetHelpText(Workflow.Theme).ShouldContain("#115");
+        OptionParser.GetHelpText(Workflow.Theme).ShouldContain("theme list");
     }
 
     [Test]
-    public void ReservedThemeSubcommandReturnsActionableError()
+    public void ThemeListSubcommandSelectsListAction()
     {
-        OptionParser.TryParse(["theme", "list"], out _, out var error, out _).ShouldBeFalse();
-        error!.ShouldContain("reserved");
-        error!.ShouldContain("--theme");
+        OptionParser.TryParse(["theme", "list"], out var options, out _, out _).ShouldBeTrue();
+        options!.RequestedThemeAction.ShouldBe(ThemeAction.List);
     }
 
     [Test]

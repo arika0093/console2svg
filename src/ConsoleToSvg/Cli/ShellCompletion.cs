@@ -6,7 +6,7 @@ namespace ConsoleToSvg.Cli;
 internal static class ShellCompletion
 {
     private const string Commands =
-        "capture interactive replay convert theme completion live-server";
+        "capture interactive replay convert theme completion live-server tmux";
     private const string Shells = "bash zsh fish powershell";
 
     // Keep these lists in sync with the workflows accepted by OptionParser.
@@ -23,6 +23,10 @@ internal static class ShellCompletion
     private const string ConvertOptions = CommonOptions + " --stdout";
     private const string LiveServerOptions =
         "--help --version -w --width -h --height -c --with-command --mask --verbose --theme --forecolor -d --window --margin --padding --no-colorenv --no-delete-envs --opacity --adjust --background --font --fontsize --header --prompt --pc-padding --backcolor --listen --no-resize";
+    private const string TmuxCaptureOptions =
+        "--help --version --target --history -o --out -w --width -h --height -v --video --fps --mask --theme --forecolor -d --window --margin --padding --opacity --adjust --background --font --fontsize --header --prompt --pc-padding --backcolor";
+    private const string TmuxLiveServerOptions =
+        "--help --version --target -w --width -h --height --fps --mask --theme --forecolor -d --window --margin --padding --opacity --adjust --background --font --fontsize --header --prompt --pc-padding --backcolor --listen";
 
     public static string? GetScript(string? shell) =>
         shell?.ToLowerInvariant() switch
@@ -37,9 +41,9 @@ internal static class ShellCompletion
     private static string GetBashScript() =>
         $$"""
                 _console2svg() {
-              local current="${COMP_WORDS[COMP_CWORD]}" workflow="${COMP_WORDS[1]}" candidates
+              local current="${COMP_WORDS[COMP_CWORD]}" workflow="${COMP_WORDS[1]}" tmux_action="${COMP_WORDS[2]}" candidates
               local commands='{{Commands}}' shells='{{Shells}}'
-              local capture='{{CaptureOptions}}' interactive='{{InteractiveOptions}}' replay='{{ReplayOptions}}' convert='{{ConvertOptions}}' live_server='{{LiveServerOptions}}'
+              local capture='{{CaptureOptions}}' interactive='{{InteractiveOptions}}' replay='{{ReplayOptions}}' convert='{{ConvertOptions}}' live_server='{{LiveServerOptions}}' tmux_capture='{{TmuxCaptureOptions}}' tmux_live_server='{{TmuxLiveServerOptions}}'
               local words_before="${COMP_WORDS[*]:1:COMP_CWORD}"
               [[ " $words_before " == *" -- "* ]] && return 0
               case "${COMP_WORDS[COMP_CWORD-1]}" in
@@ -48,11 +52,13 @@ internal static class ShellCompletion
               esac
                   if [[ $COMP_CWORD -eq 1 ]]; then candidates="$commands";
               elif [[ "$workflow" == completion && $COMP_CWORD -eq 2 ]]; then candidates="$shells";
+              elif [[ "$workflow" == tmux && $COMP_CWORD -eq 2 ]]; then candidates='capture live-server';
                   else
                     case "$workflow" in
                       capture) candidates="$capture" ;; interactive) candidates="$interactive" ;;
                       replay) candidates="$replay" ;; convert) candidates="$convert" ;;
                       live-server) candidates="$live_server" ;; theme) candidates='list install remove update --help --version' ;;
+                      tmux) case "$tmux_action" in capture) candidates="$tmux_capture" ;; live-server) candidates="$tmux_live_server" ;; esac ;;
                       *) candidates="$commands" ;;
                     esac
                   fi
@@ -66,7 +72,7 @@ internal static class ShellCompletion
                 #compdef console2svg
                 _console2svg() {
               local -a candidates
-              local workflow=${words[2]}
+              local workflow=${words[2]} tmux_action=${words[3]}
               (( ${words[(I)--]} > 0 && ${words[(I)--]} <= CURRENT )) && return 0
               case ${words[CURRENT-1]} in
                 -o|--out|--in|--save-cast|--replay-save|--replay|--save-frames)
@@ -74,11 +80,13 @@ internal static class ShellCompletion
               esac
                   if (( CURRENT == 2 )); then candidates=({{Commands}})
               elif [[ $workflow == completion && CURRENT -eq 3 ]]; then candidates=({{Shells}})
+              elif [[ $workflow == tmux && CURRENT -eq 3 ]]; then candidates=(capture live-server)
                   else
                     case $workflow in
                       capture) candidates=({{CaptureOptions}}) ;; interactive) candidates=({{InteractiveOptions}}) ;;
                       replay) candidates=({{ReplayOptions}}) ;; convert) candidates=({{ConvertOptions}}) ;;
                       live-server) candidates=({{LiveServerOptions}}) ;; theme) candidates=(list install remove update --help --version) ;;
+                      tmux) case $tmux_action in capture) candidates=({{TmuxCaptureOptions}}) ;; live-server) candidates=({{TmuxLiveServerOptions}}) ;; esac ;;
                       *) candidates=({{Commands}}) ;;
                     esac
                   fi
@@ -105,6 +113,9 @@ internal static class ShellCompletion
                         complete -c console2svg -f -n '__fish_seen_subcommand_from replay' -a '{{ReplayOptions}}'
                         complete -c console2svg -f -n '__fish_seen_subcommand_from convert' -a '{{ConvertOptions}}'
                         complete -c console2svg -f -n '__fish_seen_subcommand_from live-server' -a '{{LiveServerOptions}}'
+                        complete -c console2svg -f -n '__fish_seen_subcommand_from tmux; and not __fish_seen_subcommand_from capture live-server' -a 'capture live-server'
+                        complete -c console2svg -f -n '__fish_seen_subcommand_from tmux capture' -a '{{TmuxCaptureOptions}}'
+                        complete -c console2svg -f -n '__fish_seen_subcommand_from tmux live-server' -a '{{TmuxLiveServerOptions}}'
                     complete -c console2svg -f -n '__fish_seen_subcommand_from theme' -a 'list install remove update --help --version'
                     complete -c console2svg -l out -r
                     complete -c console2svg -s o -r
@@ -122,6 +133,7 @@ internal static class ShellCompletion
                   param($wordToComplete, $commandAst, $cursorPosition)
                   $words = @($commandAst.CommandElements | Select-Object -Skip 1 | ForEach-Object { $_.Extent.Text })
               $workflow = if ($words.Count) { $words[0] } else { '' }
+              $tmuxAction = if ($words.Count -gt 1) { $words[1] } else { '' }
               if ($words -contains '--') { return }
               $pathOptions = '-o', '--out', '--in', '--save-cast', '--replay-save', '--replay', '--save-frames'
               if ($words.Count -gt 1 -and $words[-2] -in $pathOptions) {
@@ -138,6 +150,7 @@ internal static class ShellCompletion
                     'replay' { '{{ReplayOptions}}'.Split(' ') }
                     'convert' { '{{ConvertOptions}}'.Split(' ') }
                     'live-server' { '{{LiveServerOptions}}'.Split(' ') }
+                    'tmux' { if ($words.Count -le 1) { 'capture', 'live-server' } elseif ($tmuxAction -eq 'capture') { '{{TmuxCaptureOptions}}'.Split(' ') } elseif ($tmuxAction -eq 'live-server') { '{{TmuxLiveServerOptions}}'.Split(' ') } else { 'capture', 'live-server' } }
                     'theme' { 'list', 'install', 'remove', 'update', '--help', '--version' }
                     'completion' { $shells }
                     default { $commands }

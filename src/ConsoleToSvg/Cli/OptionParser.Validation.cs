@@ -213,6 +213,29 @@ public static partial class OptionParser
             return false;
         }
 
+        if (
+            options.Workflow != Workflow.Tmux
+            && (!string.IsNullOrWhiteSpace(options.TmuxTarget) || options.TmuxHistory)
+        )
+        {
+            error = "--target and --history are only available with console2svg tmux.";
+            return false;
+        }
+
+        if (
+            options.Workflow == Workflow.Tmux
+            && (
+                options.RequestedTmuxAction is null
+                || !string.IsNullOrWhiteSpace(options.Command)
+                || !string.IsNullOrWhiteSpace(options.InputCastPath)
+                || options.Interactive
+            )
+        )
+        {
+            error = "tmux workflows do not accept a command, --in, or --interactive.";
+            return false;
+        }
+
         if (options.Width.HasValue && options.Width.Value <= 0)
         {
             error = "--width must be greater than 0.";
@@ -434,12 +457,6 @@ public static partial class OptionParser
                 return false;
             }
 
-            if (options.Mode == OutputMode.Repeat)
-            {
-                error = "--interactive cannot be used with --mode repeat.";
-                return false;
-            }
-
             if (
                 !string.IsNullOrWhiteSpace(options.ReplayPath)
                 || !string.IsNullOrWhiteSpace(options.ReplaySavePath)
@@ -477,18 +494,6 @@ public static partial class OptionParser
             return false;
         }
 
-        if (options.EmbedReplay && options.Mode == OutputMode.Repeat)
-        {
-            error = "--embed-replay cannot be used with --mode repeat.";
-            return false;
-        }
-
-        if (options.Mode == OutputMode.Repeat && string.IsNullOrWhiteSpace(options.Command))
-        {
-            error = "--mode repeat requires a command to be specified.";
-            return false;
-        }
-
         if (
             !string.IsNullOrWhiteSpace(options.InputSvgPath)
             && !string.IsNullOrWhiteSpace(options.InputCastPath)
@@ -502,7 +507,7 @@ public static partial class OptionParser
         {
             var outputExtension = Path.GetExtension(options.OutputPath).TrimStart('.');
             var usesVideoOutput = options.IsModeExplicit
-                ? options.Mode is OutputMode.Video or OutputMode.Repeat
+                ? options.Mode is OutputMode.Video
                 : IsVideoFormat(outputExtension);
             if (usesVideoOutput)
             {

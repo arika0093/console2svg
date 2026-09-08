@@ -240,38 +240,16 @@ public sealed partial class OptionParserTests
     }
 
     [Test]
-    public void RepeatModeParsedFromLongFlag()
+    public void RepeatModeIsRejected()
     {
         var ok = OptionParser.TryParse(
             new[] { "-m", "repeat", "--", "echo", "hello" },
             out var options,
-            out _,
+            out var error,
             out _
         );
-        ok.ShouldBeTrue();
-        options!.Mode.ShouldBe(OutputMode.Repeat);
-        options.Command.ShouldBe("echo hello");
-    }
-
-    [Test]
-    public void RepeatModeParsedCaseInsensitive()
-    {
-        var ok = OptionParser.TryParse(
-            new[] { "--mode", "REPEAT", "--", "echo", "hi" },
-            out var options,
-            out _,
-            out _
-        );
-        ok.ShouldBeTrue();
-        options!.Mode.ShouldBe(OutputMode.Repeat);
-    }
-
-    [Test]
-    public void RepeatModeWithoutCommandReturnsError()
-    {
-        var ok = OptionParser.TryParse(new[] { "--mode", "repeat" }, out _, out var error, out _);
         ok.ShouldBeFalse();
-        error.ShouldBe("--mode repeat requires a command to be specified.");
+        error.ShouldBe("--mode must be image or video.");
     }
 
     [Test]
@@ -279,7 +257,7 @@ public sealed partial class OptionParserTests
     {
         var ok = OptionParser.TryParse(new[] { "--mode", "unknown" }, out _, out var error, out _);
         ok.ShouldBeFalse();
-        error.ShouldBe("--mode must be image, video, or repeat.");
+        error.ShouldBe("--mode must be image or video.");
     }
 
     [Test]

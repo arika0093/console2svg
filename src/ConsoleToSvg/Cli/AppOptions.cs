@@ -8,7 +8,6 @@ public enum OutputMode
 {
     Image,
     Video,
-    Repeat,
 }
 
 public enum Workflow
@@ -20,6 +19,13 @@ public enum Workflow
     Convert,
     Theme,
     Completion,
+    LiveServer,
+    Tmux,
+}
+
+public enum TmuxAction
+{
+    Capture,
     LiveServer,
 }
 
@@ -47,12 +53,18 @@ public sealed class AppOptions
 
     public string? CompletionShell { get; set; }
 
+    public TmuxAction? RequestedTmuxAction { get; set; }
+    public string? TmuxTarget { get; set; }
+    public bool TmuxHistory { get; set; }
+    public int? TmuxHistoryLines { get; set; }
+
     public string? ListenAddress { get; set; }
 
     public int LiveServerPort { get; set; } = 38473;
 
     /// <summary>Resize the live terminal when the host TTY size changes.</summary>
     public bool LiveServerResize { get; set; } = true;
+    public bool LiveServerForwardToConsole { get; set; } = true;
 
     /// <summary>
     /// Unmodified arguments following <c>--</c>. Interactive mode uses these to

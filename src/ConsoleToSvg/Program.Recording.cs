@@ -49,23 +49,6 @@ internal static partial class Program
                 DefaultHeight
             );
 
-            if (options.Mode == OutputMode.Repeat)
-            {
-                logger.ZLogDebug(
-                    $"Input source: repeat command. Command={options.Command} Width={ptyWidth} Height={ptyHeight} Fps={options.VideoFps}"
-                );
-                return await RepeatRecorder
-                    .RecordAsync(
-                        options.Command,
-                        ptyWidth,
-                        ptyHeight,
-                        options.VideoFps,
-                        cancellationToken,
-                        loggerFactory.CreateLogger("ConsoleToSvg.RepeatRecorder"),
-                        noDeleteEnvs: options.NoDeleteEnvs
-                    )
-                    .ConfigureAwait(false);
-            }
             logger.ZLogDebug(
                 $"Input source: PTY command. Command={options.Command} Width={ptyWidth} Height={ptyHeight}"
             );

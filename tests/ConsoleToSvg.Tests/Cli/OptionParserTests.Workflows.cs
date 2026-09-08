@@ -47,6 +47,63 @@ public sealed partial class OptionParserTests
     }
 
     [Test]
+    public void TmuxCaptureParsesTargetAndHistory()
+    {
+        OptionParser
+            .TryParse(
+                ["tmux", "capture", "--target", ":0", "--history", "1000", "-v"],
+                out var options,
+                out _,
+                out _
+            )
+            .ShouldBeTrue();
+
+        options!.Workflow.ShouldBe(Workflow.Tmux);
+        options.RequestedTmuxAction.ShouldBe(TmuxAction.Capture);
+        options.TmuxTarget.ShouldBe(":0");
+        options.TmuxHistory.ShouldBeTrue();
+        options.TmuxHistoryLines.ShouldBe(1000);
+        options.Mode.ShouldBe(OutputMode.Video);
+    }
+
+    [Test]
+    public void TmuxLiveServerParsesPort()
+    {
+        OptionParser
+            .TryParse(["tmux", "live-server", "8080", "--target", "%4"], out var options, out _, out _)
+            .ShouldBeTrue();
+
+        options!.RequestedTmuxAction.ShouldBe(TmuxAction.LiveServer);
+        options.LiveServerPort.ShouldBe(8080);
+    }
+
+    [Test]
+    public void TmuxWithoutActionUsesTheStandardShortHelpFormat()
+    {
+        OptionParser.TryParse(["tmux"], out var options, out _, out var showHelp).ShouldBeTrue();
+
+        options!.Workflow.ShouldBe(Workflow.Tmux);
+        options.RequestedTmuxAction.ShouldBeNull();
+        showHelp.ShouldBeTrue();
+        var help = OptionParser.GetHelpText(options);
+        help.ShouldContain("console2svg - Convert terminal output to SVG");
+        help.ShouldContain("Usage:");
+        help.ShouldContain("Commands:");
+        help.ShouldContain("console2svg tmux <command> --help");
+        help.ShouldNotContain("Options (");
+    }
+
+    [Test]
+    public void TmuxLiveServerHelpIncludesPollingOptions()
+    {
+        OptionParser.TryParse(["tmux", "live-server", "--help"], out var options, out _, out _).ShouldBeTrue();
+
+        var help = OptionParser.GetHelpText(options!);
+        help.ShouldContain("--target <pane>");
+        help.ShouldContain("--fps <value>");
+    }
+
+    [Test]
     public void ReplayVerbOwnsReplayFile()
     {
         OptionParser

@@ -53,20 +53,6 @@ public sealed partial class OptionParserTests
     }
 
     [Test]
-    public void EmbedReplayRejectsRepeatMode()
-    {
-        var ok = OptionParser.TryParse(
-            new[] { "--embed-replay", "--mode", "repeat", "echo hi" },
-            out _,
-            out var error,
-            out _
-        );
-
-        ok.ShouldBeFalse();
-        error.ShouldBe("--embed-replay cannot be used with --mode repeat.");
-    }
-
-    [Test]
     public void InvalidWindowReturnsError()
     {
         // Unknown window values are now accepted at parse time and validated at load time.

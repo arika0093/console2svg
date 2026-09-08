@@ -159,10 +159,6 @@ public sealed partial class OptionParserTests
         "--interactive cannot be used with --save-cast."
     )]
     [Arguments(
-        new[] { "--interactive", "--mode", "repeat" },
-        "--interactive cannot be used with --mode repeat."
-    )]
-    [Arguments(
         new[] { "--interactive", "--replay", "input.json" },
         "--interactive cannot be used with replay options."
     )]

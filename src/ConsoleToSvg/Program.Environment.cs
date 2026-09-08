@@ -149,7 +149,7 @@ internal static partial class Program
     private static bool RequiresFfmpeg(AppOptions options, string extension)
     {
         var useVideoPath = options.IsModeExplicit
-            ? options.Mode is OutputMode.Video or OutputMode.Repeat
+            ? options.Mode is OutputMode.Video
             : IsVideoFormat(extension);
         var isPngOutput = string.Equals(extension, "png", StringComparison.Ordinal);
         return useVideoPath || !isPngOutput;

@@ -37,7 +37,7 @@ internal static partial class Program
                 ColorizeIfSupported(
                     options?.Workflow is Workflow.Legacy
                         ? OptionParser.ShortHelpText
-                        : OptionParser.GetHelpText(options!.Workflow)
+                        : OptionParser.GetHelpText(options!)
                 )
             );
             return 1;
@@ -49,7 +49,7 @@ internal static partial class Program
                 ColorizeIfSupported(
                     options?.Workflow is Workflow.Legacy
                         ? OptionParser.ShortHelpText
-                        : OptionParser.GetHelpText(options!.Workflow)
+                        : OptionParser.GetHelpText(options!)
                 )
             );
             return 0;
@@ -78,6 +78,16 @@ internal static partial class Program
 
         if (options.Workflow == Workflow.Theme)
             return RunThemeCommand(options);
+
+        if (options.Workflow == Workflow.Tmux)
+        {
+            var tmuxError = await PrepareTmuxAsync(options).ConfigureAwait(false);
+            if (tmuxError is not null)
+            {
+                await Console.Error.WriteLineAsync(tmuxError);
+                return 1;
+            }
+        }
 
         if (
             options.Workflow == Workflow.Capture
@@ -327,7 +337,7 @@ internal static partial class Program
             void WriteOutputSvg(TextWriter writer)
             {
                 logger.ZLogDebug($"Rendering SVG stream. Mode={options.Mode}");
-                if (options.Mode is OutputMode.Video or OutputMode.Repeat)
+                if (options.Mode is OutputMode.Video)
                 {
                     AnimatedSvgRenderer.Write(writer, session, renderOptions);
                 }
@@ -381,7 +391,7 @@ internal static partial class Program
                     // Explicit --mode image overrides video extensions (e.g. static GIF with --frame).
                     // No explicit mode: video extensions → frame-sequence path, others → ffmpeg image.
                     var useVideoPath = options.IsModeExplicit
-                        ? options.Mode is OutputMode.Video or OutputMode.Repeat
+                        ? options.Mode is OutputMode.Video
                         : IsVideoFormat(outputExt);
                     renderOptions.RenderCursor = useVideoPath;
 

@@ -8,6 +8,46 @@ namespace ConsoleToSvg.Cli;
 
 public static partial class OptionParser
 {
+    public static string GetHelpText(AppOptions options)
+    {
+        if (options.Workflow != Workflow.Tmux)
+            return GetHelpText(options.Workflow);
+
+        if (options.RequestedTmuxAction is null)
+            return GetHelpText(Workflow.Tmux);
+
+        var action = options.RequestedTmuxAction.Value;
+        var workflow = action == TmuxAction.LiveServer ? Workflow.LiveServer : Workflow.Capture;
+        var usage =
+            action == TmuxAction.LiveServer
+                ? "Usage: console2svg tmux live-server [port] [options]"
+                : "Usage: console2svg tmux capture [options]";
+        var help = WithWorkflowUsage(workflow, usage);
+        const string targetOption = """
+
+            Options (tmux):
+                --target <pane>          tmux pane target (for example :0 or %4).
+                                        Omit to select a pane interactively.
+            """;
+        const string historyOption = """
+
+                --history [lines]        Include all history, or a number of recent lines.
+            """;
+        const string liveServerOption = """
+
+                --fps <value>            Pane polling rate (default: 12).
+            """;
+        var tmuxOptions =
+            action == TmuxAction.LiveServer
+                ? targetOption + liveServerOption
+                : targetOption + historyOption;
+        return help.Replace(
+            "\nOptions (Common):",
+            tmuxOptions + "\nOptions (Common):",
+            StringComparison.Ordinal
+        );
+    }
+
     public static string GetHelpText(Workflow workflow) =>
         workflow switch
         {
@@ -45,6 +85,19 @@ public static partial class OptionParser
                 Workflow.LiveServer,
                 "Usage: console2svg live-server [port] [options] [-- <command> [args...]]"
             ),
+            Workflow.Tmux => $"""
+                console2svg - Convert terminal output to SVG [Ver: {ThisAssembly.AssemblyInformationalVersion}]
+
+                Usage:
+                    console2svg tmux <command> [options]
+
+                Commands:
+                    capture            Capture a tmux pane as SVG.
+                    live-server [port] Serve a tmux pane as a live SVG.
+
+                Omit --target to select a pane interactively.
+                Use "console2svg tmux <command> --help" for detailed options.
+                """,
             _ => HelpText,
         };
 
@@ -158,6 +211,7 @@ public static partial class OptionParser
                 theme        List, install, remove, or update themes.
                 completion   Print shell completion code.
                 live-server  Serve a live terminal SVG.
+                tmux         Capture or serve a tmux pane.
 
             Use "console2svg <verb> --help" for detailed options.
             """;
@@ -175,6 +229,8 @@ public static partial class OptionParser
                 console2svg theme list|install|remove|update
                 console2svg completion <shell>
                 console2svg live-server [port] [options] [-- command]
+                console2svg tmux capture [options]
+                console2svg tmux live-server [port] [options]
 
             Options (Common):
                 -o, --out <path>          Output file path (default: output.svg).
@@ -184,7 +240,7 @@ public static partial class OptionParser
                                             .mp4/.webm/…  - Video using frame sequences via ffmpeg.
                 --stdout                  Write SVG to stdout instead of a file.
                                           PTY output forwarding is suppressed so the pipe receives only SVG.
-                -m, --mode <image|video|repeat>  Output mode (default: image).
+                -m, --mode <image|video>  Output mode (default: image).
                 -v, --video               Output animated SVG (alias for --mode video).
                 -w, --width <int|adjust>  Terminal width in characters (default: adjust).
                                           Uses the current terminal width. Specify an integer for a fixed width.
@@ -256,7 +312,7 @@ public static partial class OptionParser
                 --crop-right <value>      Crop right by px or ch.
                 --crop-left <value>       Crop left by px or ch.
 
-            Options (Video/Repeat mode):
+            Options (Video mode):
                 --no-loop                 Disable loop for animated SVG playback in video mode (default: loop).
                 --fps <value>             Max FPS for animated SVG frame sampling (default: 12).
                 --sleep <sec>             Wait time after execution completes in video mode (default: 0).
@@ -401,7 +457,8 @@ public static partial class OptionParser
                 or "convert"
                 or "theme"
                 or "completion"
-                or "live-server";
+                or "live-server"
+                or "tmux";
     }
 
     private static int DetectOptionIndent(string[] lines)
@@ -622,7 +679,10 @@ public static partial class OptionParser
             return false;
         }
 
-        if (options.Workflow == Workflow.Theme)
+        if (
+            options.Workflow == Workflow.Theme
+            || (options.Workflow == Workflow.Tmux && options.RequestedTmuxAction is null)
+        )
         {
             return true;
         }
@@ -711,13 +771,29 @@ public static partial class OptionParser
                 && i + 1 < args.Length
                 && IsVerboseLogPathValue(args[i + 1]);
 
+            var optionalTmuxHistoryValue =
+                value is null
+                && string.Equals(name, "--history", StringComparison.OrdinalIgnoreCase)
+                && i + 1 < args.Length
+                && int.TryParse(
+                    args[i + 1],
+                    NumberStyles.Integer,
+                    CultureInfo.InvariantCulture,
+                    out _
+                );
+
             if (requiresValue && i + 1 >= args.Length)
             {
                 error = $"Missing value for option: {name}";
                 return false;
             }
 
-            if (requiresValue || optionalWindowValue || optionalVerboseValue)
+            if (
+                requiresValue
+                || optionalWindowValue
+                || optionalVerboseValue
+                || optionalTmuxHistoryValue
+            )
             {
                 // Value is required, or optional window/verbose value was provided.
                 i++;
@@ -908,6 +984,36 @@ public static partial class OptionParser
                     args = args[1..];
                 }
                 return true;
+            case "tmux":
+                options.Workflow = Workflow.Tmux;
+                if (args.Length < 2 || args[1] is "--help" or "-h")
+                {
+                    showHelp = true;
+                    args = [];
+                    return true;
+                }
+                options.RequestedTmuxAction = args[1].ToLowerInvariant() switch
+                {
+                    "capture" => TmuxAction.Capture,
+                    "live-server" => TmuxAction.LiveServer,
+                    _ => null,
+                };
+                if (options.RequestedTmuxAction is null)
+                {
+                    error = "tmux requires capture or live-server.";
+                    return false;
+                }
+                args = args[2..];
+                if (
+                    options.RequestedTmuxAction == TmuxAction.LiveServer
+                    && args.Length > 0
+                    && int.TryParse(args[0], out var tmuxPort)
+                )
+                {
+                    options.LiveServerPort = tmuxPort;
+                    args = args[1..];
+                }
+                return true;
             default:
                 return true;
         }
@@ -950,7 +1056,8 @@ public static partial class OptionParser
             && !string.Equals(name, "--embed-logs", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--embed-replay", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(name, "--embed-debug", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(name, "--no-resize", StringComparison.OrdinalIgnoreCase);
+            && !string.Equals(name, "--no-resize", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(name, "--history", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsVerboseLogPathValue(string token) =>

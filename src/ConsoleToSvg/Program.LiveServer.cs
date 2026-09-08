@@ -156,6 +156,7 @@ internal static partial class Program
                         }
                     },
                     captureControlsEnabled: false,
+                    forwardToConsole: options.LiveServerForwardToConsole,
                     terminalSizeProvider: options.LiveServerResize
                         ? new Func<(int Width, int Height)>(() =>
                             (

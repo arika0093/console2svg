@@ -194,6 +194,8 @@ console2svg groups workflows under explicit commands. Options belong to the work
 | `interactive [options] [-- <program>]` | interactive shell/program | interactive recording controls |
 | `replay <replay.json> [options] -- <command>` | keyboard replay plus command | replay input path |
 | `convert <input.cast or input.svg> [options]` | asciicast v2 recording or SVG | rendering/export options |
+| `tmux capture [options]` | selected tmux pane | `--target`, `--history` |
+| `tmux live-server [port] [options]` | selected tmux pane | `--target`, live-server options |
 
 ### Pipe mode
 
@@ -431,6 +433,7 @@ console2svg capture -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --for
 ## Tips
 ### Using with `tmux`
 By combining with `tmux`, you can save the step-by-step execution process of commands as SVG images.
+The `tmux` workflow is available on Linux and macOS; on Windows, run console2svg inside WSL.
 
 First, open tmux. If it's not installed, install it using `apt install tmux` or `brew install tmux`, etc.
 
@@ -445,16 +448,11 @@ $ echo "say hello"
 $ echo "say goodbye"
 ```
 
-After completing the command execution you want to record, open a new window with `ctrl+b c`. Then, run `tmux capture-pane | console2svg capture` to save the content of the original window as SVG.
+After completing the command execution you want to record, open a new window with `ctrl+b c`. Then, run `console2svg tmux capture` and choose the pane you want to save.
 
 ```sh
-# tmux options:
-#   -p: print the captured content to stdout
-#   -e: include escape sequences (for colors, etc.)
-#   -t :0: target the first pane (you can specify other panes as needed)
-# console2svg options:
 #   -h 12: set the height of the output SVG to 12 lines (adjust as needed)
-tmux capture-pane -pe -t :0 | console2svg capture -h 12 -o capture-$(date +%s).svg
+console2svg tmux capture -h 12 -o capture-$(date +%s).svg
 ```
 
 <details>
@@ -469,28 +467,31 @@ With the power of `console2svg`, you can even record and explain how to use `con
 <details>
 <summary>tmux capture-pane result example</summary>
 
-![tmux capture-pane -pe -t :0 | console2svg capture -h 12](./assets/cmd-tmux-cap.svg)
+![console2svg tmux capture -h 12](./assets/cmd-tmux-cap.svg)
 
 </details>
 
 Then repeat the workflow: press `ctrl+b p` to return to the original window, work on your commands, press `ctrl+b n` to switch to the SVG capture pane, and run the `console2svg` command. This allows you to progressively save the command execution process as SVG images.
 
-Of course, you can also save all lines (useful for evidence). In that case, specify the `-S -` option on the tmux side to capture the entire screen.
+Of course, you can also save all lines (useful for evidence) with `--history`. Use `--history=<lines>` to include a specific number of recent history lines.
 
 ```sh
-tmux capture-pane -pe -S - -t :0 | console2svg capture -o full-capture-$(date +%s).svg
+console2svg tmux capture --target :0 --history -o full-capture-$(date +%s).svg
 ```
 
-### Repeat capture mode
+### Animated tmux capture and live server
 
-use `-m repeat` to repeatedly run a command and capture each result as an animated SVG.
-This is useful for commands that output a static snapshot of another terminal, such as `tmux capture-pane`.
-
-Each result is treated as a full-screen update, so content from the previous capture is cleared before the next one is displayed.
-The command runs at the interval specified by `--fps` until you stop `console2svg` with `Ctrl+C`.
+Use `-v` to repeatedly capture a tmux pane as an animated SVG. The pane is selected interactively unless you specify `--target`. The command runs at the interval specified by `--fps` until you stop it with `Ctrl+C`.
 
 ```sh
-console2svg capture -m repeat --fps 2 -- tmux capture-pane -pe -t :0
+console2svg tmux capture -v --fps 2 -o tmux.svg
+```
+
+To serve a tmux pane in a browser, run a live server in another terminal window. It polls the pane at `--fps` and does not forward tmux output to the server terminal.
+
+```sh
+console2svg tmux live-server --target :0 --fps 2
+# -> Live terminal: http://127.0.0.1:38473/
 ```
 
 ## Supported platforms

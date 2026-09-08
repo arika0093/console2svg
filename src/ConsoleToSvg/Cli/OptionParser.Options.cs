@@ -72,15 +72,31 @@ public static partial class OptionParser
                     return true;
                 }
 
-                if (string.Equals(value, "repeat", StringComparison.OrdinalIgnoreCase))
-                {
-                    options.Mode = OutputMode.Repeat;
-                    options.IsModeExplicit = true;
-                    return true;
-                }
-
-                error = "--mode must be image, video, or repeat.";
+                error = "--mode must be image or video.";
                 return false;
+            case "--target":
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    error = "--target requires a tmux pane target.";
+                    return false;
+                }
+                options.TmuxTarget = value;
+                return true;
+            case "--history":
+                options.TmuxHistory = true;
+                if (value is not null)
+                {
+                    if (
+                        !TryParseInt(value, "--history", out var historyLines, out error)
+                        || historyLines <= 0
+                    )
+                    {
+                        error ??= "--history value must be greater than 0.";
+                        return false;
+                    }
+                    options.TmuxHistoryLines = historyLines;
+                }
+                return true;
             case "-w":
             case "--width":
                 if (string.Equals(value, "adjust", StringComparison.OrdinalIgnoreCase))

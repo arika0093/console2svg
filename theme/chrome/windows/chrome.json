@@ -1,0 +1,8 @@
+{
+  "paddingTop": 35,
+  "paddingRight": 1,
+  "paddingBottom": 1,
+  "paddingLeft": 1,
+  "shadowOffset": 6,
+  "svgTemplate": "window.svg"
+}

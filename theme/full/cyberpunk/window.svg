@@ -1,0 +1,6 @@
+<rect x="{winX+1}" y="{winY+1}" width="{winW-2}" height="{winH-2}" fill="#090b1a" stroke="#27e8ff" stroke-width="1.5"/>
+<path d="M {winX+8},{winY+8} H {winRight-8} V {winY+31} H {winX+8} Z" fill="#151333" stroke="#ff3c9e" stroke-width="1"/>
+<path d="M {winX+13},{winY+13} h 22 M {winX+13},{winY+18} h 12" stroke="#27e8ff" stroke-width="2"/>
+<text x="{winX+44}" y="{winY+23}" fill="#ff65b1" font-family="monospace" font-size="11" font-weight="bold">SYS://NEON-TERMINAL</text>
+<path d="M {winRight-68},{winY+13} h 14 v 12 h -14 Z M {winRight-47},{winY+13} h 14 v 12 h -14 Z M {winRight-26},{winY+13} h 14 v 12 h -14 Z" fill="none" stroke="#27e8ff" stroke-width="1.5"/>
+<path d="M {winX+1},{winY+1} h 18 M {winX+1},{winY+1} v 18 M {winRight-1},{winY+1} h -18 M {winRight-1},{winY+1} v 18 M {winX+1},{winBottom-1} h 18 M {winX+1},{winBottom-1} v -18 M {winRight-1},{winBottom-1} h -18 M {winRight-1},{winBottom-1} v -18" stroke="#ff3c9e" stroke-width="3"/>

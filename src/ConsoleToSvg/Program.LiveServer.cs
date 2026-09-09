@@ -26,9 +26,13 @@ internal static partial class Program
             await Console.Error.WriteLineAsync("live-server port must be between 1 and 65535.");
             return 1;
         }
-        if (!IPAddress.TryParse(options.ListenAddress ?? "127.0.0.1", out var address))
+        var listenHost = options.ListenAddress ?? "127.0.0.1";
+        var address = await ResolveListenAddressAsync(listenHost, cancellationToken);
+        if (address is null)
         {
-            await Console.Error.WriteLineAsync("--listen must be an IP address.");
+            await Console.Error.WriteLineAsync(
+                $"live-server host '{listenHost}' is not a valid IP address or host name."
+            );
             return 1;
         }
 
@@ -205,6 +209,36 @@ internal static partial class Program
             listener.Stop();
             foreach (var client in clients.Values)
                 await client.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    private static async Task<IPAddress?> ResolveListenAddressAsync(
+        string host,
+        CancellationToken cancellationToken
+    )
+    {
+        if (IPAddress.TryParse(host, out var address))
+            return address;
+
+        try
+        {
+            var addresses = await Dns.GetHostAddressesAsync(host, cancellationToken)
+                .ConfigureAwait(false);
+            foreach (var candidate in addresses)
+            {
+                if (candidate.AddressFamily == AddressFamily.InterNetwork)
+                    return candidate;
+            }
+
+            return addresses.Length > 0 ? addresses[0] : null;
+        }
+        catch (SocketException)
+        {
+            return null;
+        }
+        catch (ArgumentException)
+        {
+            return null;
         }
     }
 

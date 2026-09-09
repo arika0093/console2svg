@@ -196,6 +196,49 @@ public sealed class ConsoleToSvgCommandLineTests
     }
 
     [Test]
+    public async Task LiveServerEndpointIsOptionalAndAcceptsHostAndPort()
+    {
+        var defaultEndpoint = await InvokeAsync("live-server");
+        defaultEndpoint.ExitCode.ShouldBe(0);
+        defaultEndpoint.Options!.LiveServerPort.ShouldBe(38473);
+        defaultEndpoint.Options.ListenAddress.ShouldBeNull();
+
+        var portOnly = await InvokeAsync("live-server", "8080");
+        portOnly.ExitCode.ShouldBe(0);
+        portOnly.Options!.LiveServerPort.ShouldBe(8080);
+        portOnly.Options.ListenAddress.ShouldBeNull();
+
+        var hostAndPort = await InvokeAsync("live-server", "localhost:8080");
+        hostAndPort.ExitCode.ShouldBe(0);
+        hostAndPort.Options!.LiveServerPort.ShouldBe(8080);
+        hostAndPort.Options.ListenAddress.ShouldBe("localhost");
+
+        var endpointBeforeOption = await InvokeAsync(
+            "live-server",
+            "8081",
+            "--theme",
+            "cyberpunk-pc"
+        );
+        endpointBeforeOption.ExitCode.ShouldBe(0);
+        endpointBeforeOption.Options!.LiveServerPort.ShouldBe(8081);
+        endpointBeforeOption.Options.Themes.ShouldBe(["cyberpunk-pc"]);
+    }
+
+    [Test]
+    public async Task LiveServerMapsThemeOptions()
+    {
+        var invocation = await InvokeAsync("live-server", "--theme", "cyberpunk-pc");
+
+        invocation.ExitCode.ShouldBe(0);
+        invocation.Options!.Themes.ShouldBe(["cyberpunk-pc"]);
+
+        var renderOptions = SvgRenderOptionsFactory.Create(invocation.Options);
+        renderOptions.TerminalTheme!.Foreground.ShouldBe("#d8f9ff");
+        renderOptions.Background.ShouldBe(["#09051a", "#17104a"]);
+        renderOptions.Chrome!.IsDesktop.ShouldBeTrue();
+    }
+
+    [Test]
     public async Task GeneratedHelpKeepsSvgConverterColumnCompact()
     {
         var invocation = await InvokeAsync("capture", "--help");

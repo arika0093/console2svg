@@ -389,6 +389,13 @@ public sealed partial class ConsoleToSvgCommandLine
             return true;
         }
 
+        if (TryParseHostPort(portText, out var host, out port))
+        {
+            options.ListenAddress = host;
+            options.LiveServerPort = port;
+            return true;
+        }
+
         if (options.Workflow == Workflow.Tmux)
         {
             error = "tmux live-server port must be an integer.";
@@ -397,6 +404,42 @@ public sealed partial class ConsoleToSvgCommandLine
 
         leadingCommand = portText;
         return true;
+    }
+
+    private static bool TryParseHostPort(string value, out string? host, out int port)
+    {
+        host = null;
+        port = 0;
+
+        var isBracketedHost = value.StartsWith("[", StringComparison.Ordinal);
+        var portStart = isBracketedHost
+            ? value.IndexOf("]:".AsSpan(), StringComparison.Ordinal)
+            : value.LastIndexOf(':');
+        if (portStart < 0)
+            return false;
+
+        if (isBracketedHost)
+        {
+            host = value[1..portStart];
+            portStart += 2;
+        }
+        else
+        {
+            host = value[..portStart];
+            portStart++;
+        }
+
+        if (string.IsNullOrWhiteSpace(host))
+            host = null;
+        if (portStart >= value.Length)
+            return false;
+
+        return int.TryParse(
+            value[portStart..],
+            NumberStyles.Integer,
+            CultureInfo.InvariantCulture,
+            out port
+        );
     }
 
     private static void SetCommand(

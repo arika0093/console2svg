@@ -147,25 +147,25 @@ public sealed partial class SvgRendererTests
     }
 
     [Test]
-    public void WindowAndPaddingParsedForNewStyles()
+    public void SvgRenderOptionsRecognizesDesktopWindowStyles()
     {
-        var ok = ConsoleToSvg.Cli.OptionParser.TryParse(
-            new[] { "--window", "macos-pc" },
-            out var options,
-            out _,
-            out _
+        var macos = ConsoleToSvg.Cli.SvgRenderOptionsFactory.Create(
+            new ConsoleToSvg.Cli.AppOptions
+            {
+                Window = "macos-pc",
+                IsWindowExplicit = true,
+            }
         );
-        ok.ShouldBeTrue();
-        options!.Window.ShouldBe("macos-pc");
+        var windows = ConsoleToSvg.Cli.SvgRenderOptionsFactory.Create(
+            new ConsoleToSvg.Cli.AppOptions
+            {
+                Window = "windows-pc",
+                IsWindowExplicit = true,
+            }
+        );
 
-        ok = ConsoleToSvg.Cli.OptionParser.TryParse(
-            new[] { "--window", "windows-pc" },
-            out options,
-            out _,
-            out _
-        );
-        ok.ShouldBeTrue();
-        options!.Window.ShouldBe("windows-pc");
+        macos.Chrome!.IsDesktop.ShouldBeTrue();
+        windows.Chrome!.IsDesktop.ShouldBeTrue();
     }
 
     [Test]
@@ -218,14 +218,13 @@ public sealed partial class SvgRendererTests
     [Test]
     public void DefaultMarginAndPaddingAreAppliedWhenWindowIsSet()
     {
-        var ok = ConsoleToSvg.Cli.OptionParser.TryParse(
-            new[] { "--window", "macos" },
-            out var options,
-            out _,
-            out _
+        var renderOptions = ConsoleToSvg.Cli.SvgRenderOptionsFactory.Create(
+            new ConsoleToSvg.Cli.AppOptions
+            {
+                Window = "macos",
+                IsWindowExplicit = true,
+            }
         );
-        ok.ShouldBeTrue();
-        var renderOptions = ConsoleToSvg.Cli.SvgRenderOptionsFactory.Create(options!);
         renderOptions.Margin.ShouldBe(0d);
         renderOptions.Padding.ShouldBe(8d);
     }
@@ -233,14 +232,15 @@ public sealed partial class SvgRendererTests
     [Test]
     public void ExplicitPaddingIsIndependentFromWindowMargin()
     {
-        var ok = ConsoleToSvg.Cli.OptionParser.TryParse(
-            new[] { "--window", "macos", "--padding", "3" },
-            out var options,
-            out _,
-            out _
+        var renderOptions = ConsoleToSvg.Cli.SvgRenderOptionsFactory.Create(
+            new ConsoleToSvg.Cli.AppOptions
+            {
+                Window = "macos",
+                IsWindowExplicit = true,
+                Padding = 3,
+                IsPaddingExplicit = true,
+            }
         );
-        ok.ShouldBeTrue();
-        var renderOptions = ConsoleToSvg.Cli.SvgRenderOptionsFactory.Create(options!);
         renderOptions.Margin.ShouldBe(0d);
         renderOptions.Padding.ShouldBe(3d);
     }
@@ -248,28 +248,29 @@ public sealed partial class SvgRendererTests
     [Test]
     public void HeaderOverridesCommandInRenderOptions()
     {
-        var ok = ConsoleToSvg.Cli.OptionParser.TryParse(
-            new[] { "-c", "ls", "--header", "custom", "--prompt", "@" },
-            out var options,
-            out _,
-            out _
+        var renderOptions = ConsoleToSvg.Cli.SvgRenderOptionsFactory.Create(
+            new ConsoleToSvg.Cli.AppOptions
+            {
+                WithCommand = true,
+                Command = "ls",
+                Header = "custom",
+                Prompt = "@",
+            }
         );
-        ok.ShouldBeTrue();
-        var renderOptions = ConsoleToSvg.Cli.SvgRenderOptionsFactory.Create(options!);
         renderOptions.CommandHeader.ShouldBe("@ custom");
     }
 
     [Test]
     public void PromptOverridesCommandPrefixInRenderOptions()
     {
-        var ok = ConsoleToSvg.Cli.OptionParser.TryParse(
-            new[] { "-c", "ls", "--prompt", "#" },
-            out var options,
-            out _,
-            out _
+        var renderOptions = ConsoleToSvg.Cli.SvgRenderOptionsFactory.Create(
+            new ConsoleToSvg.Cli.AppOptions
+            {
+                WithCommand = true,
+                Command = "ls",
+                Prompt = "#",
+            }
         );
-        ok.ShouldBeTrue();
-        var renderOptions = ConsoleToSvg.Cli.SvgRenderOptionsFactory.Create(options!);
         renderOptions.CommandHeader.ShouldBe("# ls");
     }
 

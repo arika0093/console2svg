@@ -1,6 +1,6 @@
 <div align="center">
 
-![console2svg hero image with oh-my-logo](./assets/cmd-hero.svg)
+![console2svg hero image with oh-my-logo](./docs/public/assets/cmd-hero.svg)
 
 [![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest) ![WinGet Package Version](https://img.shields.io/winget/v/arika0093.console2svg?style=flat-square&logo=gitlfs&label=WinGet&color=%230080CC)
 
@@ -23,7 +23,7 @@ Truecolor, animation, cropping and many appearance options are supported.
 ## Why console2svg?
 Console screenshots in raster formats (PNG, etc.) often make text look blurry. console2svg converts console output into vector SVG images so you can save your terminal as a crisp, scalable image.
 
-For example, let's open [this image](https://raw.githubusercontent.com/arika0093/console2svg/refs/heads/main/assets/cmd-btop.svg) in your browser and zoom in — the text remains sharp at any scale 👀
+For example, let's open [this image](https://raw.githubusercontent.com/arika0093/console2svg/refs/heads/main/docs/public/assets/cmd-btop.svg) in your browser and zoom in — the text remains sharp at any scale 👀
 
 There are similar tools, but console2svg stands out for:
 
@@ -44,7 +44,7 @@ The simplest way to use it is to put the command you want to run after `console2
 console2svg capture -- console2svg
 ```
 
-![console2svg capture -- console2svg](./assets/cmd.svg)
+![console2svg capture -- console2svg](./docs/public/assets/cmd.svg)
 
 You can also generate SVG with a window frame. and some options to customize the appearance.  
 For example, `-w` specifies the width, `-c` is an option to display the command at the beginning of the output, and `-d` is an option to specify the style of the window frame, where we specify a macOS-like frame. If the command is long, you can also write it together after `--`.
@@ -53,7 +53,7 @@ For example, `-w` specifies the width, `-c` is an option to display the command 
 console2svg capture -w 100 -c -d macos-pc -- fastfetch
 ```
 
-![console2svg capture -w 100 -c -d macos-pc -- fastfetch](./assets/cmd-window.svg)
+![console2svg capture -w 100 -c -d macos-pc -- fastfetch](./docs/public/assets/cmd-window.svg)
 
 ---
 
@@ -64,7 +64,7 @@ By using the [replay feature](#replay-input), you can save the command execution
 console2svg -w 80 -h 20 -v -d windows --timeout 7 -- /usr/games/pipes -t 1 -f 35
 ```
 
-![console2svg -w 80 -h 20 -v -d windows --timeout 7 -- pipes.sh](./assets/cmd-loop.svg)
+![console2svg -w 80 -h 20 -v -d windows --timeout 7 -- pipes.sh](./docs/public/assets/cmd-loop.svg)
 
 ---
 
@@ -75,7 +75,7 @@ console2svg interactive -d macos -o ./captures/output.svg
 # -> saves ./captures/output_yyyyMMdd_HHmmss.svg
 ```
 
-![console2svg interactive -d macos -o ./captures/output.svg](./assets/cmd-interactive.svg)
+![console2svg interactive -d macos -o ./captures/output.svg](./docs/public/assets/cmd-interactive.svg)
 
 ---
 
@@ -86,7 +86,7 @@ console2svg live-server -d --background your-bg.png
 # -> Live terminal: http://127.0.0.1:38473/
 ```
 
-![console2svg live-server -d macos-pc --background assets/image3.png --opacity 0.9](./assets/cmd-liveserver.png)
+![console2svg live-server -d macos-pc --background docs/public/assets/image3.png --opacity 0.9](./docs/public/assets/cmd-liveserver.png)
 
 ## Install
 ### Linux/macOS
@@ -182,7 +182,7 @@ To disable this behavior, use the `--no-colorenv` and `--no-delete-envs` options
 </details>
 
 > [!TIP]
-> This repository uses this action itself to automatically regenerate all the SVG images in the [`assets/`](assets/) directory whenever a new release is published.
+> This repository uses this action itself to automatically regenerate all the SVG images in the [`docs/public/assets/`](docs/public/assets/) directory whenever a new release is published.
 
 ## Usage
 ### Pipe mode
@@ -245,7 +245,7 @@ console2svg capture --crop-top "Host" --crop-bottom ".NET runtimes installed:-2"
 
 The result will look like this.
 
-![console2svg capture --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -- dotnet --info](./assets/cmd-crop-word.svg)
+![console2svg capture --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -- dotnet --info](./docs/public/assets/cmd-crop-word.svg)
 
 ### Animated SVG
 
@@ -256,7 +256,7 @@ use `-m video` or `-v` to capture the animation of the command execution and sav
 console2svg capture -c -d -v -- sl
 ```
 
-![console2svg capture -c -d -v -- sl](./assets/cmd-sl.svg)
+![console2svg capture -c -d -v -- sl](./docs/public/assets/cmd-sl.svg)
 
 You can specify the `--timeout` option to output SVG after a certain time has elapsed.
 This is useful for converting commands that do not terminate, such as `nyancat`, into SVG.
@@ -268,7 +268,7 @@ There is also a `--sleep` option to specify the stop time after playback. This a
 console2svg capture -w 160 -h 32 -c -d -v --timeout 5 --sleep 0.5 -- nyancat -d 10
 ```
 
-![console2svg capture -w 160 -h 32 -c -d -v --timeout 5 --sleep 0.5 -- nyancat -d 10](./assets/cmd-nyancat.svg)
+![console2svg capture -w 160 -h 32 -c -d -v --timeout 5 --sleep 0.5 -- nyancat -d 10](./docs/public/assets/cmd-nyancat.svg)
 
 You can also write sequential SVG files starting with `frame-0000.svg` to a specific folder.
 This is useful for cherry-picking your favorite frames or converting them into a video using software like ffmpeg. 
@@ -294,7 +294,7 @@ By using this feature, you can generate an SVG that records terminal operations 
 console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash
 ```
 
-![console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash](./assets/cmd-bash-vim.svg)
+![console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash](./docs/public/assets/cmd-bash-vim.svg)
 
 The replay file is in a simple JSON format. If you make a mistake in the input, you can directly edit this file (or of course, you can ask AI to fix it for you).
 
@@ -355,7 +355,7 @@ Then, you can specify the output file with the desired extension. For example, t
 console2svg capture -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab
 ```
 
-![console2svg capture -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab](./assets/cmd-matrix-video.gif)
+![console2svg capture -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab](./docs/public/assets/cmd-matrix-video.gif)
 
 You can also output as MP4, WebM, or a static PNG/JPG by changing the extension.
 
@@ -368,7 +368,7 @@ You can set the background color or image of the output SVG, and adjust the opac
 console2svg capture -h 10 -c -d macos-pc --background "#003060" --opacity 0.85 -- dotnet --version
 ```
 
-![console2svg capture -h 10 -c -d macos-pc --background "#003060" --opacity 0.85 -- dotnet --version](./assets/cmd-bg1.svg)
+![console2svg capture -h 10 -c -d macos-pc --background "#003060" --opacity 0.85 -- dotnet --version](./docs/public/assets/cmd-bg1.svg)
 
 You can also set a gradient background.
 
@@ -376,7 +376,7 @@ You can also set a gradient background.
 console2svg capture -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.85 -- dotnet --version
 ```
 
-![console2svg capture -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.85 -- dotnet --version](./assets/cmd-bg2.svg)
+![console2svg capture -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.85 -- dotnet --version](./docs/public/assets/cmd-bg2.svg)
 
 Image background is also supported.
 
@@ -384,7 +384,7 @@ Image background is also supported.
 console2svg capture -h 10 -c -d macos-pc --background image.png --opacity 0.85  -- dotnet --version
 ```
 
-![console2svg capture -h 10 -c -d macos-pc --background image.png --opacity 0.85  -- dotnet --version](./assets/cmd-bg3.svg)
+![console2svg capture -h 10 -c -d macos-pc --background image.png --opacity 0.85  -- dotnet --version](./docs/public/assets/cmd-bg3.svg)
 
 ### Terminal Appearance
 
@@ -396,7 +396,7 @@ the command header is changed to `my-custom-header`, and the text color is chang
 console2svg capture -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" --backcolor "#042515" -- echo "hi"
 ```
 
-![console2svg capture -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" --backcolor "#042515" -- echo "hi"](./assets/cmd-term-custom.svg)
+![console2svg capture -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" --backcolor "#042515" -- echo "hi"](./docs/public/assets/cmd-term-custom.svg)
 
 
 ### Window chrome
@@ -405,18 +405,18 @@ console2svg capture -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --for
 
 | Image                                                                      | Style(`-d`)   | Description |
 |----------------------------------------------------------------------------|---------------|----|
-| <img src="./assets/window/none.svg" width="400" alt="none">                | `none`        | no window frame |
-| <img src="./assets/window/transparent.svg" width="400" alt="transparent">  | `transparent` | transparent background (text-only output) |
-| <img src="./assets/window/macos.svg" width="400" alt="macos">              | `macos`       | macOS style window frame |
-| <img src="./assets/window/windows.svg" width="400" alt="windows">          | `windows`     | Windows Terminal style window frame |
+| <img src="./docs/public/assets/window/none.svg" width="400" alt="none">                | `none`        | no window frame |
+| <img src="./docs/public/assets/window/transparent.svg" width="400" alt="transparent">  | `transparent` | transparent background (text-only output) |
+| <img src="./docs/public/assets/window/macos.svg" width="400" alt="macos">              | `macos`       | macOS style window frame |
+| <img src="./docs/public/assets/window/windows.svg" width="400" alt="windows">          | `windows`     | Windows Terminal style window frame |
 
 
 `*-pc` styles are designed for use with a background, and include padding and shadows to create a "window" effect. You can customize the spacing between the window chrome and shell with `--margin`, the terminal's inner spacing with `--padding`, and the desktop padding with `--pc-padding`.
 
 | Image                                                                      | Style(`-d`)   |
 |----------------------------------------------------------------------------|---------------|
-| <img src="./assets/window/macos-pc.svg" width="400" alt="macos-pc">        | `macos-pc`    |
-| <img src="./assets/window/windows-pc.svg" width="400" alt="windows-pc">    | `windows-pc`  |
+| <img src="./docs/public/assets/window/macos-pc.svg" width="400" alt="macos-pc">        | `macos-pc`    |
+| <img src="./docs/public/assets/window/windows-pc.svg" width="400" alt="windows-pc">    | `windows-pc`  |
 
 ## Tips
 ### Using with `tmux`
@@ -448,14 +448,14 @@ console2svg tmux capture -h 12 -o capture-$(date +%s).svg
 
 With the power of `console2svg`, you can even record and explain how to use `console2svg` itself :)
 
-![](./assets/cmd-tmux-replay.svg)
+![](./docs/public/assets/cmd-tmux-replay.svg)
 
 </details>
 
 <details>
 <summary>tmux capture-pane result example</summary>
 
-![console2svg tmux capture -h 12](./assets/cmd-tmux-cap.svg)
+![console2svg tmux capture -h 12](./docs/public/assets/cmd-tmux-cap.svg)
 
 </details>
 

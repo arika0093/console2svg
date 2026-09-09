@@ -1,0 +1,51 @@
+---
+title: Quick start
+description: Create your first console2svg capture.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+After [installing console2svg](/getting-started/installation/), put the command you want to capture after `--`. Everything after that separator belongs to the captured command, which avoids ambiguity with console2svg's own options.
+
+<Steps>
+
+1. **Capture a command.**
+
+   ```bash
+   console2svg capture -- console2svg
+   ```
+
+2. **Open the generated image.** The default output path is `output.svg`. Open it in a browser or embed it in Markdown; because it is SVG, terminal text remains sharp when zoomed.
+
+</Steps>
+
+![The output of `console2svg capture -- console2svg`](/assets/cmd.svg)
+
+> [!NOTE]
+> `capture` also accepts piped input, for example `my-command | console2svg capture`. Use command mode when the program needs a terminal-like environment; use pipe mode for output that already exists.
+
+## Add a window frame
+
+```bash
+console2svg capture -w 100 -c -d macos-pc -- fastfetch
+```
+
+![The output of `console2svg capture -w 100 -c -d macos-pc -- fastfetch`](/assets/cmd-window.svg)
+
+`-c` writes the command as the first terminal line, `-w` chooses the terminal width, and `-d macos-pc` selects the bundled macOS desktop theme.
+
+## Capture an animation
+
+```bash
+console2svg capture -w 80 -h 20 -v -d windows --timeout 10 -- /usr/games/pipes -t 0 -f 35
+```
+
+![The output of the pipes animation command above](/assets/cmd-loop.svg)
+
+`-v` records screen changes as an animated SVG. Choose another extension, such as `-o output.gif` or `-o output.mp4`, when a consumer needs a raster or video artifact.
+
+## Where to go next
+
+- [Capture command output](/basic-usage/capturing-command-output/)
+- [Customize themes and backgrounds](/appearance/themes/)
+- [Use console2svg in GitHub Actions](/automation/github-actions/)

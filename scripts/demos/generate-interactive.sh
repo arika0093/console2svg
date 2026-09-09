@@ -52,4 +52,4 @@ fi
 sleep 1
 tmux -L "$socket" send-keys -t "$session:0.0" C-d
 wait_for_file "$work_dir/cmd-interactive.svg"
-mv "$work_dir/cmd-interactive.svg" "$DEMO_ROOT/assets/cmd-interactive.svg"
+mv "$work_dir/cmd-interactive.svg" "$ASSET_ROOT/cmd-interactive.svg"

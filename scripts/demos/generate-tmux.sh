@@ -72,5 +72,5 @@ tmux -L "$socket" detach-client -s "$session"
 wait "$recorder_pid"
 recorder_pid=""
 
-mv "$work_dir/capture.svg" "$DEMO_ROOT/assets/cmd-tmux-cap.svg"
-mv "$work_dir/cmd-tmux-replay.svg" "$DEMO_ROOT/assets/cmd-tmux-replay.svg"
+mv "$work_dir/capture.svg" "$ASSET_ROOT/cmd-tmux-cap.svg"
+mv "$work_dir/cmd-tmux-replay.svg" "$ASSET_ROOT/cmd-tmux-replay.svg"

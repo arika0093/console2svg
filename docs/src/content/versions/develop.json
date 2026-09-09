@@ -1,0 +1,93 @@
+{
+  "sidebar": [
+    {
+      "label": "Overview",
+      "items": [
+        "features",
+        "introduction"
+      ]
+    },
+    {
+      "label": "Getting started",
+      "items": [
+        "getting-started/quick-start",
+        "getting-started/installation"
+      ]
+    },
+    {
+      "label": "Basic usage",
+      "items": [
+        "basic-usage/capturing-command-output",
+        "basic-usage/interactive-capture",
+        "basic-usage/cropping-output",
+        "basic-usage/masking-sensitive-output",
+        "basic-usage/converting-output-formats"
+      ]
+    },
+    {
+      "label": "Advanced usage",
+      "items": [
+        "advanced-usage/live-server",
+        "advanced-usage/tmux",
+        "advanced-usage/recording-replay-and-cast-files",
+        "advanced-usage/shell-completion"
+      ]
+    },
+    {
+      "label": "Appearance",
+      "items": [
+        "appearance/themes",
+        "appearance/window-chrome-and-backgrounds",
+        "appearance/layout-and-typography"
+      ]
+    },
+    {
+      "label": "Automation",
+      "items": [
+        "automation/ci-cd-support",
+        "automation/github-actions"
+      ]
+    },
+    {
+      "label": "Reference",
+      "items": [
+        "reference/cli-reference",
+        "reference/file-formats-and-embedded-metadata",
+        "reference/status-and-verbose-logs"
+      ]
+    },
+    {
+      "label": "Concepts",
+      "items": [
+        "concepts/how-console2svg-works",
+        "concepts/svg-format-and-style"
+      ]
+    }
+  ],
+  "excluded": [
+    "",
+    "advanced-usage/live-server",
+    "advanced-usage/recording-replay-and-cast-files",
+    "advanced-usage/shell-completion",
+    "advanced-usage/tmux",
+    "appearance/layout-and-typography",
+    "appearance/themes",
+    "appearance/window-chrome-and-backgrounds",
+    "automation/ci-cd-support",
+    "automation/github-actions",
+    "basic-usage/capturing-command-output",
+    "basic-usage/converting-output-formats",
+    "basic-usage/cropping-output",
+    "basic-usage/interactive-capture",
+    "basic-usage/masking-sensitive-output",
+    "concepts/how-console2svg-works",
+    "concepts/svg-format-and-style",
+    "features",
+    "getting-started/installation",
+    "getting-started/quick-start",
+    "introduction",
+    "reference/cli-reference",
+    "reference/file-formats-and-embedded-metadata",
+    "reference/status-and-verbose-logs"
+  ]
+}

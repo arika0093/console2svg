@@ -5,7 +5,8 @@ set -euo pipefail
 DEMO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CONSOLE2SVG_BIN="${CONSOLE2SVG_BIN:-console2svg}"
 
-mkdir -p "$DEMO_ROOT/assets" "$DEMO_ROOT/logs"
+ASSET_ROOT="$DEMO_ROOT/docs/public/assets"
+mkdir -p "$ASSET_ROOT" "$DEMO_ROOT/logs"
 
 wait_for_pane() {
     local socket="$1"

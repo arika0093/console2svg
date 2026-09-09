@@ -1,0 +1,15 @@
+:root {
+  --sl-color-accent-low: #102d3b;
+  --sl-color-accent: #26a6d1;
+  --sl-color-accent-high: #a8e4f5;
+  --sl-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+}
+
+.sl-markdown-content img {
+  border-radius: 0.5rem;
+}
+
+.sl-markdown-content img[src$='.svg'] {
+  background: var(--sl-color-gray-6);
+}

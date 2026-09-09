@@ -187,13 +187,7 @@ public sealed partial class ConsoleToSvgCommandLine
         }
 
         if (inputPath is not null)
-        {
-            var path = result.GetRequiredValue(inputPath);
-            if (path.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
-                options.InputSvgPath = path;
-            else
-                options.InputCastPath = path;
-        }
+            options.InputCastPath = result.GetRequiredValue(inputPath);
         if (replayPath is not null)
             options.ReplayPath = result.GetRequiredValue(replayPath);
         if (themeArgument is not null)
@@ -527,11 +521,6 @@ public sealed partial class ConsoleToSvgCommandLine
                 error = "--interactive cannot be used with --in.";
                 return false;
             }
-            if (!string.IsNullOrWhiteSpace(options.InputSvgPath))
-            {
-                error = "--interactive cannot be used with SVG input.";
-                return false;
-            }
             if (options.StdOut)
             {
                 error = "--interactive cannot be used with --stdout.";
@@ -577,31 +566,8 @@ public sealed partial class ConsoleToSvgCommandLine
             return false;
         }
         if (
-            !string.IsNullOrWhiteSpace(options.InputSvgPath)
-            && !string.IsNullOrWhiteSpace(options.InputCastPath)
-        )
-        {
-            error = "SVG input and --in cannot be used together.";
-            return false;
-        }
-        if (!string.IsNullOrWhiteSpace(options.InputSvgPath))
-        {
-            var outputExtension = Path.GetExtension(options.OutputPath).TrimStart('.');
-            var usesVideoOutput = options.IsModeExplicit
-                ? options.Mode is OutputMode.Video
-                : IsVideoFormat(outputExtension);
-            if (usesVideoOutput)
-            {
-                error = "SVG input cannot be converted to video output.";
-                return false;
-            }
-        }
-        if (
             !string.IsNullOrWhiteSpace(options.Command)
-            && (
-                !string.IsNullOrWhiteSpace(options.InputCastPath)
-                || !string.IsNullOrWhiteSpace(options.InputSvgPath)
-            )
+            && (!string.IsNullOrWhiteSpace(options.InputCastPath))
         )
         {
             error = "--command and --in cannot be used together.";
@@ -635,23 +601,6 @@ public sealed partial class ConsoleToSvgCommandLine
 
         return true;
     }
-
-    private static bool IsVideoFormat(string extension) =>
-        extension.ToLowerInvariant() switch
-        {
-            "mp4"
-            or "webm"
-            or "avi"
-            or "mov"
-            or "mkv"
-            or "ogv"
-            or "flv"
-            or "ts"
-            or "wmv"
-            or "m4v"
-            or "gif" => true,
-            _ => false,
-        };
 
     private static IReadOnlyList<string> NormalizeCompatibilitySyntax(IReadOnlyList<string> args)
     {
@@ -746,7 +695,7 @@ public sealed partial class ConsoleToSvgCommandLine
                 "capture"
                 or "interactive"
                 or "replay"
-                or "convert"
+                or "cast"
                 or "theme"
                 or "status"
                 or "live-server"

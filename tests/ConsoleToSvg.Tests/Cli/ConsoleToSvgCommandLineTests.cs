@@ -119,16 +119,6 @@ public sealed class ConsoleToSvgCommandLineTests
     }
 
     [Test]
-    public async Task ConvertUsesTheInputExtensionToSelectSvgOrAsciicast()
-    {
-        var svg = await InvokeAsync("convert", "demo.svg", "-o", "demo.png");
-        svg.ExitCode.ShouldBe(0);
-        svg.Options!.Workflow.ShouldBe(Workflow.Convert);
-        svg.Options.InputSvgPath.ShouldBe("demo.svg");
-        svg.Options.InputCastPath.ShouldBeNull();
-    }
-
-    [Test]
     public async Task StatusMapsTheJsonOption()
     {
         var invocation = await InvokeAsync("status", "--json");
@@ -136,11 +126,16 @@ public sealed class ConsoleToSvgCommandLineTests
         invocation.ExitCode.ShouldBe(0);
         invocation.Options!.Workflow.ShouldBe(Workflow.Status);
         invocation.Options.StatusJson.ShouldBeTrue();
+    }
 
-        var cast = await InvokeAsync("convert", "demo.cast");
-        cast.ExitCode.ShouldBe(0);
-        cast.Options!.InputCastPath.ShouldBe("demo.cast");
-        cast.Options.InputSvgPath.ShouldBeNull();
+    [Test]
+    public async Task CastMapsTheAsciicastInput()
+    {
+        var invocation = await InvokeAsync("cast", "demo.cast");
+
+        invocation.ExitCode.ShouldBe(0);
+        invocation.Options!.Workflow.ShouldBe(Workflow.Cast);
+        invocation.Options.InputCastPath.ShouldBe("demo.cast");
     }
 
     [Test]

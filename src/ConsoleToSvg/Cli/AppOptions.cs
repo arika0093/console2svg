@@ -18,7 +18,6 @@ public enum Workflow
     Replay,
     Convert,
     Theme,
-    Completion,
     LiveServer,
     Tmux,
 }
@@ -47,11 +46,7 @@ public sealed class AppOptions
 
     public string? VerboseLogPath { get; set; }
 
-    public bool ShowVersion { get; set; }
-
     public string? Command { get; set; }
-
-    public string? CompletionShell { get; set; }
 
     public TmuxAction? RequestedTmuxAction { get; set; }
     public string? TmuxTarget { get; set; }

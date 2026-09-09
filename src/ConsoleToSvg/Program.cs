@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.CommandLine;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -23,59 +24,31 @@ internal static partial class Program
 
     public static async Task<int> Main(string[] args)
     {
-        var parseResult = OptionParser.TryParse(
-            args,
-            out var options,
-            out var error,
-            out var showHelp
-        );
-        if (!parseResult)
-        {
-            await Console.Error.WriteLineAsync(error);
-            await Console.Error.WriteLineAsync();
-            await Console.Error.WriteLineAsync(
-                ColorizeIfSupported(
-                    options?.Workflow is Workflow.Legacy
-                        ? OptionParser.ShortHelpText
-                        : OptionParser.GetHelpText(options!)
-                )
-            );
-            return 1;
-        }
-
-        if (showHelp || options is null)
-        {
-            WritePagedHelp(
-                ColorizeIfSupported(
-                    options?.Workflow is Workflow.Legacy
-                        ? OptionParser.ShortHelpText
-                        : OptionParser.GetHelpText(options!)
-                )
-            );
-            return 0;
-        }
-
-        if (options.ShowVersion)
-        {
-            Console.WriteLine(ThisAssembly.AssemblyInformationalVersion);
-            return 0;
-        }
-
-        if (options.Workflow == Workflow.Completion)
-        {
-            var script = ShellCompletion.GetScript(options.CompletionShell);
-            if (script is null)
+        var commandLine = ConsoleToSvgCommandLine.Create(
+            async (options, parseResult, cancellationToken) =>
             {
-                await Console.Error.WriteLineAsync(
-                    "completion shell must be bash, zsh, fish, or powershell."
-                );
-                return 1;
+                if (parseResult.Tokens.Count == 0 && !Console.IsInputRedirected)
+                {
+                    WritePagedHelp(
+                        ColorizeIfSupported(ConsoleToSvgCommandLine.FormatHelp(parseResult))
+                    );
+                    return 0;
+                }
+
+                return await RunAsync(options, parseResult, args, cancellationToken)
+                    .ConfigureAwait(false);
             }
+        );
+        return await commandLine.Parse(args).InvokeAsync().ConfigureAwait(false);
+    }
 
-            await Console.Out.WriteAsync(script);
-            return 0;
-        }
-
+    private static async Task<int> RunAsync(
+        AppOptions options,
+        ParseResult parseResult,
+        string[] args,
+        CancellationToken invocationCancellationToken
+    )
+    {
         if (options.Workflow == Workflow.Theme)
             return RunThemeCommand(options);
 
@@ -96,7 +69,7 @@ internal static partial class Program
             && !Console.IsInputRedirected
         )
         {
-            WritePagedHelp(ColorizeIfSupported(OptionParser.GetHelpText(Workflow.Capture)));
+            WritePagedHelp(ColorizeIfSupported(ConsoleToSvgCommandLine.FormatHelp(parseResult)));
             return 0;
         }
 
@@ -106,19 +79,15 @@ internal static partial class Program
                 options,
                 Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance
             );
-            using var liveCancellation = new CancellationTokenSource();
+            using var liveCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+                invocationCancellationToken
+            );
             Console.CancelKeyPress += (_, eventArgs) =>
             {
                 eventArgs.Cancel = true;
                 liveCancellation.Cancel();
             };
             return await RunLiveServerAsync(options, liveCancellation.Token).ConfigureAwait(false);
-        }
-
-        if (args.Length == 0 && !Console.IsInputRedirected)
-        {
-            Console.WriteLine(ColorizeIfSupported(OptionParser.ShortHelpText));
-            return 0;
         }
 
         if (string.IsNullOrWhiteSpace(options.Prompt))
@@ -145,7 +114,9 @@ internal static partial class Program
         using var environmentScope = ApplyProcessEnvironmentOverrides(options, logger);
 
         var canceledByCtrlC = false;
-        using var cancellationTokenSource = new CancellationTokenSource();
+        using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(
+            invocationCancellationToken
+        );
         Console.CancelKeyPress += (_, eventArgs) =>
         {
             eventArgs.Cancel = true;
@@ -508,20 +479,23 @@ internal static partial class Program
                                 // Task is awaited before the process exits so that
                                 // deletion actually completes even on Windows where
                                 // AV scans make recursive delete slow.
-                                tempCleanup = Task.Run(() =>
-                                {
-                                    try
+                                tempCleanup = Task.Run(
+                                    () =>
                                     {
-                                        Directory.Delete(tempDir, recursive: true);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        logger.ZLogDebug(
-                                            ex,
-                                            $"Failed to delete temp dir {tempDir}: {ex.Message}"
-                                        );
-                                    }
-                                });
+                                        try
+                                        {
+                                            Directory.Delete(tempDir, recursive: true);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            logger.ZLogDebug(
+                                                ex,
+                                                $"Failed to delete temp dir {tempDir}: {ex.Message}"
+                                            );
+                                        }
+                                    },
+                                    CancellationToken.None
+                                );
                             }
                         }
                     }

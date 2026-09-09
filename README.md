@@ -185,18 +185,6 @@ To disable this behavior, use the `--no-colorenv` and `--no-delete-envs` options
 > This repository uses this action itself to automatically regenerate all the SVG images in the [`assets/`](assets/) directory whenever a new release is published.
 
 ## Usage
-
-console2svg groups workflows under explicit commands. Options belong to the workflow shown below; common output and appearance options are accepted by capture, interactive, replay, and convert.
-
-| Command | Input | Workflow-specific options |
-| --- | --- | --- |
-| `capture [options] -- <command>` | command or piped stdin | `--save-cast`, `--replay-save`, `--timeout` |
-| `interactive [options] [-- <program>]` | interactive shell/program | interactive recording controls |
-| `replay <replay.json> [options] -- <command>` | keyboard replay plus command | replay input path |
-| `convert <input.cast or input.svg> [options]` | asciicast v2 recording or SVG | rendering/export options |
-| `tmux capture [options]` | selected tmux pane | `--target`, `--history` |
-| `tmux live-server [port] [options]` | selected tmux pane | `--target`, live-server options |
-
 ### Pipe mode
 
 ```sh

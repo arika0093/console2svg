@@ -236,7 +236,7 @@ internal static partial class Program
     {
         if (SupportsAnsiColors())
         {
-            return OptionParser.ColorizeHelp(text);
+            return AnsiHelpFormatter.Colorize(text);
         }
         return text;
     }

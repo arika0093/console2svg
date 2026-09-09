@@ -43,6 +43,11 @@ public sealed class ThemeManifest
     public ThemeInclude[]? Includes { get; set; }
 }
 
+[JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
+[JsonSerializable(typeof(ThemeManifest))]
+[JsonSerializable(typeof(ThemeInstallation))]
+internal sealed partial class ThemeJsonContext : JsonSerializerContext { }
+
 [JsonConverter(typeof(ThemeIncludeConverter))]
 public sealed record ThemeInclude(string Id, string? Source = null);
 

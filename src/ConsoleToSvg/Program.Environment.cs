@@ -182,6 +182,6 @@ internal static partial class Program
         }
 
         // 3. Rely on PATH
-        return exeName;
+        return FindExecutableInPath("ffmpeg") ?? exeName;
     }
 }

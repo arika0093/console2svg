@@ -227,13 +227,64 @@ internal static partial class Program
             pngConverter = "rsvg-convert";
         return
         [
-            new("svg", true, ".svg", "native", null),
-            new("png", rasterAvailable, ".png", pngConverter, null),
-            new("jpg", rasterAvailable && ffmpegAvailable, ".jpg, .jpeg", "ffmpeg", "mjpeg"),
-            new("gif", rasterAvailable && ffmpegAvailable, ".gif", "ffmpeg", "gif"),
-            new("mp4", rasterAvailable && mp4Codec is not null, ".mp4", "ffmpeg", mp4Codec),
-            new("webm", rasterAvailable && ffmpegAvailable, ".webm", "ffmpeg", "vp9"),
+            new("svg", true, ".svg", "native", null, null),
+            new(
+                "png",
+                rasterAvailable,
+                ".png",
+                pngConverter,
+                null,
+                rasterAvailable ? null : "svg->png conversion is not available"
+            ),
+            new(
+                "jpg",
+                rasterAvailable && ffmpegAvailable,
+                ".jpg, .jpeg",
+                "ffmpeg",
+                "mjpeg",
+                GetOutputFormatReason("jpg", rasterAvailable, ffmpegAvailable)
+            ),
+            new(
+                "gif",
+                rasterAvailable && ffmpegAvailable,
+                ".gif",
+                "ffmpeg",
+                "gif",
+                GetOutputFormatReason("gif", rasterAvailable, ffmpegAvailable)
+            ),
+            new(
+                "mp4",
+                rasterAvailable && mp4Codec is not null,
+                ".mp4",
+                "ffmpeg",
+                mp4Codec,
+                GetOutputFormatReason("mp4", rasterAvailable, ffmpegAvailable, mp4Codec is not null)
+            ),
+            new(
+                "webm",
+                rasterAvailable && ffmpegAvailable,
+                ".webm",
+                "ffmpeg",
+                "vp9",
+                GetOutputFormatReason("webm", rasterAvailable, ffmpegAvailable)
+            ),
         ];
+    }
+
+    private static string? GetOutputFormatReason(
+        string format,
+        bool rasterAvailable,
+        bool ffmpegAvailable,
+        bool codecAvailable = true
+    )
+    {
+        if (!rasterAvailable)
+            return null;
+        if (!ffmpegAvailable)
+            return $"png->{format} conversion is not available";
+        if (!codecAvailable)
+            return $"ffmpeg {format} codec is not available";
+        return null;
     }
 
     private static string GetFfmpegSource(string? path) =>
@@ -261,11 +312,16 @@ internal static partial class Program
 
     private static void WriteStatusReport(StatusReport report)
     {
-        Console.WriteLine($"console2svg  {report.Application.Version}");
+        Console.WriteLine($"Version        {report.Application.Version}");
+        Console.WriteLine($"  Commit at    {ThisAssembly.GitCommitDate:yyyy-MM-dd HH:mm:ss} UTC");
         Console.WriteLine(
-            $"platform     {report.Platform.OperatingSystem} ({report.Platform.Architecture})"
+            $"Platform       {report.Platform.OperatingSystem} / {report.Platform.Architecture}"
         );
-        Console.WriteLine($"executable   {report.Application.ExecutablePath ?? "(unknown)"}");
+        Console.WriteLine($"Executable     {report.Application.ExecutablePath ?? "(unknown)"}");
+        Console.WriteLine(
+            $"Framework      {report.Platform.Framework}"
+                + (report.Application.NativeAot ? " (NativeAOT)" : string.Empty)
+        );
         Console.WriteLine();
         Console.WriteLine("Rendering");
         WriteStatusTool("resvg", report.Renderers.Resvg);
@@ -294,10 +350,47 @@ internal static partial class Program
     private static void WriteStatusTool(string name, StatusTool tool)
     {
         var status = tool.Available ? "available" : "unavailable";
-        var path = tool.Available ? tool.Path ?? "(bundled)" : "";
-        var details = tool.Available ? tool.Version : tool.Error;
+        var path = tool.Available ? FormatStatusToolPath(tool.Path) : "";
+        var details = tool.Available ? FormatStatusToolVersion(tool.Version) : tool.Error;
         var value = $"{status.PadRight(12)}{path.PadRight(24)}{details ?? string.Empty}".TrimEnd();
         Console.WriteLine($"  {name.PadRight(14)}{ColorizeStatus(value, tool.Available)}");
+    }
+
+    private static string? FormatStatusToolVersion(string? version)
+    {
+        if (version is null)
+            return null;
+
+        var copyrightIndex = version.IndexOf("Copyright", StringComparison.OrdinalIgnoreCase);
+        if (copyrightIndex < 0)
+            copyrightIndex = version.IndexOf("(c)", StringComparison.Ordinal);
+        return (copyrightIndex < 0 ? version : version[..copyrightIndex]).TrimEnd();
+    }
+
+    private static string FormatStatusToolPath(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return "(bundled)";
+
+        var fullPath = Path.GetFullPath(path);
+        foreach (var directory in AppPaths.GetBundledAssetDirectories())
+        {
+            var relativePath = Path.GetRelativePath(directory, fullPath);
+            if (
+                relativePath != "."
+                && relativePath != ".."
+                && !relativePath.StartsWith(
+                    $"..{Path.DirectorySeparatorChar}",
+                    StringComparison.Ordinal
+                )
+                && !Path.IsPathRooted(relativePath)
+            )
+            {
+                return $"./{relativePath.Replace('\\', '/')}";
+            }
+        }
+
+        return Path.GetFileName(fullPath);
     }
 
     private static void WriteStatusAvailability(string name, StatusAvailability availability)
@@ -319,11 +412,19 @@ internal static partial class Program
     private static void WriteOutputFormatStatus(StatusOutputFormat format)
     {
         var status = $"{(format.Available ? "available" : "unavailable")}({format.Extensions})";
-        var details =
-            $"{format.Converter ?? "none"}{(format.Codec is null ? "" : $" ({format.Codec})")}";
-        Console.WriteLine(
-            $"  {format.Name.PadRight(14)}{ColorizeStatus(status.PadRight(27) + details, format.Available)}"
-        );
+        string details;
+        if (format.Available)
+        {
+            details = format.Converter ?? "none";
+            if (format.Codec is not null)
+                details += $" ({format.Codec})";
+        }
+        else
+        {
+            details = format.Reason ?? string.Empty;
+        }
+        var value = (status.PadRight(27) + details).TrimEnd();
+        Console.WriteLine($"  {format.Name.PadRight(14)}{ColorizeStatus(value, format.Available)}");
     }
 
     private static string ColorizeStatus(string value, bool available)
@@ -371,7 +472,8 @@ internal sealed record StatusOutputFormat(
     bool Available,
     string Extensions,
     string? Converter,
-    string? Codec
+    string? Codec,
+    string? Reason
 );
 
 internal sealed record StatusTool(

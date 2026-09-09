@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net;
@@ -16,6 +17,9 @@ namespace ConsoleToSvg;
 
 internal static partial class Program
 {
+    private static readonly TimeSpan LiveFrameSettleDelay = TimeSpan.FromMilliseconds(25);
+    private static readonly TimeSpan LiveFrameMaximumDelay = TimeSpan.FromMilliseconds(100);
+
     private static async Task<int> RunLiveServerAsync(
         AppOptions options,
         CancellationToken cancellationToken
@@ -57,7 +61,7 @@ internal static partial class Program
         windowRenderOptions.IncludeTerminalForeground = false;
         windowRenderOptions.IncludeTerminalBaseBackground = false;
         var textRenderOptions = SvgRenderOptionsFactory.Create(options);
-        textRenderOptions.RenderCursor = true;
+        textRenderOptions.RenderCursor = options.RequestedTmuxAction != TmuxAction.LiveServer;
         textRenderOptions.IncludeStaticLayers = false;
         textRenderOptions.IncludeTerminalBackground = true;
         textRenderOptions.IncludeTerminalBaseBackground = false;
@@ -408,12 +412,22 @@ internal static partial class Program
         var staticRendered = false;
         var renderedWidth = 0;
         var renderedHeight = 0;
+        var observedVersion = -1L;
+        var pendingSince = Stopwatch.GetTimestamp();
+        var publishedAt = pendingSince;
         while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
         {
             var (screen, version) = getLatestScreen();
             if (screen is null)
             {
                 continue;
+            }
+
+            var now = Stopwatch.GetTimestamp();
+            if (version != observedVersion)
+            {
+                observedVersion = version;
+                pendingSince = now;
             }
 
             if (screen.Width != renderedWidth || screen.Height != renderedHeight)
@@ -428,6 +442,13 @@ internal static partial class Program
                 continue;
             }
 
+            var settled = Stopwatch.GetElapsedTime(pendingSince) >= LiveFrameSettleDelay;
+            var overdue = Stopwatch.GetElapsedTime(publishedAt) >= LiveFrameMaximumDelay;
+            if (!settled && !overdue)
+            {
+                continue;
+            }
+
             var backgroundSvg = staticRendered
                 ? null
                 : SvgRenderer.Render(screen, backgroundRenderOptions);
@@ -435,6 +456,7 @@ internal static partial class Program
             publish(backgroundSvg, windowSvg, SvgRenderer.Render(screen, textRenderOptions));
             staticRendered = true;
             renderedVersion = version;
+            publishedAt = now;
         }
     }
 

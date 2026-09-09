@@ -36,8 +36,11 @@ internal static partial class Program
         else
         {
             var panes = await GetTmuxPanesAsync().ConfigureAwait(false);
+            var currentPane = Environment.GetEnvironmentVariable("TMUX_PANE");
+            if (!string.IsNullOrWhiteSpace(currentPane))
+                panes.RemoveAll(pane => pane.Id == currentPane);
             if (panes.Count == 0)
-                return "No tmux panes found. Start tmux first, or specify a valid --target.";
+                return "No other tmux panes found. Start another pane, or specify a valid --target.";
             if (Console.IsInputRedirected || Console.IsOutputRedirected)
                 return "--target is required when a tmux pane cannot be selected interactively.";
             pane = SelectTmuxPane(panes);
@@ -224,6 +227,9 @@ internal static partial class Program
     {
         var selected = 0;
         var top = Console.CursorTop;
+        var labelWidth = panes.Max(pane => pane.Label.Length);
+        var commandWidth = panes.Max(pane => pane.Command.Length);
+        var sizeWidth = panes.Max(pane => $"{pane.Width}x{pane.Height}".Length);
         try
         {
             while (true)
@@ -238,7 +244,9 @@ internal static partial class Program
                 {
                     var pane = panes[index];
                     var prefix = index == selected ? "> " : "  ";
-                    var text = $"{prefix}{pane.Label}  {pane.Command}  {pane.Width}x{pane.Height}";
+                    var dimensions = $"{pane.Width}x{pane.Height}";
+                    var text =
+                        $"{prefix}{pane.Label.PadRight(labelWidth)}  {pane.Command.PadRight(commandWidth)}  {dimensions.PadRight(sizeWidth)}  {TruncateTmuxTitle(pane.Title)}";
                     Console.WriteLine(
                         text.Length >= Console.WindowWidth
                             ? text[..Math.Max(0, Console.WindowWidth - 1)]
@@ -260,5 +268,11 @@ internal static partial class Program
         {
             Console.SetCursorPosition(0, top + panes.Count + 1);
         }
+    }
+
+    private static string TruncateTmuxTitle(string title)
+    {
+        const int maxLength = 32;
+        return title.Length <= maxLength ? title : title[..(maxLength - 3)] + "...";
     }
 }

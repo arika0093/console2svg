@@ -16,7 +16,7 @@ public enum Workflow
     Capture,
     Interactive,
     Replay,
-    Convert,
+    Cast,
     Theme,
     Status,
     LiveServer,
@@ -70,8 +70,6 @@ public sealed class AppOptions
     public string[]? DelimitedCommand { get; set; }
 
     public string? InputCastPath { get; set; }
-
-    public string? InputSvgPath { get; set; }
 
     public string OutputPath { get; set; } = "output.svg";
 

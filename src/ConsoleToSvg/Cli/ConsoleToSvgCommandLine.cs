@@ -89,12 +89,12 @@ public sealed partial class ConsoleToSvgCommandLine
         );
         root.Subcommands.Add(replay);
 
-        var convert = new Command("convert", "Render an asciicast or convert an SVG.");
-        var input = new Argument<string>("input") { Description = "An asciicast v2 file or SVG." };
-        convert.Arguments.Add(input);
-        AddOptions(convert, _symbols.ConvertOptions);
-        SetMappedAction(convert, Workflow.Convert, inputPath: input);
-        root.Subcommands.Add(convert);
+        var cast = new Command("cast", "Render an asciicast file.");
+        var castPath = new Argument<string>("cast") { Description = "Asciicast v2 file." };
+        cast.Arguments.Add(castPath);
+        AddOptions(cast, _symbols.CastOptions);
+        SetMappedAction(cast, Workflow.Cast, inputPath: castPath);
+        root.Subcommands.Add(cast);
 
         AddThemeCommand(root);
         AddStatusCommand(root);

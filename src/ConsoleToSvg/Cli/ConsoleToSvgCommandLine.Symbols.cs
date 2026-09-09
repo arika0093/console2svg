@@ -205,7 +205,7 @@ public sealed partial class ConsoleToSvgCommandLine
         public IEnumerable<Option> ReplayOptions =>
             CaptureOptions.Except([Interactive, LegacyRoot]);
 
-        public IEnumerable<Option> ConvertOptions =>
+        public IEnumerable<Option> CastOptions =>
             ReplayOptions.Except([
                 InputCastPath,
                 SaveCastPath,

@@ -126,6 +126,16 @@ public sealed class ConsoleToSvgCommandLineTests
         svg.Options!.Workflow.ShouldBe(Workflow.Convert);
         svg.Options.InputSvgPath.ShouldBe("demo.svg");
         svg.Options.InputCastPath.ShouldBeNull();
+    }
+
+    [Test]
+    public async Task StatusMapsTheJsonOption()
+    {
+        var invocation = await InvokeAsync("status", "--json");
+
+        invocation.ExitCode.ShouldBe(0);
+        invocation.Options!.Workflow.ShouldBe(Workflow.Status);
+        invocation.Options.StatusJson.ShouldBeTrue();
 
         var cast = await InvokeAsync("convert", "demo.cast");
         cast.ExitCode.ShouldBe(0);

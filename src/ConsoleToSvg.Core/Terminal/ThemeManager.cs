@@ -50,7 +50,8 @@ public static class ThemeManager
                 File.WriteAllText(
                     Path.Combine(staged, theme.Manifest.Id + ".json"),
                     JsonSerializer.Serialize(
-                        new ThemeInstallation(theme.Source, theme.Manifest.Id!, theme.Commit)
+                        new ThemeInstallation(theme.Source, theme.Manifest.Id!, theme.Commit),
+                        ThemeJsonContext.Default.ThemeInstallation
                     )
                 );
             }
@@ -112,8 +113,9 @@ public static class ThemeManager
             : [];
         foreach (var file in files)
         {
-            var installation = JsonSerializer.Deserialize<ThemeInstallation>(
-                File.ReadAllText(file)
+            var installation = JsonSerializer.Deserialize(
+                File.ReadAllText(file),
+                ThemeJsonContext.Default.ThemeInstallation
             );
             if (
                 installation is null
@@ -299,7 +301,8 @@ public static class ThemeManager
             File.WriteAllText(
                 metadata,
                 JsonSerializer.Serialize(
-                    new ThemeInstallation(installation.Source, manifest.Id!, ReadCommit(temporary))
+                    new ThemeInstallation(installation.Source, manifest.Id!, ReadCommit(temporary)),
+                    ThemeJsonContext.Default.ThemeInstallation
                 )
             );
         }
@@ -358,8 +361,9 @@ public static class ThemeManager
     private static ThemeManifest ReadManifest(string root)
     {
         var manifest =
-            JsonSerializer.Deserialize<ThemeManifest>(
-                File.ReadAllText(Path.Combine(root, "theme.json"))
+            JsonSerializer.Deserialize(
+                File.ReadAllText(Path.Combine(root, "theme.json")),
+                ThemeJsonContext.Default.ThemeManifest
             ) ?? throw new InvalidDataException("Invalid theme manifest.");
         ThemeManifestValidator.Validate(manifest, root);
         return manifest;

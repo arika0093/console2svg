@@ -49,6 +49,10 @@ internal static partial class Program
         CancellationToken invocationCancellationToken
     )
     {
+        if (options.Workflow == Workflow.Status)
+            return await RunStatusAsync(options.StatusJson, invocationCancellationToken)
+                .ConfigureAwait(false);
+
         if (options.Workflow == Workflow.Theme)
             return RunThemeCommand(options);
 

@@ -97,6 +97,7 @@ public sealed partial class ConsoleToSvgCommandLine
         root.Subcommands.Add(convert);
 
         AddThemeCommand(root);
+        AddStatusCommand(root);
         AddLiveServerCommand(root);
         AddTmuxCommand(root);
         AddCompletionsCommand(root);
@@ -186,6 +187,25 @@ public sealed partial class ConsoleToSvgCommandLine
             portArgument: port
         );
         root.Subcommands.Add(liveServer);
+    }
+
+    private void AddStatusCommand(RootCommand root)
+    {
+        var status = new Command("status", "Show application and dependency status.");
+        status.Options.Add(_symbols.StatusJson);
+        status.SetAction(
+            (parseResult, cancellationToken) =>
+                _handler(
+                    new AppOptions
+                    {
+                        Workflow = Workflow.Status,
+                        StatusJson = parseResult.GetValue(_symbols.StatusJson),
+                    },
+                    parseResult,
+                    cancellationToken
+                )
+        );
+        root.Subcommands.Add(status);
     }
 
     private void AddTmuxCommand(RootCommand root)

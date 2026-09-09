@@ -705,6 +705,7 @@ public sealed partial class ConsoleToSvgCommandLine
                 or "replay"
                 or "convert"
                 or "theme"
+                or "status"
                 or "live-server"
                 or "tmux"
                 or "completions"

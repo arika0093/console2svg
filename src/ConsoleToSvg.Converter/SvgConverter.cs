@@ -76,6 +76,40 @@ public static partial class SvgConverter
     /// </summary>
     public static bool IsFfmpegAvailable => _ffmpegAvailable.Value;
 
+    /// <summary>True when rsvg-convert was discovered next to the application or on PATH.</summary>
+    public static bool IsRsvgConvertAvailable => _rsvgConvertAvailable.Value;
+
+    /// <summary>True when the bundled resvg native library loaded and initialized successfully.</summary>
+    public static bool IsResvgAvailable => _resvgAvailable.Value;
+
+    /// <summary>Returns the resolved rsvg-convert executable path, or an empty string when unavailable.</summary>
+    public static string RsvgConvertPath => FindRsvgConvertExecutable();
+
+    /// <summary>The resvg crate version statically linked into the bundled native renderer.</summary>
+    public const string BundledResvgVersion = "0.43.0";
+
+    /// <summary>Returns the MP4 codec selected by the installed ffmpeg build.</summary>
+    public static string? GetMp4CodecForStatus(string ffmpegPath)
+    {
+        var executable = ResolveFfmpegExecutable(ffmpegPath);
+        if (string.IsNullOrEmpty(executable))
+            return null;
+        var codecs = _videoCodecAvailabilityByFfmpegPath
+            .GetOrAdd(
+                executable,
+                static path => new Lazy<VideoCodecAvailability>(
+                    () => DetectFfmpegVideoCodecs(path),
+                    LazyThreadSafetyMode.ExecutionAndPublication
+                )
+            )
+            .Value;
+        if (codecs.Libx264)
+            return "h.264";
+        if (codecs.Mpeg4)
+            return "mpeg4";
+        return null;
+    }
+
     /// <summary>
     /// True when ffmpeg can actually decode SVG (librsvg input device enabled).
     /// Determined by a real SVG→PNG probe so we never rely on <c>-formats</c>

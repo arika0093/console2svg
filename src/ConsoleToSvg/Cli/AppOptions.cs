@@ -18,6 +18,7 @@ public enum Workflow
     Replay,
     Convert,
     Theme,
+    Status,
     LiveServer,
     Tmux,
 }
@@ -41,6 +42,7 @@ public sealed class AppOptions
     public Workflow Workflow { get; set; }
     public ThemeAction? RequestedThemeAction { get; set; }
     public string? ThemeArgument { get; set; }
+    public bool StatusJson { get; set; }
 
     public bool Verbose { get; set; }
 

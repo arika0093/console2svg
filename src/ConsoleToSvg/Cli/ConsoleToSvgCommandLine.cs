@@ -118,12 +118,15 @@ public sealed partial class ConsoleToSvgCommandLine
             command.Options.Add(option);
     }
 
-    private static Argument<string[]> AddCommandArgument(Command command)
+    private static Argument<string[]> AddCommandArgument(
+        Command command,
+        bool captureRemainingTokens = true
+    )
     {
         var argument = new Argument<string[]>("command")
         {
             Arity = ArgumentArity.ZeroOrMore,
-            CaptureRemainingTokens = true,
+            CaptureRemainingTokens = captureRemainingTokens,
             Description = "Command to capture. Use -- to preserve argument boundaries.",
         };
         command.Arguments.Add(argument);
@@ -174,17 +177,18 @@ public sealed partial class ConsoleToSvgCommandLine
     {
         var liveServer = new Command("live-server", "Serve a live terminal SVG.");
         AddOptions(liveServer, _symbols.LiveServerOptions);
-        var port = new Argument<string?>("port")
+        var endpoint = new Argument<string?>("host:port")
         {
-            Description = "Port to listen on.",
-            HelpName = "port",
+            Arity = ArgumentArity.ZeroOrOne,
+            Description = "Optional host and port to listen on (for example, 127.0.0.1:8080).",
+            HelpName = "host:port",
         };
-        liveServer.Arguments.Add(port);
+        liveServer.Arguments.Add(endpoint);
         SetMappedAction(
             liveServer,
             Workflow.LiveServer,
-            AddCommandArgument(liveServer),
-            portArgument: port
+            AddCommandArgument(liveServer, captureRemainingTokens: false),
+            portArgument: endpoint
         );
         root.Subcommands.Add(liveServer);
     }
@@ -220,17 +224,18 @@ public sealed partial class ConsoleToSvgCommandLine
 
         var liveServer = new Command("live-server", "Serve a tmux pane as a live SVG.");
         AddOptions(liveServer, _symbols.TmuxLiveServerOptions);
-        var port = new Argument<string?>("port")
+        var endpoint = new Argument<string?>("host:port")
         {
-            Description = "Port to listen on.",
-            HelpName = "port",
+            Arity = ArgumentArity.ZeroOrOne,
+            Description = "Optional host and port to listen on (for example, 127.0.0.1:8080).",
+            HelpName = "host:port",
         };
-        liveServer.Arguments.Add(port);
+        liveServer.Arguments.Add(endpoint);
         SetMappedAction(
             liveServer,
             Workflow.Tmux,
             tmuxAction: TmuxAction.LiveServer,
-            portArgument: port
+            portArgument: endpoint
         );
         tmux.Subcommands.Add(liveServer);
 

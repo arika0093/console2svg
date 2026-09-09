@@ -1,0 +1,32 @@
+---
+title: Introduction
+description: An overview of the console2svg workflow and terminology.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+console2svg accepts terminal output, emulates the terminal screen, then renders that screen into a portable image. A command can run in a pseudo-terminal when it needs terminal dimensions, ANSI color, or interactive behavior; existing text can be read directly from a pipe.
+
+<Steps>
+
+1. **Choose an input workflow.** Capture a command, pipe text, enter interactive mode, replay recorded keys, or select a tmux pane.
+2. **Render the terminal state.** console2svg interprets ANSI/VT output and writes a static SVG by default.
+3. **Tailor the artifact.** Add appearance options, preserve animation with `-v`, or choose a PNG, GIF, WebM, or MP4 output path.
+
+</Steps>
+
+The shortest example writes `output.svg`:
+
+```bash
+console2svg capture -- console2svg
+```
+
+![The output of `console2svg capture -- console2svg`](/assets/cmd.svg)
+
+For a styled capture, add the terminal size, command line, window theme, and background that you need:
+
+```bash
+console2svg capture -w 100 -h 24 -c -d macos-pc --background '#102030' -- dotnet --info
+```
+
+Input handling, terminal emulation, rendering, and output conversion are separate parts of the application. The [concepts](/concepts/how-console2svg-works/) section explains how they fit together.

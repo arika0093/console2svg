@@ -30,7 +30,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: generate-svg-images
-          path: assets/
+          path: docs/public/assets/
 
       - name: Log Artifacts upload
         uses: actions/upload-artifact@v7

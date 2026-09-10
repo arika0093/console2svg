@@ -85,7 +85,7 @@ internal static partial class SvgDocumentBuilder
                 cell.IsWideContinuation
                 || cell.Hidden
                 || IsBlockElement(cell.Text)
-                || IsSingleLineBoxDrawing(cell.Text)
+                || IsBoxDrawingLine(cell.Text)
                 || IsRoundedBoxDrawing(cell.Text)
             )
             {
@@ -469,63 +469,23 @@ internal static partial class SvgDocumentBuilder
                     continue;
                 }
 
-                if (IsSingleLineBoxDrawing(cell.Text))
+                if (TryGetBoxDrawingLine(cell.Text, out var boxDrawing))
                 {
                     pendingSpaces = 0;
                     FlushFgRun();
                     // Collect segments instead of rendering immediately
-                    var character = cell.Text[0];
                     var centerX = cellX + cellW / 2d;
                     var centerY = y + context.CellHeight / 2d;
-                    var sw = context.FontSize / 14d;
-
-                    // Determine which directions this character connects to
-                    var left =
-                        character
-                        is '\u2500'
-                            or '\u2510'
-                            or '\u2518'
-                            or '\u2524'
-                            or '\u252C'
-                            or '\u2534'
-                            or '\u253C';
-                    var right =
-                        character
-                        is '\u2500'
-                            or '\u250C'
-                            or '\u2514'
-                            or '\u251C'
-                            or '\u252C'
-                            or '\u2534'
-                            or '\u253C';
-                    var up =
-                        character
-                        is '\u2502'
-                            or '\u2514'
-                            or '\u2518'
-                            or '\u251C'
-                            or '\u2524'
-                            or '\u2534'
-                            or '\u253C';
-                    var down =
-                        character
-                        is '\u2502'
-                            or '\u250C'
-                            or '\u2510'
-                            or '\u251C'
-                            or '\u2524'
-                            or '\u252C'
-                            or '\u253C';
-
-                    if (left)
+                    var sw = context.FontSize / 14d * boxDrawing.StrokeWidth;
+                    if (boxDrawing.Left)
                         hSegments.Add(new AxisSegment(centerY, cellX, centerX, effectiveFg, sw));
-                    if (right)
+                    if (boxDrawing.Right)
                         hSegments.Add(
                             new AxisSegment(centerY, centerX, cellX + cellW, effectiveFg, sw)
                         );
-                    if (up)
+                    if (boxDrawing.Up)
                         vSegments.Add(new AxisSegment(centerX, y, centerY, effectiveFg, sw));
-                    if (down)
+                    if (boxDrawing.Down)
                         vSegments.Add(
                             new AxisSegment(
                                 centerX,
@@ -697,20 +657,119 @@ internal static partial class SvgDocumentBuilder
         return cp is >= 0x2580 and <= 0x259F and not (0x2591 or 0x2592 or 0x2593);
     }
 
-    private static bool IsSingleLineBoxDrawing(string text) =>
-        text.Length == 1
-        && text[0]
-            is '\u2500'
-                or '\u2502'
-                or '\u250C'
-                or '\u2510'
-                or '\u2514'
-                or '\u2518'
-                or '\u251C'
-                or '\u2524'
-                or '\u252C'
-                or '\u2534'
-                or '\u253C';
+    private static bool IsBoxDrawingLine(string text) =>
+        text.Length == 1 && TryGetBoxDrawingLine(text, out _);
+
+    private static bool TryGetBoxDrawingLine(string text, out BoxDrawingLine line)
+    {
+        line = default;
+        if (text.Length != 1)
+        {
+            return false;
+        }
+
+        var character = text[0];
+        var connections = character switch
+        {
+            // Light box drawing characters.
+            '\u2500' => BoxDrawingConnections.Left | BoxDrawingConnections.Right,
+            '\u2502' => BoxDrawingConnections.Up | BoxDrawingConnections.Down,
+            '\u250C' => BoxDrawingConnections.Right | BoxDrawingConnections.Down,
+            '\u2510' => BoxDrawingConnections.Left | BoxDrawingConnections.Down,
+            '\u2514' => BoxDrawingConnections.Right | BoxDrawingConnections.Up,
+            '\u2518' => BoxDrawingConnections.Left | BoxDrawingConnections.Up,
+            '\u251C' => BoxDrawingConnections.Right
+                | BoxDrawingConnections.Up
+                | BoxDrawingConnections.Down,
+            '\u2524' => BoxDrawingConnections.Left
+                | BoxDrawingConnections.Up
+                | BoxDrawingConnections.Down,
+            '\u252C' => BoxDrawingConnections.Left
+                | BoxDrawingConnections.Right
+                | BoxDrawingConnections.Down,
+            '\u2534' => BoxDrawingConnections.Left
+                | BoxDrawingConnections.Right
+                | BoxDrawingConnections.Up,
+            '\u253C' => BoxDrawingConnections.Left
+                | BoxDrawingConnections.Right
+                | BoxDrawingConnections.Up
+                | BoxDrawingConnections.Down,
+
+            // Heavy box drawing characters. These are common in terminal UIs
+            // and must not fall back to font glyphs, which can leave visible gaps.
+            '\u2501' => BoxDrawingConnections.Left | BoxDrawingConnections.Right,
+            '\u2503' => BoxDrawingConnections.Up | BoxDrawingConnections.Down,
+            '\u250F' => BoxDrawingConnections.Right | BoxDrawingConnections.Down,
+            '\u2513' => BoxDrawingConnections.Left | BoxDrawingConnections.Down,
+            '\u2517' => BoxDrawingConnections.Right | BoxDrawingConnections.Up,
+            '\u251B' => BoxDrawingConnections.Left | BoxDrawingConnections.Up,
+            '\u2523' => BoxDrawingConnections.Right
+                | BoxDrawingConnections.Up
+                | BoxDrawingConnections.Down,
+            '\u252B' => BoxDrawingConnections.Left
+                | BoxDrawingConnections.Up
+                | BoxDrawingConnections.Down,
+            '\u2533' => BoxDrawingConnections.Left
+                | BoxDrawingConnections.Right
+                | BoxDrawingConnections.Down,
+            '\u253B' => BoxDrawingConnections.Left
+                | BoxDrawingConnections.Right
+                | BoxDrawingConnections.Up,
+            '\u254B' => BoxDrawingConnections.Left
+                | BoxDrawingConnections.Right
+                | BoxDrawingConnections.Up
+                | BoxDrawingConnections.Down,
+
+            // Short and mixed light/heavy line segments.
+            '\u2574' => BoxDrawingConnections.Left,
+            '\u2575' => BoxDrawingConnections.Up,
+            '\u2576' => BoxDrawingConnections.Right,
+            '\u2577' => BoxDrawingConnections.Down,
+            '\u2578' => BoxDrawingConnections.Left,
+            '\u2579' => BoxDrawingConnections.Up,
+            '\u257A' => BoxDrawingConnections.Right,
+            '\u257B' => BoxDrawingConnections.Down,
+            '\u257C' => BoxDrawingConnections.Left | BoxDrawingConnections.Right,
+            '\u257D' => BoxDrawingConnections.Up | BoxDrawingConnections.Down,
+            '\u257E' => BoxDrawingConnections.Left | BoxDrawingConnections.Right,
+            '\u257F' => BoxDrawingConnections.Up | BoxDrawingConnections.Down,
+            _ => BoxDrawingConnections.None,
+        };
+
+        if (connections == BoxDrawingConnections.None)
+        {
+            return false;
+        }
+
+        var strokeWidth = character
+            is '\u2501'
+                or '\u2503'
+                or '\u250F'
+                or '\u2513'
+                or '\u2517'
+                or '\u251B'
+                or '\u2523'
+                or '\u252B'
+                or '\u2533'
+                or '\u253B'
+                or '\u254B'
+                or '\u2578'
+                or '\u2579'
+                or '\u257A'
+                or '\u257B'
+                or '\u257E'
+                or '\u257F'
+            ? 2d
+            : 1d;
+        line = new BoxDrawingLine(
+            connections.HasFlag(BoxDrawingConnections.Left),
+            connections.HasFlag(BoxDrawingConnections.Right),
+            connections.HasFlag(BoxDrawingConnections.Up),
+            connections.HasFlag(BoxDrawingConnections.Down),
+            strokeWidth
+        );
+        return true;
+    }
 
     private static bool IsRoundedBoxDrawing(string text) =>
         text.Length == 1 && text[0] is >= '\u256D' and <= '\u2570';
@@ -1002,6 +1061,24 @@ internal static partial class SvgDocumentBuilder
         double Start,
         double End,
         string Color,
+        double StrokeWidth
+    );
+
+    [Flags]
+    private enum BoxDrawingConnections
+    {
+        None = 0,
+        Left = 1,
+        Right = 2,
+        Up = 4,
+        Down = 8,
+    }
+
+    private readonly record struct BoxDrawingLine(
+        bool Left,
+        bool Right,
+        bool Up,
+        bool Down,
         double StrokeWidth
     );
 

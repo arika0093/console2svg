@@ -378,6 +378,37 @@ public sealed partial class SvgRendererTests
     }
 
     [Test]
+    public void RenderStaticSvgWithHeavyBoxDrawingUsesConnectedPaths()
+    {
+        var session = new RecordingSession(width: 8, height: 3);
+        session.AddEvent(0.01, "┏━┓\r\n┃ ┃\r\n┗━┛");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain("<path d=\"");
+        svg.ShouldNotContain(">┃");
+        svg.ShouldNotContain(">━");
+    }
+
+    [Test]
+    public void RenderStaticSvgWithShortHeavyBoxDrawingUsesConnectedPaths()
+    {
+        var session = new RecordingSession(width: 4, height: 1);
+        session.AddEvent(0.01, "╻╻");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { Theme = "dark" }
+        );
+
+        svg.ShouldContain("<path d=\"");
+        svg.ShouldNotContain(">╻");
+    }
+
+    [Test]
     public void RenderStaticSvgWithRepeatedBoxDrawingUsesConnectedPaths()
     {
         var session = new RecordingSession(width: 8, height: 2);

@@ -125,6 +125,8 @@ internal static partial class Program
                         BroadcastInitialSvg(clients, backgroundSvg, windowSvg, textSvg);
                         return;
                     }
+                    if (textSvg == latestTextSvg)
+                        return;
                     latestTextSvg = textSvg;
                     BroadcastTextSvg(clients, textSvg);
                 },

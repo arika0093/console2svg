@@ -125,10 +125,16 @@ internal static partial class Program
                         BroadcastInitialSvg(clients, backgroundSvg, windowSvg, textSvg);
                         return;
                     }
-                    if (textSvg == latestTextSvg)
-                        return;
-                    latestTextSvg = textSvg;
-                    BroadcastTextSvg(clients, textSvg);
+                    if (windowSvg is not null && windowSvg != latestWindowSvg)
+                    {
+                        latestWindowSvg = windowSvg;
+                        BroadcastWindowSvg(clients, windowSvg);
+                    }
+                    if (textSvg != latestTextSvg)
+                    {
+                        latestTextSvg = textSvg;
+                        BroadcastTextSvg(clients, textSvg);
+                    }
                 },
                 backgroundRenderOptions,
                 windowRenderOptions,
@@ -400,6 +406,15 @@ internal static partial class Program
             client.TrySendText(svg);
     }
 
+    private static void BroadcastWindowSvg(
+        ConcurrentDictionary<int, LiveSseClient> clients,
+        string svg
+    )
+    {
+        foreach (var client in clients.Values)
+            client.TrySendWindow(svg);
+    }
+
     private static async Task RenderLiveFramesAsync(
         Func<(ScreenBuffer? Screen, long Version)> getLatestScreen,
         Action<string?, string?, string> publish,
@@ -454,7 +469,7 @@ internal static partial class Program
             var backgroundSvg = staticRendered
                 ? null
                 : SvgRenderer.Render(screen, backgroundRenderOptions);
-            var windowSvg = staticRendered ? null : SvgRenderer.Render(screen, windowRenderOptions);
+            var windowSvg = SvgRenderer.Render(screen, windowRenderOptions);
             publish(backgroundSvg, windowSvg, SvgRenderer.Render(screen, textRenderOptions));
             staticRendered = true;
             renderedVersion = version;
@@ -466,6 +481,7 @@ internal static partial class Program
     {
         private readonly object _sendGate = new();
         private int _sending;
+        private string? _pendingWindow;
         private string? _pendingText;
 
         public async Task SendInitialAsync(
@@ -497,7 +513,7 @@ internal static partial class Program
                     await WriteSseAsync(stream, "text", textSvg, cancellationToken)
                         .ConfigureAwait(false);
                 }
-                await SendPendingTextAsync(cancellationToken).ConfigureAwait(false);
+                await SendPendingUpdatesAsync(cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -535,6 +551,21 @@ internal static partial class Program
             _ = SendAsync();
         }
 
+        public void TrySendWindow(string windowSvg)
+        {
+            lock (_sendGate)
+            {
+                _pendingWindow = windowSvg;
+                if (_sending != 0)
+                {
+                    return;
+                }
+
+                _sending = 1;
+            }
+            _ = SendAsync();
+        }
+
         private async Task SendInitialAndTextAsync(string backgroundSvg, string windowSvg)
         {
             using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
@@ -544,7 +575,7 @@ internal static partial class Program
                     .ConfigureAwait(false);
                 await WriteSseAsync(stream, "window", windowSvg, timeout.Token)
                     .ConfigureAwait(false);
-                await SendPendingTextAsync(timeout.Token).ConfigureAwait(false);
+                await SendPendingUpdatesAsync(timeout.Token).ConfigureAwait(false);
             }
             catch
             {
@@ -557,24 +588,35 @@ internal static partial class Program
             }
         }
 
-        private async Task SendPendingTextAsync(CancellationToken cancellationToken)
+        private async Task SendPendingUpdatesAsync(CancellationToken cancellationToken)
         {
             while (true)
             {
+                string? windowSvg;
                 string? textSvg;
                 lock (_sendGate)
                 {
+                    windowSvg = _pendingWindow;
+                    _pendingWindow = null;
                     textSvg = _pendingText;
                     _pendingText = null;
                 }
 
-                if (textSvg is null)
+                if (windowSvg is null && textSvg is null)
                 {
                     return;
                 }
 
-                await WriteSseAsync(stream, "text", textSvg, cancellationToken)
-                    .ConfigureAwait(false);
+                if (windowSvg is not null)
+                {
+                    await WriteSseAsync(stream, "window", windowSvg, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                if (textSvg is not null)
+                {
+                    await WriteSseAsync(stream, "text", textSvg, cancellationToken)
+                        .ConfigureAwait(false);
+                }
             }
         }
 
@@ -583,7 +625,7 @@ internal static partial class Program
             using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
             try
             {
-                await SendPendingTextAsync(timeout.Token).ConfigureAwait(false);
+                await SendPendingUpdatesAsync(timeout.Token).ConfigureAwait(false);
             }
             catch
             {
@@ -600,7 +642,7 @@ internal static partial class Program
         {
             lock (_sendGate)
             {
-                if (_pendingText is null)
+                if (_pendingWindow is null && _pendingText is null)
                 {
                     _sending = 0;
                     return;

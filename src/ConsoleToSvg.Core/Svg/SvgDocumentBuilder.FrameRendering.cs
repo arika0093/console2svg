@@ -216,6 +216,7 @@ internal static partial class SvgDocumentBuilder
         var hSegments = new List<AxisSegment>();
         var vSegments = new List<AxisSegment>();
         var roundedCorners = new List<RoundedCorner>();
+        var blockRects = new List<BlockRect>();
         var fgRunText = new StringBuilder(context.EndColExclusive - context.StartCol);
 
         for (var row = context.StartRow; row < context.EndRowExclusive; row++)
@@ -456,14 +457,13 @@ internal static partial class SvgDocumentBuilder
                     pendingSpaces = 0;
                     FlushFgRun();
                     RenderBlockElement(
-                        sb,
                         cell.Text,
                         cellX,
                         y,
                         cellW,
                         context.CellHeight,
                         effectiveFg,
-                        elements
+                        blockRects
                     );
                     fgRunStart = col + (cell.IsWide ? 2 : 1);
                     continue;
@@ -561,6 +561,7 @@ internal static partial class SvgDocumentBuilder
 
         if (renderForeground)
         {
+            RenderMergedBlockRects(sb, blockRects, elements);
             RenderMergedBoxSegments(
                 sb,
                 hSegments,
@@ -1100,15 +1101,22 @@ internal static partial class SvgDocumentBuilder
         string Color
     );
 
+    private readonly record struct BlockRect(
+        double X,
+        double Y,
+        double Width,
+        double Height,
+        string Color
+    );
+
     private static void RenderBlockElement(
-        SvgWriter sb,
         string text,
         double x,
         double y,
         double cellRectWidth,
         double cellRectHeight,
         string fill,
-        SvgElementRegistry? elements
+        List<BlockRect> blockRects
     )
     {
         var cp = text.Length == 1 ? text[0] : char.ConvertToUtf32(text[0], text[1]);
@@ -1218,38 +1226,96 @@ internal static partial class SvgDocumentBuilder
 
         void R(double rx, double ry, double rw, double rh)
         {
-            if (elements is null)
-            {
-                sb.Append("<rect class=\"q\"");
-                AppendPositionAttributes(sb, rx, ry);
-                sb.Append(" width=\"");
-                sb.Append(rw);
-                sb.Append("\" height=\"");
-                sb.Append(rh);
-                sb.Append("\" fill=\"");
-                sb.Append(fill);
-                sb.Append("\" stroke=\"");
-                sb.Append(fill);
-                sb.Append("\" stroke-width=\"");
-                sb.Append(BackgroundSeamStrokeWidth);
-                sb.Append("\" vector-effect=\"non-scaling-stroke\"/>\n");
-            }
-            else
-            {
-                elements.AppendRect(
-                    sb,
-                    "q",
-                    rx,
-                    ry,
-                    rw,
-                    rh,
-                    fill,
-                    stroke: fill,
-                    strokeWidth: BackgroundSeamStrokeWidth,
-                    nonScalingStroke: true
-                );
-            }
+            blockRects.Add(new BlockRect(rx, ry, rw, rh, fill));
         }
+    }
+
+    private static void RenderMergedBlockRects(
+        SvgWriter sb,
+        List<BlockRect> blockRects,
+        SvgElementRegistry? elements
+    )
+    {
+        if (blockRects.Count == 0)
+        {
+            return;
+        }
+
+        blockRects.Sort(
+            static (left, right) =>
+            {
+                var result = left.Y.CompareTo(right.Y);
+                if (result != 0)
+                    return result;
+                result = left.Height.CompareTo(right.Height);
+                if (result != 0)
+                    return result;
+                result = string.CompareOrdinal(left.Color, right.Color);
+                if (result != 0)
+                    return result;
+                return left.X.CompareTo(right.X);
+            }
+        );
+
+        var merged = blockRects[0];
+        for (var index = 1; index < blockRects.Count; index++)
+        {
+            var next = blockRects[index];
+            if (
+                Math.Abs(next.Y - merged.Y) < 0.001d
+                && Math.Abs(next.Height - merged.Height) < 0.001d
+                && string.Equals(next.Color, merged.Color, StringComparison.OrdinalIgnoreCase)
+                && next.X <= merged.X + merged.Width + 0.001d
+            )
+            {
+                var end = Math.Max(merged.X + merged.Width, next.X + next.Width);
+                merged = merged with { Width = end - merged.X };
+                continue;
+            }
+
+            AppendBlockRect(sb, merged, elements);
+            merged = next;
+        }
+
+        AppendBlockRect(sb, merged, elements);
+    }
+
+    private static void AppendBlockRect(
+        SvgWriter sb,
+        in BlockRect rect,
+        SvgElementRegistry? elements
+    )
+    {
+        if (elements is not null)
+        {
+            elements.AppendRect(
+                sb,
+                "q",
+                rect.X,
+                rect.Y,
+                rect.Width,
+                rect.Height,
+                rect.Color,
+                stroke: rect.Color,
+                strokeWidth: BackgroundSeamStrokeWidth,
+                nonScalingStroke: true
+            );
+            return;
+        }
+
+        sb.Append("<rect class=\"q\"");
+        AppendPositionAttributes(sb, rect.X, rect.Y);
+        sb.Append(" width=\"");
+        sb.Append(rect.Width);
+        sb.Append("\" height=\"");
+        sb.Append(rect.Height);
+        sb.Append("\" fill=\"");
+        sb.Append(rect.Color);
+        sb.Append("\" stroke=\"");
+        sb.Append(rect.Color);
+        sb.Append("\" stroke-width=\"");
+        sb.Append(BackgroundSeamStrokeWidth);
+        sb.Append("\" vector-effect=\"non-scaling-stroke\"/>\n");
     }
 
     private static string EscapeText(string value)

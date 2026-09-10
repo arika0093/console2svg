@@ -214,11 +214,7 @@ public sealed partial class SvgRendererTests
         );
 
         svg.ShouldContain(
-            "<rect class=\"q\" width=\"8.4\" height=\"18\" fill=\"#d4d4d4\""
-                + " stroke=\"#d4d4d4\" stroke-width=\"2\" vector-effect=\"non-scaling-stroke\""
-        );
-        svg.ShouldContain(
-            "<rect class=\"q\" x=\"8.4\" width=\"8.4\" height=\"18\" fill=\"#d4d4d4\""
+            "<rect class=\"q\" width=\"16.8\" height=\"18\" fill=\"#d4d4d4\""
                 + " stroke=\"#d4d4d4\" stroke-width=\"2\" vector-effect=\"non-scaling-stroke\""
         );
     }

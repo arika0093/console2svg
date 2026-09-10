@@ -103,7 +103,7 @@ internal static partial class Program
     {
         var seconds = 1d / Math.Max(0.1d, fps);
         var interval = seconds.ToString("0.###", CultureInfo.InvariantCulture);
-        return $"while :; do printf '\\033[2J\\033[H'; {captureCommand}; sleep {interval}; done";
+        return $"while :; do printf '\\033[2J\\033[H'; captured=$({captureCommand}); printf '%s' \"$captured\" | sed 's/$/\\r/'; sleep {interval}; done";
     }
 
     private static string ShellQuote(string value) =>

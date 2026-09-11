@@ -10,8 +10,16 @@
   <PropertyGroup Condition="'$(PublishAot)' == 'true'">
     <InvariantGlobalization>false</InvariantGlobalization>
     <StripSymbols>true</StripSymbols>
+    <!-- Configuration.Writable 0.9 and its YAML provider ship with linker annotations
+         that .NET 10 reports at assembly granularity. Keep these diagnostics visible
+         without turning upstream package warnings into a failed native link. -->
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);IL2104;IL3053</WarningsNotAsErrors>
   </PropertyGroup>
   <ItemGroup Condition="'$(PublishAot)' == 'true'">
+    <!-- YamlFormatProvider reads schema metadata through VYaml's mapping formatter.
+         Preserve VYaml's formatter graph so its reflection-based resolver remains
+         available after NativeAOT trimming. -->
+    <TrimmerRootAssembly Include="VYaml" />
     <!-- NativeAOT binaries need to locate bundled native libraries at runtime.
          Release archives use a flat layout, so the binary searches its own
          directory ($ORIGIN / @loader_path). rpm/deb packages use

@@ -94,6 +94,27 @@ internal static partial class Program
             return await RunLiveServerAsync(options, liveCancellation.Token).ConfigureAwait(false);
         }
 
+        ReplayDocumentV2? replayDocument = null;
+        if (!string.IsNullOrWhiteSpace(options.ReplayPath))
+        {
+            replayDocument = await InputReplayFile
+                .ReadDocumentAsync(options.ReplayPath, invocationCancellationToken)
+                .ConfigureAwait(false);
+            SessionOptionsOverlay.Apply(options, replayDocument.Options);
+            if (string.IsNullOrWhiteSpace(options.Command))
+            {
+                options.Command = replayDocument.Command;
+            }
+        }
+
+        if (options.Workflow == Workflow.Replay && string.IsNullOrWhiteSpace(options.Command))
+        {
+            await Console.Error.WriteLineAsync(
+                "Replay requires a command either in the replay document or after --."
+            );
+            return 1;
+        }
+
         if (string.IsNullOrWhiteSpace(options.Prompt))
         {
             options.Prompt = GetDefaultPrompt();
@@ -211,7 +232,8 @@ internal static partial class Program
             var session = await LoadOrRecordAsync(
                     options,
                     loggerFactory,
-                    cancellationTokenSource.Token
+                    cancellationTokenSource.Token,
+                    replayDocument
                 )
                 .ConfigureAwait(false);
             var wasCanceled = cancellationTokenSource.IsCancellationRequested;

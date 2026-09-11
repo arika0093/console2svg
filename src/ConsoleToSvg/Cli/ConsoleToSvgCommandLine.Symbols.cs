@@ -103,9 +103,9 @@ public sealed partial class ConsoleToSvgCommandLine
         public Option<bool> EmbedDebug { get; } =
             Flag("--embed-debug", "Enable all embedded diagnostics.");
         public Option<string> ReplaySavePath { get; } =
-            RequiredString("--replay-save", "Save keyboard input for later replay.");
+            RequiredString("--replay-save", "Save a reproducible Replay v2 YAML session.");
         public Option<string> ReplayPath { get; } =
-            RequiredString("--replay", "Replay recorded keyboard input.");
+            RequiredString("--replay", "Replay a YAML v2 session or legacy JSON v1 input.");
         public Option<string> SaveFramesPath { get; } =
             RequiredString("--save-frames", "Save individual SVG frames to a directory.");
         public Option<bool> Interactive { get; } =

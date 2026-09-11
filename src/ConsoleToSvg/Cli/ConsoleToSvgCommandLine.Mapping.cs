@@ -179,6 +179,7 @@ public sealed partial class ConsoleToSvgCommandLine
         options.TmuxHistory = IsSpecified(result, _symbols.History);
         options.TmuxHistoryLines = result.GetValue(_symbols.History);
         options.Timeout = result.GetValue(_symbols.Timeout);
+        MarkExplicitSessionOptions(result, options);
         options.LiveServerPort = 38473;
         if (!ApplyPort(portArgument, result, options, out var leadingCommand, out error))
         {
@@ -212,6 +213,42 @@ public sealed partial class ConsoleToSvgCommandLine
 
     private static bool IsSpecified(ParseResult result, Option option) =>
         result.GetResult(option) is { Implicit: false };
+
+    private void MarkExplicitSessionOptions(ParseResult result, AppOptions options)
+    {
+        Mark("width", _symbols.Width);
+        Mark("height", _symbols.Height);
+        Mark("theme", _symbols.Theme);
+        Mark("font", _symbols.Font);
+        Mark("fontSize", _symbols.FontSize);
+        Mark("window", _symbols.Window);
+        Mark("margin", _symbols.Margin);
+        Mark("padding", _symbols.Padding);
+        Mark("foreColor", _symbols.ForeColor);
+        Mark("backColor", _symbols.BackColor);
+        Mark("background", _symbols.Background);
+        Mark("fps", _symbols.Fps);
+        Mark("timing", _symbols.Timing);
+        Mark("sleep", _symbols.Sleep);
+        Mark("fadeOut", _symbols.FadeOut);
+        Mark("coalesce", _symbols.Coalesce);
+        if (options.IsModeExplicit)
+        {
+            options.MarkCliOptionExplicit("mode");
+        }
+        if (IsSpecified(result, _symbols.NoLoop))
+        {
+            options.MarkCliOptionExplicit("loop");
+        }
+
+        void Mark(string name, Option option)
+        {
+            if (IsSpecified(result, option))
+            {
+                options.MarkCliOptionExplicit(name);
+            }
+        }
+    }
 
     private static bool IsVideoMoreRecent(ParseResult result)
     {

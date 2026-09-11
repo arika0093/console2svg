@@ -74,17 +74,17 @@ public sealed partial class ConsoleToSvgCommandLine
         SetMappedAction(interactive, Workflow.Interactive, AddCommandArgument(interactive));
         root.Subcommands.Add(interactive);
 
-        var replay = new Command("replay", "Replay keyboard input while capturing a command.");
-        var replayPath = new Argument<string>("replay.json")
+        var replay = new Command("replay", "Replay a reproducible terminal session.");
+        var replayPath = new Argument<string>("replay")
         {
-            Description = "Recorded keyboard input.",
+            Description = "Replay v2 YAML session or legacy v1 JSON input.",
         };
         replay.Arguments.Add(replayPath);
         AddOptions(replay, _symbols.ReplayOptions);
         SetMappedAction(
             replay,
             Workflow.Replay,
-            AddCommandArgument(replay),
+            AddCommandArgument(replay, captureRemainingTokens: false),
             replayPath: replayPath
         );
         root.Subcommands.Add(replay);

@@ -22,7 +22,8 @@ internal static partial class Program
     private static async Task<RecordingSession> LoadOrRecordAsync(
         AppOptions options,
         ILoggerFactory loggerFactory,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken,
+        ReplayDocumentV2? replayDocument = null
     )
     {
         var logger = loggerFactory.CreateLogger("ConsoleToSvg.LoadOrRecord");
@@ -63,6 +64,8 @@ internal static partial class Program
                     noDeleteEnvs: options.NoDeleteEnvs,
                     replaySavePath: options.ReplaySavePath,
                     replayPath: options.ReplayPath,
+                    replayDocument: replayDocument,
+                    replaySessionOptions: SessionOptionsOverlay.Snapshot(options),
                     outputCoalesceMs: options.OutputCoalesceMs
                         ?? (options.Mode == OutputMode.Video ? null : 0d),
                     videoFps: options.VideoFps

@@ -39,6 +39,8 @@ public enum ThemeAction
 
 public sealed class AppOptions
 {
+    private readonly HashSet<string> _explicitCliOptions = new(StringComparer.Ordinal);
+
     public Workflow Workflow { get; set; }
     public ThemeAction? RequestedThemeAction { get; set; }
     public string? ThemeArgument { get; set; }
@@ -209,4 +211,8 @@ public sealed class AppOptions
     /// which prefers the bundled resvg host, then ffmpeg+librsvg.
     /// </summary>
     public SvgConverterMode SvgConverter { get; set; } = SvgConverterMode.Auto;
+
+    internal void MarkCliOptionExplicit(string name) => _explicitCliOptions.Add(name);
+
+    internal bool IsCliOptionExplicit(string name) => _explicitCliOptions.Contains(name);
 }

@@ -97,6 +97,62 @@ public static partial class PtyRecorder
         Encoding outputEncoding,
         double? outputCoalesceMs,
         double videoFps
+    ) =>
+        await ReadOutputCoreAsync(
+                readerStream,
+                session,
+                stopwatch,
+                cancellationToken,
+                logger,
+                forwardOutput,
+                forwardOutputWriter,
+                outputEncoding,
+                outputCoalesceMs,
+                videoFps,
+                replayScreen: null
+            )
+            .ConfigureAwait(false);
+
+    private static async Task ReadReplayOutputAsync(
+        Stream readerStream,
+        RecordingSession session,
+        Stopwatch stopwatch,
+        CancellationToken cancellationToken,
+        ILogger logger,
+        Stream? forwardOutput,
+        TextWriter? forwardOutputWriter,
+        Encoding outputEncoding,
+        double? outputCoalesceMs,
+        double videoFps,
+        ReplayScreenObserver replayScreen
+    ) =>
+        await ReadOutputCoreAsync(
+                readerStream,
+                session,
+                stopwatch,
+                cancellationToken,
+                logger,
+                forwardOutput,
+                forwardOutputWriter,
+                outputEncoding,
+                outputCoalesceMs,
+                videoFps,
+                replayScreen
+            )
+            .ConfigureAwait(false);
+
+    private static async Task ReadOutputCoreAsync(
+        Stream readerStream,
+        RecordingSession session,
+        Stopwatch stopwatch,
+        CancellationToken cancellationToken,
+        ILogger logger,
+        Stream? forwardOutput,
+        TextWriter? forwardOutputWriter,
+        Encoding outputEncoding,
+        double? outputCoalesceMs,
+        double videoFps,
+        ReplayScreenObserver? replayScreen
     )
     {
         var bytes = new byte[4096];
@@ -132,9 +188,10 @@ public static partial class PtyRecorder
             int byteCount
         )
         {
+            var text = new string(textBuffer, 0, charCount);
+            replayScreen?.ProcessOutput(text);
             if (pendingText is null)
             {
-                var text = new string(textBuffer, 0, charCount);
                 session.AddEvent(elapsedSeconds, text);
                 logger.ZLogDebug(
                     $"Captured chunk bytes={byteCount} chars={text.Length} elapsedMs={stopwatch.ElapsedMilliseconds} preview={ToPreview(text)}"
@@ -340,7 +397,7 @@ public static partial class PtyRecorder
         CancellationToken cancellationToken,
         ILogger logger,
         Stopwatch? stopwatch = null,
-        InputReplayFile.InputReplayWriter? inputSave = null
+        IReplayInputRecorder? inputSave = null
     )
     {
         var buffer = new byte[256];

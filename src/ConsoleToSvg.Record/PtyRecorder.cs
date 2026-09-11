@@ -37,7 +37,9 @@ public static partial class PtyRecorder
         string? replaySavePath = null,
         string? replayPath = null,
         double? outputCoalesceMs = null,
-        double videoFps = 12d
+        double videoFps = 12d,
+        ReplayDocumentV2? replayDocument = null,
+        SessionOptions? replaySessionOptions = null
     )
     {
         logger ??= NullLogger.Instance;
@@ -60,6 +62,8 @@ public static partial class PtyRecorder
                         noDeleteEnvs,
                         replaySavePath,
                         replayPath,
+                        replayDocument,
+                        replaySessionOptions,
                         outputCoalesceMs,
                         videoFps,
                         startupTimeoutMs: PtyStartupTimeoutMs
@@ -91,6 +95,8 @@ public static partial class PtyRecorder
                         noDeleteEnvs,
                         replaySavePath,
                         replayPath,
+                        replayDocument,
+                        replaySessionOptions,
                         outputCoalesceMs,
                         videoFps
                     )
@@ -117,6 +123,8 @@ public static partial class PtyRecorder
                         noDeleteEnvs,
                         replaySavePath,
                         replayPath,
+                        replayDocument,
+                        replaySessionOptions,
                         outputCoalesceMs,
                         videoFps
                     )
@@ -138,12 +146,15 @@ public static partial class PtyRecorder
         bool noDeleteEnvs,
         string? replaySavePath,
         string? replayPath,
+        ReplayDocumentV2? replayDocument,
+        SessionOptions? replaySessionOptions,
         double? outputCoalesceMs,
         double videoFps,
         int? startupTimeoutMs = null
     )
     {
-        var disableInputEcho = forwardToConsole && string.IsNullOrWhiteSpace(replayPath);
+        var disableInputEcho =
+            forwardToConsole && string.IsNullOrWhiteSpace(replayPath) && replayDocument is null;
         var options = BuildOptions(logger, command, width, height, disableInputEcho, noDeleteEnvs);
         logger.ZLogDebug(
             $"Spawning PTY process. App={options.App} Args={string.Join(' ', options.Args ?? [])} Cwd={options.Cwd} Cols={options.Cols} Rows={options.Rows}"
@@ -159,7 +170,7 @@ public static partial class PtyRecorder
             cancellationToken
         );
         using var rawInput =
-            forwardToConsole && string.IsNullOrWhiteSpace(replayPath)
+            forwardToConsole && string.IsNullOrWhiteSpace(replayPath) && replayDocument is null
                 ? ConsoleInputMode.TryEnableRaw(logger)
                 : null;
         using var utf8OutputScope = TryUseUtf8ConsoleOutputEncoding(forwardToConsole, logger);
@@ -176,69 +187,98 @@ public static partial class PtyRecorder
                     ? TryOpenStandardOutput(logger)
                     : null;
             Stream? inputForward;
-            InputReplayData? replayData = null;
-            if (!string.IsNullOrWhiteSpace(replayPath))
+            ReplayDocumentV2? document = replayDocument;
+            if (document is not null || !string.IsNullOrWhiteSpace(replayPath))
             {
-                logger.ZLogDebug($"Input source: replay file. Path={replayPath}");
-                replayData = await InputReplayFile
-                    .ReadDataAsync(replayPath, cancellationToken)
-                    .ConfigureAwait(false);
-                inputForward = new InputReplayFile.ReplayStream(replayData.Replay, logger);
+                if (document is null)
+                {
+                    logger.ZLogDebug($"Input source: replay file. Path={replayPath}");
+                    document = await InputReplayFile
+                        .ReadDocumentAsync(replayPath!, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                inputForward = null;
             }
             else
             {
                 inputForward = forwardToConsole ? TryOpenInputForForwarding(logger) : null;
             }
 
-            InputReplayFile.InputReplayWriter? replaySaveWriter = null;
+            ReplayDocumentWriter? replaySaveWriter = null;
             if (!string.IsNullOrWhiteSpace(replaySavePath))
             {
-                logger.ZLogDebug($"Saving input to replay file. Path={replaySavePath}");
-                var dir = Path.GetDirectoryName(Path.GetFullPath(replaySavePath));
-                if (!string.IsNullOrWhiteSpace(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
-
-                replaySaveWriter = new InputReplayFile.InputReplayWriter(
-                    new FileStream(
-                        replaySavePath,
-                        FileMode.Create,
-                        FileAccess.Write,
-                        FileShare.None,
-                        4096,
-                        FileOptions.Asynchronous
-                    )
+                logger.ZLogDebug(
+                    $"Saving input to canonical replay file. Path={ReplayDocumentFile.GetCanonicalPath(replaySavePath)}"
+                );
+                replaySaveWriter = new ReplayDocumentWriter(
+                    replaySavePath,
+                    new ReplayDocumentV2
+                    {
+                        Command = command,
+                        Options = replaySessionOptions?.DeepClone() ?? new SessionOptions(),
+                        AppVersion = ThisAssembly.AssemblyInformationalVersion,
+                        CreatedAt = DateTimeOffset.UtcNow,
+                    }
                 );
             }
 
-            var readTask = ReadOutputAsync(
-                connection.ReaderStream,
-                session,
-                stopwatch,
-                readCancellation.Token,
-                logger,
-                outputForward,
-                outputForwardWriter,
-                Encoding.UTF8,
-                outputCoalesceMs,
-                videoFps
-            );
-            var inputTask = inputForward is not null
-                ? PumpInputAsync(
+            var replayScreen = document is null ? null : new ReplayScreenObserver(width, height);
+            var replayDeadline = document?.Timeout is string replayTimeout
+                ? ReplayDuration.Parse(replayTimeout, "timeout")
+                : (TimeSpan?)null;
+            var readTask = replayScreen is null
+                ? ReadOutputAsync(
+                    connection.ReaderStream,
+                    session,
+                    stopwatch,
+                    readCancellation.Token,
+                    logger,
+                    outputForward,
+                    outputForwardWriter,
+                    Encoding.UTF8,
+                    outputCoalesceMs,
+                    videoFps
+                )
+                : ReadReplayOutputAsync(
+                    connection.ReaderStream,
+                    session,
+                    stopwatch,
+                    readCancellation.Token,
+                    logger,
+                    outputForward,
+                    outputForwardWriter,
+                    Encoding.UTF8,
+                    outputCoalesceMs,
+                    videoFps,
+                    replayScreen
+                );
+            Task? inputTask = null;
+            if (document is not null)
+            {
+                inputTask = ReplayExecutor.ExecuteAsync(
+                    document,
+                    connection.WriterStream,
+                    replayScreen!,
+                    inputCancellation.Token,
+                    logger
+                );
+            }
+            else if (inputForward is not null)
+            {
+                inputTask = PumpInputAsync(
                     inputForward,
                     connection.WriterStream,
                     inputCancellation.Token,
                     logger,
                     stopwatch,
                     replaySaveWriter
-                )
-                : null;
+                );
+            }
 
             var eofReached = false;
             var processExited = false;
             var disposed = false;
-            double? replayTimeoutExceeded = null;
+            Exception? replayFailure = null;
             try
             {
                 while (true)
@@ -255,19 +295,25 @@ public static partial class PtyRecorder
                         break;
                     }
 
-                    if (connection.WaitForExit(50))
+                    if (inputTask is { IsFaulted: true })
                     {
-                        processExited = true;
+                        replayFailure = inputTask.Exception?.GetBaseException();
+                        canceled = true;
                         break;
                     }
 
-                    if (
-                        replayData?.TotalDuration is double replayTotalDuration
-                        && stopwatch.Elapsed.TotalSeconds > replayTotalDuration + 1.0
-                    )
+                    if (replayDeadline is TimeSpan deadline && stopwatch.Elapsed > deadline)
                     {
-                        replayTimeoutExceeded = replayTotalDuration;
+                        replayFailure = new ReplayTimeoutException(
+                            $"Replay timed out after {document!.Timeout}."
+                        );
                         canceled = true;
+                        break;
+                    }
+
+                    if (connection.WaitForExit(50))
+                    {
+                        processExited = true;
                         break;
                     }
 
@@ -287,13 +333,6 @@ public static partial class PtyRecorder
             {
                 // PTY process may have already exited; ignore cleanup errors such as
                 // "Killing terminal failed with error 3" (ESRCH: no such process)
-            }
-
-            if (replayTimeoutExceeded is double exceededDuration)
-            {
-                logger.ZLogDebug(
-                    $"Replay timeout exceeded ({exceededDuration:F1}s + 1s). Finalizing PTY recording."
-                );
             }
 
             // When the process has exited but the read task has not completed,
@@ -367,6 +406,24 @@ public static partial class PtyRecorder
                 await DisposeConnectionWithTimeoutAsync(connection, logger).ConfigureAwait(false);
             }
 
+            if (document is not null && inputTask is { IsFaulted: true } && replayFailure is null)
+            {
+                replayFailure = inputTask.Exception?.GetBaseException();
+            }
+
+            if (
+                document is not null
+                && inputTask is not null
+                && !inputTask.IsCompleted
+                && !cancellationToken.IsCancellationRequested
+                && replayFailure is null
+            )
+            {
+                replayFailure = new InvalidOperationException(
+                    "Replay ended before all actions completed. The process exited or closed its output while a replay action was still waiting."
+                );
+            }
+
             if (inputTask is not null)
             {
                 await IgnoreTaskFailureWithTimeoutAsync(inputTask, 200).ConfigureAwait(false);
@@ -376,8 +433,7 @@ public static partial class PtyRecorder
             {
                 try
                 {
-                    replaySaveWriter.TotalDuration = stopwatch.Elapsed.TotalSeconds;
-                    await replaySaveWriter.DisposeAsync().ConfigureAwait(false);
+                    await replaySaveWriter.SaveAsync(CancellationToken.None).ConfigureAwait(false);
                 }
                 catch
                 {
@@ -389,11 +445,11 @@ public static partial class PtyRecorder
                 $"PTY recording completed. Events={session.GetEventCount()} ElapsedMs={stopwatch.ElapsedMilliseconds}"
             );
 
-            if (replayTimeoutExceeded is double exceededDurationFinal)
+            if (replayFailure is not null)
             {
-                throw new TimeoutException(
-                    $"Replay did not complete within the expected duration ({exceededDurationFinal:F1}s + 1s timeout)."
-                );
+                System
+                    .Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(replayFailure)
+                    .Throw();
             }
 
             if (startupHang)
@@ -509,6 +565,8 @@ public static partial class PtyRecorder
         bool noDeleteEnvs,
         string? replaySavePath,
         string? replayPath,
+        ReplayDocumentV2? replayDocument,
+        SessionOptions? replaySessionOptions,
         double? outputCoalesceMs,
         double videoFps
     )
@@ -520,7 +578,7 @@ public static partial class PtyRecorder
             cancellationToken
         );
         using var rawInput =
-            forwardToConsole && string.IsNullOrWhiteSpace(replayPath)
+            forwardToConsole && string.IsNullOrWhiteSpace(replayPath) && replayDocument is null
                 ? ConsoleInputMode.TryEnableRaw(logger)
                 : null;
         using var utf8OutputScope = TryUseUtf8ConsoleOutputEncoding(forwardToConsole, logger);
@@ -557,98 +615,182 @@ public static partial class PtyRecorder
                     ? TryOpenStandardOutput(logger)
                     : null;
             Stream? inputForward;
-            InputReplayData? replayData = null;
-            if (!string.IsNullOrWhiteSpace(replayPath))
+            ReplayDocumentV2? document = replayDocument;
+            if (document is not null || !string.IsNullOrWhiteSpace(replayPath))
             {
-                logger.ZLogDebug($"Input source: replay file. Path={replayPath}");
-                replayData = await InputReplayFile
-                    .ReadDataAsync(replayPath, cancellationToken)
-                    .ConfigureAwait(false);
-                inputForward = new InputReplayFile.ReplayStream(replayData.Replay, logger);
+                if (document is null)
+                {
+                    logger.ZLogDebug($"Input source: replay file. Path={replayPath}");
+                    document = await InputReplayFile
+                        .ReadDocumentAsync(replayPath!, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                inputForward = null;
             }
             else
             {
                 inputForward = forwardToConsole ? TryOpenInputForForwarding(logger) : null;
             }
 
-            InputReplayFile.InputReplayWriter? replaySaveWriter = null;
+            ReplayDocumentWriter? replaySaveWriter = null;
             if (!string.IsNullOrWhiteSpace(replaySavePath))
             {
-                logger.ZLogDebug($"Saving input to replay file. Path={replaySavePath}");
-                var dir = Path.GetDirectoryName(Path.GetFullPath(replaySavePath));
-                if (!string.IsNullOrWhiteSpace(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
-
-                replaySaveWriter = new InputReplayFile.InputReplayWriter(
-                    new FileStream(
-                        replaySavePath,
-                        FileMode.Create,
-                        FileAccess.Write,
-                        FileShare.None,
-                        4096,
-                        FileOptions.Asynchronous
-                    )
+                logger.ZLogDebug(
+                    $"Saving input to canonical replay file. Path={ReplayDocumentFile.GetCanonicalPath(replaySavePath)}"
+                );
+                replaySaveWriter = new ReplayDocumentWriter(
+                    replaySavePath,
+                    new ReplayDocumentV2
+                    {
+                        Command = command,
+                        Options = replaySessionOptions?.DeepClone() ?? new SessionOptions(),
+                        AppVersion = ThisAssembly.AssemblyInformationalVersion,
+                        CreatedAt = DateTimeOffset.UtcNow,
+                    }
                 );
             }
 
-            var inputTask = inputForward is not null
-                ? PumpInputAsync(
+            var replayScreen = document is null ? null : new ReplayScreenObserver(width, height);
+            Task? inputTask = null;
+            if (document is not null)
+            {
+                inputTask = ReplayExecutor.ExecuteAsync(
+                    document,
+                    process.StandardInput.BaseStream,
+                    replayScreen!,
+                    inputCancellation.Token,
+                    logger
+                );
+            }
+            else if (inputForward is not null)
+            {
+                inputTask = PumpInputAsync(
                     inputForward,
                     process.StandardInput.BaseStream,
                     inputCancellation.Token,
                     logger,
                     stopwatch,
                     replaySaveWriter
-                )
-                : null;
+                );
+            }
 
-            // When replaying with a TotalDuration, create a timeout CTS so that ReadOutputAsync
-            // is cancelled (and the process is killed) if stdout stays open beyond the deadline.
-            using var replayTimeoutCts = replayData?.TotalDuration is double replayTotalDur
-                ? new CancellationTokenSource(TimeSpan.FromSeconds(replayTotalDur + 1.0))
+            using var replayTimeoutCancellation = document?.Timeout is string replayTimeout
+                ? new CancellationTokenSource(ReplayDuration.Parse(replayTimeout, "timeout"))
                 : null;
-            using var timeoutKillRegistration = replayTimeoutCts?.Token.Register(() =>
+            using var replayTimeoutKillRegistration = replayTimeoutCancellation?.Token.Register(
+                () =>
+                {
+                    try
+                    {
+                        if (!process.HasExited)
+                        {
+                            process.Kill();
+                        }
+                    }
+                    catch
+                    {
+                        // The process may already have exited as the deadline fired.
+                    }
+                }
+            );
+            var outputEncoding = GetFallbackProcessOutputEncoding(logger);
+            var readTask = replayScreen is null
+                ? ReadOutputAsync(
+                    process.StandardOutput.BaseStream,
+                    session,
+                    stopwatch,
+                    replayTimeoutCancellation?.Token ?? CancellationToken.None,
+                    logger,
+                    outputForward,
+                    outputForwardWriter,
+                    outputEncoding,
+                    outputCoalesceMs,
+                    videoFps
+                )
+                : ReadReplayOutputAsync(
+                    process.StandardOutput.BaseStream,
+                    session,
+                    stopwatch,
+                    replayTimeoutCancellation?.Token ?? CancellationToken.None,
+                    logger,
+                    outputForward,
+                    outputForwardWriter,
+                    outputEncoding,
+                    outputCoalesceMs,
+                    videoFps,
+                    replayScreen
+                );
+            try
+            {
+                if (inputTask is not null)
+                {
+                    var first = await Task.WhenAny(readTask, inputTask).ConfigureAwait(false);
+                    if (first == inputTask && inputTask.IsFaulted)
+                    {
+                        try
+                        {
+                            if (!process.HasExited)
+                            {
+                                process.Kill();
+                            }
+                        }
+                        catch
+                        {
+                            // Let the replay failure provide the actionable error.
+                        }
+                        await inputTask.ConfigureAwait(false);
+                    }
+                }
+                await readTask.ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+                when (replayTimeoutCancellation?.IsCancellationRequested == true
+                    && !cancellationToken.IsCancellationRequested
+                )
+            {
+                throw new ReplayTimeoutException($"Replay timed out after {document!.Timeout}.");
+            }
+            catch
             {
                 try
                 {
                     if (!process.HasExited)
+                    {
                         process.Kill();
+                    }
                 }
-                catch (InvalidOperationException)
+                catch
                 {
-                    // Process has already exited; nothing to kill.
+                    // Let the original failure win.
                 }
-                catch (System.ComponentModel.Win32Exception)
-                {
-                    // Kill may fail on Windows if the process is already gone.
-                }
-            });
-
-            var replayTimedOut = false;
-            var outputEncoding = GetFallbackProcessOutputEncoding(logger);
-            try
-            {
-                await ReadOutputAsync(
-                        process.StandardOutput.BaseStream,
-                        session,
-                        stopwatch,
-                        replayTimeoutCts?.Token ?? CancellationToken.None,
-                        logger,
-                        outputForward,
-                        outputForwardWriter,
-                        outputEncoding,
-                        outputCoalesceMs,
-                        videoFps
-                    )
-                    .ConfigureAwait(false);
+                throw;
             }
-            catch (OperationCanceledException ex)
-                when (replayTimeoutCts is not null && ex.CancellationToken == replayTimeoutCts.Token
-                )
+
+            if (document is not null && inputTask is { IsFaulted: true })
             {
-                replayTimedOut = true;
+                await inputTask.ConfigureAwait(false);
+            }
+
+            if (
+                document is not null
+                && inputTask is not null
+                && !inputTask.IsCompleted
+                && !cancellationToken.IsCancellationRequested
+            )
+            {
+                await inputCancellation.CancelAsync().ConfigureAwait(false);
+                await IgnoreTaskFailureWithTimeoutAsync(inputTask, 200).ConfigureAwait(false);
+                throw new InvalidOperationException(
+                    "Replay ended before all actions completed. The process exited or closed its output while a replay action was still waiting."
+                );
+            }
+
+            if (
+                replayTimeoutCancellation?.IsCancellationRequested == true
+                && !cancellationToken.IsCancellationRequested
+            )
+            {
+                throw new ReplayTimeoutException($"Replay timed out after {document!.Timeout}.");
             }
 
             while (!process.WaitForExit(50))
@@ -670,8 +812,7 @@ public static partial class PtyRecorder
             {
                 try
                 {
-                    replaySaveWriter.TotalDuration = stopwatch.Elapsed.TotalSeconds;
-                    await replaySaveWriter.DisposeAsync().ConfigureAwait(false);
+                    await replaySaveWriter.SaveAsync(CancellationToken.None).ConfigureAwait(false);
                 }
                 catch
                 {
@@ -682,13 +823,6 @@ public static partial class PtyRecorder
             logger.ZLogDebug(
                 $"Fallback recording completed. ExitCode={process.ExitCode} Events={session.GetEventCount()} ElapsedMs={stopwatch.ElapsedMilliseconds} Canceled={canceled}"
             );
-
-            if (replayTimedOut && replayData?.TotalDuration is double exceededDuration)
-            {
-                throw new TimeoutException(
-                    $"Replay did not complete within the expected duration ({exceededDuration:F1}s + 1s timeout)."
-                );
-            }
 
             return session;
         }

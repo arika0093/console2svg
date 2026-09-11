@@ -139,6 +139,27 @@ public sealed class ConsoleToSvgCommandLineTests
     }
 
     [Test]
+    public async Task ReplayAcceptsOptionsAfterTheDocumentPath()
+    {
+        var invocation = await InvokeAsync(
+            "replay",
+            "session.yaml",
+            "--width",
+            "80",
+            "--",
+            "bash",
+            "-c",
+            "echo ready"
+        );
+
+        invocation.ExitCode.ShouldBe(0);
+        invocation.Options!.Workflow.ShouldBe(Workflow.Replay);
+        invocation.Options.ReplayPath.ShouldBe("session.yaml");
+        invocation.Options.Width.ShouldBe(80);
+        invocation.Options.DelimitedCommand.ShouldBe(["bash", "-c", "echo ready"]);
+    }
+
+    [Test]
     public async Task TmuxCaptureMapsTheTmuxSpecificOptions()
     {
         var invocation = await InvokeAsync(

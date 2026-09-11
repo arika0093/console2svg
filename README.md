@@ -279,56 +279,72 @@ console2svg capture -c -d -v --timeout 5 --fps 30 --save-frames ./frames-dir -- 
 ```
 
 ### Replay input
-You can also save the command execution record and later regenerate the SVG based on that record. 
-To save the record, use the `--replay-save` option to save the command execution.
+Replay v2 saves a reproducible terminal session: the command, relevant terminal,
+appearance and rendering settings, and the recorded interaction steps. Replay
+documents use YAML as their canonical format.
 
 ```sh
-console2svg capture --replay-save ./replay.json -- bash
-# save key inputs to replay.json
+console2svg capture --replay-save ./replay.yaml -- bash
+# save keyboard input and the session settings to replay.yaml
 ```
 
-Then, generate the SVG based on the saved key input.
-By using this feature, you can generate an SVG that records terminal operations as shown below.
+Run a document directly; its `command` is used unless a command is supplied
+after `--`. Explicit CLI settings take precedence over settings saved in the
+document.
 
 ```sh
-console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash
+console2svg replay ./replay.yaml
 ```
 
-![console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash](./assets/cmd-bash-vim.svg)
+![console2svg replay ./replay.json](./assets/cmd-bash-vim.svg)
 
-The replay file is in a simple JSON format. If you make a mistake in the input, you can directly edit this file (or of course, you can ask AI to fix it for you).
+`waitFor` observes the emulated terminal screen, not raw PTY chunks. It can
+match visible screen text (the default), scrollback, or a regular expression.
+`input` sends Unicode text, optionally with an interval; `key` supports named
+keys and chords; `sleep` waits; and `raw` preserves low-level compatibility
+input. `defaults.timeout` supplies an action timeout, which individual actions
+can override.
 
 <details>
 <summary>Replay file format</summary>
 
-```json5
-// replay.json
-{
-  "version": "1",
-  "appVersion": "0.4.0.2+17cc95284e",
-  "createdAt": "2026-03-01T06:52:43.3615812+00:00",
-  // If more than 1 second has passed from the total time,
-  // it will exit with an error as a timeout.
-  "totalDuration": 10.9530099,
-  "replay": [
-    {
-      // first event: absolute time from recording start (seconds)
-      "time": 1.5,
-      "key": "e",
-      "modifiers": [],
-      "type": "keydown"
-    },
-    {
-      // subsequent events: delta from the previous event (seconds)
-      "tick": 0.08,
-      "key": "c",
-      "modifiers": ["shift"],
-      "type": "keydown"
-    },
-    // and so on...
-  ]
-}
+```yaml
+$version: 2
+
+options:
+  terminal:
+    width: 100
+    height: 30
+  appearance:
+    theme: dark
+    font: Cascadia Mono
+    fontSize: 14
+    window: macos
+    padding: 12
+  render:
+    mode: video
+    fps: 12
+    timing: deterministic
+    loop: true
+
+command: dotnet test
+defaults:
+  timeout: 10s
+
+steps:
+  - waitFor: "$ "
+  - input: dotnet test
+    interval: 30ms
+  - key: Enter
+  - waitFor:
+      regex: Passed!
+      timeout: 30s
 ```
+
+Existing v1 JSON files (including files with no `version` or the historical
+`"version": "1"`) remain supported. On first successful load they are migrated
+to a sibling `.yaml` Replay v2 document; the original is preserved as a backup
+when supported by the file system provider.
 
 </details>
 

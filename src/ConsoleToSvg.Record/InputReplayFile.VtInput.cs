@@ -340,7 +340,7 @@ public static partial class InputReplayFile
     /// Collects <see cref="InputEvent"/> objects and writes the entire
     /// <see cref="InputReplayData"/> JSON to the stream on dispose.
     /// </summary>
-    public sealed class InputReplayWriter : IDisposable, IAsyncDisposable
+    public sealed class InputReplayWriter : IDisposable, IAsyncDisposable, IReplayInputRecorder
     {
         private readonly Stream _stream;
         private readonly InputReplayData _data = new();
@@ -357,9 +357,9 @@ public static partial class InputReplayFile
             _stream = stream;
         }
 
-        public void AppendEvent(InputEvent evt)
+        public void AppendEvent(InputEvent inputEvent)
         {
-            _data.Replay.Add(evt);
+            _data.Replay.Add(inputEvent);
         }
 
         /// <summary>

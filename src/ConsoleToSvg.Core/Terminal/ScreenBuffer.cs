@@ -576,6 +576,45 @@ public sealed partial class ScreenBuffer
         return GetCell(row - _scrollbackRows.Count, col);
     }
 
+    /// <summary>
+    /// Returns terminal text suitable for deterministic replay matching.
+    /// Wide-character continuation cells are omitted, and trailing blanks on
+    /// each row do not participate in matching.
+    /// </summary>
+    public string GetNormalizedText(bool includeScrollback = false)
+    {
+        var start = includeScrollback ? 0 : _scrollbackRows.Count;
+        var end = _scrollbackRows.Count + Height;
+        var result = new System.Text.StringBuilder((end - start) * (Width + 1));
+        for (var row = start; row < end; row++)
+        {
+            var line = new System.Text.StringBuilder(Width);
+            for (var col = 0; col < Width; col++)
+            {
+                var cell = GetCellFromTop(row, col);
+                if (!cell.IsWideContinuation)
+                {
+                    line.Append(cell.Text);
+                }
+            }
+
+            var length = line.Length;
+            while (length > 0 && line[length - 1] == ' ')
+            {
+                length--;
+            }
+            if (length > 0)
+            {
+                result.Append(line, 0, length);
+            }
+            if (row + 1 < end)
+            {
+                result.Append('\n');
+            }
+        }
+        return result.ToString();
+    }
+
     public ScreenBuffer Clone()
     {
         Array.Fill(_mainRowsShared, true);

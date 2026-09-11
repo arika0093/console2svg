@@ -105,6 +105,22 @@ public static partial class InputReplayFile
     }
 
     /// <summary>
+    /// Loads a Replay v2 session document. Legacy JSON v1 documents are
+    /// migrated to the canonical YAML representation as part of loading.
+    /// </summary>
+    public static Task<ReplayDocumentV2> ReadDocumentAsync(
+        string path,
+        CancellationToken cancellationToken
+    ) => ReplayDocumentFile.ReadAsync(path, cancellationToken);
+
+    /// <summary>Writes a Replay v2 session document as canonical YAML.</summary>
+    public static Task WriteDocumentAsync(
+        string path,
+        ReplayDocumentV2 document,
+        CancellationToken cancellationToken
+    ) => ReplayDocumentFile.WriteAsync(path, document, cancellationToken);
+
+    /// <summary>
     /// Parse a decoded VT input string into a sequence of cross-platform key events.
     /// </summary>
     public static IEnumerable<InputEvent> ParseInputText(string text, double time)

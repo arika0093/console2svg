@@ -4,7 +4,11 @@
 .c2 text { dominant-baseline: alphabetic; }
 .c2 .q { shape-rendering: crispEdges; }
 .c2 .aa{fill:#d4d4d4}
-</style><rect x="0.5" y="0.5" width="353" height="141" fill="#333" stroke="#333"/>
+</style><defs>
+<linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1d2e"/><stop offset="100%" stop-color="#252840"/></linearGradient>
+</defs>
+<rect width="354" height="142" fill="url(#c2bg)"/>
+<rect x="0.5" y="0.5" width="353" height="141" fill="#333" stroke="#333"/>
 <rect x="1" y="1" width="352" height="34" fill="#333"/>
 <path d="M 8,35 L 8,11 Q 8,6 13,6 L 163,6 Q 168,6 168,11 L 168,35 Z" fill="#0c0c0c"/>
 <polyline points="16,15.5 20,19.5 16,23.5" fill="none" stroke="#cccccc" stroke-width="1.2" stroke-linejoin="round"/>
@@ -15,11 +19,14 @@
 <rect x="280" y="14.5" width="10" height="10" fill="none" stroke="#cccccc" stroke-width="1.2"/>
 <line x1="326" y1="14.5" x2="336" y2="24.5" stroke="#cccccc" stroke-width="1.3"/>
 <line x1="336" y1="14.5" x2="326" y2="24.5" stroke="#cccccc" stroke-width="1.3"/>
-<rect x="1" y="35" width="352" height="106" fill="#0c0c0c"/>
-<g class="c2 c"><rect x="9" y="43" width="336" height="18" fill="#0c0c0c"/>
+
+<rect x="1" y="35" width="352" height="106" fill="#1e1e1e"/>
+<g class="c2 c"><rect x="9" y="43" width="336" height="18" fill="#1e1e1e"/>
 <text class="aa" x="9" y="57">$ dotnet --version</text></g>
 <g class="c2 c" transform="translate(9 61)">
-<rect width="336" height="72" fill="#0c0c0c"/>
-<text class="aa" y="14" textLength="67.2">10.0.400</text>
+<rect width="336" height="72" fill="#1e1e1e"/>
+</g>
+<g class="c2 c" transform="translate(9 61)">
+<text class="aa" y="14" textLength="67.2">10.0.401</text>
 </g>
 </svg>

@@ -9,7 +9,11 @@
 .c2 .aa{fill:#d4d4d4}
 .c2 .ab{fill:#1e1e1e}
 @keyframes c2b { 50% { visibility: hidden; } }
-</style><rect width="688" height="268" fill="#1e1e1e"/>
+</style><defs>
+<linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1d2e"/><stop offset="100%" stop-color="#252840"/></linearGradient>
+</defs>
+<rect width="688" height="268" fill="url(#c2bg)"/>
+<rect width="688" height="268" fill="#1e1e1e"/>
 <defs>
 <g id="c2r0" class="c2 c">
 <rect width="672" height="18" id="c2e0" fill="#1e1e1e"/>
@@ -146,64 +150,64 @@
 </g>
 <g id="c2r24" class="c2 c"><use href="#c2r23"/>
 <g transform="translate(84)">
-<use href="#c2e3"/>
-<text class="aa" y="14" textLength="16.8">tu</text>
+<use href="#c2e5"/>
+<text class="aa" y="14" textLength="25.2">tur</text>
 </g>
 </g>
 <g id="c2r25" class="c2 c"><use href="#c2r24"/>
-<g transform="translate(100.8)">
-<use href="#c2e2"/>
-<text class="aa" y="14" textLength="8.4">r</text>
-</g>
-</g>
-<g id="c2r26" class="c2 c"><use href="#c2r25"/>
 <g transform="translate(109.2)">
 <use href="#c2e2"/>
 <text class="aa" y="14" textLength="8.4">e</text>
 </g>
 </g>
+<g id="c2r26" class="c2 c"><use href="#c2r25"/>
+<g transform="translate(117.6)">
+<use href="#c2e2"/>
+<text class="aa" y="14" textLength="8.4">-</text>
+</g>
+</g>
 <g id="c2r27" class="c2 c">
 <use href="#c2e0"/>
-<text class="aa w" y="14" textLength="126">$ tmux capture-</text>
+<text class="aa w" y="14" textLength="134.4">$ tmux capture-p</text>
 </g>
 <g id="c2r28" class="c2 c"><use href="#c2r27"/>
-<g transform="translate(126)">
+<g transform="translate(134.4)">
 <use href="#c2e5"/>
-<text class="aa" y="14" textLength="25.2">pan</text>
+<text class="aa" y="14" textLength="25.2">ane</text>
 </g>
 </g>
 <g id="c2r29" class="c2 c"><use href="#c2r28"/>
-<g transform="translate(151.2)">
-<use href="#c2e2"/>
-<text class="aa" y="14" textLength="8.4">e</text>
-</g>
-</g>
-<g id="c2r30" class="c2 c"><use href="#c2r29"/>
 <g transform="translate(168)">
 <use href="#c2e2"/>
 <text class="aa" y="14" textLength="8.4">-</text>
 </g>
 </g>
-<g id="c2r31" class="c2 c"><use href="#c2r30"/>
+<g id="c2r30" class="c2 c"><use href="#c2r29"/>
 <g transform="translate(176.4)">
-<use href="#c2e3"/>
-<text class="aa" y="14" textLength="16.8">pe</text>
+<use href="#c2e2"/>
+<text class="aa" y="14" textLength="8.4">p</text>
+</g>
+</g>
+<g id="c2r31" class="c2 c"><use href="#c2r30"/>
+<g transform="translate(184.8)">
+<use href="#c2e2"/>
+<text class="aa" y="14" textLength="8.4">e</text>
 </g>
 </g>
 <g id="c2r32" class="c2 c">
 <use href="#c2e0"/>
-<text class="aa w" y="14" textLength="210">$ tmux capture-pane -pe -</text>
+<text class="aa w" y="14" textLength="218.4">$ tmux capture-pane -pe -t</text>
 </g>
 <g id="c2r33" class="c2 c"><use href="#c2r32"/>
-<g transform="translate(210)">
+<g transform="translate(226.8)">
 <use href="#c2e2"/>
-<text class="aa" y="14" textLength="8.4">t</text>
+<text class="aa" y="14" textLength="8.4">:</text>
 </g>
 </g>
 <g id="c2r34" class="c2 c"><use href="#c2r33"/>
-<g transform="translate(226.8)">
-<use href="#c2e3"/>
-<text class="aa" y="14" textLength="16.8">:0</text>
+<g transform="translate(235.2)">
+<use href="#c2e2"/>
+<text class="aa" y="14" textLength="8.4">0</text>
 </g>
 </g>
 <g id="c2r35" class="c2 c"><use href="#c2r34"/>
@@ -220,99 +224,117 @@
 </g>
 <g id="c2r37" class="c2 c">
 <use href="#c2e0"/>
-<text class="aa w" y="14" textLength="294">$ tmux capture-pane -pe -t :0 | con</text>
+<text class="aa w" y="14" textLength="302.4">$ tmux capture-pane -pe -t :0 | cons</text>
 </g>
 <g id="c2r38" class="c2 c"><use href="#c2r37"/>
-<g transform="translate(294)">
+<g transform="translate(302.4)">
 <use href="#c2e3"/>
-<text class="aa" y="14" textLength="16.8">so</text>
+<text class="aa" y="14" textLength="16.8">ol</text>
 </g>
 </g>
 <g id="c2r39" class="c2 c"><use href="#c2r38"/>
-<g transform="translate(310.8)">
-<use href="#c2e2"/>
-<text class="aa" y="14" textLength="8.4">l</text>
-</g>
-</g>
-<g id="c2r40" class="c2 c"><use href="#c2r39"/>
 <g transform="translate(319.2)">
-<use href="#c2e5"/>
-<text class="aa" y="14" textLength="25.2">e2s</text>
-</g>
-</g>
-<g id="c2r41" class="c2 c"><use href="#c2r40"/>
-<g transform="translate(344.4)">
-<use href="#c2e2"/>
-<text class="aa" y="14" textLength="8.4">v</text>
-</g>
-</g>
-<g id="c2r42" class="c2 c">
-<use href="#c2e0"/>
-<text class="aa w" y="14" textLength="361.2">$ tmux capture-pane -pe -t :0 | console2svg</text>
-</g>
-<g id="c2r43" class="c2 c"><use href="#c2r42"/>
-<g transform="translate(369.6)">
-<use href="#c2e3"/>
-<text class="aa" y="14" textLength="16.8">-h</text>
-</g>
-</g>
-<g id="c2r44" class="c2 c"><use href="#c2r43"/>
-<g transform="translate(394.8)">
-<use href="#c2e2"/>
-<text class="aa" y="14" textLength="8.4">1</text>
-</g>
-</g>
-<g id="c2r45" class="c2 c"><use href="#c2r44"/>
-<g transform="translate(403.2)">
-<use href="#c2e2"/>
-<text class="aa" y="14" textLength="8.4">2</text>
-</g>
-</g>
-<g id="c2r46" class="c2 c"><use href="#c2r45"/>
-<g transform="translate(420)">
-<use href="#c2e3"/>
-<text class="aa" y="14" textLength="16.8">-o</text>
-</g>
-</g>
-<g id="c2r47" class="c2 c">
-<use href="#c2e0"/>
-<text class="aa w" y="14" textLength="453.6">$ tmux capture-pane -pe -t :0 | console2svg -h 12 -o c</text>
-</g>
-<g id="c2r48" class="c2 c"><use href="#c2r47"/>
-<g transform="translate(453.6)">
-<use href="#c2e2"/>
-<text class="aa" y="14" textLength="8.4">a</text>
-</g>
-</g>
-<g id="c2r49" class="c2 c"><use href="#c2r48"/>
-<g transform="translate(462)">
-<use href="#c2e3"/>
-<text class="aa" y="14" textLength="16.8">pt</text>
-</g>
-</g>
-<g id="c2r50" class="c2 c"><use href="#c2r49"/>
-<g transform="translate(478.8)">
-<use href="#c2e3"/>
-<text class="aa" y="14" textLength="16.8">ur</text>
-</g>
-</g>
-<g id="c2r51" class="c2 c"><use href="#c2r50"/>
-<g transform="translate(495.6)">
 <use href="#c2e2"/>
 <text class="aa" y="14" textLength="8.4">e</text>
 </g>
 </g>
+<g id="c2r40" class="c2 c"><use href="#c2r39"/>
+<g transform="translate(327.6)">
+<use href="#c2e3"/>
+<text class="aa" y="14" textLength="16.8">2s</text>
+</g>
+</g>
+<g id="c2r41" class="c2 c"><use href="#c2r40"/>
+<g transform="translate(344.4)">
+<use href="#c2e3"/>
+<text class="aa" y="14" textLength="16.8">vg</text>
+</g>
+</g>
+<g id="c2r42" class="c2 c">
+<use href="#c2e0"/>
+<text class="aa w" y="14" textLength="378">$ tmux capture-pane -pe -t :0 | console2svg c</text>
+</g>
+<g id="c2r43" class="c2 c"><use href="#c2r42"/>
+<g transform="translate(378)">
+<use href="#c2e3"/>
+<text class="aa" y="14" textLength="16.8">ap</text>
+</g>
+</g>
+<g id="c2r44" class="c2 c"><use href="#c2r43"/>
+<g transform="translate(394.8)">
+<use href="#c2e3"/>
+<text class="aa" y="14" textLength="16.8">tu</text>
+</g>
+</g>
+<g id="c2r45" class="c2 c"><use href="#c2r44"/>
+<g transform="translate(411.6)">
+<use href="#c2e2"/>
+<text class="aa" y="14" textLength="8.4">r</text>
+</g>
+</g>
+<g id="c2r46" class="c2 c"><use href="#c2r45"/>
+<g transform="translate(420)">
+<use href="#c2e5"/>
+<text class="aa w" y="14" textLength="25.2">e -</text>
+</g>
+</g>
+<g id="c2r47" class="c2 c">
+<use href="#c2e0"/>
+<text class="aa w" y="14" textLength="453.6">$ tmux capture-pane -pe -t :0 | console2svg capture -h</text>
+</g>
+<g id="c2r48" class="c2 c"><use href="#c2r47"/>
+<g transform="translate(462)">
+<use href="#c2e2"/>
+<text class="aa" y="14" textLength="8.4">1</text>
+</g>
+</g>
+<g id="c2r49" class="c2 c"><use href="#c2r48"/>
+<g transform="translate(470.4)">
+<use href="#c2e5"/>
+<text class="aa w" y="14" textLength="25.2">2 -</text>
+</g>
+</g>
+<g id="c2r50" class="c2 c"><use href="#c2r49"/>
+<g transform="translate(495.6)">
+<use href="#c2e2"/>
+<text class="aa" y="14" textLength="8.4">o</text>
+</g>
+</g>
+<g id="c2r51" class="c2 c"><use href="#c2r50"/>
+<g transform="translate(512.4)">
+<use href="#c2e2"/>
+<text class="aa" y="14" textLength="8.4">c</text>
+</g>
+</g>
 <g id="c2r52" class="c2 c">
 <use href="#c2e0"/>
-<text class="aa w" y="14" textLength="529.2">$ tmux capture-pane -pe -t :0 | console2svg -h 12 -o capture.sv</text>
+<text class="aa w" y="14" textLength="537.6">$ tmux capture-pane -pe -t :0 | console2svg capture -h 12 -o cap</text>
 </g>
 <g id="c2r53" class="c2 c"><use href="#c2r52"/>
-<g transform="translate(529.2)">
+<g transform="translate(537.6)">
+<use href="#c2e3"/>
+<text class="aa" y="14" textLength="16.8">tu</text>
+</g>
+</g>
+<g id="c2r54" class="c2 c"><use href="#c2r53"/>
+<g transform="translate(554.4)">
 <use href="#c2e2"/>
-<text class="aa" y="14" textLength="8.4">g</text>
+<text class="aa" y="14" textLength="8.4">r</text>
 </g>
 </g>
-<g id="c2r54" class="c2 c">
+<g id="c2r55" class="c2 c"><use href="#c2r54"/>
+<g transform="translate(562.8)">
+<use href="#c2e5"/>
+<text class="aa" y="14" textLength="25.2">e.s</text>
+</g>
+</g>
+<g id="c2r56" class="c2 c"><use href="#c2r55"/>
+<g transform="translate(588)">
+<use href="#c2e3"/>
+<text class="aa" y="14" textLength="16.8">vg</text>
+</g>
+</g>
+<g id="c2r57" class="c2 c">
 <use href="#c2e0"/>
 <text class="aa w" y="14" textLength="184.8">Generated: capture.svg</text>
 </g>
@@ -320,220 +342,232 @@
 <g transform="translate(8 8)">
 <g>
 <use href="#c2r0" display="none">
-<animate attributeName="display" values="inline;none" keyTimes="0;0.070588" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="inline;none" keyTimes="0;0.068182" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r3" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.070588;0.082353" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.068182;0.079545" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r4" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.082353;0.094118" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.079545;0.090909" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r5" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.094118;0.105882" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.090909;0.102273" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r6" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.105882;0.117647" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.102273;0.113636" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r7" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.117647;0.123529" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.113636;0.119318" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r8" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.123529;0.129412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.119318;0.125" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r9" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.129412;0.135294" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.125;0.130682" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r10" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.135294;0.376471" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.130682;0.363636" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r0" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.376471;0.447059" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.363636;0.431818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r18" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.447059;0.458824" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.431818;0.443182" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r19" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.458824;0.470588" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.443182;0.454545" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r20" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.470588;0.476471" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.454545;0.460227" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r21" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.476471;0.482353" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.460227;0.465909" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r22" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.482353;0.494118" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.465909;0.477273" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r23" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.494118;0.505882" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.477273;0.488636" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r24" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.505882;0.511765" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.488636;0.494318" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r25" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.511765;0.517647" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.494318;0.5" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r26" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.517647;0.529412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.5;0.511364" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r27" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.529412;0.541176" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.511364;0.522727" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r28" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.541176;0.552941" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.522727;0.534091" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r29" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.552941;0.564706" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.534091;0.545455" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r30" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.564706;0.576471" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.545455;0.556818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r31" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.576471;0.588235" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.556818;0.568182" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r32" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.588235;0.6" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.568182;0.579545" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r33" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.6;0.611765" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.579545;0.590909" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r34" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.611765;0.623529" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.590909;0.602273" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r35" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.623529;0.635294" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.602273;0.613636" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r36" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.635294;0.647059" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.613636;0.625" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r37" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.647059;0.658824" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.625;0.636364" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r38" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.658824;0.670588" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.636364;0.647727" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r39" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.670588;0.682353" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.647727;0.659091" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r40" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.682353;0.694118" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.659091;0.670455" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r41" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.694118;0.705882" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.670455;0.681818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r42" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.705882;0.717647" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.681818;0.693182" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r43" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.717647;0.729412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.693182;0.704545" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r44" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.729412;0.741176" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.704545;0.715909" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r45" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.741176;0.752941" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.715909;0.727273" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r46" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.752941;0.764706" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.727273;0.738636" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r47" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.764706;0.776471" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.738636;0.75" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r48" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.776471;0.788235" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.75;0.761364" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r49" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.788235;0.8" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.761364;0.772727" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r50" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.8;0.811765" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.772727;0.784091" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r51" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.811765;0.823529" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.784091;0.795455" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r52" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.823529;0.835294" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.795455;0.806818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r53" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.835294;0.929412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.806818;0.818182" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.818182;0.829545" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r55" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.829545;0.840909" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r56" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.840909;0.931818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r10" display="none">
-<animate attributeName="display" values="none;inline" keyTimes="0;0.929412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline" keyTimes="0;0.931818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r1" y="18" display="none">
-<animate attributeName="display" values="inline;none" keyTimes="0;0.141176" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="inline;none" keyTimes="0;0.136364" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r11" y="18" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.141176;0.376471" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.136364;0.363636" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r1" y="18" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.376471;0.835294" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.363636;0.852273" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
-<use href="#c2r54" y="18" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.835294;0.929412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<use href="#c2r57" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.852273;0.931818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r11" y="18" display="none">
-<animate attributeName="display" values="none;inline" keyTimes="0;0.929412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline" keyTimes="0;0.931818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r1" y="36" display="none">
-<animate attributeName="display" values="inline;none" keyTimes="0;0.141176" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="inline;none" keyTimes="0;0.136364" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r0" y="36" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.141176;0.223529" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.136364;0.204545" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r3" y="36" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.223529;0.235294" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.204545;0.215909" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r4" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.215909;0.227273" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r5" y="36" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.235294;0.247059" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.227273;0.238636" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r6" y="36" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.247059;0.258824" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.238636;0.25" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r12" y="36" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.258824;0.270588" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.25;0.261364" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r13" y="36" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.270588;0.282353" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.261364;0.272727" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r14" y="36" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.282353;0.294118" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.272727;0.284091" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r15" y="36" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.294118;0.376471" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.284091;0.363636" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r1" y="36" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.376471;0.835294" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.363636;0.852273" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r0" y="36" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.835294;0.929412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.852273;0.931818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r15" y="36" display="none">
-<animate attributeName="display" values="none;inline" keyTimes="0;0.929412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline" keyTimes="0;0.931818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r1" y="54" display="none">
-<animate attributeName="display" values="inline;none" keyTimes="0;0.305882" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="inline;none" keyTimes="0;0.295455" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r16" y="54" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.305882;0.376471" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.295455;0.363636" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r1" y="54" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.376471;0.929412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.363636;0.931818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r16" y="54" display="none">
-<animate attributeName="display" values="none;inline" keyTimes="0;0.929412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline" keyTimes="0;0.931818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r1" y="72" display="none">
-<animate attributeName="display" values="inline;none" keyTimes="0;0.305882" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="inline;none" keyTimes="0;0.295455" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r0" y="72" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.305882;0.376471" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.295455;0.363636" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r1" y="72" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.376471;0.929412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.363636;0.931818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r0" y="72" display="none">
-<animate attributeName="display" values="none;inline" keyTimes="0;0.929412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline" keyTimes="0;0.931818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r1" y="90" display="inline"/>
 <use href="#c2r1" y="108" display="inline"/>
@@ -544,236 +578,256 @@
 <use href="#c2r1" y="198" display="inline"/>
 <use href="#c2r1" y="216" display="inline"/>
 <use href="#c2r2" y="234" display="none">
-<animate attributeName="display" values="inline;none" keyTimes="0;0.376471" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="inline;none" keyTimes="0;0.363636" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r17" y="234" display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.376471;0.929412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.363636;0.931818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r2" y="234" display="none">
-<animate attributeName="display" values="none;inline" keyTimes="0;0.929412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline" keyTimes="0;0.931818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <g display="none">
-<animate attributeName="display" values="inline;none" keyTimes="0;0.070588" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="inline;none" keyTimes="0;0.068182" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="16.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.070588;0.082353" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.068182;0.079545" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="25.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.082353;0.094118" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.079545;0.090909" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="42" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.094118;0.105882" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.090909;0.102273" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="50.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.105882;0.117647" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.102273;0.113636" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="67.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.117647;0.123529" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.113636;0.119318" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="92.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.123529;0.129412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.119318;0.125" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="100.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.129412;0.135294" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.125;0.130682" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="109.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.135294;0.141176" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.130682;0.136364" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="117.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.141176;0.223529" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.136364;0.204545" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="16.8" y="36" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.223529;0.235294" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.204545;0.215909" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="25.2" y="36" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.235294;0.247059" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="50.4" y="36" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.215909;0.227273" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="42" y="36" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.247059;0.258824" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.227273;0.238636" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="58.8" y="36" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.238636;0.25" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="67.2" y="36" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.258824;0.270588" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.25;0.261364" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="84" y="36" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.270588;0.282353" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.261364;0.272727" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="100.8" y="36" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.282353;0.294118" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.272727;0.284091" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="109.2" y="36" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.294118;0.305882" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.284091;0.295455" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="134.4" y="36" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.305882;0.376471" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.295455;0.363636" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="16.8" y="72" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.376471;0.447059" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.363636;0.431818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="16.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.447059;0.458824" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.431818;0.443182" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="25.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.458824;0.470588" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.443182;0.454545" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="33.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.470588;0.476471" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.454545;0.460227" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="58.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.476471;0.482353" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.460227;0.465909" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="67.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.482353;0.494118" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.465909;0.477273" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="75.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.494118;0.505882" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.477273;0.488636" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="84" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.505882;0.511765" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="100.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.511765;0.517647" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.488636;0.494318" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="109.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.517647;0.529412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.494318;0.5" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="117.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.529412;0.541176" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.5;0.511364" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="126" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.541176;0.552941" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="151.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.511364;0.522727" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="134.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.552941;0.564706" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.522727;0.534091" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="159.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.564706;0.576471" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.534091;0.545455" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="176.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.576471;0.588235" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.545455;0.556818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="184.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.556818;0.568182" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="201.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.588235;0.6" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="210" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.6;0.611765" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.568182;0.579545" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="218.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.611765;0.623529" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="243.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.579545;0.590909" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="235.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.623529;0.635294" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="260.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.590909;0.602273" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="252" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.635294;0.647059" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.602273;0.613636" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="268.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.613636;0.625" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="277.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.647059;0.658824" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="294" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.625;0.636364" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="302.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.658824;0.670588" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="310.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.670588;0.682353" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.636364;0.647727" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="319.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.682353;0.694118" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.647727;0.659091" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="327.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.659091;0.670455" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="344.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.694118;0.705882" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="352.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
-</g>
-<g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.705882;0.717647" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.670455;0.681818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="361.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.717647;0.729412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="386.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.681818;0.693182" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="378" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.729412;0.741176" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="403.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.693182;0.704545" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="394.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.741176;0.752941" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.704545;0.715909" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="411.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.752941;0.764706" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="436.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.715909;0.727273" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="420" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.764706;0.776471" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="453.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.727273;0.738636" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="445.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.776471;0.788235" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.738636;0.75" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="462" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.788235;0.8" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="478.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.75;0.761364" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="470.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.8;0.811765" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.761364;0.772727" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="495.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.811765;0.823529" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="504" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.772727;0.784091" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="512.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.823529;0.835294" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
-<rect class="u" x="529.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.784091;0.795455" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="520.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline;none" keyTimes="0;0.835294;0.929412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.795455;0.806818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="537.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.806818;0.818182" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="554.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.818182;0.829545" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="562.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.829545;0.840909" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="588" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.840909;0.852273" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="604.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.852273;0.931818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="16.8" y="36" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 <g display="none">
-<animate attributeName="display" values="none;inline" keyTimes="0;0.929412" dur="7.083s" calcMode="discrete" repeatCount="indefinite"/>
+<animate attributeName="display" values="none;inline" keyTimes="0;0.931818" dur="7.333s" calcMode="discrete" repeatCount="indefinite"/>
 <rect class="u" x="16.8" y="72" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
 </g>
 </g>

@@ -1,91 +1,52 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="502" viewBox="0 0 1024 502" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="448" viewBox="0 0 1024 448" role="img" aria-label="console2svg output">
 <style>
 .c2.c { font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace; font-size: 14px; }
 .c2 text { dominant-baseline: alphabetic; }
 .c2 .q { shape-rendering: crispEdges; }
 .c2 .w { white-space: pre; }
-.c2 .aa{fill:#10E291;font-weight:bold}
-.c2 .ab{fill:#FFFF13;font-weight:bold}
-.c2 .ac{fill:#d4d4d4}
-.c2 .ad{fill:#11a8cd}
-.c2 .ae{fill:#bc3fbc}
-.c2 .af{fill:#9F9F9F}
-</style><rect width="1024" height="502" fill="#1e1e1e"/>
+.c2 .aa{fill:#FFFF13;font-weight:bold}
+.c2 .ab{fill:#d4d4d4}
+.c2 .ac{fill:#11a8cd}
+.c2 .ad{fill:#bc3fbc}
+</style><defs>
+<linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1d2e"/><stop offset="100%" stop-color="#252840"/></linearGradient>
+</defs>
+<rect width="1024" height="448" fill="url(#c2bg)"/>
+<rect width="1024" height="448" fill="#1e1e1e"/>
 <g class="c2 c" transform="translate(8 8)">
-<rect width="1008" height="486" fill="#1e1e1e"/>
-<text class="aa w" y="14" textLength="588">console2svg - Convert terminal output to SVG [Ver: 0.8.3.0+e36dd74b22]</text>
-<text class="ab" y="50" textLength="50.4">Usage:</text>
-<text class="ac w" x="33.6" y="68" textLength="285.6">my-command | console2svg [options]</text>
-<text class="ac w" x="33.6" y="86" textLength="369.6">console2svg &quot;my-command with-args&quot; [options]</text>
-<text class="ac w" x="33.6" y="104" textLength="378">console2svg [options] -- my-command with args</text>
-<text class="ab w" y="140" textLength="117.6">Major options:</text>
-<text class="ad" x="33.6" y="158" textLength="16.8">-o</text>
-<text class="ac" x="50.4" y="158" textLength="8.4">,</text>
-<text class="ad" x="67.2" y="158" textLength="42">--out</text>
-<text class="ae" x="117.6" y="158" textLength="50.4">&lt;path&gt;</text>
-<text class="ac w" x="252" y="158" textLength="134.4">Output file path</text>
-<text class="af w" x="394.8" y="158" textLength="176.4">(default: output.svg)</text>
-<text class="ac" x="571.2" y="158" textLength="8.4">.</text>
-<text class="ac w" x="252" y="176" textLength="369.6">Non-SVG extensions trigger ffmpeg conversion</text>
-<text class="af w" x="630" y="176" textLength="243.6">(e.g. output.png, output.mp4)</text>
-<text class="ac" x="873.6" y="176" textLength="8.4">.</text>
-<text class="ad" x="33.6" y="194" textLength="16.8">-w</text>
-<text class="ac" x="50.4" y="194" textLength="8.4">,</text>
-<text class="ad" x="67.2" y="194" textLength="58.8">--width</text>
-<text class="ae" x="134.4" y="194" textLength="100.8">&lt;int|adjust&gt;</text>
-<text class="ac w" x="252" y="194" textLength="235.2">Terminal width in characters</text>
-<text class="af w" x="495.6" y="194" textLength="142.8">(default: adjust)</text>
-<text class="ac" x="638.4" y="194" textLength="8.4">.</text>
-<text class="ac w" x="252" y="212" textLength="336">Specify an integer to use a fixed width.</text>
-<text class="ad" x="33.6" y="230" textLength="16.8">-h</text>
-<text class="ac" x="50.4" y="230" textLength="8.4">,</text>
-<text class="ad" x="67.2" y="230" textLength="67.2">--height</text>
-<text class="ae" x="142.8" y="230" textLength="100.8">&lt;int|adjust&gt;</text>
-<text class="ac w" x="252" y="230" textLength="193.2">Terminal height in rows</text>
-<text class="af w" x="453.6" y="230" textLength="142.8">(default: adjust)</text>
-<text class="ac" x="596.4" y="230" textLength="8.4">.</text>
-<text class="ac w" x="252" y="248" textLength="344.4">Specify an integer to use a fixed height.</text>
-<text class="ad" x="33.6" y="266" textLength="16.8">-v</text>
-<text class="ac" x="50.4" y="266" textLength="8.4">,</text>
-<text class="ad" x="67.2" y="266" textLength="58.8">--video</text>
-<text class="ac w" x="252" y="266" textLength="159.6">Output animated SVG</text>
-<text class="af w" x="420" y="266" textLength="201.6">(alias for --mode video)</text>
-<text class="ac" x="621.6" y="266" textLength="8.4">.</text>
-<text class="ad" x="33.6" y="284" textLength="16.8">-i</text>
-<text class="ac" x="50.4" y="284" textLength="8.4">,</text>
-<text class="ad" x="67.2" y="284" textLength="109.2">--interactive</text>
-<text class="ac w" x="252" y="284" textLength="646.8">Run an interactive shell; F9 records, F12 pauses, and F10 takes a screenshot.</text>
-<text class="ac w" x="252" y="302" textLength="361.2">Use -- to start another interactive program</text>
-<text class="af w" x="621.6" y="302" textLength="142.8">(e.g. -i -- pwsh)</text>
-<text class="ac" x="764.4" y="302" textLength="8.4">.</text>
-<text class="ad" x="33.6" y="320" textLength="16.8">-c</text>
-<text class="ac" x="50.4" y="320" textLength="8.4">,</text>
-<text class="ad" x="67.2" y="320" textLength="117.6">--with-command</text>
-<text class="ac w" x="252" y="320" textLength="327.6">Prepend the command line to the output.</text>
-<text class="ad" x="33.6" y="338" textLength="16.8">-d</text>
-<text class="ac" x="50.4" y="338" textLength="8.4">,</text>
-<text class="ad" x="67.2" y="338" textLength="67.2">--window</text>
-<text class="ae" x="142.8" y="338" textLength="58.8">[style]</text>
-<text class="ac w" x="252" y="338" textLength="596.4">Window chrome: none, macos, windows, macos-pc, windows-pc, transparent.</text>
-<text class="ad" x="33.6" y="356" textLength="100.8">--background</text>
-<text class="ae" x="142.8" y="356" textLength="58.8">&lt;color&gt;</text>
-<text class="ae" x="210" y="356" textLength="58.8">[color]</text>
-<text class="ac w" x="285.6" y="356" textLength="352.8">Background color, gradient, or image path.</text>
-<text class="ad" x="33.6" y="374" textLength="235.2">--crop-top/bottom/left/right</text>
-<text class="ac w" x="285.6" y="374" textLength="268.8">Crop by px, ch, or text pattern.</text>
-<text class="ad" x="33.6" y="392" textLength="67.2">--header</text>
-<text class="ae" x="109.2" y="392" textLength="50.4">&lt;text&gt;</text>
-<text class="ac w" x="252" y="392" textLength="243.6">Override command header text.</text>
-<text class="ad" x="33.6" y="410" textLength="67.2">--prompt</text>
-<text class="ae" x="109.2" y="410" textLength="50.4">&lt;text&gt;</text>
-<text class="ac w" x="252" y="410" textLength="243.6">Override prompt prefix for -c</text>
-<text class="af w" x="504" y="410" textLength="226.8">(default: $ or # when root)</text>
-<text class="ac" x="730.8" y="410" textLength="8.4">.</text>
-<text class="ad" x="33.6" y="428" textLength="75.6">--verbose</text>
-<text class="ae" x="117.6" y="428" textLength="50.4">[path]</text>
-<text class="ac w" x="252" y="428" textLength="184.8">Enable verbose logging</text>
-<text class="af w" x="445.2" y="428" textLength="327.6">(log to path, default: console2svg.log)</text>
-<text class="ac" x="772.8" y="428" textLength="8.4">.</text>
-<text class="ab w" y="464" textLength="277.2">For full option list, see --help.</text>
+<rect width="1008" height="432" fill="#1e1e1e"/>
+</g>
+<g class="c2 c" transform="translate(8 8)">
+<text class="aa" y="14" textLength="100.8">Description:</text>
+<text class="ab w" x="16.8" y="32" textLength="260.4">Convert terminal output to SVG.</text>
+<text class="aa" y="68" textLength="50.4">Usage:</text>
+<text class="ab w" x="16.8" y="86" textLength="260.4">console2svg [command] [options]</text>
+<text class="aa" y="122" textLength="67.2">Options:</text>
+<text class="ac" x="16.8" y="140" textLength="50.4">--help</text>
+<text class="ab w" x="109.2" y="140" textLength="260.4">Show help and usage information</text>
+<text class="ac" x="16.8" y="158" textLength="75.6">--version</text>
+<text class="ab w" x="109.2" y="158" textLength="201.6">Show version information</text>
+<text class="aa" y="194" textLength="75.6">Commands:</text>
+<text class="ab" x="16.8" y="212" textLength="58.8">capture</text>
+<text class="ad" x="84" y="212" textLength="75.6">&lt;command&gt;</text>
+<text class="ab w" x="310.8" y="212" textLength="260.4">Capture terminal output as SVG.</text>
+<text class="ab" x="16.8" y="230" textLength="92.4">interactive</text>
+<text class="ad" x="117.6" y="230" textLength="75.6">&lt;command&gt;</text>
+<text class="ab w" x="310.8" y="230" textLength="336">Capture an interactive shell or program.</text>
+<text class="ab" x="16.8" y="248" textLength="50.4">replay</text>
+<text class="ad" x="75.6" y="248" textLength="109.2">&lt;replay.json&gt;</text>
+<text class="ad" x="193.2" y="248" textLength="75.6">&lt;command&gt;</text>
+<text class="ab w" x="310.8" y="248" textLength="403.2">Replay keyboard input while capturing a command.</text>
+<text class="ab" x="16.8" y="266" textLength="33.6">cast</text>
+<text class="ad" x="58.8" y="266" textLength="50.4">&lt;cast&gt;</text>
+<text class="ab w" x="310.8" y="266" textLength="210">Render an asciicast file.</text>
+<text class="ab w" x="16.8" y="284" textLength="495.6">theme                              Manage installed themes.</text>
+<text class="ab w" x="16.8" y="302" textLength="621.6">status                             Show application and dependency status.</text>
+<text class="ab" x="16.8" y="320" textLength="92.4">live-server</text>
+<text class="ad" x="117.6" y="320" textLength="92.4">&lt;host:port&gt;</text>
+<text class="ad" x="218.4" y="320" textLength="75.6">&lt;command&gt;</text>
+<text class="ab w" x="310.8" y="320" textLength="218.4">Serve a live terminal SVG.</text>
+<text class="ab w" x="16.8" y="338" textLength="537.6">tmux                               Capture or serve a tmux pane.</text>
+<text class="ab w" x="16.8" y="356" textLength="898.8">completions                        Commands for generating and registering completions for supported shells</text>
 </g>
 </svg>

@@ -277,6 +277,7 @@ public static partial class PtyRecorder
         private const uint StdOutputHandle = 0xFFFFFFF5;
         private const uint EnableProcessedOutput = 0x0001;
         private const uint EnableVirtualTerminalProcessing = 0x0004;
+        private const uint DisableNewlineAutoReturn = 0x0008;
 
         private readonly ILogger _logger;
         private readonly IntPtr _handle;
@@ -295,6 +296,12 @@ public static partial class PtyRecorder
         /// Enables virtual-terminal processing on the host stdout handle so that
         /// forwarded ConPTY output (cursor moves, clears, colors) is interpreted
         /// by legacy conhost consoles instead of leaking literals like "[A".
+        /// Also disables the automatic carriage return on line feed so a bare
+        /// "\n" moves the host cursor straight down, matching the internal
+        /// terminal emulator (and xterm LNM-reset behavior) that TUI apps rely
+        /// on when redrawing with sequences such as "ECH LF ECH". Without this,
+        /// conhost resets the column to 0 on "\n" and subsequent erases hit the
+        /// wrong range, leaving stale borders and text on the host screen.
         /// Returns null when output is redirected or the mode cannot be changed.
         /// </summary>
         public static ConsoleOutputMode? TryEnable(ILogger logger)
@@ -322,22 +329,32 @@ public static partial class PtyRecorder
                     return null;
                 }
 
-                if ((mode & EnableVirtualTerminalProcessing) != 0)
-                {
-                    return null;
-                }
-
                 var newMode = mode | EnableVirtualTerminalProcessing;
                 // Keep processed output enabled so embedded CR/LF sequences keep
                 // their default conhost behavior.
                 newMode |= EnableProcessedOutput;
+                // A bare LF must not reset the column (see the doc comment).
+                // Normal "\r\n" output is unaffected because CR is explicit.
+                // NOTE: every required bit is OR-ed before comparing with the
+                // current mode. Returning early on the VT bit alone (as an
+                // earlier revision did) silently skips the newline flag on
+                // terminals that already enable VT processing (e.g. Windows
+                // Terminal), leaving the host/ECH divergence in place.
+                newMode |= DisableNewlineAutoReturn;
+
+                if (newMode == mode)
+                {
+                    return null;
+                }
 
                 if (!SetConsoleMode(handle, newMode))
                 {
                     return null;
                 }
 
-                logger.ZLogDebug($"Enabled virtual terminal processing for console output.");
+                logger.ZLogDebug(
+                    $"Enabled virtual terminal console output. PreviousMode=0x{mode:X} NewMode=0x{newMode:X}"
+                );
                 return new ConsoleOutputMode(logger, handle, mode);
             }
             catch (Exception ex)

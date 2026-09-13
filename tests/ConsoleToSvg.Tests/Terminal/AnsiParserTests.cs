@@ -877,4 +877,34 @@ public sealed class AnsiParserTests
         emulator.Buffer.GetCell(0, 0).Text.ShouldBe(" ");
         emulator.Buffer.GetCell(1, 0).Text.ShouldBe("B");
     }
+
+    [Test]
+    public void BareLineFeedPreservesColumnForSubsequentErase()
+    {
+        // TUI apps redraw multi-row regions with "CUP ECH LF ECH ..." and rely
+        // on LF keeping the column (xterm LNM-reset behavior). The host mirror
+        // must be configured the same way (DISABLE_NEWLINE_AUTO_RETURN);
+        // this test locks the emulator side of that contract.
+        var theme = Theme.Resolve("dark");
+        var emulator = new TerminalEmulator(10, 4, theme);
+
+        emulator.Process("\u001b[2;5HABCDE\u001b[3;1H0123456789");
+        emulator.Process("\u001b[2;5H\u001b[3X\n\u001b[3X");
+
+        // Cursor stayed in its column across the bare LF: both rows were
+        // erased starting at column 5 (1-based), not from column 1.
+        emulator.Buffer.CursorRow.ShouldBe(2);
+        emulator.Buffer.CursorCol.ShouldBe(4);
+        emulator.Buffer.GetCell(1, 4).Text.ShouldBe(" ");
+        emulator.Buffer.GetCell(1, 5).Text.ShouldBe(" ");
+        emulator.Buffer.GetCell(1, 6).Text.ShouldBe(" ");
+        emulator.Buffer.GetCell(1, 7).Text.ShouldBe("D");
+        emulator.Buffer.GetCell(1, 8).Text.ShouldBe("E");
+        emulator.Buffer.GetCell(2, 0).Text.ShouldBe("0");
+        emulator.Buffer.GetCell(2, 3).Text.ShouldBe("3");
+        emulator.Buffer.GetCell(2, 4).Text.ShouldBe(" ");
+        emulator.Buffer.GetCell(2, 5).Text.ShouldBe(" ");
+        emulator.Buffer.GetCell(2, 6).Text.ShouldBe(" ");
+        emulator.Buffer.GetCell(2, 7).Text.ShouldBe("7");
+    }
 }

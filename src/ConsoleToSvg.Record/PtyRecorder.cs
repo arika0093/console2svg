@@ -163,6 +163,7 @@ public static partial class PtyRecorder
                 ? ConsoleInputMode.TryEnableRaw(logger)
                 : null;
         using var utf8OutputScope = TryUseUtf8ConsoleOutputEncoding(forwardToConsole, logger);
+        using var vtOutputScope = forwardToConsole ? ConsoleOutputMode.TryEnable(logger) : null;
 
         try
         {
@@ -524,6 +525,7 @@ public static partial class PtyRecorder
                 ? ConsoleInputMode.TryEnableRaw(logger)
                 : null;
         using var utf8OutputScope = TryUseUtf8ConsoleOutputEncoding(forwardToConsole, logger);
+        using var vtOutputScope = forwardToConsole ? ConsoleOutputMode.TryEnable(logger) : null;
 
         var startInfo = BuildFallbackProcessStartInfo(command, noDeleteEnvs);
         logger.ZLogDebug(

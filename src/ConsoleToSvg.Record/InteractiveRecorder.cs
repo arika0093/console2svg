@@ -68,6 +68,18 @@ public static partial class InteractiveRecorder
         var input = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
             ? Console.OpenStandardInput()
             : null;
+
+        var rawInput = forwardToConsole ? PtyRecorder.ConsoleInputMode.TryEnableRaw(logger) : null;
+        using var utf8OutputScope = PtyRecorder.TryUseUtf8ConsoleOutputEncoding(
+            forwardToConsole,
+            logger
+        );
+        // Enable VT processing before writing any VT sequences (mouse reset,
+        // screen clear) so legacy conhost interprets them instead of leaking
+        // literals like "[A" and leaving stale screen content behind.
+        using var vtOutputScope = forwardToConsole
+            ? PtyRecorder.ConsoleOutputMode.TryEnable(logger)
+            : null;
         if (forwardToConsole)
         {
             PtyRecorder.TryDisableTerminalMouseTracking(forwardToConsole: true, logger);
@@ -131,11 +143,6 @@ public static partial class InteractiveRecorder
                 },
                 CancellationToken.None
             );
-        var rawInput = forwardToConsole ? PtyRecorder.ConsoleInputMode.TryEnableRaw(logger) : null;
-        using var utf8OutputScope = PtyRecorder.TryUseUtf8ConsoleOutputEncoding(
-            forwardToConsole,
-            logger
-        );
         // Console.Out is recreated when the console encoding changes. Acquire it
         // after entering the UTF-8 scope so its writer matches the console.
         var outputWriter =
@@ -813,9 +820,77 @@ public static partial class InteractiveRecorder
                     );
                     var forwarded = new List<byte>(maxForwardedLength);
                     var forwardedBytes = new byte[maxForwardedLength];
+                    // Batch all bytes produced by one host read into a single PTY
+                    // write so multi-byte VT sequences (e.g. ESC [ A) arrive
+                    // atomically instead of being split across writes.
+                    var batch = new List<byte>(bytes.Length + 16);
+                    // ConPTY expects UTF-8 input, but a Windows console delivers
+                    // bytes in Console.InputEncoding (e.g. CP932/Shift_JIS on
+                    // Japanese Windows). Forwarding those bytes raw garbles CJK
+                    // input (each Shift_JIS byte becomes U+FFFD). Decode with a
+                    // persistent decoder and re-encode as UTF-8. ASCII (including
+                    // VT sequences) round-trips unchanged. Only for real console
+                    // input; piped input keeps byte-exact forwarding.
+                    var hostInputEncoding =
+                        RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                        && input is not null
+                        && !Console.IsInputRedirected
+                            ? Console.InputEncoding
+                            : null;
+                    var transcodeDecoder = hostInputEncoding?.GetDecoder();
+                    var transcodeChars = transcodeDecoder is not null ? new char[512] : null;
                     var inputGate = new SemaphoreSlim(1, 1);
                     long escapePendingVersion = 0;
                     logger.ZLogDebug($"Interactive input forwarding started.");
+
+                    async Task WriteBatchAsync()
+                    {
+                        if (batch.Count == 0)
+                        {
+                            return;
+                        }
+
+                        if (transcodeDecoder is not null && transcodeChars is not null)
+                        {
+                            var batchArray = batch.ToArray();
+                            var charCount = transcodeDecoder.GetChars(
+                                batchArray,
+                                0,
+                                batchArray.Length,
+                                transcodeChars,
+                                0,
+                                flush: false
+                            );
+                            batch.Clear();
+                            if (charCount <= 0)
+                            {
+                                // Incomplete trailing multibyte sequence; the
+                                // decoder holds it until the next read completes it.
+                                return;
+                            }
+
+                            var utf8 = Encoding.UTF8.GetBytes(transcodeChars, 0, charCount);
+                            await connection
+                                .WriterStream.WriteAsync(utf8.AsMemory(), lifetime.Token)
+                                .ConfigureAwait(false);
+                            return;
+                        }
+
+                        if (batch.Count > forwardedBytes.Length)
+                        {
+                            Array.Resize(ref forwardedBytes, batch.Count);
+                        }
+
+                        batch.CopyTo(forwardedBytes);
+                        var pendingCount = batch.Count;
+                        batch.Clear();
+                        await connection
+                            .WriterStream.WriteAsync(
+                                forwardedBytes.AsMemory(0, pendingCount),
+                                lifetime.Token
+                            )
+                            .ConfigureAwait(false);
+                    }
 
                     void ScheduleStandaloneEscape(long version)
                     {
@@ -902,6 +977,7 @@ public static partial class InteractiveRecorder
                             {
                                 // A new byte invalidates any pending standalone-Escape timer.
                                 Interlocked.Increment(ref escapePendingVersion);
+                                batch.Clear();
                                 for (var i = 0; i < count; i++)
                                 {
                                     forwarded.Clear();
@@ -912,17 +988,16 @@ public static partial class InteractiveRecorder
                                     );
                                     if (forwarded.Count > 0)
                                     {
-                                        if (forwarded.Count > forwardedBytes.Length)
-                                        {
-                                            Array.Resize(ref forwardedBytes, forwarded.Count);
-                                        }
-                                        forwarded.CopyTo(forwardedBytes);
-                                        await connection
-                                            .WriterStream.WriteAsync(
-                                                forwardedBytes.AsMemory(0, forwarded.Count),
-                                                lifetime.Token
-                                            )
-                                            .ConfigureAwait(false);
+                                        batch.AddRange(forwarded);
+                                    }
+
+                                    if (action != InteractiveInputAction.None)
+                                    {
+                                        // Flush preceding input before handling the
+                                        // action so the PTY observes bytes in order
+                                        // (e.g. EOT must arrive before exit, typed
+                                        // text before a screenshot settles).
+                                        await WriteBatchAsync().ConfigureAwait(false);
                                     }
 
                                     switch (action)
@@ -999,6 +1074,10 @@ public static partial class InteractiveRecorder
                                             break;
                                     }
                                 }
+
+                                // Flush any remaining input from this host read as one
+                                // PTY write (transcoded to UTF-8 on Windows consoles).
+                                await WriteBatchAsync().ConfigureAwait(false);
 
                                 // Function keys and other VT input can arrive across reads.
                                 // Give a lone Escape a short grace period before forwarding it.

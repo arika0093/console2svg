@@ -272,6 +272,109 @@ public static partial class PtyRecorder
         return Path.Combine(systemDir, "cmd.exe");
     }
 
+    internal sealed class ConsoleOutputMode : IDisposable
+    {
+        private const uint StdOutputHandle = 0xFFFFFFF5;
+        private const uint EnableProcessedOutput = 0x0001;
+        private const uint EnableVirtualTerminalProcessing = 0x0004;
+
+        private readonly ILogger _logger;
+        private readonly IntPtr _handle;
+        private readonly uint _originalMode;
+        private readonly bool _changed;
+
+        private ConsoleOutputMode(ILogger logger, IntPtr handle, uint originalMode)
+        {
+            _logger = logger;
+            _handle = handle;
+            _originalMode = originalMode;
+            _changed = true;
+        }
+
+        /// <summary>
+        /// Enables virtual-terminal processing on the host stdout handle so that
+        /// forwarded ConPTY output (cursor moves, clears, colors) is interpreted
+        /// by legacy conhost consoles instead of leaking literals like "[A".
+        /// Returns null when output is redirected or the mode cannot be changed.
+        /// </summary>
+        public static ConsoleOutputMode? TryEnable(ILogger logger)
+        {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return null;
+            }
+
+            if (Console.IsOutputRedirected)
+            {
+                return null;
+            }
+
+            try
+            {
+                var handle = GetStdHandle(StdOutputHandle);
+                if (handle == IntPtr.Zero || handle == new IntPtr(-1))
+                {
+                    return null;
+                }
+
+                if (!GetConsoleMode(handle, out var mode))
+                {
+                    return null;
+                }
+
+                if ((mode & EnableVirtualTerminalProcessing) != 0)
+                {
+                    return null;
+                }
+
+                var newMode = mode | EnableVirtualTerminalProcessing;
+                // Keep processed output enabled so embedded CR/LF sequences keep
+                // their default conhost behavior.
+                newMode |= EnableProcessedOutput;
+
+                if (!SetConsoleMode(handle, newMode))
+                {
+                    return null;
+                }
+
+                logger.ZLogDebug($"Enabled virtual terminal processing for console output.");
+                return new ConsoleOutputMode(logger, handle, mode);
+            }
+            catch (Exception ex)
+            {
+                logger.ZLogDebug(ex, $"Failed to enable virtual terminal console output.");
+                return null;
+            }
+        }
+
+        public void Dispose()
+        {
+            if (!_changed)
+            {
+                return;
+            }
+
+            try
+            {
+                SetConsoleMode(_handle, _originalMode);
+                _logger.ZLogDebug($"Restored console output mode.");
+            }
+            catch
+            {
+                // Ignore restore failures.
+            }
+        }
+
+        [DllImport("kernel32.dll")]
+        private static extern IntPtr GetStdHandle(uint nStdHandle);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
+    }
+
     internal sealed class ConsoleInputMode : IDisposable
     {
         private const uint StdInputHandle = 0xFFFFFFF6;

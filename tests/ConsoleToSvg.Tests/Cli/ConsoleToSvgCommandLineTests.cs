@@ -53,7 +53,13 @@ public sealed class ConsoleToSvgCommandLineTests
         window.ExitCode.ShouldBe(0);
         window.Options!.Window.ShouldBe("macos");
 
-        var logPath = await InvokeAsync("capture", "--verbose", "logs/console2svg.log", "--", "echo");
+        var logPath = await InvokeAsync(
+            "capture",
+            "--verbose",
+            "logs/console2svg.log",
+            "--",
+            "echo"
+        );
         logPath.ExitCode.ShouldBe(0);
         logPath.Options!.Verbose.ShouldBeTrue();
         logPath.Options.VerboseLogPath.ShouldBe("logs/console2svg.log");
@@ -83,7 +89,13 @@ public sealed class ConsoleToSvgCommandLineTests
         invocation.Options!.Background.ShouldBe(["#ff0000", "#0000ff"]);
         invocation.Options.MaskPatterns.ShouldBe(["password", "token"]);
 
-        var shorthand = await InvokeAsync("capture", "--background", "#ff0000:#0000ff", "--", "echo");
+        var shorthand = await InvokeAsync(
+            "capture",
+            "--background",
+            "#ff0000:#0000ff",
+            "--",
+            "echo"
+        );
         shorthand.ExitCode.ShouldBe(0);
         shorthand.Options!.Background.ShouldBe(["#ff0000", "#0000ff"]);
     }
@@ -158,6 +170,47 @@ public sealed class ConsoleToSvgCommandLineTests
         invocation.Options.TmuxHistory.ShouldBeTrue();
         invocation.Options.TmuxHistoryLines.ShouldBe(1000);
         invocation.Options.Mode.ShouldBe(OutputMode.Video);
+    }
+
+    [Test]
+    public async Task InteractiveAcceptsSaveCastForDebug()
+    {
+        var invocation = await InvokeAsync(
+            "interactive",
+            "--save-cast",
+            "debug.cast",
+            "--",
+            "echo",
+            "hi"
+        );
+
+        invocation.ExitCode.ShouldBe(0);
+        invocation.Options!.Workflow.ShouldBe(Workflow.Interactive);
+        invocation.Options.SaveCastPath.ShouldBe("debug.cast");
+    }
+
+    [Test]
+    public async Task LiveServerAcceptsSaveCastForDebug()
+    {
+        var invocation = await InvokeAsync("live-server", "--save-cast", "debug.cast");
+
+        invocation.ExitCode.ShouldBe(0);
+        invocation.Options!.Workflow.ShouldBe(Workflow.LiveServer);
+        invocation.Options.SaveCastPath.ShouldBe("debug.cast");
+
+        var tmux = await InvokeAsync(
+            "tmux",
+            "live-server",
+            "--target",
+            ":0",
+            "--save-cast",
+            "debug.cast"
+        );
+
+        tmux.ExitCode.ShouldBe(0);
+        tmux.Options!.Workflow.ShouldBe(Workflow.Tmux);
+        tmux.Options.RequestedTmuxAction.ShouldBe(TmuxAction.LiveServer);
+        tmux.Options.SaveCastPath.ShouldBe("debug.cast");
     }
 
     [Test]
@@ -261,7 +314,9 @@ public sealed class ConsoleToSvgCommandLineTests
         zsh.Output.ShouldContain(
             "*--background=[Desktop background color or image. Can be specified twice for a gradient.]: :_files"
         );
-        zsh.Output.ShouldContain("--verbose=[Enable verbose logging; optionally write to a file.]: :_files");
+        zsh.Output.ShouldContain(
+            "--verbose=[Enable verbose logging; optionally write to a file.]: :_files"
+        );
     }
 
     private static async Task<Invocation> InvokeAsync(params string[] args)
@@ -282,5 +337,10 @@ public sealed class ConsoleToSvgCommandLineTests
         return new Invocation(exitCode, options, output.ToString(), error.ToString());
     }
 
-    private sealed record Invocation(int ExitCode, AppOptions? Options, string Output, string Error);
+    private sealed record Invocation(
+        int ExitCode,
+        AppOptions? Options,
+        string Output,
+        string Error
+    );
 }

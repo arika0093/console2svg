@@ -34,7 +34,8 @@ public static partial class InteractiveRecorder
         Action<ScreenBuffer>? onScreenUpdated = null,
         bool forwardToConsole = true,
         bool captureControlsEnabled = true,
-        Func<(int Width, int Height)>? terminalSizeProvider = null
+        Func<(int Width, int Height)>? terminalSizeProvider = null,
+        string? saveCastPath = null
     )
     {
         if (screenshotKey.IsEmpty || recordingKey.IsEmpty || pauseKey.IsEmpty)
@@ -61,6 +62,9 @@ public static partial class InteractiveRecorder
         var canRecord = recordingEnabled;
         var canScreenshot = screenshotEnabled;
         var notificationActive = 0;
+        RecordingSession? castSession = string.IsNullOrWhiteSpace(saveCastPath)
+            ? null
+            : new RecordingSession(width, height);
 
         var options = BuildOptions(width, height, noDeleteEnvs, command);
         using var lifetime = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -684,6 +688,7 @@ public static partial class InteractiveRecorder
                                 var text = new string(chars, 0, charCount);
                                 emulator.Process(text);
                                 Volatile.Write(ref lastOutputTimestamp, Stopwatch.GetTimestamp());
+                                castSession?.AddEvent(stopwatch.Elapsed.TotalSeconds, text);
                                 if (
                                     videoFrames is not null
                                     && Volatile.Read(ref recordingPaused) == 0
@@ -1228,6 +1233,26 @@ public static partial class InteractiveRecorder
                 pendingCaptures = captureQueue;
             }
             await IgnoreFailureAsync(pendingCaptures).ConfigureAwait(false);
+            if (castSession is not null && !string.IsNullOrWhiteSpace(saveCastPath))
+            {
+                try
+                {
+                    logger.ZLogDebug($"Saving interactive asciicast to {saveCastPath}");
+                    await AsciicastWriter
+                        .WriteToFileAsync(saveCastPath, castSession, CancellationToken.None)
+                        .ConfigureAwait(false);
+                    logger.ZLogDebug(
+                        $"Saved interactive asciicast to {saveCastPath} Events={castSession.GetEventCount()}"
+                    );
+                }
+                catch (Exception ex)
+                {
+                    logger.ZLogError(
+                        ex,
+                        $"Failed to save interactive asciicast to {saveCastPath}."
+                    );
+                }
+            }
             // A child application can leave the outer terminal in mouse-reporting
             // mode. Reset it before restoring the host input mode so selection is
             // available after an interactive session ends.

@@ -191,7 +191,6 @@ public sealed partial class ConsoleToSvgCommandLine
         public IEnumerable<Option> InteractiveOptions =>
             CaptureOptions.Except([
                 InputCastPath,
-                SaveCastPath,
                 EmbedCast,
                 EmbedReplay,
                 EmbedDebug,
@@ -235,7 +234,6 @@ public sealed partial class ConsoleToSvgCommandLine
                 FadeOut,
                 Coalesce,
                 Timeout,
-                SaveCastPath,
                 EmbedCast,
                 EmbedLogs,
                 EmbedReplay,

@@ -172,7 +172,8 @@ internal static partial class Program
                     return "Saved";
                 },
                 cancellationToken,
-                loggerFactory.CreateLogger("ConsoleToSvg.InteractiveRecorder")
+                loggerFactory.CreateLogger("ConsoleToSvg.InteractiveRecorder"),
+                saveCastPath: options.SaveCastPath
             )
             .ConfigureAwait(false);
         return 0;

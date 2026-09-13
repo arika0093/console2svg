@@ -180,7 +180,8 @@ internal static partial class Program
                                 TryGetConsoleHeight() ?? DefaultHeight
                             )
                         )
-                        : null
+                        : null,
+                    saveCastPath: options.SaveCastPath
                 )
                 .ConfigureAwait(false);
             await liveLifetime.CancelAsync().ConfigureAwait(false);

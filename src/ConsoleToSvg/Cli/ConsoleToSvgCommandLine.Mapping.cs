@@ -526,11 +526,6 @@ public sealed partial class ConsoleToSvgCommandLine
                 error = "--interactive cannot be used with --stdout.";
                 return false;
             }
-            if (!string.IsNullOrWhiteSpace(options.SaveCastPath))
-            {
-                error = "--interactive cannot be used with --save-cast.";
-                return false;
-            }
             if (
                 !string.IsNullOrWhiteSpace(options.ReplayPath)
                 || !string.IsNullOrWhiteSpace(options.ReplaySavePath)

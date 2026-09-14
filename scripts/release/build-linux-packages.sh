@@ -8,6 +8,8 @@ fi
 
 package_version="$1"
 package_iteration="$2"
+mkdir -p ./release-upload
+release_upload="$(cd ./release-upload && pwd)"
 
 for rid in linux-x64 linux-arm64; do
   case "$rid" in
@@ -55,6 +57,6 @@ for rid in linux-x64 linux-arm64; do
     -C "$package_root"
   )
 
-  fpm "${common_args[@]}" -t deb -a "$deb_arch" -p "./release-upload/console2svg.${asset_arch}.deb" .
-  fpm "${common_args[@]}" -t rpm -a "$rpm_arch" -p "./release-upload/console2svg.${asset_arch}.rpm" .
+  fpm "${common_args[@]}" -t deb -a "$deb_arch" -p "${release_upload}/console2svg.${asset_arch}.deb" .
+  fpm "${common_args[@]}" -t rpm -a "$rpm_arch" -p "${release_upload}/console2svg.${asset_arch}.rpm" .
 done

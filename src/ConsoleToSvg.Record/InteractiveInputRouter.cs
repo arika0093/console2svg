@@ -56,15 +56,14 @@ public sealed class InteractiveInputRouter
 
         if (value == 0x04)
         {
-            // Let Unix shells receive EOT so Bash can close normally. Windows
-            // cmd.exe does not treat it as EOF, so the caller also receives the
-            // explicit Exit action and can close the recording session there.
+            // Forward EOT so the active (possibly nested) shell receives it.
+            // The recorder decides via the PTY process tree whether EOT also
+            // ends the session (top-level cmd.exe ignores EOT on Windows).
             forwarded.Add(value);
             return InteractiveInputAction.Exit;
         }
 
-        // live-server does not reserve F9/F10/F12, but Ctrl+D must remain an
-        // application-level exit request on Windows, where cmd.exe ignores EOT.
+        // live-server does not reserve F9/F10/F12.
         if (!captureControlsEnabled)
         {
             forwarded.Add(value);

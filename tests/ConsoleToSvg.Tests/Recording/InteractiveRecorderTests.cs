@@ -161,6 +161,109 @@ public sealed class InteractiveRecorderTests
     }
 
     [Test]
+    public void NestedShellDetectionIgnoresConhostButSeesUserShells()
+    {
+        InteractiveRecorder.IsShellChildProcess("conhost.exe").ShouldBeFalse();
+        InteractiveRecorder.IsShellChildProcess("CONHOST.EXE").ShouldBeFalse();
+        InteractiveRecorder.IsShellChildProcess("conhost").ShouldBeFalse();
+        InteractiveRecorder.IsShellChildProcess("wsl.exe").ShouldBeTrue();
+        InteractiveRecorder.IsShellChildProcess("powershell.exe").ShouldBeTrue();
+        InteractiveRecorder.IsShellChildProcess("cmd.exe").ShouldBeTrue();
+        InteractiveRecorder.IsShellChildProcess(null).ShouldBeFalse();
+        InteractiveRecorder.IsShellChildProcess("").ShouldBeFalse();
+        InteractiveRecorder.IsShellChildProcess("  ").ShouldBeFalse();
+    }
+
+    [Test]
+    public async Task CtrlDNestedShellDetectionSeesTopLevelPtyWithoutChildren()
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return;
+        }
+
+        var cmd = System.IO.Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.System),
+            "cmd.exe"
+        );
+        // `pause` keeps the root shell alive without needing stdin and never
+        // spawns children. Only the ConPTY host (conhost.exe, excluded) may be
+        // attached, so this must read as "no nested shell" the whole time.
+        using var connection = await NativePty.SpawnAsync(
+            new NativePtyOptions
+            {
+                Name = "console2svg-test",
+                Cols = 80,
+                Rows = 24,
+                Cwd = Environment.CurrentDirectory,
+                App = cmd,
+                Args = ["/d", "/c", "pause"],
+            },
+            CancellationToken.None
+        );
+        (connection.ProcessId > 0).ShouldBeTrue();
+        var stopwatch = Stopwatch.StartNew();
+        while (stopwatch.Elapsed < TimeSpan.FromSeconds(3))
+        {
+            InteractiveRecorder
+                .HasNestedChildProcesses(connection.ProcessId)
+                .ShouldBeFalse();
+            await Task.Delay(100, CancellationToken.None);
+        }
+    }
+
+    [Test]
+    public void CtrlDNestedShellDetectionSeesOwnChildProcess()
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return;
+        }
+
+        var cmd = System.IO.Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.System),
+            "cmd.exe"
+        );
+        using var child = System.Diagnostics.Process.Start(
+            new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = cmd,
+                Arguments = "/d /c ping -n 30 127.0.0.1 >nul",
+                CreateNoWindow = true,
+                UseShellExecute = false,
+            }
+        );
+        try
+        {
+            (child is not null).ShouldBeTrue();
+            var detected = false;
+            var stopwatch = Stopwatch.StartNew();
+            while (stopwatch.Elapsed < TimeSpan.FromSeconds(5))
+            {
+                if (InteractiveRecorder.HasNestedChildProcesses(Environment.ProcessId))
+                {
+                    detected = true;
+                    break;
+                }
+                Thread.Sleep(100);
+            }
+            detected.ShouldBeTrue();
+        }
+        finally
+        {
+            try
+            {
+                child?.Kill();
+                child?.WaitForExit((int)TimeSpan.FromSeconds(5).TotalMilliseconds);
+            }
+            catch
+            {
+                // Best-effort cleanup; the ping exits on its own within seconds.
+            }
+        }
+    }
+
+    [Test]
     public async Task ExitedInteractiveChildIsObservedWithoutHanging()
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

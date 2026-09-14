@@ -160,7 +160,6 @@ internal static partial class Program
                     Encoding.ASCII.GetBytes("\u001b[24~"),
                     options.NoDeleteEnvs,
                     options.DelimitedCommand,
-                    exitOnCtrlD: true,
                     recordingEnabled: false,
                     screenshotEnabled: false,
                     static (_, _) => Task.FromResult<string?>(null),

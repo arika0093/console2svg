@@ -52,7 +52,8 @@ public sealed class NativePtyConnection : IDisposable
         Stream writerStream,
         Func<int, bool> waitForExit,
         Action dispose,
-        Action<int, int>? resize = null
+        Action<int, int>? resize = null,
+        int processId = 0
     )
     {
         ReaderStream = readerStream;
@@ -60,10 +61,18 @@ public sealed class NativePtyConnection : IDisposable
         _waitForExit = waitForExit;
         _dispose = dispose;
         _resize = resize ?? ((_, _) => { });
+        ProcessId = processId;
     }
 
     public Stream ReaderStream { get; }
     public Stream WriterStream { get; }
+
+    /// <summary>
+    /// The root process running in the PTY (0 when unknown, e.g. Unix backends
+    /// that do not report it). Used on Windows to tell a nested shell apart
+    /// from the top-level shell for Ctrl+D handling.
+    /// </summary>
+    public int ProcessId { get; }
 
     public void Resize(int cols, int rows) => _resize(cols, rows);
 
@@ -225,7 +234,8 @@ internal static class NativePtyWindows
                     {
                         ThrowWin32("ResizePseudoConsole failed", result);
                     }
-                }
+                },
+                processInfo.dwProcessId
             );
         }
         catch

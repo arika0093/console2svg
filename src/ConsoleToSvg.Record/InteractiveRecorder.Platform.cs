@@ -37,6 +37,74 @@ public static partial class InteractiveRecorder
         }
     }
 
+    /// <summary>
+    /// Returns true when the PTY root process currently has a nested child shell
+    /// (Windows only). Ctrl+D (EOT) is always forwarded to the PTY; the caller uses
+    /// this to decide whether EOT belongs to the active nested shell (forward only)
+    /// or to the top-level shell, which ignores EOT on Windows (exit the session).
+    /// Failures conservatively report nested so a nested shell is never killed.
+    /// </summary>
+    public static bool HasNestedChildProcesses(int rootProcessId)
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || rootProcessId <= 0)
+        {
+            return true;
+        }
+
+        const uint TH32CS_SNAPPROCESS = 0x2;
+        var snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+        if (snapshot == IntPtr.Zero || snapshot == new IntPtr(-1))
+        {
+            return true;
+        }
+
+        try
+        {
+            var entry = new ProcessEntry32 { dwSize = (uint)Marshal.SizeOf<ProcessEntry32>() };
+            if (!Process32First(snapshot, ref entry))
+            {
+                return true;
+            }
+
+            do
+            {
+                if (
+                    entry.th32ParentProcessID == rootProcessId
+                    && entry.th32ProcessID != rootProcessId
+                    && IsShellChildProcess(entry.szExeFile)
+                )
+                {
+                    return true;
+                }
+            } while (Process32Next(snapshot, ref entry));
+            return false;
+        }
+        catch
+        {
+            return true;
+        }
+        finally
+        {
+            CloseToolhelpSnapshot(snapshot);
+        }
+    }
+
+    /// <summary>
+    /// Returns true when a child process image counts as a nested shell for Ctrl+D
+    /// purposes. The ConPTY host (conhost.exe) is attached to the pseudo-console
+    /// machinery rather than being a user shell, so it never counts.
+    /// </summary>
+    public static bool IsShellChildProcess(string? exeFile)
+    {
+        if (string.IsNullOrWhiteSpace(exeFile))
+        {
+            return false;
+        }
+
+        return !exeFile.Equals("conhost.exe", StringComparison.OrdinalIgnoreCase)
+            && !exeFile.Equals("conhost", StringComparison.OrdinalIgnoreCase);
+    }
+
     public static InteractiveCapture CompleteRecording(
         List<TerminalFrame> frames,
         double elapsedSeconds,
@@ -89,6 +157,35 @@ public static partial class InteractiveRecorder
 
     [DllImport("libc", SetLastError = true)]
     private static extern nint read(int fd, byte[] buffer, nuint count);
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+    private struct ProcessEntry32
+    {
+        public uint dwSize;
+        public uint cntUsage;
+        public uint th32ProcessID;
+        public nuint th32DefaultHeapID;
+        public uint th32ModuleID;
+        public uint cntThreads;
+        public uint th32ParentProcessID;
+        public int pcPriClassBase;
+        public uint dwFlags;
+
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+        public string szExeFile;
+    }
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern IntPtr CreateToolhelp32Snapshot(uint dwFlags, uint th32ProcessID);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool Process32First(IntPtr hSnapshot, ref ProcessEntry32 lppe);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool Process32Next(IntPtr hSnapshot, ref ProcessEntry32 lppe);
+
+    [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "CloseHandle")]
+    private static extern bool CloseToolhelpSnapshot(IntPtr hObject);
 
     public sealed class HostTerminalSequenceFilter
     {

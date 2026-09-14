@@ -151,7 +151,6 @@ internal static partial class Program
                 Encoding.ASCII.GetBytes("\u001b[24~"), // F12
                 options.NoDeleteEnvs,
                 options.DelimitedCommand,
-                options.DelimitedCommand is null or { Length: 0 },
                 IsInteractiveRecordingFormat(options.OutputPath),
                 !IsVideoFormat(Path.GetExtension(options.OutputPath).TrimStart('.')),
                 async (capture, progressReporter) =>

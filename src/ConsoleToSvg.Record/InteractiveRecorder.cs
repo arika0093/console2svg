@@ -25,7 +25,6 @@ public static partial class InteractiveRecorder
         ReadOnlyMemory<byte> pauseKey,
         bool noDeleteEnvs,
         string[]? command,
-        bool exitOnCtrlD,
         bool recordingEnabled,
         bool screenshotEnabled,
         Func<InteractiveCapture, IProgressReporter, Task<string?>> onCapture,
@@ -92,6 +91,9 @@ public static partial class InteractiveRecorder
         var connection = await NativePty
             .SpawnAsync(options, cancellationToken)
             .ConfigureAwait(false);
+        // Root PTY process id for Ctrl+D handling: EOT belongs to the active
+        // (nested) shell when one exists, otherwise it exits the session.
+        var ptyRootProcessId = connection.ProcessId;
         onScreenUpdated?.Invoke(emulator.Buffer.Clone());
         var resizeTask = terminalSizeProvider is null
             ? null
@@ -1008,19 +1010,23 @@ public static partial class InteractiveRecorder
                                     switch (action)
                                     {
                                         case InteractiveInputAction.Exit:
+                                            // EOT (Ctrl+D) is forwarded to the PTY above.
+                                            // Like Unix shells, it belongs to the active
+                                            // shell: when a nested shell (e.g. wsl,
+                                            // powershell, python) runs inside the hosted
+                                            // cmd.exe, forward only and let it consume EOT.
+                                            // cmd.exe itself ignores EOT, so at the
+                                            // top level (no nested child) honor Ctrl+D
+                                            // as the session exit instead.
                                             if (
-                                                exitOnCtrlD
-                                                && RuntimeInformation.IsOSPlatform(
-                                                    OSPlatform.Windows
-                                                )
+                                                RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                                                && !connection.WaitForExit(0)
+                                                && !HasNestedChildProcesses(ptyRootProcessId)
                                             )
                                             {
                                                 await lifetime.CancelAsync().ConfigureAwait(false);
                                                 return;
                                             }
-
-                                            // Bash receives the EOT byte above and exits;
-                                            // wait for the PTY's normal process-exit path.
                                             break;
                                         case InteractiveInputAction.Screenshot:
                                             if (!screenshotEnabled)

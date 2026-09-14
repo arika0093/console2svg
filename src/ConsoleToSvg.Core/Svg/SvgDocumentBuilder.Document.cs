@@ -27,7 +27,7 @@ internal static partial class SvgDocumentBuilder
         bool includeBackground = true,
         bool includeChrome = true,
         bool includeClientBackground = true,
-        bool autoMask = false,
+        bool autoMask = true,
         QuickLeaksScanMode autoMaskMode = QuickLeaksScanMode.Normal
     )
     {
@@ -131,7 +131,7 @@ internal static partial class SvgDocumentBuilder
         SvgStyleRegistry styles,
         string commandHeader,
         string[]? maskPatterns = null,
-        bool autoMask = false,
+        bool autoMask = true,
         QuickLeaksScanMode autoMaskMode = QuickLeaksScanMode.Normal
     )
     {
@@ -608,7 +608,7 @@ internal static partial class SvgDocumentBuilder
         string lengthAdjust,
         double opacity = 1d,
         string[]? maskPatterns = null,
-        bool autoMask = false,
+        bool autoMask = true,
         QuickLeaksScanMode autoMaskMode = QuickLeaksScanMode.Normal
     )
     {

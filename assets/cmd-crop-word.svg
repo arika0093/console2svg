@@ -5,7 +5,7 @@
 .c2 .q { shape-rendering: crispEdges; }
 .c2 .w { white-space: pre; }
 .c2 .aa{fill:#d4d4d4}
-</style><defs>
+</style><defs><pattern id="c2-redacted-stripe" patternUnits="userSpaceOnUse" width="8" height="8"><path d="M0 0h8v8H0z" fill="#1e1e1e"/><path d="M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6" stroke="#d4d4d4" stroke-width="2" opacity="0.3"/></pattern></defs><defs>
 <linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1d2e"/><stop offset="100%" stop-color="#252840"/></linearGradient>
 </defs>
 <rect width="856" height="340" fill="url(#c2bg)"/>
@@ -15,9 +15,9 @@
 </g>
 <g class="c2 c" transform="translate(8 8)">
 <text class="aa" y="14" textLength="42">Host:</text>
-<text class="aa w" x="16.8" y="32" textLength="176.4">Version:      10.0.12</text>
+<text class="aa w" x="16.8" y="32" textLength="294">Version:      11.0.0-rc.1.26425.128</text>
 <text class="aa w" x="16.8" y="50" textLength="142.8">Architecture: x64</text>
-<text class="aa w" x="16.8" y="68" textLength="201.6">Commit:       95017c711e</text>
+<text class="aa w" x="16.8" y="68" textLength="201.6">Commit:       3551975be0</text>
 <text class="aa w" y="104" textLength="168">.NET SDKs installed:</text>
 <text class="aa w" x="16.8" y="122" textLength="260.4">8.0.130 [/usr/share/dotnet/sdk]</text>
 <text class="aa w" x="16.8" y="140" textLength="260.4">8.0.206 [/usr/share/dotnet/sdk]</text>
@@ -30,6 +30,6 @@
 <text class="aa w" x="16.8" y="266" textLength="268.8">10.0.204 [/usr/share/dotnet/sdk]</text>
 <text class="aa w" x="16.8" y="284" textLength="268.8">10.0.303 [/usr/share/dotnet/sdk]</text>
 <text class="aa w" x="16.8" y="302" textLength="268.8">10.0.400 [/usr/share/dotnet/sdk]</text>
-<text class="aa w" x="16.8" y="320" textLength="268.8">10.0.401 [/usr/share/dotnet/sdk]</text>
+<text class="aa w" x="16.8" y="320" textLength="394.8">11.0.100-rc.1.26425.128 [/usr/share/dotnet/sdk]</text>
 </g>
 </svg>

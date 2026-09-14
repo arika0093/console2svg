@@ -7,7 +7,7 @@
 .c2 .aa{fill:#d4d4d4}
 .c2 .ab{fill:#F63B3B;font-weight:bold}
 .c2 .ac{fill:#0dbc79}
-</style><defs>
+</style><defs><pattern id="c2-redacted-stripe" patternUnits="userSpaceOnUse" width="8" height="8"><path d="M0 0h8v8H0z" fill="#1e1e1e"/><path d="M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6" stroke="#d4d4d4" stroke-width="2" opacity="0.3"/></pattern></defs><defs>
 <linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1d2e"/><stop offset="100%" stop-color="#252840"/></linearGradient>
 </defs>
 <rect width="898" height="535" fill="url(#c2bg)"/>
@@ -56,7 +56,7 @@
 <text class="aa w" x="445.2" y="86" textLength="210">: Linux 6.17.0-1022-azure</text>
 <text class="ab w" x="50.4" y="104" textLength="285.6">;clool&apos;             .cooooooc.  ,,</text>
 <text class="ab" x="394.8" y="104" textLength="50.4">Uptime</text>
-<text class="aa w" x="445.2" y="104" textLength="67.2">: 2 mins</text>
+<text class="aa w" x="445.2" y="104" textLength="58.8">: 1 min</text>
 <text class="ab w" x="75.6" y="122" textLength="268.8">...                ......  .:oo,</text>
 <text class="ab" x="394.8" y="122" textLength="67.2">Packages</text>
 <text class="aa w" x="462" y="122" textLength="109.2">: 1316 (dpkg)</text>
@@ -80,10 +80,10 @@
 <text class="aa w" x="462" y="230" textLength="126">: Runner.Worker</text>
 <text class="ab w" x="58.8" y="248" textLength="294">...                         ,ooool.</text>
 <text class="ab" x="394.8" y="248" textLength="25.2">CPU</text>
-<text class="aa w" x="420" y="248" textLength="319.2">: AMD EPYC 9V74 80-Core (4) @ 3.69 GHz</text>
+<text class="aa w" x="420" y="248" textLength="319.2">: AMD EPYC 9V74 80-Core (4) @ 2.87 GHz</text>
 <text class="ab w" x="33.6" y="266" textLength="310.8">.cooooc.              ..&apos;,,&apos;.  .cooo.</text>
 <text class="ab" x="394.8" y="266" textLength="50.4">Memory</text>
-<text class="aa w" x="445.2" y="266" textLength="201.6">: 1.02 GiB / 15.61 GiB (</text>
+<text class="aa w" x="445.2" y="266" textLength="201.6">: 1.03 GiB / 15.61 GiB (</text>
 <text class="ac" x="646.8" y="266" textLength="16.8">7%</text>
 <text class="aa" x="663.6" y="266" textLength="8.4">)</text>
 <text class="ab w" x="50.4" y="284" textLength="285.6">;ooooo:.           ;oooooooc.  :l.</text>
@@ -93,12 +93,12 @@
 <text class="aa" x="596.4" y="284" textLength="8.4">)</text>
 <text class="ab w" x="58.8" y="302" textLength="243.6">.coooooc,..      coooooooooo.</text>
 <text class="ab w" x="394.8" y="302" textLength="67.2">Disk (/)</text>
-<text class="aa w" x="462" y="302" textLength="218.4">: 59.30 GiB / 144.26 GiB (</text>
+<text class="aa w" x="462" y="302" textLength="218.4">: 59.29 GiB / 144.26 GiB (</text>
 <text class="ac" x="680.4" y="302" textLength="25.2">41%</text>
 <text class="aa w" x="705.6" y="302" textLength="67.2">) - ext4</text>
 <text class="ab w" x="75.6" y="320" textLength="226.8">.:ooooooolc:. .ooooooooooo&apos;</text>
 <text class="ab w" x="394.8" y="320" textLength="126">Local IP (eth0)</text>
-<text class="aa w" x="520.8" y="320" textLength="117.6">: 10.1.0.61/20</text>
+<text class="aa w" x="520.8" y="320" textLength="117.6">: 10.1.0.89/20</text>
 <text class="ab w" x="92.4" y="338" textLength="201.6">.&apos;:loooooo;  ,oooooooooc</text>
 <text class="ab" x="394.8" y="338" textLength="50.4">Locale</text>
 <text class="aa w" x="445.2" y="338" textLength="75.6">: C.UTF-8</text>

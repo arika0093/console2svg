@@ -4,7 +4,7 @@
 .c2 text { dominant-baseline: alphabetic; }
 .c2 .q { shape-rendering: crispEdges; }
 .c2 .aa{fill:#d4d4d4}
-</style><defs>
+</style><defs><pattern id="c2-redacted-stripe" patternUnits="userSpaceOnUse" width="8" height="8"><path d="M0 0h8v8H0z" fill="#1e1e1e"/><path d="M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6" stroke="#d4d4d4" stroke-width="2" opacity="0.3"/></pattern></defs><defs>
 <linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#004060"/><stop offset="100%" stop-color="#0080c0"/></linearGradient>
 </defs>
 <rect width="898" height="283" fill="url(#c2bg)"/>
@@ -23,6 +23,6 @@
 </g>
 </g>
 <g class="c2 c" transform="translate(29 74)">
-<text class="aa" y="14" textLength="67.2">10.0.401</text>
+<text class="aa" y="14" textLength="193.2">11.0.100-rc.1.26425.128</text>
 </g>
 </svg>

@@ -8,7 +8,7 @@
 .c2 .ab{fill:#d4d4d4}
 .c2 .ac{fill:#11a8cd}
 .c2 .ad{fill:#bc3fbc}
-</style><defs>
+</style><defs><pattern id="c2-redacted-stripe" patternUnits="userSpaceOnUse" width="8" height="8"><path d="M0 0h8v8H0z" fill="#1e1e1e"/><path d="M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6" stroke="#d4d4d4" stroke-width="2" opacity="0.3"/></pattern></defs><defs>
 <linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1d2e"/><stop offset="100%" stop-color="#252840"/></linearGradient>
 </defs>
 <rect width="1024" height="448" fill="url(#c2bg)"/>
@@ -42,11 +42,12 @@
 <text class="ab w" x="310.8" y="266" textLength="210">Render an asciicast file.</text>
 <text class="ab w" x="16.8" y="284" textLength="495.6">theme                              Manage installed themes.</text>
 <text class="ab w" x="16.8" y="302" textLength="621.6">status                             Show application and dependency status.</text>
-<text class="ab" x="16.8" y="320" textLength="92.4">live-server</text>
-<text class="ad" x="117.6" y="320" textLength="92.4">&lt;host:port&gt;</text>
-<text class="ad" x="218.4" y="320" textLength="75.6">&lt;command&gt;</text>
-<text class="ab w" x="310.8" y="320" textLength="218.4">Serve a live terminal SVG.</text>
-<text class="ab w" x="16.8" y="338" textLength="537.6">tmux                               Capture or serve a tmux pane.</text>
-<text class="ab w" x="16.8" y="356" textLength="898.8">completions                        Commands for generating and registering completions for supported shells</text>
+<text class="ab w" x="16.8" y="320" textLength="705.6">update                             Check for or install a newer console2svg version.</text>
+<text class="ab" x="16.8" y="338" textLength="92.4">live-server</text>
+<text class="ad" x="117.6" y="338" textLength="92.4">&lt;host:port&gt;</text>
+<text class="ad" x="218.4" y="338" textLength="75.6">&lt;command&gt;</text>
+<text class="ab w" x="310.8" y="338" textLength="218.4">Serve a live terminal SVG.</text>
+<text class="ab w" x="16.8" y="356" textLength="537.6">tmux                               Capture or serve a tmux pane.</text>
+<text class="ab w" x="16.8" y="374" textLength="898.8">completions                        Commands for generating and registering completions for supported shells</text>
 </g>
 </svg>

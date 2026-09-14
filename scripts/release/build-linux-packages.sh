@@ -8,6 +8,8 @@ fi
 
 package_version="$1"
 package_iteration="$2"
+mkdir -p ./release-upload
+release_upload="$(cd ./release-upload && pwd)"
 
 for rid in linux-x64 linux-arm64; do
   case "$rid" in
@@ -27,13 +29,22 @@ for rid in linux-x64 linux-arm64; do
   if [ ! -f "$src" ]; then
     continue
   fi
-  chmod 755 "$src"
 
   so_src="./native-artifacts/native-${rid}/libconsole2svg_resvg.so"
   if [ ! -f "$so_src" ]; then
     echo "Native library not found: $so_src" >&2
     exit 1
   fi
+
+  package_root="./package-root/${rid}"
+  rm -rf "$package_root"
+  mkdir -p "$package_root/usr/bin" "$package_root/usr/lib/console2svg"
+
+  cp "$src" "$package_root/usr/lib/console2svg/console2svg"
+  chmod 755 "$package_root/usr/lib/console2svg/console2svg"
+  cp "$so_src" "$package_root/usr/lib/console2svg/libconsole2svg_resvg.so"
+  chmod 755 "$package_root/usr/lib/console2svg/libconsole2svg_resvg.so"
+  ln -s ../lib/console2svg/console2svg "$package_root/usr/bin/console2svg"
 
   common_args=(
     -s dir
@@ -43,12 +54,9 @@ for rid in linux-x64 linux-arm64; do
     --license Apache-2.0
     --url "https://github.com/${GITHUB_REPOSITORY}"
     --description "Convert terminal output to SVG images."
+    -C "$package_root"
   )
 
-  fpm "${common_args[@]}" -t deb -a "$deb_arch" -p "./release-upload/console2svg.${asset_arch}.deb" \
-    "$src=/usr/local/bin/console2svg" \
-    "$so_src=/usr/local/lib/console2svg/libconsole2svg_resvg.so"
-  fpm "${common_args[@]}" -t rpm -a "$rpm_arch" -p "./release-upload/console2svg.${asset_arch}.rpm" \
-    "$src=/usr/local/bin/console2svg" \
-    "$so_src=/usr/local/lib/console2svg/libconsole2svg_resvg.so"
+  fpm "${common_args[@]}" -t deb -a "$deb_arch" -p "${release_upload}/console2svg.${asset_arch}.deb" .
+  fpm "${common_args[@]}" -t rpm -a "$rpm_arch" -p "${release_upload}/console2svg.${asset_arch}.rpm" .
 done

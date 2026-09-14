@@ -2,5 +2,5 @@
 set -euo pipefail
 
 sudo apt-get update
-sudo apt-get install -y rpm
+sudo apt-get install -y cpio rpm
 sudo gem install --no-document fpm

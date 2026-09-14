@@ -9,8 +9,6 @@ on:
       - 'scripts/release/build-linux-packages.sh'
       - 'scripts/release/verify-linux-packages.sh'
       - 'scripts/release/install-linux-packaging-tools.sh'
-      - 'scripts/release/publish-native-aot.sh'
-      - 'scripts/build-resvg-native.sh'
       - '.github/workflows/package-test.yaml'
       - '.github/workflows/release.yaml'
 
@@ -22,30 +20,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
 
-      - uses: actions/setup-dotnet@v6
-        with:
-          dotnet-version: latest
-          dotnet-quality: preview
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-unknown-linux-gnu
-
-      - name: Build bundled resvg library
-        run: bash scripts/build-resvg-native.sh x86_64-unknown-linux-gnu ./native-build/linux-x64
-
-      - name: Publish NativeAOT
-        run: bash scripts/release/publish-native-aot.sh linux-x64
-
-      - name: Stage release artifact layout
+      - name: Download stable Linux artifact
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p ./native-artifacts/native-linux-x64
-          cp ./native-publish/linux-x64/console2svg ./native-artifacts/native-linux-x64/
-          cp ./native-publish/linux-x64/libconsole2svg_resvg.so ./native-artifacts/native-linux-x64/
+          curl -fsSL \
+            https://github.com/arika0093/console2svg/releases/latest/download/console2svg-linux-x64.tar.gz \
+            -o /tmp/console2svg-linux-x64.tar.gz
+          tar -xzf /tmp/console2svg-linux-x64.tar.gz \
+            -C ./native-artifacts/native-linux-x64
+          test -x ./native-artifacts/native-linux-x64/console2svg
+          test -f ./native-artifacts/native-linux-x64/libconsole2svg_resvg.so
 
       - name: Install Linux packaging tools
         run: bash scripts/release/install-linux-packaging-tools.sh

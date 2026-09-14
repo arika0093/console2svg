@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using ConsoleToSvg.Terminal;
 
 namespace ConsoleToSvg;
@@ -14,7 +16,7 @@ internal static partial class Program
             switch (action)
             {
                 case Cli.ThemeAction.List:
-                    WriteThemeList(new ThemeCatalog());
+                    WriteThemeList(new ThemeCatalog(), options.OutputFormat);
                     return 0;
                 case Cli.ThemeAction.Install:
                     ThemeManager.Install(options.ThemeArgument!);
@@ -44,30 +46,57 @@ internal static partial class Program
         }
     }
 
-    private static void WriteThemeList(ThemeCatalog catalog)
+    private static void WriteThemeList(ThemeCatalog catalog, Cli.OutputFormat format)
     {
-        var rows = catalog
-            .Entries.Select(entry =>
-                new[]
-                {
-                    entry.Manifest.Id ?? "",
-                    entry.Manifest.Name ?? "",
-                    entry.Manifest.Version ?? "",
-                    entry.IsBuiltIn ? "built-in" : "installed",
-                }
-            )
+        var entries = catalog
+            .Entries.Select(entry => new ThemeListItem(
+                entry.Manifest.Id ?? "",
+                entry.Manifest.Name ?? "",
+                entry.Manifest.Version ?? "",
+                entry.IsBuiltIn ? "built-in" : "installed"
+            ))
             .ToArray();
+        if (format == Cli.OutputFormat.Json)
+        {
+            Console.WriteLine(
+                JsonSerializer.Serialize(entries, ThemeListJsonContext.Default.ThemeListItemArray)
+            );
+            return;
+        }
+        if (format == Cli.OutputFormat.Markdown)
+        {
+            Console.WriteLine("| ID | Name | Version | Source |");
+            Console.WriteLine("| --- | --- | --- | --- |");
+            foreach (var entry in entries)
+                Console.WriteLine(
+                    $"| {EscapeMarkdown(entry.Id)} | {EscapeMarkdown(entry.Name)} | {EscapeMarkdown(entry.Version)} | {entry.Source} |"
+                );
+            return;
+        }
+
         var headers = new[] { "ID", "Name", "Version", "Source" };
         var widths = headers
             .Select(
-                (header, index) => rows.Select(row => row[index].Length).Append(header.Length).Max()
+                (header, index) =>
+                    entries
+                        .Select(entry =>
+                            index switch
+                            {
+                                0 => entry.Id.Length,
+                                1 => entry.Name.Length,
+                                2 => entry.Version.Length,
+                                _ => entry.Source.Length,
+                            }
+                        )
+                        .Append(header.Length)
+                        .Max()
             )
             .ToArray();
 
         WriteRow(headers, widths);
         WriteRow(widths.Select(width => new string('-', width)).ToArray(), widths);
-        foreach (var row in rows)
-            WriteRow(row, widths);
+        foreach (var entry in entries)
+            WriteRow([entry.Id, entry.Name, entry.Version, entry.Source], widths);
     }
 
     private static void WriteRow(string[] columns, int[] widths) =>
@@ -81,3 +110,9 @@ internal static partial class Program
             )
         );
 }
+
+internal sealed record ThemeListItem(string Id, string Name, string Version, string Source);
+
+[JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
+[JsonSerializable(typeof(ThemeListItem[]))]
+internal sealed partial class ThemeListJsonContext : JsonSerializerContext { }

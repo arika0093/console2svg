@@ -23,7 +23,8 @@ public sealed partial class ConsoleToSvgCommandLine
         ThemeAction? themeAction = null,
         Argument<string>? themeArgument = null,
         Argument<string?>? optionalThemeArgument = null,
-        TmuxAction? tmuxAction = null
+        TmuxAction? tmuxAction = null,
+        Option<string>? formatOption = null
     )
     {
         command.SetAction(
@@ -41,6 +42,7 @@ public sealed partial class ConsoleToSvgCommandLine
                         themeArgument,
                         optionalThemeArgument,
                         tmuxAction,
+                        formatOption,
                         out var options,
                         out var error
                     )
@@ -69,6 +71,7 @@ public sealed partial class ConsoleToSvgCommandLine
         Argument<string>? themeArgument,
         Argument<string?>? optionalThemeArgument,
         TmuxAction? tmuxAction,
+        Option<string>? formatOption,
         out AppOptions? options,
         out string? error
     )
@@ -117,6 +120,9 @@ public sealed partial class ConsoleToSvgCommandLine
             Frame = result.GetValue(_symbols.Frame),
             RequestedThemeAction = themeAction,
             RequestedTmuxAction = tmuxAction,
+            OutputFormat = ParseOutputFormat(
+                formatOption is null ? null : result.GetValue(formatOption)
+            ),
         };
 
         if (options.EmbedDebug)

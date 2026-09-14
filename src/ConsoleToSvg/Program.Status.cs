@@ -18,13 +18,18 @@ internal static partial class Program
 {
     private const int StatusProbeTimeoutMilliseconds = 5000;
 
-    private static async Task<int> RunStatusAsync(bool json, CancellationToken cancellationToken)
+    private static async Task<int> RunStatusAsync(
+        Cli.OutputFormat format,
+        CancellationToken cancellationToken
+    )
     {
         var report = await CreateStatusReportAsync(cancellationToken).ConfigureAwait(false);
-        if (json)
+        if (format == Cli.OutputFormat.Json)
             Console.WriteLine(
                 JsonSerializer.Serialize(report, StatusReportJsonContext.Default.StatusReport)
             );
+        else if (format == Cli.OutputFormat.Markdown)
+            WriteStatusMarkdown(report);
         else
             WriteStatusReport(report);
         return 0;
@@ -348,6 +353,73 @@ internal static partial class Program
         foreach (var format in report.OutputFormats)
             WriteOutputFormatStatus(format);
     }
+
+    private static void WriteStatusMarkdown(StatusReport report)
+    {
+        Console.WriteLine("## console2svg status");
+        Console.WriteLine();
+        Console.WriteLine("### Application");
+        Console.WriteLine("| Property | Value |");
+        Console.WriteLine("| --- | --- |");
+        Console.WriteLine($"| Version | {EscapeMarkdown(report.Application.Version)} |");
+        Console.WriteLine($"| Commit at | {ThisAssembly.GitCommitDate:yyyy-MM-dd HH:mm:ss} UTC |");
+        Console.WriteLine(
+            $"| Executable | {EscapeMarkdown(report.Application.ExecutablePath ?? "(unknown)")} |"
+        );
+        Console.WriteLine($"| Channel | {EscapeMarkdown(report.Application.InstallChannel)} |");
+        Console.WriteLine(
+            $"| Platform | {EscapeMarkdown(report.Platform.OperatingSystem)} / {report.Platform.Architecture} |"
+        );
+        Console.WriteLine($"| Framework | {EscapeMarkdown(report.Platform.Framework)} |");
+        Console.WriteLine();
+        Console.WriteLine("### Rendering");
+        WriteToolMarkdown(
+            ("resvg", report.Renderers.Resvg),
+            ("rsvg-convert", report.Renderers.RsvgConvert),
+            ("ffmpeg", report.Renderers.Ffmpeg)
+        );
+        Console.WriteLine();
+        Console.WriteLine("### Optional features");
+        WriteToolMarkdown(
+            ("git", report.OptionalFeatures.Git),
+            ("tmux", report.OptionalFeatures.Tmux)
+        );
+        Console.WriteLine();
+        Console.WriteLine("### Themes");
+        Console.WriteLine("| Status | Built-in | Installed | Directory | Error |");
+        Console.WriteLine("| --- | ---: | ---: | --- | --- |");
+        Console.WriteLine(
+            $"| {(report.Themes.Error is null ? "available" : "unavailable")} | {report.Themes.BuiltIn} | {report.Themes.Installed} | {EscapeMarkdown(report.Themes.Directory)} | {EscapeMarkdown(report.Themes.Error ?? "")} |"
+        );
+        Console.WriteLine();
+        Console.WriteLine("### Terminal");
+        Console.WriteLine("| Feature | Status | Reason |");
+        Console.WriteLine("| --- | --- | --- |");
+        Console.WriteLine(
+            $"| ANSI color | {(report.Terminal.AnsiColor.Available ? "available" : "unavailable")} | {EscapeMarkdown(report.Terminal.AnsiColor.Reason ?? "")} |"
+        );
+        Console.WriteLine();
+        Console.WriteLine("### Supported output formats");
+        Console.WriteLine("| Format | Status | Extensions | Converter | Codec | Reason |");
+        Console.WriteLine("| --- | --- | --- | --- | --- | --- |");
+        foreach (var format in report.OutputFormats)
+            Console.WriteLine(
+                $"| {format.Name} | {(format.Available ? "available" : "unavailable")} | {format.Extensions} | {format.Converter ?? ""} | {format.Codec ?? ""} | {EscapeMarkdown(format.Reason ?? "")} |"
+            );
+    }
+
+    private static void WriteToolMarkdown(params (string Name, StatusTool Tool)[] tools)
+    {
+        Console.WriteLine("| Tool | Status | Version | Path | Error |");
+        Console.WriteLine("| --- | --- | --- | --- | --- |");
+        foreach (var (name, tool) in tools)
+            Console.WriteLine(
+                $"| {name} | {(tool.Available ? "available" : "unavailable")} | {EscapeMarkdown(FormatStatusToolVersion(tool.Version) ?? "")} | {EscapeMarkdown(FormatStatusToolPath(tool.Path))} | {EscapeMarkdown(tool.Error ?? "")} |"
+            );
+    }
+
+    private static string EscapeMarkdown(string value) =>
+        value.Replace("|", "\\|").Replace("\n", " ");
 
     private static void WriteStatusTool(string name, StatusTool tool)
     {

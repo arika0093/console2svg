@@ -124,6 +124,10 @@ public sealed partial class ConsoleToSvgCommandLine
         public Option<string> ListenAddress { get; } =
             RequiredString("--listen", "IP address for the live server.");
         public Option<bool> StatusJson { get; } = Flag("--json", "Write status as JSON.");
+        public Option<string> StatusFormat { get; } =
+            StringChoice("--format", "Output format.", ["json", "markdown", "table"]);
+        public Option<string> ThemeFormat { get; } =
+            StringChoice("--format", "Output format.", ["json", "markdown", "table"]);
 
         public IEnumerable<Option> Options =>
             [

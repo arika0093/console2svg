@@ -138,6 +138,20 @@ public sealed class ConsoleToSvgCommandLineTests
         invocation.ExitCode.ShouldBe(0);
         invocation.Options!.Workflow.ShouldBe(Workflow.Status);
         invocation.Options.StatusJson.ShouldBeTrue();
+        invocation.Options.OutputFormat.ShouldBe(OutputFormat.Json);
+    }
+
+    [Test]
+    public async Task StatusAndThemeListMapTheSharedOutputFormats()
+    {
+        var status = await InvokeAsync("status", "--format", "markdown");
+        var themes = await InvokeAsync("theme", "list", "--format", "json");
+
+        status.ExitCode.ShouldBe(0);
+        status.Options!.OutputFormat.ShouldBe(OutputFormat.Markdown);
+        themes.ExitCode.ShouldBe(0);
+        themes.Options!.Workflow.ShouldBe(Workflow.Theme);
+        themes.Options.OutputFormat.ShouldBe(OutputFormat.Json);
     }
 
     [Test]

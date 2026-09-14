@@ -140,7 +140,13 @@ public sealed partial class ConsoleToSvgCommandLine
         theme.SetAction(ColoredHelpAction.Write);
 
         var list = new Command("list", "List installed themes.");
-        SetMappedAction(list, Workflow.Theme, themeAction: ThemeAction.List);
+        list.Options.Add(_symbols.ThemeFormat);
+        SetMappedAction(
+            list,
+            Workflow.Theme,
+            themeAction: ThemeAction.List,
+            formatOption: _symbols.ThemeFormat
+        );
         theme.Subcommands.Add(list);
 
         var install = new Command("install", "Install a theme from a directory, archive, or URL.");
@@ -198,6 +204,7 @@ public sealed partial class ConsoleToSvgCommandLine
     {
         var status = new Command("status", "Show application and dependency status.");
         status.Options.Add(_symbols.StatusJson);
+        status.Options.Add(_symbols.StatusFormat);
         status.SetAction(
             (parseResult, cancellationToken) =>
                 _handler(
@@ -205,6 +212,9 @@ public sealed partial class ConsoleToSvgCommandLine
                     {
                         Workflow = Workflow.Status,
                         StatusJson = parseResult.GetValue(_symbols.StatusJson),
+                        OutputFormat = parseResult.GetValue(_symbols.StatusJson)
+                            ? OutputFormat.Json
+                            : ParseOutputFormat(parseResult.GetValue(_symbols.StatusFormat)),
                     },
                     parseResult,
                     cancellationToken
@@ -212,6 +222,9 @@ public sealed partial class ConsoleToSvgCommandLine
         );
         root.Subcommands.Add(status);
     }
+
+    private static OutputFormat ParseOutputFormat(string? value) =>
+        Enum.TryParse<OutputFormat>(value, true, out var format) ? format : OutputFormat.Table;
 
     private void AddUpdateCommand(RootCommand root)
     {

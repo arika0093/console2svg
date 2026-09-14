@@ -10,6 +10,13 @@ public enum OutputMode
     Video,
 }
 
+public enum OutputFormat
+{
+    Table,
+    Json,
+    Markdown,
+}
+
 public enum Workflow
 {
     Legacy,
@@ -44,6 +51,7 @@ public sealed class AppOptions
     public ThemeAction? RequestedThemeAction { get; set; }
     public string? ThemeArgument { get; set; }
     public bool StatusJson { get; set; }
+    public OutputFormat OutputFormat { get; set; } = OutputFormat.Table;
     public bool UpdateCheck { get; set; }
     public bool UpdateForce { get; set; }
     public bool UpdateYes { get; set; }

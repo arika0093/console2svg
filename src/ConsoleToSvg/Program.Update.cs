@@ -199,24 +199,43 @@ internal static partial class Program
         if (string.IsNullOrWhiteSpace(executablePath))
             return InstallChannelInfo.Standalone;
 
+        var resolvedExecutablePath = ResolveExecutablePath(executablePath);
+        if (IsNpmManagedPath(resolvedExecutablePath))
+            return new("npm", "npm update -g console2svg", true);
+
         if (OperatingSystem.IsLinux())
         {
-            var resolvedPath = ResolveExecutablePath(executablePath);
-            if (await IsOwnedByPackageAsync("dpkg-query", "-S", resolvedPath, cancellationToken))
+            if (
+                await IsOwnedByPackageAsync(
+                    "dpkg-query",
+                    "-S",
+                    resolvedExecutablePath,
+                    cancellationToken
+                )
+            )
                 return new(
                     "deb",
                     "sudo apt update && sudo apt install --only-upgrade console2svg",
                     true
                 );
-            if (await IsOwnedByPackageAsync("rpm", "-qf", resolvedPath, cancellationToken))
+            if (
+                await IsOwnedByPackageAsync("rpm", "-qf", resolvedExecutablePath, cancellationToken)
+            )
                 return new("rpm", "sudo dnf upgrade console2svg", true);
         }
 
-        if (OperatingSystem.IsWindows() && await IsWingetInstallationAsync(cancellationToken))
+        if (
+            OperatingSystem.IsWindows()
+            && await IsWingetInstallationAsync(resolvedExecutablePath, cancellationToken)
+        )
             return new("winget", "winget upgrade --id arika0093.console2svg --exact", true);
 
         return InstallChannelInfo.Standalone;
     }
+
+    private static bool IsNpmManagedPath(string resolvedExecutablePath) =>
+        resolvedExecutablePath.Contains("node_modules", StringComparison.OrdinalIgnoreCase)
+        && resolvedExecutablePath.Contains("console2svg", StringComparison.OrdinalIgnoreCase);
 
     private static async Task<bool> IsOwnedByPackageAsync(
         string command,
@@ -251,8 +270,18 @@ internal static partial class Program
         }
     }
 
-    private static async Task<bool> IsWingetInstallationAsync(CancellationToken cancellationToken)
+    private static async Task<bool> IsWingetInstallationAsync(
+        string resolvedExecutablePath,
+        CancellationToken cancellationToken
+    )
     {
+        // 'winget list' only proves the package exists somewhere on this machine.
+        // When standalone and winget copies coexist, the running standalone binary
+        // must not be reported as winget-managed, so require the current
+        // executable to live under a winget-owned location first.
+        if (!IsLikelyWingetPath(resolvedExecutablePath))
+            return false;
+
         try
         {
             var executable = FindExecutableInPath("winget");
@@ -284,6 +313,19 @@ internal static partial class Program
         {
             return false;
         }
+    }
+
+    private static bool IsLikelyWingetPath(string resolvedExecutablePath)
+    {
+        return resolvedExecutablePath.Contains(
+                Path.Combine("Microsoft", "WinGet", "Packages"),
+                StringComparison.OrdinalIgnoreCase
+            )
+            || resolvedExecutablePath.Contains(
+                $"{Path.DirectorySeparatorChar}WinGet{Path.DirectorySeparatorChar}Packages{Path.DirectorySeparatorChar}",
+                StringComparison.OrdinalIgnoreCase
+            )
+            || resolvedExecutablePath.Contains("WindowsApps", StringComparison.OrdinalIgnoreCase);
     }
 
     private static async Task<ReleaseInfo> GetLatestReleaseAsync(

@@ -66,9 +66,9 @@ public sealed partial class ConsoleToSvgCommandLine
         public Option<bool> MaskAuto { get; } =
             new("--mask-auto")
             {
-                Description = "Automatically overlay Betterleaks secret findings (default: false).",
+                Description = "Automatically overlay Betterleaks secret findings (default: true).",
                 Arity = ArgumentArity.ZeroOrOne,
-                DefaultValueFactory = _ => false,
+                DefaultValueFactory = _ => true,
             };
         public Option<bool> WithCommand { get; } =
             Flag("--with-command", "Prepend the command line to output.", "-c");

@@ -131,7 +131,7 @@ internal static partial class SvgDocumentBuilder
         bool renderBackground = true,
         bool renderBaseBackground = true,
         bool renderForeground = true,
-        bool autoMask = false,
+        bool autoMask = true,
         QuickLeaksScanMode autoMaskMode = QuickLeaksScanMode.Normal
     )
     {

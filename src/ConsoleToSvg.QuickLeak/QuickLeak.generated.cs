@@ -2404,9 +2404,9 @@ public static partial class QuickLeak
     private static partial Regex Rule461();
     [GeneratedRegex("\\b(zpka_[a-z0-9]{0,32}_[0-9a-f]{0,8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
     private static partial Regex EarlyRule461();
-    [GeneratedRegex("(?i)(?:/(?:home|Users)/[A-Za-z0-9._-]+|[A-Za-z]:\\\\Users\\\\[A-Za-z0-9._-]+)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:/(?:home|Users)/[A-Za-z0-9._-]+|(?:[A-Za-z]:)?(?:\\\\|/)Users(?:\\\\|/)[A-Za-z0-9._-]+)", RegexOptions.CultureInvariant)]
     private static partial Regex Rule462();
-    [GeneratedRegex("(?i)(?:/(?:home|Users)/[A-Za-z0-9._-]*|[A-Za-z]:\\\\Users\\\\[A-Za-z0-9._-]*)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:/(?:home|Users)/[A-Za-z0-9._-]*|(?:[A-Za-z]:)?(?:\\\\|/)Users(?:\\\\|/)[A-Za-z0-9._-]*)", RegexOptions.CultureInvariant)]
     private static partial Regex EarlyRule462();
     [GeneratedRegex("(?i)\\b[a-z][a-z0-9+.-]{1,20}://[^/\\s:@]+:[^/\\s@]+@", RegexOptions.CultureInvariant)]
     private static partial Regex Rule463();

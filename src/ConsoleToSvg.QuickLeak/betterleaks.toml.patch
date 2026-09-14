@@ -1,7 +1,7 @@
 [[rules]]
 id = "console2svg-home-directory"
-regex = '(?i)(?:/(?:home|Users)/[A-Za-z0-9._-]+|[A-Za-z]:\\Users\\[A-Za-z0-9._-]+)'
-early_regex = '(?i)(?:/(?:home|Users)/[A-Za-z0-9._-]*|[A-Za-z]:\\Users\\[A-Za-z0-9._-]*)'
+regex = '(?i)(?:/(?:home|Users)/[A-Za-z0-9._-]+|(?:[A-Za-z]:)?(?:\\|/)Users(?:\\|/)[A-Za-z0-9._-]+)'
+early_regex = '(?i)(?:/(?:home|Users)/[A-Za-z0-9._-]*|(?:[A-Za-z]:)?(?:\\|/)Users(?:\\|/)[A-Za-z0-9._-]*)'
 keywords = ["home", "users"]
 
 [[rules]]

@@ -34,7 +34,8 @@ public static partial class InteractiveRecorder
         bool forwardToConsole = true,
         bool captureControlsEnabled = true,
         Func<(int Width, int Height)>? terminalSizeProvider = null,
-        string? saveCastPath = null
+        string? saveCastPath = null,
+        Func<Task>? onHostReadyAsync = null
     )
     {
         if (screenshotKey.IsEmpty || recordingKey.IsEmpty || pauseKey.IsEmpty)
@@ -1136,7 +1137,7 @@ public static partial class InteractiveRecorder
             )
             : Task.CompletedTask;
 
-        if (forwardToConsole)
+        if (forwardToConsole || onHostReadyAsync is not null)
         {
             _ = Task.Run(
                 async () =>
@@ -1146,10 +1147,27 @@ public static partial class InteractiveRecorder
                         var initialNotificationVersion = Volatile.Read(ref notificationVersion);
                         // cmd/Clink and Starship often clear the terminal while their
                         // startup scripts run. Wait for that output to finish before
-                        // drawing the host-only key guide.
+                        // printing startup messages (e.g. the live-server URL) and
+                        // drawing the host-only key guide, so neither is erased:
+                        // cls -> shell startup -> message -> ready.
                         await Task.Delay(500, lifetime.Token).ConfigureAwait(false);
                         await WaitForOutputToSettleAsync().ConfigureAwait(false);
-                        if (Volatile.Read(ref notificationVersion) == initialNotificationVersion)
+                        if (onHostReadyAsync is not null)
+                        {
+                            await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);
+                            try
+                            {
+                                await onHostReadyAsync().ConfigureAwait(false);
+                            }
+                            finally
+                            {
+                                hostOutputGate.Release();
+                            }
+                        }
+                        if (
+                            forwardToConsole
+                            && Volatile.Read(ref notificationVersion) == initialNotificationVersion
+                        )
                         {
                             Interlocked.Exchange(ref startupIndicatorActive, 1);
                             await hostOutputGate.WaitAsync(lifetime.Token).ConfigureAwait(false);

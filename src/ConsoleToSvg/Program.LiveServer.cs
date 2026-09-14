@@ -87,15 +87,7 @@ internal static partial class Program
             );
             return 1;
         }
-        if (!Console.IsOutputRedirected)
-        {
-            await Console.Out.WriteAsync("\u001b[2J\u001b[H");
-            await Console.Out.FlushAsync(cancellationToken);
-        }
-        await Console.Error.WriteLineAsync(
-            $"Live terminal: http://{address}:{options.LiveServerPort}/"
-        );
-        await Console.Error.FlushAsync(cancellationToken);
+        var liveUrl = $"Live terminal: http://{address}:{options.LiveServerPort}/";
         using var listenerRegistration = cancellationToken.Register(listener.Stop);
         try
         {
@@ -182,7 +174,15 @@ internal static partial class Program
                             )
                         )
                         : null,
-                    saveCastPath: options.SaveCastPath
+                    saveCastPath: options.SaveCastPath,
+                    onHostReadyAsync: async () =>
+                    {
+                        // Printed after the shell startup output settles inside
+                        // InteractiveRecorder, so neither its clear nor the
+                        // shell's own clears erase it: cls -> URL -> ready.
+                        await Console.Error.WriteLineAsync(liveUrl).ConfigureAwait(false);
+                        await Console.Error.FlushAsync(cancellationToken).ConfigureAwait(false);
+                    }
                 )
                 .ConfigureAwait(false);
             await liveLifetime.CancelAsync().ConfigureAwait(false);

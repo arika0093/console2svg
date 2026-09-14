@@ -55,16 +55,52 @@ public sealed class QuickLeakTests
     }
 
     [Test]
-    public void GenericPasswordRequiresAValueAndStartsAtThePasswordKey()
+    public void GenericPasswordMasksOnlyTheValue()
     {
-        var findings = Filter.Scan("\"password\": \"123456\"");
+        var text = "\"password\": \"123456\"";
+        var findings = Filter.Scan(text);
 
         findings.Any(finding => finding.RuleId == "generic-password").ShouldBeTrue();
-        findings
-            .Single(finding => finding.RuleId == "generic-password")
-            .Start
-            .ShouldBe(1);
+        var finding = findings.Single(finding => finding.RuleId == "generic-password");
+        text.Substring(finding.Start, finding.End - finding.Start).ShouldBe("123456");
         Filter.Scan("PASSWORD=").ShouldBeEmpty();
+    }
+
+    [Test]
+    public void HomeDirectoryMasksOnlyTheUsername()
+    {
+        foreach (
+            var path in new[]
+            {
+                "/home/alice/project",
+                "C:\\Users\\alice\\project",
+                "\\Users\\alice",
+                "C:/Users/alice/project",
+            }
+        )
+        {
+            var findings = Filter.Scan(path);
+            var finding = findings.Single(
+                finding => finding.RuleId == "console2svg-home-directory"
+            );
+            path.Substring(finding.Start, finding.End - finding.Start).ShouldBe("alice");
+        }
+    }
+
+    [Test]
+    public void CredentialUriMasksOnlyThePassword()
+    {
+        var text = "https://user:secret@example.test/path";
+        var findings = Filter.Scan(text);
+
+        foreach (
+            var finding in findings.Where(finding =>
+                finding.RuleId is "generic-credential-uri" or "console2svg-credential-uri"
+            )
+        )
+        {
+            text.Substring(finding.Start, finding.End - finding.Start).ShouldBe("secret");
+        }
     }
 
     [Test]

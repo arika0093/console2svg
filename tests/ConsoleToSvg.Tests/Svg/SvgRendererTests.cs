@@ -46,12 +46,11 @@ public sealed partial class SvgRendererTests
         svg.ShouldNotContain("console2svg-asciicast");
     }
 
-    #if false
     [Test]
     public void RenderAutoMaskRemovesSecretsFromTextNodes()
     {
         var session = new RecordingSession(width: 32, height: 1);
-        session.AddEvent(0.01, "PASSWORD=123456 safe");
+        session.AddEvent(0.01, "PASSWORD=123456");
 
         var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
             session,
@@ -72,8 +71,6 @@ public sealed partial class SvgRendererTests
         svg.ShouldContain("c2-redacted-stripe");
     }
 
-    #endif
-
     [Test]
     public void RenderAutoMaskRemovesHomePathFromTextNodes()
     {
@@ -85,7 +82,8 @@ public sealed partial class SvgRendererTests
             new ConsoleToSvg.Svg.SvgRenderOptions { MaskAuto = true }
         );
 
-        svg.ShouldNotContain("/home/alice");
+        svg.ShouldNotContain("alice");
+        svg.ShouldContain("/home/");
         svg.ShouldContain("c2-redacted-stripe");
     }
 
@@ -107,14 +105,13 @@ public sealed partial class SvgRendererTests
             .ShouldBe(3);
     }
 
-    #if false
     [Test]
     public void RenderAutoMaskRemovesCredentialValueFromTextNodes()
     {
         var session = new RecordingSession(width: 32, height: 1);
         var key = string.Concat('p', 'a', 's', 's', 'w', 'o', 'r', 'd');
         var value = string.Concat('1', '2', '3', '4', '5', '6');
-        session.AddEvent(0.01, "\"" + key + "\": \"" + value + "\" safe");
+        session.AddEvent(0.01, "\"" + key + "\": \"" + value + "\"");
 
         var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
             session,
@@ -124,8 +121,6 @@ public sealed partial class SvgRendererTests
         svg.ShouldNotContain(value);
         svg.ShouldContain("c2-redacted-stripe");
     }
-
-    #endif
 
     [Test]
     public void RenderEmbedsLogsAndReplayMetadata()

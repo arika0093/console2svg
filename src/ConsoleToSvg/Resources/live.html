@@ -112,6 +112,7 @@
   let mode = 'contain';
   let events;
   let reconnectTimer;
+  let connectionWatchdog;
 
   function applyMode() {
     const svg = textLayer.querySelector('svg');
@@ -146,8 +147,14 @@
 
   function connect() {
     clearTimeout(reconnectTimer);
+    clearInterval(connectionWatchdog);
     const source = new EventSource('/events');
     events = source;
+    connectionWatchdog = setInterval(() => {
+      if (events === source && source.readyState === EventSource.CLOSED) {
+        reconnect(source);
+      }
+    }, 1000);
     source.addEventListener('background', e => {
       background.innerHTML = e.data;
       applyMode();
@@ -172,9 +179,17 @@
         return;
       }
       status.classList.add('visible');
-      source.close();
-      reconnectTimer = setTimeout(connect, 1000);
+      reconnect(source);
     };
+  }
+
+  function reconnect(source) {
+    if (events !== source) {
+      return;
+    }
+    source.close();
+    clearInterval(connectionWatchdog);
+    reconnectTimer = setTimeout(connect, 1000);
   }
 
   windowLayer.onpointermove = e => {

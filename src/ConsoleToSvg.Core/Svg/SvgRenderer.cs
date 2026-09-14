@@ -133,7 +133,9 @@ public static class SvgRenderer
             includeStaticLayers: options.IncludeStaticLayers,
             includeBackground: options.IncludeBackground,
             includeChrome: options.IncludeChrome,
-            includeClientBackground: options.IncludeClientBackground
+            includeClientBackground: options.IncludeClientBackground,
+            autoMask: options.MaskAuto,
+            autoMaskMode: options.AutoMaskMode
         );
         if (options.IncludeTerminalFrame && options.IncludeTerminalBackground)
         {
@@ -151,7 +153,9 @@ public static class SvgRenderer
                 renderCursor: false,
                 renderBackground: true,
                 renderBaseBackground: options.IncludeTerminalBaseBackground,
-                renderForeground: false
+                renderForeground: false,
+                autoMask: options.MaskAuto,
+                autoMaskMode: options.AutoMaskMode
             );
         }
         SvgDocumentBuilder.EndStaticLayers(svgWriter, options.Opacity);
@@ -170,7 +174,9 @@ public static class SvgRenderer
                 maskPatterns: options.MaskPatterns,
                 renderCursor: options.RenderCursor,
                 renderBackground: false,
-                renderForeground: true
+                renderForeground: true,
+                autoMask: options.MaskAuto,
+                autoMaskMode: options.AutoMaskMode
             );
         }
         SvgDocumentBuilder.EndSvg(

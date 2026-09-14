@@ -123,6 +123,7 @@ public sealed partial class ConsoleToSvgCommandLine
             OutputFormat = ParseOutputFormat(
                 formatOption is null ? null : result.GetValue(formatOption)
             ),
+            MaskAuto = result.GetValue(_symbols.MaskAuto),
         };
 
         if (options.EmbedDebug)

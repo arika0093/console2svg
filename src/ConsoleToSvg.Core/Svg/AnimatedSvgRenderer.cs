@@ -188,7 +188,9 @@ public static partial class AnimatedSvgRenderer
             opacity: options.Opacity,
             background: options.Background,
             maskPatterns: options.MaskPatterns,
-            animateBlink: true
+            animateBlink: true,
+            autoMask: options.MaskAuto,
+            autoMaskMode: options.AutoMaskMode
         );
         SvgDocumentBuilder.EndStaticLayers(svgWriter, options.Opacity);
 
@@ -200,7 +202,9 @@ public static partial class AnimatedSvgRenderer
             styles,
             lengthAdjust: options.LengthAdjust,
             opacity: 1d,
-            maskPatterns: options.MaskPatterns
+            maskPatterns: options.MaskPatterns,
+            autoMask: options.MaskAuto,
+            autoMaskMode: options.AutoMaskMode
         );
         var hasContentTransform = SvgDocumentBuilder.AppendContentTransformGroupOpen(
             svgWriter,

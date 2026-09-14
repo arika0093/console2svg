@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using ConsoleToSvg.QuickLeak;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
+using Filter = ConsoleToSvg.QuickLeak.QuickLeak;
 
 namespace ConsoleToSvg.Svg;
 
@@ -24,7 +26,9 @@ internal static partial class SvgDocumentBuilder
         bool includeStaticLayers = true,
         bool includeBackground = true,
         bool includeChrome = true,
-        bool includeClientBackground = true
+        bool includeClientBackground = true,
+        bool autoMask = false,
+        QuickLeakScanMode autoMaskMode = QuickLeakScanMode.Normal
     )
     {
         sb.Append("<svg xmlns=\"http://www.w3.org/2000/svg\" ");
@@ -74,6 +78,14 @@ internal static partial class SvgDocumentBuilder
             sb.Append("@keyframes c2b { 50% { visibility: hidden; } }\n");
         }
         sb.Append("</style>");
+        sb.Append(
+            "<defs><pattern id=\"c2-redacted-stripe\" patternUnits=\"userSpaceOnUse\" width=\"8\" height=\"8\">"
+        );
+        sb.Append("<path d=\"M0 0h8v8H0z\" fill=\"");
+        sb.Append(EscapeAttribute(theme.Background));
+        sb.Append("\"/><path d=\"M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6\" stroke=\"");
+        sb.Append(EscapeAttribute(theme.Foreground));
+        sb.Append("\" stroke-width=\"2\" opacity=\"0.3\"/></pattern></defs>");
 
         if (includeStaticLayers && includeBackground)
         {
@@ -93,7 +105,16 @@ internal static partial class SvgDocumentBuilder
             }
             if (context.HeaderRows > 0 && !string.IsNullOrEmpty(commandHeader))
             {
-                AppendCommandHeader(sb, context, theme, styles, commandHeader, maskPatterns);
+                AppendCommandHeader(
+                    sb,
+                    context,
+                    theme,
+                    styles,
+                    commandHeader,
+                    maskPatterns,
+                    autoMask,
+                    autoMaskMode
+                );
             }
         }
     }
@@ -109,7 +130,9 @@ internal static partial class SvgDocumentBuilder
         Theme theme,
         SvgStyleRegistry styles,
         string commandHeader,
-        string[]? maskPatterns = null
+        string[]? maskPatterns = null,
+        bool autoMask = false,
+        QuickLeakScanMode autoMaskMode = QuickLeakScanMode.Normal
     )
     {
         var x = context.HeaderOffsetX;
@@ -129,8 +152,45 @@ internal static partial class SvgDocumentBuilder
         sb.Append('"');
         AppendPositionAttributes(sb, x, bgY + context.BaselineOffset);
         sb.Append(">");
-        sb.Append(ApplyMask(EscapeText(commandHeader), maskPatterns));
-        sb.Append("</text></g>\n");
+        var renderedHeader = commandHeader;
+        if (autoMask)
+        {
+            var redactedHeader = commandHeader.ToCharArray();
+            foreach (var finding in Filter.Enumerate(commandHeader, autoMaskMode))
+            {
+                var start = Math.Max(0, finding.Start);
+                var end = Math.Min(redactedHeader.Length, finding.End);
+                for (var index = start; index < end; index++)
+                {
+                    redactedHeader[index] = ' ';
+                }
+            }
+            renderedHeader = new string(redactedHeader);
+        }
+        sb.Append(ApplyMask(EscapeText(renderedHeader), maskPatterns));
+        sb.Append("</text>");
+        if (autoMask)
+        {
+            foreach (var finding in Filter.Enumerate(commandHeader, autoMaskMode))
+            {
+                var start = Math.Max(0, finding.Start);
+                var end = Math.Min(commandHeader.Length, finding.End);
+                if (end <= start)
+                {
+                    continue;
+                }
+                sb.Append("<rect class=\"c2-auto-mask\" x=\"");
+                sb.Append(x + start * context.CellWidth);
+                sb.Append("\" y=\"");
+                sb.Append(bgY);
+                sb.Append("\" width=\"");
+                sb.Append((end - start) * context.CellWidth);
+                sb.Append("\" height=\"");
+                sb.Append(bgH);
+                sb.Append("\" fill=\"url(#c2-redacted-stripe)\"/>");
+            }
+        }
+        sb.Append("</g>\n");
     }
 
     /// <summary>Renders the always-opaque background layer (desktop bg for desktop styles, canvas bg otherwise).</summary>
@@ -547,7 +607,9 @@ internal static partial class SvgDocumentBuilder
         SvgStyleRegistry styles,
         string lengthAdjust,
         double opacity = 1d,
-        string[]? maskPatterns = null
+        string[]? maskPatterns = null,
+        bool autoMask = false,
+        QuickLeakScanMode autoMaskMode = QuickLeakScanMode.Normal
     )
     {
         var rowCount = context.EndRowExclusive - context.StartRow;
@@ -656,7 +718,9 @@ internal static partial class SvgDocumentBuilder
                     lengthAdjust: lengthAdjust,
                     maskPatterns: maskPatterns,
                     renderCursor: false,
-                    elements: elements
+                    elements: elements,
+                    autoMask: autoMask,
+                    autoMaskMode: autoMaskMode
                 );
             }
             else
@@ -685,7 +749,9 @@ internal static partial class SvgDocumentBuilder
                     renderCursor: false,
                     applyFontClass: false,
                     overlapBaseBackground: true,
-                    elements: elements
+                    elements: elements,
+                    autoMask: autoMask,
+                    autoMaskMode: autoMaskMode
                 );
                 sb.Append("</g>\n");
             }

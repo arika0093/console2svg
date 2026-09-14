@@ -1,5 +1,6 @@
 namespace ConsoleToSvg.Svg;
 
+using ConsoleToSvg.QuickLeak;
 using ConsoleToSvg.Terminal;
 
 public sealed class SvgRenderOptions
@@ -96,6 +97,12 @@ public sealed class SvgRenderOptions
     /// Applied to all text content including command headers.
     /// </summary>
     public string[]? MaskPatterns { get; set; }
+
+    /// <summary>Overlay secrets found by the generated Betterleaks quick filter.</summary>
+    public bool MaskAuto { get; set; } = true;
+
+    /// <summary>Regex mode used by automatic masking.</summary>
+    public QuickLeakScanMode AutoMaskMode { get; set; } = QuickLeakScanMode.Normal;
 
     /// <summary>
     /// Base64-encoded UTF-8 asciicast v2 data to include in the SVG metadata.

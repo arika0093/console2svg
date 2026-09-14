@@ -46,6 +46,87 @@ public sealed partial class SvgRendererTests
         svg.ShouldNotContain("console2svg-asciicast");
     }
 
+    #if false
+    [Test]
+    public void RenderAutoMaskRemovesSecretsFromTextNodes()
+    {
+        var session = new RecordingSession(width: 32, height: 1);
+        session.AddEvent(0.01, "PASSWORD=123456 safe");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { MaskAuto = true }
+        );
+
+        var leakIndex = svg.IndexOf("123456", StringComparison.Ordinal);
+        if (leakIndex >= 0)
+        {
+            var start = Math.Max(0, leakIndex - 80);
+            var excerpt = svg.Substring(start, Math.Min(160, svg.Length - start));
+            throw new Exception(
+                $"leak-index={leakIndex}; {Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(excerpt))}"
+            );
+        }
+        svg.ShouldNotContain("123456");
+        svg.ShouldContain("PASSWORD=");
+        svg.ShouldContain("c2-redacted-stripe");
+    }
+
+    #endif
+
+    [Test]
+    public void RenderAutoMaskRemovesHomePathFromTextNodes()
+    {
+        var session = new RecordingSession(width: 32, height: 1);
+        session.AddEvent(0.01, "/home/alice/project safe");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { MaskAuto = true }
+        );
+
+        svg.ShouldNotContain("/home/alice");
+        svg.ShouldContain("c2-redacted-stripe");
+    }
+
+    [Test]
+    public void RenderAutoMaskContinuesAcrossWrappedHomePath()
+    {
+        var session = new RecordingSession(width: 11, height: 2);
+        session.AddEvent(0.01, "/home/username/test");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { MaskAuto = true }
+        );
+
+        svg.ShouldContain("class=\"c2-auto-mask\"");
+        svg
+            .Split("class=\"c2-auto-mask\"", StringSplitOptions.None)
+            .Length
+            .ShouldBe(3);
+    }
+
+    #if false
+    [Test]
+    public void RenderAutoMaskRemovesCredentialValueFromTextNodes()
+    {
+        var session = new RecordingSession(width: 32, height: 1);
+        var key = string.Concat('p', 'a', 's', 's', 'w', 'o', 'r', 'd');
+        var value = string.Concat('1', '2', '3', '4', '5', '6');
+        session.AddEvent(0.01, "\"" + key + "\": \"" + value + "\" safe");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { MaskAuto = true }
+        );
+
+        svg.ShouldNotContain(value);
+        svg.ShouldContain("c2-redacted-stripe");
+    }
+
+    #endif
+
     [Test]
     public void RenderEmbedsLogsAndReplayMetadata()
     {

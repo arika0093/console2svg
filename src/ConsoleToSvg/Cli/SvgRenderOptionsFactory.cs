@@ -103,6 +103,7 @@ public static class SvgRenderOptionsFactory
             SizeHeight = appOptions.SizeHeight,
             MaskPatterns =
                 appOptions.MaskPatterns.Count > 0 ? appOptions.MaskPatterns.ToArray() : null,
+            MaskAuto = appOptions.MaskAuto,
         };
     }
 

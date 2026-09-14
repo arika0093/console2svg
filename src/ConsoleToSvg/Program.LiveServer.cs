@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ConsoleToSvg.Cli;
+using ConsoleToSvg.QuickLeak;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;
 using ConsoleToSvg.Terminal;
@@ -61,6 +62,7 @@ internal static partial class Program
         windowRenderOptions.IncludeTerminalForeground = false;
         windowRenderOptions.IncludeTerminalBaseBackground = false;
         var textRenderOptions = SvgRenderOptionsFactory.Create(options);
+        textRenderOptions.AutoMaskMode = QuickLeakScanMode.Early;
         textRenderOptions.RenderCursor = options.RequestedTmuxAction != TmuxAction.LiveServer;
         textRenderOptions.IncludeStaticLayers = false;
         textRenderOptions.IncludeTerminalBackground = true;
@@ -629,33 +631,32 @@ internal static partial class Program
 
         private async Task SendPendingUpdatesAsync(CancellationToken cancellationToken)
         {
-            while (true)
+            string? windowSvg;
+            string? textSvg;
+            var heartbeatPending = false;
+            lock (_sendGate)
             {
-                string? windowSvg;
-                string? textSvg;
-                lock (_sendGate)
-                {
-                    windowSvg = _pendingWindow;
-                    _pendingWindow = null;
-                    textSvg = _pendingText;
-                    _pendingText = null;
-                }
+                windowSvg = _pendingWindow;
+                _pendingWindow = null;
+                textSvg = _pendingText;
+                _pendingText = null;
+                heartbeatPending = _heartbeatPending;
+                _heartbeatPending = false;
+            }
 
-                if (windowSvg is null && textSvg is null)
-                {
-                    return;
-                }
-
-                if (windowSvg is not null)
-                {
-                    await WriteSseAsync(stream, "window", windowSvg, cancellationToken)
-                        .ConfigureAwait(false);
-                }
-                if (textSvg is not null)
-                {
-                    await WriteSseAsync(stream, "text", textSvg, cancellationToken)
-                        .ConfigureAwait(false);
-                }
+            if (windowSvg is not null)
+            {
+                await WriteSseAsync(stream, "window", windowSvg, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            if (textSvg is not null)
+            {
+                await WriteSseAsync(stream, "text", textSvg, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            if (heartbeatPending)
+            {
+                await WriteBytesAsync(stream, ":\n\n", cancellationToken).ConfigureAwait(false);
             }
         }
 

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using ConsoleToSvg.QuickLeak;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
+using Filter = ConsoleToSvg.QuickLeak.QuickLeak;
 
 namespace ConsoleToSvg.Svg;
 
@@ -128,7 +130,9 @@ internal static partial class SvgDocumentBuilder
         SvgElementRegistry? elements = null,
         bool renderBackground = true,
         bool renderBaseBackground = true,
-        bool renderForeground = true
+        bool renderForeground = true,
+        bool autoMask = false,
+        QuickLeakScanMode autoMaskMode = QuickLeakScanMode.Normal
     )
     {
         var effectiveLengthAdjust = string.IsNullOrWhiteSpace(lengthAdjust)
@@ -218,6 +222,9 @@ internal static partial class SvgDocumentBuilder
         var roundedCorners = new List<RoundedCorner>();
         var blockRects = new List<BlockRect>();
         var fgRunText = new StringBuilder(context.EndColExclusive - context.StartCol);
+        var autoMaskedCells = autoMask
+            ? FindAutoMaskedCells(buffer, context, includeScrollback, autoMaskMode)
+            : null;
 
         for (var row = context.StartRow; row < context.EndRowExclusive; row++)
         {
@@ -423,7 +430,9 @@ internal static partial class SvgDocumentBuilder
                     continue;
                 }
 
-                if (cell.Text == " ")
+                var cellText = autoMaskedCells?.Contains((row, col)) == true ? " " : cell.Text;
+
+                if (cellText == " ")
                 {
                     // Buffer whitespace-only gaps. A space is merged into the
                     // current run only when a later non-space cell of the same
@@ -452,12 +461,12 @@ internal static partial class SvgDocumentBuilder
 
                 // Unicode Block Elements (U+2580–U+259F): render as calibrated rects so that
                 // adjacent cells always tile seamlessly regardless of font metrics.
-                if (IsBlockElement(cell.Text))
+                if (IsBlockElement(cellText))
                 {
                     pendingSpaces = 0;
                     FlushFgRun();
                     RenderBlockElement(
-                        cell.Text,
+                        cellText,
                         cellX,
                         y,
                         cellW,
@@ -469,7 +478,7 @@ internal static partial class SvgDocumentBuilder
                     continue;
                 }
 
-                if (TryGetBoxDrawingLine(cell.Text, out var boxDrawing))
+                if (TryGetBoxDrawingLine(cellText, out var boxDrawing))
                 {
                     pendingSpaces = 0;
                     FlushFgRun();
@@ -500,13 +509,13 @@ internal static partial class SvgDocumentBuilder
                     continue;
                 }
 
-                if (IsRoundedBoxDrawing(cell.Text))
+                if (IsRoundedBoxDrawing(cellText))
                 {
                     pendingSpaces = 0;
                     FlushFgRun();
                     roundedCorners.Add(
                         new RoundedCorner(
-                            cell.Text[0],
+                            cellText[0],
                             cellX,
                             y,
                             cellW,
@@ -544,7 +553,7 @@ internal static partial class SvgDocumentBuilder
                     pendingSpaces = 0;
                 }
 
-                fgRunText.Append(EscapeText(cell.Text));
+                fgRunText.Append(EscapeText(cellText));
                 fgRunCellCount += cell.IsWide ? 2 : 1;
 
                 // Wide chars must always be emitted immediately so the next char
@@ -561,6 +570,10 @@ internal static partial class SvgDocumentBuilder
 
         if (renderForeground)
         {
+            if (autoMask)
+            {
+                AppendAutoMaskOverlays(sb, context, autoMaskedCells!);
+            }
             RenderMergedBlockRects(sb, blockRects, elements);
             RenderMergedBoxSegments(
                 sb,
@@ -577,6 +590,135 @@ internal static partial class SvgDocumentBuilder
             }
         }
 
+        sb.Append("</g>\n");
+    }
+
+    private static HashSet<(int Row, int Column)> FindAutoMaskedCells(
+        ScreenBuffer buffer,
+        in Context context,
+        bool includeScrollback,
+        QuickLeakScanMode mode
+    )
+    {
+        var normalized = new StringBuilder(
+            (context.EndRowExclusive - context.StartRow)
+                * (context.EndColExclusive - context.StartCol)
+        );
+        var coordinates = new List<(int Row, int Column)?>(normalized.Capacity);
+        for (var row = context.StartRow; row < context.EndRowExclusive; row++)
+        {
+            var rowStart = normalized.Length;
+            var rowEndColumn = -1;
+            for (var col = context.StartCol; col < context.EndColExclusive; col++)
+            {
+                var cell = includeScrollback
+                    ? buffer.GetCellFromTop(row, col)
+                    : buffer.GetCell(row, col);
+                var cellText = cell.IsWideContinuation ? " " : cell.Text;
+                foreach (var character in cellText)
+                {
+                    normalized.Append(character);
+                    coordinates.Add((row, col));
+                }
+                if (cellText != " " || cell.IsWideContinuation)
+                {
+                    rowEndColumn = col;
+                }
+            }
+            while (normalized.Length > rowStart && normalized[normalized.Length - 1] == ' ')
+            {
+                normalized.Length--;
+                coordinates.RemoveAt(coordinates.Count - 1);
+            }
+            if (row + 1 < context.EndRowExclusive)
+            {
+                var nextCell = includeScrollback
+                    ? buffer.GetCellFromTop(row + 1, context.StartCol)
+                    : buffer.GetCell(row + 1, context.StartCol);
+                var isWrappedText =
+                    rowEndColumn == context.EndColExclusive - 1
+                    && nextCell.Text != " "
+                    && !nextCell.IsWideContinuation;
+                if (!isWrappedText)
+                {
+                    normalized.Append('\n');
+                    coordinates.Add(null);
+                }
+            }
+        }
+
+        var maskedCells = new HashSet<(int Row, int Column)>();
+        foreach (var finding in Filter.Enumerate(normalized.ToString(), mode))
+        {
+            var start = Math.Max(0, finding.Start);
+            var end = Math.Min(coordinates.Count, finding.End);
+            for (var index = start; index < end; index++)
+            {
+                if (coordinates[index] is not { } coordinate)
+                {
+                    continue;
+                }
+                maskedCells.Add(coordinate);
+            }
+        }
+        return maskedCells;
+    }
+
+    private static void AppendAutoMaskOverlays(
+        SvgWriter sb,
+        in Context context,
+        HashSet<(int Row, int Column)> maskedCells
+    )
+    {
+        if (maskedCells.Count == 0)
+        {
+            return;
+        }
+
+        var maskedColumnsByRow = new Dictionary<int, HashSet<int>>();
+        foreach (var cell in maskedCells)
+        {
+            if (!maskedColumnsByRow.TryGetValue(cell.Row, out var columns))
+            {
+                columns = [];
+                maskedColumnsByRow.Add(cell.Row, columns);
+            }
+            columns.Add(cell.Column);
+        }
+
+        sb.Append("<g class=\"c2-redacted\">\n");
+        foreach (var row in maskedColumnsByRow.Keys.Order())
+        {
+            var columns = maskedColumnsByRow[row].Order().ToArray();
+            var runStart = columns[0];
+            var previous = runStart;
+            for (var index = 1; index <= columns.Length; index++)
+            {
+                var column = index < columns.Length ? columns[index] : previous + 2;
+                if (column == previous + 1)
+                {
+                    previous = column;
+                    continue;
+                }
+
+                var x = (runStart - context.StartCol) * context.CellWidth;
+                var width = (previous - runStart + 1) * context.CellWidth;
+                sb.Append("<rect class=\"c2-auto-mask\" x=\"");
+                sb.Append(x);
+                sb.Append("\" y=\"");
+                sb.Append((row - context.StartRow) * context.CellHeight);
+                sb.Append("\" width=\"");
+                sb.Append(width);
+                sb.Append("\" height=\"");
+                sb.Append(context.CellHeight);
+                sb.Append("\" fill=\"url(#c2-redacted-stripe)\"/>\n");
+                if (index < columns.Length)
+                {
+                    runStart = column;
+                    previous = column;
+                }
+            }
+        }
         sb.Append("</g>\n");
     }
 

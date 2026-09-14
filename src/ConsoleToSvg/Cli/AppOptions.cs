@@ -67,6 +67,10 @@ public sealed class AppOptions
     public bool TmuxHistory { get; set; }
     public int? TmuxHistoryLines { get; set; }
 
+    /// <summary>
+    /// Live-server listen host parsed from the positional <c>host:port</c> endpoint.
+    /// Null means the default loopback address.
+    /// </summary>
     public string? ListenAddress { get; set; }
 
     public int LiveServerPort { get; set; } = 38473;

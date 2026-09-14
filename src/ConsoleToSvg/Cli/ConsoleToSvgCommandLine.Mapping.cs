@@ -95,7 +95,6 @@ public sealed partial class ConsoleToSvgCommandLine
             EmbedReplay = result.GetValue(_symbols.EmbedReplay),
             EmbedDebug = result.GetValue(_symbols.EmbedDebug),
             TmuxTarget = result.GetValue(_symbols.TmuxTarget),
-            ListenAddress = result.GetValue(_symbols.ListenAddress),
             Font = result.GetValue(_symbols.Font),
             ForeColor = result.GetValue(_symbols.ForeColor),
             BackColor = result.GetValue(_symbols.BackColor),

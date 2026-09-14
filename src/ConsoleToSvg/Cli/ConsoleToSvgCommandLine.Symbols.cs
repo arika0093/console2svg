@@ -128,8 +128,6 @@ public sealed partial class ConsoleToSvgCommandLine
         public Option<bool> LegacyRoot { get; } = HiddenFlag("--legacy-root");
         public Option<string> TmuxTarget { get; } = RequiredString("--target", "tmux pane target.");
         public Option<int?> History { get; } = HistoryOption();
-        public Option<string> ListenAddress { get; } =
-            RequiredString("--listen", "IP address for the live server.");
         public Option<bool> StatusJson { get; } = Flag("--json", "Write status as JSON.");
         public Option<string> StatusFormat { get; } =
             StringChoice("--format", "Output format.", ["json", "markdown", "table"]);
@@ -194,11 +192,10 @@ public sealed partial class ConsoleToSvgCommandLine
                 LegacyRoot,
                 TmuxTarget,
                 History,
-                ListenAddress,
             ];
 
         public IEnumerable<Option> CaptureOptions =>
-            Options.Except([Interactive, TmuxTarget, History, ListenAddress]);
+            Options.Except([Interactive, TmuxTarget, History]);
 
         public IEnumerable<Option> InteractiveOptions =>
             CaptureOptions.Except([
@@ -263,7 +260,7 @@ public sealed partial class ConsoleToSvgCommandLine
 
         public IEnumerable<Option> TmuxCaptureOptions =>
             CaptureOptions
-                .Except([InputCastPath, StdOut, Interactive, NoResize, ListenAddress, LegacyRoot])
+                .Except([InputCastPath, StdOut, Interactive, NoResize, LegacyRoot])
                 .Concat([TmuxTarget, History]);
 
         public IEnumerable<Option> TmuxLiveServerOptions =>

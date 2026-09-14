@@ -296,6 +296,14 @@ public sealed class ConsoleToSvgCommandLineTests
         endpointBeforeOption.ExitCode.ShouldBe(0);
         endpointBeforeOption.Options!.LiveServerPort.ShouldBe(8081);
         endpointBeforeOption.Options.Themes.ShouldBe(["cyberpunk-pc"]);
+
+        // --listen was removed in v0.10; the positional host:port is the only way
+        // to set the listen address. A stray --listen token is treated as a
+        // command (consistent with other unknown options) and must not
+        // configure the listener.
+        var removedListenOption = await InvokeAsync("live-server", "--listen", "127.0.0.1");
+        removedListenOption.Options.ShouldNotBeNull();
+        removedListenOption.Options!.ListenAddress.ShouldBeNull();
     }
 
     [Test]

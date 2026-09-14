@@ -12,10 +12,12 @@ if [ "${#debs[@]}" -eq 0 ] || [ "${#rpms[@]}" -eq 0 ]; then
 fi
 
 for deb in "${debs[@]}"; do
-  if dpkg-deb -c "$deb" | grep -qE '[[:space:]]\./usr/local/'; then
+  if dpkg-deb -c "$deb" | grep -E '[[:space:]]\./usr/local/' >/dev/null; then
     echo "Debian package must not install files under /usr/local: $deb" >&2
     exit 1
   fi
+
+  test "$(dpkg-deb -f "$deb" Package)" = "console2svg"
 
   tmp=$(mktemp -d)
   trap 'rm -rf "$tmp"' EXIT
@@ -32,7 +34,7 @@ done
 
 for rpm_package in "${rpms[@]}"; do
   files=$(rpm -qlp "$rpm_package")
-  if grep -q '^/usr/local/' <<<"$files"; then
+  if grep '^/usr/local/' <<<"$files" >/dev/null; then
     echo "RPM package must not install files under /usr/local: $rpm_package" >&2
     exit 1
   fi

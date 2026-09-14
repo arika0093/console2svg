@@ -23,7 +23,7 @@ internal static partial class Program
         CancellationToken cancellationToken
     )
     {
-        var report = await CreateStatusReportAsync(cancellationToken).ConfigureAwait(false);
+        var report = await CreateStatusReportAsync(format, cancellationToken).ConfigureAwait(false);
         if (format == Cli.OutputFormat.Json)
             Console.WriteLine(
                 JsonSerializer.Serialize(report, StatusReportJsonContext.Default.StatusReport)
@@ -36,6 +36,7 @@ internal static partial class Program
     }
 
     private static async Task<StatusReport> CreateStatusReportAsync(
+        Cli.OutputFormat format,
         CancellationToken cancellationToken
     )
     {
@@ -100,7 +101,7 @@ internal static partial class Program
             new StatusOptionalFeatures(git, tmux),
             GetThemeStatus(),
             new StatusTerminal(
-                GetAnsiColorStatus(),
+                GetAnsiColorStatus(format != Cli.OutputFormat.Table),
                 new Dictionary<string, string?>
                 {
                     ["TERM"] = Environment.GetEnvironmentVariable("TERM"),
@@ -198,9 +199,9 @@ internal static partial class Program
         }
     }
 
-    private static StatusAvailability GetAnsiColorStatus()
+    private static StatusAvailability GetAnsiColorStatus(bool ignoreOutputRedirection)
     {
-        if (Console.IsOutputRedirected)
+        if (!ignoreOutputRedirection && Console.IsOutputRedirected)
             return new StatusAvailability(false, "Standard output is redirected.");
         if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("NO_COLOR")))
             return new StatusAvailability(false, "NO_COLOR is set.");
@@ -212,7 +213,7 @@ internal static partial class Program
             )
         )
             return new StatusAvailability(false, "TERM is dumb.");
-        return new StatusAvailability(SupportsAnsiColors(), null);
+        return new StatusAvailability(ignoreOutputRedirection || SupportsAnsiColors(), null);
     }
 
     private static StatusOutputFormat[] GetOutputFormats(

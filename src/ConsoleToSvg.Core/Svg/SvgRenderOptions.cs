@@ -99,7 +99,7 @@ public sealed class SvgRenderOptions
     public string[]? MaskPatterns { get; set; }
 
     /// <summary>Overlay secrets found by the generated Betterleaks quick filter.</summary>
-    public bool MaskAuto { get; set; } = true;
+    public bool MaskAuto { get; set; } = false;
 
     /// <summary>Regex mode used by automatic masking.</summary>
     public QuickLeakScanMode AutoMaskMode { get; set; } = QuickLeakScanMode.Normal;

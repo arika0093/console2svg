@@ -1,0 +1,57 @@
+name: Linux Package Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches-ignore:
+      - release/*
+    paths:
+      - 'scripts/release/build-linux-packages.sh'
+      - 'scripts/release/verify-linux-packages.sh'
+      - 'scripts/release/install-linux-packaging-tools.sh'
+      - 'scripts/release/publish-native-aot.sh'
+      - 'scripts/build-resvg-native.sh'
+      - '.github/workflows/package-test.yaml'
+      - '.github/workflows/release.yaml'
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: latest
+          dotnet-quality: preview
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-gnu
+
+      - name: Build bundled resvg library
+        run: bash scripts/build-resvg-native.sh x86_64-unknown-linux-gnu ./native-build/linux-x64
+
+      - name: Publish NativeAOT
+        run: bash scripts/release/publish-native-aot.sh linux-x64
+
+      - name: Stage release artifact layout
+        run: |
+          mkdir -p ./native-artifacts/native-linux-x64
+          cp ./native-publish/linux-x64/console2svg ./native-artifacts/native-linux-x64/
+          cp ./native-publish/linux-x64/libconsole2svg_resvg.so ./native-artifacts/native-linux-x64/
+
+      - name: Install Linux packaging tools
+        run: bash scripts/release/install-linux-packaging-tools.sh
+
+      - name: Build Linux packages
+        run: bash scripts/release/build-linux-packages.sh 0.0.0 1
+
+      - name: Verify Linux package layout
+        run: bash scripts/release/verify-linux-packages.sh

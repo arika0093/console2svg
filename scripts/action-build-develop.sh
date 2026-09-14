@@ -31,9 +31,16 @@ mkdir -p "$INSTALL_DIR"
 publish_dir="$INSTALL_DIR/publish"
 
 export NBGV_GitEngine=Disabled
+# See scripts/release/publish-native-aot.sh: disable VBCSCompiler shared
+# compilation on Windows CI to avoid flaky CS2012 file-lock errors.
+dotnet build-server shutdown || true
 dotnet publish "$ACTION_PATH/src/ConsoleToSvg/ConsoleToSvg.csproj" \
   -c Release \
   -r "$RID" \
+  --disable-build-servers \
+  -m:1 \
+  -p:UseSharedCompilation=false \
+  -p:RestoreDisableParallel=true \
   -p:PublishAot=true \
   -p:SelfContained=true \
   -p:BuildResvgNative=false \

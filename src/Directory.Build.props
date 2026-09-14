@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <NoWarn>$(NoWarn);NETSDK1057</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Ship English-only messages; drop System.CommandLine satellite assemblies (ja/cs/de/...) from publish output. -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <PackageDescription>A .NET CLI tool to convert console output to SVG.</PackageDescription>
     <PackageProjectUrl>https://github.com/arika0093/ConsoleToSvg</PackageProjectUrl>
     <RepositoryUrl>https://github.com/arika0093/ConsoleToSvg</RepositoryUrl>

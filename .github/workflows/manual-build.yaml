@@ -7,6 +7,9 @@ permissions:
   contents: read
   actions: write
 
+env:
+  DOTNET_VERSION: '10.0.x'
+
 jobs:
   build-aot:
     strategy:
@@ -40,8 +43,7 @@ jobs:
 
       - uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: latest
-          dotnet-quality: preview
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -78,8 +80,7 @@ jobs:
 
       - uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: latest
-          dotnet-quality: preview
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - uses: dotnet/nbgv@v0.5
         id: nbgv

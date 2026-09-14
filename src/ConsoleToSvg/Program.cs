@@ -53,6 +53,9 @@ internal static partial class Program
             return await RunStatusAsync(options.StatusJson, invocationCancellationToken)
                 .ConfigureAwait(false);
 
+        if (options.Workflow == Workflow.Update)
+            return await RunUpdateAsync(options, invocationCancellationToken).ConfigureAwait(false);
+
         if (options.Workflow == Workflow.Theme)
             return RunThemeCommand(options);
 

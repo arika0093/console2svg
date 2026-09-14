@@ -693,6 +693,7 @@ public sealed partial class ConsoleToSvgCommandLine
                 or "cast"
                 or "theme"
                 or "status"
+                or "update"
                 or "live-server"
                 or "tmux"
                 or "completions"

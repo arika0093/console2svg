@@ -68,7 +68,8 @@ internal static partial class Program
             new StatusApplication(
                 ThisAssembly.AssemblyInformationalVersion,
                 Environment.ProcessPath,
-                !RuntimeFeature.IsDynamicCodeSupported
+                !RuntimeFeature.IsDynamicCodeSupported,
+                (await DetectInstallChannelAsync(cancellationToken).ConfigureAwait(false)).Name
             ),
             new StatusPlatform(
                 RuntimeInformation.OSDescription,
@@ -312,14 +313,15 @@ internal static partial class Program
 
     private static void WriteStatusReport(StatusReport report)
     {
-        Console.WriteLine($"Version        {report.Application.Version}");
-        Console.WriteLine($"  Commit at    {ThisAssembly.GitCommitDate:yyyy-MM-dd HH:mm:ss} UTC");
+        Console.WriteLine($"Version         {report.Application.Version}");
+        Console.WriteLine($"  Commit at     {ThisAssembly.GitCommitDate:yyyy-MM-dd HH:mm:ss} UTC");
         Console.WriteLine(
-            $"Platform       {report.Platform.OperatingSystem} / {report.Platform.Architecture}"
+            $"Platform        {report.Platform.OperatingSystem} / {report.Platform.Architecture}"
         );
-        Console.WriteLine($"Executable     {report.Application.ExecutablePath ?? "(unknown)"}");
+        Console.WriteLine($"Executable      {report.Application.ExecutablePath ?? "(unknown)"}");
+        Console.WriteLine($"  Channel       {report.Application.InstallChannel}");
         Console.WriteLine(
-            $"Framework      {report.Platform.Framework}"
+            $"Framework       {report.Platform.Framework}"
                 + (report.Application.NativeAot ? " (NativeAOT)" : string.Empty)
         );
         Console.WriteLine();
@@ -446,7 +448,12 @@ internal sealed record StatusReport(
     StatusOutputFormat[] OutputFormats
 );
 
-internal sealed record StatusApplication(string Version, string? ExecutablePath, bool NativeAot);
+internal sealed record StatusApplication(
+    string Version,
+    string? ExecutablePath,
+    bool NativeAot,
+    string InstallChannel
+);
 
 internal sealed record StatusPlatform(
     string OperatingSystem,

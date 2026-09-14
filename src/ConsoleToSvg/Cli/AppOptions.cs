@@ -19,6 +19,7 @@ public enum Workflow
     Cast,
     Theme,
     Status,
+    Update,
     LiveServer,
     Tmux,
 }
@@ -43,6 +44,9 @@ public sealed class AppOptions
     public ThemeAction? RequestedThemeAction { get; set; }
     public string? ThemeArgument { get; set; }
     public bool StatusJson { get; set; }
+    public bool UpdateCheck { get; set; }
+    public bool UpdateForce { get; set; }
+    public bool UpdateYes { get; set; }
 
     public bool Verbose { get; set; }
 

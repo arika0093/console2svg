@@ -141,6 +141,18 @@ public sealed class ConsoleToSvgCommandLineTests
     }
 
     [Test]
+    public async Task UpdateMapsCheckForceAndYesOptions()
+    {
+        var invocation = await InvokeAsync("update", "--check", "-f", "-y");
+
+        invocation.ExitCode.ShouldBe(0);
+        invocation.Options!.Workflow.ShouldBe(Workflow.Update);
+        invocation.Options.UpdateCheck.ShouldBeTrue();
+        invocation.Options.UpdateForce.ShouldBeTrue();
+        invocation.Options.UpdateYes.ShouldBeTrue();
+    }
+
+    [Test]
     public async Task CastMapsTheAsciicastInput()
     {
         var invocation = await InvokeAsync("cast", "demo.cast");

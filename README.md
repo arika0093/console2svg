@@ -129,6 +129,19 @@ winget install arika0093.console2svg
 npm install -g console2svg
 ```
 
+### Updating standalone installations
+
+Installations made from a release archive or `install.sh` can check for and install the latest
+release:
+
+```sh
+console2svg update --check
+console2svg update
+```
+
+The update command asks for confirmation before replacing files. Use `--yes` in automation.
+Installations managed by npm, winget, apt, or dnf/rpm are left to their package manager and
+display the corresponding update command instead.
 
 ### GitHub Actions
 

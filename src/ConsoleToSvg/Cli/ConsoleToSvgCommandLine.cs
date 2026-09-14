@@ -98,6 +98,7 @@ public sealed partial class ConsoleToSvgCommandLine
 
         AddThemeCommand(root);
         AddStatusCommand(root);
+        AddUpdateCommand(root);
         AddLiveServerCommand(root);
         AddTmuxCommand(root);
         AddCompletionsCommand(root);
@@ -210,6 +211,40 @@ public sealed partial class ConsoleToSvgCommandLine
                 )
         );
         root.Subcommands.Add(status);
+    }
+
+    private void AddUpdateCommand(RootCommand root)
+    {
+        var update = new Command("update", "Check for or install a newer console2svg version.");
+        var check = new Option<bool>("--check")
+        {
+            Description = "Only check for an available update.",
+        };
+        var force = new Option<bool>("--force")
+        {
+            Description = "Update even when a package manager owns this installation.",
+        };
+        force.Aliases.Add("-f");
+        var yes = new Option<bool>("--yes") { Description = "Skip the confirmation prompt." };
+        yes.Aliases.Add("-y");
+        update.Options.Add(check);
+        update.Options.Add(force);
+        update.Options.Add(yes);
+        update.SetAction(
+            (parseResult, cancellationToken) =>
+                _handler(
+                    new AppOptions
+                    {
+                        Workflow = Workflow.Update,
+                        UpdateCheck = parseResult.GetValue(check),
+                        UpdateForce = parseResult.GetValue(force),
+                        UpdateYes = parseResult.GetValue(yes),
+                    },
+                    parseResult,
+                    cancellationToken
+                )
+        );
+        root.Subcommands.Add(update);
     }
 
     private void AddTmuxCommand(RootCommand root)

@@ -481,7 +481,7 @@ internal static partial class Program
     private sealed class LiveSseClient(NetworkStream stream, Action disconnected) : IAsyncDisposable
     {
         private readonly object _sendGate = new();
-        private int _sending;
+        private int _sending = 1;
         private string? _pendingWindow;
         private string? _pendingText;
 

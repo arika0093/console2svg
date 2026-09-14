@@ -146,26 +146,33 @@
 
   function connect() {
     clearTimeout(reconnectTimer);
-    events = new EventSource('/events');
-    events.addEventListener('background', e => {
+    const source = new EventSource('/events');
+    events = source;
+    source.addEventListener('background', e => {
       background.innerHTML = e.data;
       applyMode();
     });
-    events.addEventListener('window', e => {
+    source.addEventListener('window', e => {
       windowPaintLayer.innerHTML = e.data;
       applyMode();
     });
-    events.addEventListener('text', e => {
+    source.addEventListener('text', e => {
       textLayer.innerHTML = e.data;
       applyMode();
       status.classList.remove('visible');
     });
-    events.onopen = () => {
+    source.onopen = () => {
+      if (events !== source) {
+        return;
+      }
       status.classList.remove('visible');
     };
-    events.onerror = () => {
+    source.onerror = () => {
+      if (events !== source) {
+        return;
+      }
       status.classList.add('visible');
-      events.close();
+      source.close();
       reconnectTimer = setTimeout(connect, 1000);
     };
   }

@@ -82,10 +82,18 @@ internal static partial class Program
 
         if (options.Workflow == Workflow.LiveServer)
         {
-            using var liveEnvironmentScope = ApplyProcessEnvironmentOverrides(
-                options,
-                Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance
+            using var liveLoggerFactory = CreateLoggerFactory(
+                options.Verbose,
+                options.VerboseLogPath
             );
+            var liveLogger = liveLoggerFactory.CreateLogger("ConsoleToSvg.Program");
+            liveLogger.ZLogDebug(
+                $"Application started. Version={ThisAssembly.AssemblyInformationalVersion} OS={Environment.OSVersion.Platform} Arch={RuntimeInformation.ProcessArchitecture}"
+            );
+            liveLogger.ZLogDebug(
+                $"Verbose={options.Verbose} VerboseLogPath={options.VerboseLogPath ?? "(default)"} Args={string.Join(' ', args)}"
+            );
+            using var liveEnvironmentScope = ApplyProcessEnvironmentOverrides(options, liveLogger);
             using var liveCancellation = CancellationTokenSource.CreateLinkedTokenSource(
                 invocationCancellationToken
             );

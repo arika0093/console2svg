@@ -120,6 +120,10 @@ jobs:
         shell: bash
         run: bash scripts/release/build-linux-packages.sh '${{ needs.build-metadata.outputs.package-version }}' '${{ needs.build-metadata.outputs.package-iteration }}'
 
+      - name: Verify Linux package layout
+        shell: bash
+        run: bash scripts/release/verify-linux-packages.sh
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:

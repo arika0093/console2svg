@@ -331,12 +331,23 @@ internal static partial class Program
                         includeContentLength: false
                     )
                     .ConfigureAwait(false);
-                var sseClient = new LiveSseClient(stream, () => clients.TryRemove(id, out _));
+                using var clientLifetime = CancellationTokenSource.CreateLinkedTokenSource(
+                    cancellationToken
+                );
+                var sseClient = new LiveSseClient(
+                    stream,
+                    () =>
+                    {
+                        clients.TryRemove(id, out _);
+                        clientLifetime.Cancel();
+                    }
+                );
                 clients[id] = sseClient;
                 var (backgroundSvg, windowSvg, textSvg) = latest();
                 await sseClient
                     .SendInitialAsync(backgroundSvg, windowSvg, textSvg, cancellationToken)
                     .ConfigureAwait(false);
+                _ = SendSseHeartbeatsAsync(sseClient, clientLifetime.Token);
                 try
                 {
                     await Task.Delay(Timeout.Infinite, cancellationToken).ConfigureAwait(false);
@@ -346,6 +357,7 @@ internal static partial class Program
                     clients.TryRemove(id, out _);
                 }
                 clients.TryRemove(id, out _);
+                await clientLifetime.CancelAsync().ConfigureAwait(false);
                 return;
             }
             if (path == "/snapshot.svg")
@@ -385,6 +397,16 @@ internal static partial class Program
             await WriteHttpAsync(stream, "404 Not Found", "text/plain", "Not found")
                 .ConfigureAwait(false);
         }
+    }
+
+    private static async Task SendSseHeartbeatsAsync(
+        LiveSseClient client,
+        CancellationToken cancellationToken
+    )
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(2));
+        while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
+            client.TrySendHeartbeat();
     }
 
     private static void BroadcastInitialSvg(
@@ -484,6 +506,7 @@ internal static partial class Program
         private int _sending = 1;
         private string? _pendingWindow;
         private string? _pendingText;
+        private bool _heartbeatPending;
 
         public async Task SendInitialAsync(
             string backgroundSvg,
@@ -557,6 +580,21 @@ internal static partial class Program
             lock (_sendGate)
             {
                 _pendingWindow = windowSvg;
+                if (_sending != 0)
+                {
+                    return;
+                }
+
+                _sending = 1;
+            }
+            _ = SendAsync();
+        }
+
+        public void TrySendHeartbeat()
+        {
+            lock (_sendGate)
+            {
+                _heartbeatPending = true;
                 if (_sending != 0)
                 {
                     return;

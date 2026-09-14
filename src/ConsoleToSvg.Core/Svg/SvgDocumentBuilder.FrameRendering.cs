@@ -430,7 +430,7 @@ internal static partial class SvgDocumentBuilder
                     continue;
                 }
 
-                var cellText = autoMaskedCells?.Contains((row, col)) == true ? " " : cell.Text;
+                var cellText = autoMaskedCells?.Contains((row, col)) == true ? "*" : cell.Text;
 
                 if (cellText == " ")
                 {

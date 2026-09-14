@@ -14,18 +14,18 @@ URL = f"https://raw.githubusercontent.com/betterleaks/betterleaks/{SHA}/config/b
 
 def update_readme_metadata(config_hash: str) -> None:
     marker = re.compile(
-        r"<!-- QUICKLEAK-METADATA:START -->.*?<!-- QUICKLEAK-METADATA:END -->",
+        r"<!-- QUICKLEAKS-METADATA:START -->.*?<!-- QUICKLEAKS-METADATA:END -->",
         re.DOTALL,
     )
     current = README.read_text()
     existing_count = re.search(r"Generated rules: `(\d+)`", current)
     rule_count = existing_count.group(1) if existing_count else "pending"
     metadata = (
-        "<!-- QUICKLEAK-METADATA:START -->\n"
+        "<!-- QUICKLEAKS-METADATA:START -->\n"
         f"- Betterleaks commit: `{SHA}`\n"
         f"- Downloaded config SHA-256: `{config_hash}`\n"
         f"- Generated rules: `{rule_count}`\n"
-        "<!-- QUICKLEAK-METADATA:END -->"
+        "<!-- QUICKLEAKS-METADATA:END -->"
     )
     updated = marker.sub(metadata, current, count=1)
     if updated == current:

@@ -13,7 +13,7 @@
     />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ConsoleToSvg.QuickLeak\ConsoleToSvg.QuickLeak.csproj" />
+    <ProjectReference Include="..\ConsoleToSvg.QuickLeaks\ConsoleToSvg.QuickLeaks.csproj" />
     <PackageReference Include="System.IO.Hashing" Version="10.0.11" />
   </ItemGroup>
 </Project>

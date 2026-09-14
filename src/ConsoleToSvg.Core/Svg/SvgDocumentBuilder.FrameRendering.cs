@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using ConsoleToSvg.QuickLeak;
+using ConsoleToSvg.QuickLeaks;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
-using Filter = ConsoleToSvg.QuickLeak.QuickLeak;
+using Filter = ConsoleToSvg.QuickLeaks.QuickLeaks;
 
 namespace ConsoleToSvg.Svg;
 
@@ -132,7 +132,7 @@ internal static partial class SvgDocumentBuilder
         bool renderBaseBackground = true,
         bool renderForeground = true,
         bool autoMask = false,
-        QuickLeakScanMode autoMaskMode = QuickLeakScanMode.Normal
+        QuickLeaksScanMode autoMaskMode = QuickLeaksScanMode.Normal
     )
     {
         var effectiveLengthAdjust = string.IsNullOrWhiteSpace(lengthAdjust)
@@ -597,7 +597,7 @@ internal static partial class SvgDocumentBuilder
         ScreenBuffer buffer,
         in Context context,
         bool includeScrollback,
-        QuickLeakScanMode mode
+        QuickLeaksScanMode mode
     )
     {
         var normalized = new StringBuilder(

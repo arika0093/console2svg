@@ -3,6 +3,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <RootNamespace>ConsoleToSvg.QuickLeak</RootNamespace>
+    <RootNamespace>ConsoleToSvg.QuickLeaks</RootNamespace>
   </PropertyGroup>
 </Project>

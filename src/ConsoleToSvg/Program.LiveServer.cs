@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ConsoleToSvg.Cli;
-using ConsoleToSvg.QuickLeak;
+using ConsoleToSvg.QuickLeaks;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;
 using ConsoleToSvg.Terminal;
@@ -62,7 +62,7 @@ internal static partial class Program
         windowRenderOptions.IncludeTerminalForeground = false;
         windowRenderOptions.IncludeTerminalBaseBackground = false;
         var textRenderOptions = SvgRenderOptionsFactory.Create(options);
-        textRenderOptions.AutoMaskMode = QuickLeakScanMode.Early;
+        textRenderOptions.AutoMaskMode = QuickLeaksScanMode.Early;
         textRenderOptions.RenderCursor = options.RequestedTmuxAction != TmuxAction.LiveServer;
         textRenderOptions.IncludeStaticLayers = false;
         textRenderOptions.IncludeTerminalBackground = true;

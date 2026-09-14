@@ -1,10 +1,10 @@
 using System.Linq;
-using ConsoleToSvg.QuickLeak;
-using Filter = ConsoleToSvg.QuickLeak.QuickLeak;
+using ConsoleToSvg.QuickLeaks;
+using Filter = ConsoleToSvg.QuickLeaks.QuickLeaks;
 
-namespace ConsoleToSvg.Tests.QuickLeak;
+namespace ConsoleToSvg.Tests.QuickLeaks;
 
-public sealed class QuickLeakTests
+public sealed class QuickLeaksTests
 {
     [Test]
     public void ScanFindsSecretsAndHomeDirectoryPaths()
@@ -30,7 +30,7 @@ public sealed class QuickLeakTests
 
         Filter.Scan(partialToken).ShouldBeEmpty();
         Filter
-            .Scan(partialToken, QuickLeakScanMode.Early)
+            .Scan(partialToken, QuickLeaksScanMode.Early)
             .Any(finding => finding.RuleId == "github-pat")
             .ShouldBeTrue();
     }
@@ -45,7 +45,7 @@ public sealed class QuickLeakTests
             .Any(finding => finding.RuleId == "console2svg-credential-uri")
             .ShouldBeFalse();
         Filter
-            .Scan(partialUri, QuickLeakScanMode.Early)
+            .Scan(partialUri, QuickLeaksScanMode.Early)
             .Any(finding => finding.RuleId == "console2svg-credential-uri")
             .ShouldBeTrue();
         Filter

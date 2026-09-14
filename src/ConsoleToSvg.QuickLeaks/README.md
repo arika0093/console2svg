@@ -1,43 +1,43 @@
-# ConsoleToSvg.QuickLeak
+# ConsoleToSvg.QuickLeaks
 
-`ConsoleToSvg.QuickLeak` is a dependency-free .NET secret detector generated from Betterleaks rules.
+`ConsoleToSvg.QuickLeaks` is a dependency-free .NET secret detector generated from Betterleaks rules.
 It is maintained inside console2svg.
 
-<!-- QUICKLEAK-METADATA:START -->
+<!-- QUICKLEAKS-METADATA:START -->
 - Betterleaks commit: `2a387a5bad4290a84b9a1eb679bffe70611218cc`
 - Downloaded config SHA-256: `a8f553eb634ac3c5c1ca3f0dc95e2b8abdea7d14b622604c5af07f30ce7926ef`
 - Generated rules: `464`
-<!-- QUICKLEAK-METADATA:END -->
+<!-- QUICKLEAKS-METADATA:END -->
 
 ## Use as a library
 
 Scan a string and receive rule identifiers plus UTF-16 offsets:
 
 ```csharp
-using ConsoleToSvg.QuickLeak;
+using ConsoleToSvg.QuickLeaks;
 
-var findings = QuickLeak.Scan(text);
+var findings = QuickLeaks.Scan(text);
 foreach (var finding in findings)
 {
     Console.WriteLine($"{finding.RuleId}: {finding.Start}..{finding.End}");
 }
 ```
 
-`QuickLeak.Scan` materializes results and sorts them by location. Use
-`QuickLeak.Enumerate` when the caller can process generated-rule order without
+`QuickLeaks.Scan` materializes results and sorts them by location. Use
+`QuickLeaks.Enumerate` when the caller can process generated-rule order without
 allocating a result array:
 
 ```csharp
-foreach (var finding in QuickLeak.Enumerate(text))
+foreach (var finding in QuickLeaks.Enumerate(text))
 {
     HandleFinding(finding);
 }
 ```
 
-The optional `QuickLeakScanMode.Early` mode uses relaxed generated quantifiers to detect partially entered token values.
+The optional `QuickLeaksScanMode.Early` mode uses relaxed generated quantifiers to detect partially entered token values.
 
 ```csharp
-var lists = QuickLeak.Enumerate(text, QuickLeakScanMode.Early);
+var lists = QuickLeaks.Enumerate(text, QuickLeaksScanMode.Early);
 ```
 
 This mode detects secrets while they are being entered by relaxing quantifiers such as

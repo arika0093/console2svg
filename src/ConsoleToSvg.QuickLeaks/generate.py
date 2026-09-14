@@ -8,7 +8,7 @@ import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).parent
-OUT = ROOT / "QuickLeak.generated.cs"
+OUT = ROOT / "QuickLeaks.generated.cs"
 README = ROOT / "README.md"
 SHA = "2a387a5bad4290a84b9a1eb679bffe70611218cc"
 URL = f"https://github.com/betterleaks/betterleaks/blob/{SHA}/config/betterleaks.toml"
@@ -16,16 +16,16 @@ URL = f"https://github.com/betterleaks/betterleaks/blob/{SHA}/config/betterleaks
 
 def update_readme_metadata(config: Path, rule_count: int) -> None:
     marker = re.compile(
-        r"<!-- QUICKLEAK-METADATA:START -->.*?<!-- QUICKLEAK-METADATA:END -->",
+        r"<!-- QUICKLEAKS-METADATA:START -->.*?<!-- QUICKLEAKS-METADATA:END -->",
         re.DOTALL,
     )
     current = README.read_text()
     metadata = (
-        "<!-- QUICKLEAK-METADATA:START -->\n"
+        "<!-- QUICKLEAKS-METADATA:START -->\n"
         f"- Betterleaks commit: `{SHA}`\n"
         f"- Downloaded config SHA-256: `{hashlib.sha256(config.read_bytes()).hexdigest()}`\n"
         f"- Generated rules: `{rule_count}`\n"
-        "<!-- QUICKLEAK-METADATA:END -->"
+        "<!-- QUICKLEAKS-METADATA:END -->"
     )
     updated = marker.sub(metadata, current, count=1)
     if updated == current:
@@ -88,10 +88,10 @@ with args.output.open("w") as output:
     output.write("// ConsoleToSvg rules are defined in betterleaks.toml.patch.\n\n")
     output.write("using System;\nusing System.Collections.Generic;\nusing System.Collections.Frozen;\n")
     output.write("using System.Linq;\nusing System.Text.RegularExpressions;\n\n")
-    output.write("namespace ConsoleToSvg.QuickLeak;\n\n")
+    output.write("namespace ConsoleToSvg.QuickLeaks;\n\n")
     output.write(
         "/// <summary>Generated Betterleaks and ConsoleToSvg secret detection rules.</summary>\n"
-        "public static partial class QuickLeak\n{\n"
+        "public static partial class QuickLeaks\n{\n"
         "    /// <summary>Associates a keyword with the generated rule that should be tested.</summary>\n"
         "    /// <param name=\"Value\">The case-insensitive keyword.</param>\n"
         "    /// <param name=\"RuleIndex\">The generated rule index.</param>\n"
@@ -134,14 +134,14 @@ with args.output.open("w") as output:
         "        }\n"
         "        return candidates;\n"
         "    }\n\n"
-        "    private static IEnumerable<QuickLeakFinding> EnumerateGeneratedRules(string text, QuickLeakScanMode mode)\n"
+        "    private static IEnumerable<QuickLeaksFinding> EnumerateGeneratedRules(string text, QuickLeaksScanMode mode)\n"
         "    {\n"
         "        var candidates = FindCandidateRules(text);\n"
     )
     for index, (rule_id, _, _, _) in enumerate(rules):
         output.write(
-            f"        if (candidates[{index}]) foreach (Match m in (mode == QuickLeakScanMode.Early ? EarlyRule{index}() : Rule{index}()).Matches(text)) "
-            f"yield return new QuickLeakFinding({json.dumps(rule_id)}, m.Index, m.Index + m.Length);\n"
+            f"        if (candidates[{index}]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule{index}() : Rule{index}()).Matches(text)) "
+            f"yield return new QuickLeaksFinding({json.dumps(rule_id)}, m.Index, m.Index + m.Length);\n"
         )
     output.write("    }\n\n")
     for index, (_, pattern, early, _) in enumerate(rules):

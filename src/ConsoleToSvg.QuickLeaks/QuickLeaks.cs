@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ConsoleToSvg.QuickLeak;
+namespace ConsoleToSvg.QuickLeaks;
 
 /// <summary>Describes one secret-like match found in an input string.</summary>
 /// <param name="RuleId">The Betterleaks or ConsoleToSvg rule identifier.</param>
 /// <param name="Start">The zero-based UTF-16 start offset of the match.</param>
 /// <param name="End">The exclusive zero-based UTF-16 end offset of the match.</param>
-public readonly record struct QuickLeakFinding(string RuleId, int Start, int End);
+public readonly record struct QuickLeaksFinding(string RuleId, int Start, int End);
 
-/// <summary>Selects the generated pattern set used by <see cref="QuickLeak"/>.</summary>
-public enum QuickLeakScanMode
+/// <summary>Selects the generated pattern set used by <see cref="QuickLeaks"/>.</summary>
+public enum QuickLeaksScanMode
 {
     Normal,
     Early,
@@ -20,7 +20,7 @@ public enum QuickLeakScanMode
 /// <summary>
 /// Provides fast, source-generated secret detection without external runtime dependencies.
 /// </summary>
-public static partial class QuickLeak
+public static partial class QuickLeaks
 {
     /// <summary>
     /// Finds all matches, sorts them by start and end offset, and materializes the results.
@@ -28,9 +28,9 @@ public static partial class QuickLeak
     /// <param name="text">The text to scan.</param>
     /// <param name="mode">The normal or partial-input pattern set to use.</param>
     /// <returns>The sorted findings.</returns>
-    public static IReadOnlyList<QuickLeakFinding> Scan(
+    public static IReadOnlyList<QuickLeaksFinding> Scan(
         string text,
-        QuickLeakScanMode mode = QuickLeakScanMode.Normal
+        QuickLeaksScanMode mode = QuickLeaksScanMode.Normal
     )
     {
         ArgumentNullException.ThrowIfNull(text);
@@ -43,18 +43,18 @@ public static partial class QuickLeak
         return findings;
     }
 
-    public static IEnumerable<QuickLeakFinding> Enumerate(
+    public static IEnumerable<QuickLeaksFinding> Enumerate(
         string text,
-        QuickLeakScanMode mode = QuickLeakScanMode.Normal
+        QuickLeaksScanMode mode = QuickLeaksScanMode.Normal
     )
     {
         ArgumentNullException.ThrowIfNull(text);
         return EnumerateNarrowed(text, mode);
     }
 
-    private static IEnumerable<QuickLeakFinding> EnumerateNarrowed(
+    private static IEnumerable<QuickLeaksFinding> EnumerateNarrowed(
         string text,
-        QuickLeakScanMode mode
+        QuickLeaksScanMode mode
     )
     {
         foreach (var finding in EnumerateGeneratedRules(text, mode))
@@ -71,19 +71,19 @@ public static partial class QuickLeak
     /// Narrows a raw regex match to the sensitive value portion, preserving
     /// prefixes such as <c>C:\Users\</c> or <c>PASSWORD=</c> for readability.
     /// </summary>
-    private static QuickLeakFinding NarrowFinding(string text, QuickLeakFinding finding)
+    private static QuickLeaksFinding NarrowFinding(string text, QuickLeaksFinding finding)
     {
         var start = Math.Max(0, finding.Start);
         var end = Math.Min(text.Length, finding.End);
         if (end <= start)
         {
-            return new QuickLeakFinding(finding.RuleId, start, start);
+            return new QuickLeaksFinding(finding.RuleId, start, start);
         }
 
         var span = text.AsSpan(start, end - start);
         if (span.IsEmpty)
         {
-            return new QuickLeakFinding(finding.RuleId, start, start);
+            return new QuickLeaksFinding(finding.RuleId, start, start);
         }
 
         if (string.Equals(finding.RuleId, "console2svg-home-directory", StringComparison.Ordinal))
@@ -93,9 +93,9 @@ public static partial class QuickLeak
             var lastSeparator = Math.Max(lastSlash, lastBackslash);
             if (lastSeparator >= 0 && lastSeparator + 1 < span.Length)
             {
-                return new QuickLeakFinding(finding.RuleId, start + lastSeparator + 1, end);
+                return new QuickLeaksFinding(finding.RuleId, start + lastSeparator + 1, end);
             }
-            return new QuickLeakFinding(finding.RuleId, start, start);
+            return new QuickLeaksFinding(finding.RuleId, start, start);
         }
 
         if (
@@ -128,7 +128,7 @@ public static partial class QuickLeak
         }
         if (valueOffset >= span.Length)
         {
-            return new QuickLeakFinding(finding.RuleId, start, start);
+            return new QuickLeaksFinding(finding.RuleId, start, start);
         }
 
         var quote = span[valueOffset];
@@ -148,13 +148,13 @@ public static partial class QuickLeak
             {
                 if (closingOffset > valueStart)
                 {
-                    return new QuickLeakFinding(
+                    return new QuickLeaksFinding(
                         finding.RuleId,
                         start + valueStart,
                         start + closingOffset
                     );
                 }
-                return new QuickLeakFinding(finding.RuleId, start, start);
+                return new QuickLeaksFinding(finding.RuleId, start, start);
             }
             // Unclosed quote (Early mode): mask to the end, trimming trailing whitespace.
             var trailingEnd = span.Length;
@@ -172,13 +172,13 @@ public static partial class QuickLeak
             }
             if (trailingEnd > valueStart)
             {
-                return new QuickLeakFinding(
+                return new QuickLeaksFinding(
                     finding.RuleId,
                     start + valueStart,
                     start + trailingEnd
                 );
             }
-            return new QuickLeakFinding(finding.RuleId, start, start);
+            return new QuickLeaksFinding(finding.RuleId, start, start);
         }
 
         var unquotedStart = valueOffset;
@@ -203,7 +203,7 @@ public static partial class QuickLeak
         }
         if (unquotedStart >= span.Length)
         {
-            return new QuickLeakFinding(finding.RuleId, start, start);
+            return new QuickLeaksFinding(finding.RuleId, start, start);
         }
 
         var unquotedEnd = unquotedStart;
@@ -242,13 +242,17 @@ public static partial class QuickLeak
         }
         if (unquotedEnd > unquotedStart)
         {
-            return new QuickLeakFinding(finding.RuleId, start + unquotedStart, start + unquotedEnd);
+            return new QuickLeaksFinding(
+                finding.RuleId,
+                start + unquotedStart,
+                start + unquotedEnd
+            );
         }
-        return new QuickLeakFinding(finding.RuleId, start, start);
+        return new QuickLeaksFinding(finding.RuleId, start, start);
     }
 
-    private static QuickLeakFinding NarrowCredentialUri(
-        QuickLeakFinding finding,
+    private static QuickLeaksFinding NarrowCredentialUri(
+        QuickLeaksFinding finding,
         int start,
         ReadOnlySpan<char> span
     )
@@ -267,7 +271,7 @@ public static partial class QuickLeak
         var credentialsEnd = atIndex >= 0 ? atIndex : span.Length;
         if (credentialsEnd <= credentialsStart)
         {
-            return new QuickLeakFinding(finding.RuleId, start, start);
+            return new QuickLeaksFinding(finding.RuleId, start, start);
         }
         var credentials = span[credentialsStart..credentialsEnd];
         var colonIndex = credentials.IndexOf(':');
@@ -276,15 +280,15 @@ public static partial class QuickLeak
             var passwordStart = credentialsStart + colonIndex + 1;
             if (passwordStart < credentialsEnd)
             {
-                return new QuickLeakFinding(
+                return new QuickLeaksFinding(
                     finding.RuleId,
                     start + passwordStart,
                     start + credentialsEnd
                 );
             }
-            return new QuickLeakFinding(finding.RuleId, start, start);
+            return new QuickLeaksFinding(finding.RuleId, start, start);
         }
-        return new QuickLeakFinding(
+        return new QuickLeaksFinding(
             finding.RuleId,
             start + credentialsStart,
             start + credentialsEnd

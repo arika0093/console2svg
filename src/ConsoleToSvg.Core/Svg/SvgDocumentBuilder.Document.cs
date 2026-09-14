@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using ConsoleToSvg.QuickLeak;
+using ConsoleToSvg.QuickLeaks;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
-using Filter = ConsoleToSvg.QuickLeak.QuickLeak;
+using Filter = ConsoleToSvg.QuickLeaks.QuickLeaks;
 
 namespace ConsoleToSvg.Svg;
 
@@ -28,7 +28,7 @@ internal static partial class SvgDocumentBuilder
         bool includeChrome = true,
         bool includeClientBackground = true,
         bool autoMask = false,
-        QuickLeakScanMode autoMaskMode = QuickLeakScanMode.Normal
+        QuickLeaksScanMode autoMaskMode = QuickLeaksScanMode.Normal
     )
     {
         sb.Append("<svg xmlns=\"http://www.w3.org/2000/svg\" ");
@@ -132,7 +132,7 @@ internal static partial class SvgDocumentBuilder
         string commandHeader,
         string[]? maskPatterns = null,
         bool autoMask = false,
-        QuickLeakScanMode autoMaskMode = QuickLeakScanMode.Normal
+        QuickLeaksScanMode autoMaskMode = QuickLeaksScanMode.Normal
     )
     {
         var x = context.HeaderOffsetX;
@@ -609,7 +609,7 @@ internal static partial class SvgDocumentBuilder
         double opacity = 1d,
         string[]? maskPatterns = null,
         bool autoMask = false,
-        QuickLeakScanMode autoMaskMode = QuickLeakScanMode.Normal
+        QuickLeaksScanMode autoMaskMode = QuickLeaksScanMode.Normal
     )
     {
         var rowCount = context.EndRowExclusive - context.StartRow;

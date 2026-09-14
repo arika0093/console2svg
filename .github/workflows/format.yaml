@@ -25,6 +25,9 @@ jobs:
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: latest
+          dotnet-quality: preview
 
       - name: Install dotnet-format tool
         run: dotnet tool install -g csharpier

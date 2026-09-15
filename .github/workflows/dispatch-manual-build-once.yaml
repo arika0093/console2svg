@@ -18,4 +18,4 @@ jobs:
       - name: Dispatch Manual Build
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run manual-build.yaml --ref feat/add-document-site
+        run: gh workflow run manual-build.yaml --repo arika0093/console2svg --ref feat/add-document-site

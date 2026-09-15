@@ -38,7 +38,8 @@ public sealed partial class ConsoleToSvgCommandLine
             RequiredString("--crop-bottom", "Crop bottom by px, ch, or text.");
         public Option<string> CropLeft { get; } =
             RequiredString("--crop-left", "Crop left by px or ch.");
-        public Option<string[]> Theme { get; } = MultipleStrings("--theme", "Appearance theme ID.");
+        public Option<string[]> Theme { get; } =
+            new("--theme", "-t") { Description = "Appearance theme ID." };
         public Option<string> ForeColor { get; } =
             RequiredString("--forecolor", "Override the foreground color.");
         public Option<string> BackColor { get; } =
@@ -66,9 +67,9 @@ public sealed partial class ConsoleToSvgCommandLine
         public Option<bool> MaskAuto { get; } =
             new("--mask-auto")
             {
-                Description = "Automatically overlay Betterleaks secret findings (default: false).",
+                Description = "Automatically overlay Betterleaks secret findings (default: true).",
                 Arity = ArgumentArity.ZeroOrOne,
-                DefaultValueFactory = _ => false,
+                DefaultValueFactory = _ => true,
             };
         public Option<bool> WithCommand { get; } =
             Flag("--with-command", "Prepend the command line to output.", "-c");
@@ -128,8 +129,6 @@ public sealed partial class ConsoleToSvgCommandLine
         public Option<bool> LegacyRoot { get; } = HiddenFlag("--legacy-root");
         public Option<string> TmuxTarget { get; } = RequiredString("--target", "tmux pane target.");
         public Option<int?> History { get; } = HistoryOption();
-        public Option<string> ListenAddress { get; } =
-            RequiredString("--listen", "IP address for the live server.");
         public Option<bool> StatusJson { get; } = Flag("--json", "Write status as JSON.");
         public Option<string> StatusFormat { get; } =
             StringChoice("--format", "Output format.", ["json", "markdown", "table"]);
@@ -194,11 +193,10 @@ public sealed partial class ConsoleToSvgCommandLine
                 LegacyRoot,
                 TmuxTarget,
                 History,
-                ListenAddress,
             ];
 
         public IEnumerable<Option> CaptureOptions =>
-            Options.Except([Interactive, TmuxTarget, History, ListenAddress]);
+            Options.Except([Interactive, TmuxTarget, History]);
 
         public IEnumerable<Option> InteractiveOptions =>
             CaptureOptions.Except([
@@ -263,7 +261,7 @@ public sealed partial class ConsoleToSvgCommandLine
 
         public IEnumerable<Option> TmuxCaptureOptions =>
             CaptureOptions
-                .Except([InputCastPath, StdOut, Interactive, NoResize, ListenAddress, LegacyRoot])
+                .Except([InputCastPath, StdOut, Interactive, NoResize, LegacyRoot])
                 .Concat([TmuxTarget, History]);
 
         public IEnumerable<Option> TmuxLiveServerOptions =>
@@ -484,9 +482,6 @@ public sealed partial class ConsoleToSvgCommandLine
             });
             return option;
         }
-
-        private static Option<string[]> MultipleStrings(string name, string description) =>
-            new(name) { Description = description };
 
         private static Option<string[]> MaskOption() =>
             new("--mask")

@@ -67,6 +67,10 @@ public sealed class AppOptions
     public bool TmuxHistory { get; set; }
     public int? TmuxHistoryLines { get; set; }
 
+    /// <summary>
+    /// Live-server listen host parsed from the positional <c>host:port</c> endpoint.
+    /// Null means the default loopback address.
+    /// </summary>
     public string? ListenAddress { get; set; }
 
     public int LiveServerPort { get; set; } = 38473;
@@ -91,7 +95,7 @@ public sealed class AppOptions
     public List<string> MaskPatterns { get; } = [];
 
     /// <summary>Overlay secrets found by the generated Betterleaks quick filter.</summary>
-    public bool MaskAuto { get; set; } = false;
+    public bool MaskAuto { get; set; } = true;
 
     /// <summary>True when --mode (or -v) was explicitly supplied on the command line.</summary>
     public bool IsModeExplicit { get; set; }

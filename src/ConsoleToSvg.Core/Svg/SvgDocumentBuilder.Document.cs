@@ -27,7 +27,7 @@ internal static partial class SvgDocumentBuilder
         bool includeBackground = true,
         bool includeChrome = true,
         bool includeClientBackground = true,
-        bool autoMask = false,
+        bool autoMask = true,
         QuickLeaksScanMode autoMaskMode = QuickLeaksScanMode.Normal
     )
     {
@@ -131,7 +131,7 @@ internal static partial class SvgDocumentBuilder
         SvgStyleRegistry styles,
         string commandHeader,
         string[]? maskPatterns = null,
-        bool autoMask = false,
+        bool autoMask = true,
         QuickLeaksScanMode autoMaskMode = QuickLeaksScanMode.Normal
     )
     {
@@ -185,6 +185,30 @@ internal static partial class SvgDocumentBuilder
                 sb.Append(bgY);
                 sb.Append("\" width=\"");
                 sb.Append((end - start) * context.CellWidth);
+                sb.Append("\" height=\"");
+                sb.Append(bgH);
+                sb.Append("\" fill=\"url(#c2-redacted-stripe)\"/>");
+            }
+        }
+        foreach (var pattern in maskPatterns ?? [])
+        {
+            if (string.IsNullOrEmpty(pattern))
+            {
+                continue;
+            }
+
+            for (
+                var start = commandHeader.IndexOf(pattern, StringComparison.Ordinal);
+                start >= 0;
+                start = commandHeader.IndexOf(pattern, start + 1, StringComparison.Ordinal)
+            )
+            {
+                sb.Append("<rect class=\"c2-auto-mask\" x=\"");
+                sb.Append(x + start * context.CellWidth);
+                sb.Append("\" y=\"");
+                sb.Append(bgY);
+                sb.Append("\" width=\"");
+                sb.Append(pattern.Length * context.CellWidth);
                 sb.Append("\" height=\"");
                 sb.Append(bgH);
                 sb.Append("\" fill=\"url(#c2-redacted-stripe)\"/>");
@@ -608,7 +632,7 @@ internal static partial class SvgDocumentBuilder
         string lengthAdjust,
         double opacity = 1d,
         string[]? maskPatterns = null,
-        bool autoMask = false,
+        bool autoMask = true,
         QuickLeaksScanMode autoMaskMode = QuickLeaksScanMode.Normal
     )
     {

@@ -217,12 +217,6 @@ To disable this behavior, use the `--no-colorenv` and `--no-delete-envs` options
 > This repository uses this action itself to automatically regenerate all the SVG images in the [`assets/`](assets/) directory whenever a new release is published.
 
 ## Usage
-### Pipe mode
-
-```sh
-my-command | console2svg capture
-```
-
 ### PTY command mode
 
 ```sh

@@ -131,7 +131,7 @@ internal static partial class SvgDocumentBuilder
         bool renderBackground = true,
         bool renderBaseBackground = true,
         bool renderForeground = true,
-        bool autoMask = false,
+        bool autoMask = true,
         QuickLeaksScanMode autoMaskMode = QuickLeaksScanMode.Normal
     )
     {
@@ -225,6 +225,13 @@ internal static partial class SvgDocumentBuilder
         var autoMaskedCells = autoMask
             ? FindAutoMaskedCells(buffer, context, includeScrollback, autoMaskMode)
             : null;
+        var maskedCells = maskPatterns is { Length: > 0 }
+            ? FindMaskedCells(buffer, context, includeScrollback, maskPatterns)
+            : null;
+        if (maskedCells is not null && autoMaskedCells is not null)
+        {
+            maskedCells.UnionWith(autoMaskedCells);
+        }
 
         for (var row = context.StartRow; row < context.EndRowExclusive; row++)
         {
@@ -570,9 +577,9 @@ internal static partial class SvgDocumentBuilder
 
         if (renderForeground)
         {
-            if (autoMask)
+            if (maskedCells is not null)
             {
-                AppendAutoMaskOverlays(sb, context, autoMaskedCells!);
+                AppendAutoMaskOverlays(sb, context, maskedCells);
             }
             RenderMergedBlockRects(sb, blockRects, elements);
             RenderMergedBoxSegments(
@@ -659,6 +666,62 @@ internal static partial class SvgDocumentBuilder
                     continue;
                 }
                 maskedCells.Add(coordinate);
+            }
+        }
+        return maskedCells;
+    }
+
+    private static HashSet<(int Row, int Column)> FindMaskedCells(
+        ScreenBuffer buffer,
+        in Context context,
+        bool includeScrollback,
+        string[] maskPatterns
+    )
+    {
+        var normalized = new StringBuilder(
+            (context.EndRowExclusive - context.StartRow)
+                * (context.EndColExclusive - context.StartCol)
+        );
+        var coordinates = new List<(int Row, int Column)?>(normalized.Capacity);
+        for (var row = context.StartRow; row < context.EndRowExclusive; row++)
+        {
+            for (var col = context.StartCol; col < context.EndColExclusive; col++)
+            {
+                var cell = includeScrollback
+                    ? buffer.GetCellFromTop(row, col)
+                    : buffer.GetCell(row, col);
+                var cellText = cell.IsWideContinuation ? " " : cell.Text;
+                foreach (var character in cellText)
+                {
+                    normalized.Append(character);
+                    coordinates.Add((row, col));
+                }
+            }
+            if (row + 1 < context.EndRowExclusive)
+            {
+                normalized.Append('\n');
+                coordinates.Add(null);
+            }
+        }
+
+        var maskedCells = new HashSet<(int Row, int Column)>();
+        var normalizedText = normalized.ToString();
+        foreach (var pattern in maskPatterns.Where(pattern => !string.IsNullOrEmpty(pattern)))
+        {
+            for (
+                var start = normalizedText.IndexOf(pattern, StringComparison.Ordinal);
+                start >= 0;
+                start = normalizedText.IndexOf(pattern, start + 1, StringComparison.Ordinal)
+            )
+            {
+                var end = Math.Min(coordinates.Count, start + pattern.Length);
+                for (var index = start; index < end; index++)
+                {
+                    if (coordinates[index] is { } coordinate)
+                    {
+                        maskedCells.Add(coordinate);
+                    }
+                }
             }
         }
         return maskedCells;

@@ -32,4 +32,28 @@ Use `console2svg --help` for the installed version's complete command reference.
 > [!TIP]
 > Put `--` before a captured command, especially when it has options that look like console2svg options. For example: `console2svg capture -w 100 -- git log --oneline`.
 
-<!-- TODO: Generate and embed a searchable CLI option table from `console2svg --help`. -->
+## Full option table
+
+The table below is a reading guide. Always confirm flags with the installed binary, as commands evolve between releases:
+
+```bash
+console2svg --help
+console2svg capture --help
+console2svg replay --help
+console2svg convert --help
+console2svg theme --help
+console2svg status --help
+console2svg completions generate --help
+```
+
+| Command | Key options |
+| --- | --- |
+| `capture` | `-o/--out`, `-w/-h/--size`, `-v`, `--fps`, `--sleep`, `--timeout`, `--crop-top/right/bottom/left`, `--theme`, `-d`, `-t`, `--background`, `--opacity`, `--margin`, `--padding`, `--pc-padding`, `--prompt`, `--header`, `--forecolor`, `--backcolor`, `--mask`, `--verbose`, `--stdout` |
+| `replay` | Replay-file path, `-w/-h`, `-v`, appearance and timing options shared with `capture` |
+| `convert` | Input `.cast`/`.svg` path, `-o/--out` target format (`png`, `gif`, `mp4`, `webm`) |
+| `interactive` | `-d/--theme`, `-o/--out`, on-demand keys (`F9` start/stop) |
+| `live-server`, `tmux live-server` | Port/preview options; streams the terminal as SVG |
+| `tmux capture` | Target pane, `-w/-h`, appearance options shared with `capture` |
+| `theme list/install/remove/update` | Theme id, package directory/archive/URL source |
+| `status [--json\|--markdown]` | Runtime, renderer (`resvg`, `rsvg-convert`, `ffmpeg`), theme counts, output formats |
+| `completions generate <bash\|zsh\|fish\|powershell>` | Shell name; writes the completion script to stdout |

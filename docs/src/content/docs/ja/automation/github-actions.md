@@ -24,4 +24,10 @@ The repository provides an action that installs console2svg and is a convenient 
 
 The repository uses this action to regenerate its own examples. See the [CI/CD guide](/automation/ci-cd-support/) for reproducibility and secret-handling recommendations.
 
-<!-- TODO: Add a screenshot of a generated SVG attached to a GitHub Actions run. -->
+## Where to find the capture
+
+1. Open the workflow run in the GitHub Actions tab.
+2. Scroll to the **Artifacts** section at the bottom of the run summary.
+3. Download `console-capture` and open `output.svg` in a browser.
+
+The artifact contains the rendered SVG only. Verbose logs and replay files are not uploaded by the snippet above; add them as separate private artifacts only when debugging.

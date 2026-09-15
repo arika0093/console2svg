@@ -20,4 +20,16 @@ console2svg capture -w 120 -h 30 --timeout 10 --mask "$SECRET" -o artifacts/cons
 > [!NOTE]
 > console2svg enables terminal color environment variables by default and removes CI markers that commonly disable color output. Use `--no-colorenv` or `--no-delete-envs` when that behavior is unsuitable for your runner.
 
-<!-- TODO: Add a workflow diagram showing capture generation, artifact upload, and review. -->
+## Workflow
+
+```text
+CI runner
+  1. install pinned console2svg
+  2. console2svg capture -w 120 -h 30 --timeout 10 -o artifacts/console.svg -- ./generate-output.sh
+  3. upload artifacts/console.svg (actions/upload-artifact)
+        |
+        v
+Reviewer downloads the artifact, checks the rendered terminal,
+then publishes only the reviewed SVG to docs/releases.
+Keep --verbose logs and replay files private unless reviewed.
+```

@@ -6,6 +6,8 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_root"
 assets_dir="$repo_root/docs/public/assets"
 mkdir -p "$assets_dir/window"
+mkdir -p "$assets_dir/theme"
+mkdir -p "$repo_root/logs"
 
 # --- install require packages ---
 sudo npm install -g oh-my-logo
@@ -33,6 +35,33 @@ console2svg capture -o "$assets_dir/window/macos-pc.svg"    -d macos-pc    -w 40
 console2svg capture -o "$assets_dir/window/windows.svg"     -d windows     -w 40 -h 4 -c -- dotnet --version
 console2svg capture -o "$assets_dir/window/windows-pc.svg"  -d windows-pc  -w 40 -h 4 -c -- dotnet --version
 console2svg capture -o "$assets_dir/window/transparent.svg" -d transparent -w 40 -h 4 -c -- dotnet --version
+
+## theme (same framing as window/ outputs, one file per bundled --theme id)
+# window/ covers chrome via -d; theme/ covers every --theme id (palettes, chrome variants, full themes).
+THEMES="dark light dracula github-dark github-light gruvbox-dark gruvbox-light matrix nord one-light solarized-dark solarized-light tokyo-night none transparent macos macos-pc windows windows-pc cyberpunk cyberpunk-pc"
+for theme in $THEMES; do
+  console2svg capture -o "$assets_dir/theme/${theme}.svg" --verbose "./logs/theme-${theme}.log" -w 40 -h 4 -c --theme "$theme" -- dotnet --version
+done
+
+## theme + docs examples (used by gallery.mdx / quick-start.mdx / themes.md)
+console2svg capture -o "$assets_dir/cmd-theme-dracula.svg"      --verbose ./logs/cmd-theme-dracula.log      -w 100 -c --theme dracula --theme macos -- fastfetch
+console2svg capture -o "$assets_dir/cmd-theme-cyberpunk-pc.svg" --verbose ./logs/cmd-theme-cyberpunk-pc.log -w 100 -c --theme cyberpunk-pc -- fastfetch
+console2svg capture -o "$assets_dir/cmd-quickstart-fastfetch.svg" --verbose ./logs/cmd-quickstart-fastfetch.log -w 100 -c --theme github-dark --theme macos-pc --background "#006090" -- fastfetch
+# static cmatrix frame for gallery (video is cmd-matrix-video.gif)
+console2svg capture -o "$assets_dir/cmd-cmatrix.svg" --verbose ./logs/cmd-cmatrix.log -w 100 -h 24 -c -d macos-pc --timeout 2 -- cmatrix -ab
+# static PNG next to the animated GIF (converting-output-formats.md)
+console2svg capture -o "$assets_dir/cmd-matrix.png" --verbose ./logs/cmd-matrix-png.log -w 100 -h 24 -c -d macos-pc --timeout 2 -- cmatrix -ab
+# before/after masking example with synthetic credentials only (masking-sensitive-output.md, gallery.mdx)
+cat <<'EOF' > /tmp/console2svg-mask-demo.env
+CURRENT_DIRECTORY=/home/demo/app
+APP_SECRET_TOKEN=demo-token-12345
+HTTP_PROXY=http://demo-user:demo-password-12345@10.0.0.1:8080
+CONNECTION_STRING=Server=localhost;Database=demoDb;User Id=demoUser;Password=demo-Password-12345;
+GIT_USERNAME=demo-user
+GIT_EMAIL_ADDRESS=demo-user@example.com
+EOF
+console2svg capture -o "$assets_dir/cmd-mask-before.svg" --verbose ./logs/cmd-mask-before.log -w 100 -d macos-pc -- cat /tmp/console2svg-mask-demo.env
+console2svg capture -o "$assets_dir/cmd-mask-after.svg"  --verbose ./logs/cmd-mask-after.log  -w 100 -d macos-pc --mask "demo-token-12345" "demo-password-12345" "demo-Password-12345" "demo-user" "demo-user@example.com" -- cat /tmp/console2svg-mask-demo.env
 
 # --- video ---
 console2svg capture -o "$assets_dir/cmd-sl.svg"            --verbose ./logs/cmd-sl.log           -w 120 -h 16 -c -d -v -- sl

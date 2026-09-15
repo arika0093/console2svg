@@ -59,7 +59,9 @@ console2svg capture -c -d -v -- sl
 console2svg capture -d -v -- cmatrix ab
 ```
 
-{/* TODO */}
+![console2svg capture -d -v -- cmatrix ab](/assets/cmd-cmatrix.svg)
+
+動画版は[出力フォーマットの変換](/basic-usage/converting-output-formats/)のGIF例も参照ください。
 
 ### nyancat
 
@@ -97,14 +99,16 @@ console2svg interactive -d macos -o ./captures/output.svg
 console2svg capture -c -d macos -t "dracula" -- fastfetch
 ```
 
-{/* TODO */}
+![console2svg capture -c -d macos -t "dracula" -- fastfetch](/assets/cmd-theme-dracula.svg)
 
 
 ```bash
 console2svg capture -c -t "cyberpunk-pc" -- fastfetch
 ```
 
-{/* TODO */}
+![console2svg capture -c -t "cyberpunk-pc" -- fastfetch](/assets/cmd-theme-cyberpunk-pc.svg)
+
+全テーマの一覧は[Themes](/appearance/themes/)のスウォッチ表を参照ください。
 
 ## 機密情報マスキング
 
@@ -123,4 +127,8 @@ EOF
 console2svg capture -d macos-pc -t github-dark -- cat .env
 ```
 
-{/* TODO */}
+マスキング前後の例（合成ダミーの認証情報のみ使用。`scripts/image-gen.sh`で生成）:
+
+![マスキング前](/assets/cmd-mask-before.svg)
+
+![マスキング後](/assets/cmd-mask-after.svg)

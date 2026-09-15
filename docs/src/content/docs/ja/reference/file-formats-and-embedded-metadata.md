@@ -28,4 +28,35 @@ Captures can optionally embed source information such as cast data, replay input
 > [!CAUTION]
 > Embedded metadata travels with the SVG. Do not publish an image with embedded input or logs unless you have reviewed that information for secrets and local paths.
 
-<!-- TODO: Add a diagram that distinguishes a rendered SVG from optional embedded replay, cast, and log metadata. -->
+## Rendered SVG vs. embedded metadata
+
+```text
++---------------------+      +---------------------------+
+| replay.json         |      | console.cast              |
+| (keyboard + timing) |      | (timed output + metadata) |
++----------+----------+      +-------------+-------------+
+           |                               |
+           v                               v
++--------------------------------------------------+
+| console2svg capture / replay / convert           |
++------------------------+-------------------------+
+                         |
+                         v
++--------------------------------------------------+
+| output.svg (rendered)                            |
+|  - terminal text, styles, window chrome          |
+|  - backgrounds, animation timing                 |
++--------------------------------------------------+
+                         |
+        +----------------+----------------+
+        |                                 |
+        v                                 v
++------------------+            +-------------------+
+| plain artifact   |            | with embedded     |
+| (default)        |            | --embed-replay /  |
+| shareable image  |            | --embed-cast /    |
+| only             |            | --embed-log       |
++------------------+            +-------------------+
+```
+
+Use the left path for docs and blog images. Use the right path only when another machine must re-render the exact session with different visual options.

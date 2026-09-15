@@ -51,11 +51,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Build and upload Pages artifact
-        uses: withastro/action@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
-          path: docs
           node-version: 24
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Install dependencies
+        working-directory: docs
+        run: npm ci
+
+      - name: Build documentation
+        working-directory: docs
+        run: npm run build
+
+      - name: Prefix root-relative links for project Pages
+        working-directory: docs
+        run: node scripts/prefix-base-paths.mjs dist "$CONSOLE2SVG_DOCS_BASE"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs/dist
 
   deploy:
     name: Deploy documentation

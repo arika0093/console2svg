@@ -5,7 +5,6 @@ import starlightGithubAlerts from 'starlight-github-alerts';
 import starlightThemeNova from 'starlight-theme-nova';
 import starlightVersions from 'starlight-versions';
 import githubAlerts from './src/integrations/github-alerts.mjs';
-import prefixBasePaths from './src/integrations/base-paths.mjs';
 
 // CI/release builds set CONSOLE2SVG_DOCS_VERSION to the published version.
 // Keep the development site clearly identifiable without changing source files.
@@ -18,9 +17,6 @@ export default defineConfig({
   base: docsBase,
   server: {
     host: true,
-  },
-  markdown: {
-    rehypePlugins: [[prefixBasePaths, { base: docsBase }]],
   },
   integrations: [
     starlight({

@@ -30,10 +30,11 @@ rm -rf "$INSTALL_DIR"
 mkdir -p "$INSTALL_DIR"
 publish_dir="$INSTALL_DIR/publish"
 
-export NBGV_GitEngine=Disabled
+# action.yml expands shallow checkouts before this script runs. Keep NBGV's Git
+# engine enabled so generated ThisAssembly fields such as GitCommitDate exist.
+dotnet build-server shutdown || true
 # See scripts/release/publish-native-aot.sh: disable VBCSCompiler shared
 # compilation on Windows CI to avoid flaky CS2012 file-lock errors.
-dotnet build-server shutdown || true
 dotnet publish "$ACTION_PATH/src/ConsoleToSvg/ConsoleToSvg.csproj" \
   -c Release \
   -r "$RID" \

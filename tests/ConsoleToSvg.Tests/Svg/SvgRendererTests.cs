@@ -123,6 +123,22 @@ public sealed partial class SvgRendererTests
     }
 
     [Test]
+    public void RenderMaskAddsRedactionOverlay()
+    {
+        var session = new RecordingSession(width: 32, height: 1);
+        session.AddEvent(0.01, "visible secret");
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { MaskPatterns = ["secret"], MaskAuto = false }
+        );
+
+        svg.ShouldNotContain("secret");
+        svg.ShouldContain("class=\"c2-auto-mask\"");
+        svg.ShouldContain("fill=\"url(#c2-redacted-stripe)\"");
+    }
+
+    [Test]
     public void RenderEmbedsLogsAndReplayMetadata()
     {
         var session = new RecordingSession(width: 8, height: 2);

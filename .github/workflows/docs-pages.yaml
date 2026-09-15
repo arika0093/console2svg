@@ -52,6 +52,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
+      - name: Setup GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: actions/configure-pages@v5
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:

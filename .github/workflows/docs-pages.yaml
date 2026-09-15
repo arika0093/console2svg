@@ -1,0 +1,71 @@
+name: Docs / GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - feat/add-document-site
+    paths:
+      - 'docs/**'
+      - 'action.yml'
+      - '.github/workflows/docs-pages.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  CONSOLE2SVG_DOCS_SITE: https://arika0093.github.io
+  CONSOLE2SVG_DOCS_BASE: /console2svg
+  ASTRO_TELEMETRY_DISABLED: '1'
+
+jobs:
+  action-smoke-test:
+    name: Test develop setup action
+    if: github.ref == 'refs/heads/feat/add-document-site' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout shallow clone
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Install console2svg from this checkout
+        uses: ./
+        with:
+          version: develop
+
+      - name: Verify executable
+        run: console2svg --version
+
+  build:
+    name: Build documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Build and upload Pages artifact
+        uses: withastro/action@v6
+        with:
+          path: docs
+          node-version: 24
+
+  deploy:
+    name: Deploy documentation
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

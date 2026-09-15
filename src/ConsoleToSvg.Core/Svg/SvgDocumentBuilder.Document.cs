@@ -190,6 +190,30 @@ internal static partial class SvgDocumentBuilder
                 sb.Append("\" fill=\"url(#c2-redacted-stripe)\"/>");
             }
         }
+        foreach (var pattern in maskPatterns ?? [])
+        {
+            if (string.IsNullOrEmpty(pattern))
+            {
+                continue;
+            }
+
+            for (
+                var start = commandHeader.IndexOf(pattern, StringComparison.Ordinal);
+                start >= 0;
+                start = commandHeader.IndexOf(pattern, start + 1, StringComparison.Ordinal)
+            )
+            {
+                sb.Append("<rect class=\"c2-auto-mask\" x=\"");
+                sb.Append(x + start * context.CellWidth);
+                sb.Append("\" y=\"");
+                sb.Append(bgY);
+                sb.Append("\" width=\"");
+                sb.Append(pattern.Length * context.CellWidth);
+                sb.Append("\" height=\"");
+                sb.Append(bgH);
+                sb.Append("\" fill=\"url(#c2-redacted-stripe)\"/>");
+            }
+        }
         sb.Append("</g>\n");
     }
 

@@ -9,3 +9,9 @@ id = "console2svg-credential-uri"
 regex = '(?i)\b[a-z][a-z0-9+.-]{1,20}://[^/\s:@]+:[^/\s@]+@'
 early_regex = '(?i)\b[a-z][a-z0-9+.-]{1,20}://[^/\s:@]+:[^/\s@]*(?:@|(?=$|[\s]))'
 keywords = ["://"]
+
+[[rules]]
+id = "console2svg-git-identity"
+regex = '(?m)(?:^|[ \t])[^\r\n<>]+<[^\s<>@]+@[^\s<>@]+>'
+early_regex = '(?m)(?:^|[ \t])[^\r\n<>]+<[^\s<>@]+@[^\s<>@]+>'
+keywords = ["@"]

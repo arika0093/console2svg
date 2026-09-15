@@ -228,9 +228,16 @@ internal static partial class SvgDocumentBuilder
         var maskedCells = maskPatterns is { Length: > 0 }
             ? FindMaskedCells(buffer, context, includeScrollback, maskPatterns)
             : null;
-        if (maskedCells is not null && autoMaskedCells is not null)
+        if (autoMaskedCells is not null)
         {
-            maskedCells.UnionWith(autoMaskedCells);
+            if (maskedCells is null)
+            {
+                maskedCells = autoMaskedCells;
+            }
+            else
+            {
+                maskedCells.UnionWith(autoMaskedCells);
+            }
         }
 
         for (var row = context.StartRow; row < context.EndRowExclusive; row++)

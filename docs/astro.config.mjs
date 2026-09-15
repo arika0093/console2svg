@@ -18,6 +18,15 @@ export default defineConfig({
     starlight({
       title: 'console2svg',
       description: 'Convert terminal output into crisp, scalable SVG images.',
+      defaultLocale: 'ja', //en
+      locales: {
+        // en: {
+        //   label: 'English',
+        // },
+        ja: {
+          label: '日本語',
+        },
+      },
       components: {
         ThemeProvider: 'starlight-theme-nova/components/ThemeProvider.astro',
         ThemeSelect: 'starlight-theme-nova/components/ThemeSelect.astro',
@@ -28,18 +37,18 @@ export default defineConfig({
         './src/styles/custom.css',
       ],
       plugins: [
-        starlightVersions({
-          current: { label: currentDocsVersion },
-          // Versioned pages are created by the release process. The local site
-          // only exposes the current documentation and must not copy it at build time.
-          exclude: ['**'],
-          versions: [{ slug: currentDocsVersion, label: currentDocsVersion }],
-        }),
+        // starlightVersions({
+        //   current: { label: currentDocsVersion },
+        //   // Versioned pages are created by the release process. The local site
+        //   // only exposes the current documentation and must not copy it at build time.
+        //   exclude: ['**'],
+        //   versions: [{ slug: currentDocsVersion, label: currentDocsVersion }],
+        // }),
         starlightThemeNova(),
         starlightGithubAlerts(),
       ],
       sidebar: [
-        { label: 'Overview', items: ['features', 'introduction'] },
+        { label: 'Overview', items: ['gallery'] },
         {
           label: 'Getting started',
           items: ['getting-started/quick-start', 'getting-started/installation'],

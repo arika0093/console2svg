@@ -6,7 +6,7 @@ It is maintained inside console2svg.
 <!-- QUICKLEAKS-METADATA:START -->
 - Betterleaks commit: `2a387a5bad4290a84b9a1eb679bffe70611218cc`
 - Downloaded config SHA-256: `a8f553eb634ac3c5c1ca3f0dc95e2b8abdea7d14b622604c5af07f30ce7926ef`
-- Generated rules: `464`
+- Generated rules: `465`
 <!-- QUICKLEAKS-METADATA:END -->
 
 ## Use as a library
@@ -54,7 +54,11 @@ ConsoleToSvg adds these local rules:
 
 - `console2svg-home-directory` for Unix and Windows home-directory prefixes.
 - `console2svg-credential-uri` for `schema://user:pass@` credentials.
-  - with an Early-mode variant that also detects the value before `@` is entered.
+  - masks the username and password independently, preserving the scheme, separators,
+    and host; Early mode also detects the value before `@` is entered.
+- `console2svg-git-identity` for `User Name <address@example.com>` identities such as
+  those printed by `git log`. It masks the display name and email local part
+  independently, preserving the email domain.
 
 ## Refreshing the generated source
 

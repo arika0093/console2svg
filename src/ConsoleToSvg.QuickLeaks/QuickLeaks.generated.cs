@@ -27,6 +27,7 @@ public static partial class QuickLeaks
             ["-"[0]] = [new KeywordRule("-prd-", 136), new KeywordRule("-pw", 170), new KeywordRule("-----begin", 335)],
             ["."[0]] = [new KeywordRule(".acc_", 37), new KeywordRule(".acc-", 37), new KeywordRule(".apps.googleusercontent.com", 165), new KeywordRule(".pw", 170)],
             ["0"[0]] = [new KeywordRule("0q~", 42)],
+            ["@"[0]] = [new KeywordRule("@", 464)],
             ["1"[0]] = [new KeywordRule("1q~", 42)],
             ["2"[0]] = [new KeywordRule("2q~", 42)],
             ["3"[0]] = [new KeywordRule("3q~", 42)],
@@ -68,7 +69,7 @@ public static partial class QuickLeaks
 
     private static bool[] FindCandidateRules(string text)
     {
-        var candidates = new bool[464];
+        var candidates = new bool[465];
         var textSpan = text.AsSpan();
         for (var index = 0; index < textSpan.Length; index++)
         {
@@ -554,6 +555,7 @@ public static partial class QuickLeaks
         if (candidates[461]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule461() : Rule461()).Matches(text)) yield return new QuickLeaksFinding("zuplo-consumer-api-key.1", m.Index, m.Index + m.Length);
         if (candidates[462]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule462() : Rule462()).Matches(text)) yield return new QuickLeaksFinding("console2svg-home-directory", m.Index, m.Index + m.Length);
         if (candidates[463]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule463() : Rule463()).Matches(text)) yield return new QuickLeaksFinding("console2svg-credential-uri", m.Index, m.Index + m.Length);
+        if (candidates[464]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule464() : Rule464()).Matches(text)) yield return new QuickLeaksFinding("console2svg-git-identity", m.Index, m.Index + m.Length);
     }
 
     [GeneratedRegex("\\bA3-[A-Z0-9]{6}-(?:(?:[A-Z0-9]{11})|(?:[A-Z0-9]{6}-[A-Z0-9]{5}))-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}\\b", RegexOptions.CultureInvariant)]
@@ -2412,4 +2414,8 @@ public static partial class QuickLeaks
     private static partial Regex Rule463();
     [GeneratedRegex("(?i)\\b[a-z][a-z0-9+.-]{1,20}://[^/\\s:@]+:[^/\\s@]*(?:@|(?=$|[\\s]))", RegexOptions.CultureInvariant)]
     private static partial Regex EarlyRule463();
+    [GeneratedRegex("(?m)(?:^|[ \\t])[^\\r\\n<>]+<[^\\s<>@]+@[^\\s<>@]+>", RegexOptions.CultureInvariant)]
+    private static partial Regex Rule464();
+    [GeneratedRegex("(?m)(?:^|[ \\t])[^\\r\\n<>]+<[^\\s<>@]+@[^\\s<>@]+>", RegexOptions.CultureInvariant)]
+    private static partial Regex EarlyRule464();
 }

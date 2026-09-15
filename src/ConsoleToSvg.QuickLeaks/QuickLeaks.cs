@@ -59,12 +59,146 @@ public static partial class QuickLeaks
     {
         foreach (var finding in EnumerateGeneratedRules(text, mode))
         {
+            if (string.Equals(finding.RuleId, "console2svg-git-identity", StringComparison.Ordinal))
+            {
+                foreach (var identityFinding in EnumerateGitIdentityFindings(text, finding))
+                {
+                    yield return identityFinding;
+                }
+                continue;
+            }
+            if (
+                string.Equals(
+                    finding.RuleId,
+                    "console2svg-credential-uri",
+                    StringComparison.Ordinal
+                )
+                || string.Equals(finding.RuleId, "generic-credential-uri", StringComparison.Ordinal)
+            )
+            {
+                var start = Math.Max(0, finding.Start);
+                var end = Math.Min(text.Length, finding.End);
+                foreach (
+                    var credentialFinding in EnumerateCredentialUriFindings(
+                        finding,
+                        start,
+                        text.AsSpan(start, end - start)
+                    )
+                )
+                {
+                    yield return credentialFinding;
+                }
+                continue;
+            }
+
             var narrowed = NarrowFinding(text, finding);
             if (narrowed.End > narrowed.Start)
             {
                 yield return narrowed;
             }
         }
+    }
+
+    private static IEnumerable<QuickLeaksFinding> EnumerateGitIdentityFindings(
+        string text,
+        QuickLeaksFinding finding
+    )
+    {
+        var start = Math.Max(0, finding.Start);
+        var end = Math.Min(text.Length, finding.End);
+        var span = text.AsSpan(start, end - start);
+        var openAngle = span.LastIndexOf('<');
+        var at = openAngle >= 0 ? span[openAngle..].IndexOf('@') : -1;
+        if (openAngle < 0 || at <= 1)
+        {
+            yield break;
+        }
+
+        at += openAngle;
+        var identityStart = span[..openAngle].LastIndexOf(':') + 1;
+        while (
+            identityStart < openAngle && (span[identityStart] == ' ' || span[identityStart] == '\t')
+        )
+        {
+            identityStart++;
+        }
+
+        var identityEnd = openAngle;
+        while (
+            identityEnd > identityStart
+            && (span[identityEnd - 1] == ' ' || span[identityEnd - 1] == '\t')
+        )
+        {
+            identityEnd--;
+        }
+        if (identityEnd > identityStart)
+        {
+            yield return new QuickLeaksFinding(
+                finding.RuleId,
+                start + identityStart,
+                start + identityEnd
+            );
+        }
+
+        yield return new QuickLeaksFinding(finding.RuleId, start + openAngle + 1, start + at);
+    }
+
+    private static IEnumerable<QuickLeaksFinding> EnumerateCredentialUriFindings(
+        QuickLeaksFinding finding,
+        int start,
+        ReadOnlySpan<char> span
+    )
+    {
+        var findings = new List<QuickLeaksFinding>(2);
+        var schemeIndex = span.IndexOf("://".AsSpan(), StringComparison.Ordinal);
+        if (schemeIndex < 0)
+        {
+            return findings;
+        }
+
+        var credentialsStart = schemeIndex + 3;
+        var credentialsEnd = span.LastIndexOf('@');
+        if (credentialsEnd < credentialsStart)
+        {
+            credentialsEnd = span.Length;
+        }
+
+        var credentials = span[credentialsStart..credentialsEnd];
+        var separator = credentials.IndexOf(':');
+        if (separator < 0)
+        {
+            if (!credentials.IsEmpty)
+            {
+                findings.Add(
+                    new QuickLeaksFinding(
+                        finding.RuleId,
+                        start + credentialsStart,
+                        start + credentialsEnd
+                    )
+                );
+            }
+            return findings;
+        }
+
+        if (separator > 0)
+        {
+            findings.Add(
+                new QuickLeaksFinding(
+                    finding.RuleId,
+                    start + credentialsStart,
+                    start + credentialsStart + separator
+                )
+            );
+        }
+
+        var passwordStart = credentialsStart + separator + 1;
+        if (passwordStart < credentialsEnd)
+        {
+            findings.Add(
+                new QuickLeaksFinding(finding.RuleId, start + passwordStart, start + credentialsEnd)
+            );
+        }
+        return findings;
     }
 
     /// <summary>
@@ -96,14 +230,6 @@ public static partial class QuickLeaks
                 return new QuickLeaksFinding(finding.RuleId, start + lastSeparator + 1, end);
             }
             return new QuickLeaksFinding(finding.RuleId, start, start);
-        }
-
-        if (
-            string.Equals(finding.RuleId, "console2svg-credential-uri", StringComparison.Ordinal)
-            || string.Equals(finding.RuleId, "generic-credential-uri", StringComparison.Ordinal)
-        )
-        {
-            return NarrowCredentialUri(finding, start, span);
         }
 
         // Generic key=value secrets: mask only the value after '=' or ':'.
@@ -249,50 +375,6 @@ public static partial class QuickLeaks
             );
         }
         return new QuickLeaksFinding(finding.RuleId, start, start);
-    }
-
-    private static QuickLeaksFinding NarrowCredentialUri(
-        QuickLeaksFinding finding,
-        int start,
-        ReadOnlySpan<char> span
-    )
-    {
-        var schemeIndex = span.IndexOf("://".AsSpan(), StringComparison.Ordinal);
-        if (schemeIndex < 0)
-        {
-            return finding;
-        }
-        var credentialsStart = schemeIndex + 3;
-        if (credentialsStart >= span.Length)
-        {
-            return finding;
-        }
-        var atIndex = span.LastIndexOf('@');
-        var credentialsEnd = atIndex >= 0 ? atIndex : span.Length;
-        if (credentialsEnd <= credentialsStart)
-        {
-            return new QuickLeaksFinding(finding.RuleId, start, start);
-        }
-        var credentials = span[credentialsStart..credentialsEnd];
-        var colonIndex = credentials.IndexOf(':');
-        if (colonIndex >= 0)
-        {
-            var passwordStart = credentialsStart + colonIndex + 1;
-            if (passwordStart < credentialsEnd)
-            {
-                return new QuickLeaksFinding(
-                    finding.RuleId,
-                    start + passwordStart,
-                    start + credentialsEnd
-                );
-            }
-            return new QuickLeaksFinding(finding.RuleId, start, start);
-        }
-        return new QuickLeaksFinding(
-            finding.RuleId,
-            start + credentialsStart,
-            start + credentialsEnd
-        );
     }
 }
 /// <summary>

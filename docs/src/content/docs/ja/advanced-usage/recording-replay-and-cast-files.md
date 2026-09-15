@@ -1,31 +1,43 @@
 ---
-title: Recording, replay, and cast files
-description: Record terminal input and output for repeatable captures.
+title: 録画・リプレイ・castファイル
+description: ターミナル操作を保存して、同じ入力を繰り返し再生します。
 ---
 
-Recording separates terminal input and output from rendering. Capture a session once, then render it again with different dimensions, themes, or window chrome without manually repeating the same keystrokes. This is particularly useful for demos generated in CI.
+リプレイ機能を使うと、キーボード入力と描画を分離できます。一度操作を記録しておけば、同じ入力を使ってサイズやテーマ、ウインドウ装飾だけを変えて何度でも撮り直せます。CIでデモ画像を生成するときには特に便利です。
 
-## Save keyboard input for replay
+## キーボード入力を保存する
+
+`--replay-save`を付けてコマンドを実行します。
 
 ```bash
 console2svg capture --replay-save replay.json -- bash
 ```
 
-Render the saved input again later:
+保存した入力を再生する場合は`replay`コマンドを使います。リプレイファイルだけではなく、入力先になるコマンドも指定してください。
 
 ```bash
 console2svg replay replay.json -d macos -v -- bash
 ```
 
-Replay files are JSON and can be reviewed or edited when necessary. The first event uses an absolute time and later events use elapsed ticks, which keeps a recording compact while preserving its pacing.
+リプレイファイルはJSONなので、必要なら内容を確認・編集できます。タイミング情報も保存されるため、同じ操作を自動で再現できます。
 
-## Cast files
+## castファイル
 
-Asciicast-compatible cast files represent timed terminal events. Save one with `--save-cast capture.cast`, or use `convert` when the input is already an asciicast file. They are useful when a recording needs to be exchanged with other terminal-recording tools.
+Asciicast v2互換のcastファイルには、時刻付きのターミナル出力とメタデータが保存されます。キャプチャと同時に保存するには`--save-cast`を使います。
 
-The file structure and metadata options are described in the [reference](/reference/file-formats-and-embedded-metadata/).
+```bash
+console2svg capture --save-cast capture.cast -- my-command
+```
 
-![A replayed interactive session](/assets/cmd-bash-vim.svg)
+すでにあるcastファイルを描画する場合は`cast`コマンドを使います。現在のCLIに`convert`サブコマンドはありません。
+
+```bash
+console2svg cast capture.cast -o capture.svg
+```
+
+ファイル形式や埋め込みメタデータについては[ファイル形式と埋め込みメタデータ](/ja/reference/file-formats-and-embedded-metadata/)を参照してください。
+
+![リプレイで再現したインタラクティブセッション](/assets/cmd-bash-vim.svg)
 
 > [!CAUTION]
-> Replay and cast files can contain typed commands and terminal output. Review them before publishing and use [masking](/basic-usage/masking-sensitive-output/) for generated images.
+> リプレイファイルには入力したコマンド、castファイルにはターミナル出力が含まれます。公開前に必ず内容を確認してください。生成する画像については[機密情報のマスキング](/ja/basic-usage/masking-sensitive-output/)も利用できます。

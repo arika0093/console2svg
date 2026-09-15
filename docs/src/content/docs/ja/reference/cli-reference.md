@@ -1,59 +1,67 @@
 ---
-title: CLI reference
-description: Overview of console2svg commands and option groups.
+title: CLIリファレンス
+description: console2svgの主要コマンドとオプションをまとめます。
 ---
 
-Use `console2svg --help` for the installed version's complete command reference. Commands can evolve between releases, so this page groups the options you are most likely to need rather than duplicating every help entry.
+インストール済みバージョンの正確な引数一覧は`console2svg --help`で確認してください。このページでは、現在のCLI構成とよく使うオプションをまとめます。
 
-## Commands
+## コマンド
 
-| Command | Purpose |
+| コマンド | 用途 |
 | --- | --- |
-| `capture` | Run a command or read piped output and render it. |
-| `interactive` | Run an interactive shell and capture it on demand. |
-| `replay` | Render a saved replay file. |
-| `convert` | Render an asciicast file or convert an existing SVG. |
-| `live-server` | Serve a live terminal in a browser. |
-| `tmux capture` | Capture a tmux pane. |
-| `tmux live-server` | Stream a tmux pane in a browser. |
-| `theme` | Manage terminal themes. |
-| `status` | Report runtime and converter information. |
+| `capture` | コマンドをPTY上で実行して描画します。標準入力pipeは受け付けません。 |
+| `interactive` | 対話シェルやプログラムを操作しながら、好きなタイミングで保存します。 |
+| `replay` | 保存済みキーボード入力をコマンドへ再生してキャプチャします。 |
+| `cast` | Asciicast v2ファイルを読み込んで描画します。 |
+| `live-server` | インタラクティブ端末をブラウザへライブ表示します。 |
+| `tmux capture` | tmux paneをキャプチャします。 |
+| `tmux live-server` | tmux paneをブラウザへライブ表示します。 |
+| `theme` | テーマを一覧・インストール・更新・削除します。 |
+| `status` | 実行環境、変換バックエンド、出力形式などを表示します。 |
+| `update` | 更新確認または自己更新を行います。 |
+| `completions script` | シェル補完スクリプトを生成します。 |
 
-## Common option groups
+現在のCLIに`convert`サブコマンドはありません。画像・動画への変換は`-o`の拡張子で指定し、castファイルの入力には`cast`を使います。
 
-- Output: `--out` (`-o`), `-v`, `--stdout`, and frame output.
-- Dimensions: `-w`, `-h`, `--size`, and size adjustment.
-- Timing: `--fps`, `--sleep`, `--timeout`, and video timing.
-- Cropping: `--crop-top`, `--crop-right`, `--crop-bottom`, and `--crop-left`.
-- Appearance: themes, colors, fonts, window chrome, backgrounds, padding, and margins.
-- Safety: `--mask` and embedded metadata options.
-- Diagnostics: `status`, `--verbose`, and verbose log output.
+## よく使うオプション
+
+出力先は`-o/--out`、SVGを標準出力へ出す場合は`--stdout`です。端末サイズは`-w/--width`と`-h/--height`で指定します。
+
+`--size`は端末サイズではなく、PNG/GIF/MP4などへ変換するときの出力ピクセル寸法です。
+
+動画・タイミング関連には`-v/--video`、`--mode image|video`、`--fps`、`--sleep`、`--timeout`、`--timing`があります。見た目は`-t/--theme`、`-d/--window`、`--background`、`--opacity`、フォント・色・余白系オプションで調整できます。
+
+機密情報には`--mask`と`--mask-auto`、診断用途には`--verbose`や各種`--embed-*`があります。
 
 > [!TIP]
-> Put `--` before a captured command, especially when it has options that look like console2svg options. For example: `console2svg capture -w 100 -- git log --oneline`.
+> キャプチャ対象コマンドの前には`--`を付けておくのがおすすめです。たとえば`console2svg capture -w 100 -- git log --oneline`のようにします。
 
-## Full option table
-
-The table below is a reading guide. Always confirm flags with the installed binary, as commands evolve between releases:
+## ヘルプ
 
 ```bash
 console2svg --help
 console2svg capture --help
 console2svg replay --help
-console2svg convert --help
+console2svg cast --help
+console2svg live-server --help
+console2svg tmux --help
 console2svg theme --help
 console2svg status --help
-console2svg completions generate --help
+console2svg completions script --help
 ```
 
-| Command | Key options |
+## コマンド別の要点
+
+| コマンド | 主な引数・オプション |
 | --- | --- |
-| `capture` | `-o/--out`, `-w/-h/--size`, `-v`, `--fps`, `--sleep`, `--timeout`, `--crop-top/right/bottom/left`, `--theme`, `-d`, `-t`, `--background`, `--opacity`, `--margin`, `--padding`, `--pc-padding`, `--prompt`, `--header`, `--forecolor`, `--backcolor`, `--mask`, `--verbose`, `--stdout` |
-| `replay` | Replay-file path, `-w/-h`, `-v`, appearance and timing options shared with `capture` |
-| `convert` | Input `.cast`/`.svg` path, `-o/--out` target format (`png`, `gif`, `mp4`, `webm`) |
-| `interactive` | `-d/--theme`, `-o/--out`, on-demand keys (`F9` start/stop) |
-| `live-server`, `tmux live-server` | Port/preview options; streams the terminal as SVG |
-| `tmux capture` | Target pane, `-w/-h`, appearance options shared with `capture` |
-| `theme list/install/remove/update` | Theme id, package directory/archive/URL source |
-| `status [--json\|--markdown]` | Runtime, renderer (`resvg`, `rsvg-convert`, `ffmpeg`), theme counts, output formats |
-| `completions generate <bash\|zsh\|fish\|powershell>` | Shell name; writes the completion script to stdout |
+| `capture` | `-o/--out`, `-w/-h`, `-v`, `--mode`, `--fps`, `--sleep`, `--timeout`, `--crop-*`, `-t/--theme`, `-d/--window`, `--background`, `--mask`, `--stdout` |
+| `replay` | replayファイル、再生先コマンド、`capture`と共通の描画・出力オプション |
+| `cast` | `.cast`ファイル、`-o/--out`、描画・変換オプション |
+| `interactive` | `-o/--out`、見た目のオプション、`F9`/`F10`/`F12` |
+| `live-server` | 任意の`port`または`host:port`位置引数、見た目、`--no-resize`、`--save-cast` |
+| `tmux capture` | `--target`、`--history [lines]`、`capture`と共通の描画・出力オプション |
+| `tmux live-server` | 任意の`host:port`、`--target`、見た目、`--save-cast` |
+| `theme list/install/remove/update` | Theme ID、ディレクトリ・アーカイブ・URL |
+| `status` | `--json`、`--format json|markdown|table` |
+| `update` | `--check`、`-f/--force`、`-y/--yes` |
+| `completions script <shell>` | シェル名を指定して補完スクリプトを標準出力へ生成 |

@@ -1,53 +1,59 @@
 ---
-title: Capturing command output
-description: Capture command output as static images or animated SVGs.
+title: コマンド出力をキャプチャする
+description: コマンドをPTY上で実行し、静止画またはアニメーションSVGとして保存します。
 ---
 
-The `capture` workflow is the usual entry point. It either runs a command in a pseudo-terminal or reads text from standard input, then renders the resulting terminal screen. The output is `output.svg` unless you set `-o`.
+普段もっともよく使うのが`capture`です。指定したコマンドを疑似端末(PTY)上で実行し、そのターミナル画面を描画します。`-o`を省略した場合の出力先は`output.svg`です。
 
-## Run a command
+現在の`capture`には標準入力をキャプチャするpipeモードはありません。`my-command | console2svg capture`のような使い方はできないため、対象コマンドをconsole2svgから直接起動してください。
 
-Put the command after `--` so its arguments are passed through unchanged:
+## コマンドを実行する
+
+対象コマンドは`--`の後ろに置くのがおすすめです。対象コマンド自身のオプションをconsole2svg側に誤解釈されにくくなります。
 
 ```bash
 console2svg capture -- git log --oneline -5
 ```
 
-The separator is recommended whenever the captured command has options of its own:
+シェル構文を使いたい場合は、シェル自体をキャプチャ対象にします。
 
 ```bash
 console2svg capture -- bash -lc 'printf "ready\\n"'
 ```
 
-## Capture piped output
+コマンドを指定せずに`console2svg capture`だけを実行した場合は、入力待ちにはならずヘルプが表示されます。
+
+## SVGを標準出力へ出す
+
+入力をpipeで受け取る機能はありませんが、生成したSVGを標準出力へ渡すことはできます。
 
 ```bash
-my-command | console2svg capture
+console2svg capture --stdout -- git status > status.svg
 ```
 
-Use pipe mode when the program already produces the text you want and does not need a terminal. Use command mode for programs that inspect terminal size, color support, or whether output is attached to a TTY.
+`--stdout`はSVGを標準出力へ書き出すためのオプションです。
 
-## Static images
+## 静止画
 
-Static captures are the default. Set the terminal dimensions and appearance as needed:
+標準では最終状態を静止SVGとして保存します。
 
 ```bash
 console2svg capture -w 120 -h 30 -c -d macos-pc -- my-command
 ```
 
-![A static command capture](/assets/cmd.svg)
+![静止画キャプチャの例](/assets/cmd.svg)
 
-## Animated SVGs
+## アニメーションSVG
 
-Use `-v` to preserve the command's visual changes:
+`-v` (`--video`)を指定すると、端末の変化をアニメーションSVGとして保存できます。
 
 ```bash
 console2svg capture -v --fps 30 --timeout 5 -- cmatrix -ab
 ```
 
-![An animated command capture](/assets/cmd-sl.svg)
+![アニメーションキャプチャの例](/assets/cmd-sl.svg)
 
-See [converting output formats](/basic-usage/converting-output-formats/) for GIF and MP4 output.
+GIFやMP4へ直接出力する方法は[出力フォーマットの変換](/ja/basic-usage/converting-output-formats/)を参照してください。
 
 > [!TIP]
-> Add `--timeout <seconds>` to a command that does not exit on its own. This is useful for demos such as `cmatrix` and `nyancat`.
+> `cmatrix`や`nyancat`のように自動終了しないコマンドには`--timeout <秒>`を付けておくと便利です。

@@ -1,35 +1,33 @@
 ---
-title: CI/CD support
-description: Generate repeatable terminal captures in continuous integration.
+title: CI/CDで使う
+description: CI上で再現性のあるターミナルキャプチャを生成します。
 ---
 
-console2svg is designed to run in non-interactive automation. Use explicit dimensions, timeouts, output paths, and timing options when the result needs to be reproducible. This prevents a runner's terminal size or a command that waits indefinitely from changing the generated artifact.
+console2svgは非対話のCI環境でも利用できます。毎回同じ結果を作りたい場合は、端末サイズ、タイムアウト、出力先、必要に応じてリプレイや動画タイミングを明示してください。Runnerごとの端末サイズ差や、終了しないコマンドによるハングを避けやすくなります。
 
 ```bash
-console2svg capture -w 120 -h 30 --timeout 10 --mask "$SECRET" -o artifacts/console.svg -- ./generate-output.sh
+console2svg capture -w 120 -h 30 --timeout 10 \
+  --mask "$SECRET" -o artifacts/console.svg -- ./generate-output.sh
 ```
 
-## Recommendations
+## 再現性を上げるポイント
 
-<Steps>
-  <Step title="Install a known version">Pin console2svg in the workflow or use a release tag for the repository action.</Step>
-  <Step title="Make the capture deterministic">Set dimensions, a timeout, output path, and—when required—an FPS or replay file.</Step>
-  <Step title="Publish only reviewed artifacts">Mask secrets, keep verbose logs private, and upload SVGs or converted files as build artifacts.</Step>
-</Steps>
+まずconsole2svgのバージョンを固定します。次に`-w`/`-h`、`--timeout`、出力先を明示し、操作そのものも固定したい場合はリプレイファイルを使います。公開する成果物はSVGや変換後の画像・動画だけにし、verboseログやリプレイファイルは内容を確認するまで非公開にしておくのが安全です。
 
 > [!NOTE]
-> console2svg enables terminal color environment variables by default and removes CI markers that commonly disable color output. Use `--no-colorenv` or `--no-delete-envs` when that behavior is unsuitable for your runner.
+> console2svgは標準で端末のカラー出力を有効にする環境変数を設定し、色を無効化しやすいCI系の環境変数を取り除きます。Runner側の環境をそのまま使いたい場合は`--no-colorenv`や`--no-delete-envs`を指定してください。
 
-## Workflow
+## 典型的な流れ
 
 ```text
 CI runner
-  1. install pinned console2svg
-  2. console2svg capture -w 120 -h 30 --timeout 10 -o artifacts/console.svg -- ./generate-output.sh
-  3. upload artifacts/console.svg (actions/upload-artifact)
+  1. console2svgを固定バージョンでインストール
+  2. console2svg capture -w 120 -h 30 --timeout 10 \
+       -o artifacts/console.svg -- ./generate-output.sh
+  3. artifacts/console.svg をactions/upload-artifactで保存
         |
         v
-Reviewer downloads the artifact, checks the rendered terminal,
-then publishes only the reviewed SVG to docs/releases.
-Keep --verbose logs and replay files private unless reviewed.
+生成画像をレビューしてからdocsやreleaseへ公開
 ```
+
+GitHub Actionsでのセットアップ例は[GitHub Actions](/ja/automation/github-actions/)を参照してください。

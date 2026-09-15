@@ -1,37 +1,51 @@
 ---
-title: Layout and typography
-description: Control terminal dimensions, spacing, fonts, prompts, and headers.
+title: レイアウトと文字表示
+description: 端末サイズ、余白、フォント、プロンプト、ヘッダーを調整します。
 ---
 
-Layout has two layers: the terminal screen, where applications decide how to wrap output, and the surrounding image, where themes add chrome, padding, shadows, and a desktop background. Set the terminal dimensions explicitly whenever the same image is generated on a developer machine and in CI.
+console2svgでは、「コマンドから見える端末サイズ」と「生成画像そのもののサイズ」を別々に扱います。ここを混同すると、折り返し位置や最終画像の解像度が意図せず変わるので注意してください。
 
-## Terminal dimensions
+## 端末の文字幅・行数
 
-`-w` sets the terminal width in characters and `-h` sets its height in rows. They affect the command being captured as well as the final image. `--size` accepts combined forms such as `120x30`, `120x*`, or `*x30` when that is clearer.
+`-w`は端末の横幅を文字数で、`-h`は高さを行数で指定します。この値はPTYで実行するコマンドから見える端末サイズにも影響します。
 
 ```bash
 console2svg capture -w 120 -h 30 -- dotnet --info
-console2svg capture --size 120x30 -- dotnet --info
 ```
 
-Use the smallest size that shows the output you intend to explain. A fixed height is useful for compact examples; omit it when you want the complete scrollback-sized result.
+開発端末とCIで同じ画像を作りたい場合は、`-w`と`-h`を明示しておくのがおすすめです。
 
-## Space around the terminal
+## 変換後の画像サイズ
 
-`--padding` controls the space inside the terminal surface. `--margin` is the gap between the terminal surface and its window chrome. `--pc-padding` controls the outer desktop space supplied by a `*-pc` theme.
+`--size`は端末の文字数ではありません。PNGやGIF、MP4などへ変換するときの出力ピクセル寸法を指定します。`WIDTH`、`WIDTHx*`、`*xHEIGHT`、`WIDTHxHEIGHT`の形式を使えます。
 
 ```bash
-console2svg capture -w 120 -h 30 -d macos-pc --padding 12 --margin 24 --pc-padding 32 -- dotnet --info
+console2svg capture -w 120 -h 30 -o output.png --size 1280x720 -- dotnet --info
 ```
 
-## Fonts, colors, and command labels
+SVG自体の端末レイアウトを変えたい場合は`-w`/`-h`を使ってください。
 
-Use `--font` to choose a CSS font family and `--fontsize` to set its size in pixels. `--forecolor` and `--backcolor` override terminal colors without replacing the complete theme. `--with-command` (`-c`) adds the invoked command, while `--prompt` and `--header` customize its label.
+## 端末の周囲に余白を付ける
+
+`--padding`は端末内部の余白、`--margin`は端末とウインドウ装飾の間隔、`--pc-padding`は`*-pc`テーマの外側にあるデスクトップ部分の余白を調整します。
 
 ```bash
-console2svg capture -w 100 -h 4 --font 'JetBrains Mono' --fontsize 16 --prompt '[HELLO!] $' --header my-custom-header --forecolor '#00f040' --backcolor '#042515' -- echo hi
+console2svg capture -w 120 -h 30 -d macos-pc \
+  --padding 12 --margin 24 --pc-padding 32 -- dotnet --info
 ```
 
-![A capture with a custom prompt, header, and colors](/assets/cmd-term-custom.svg)
+## フォント・色・コマンド表示
 
-For individual edge cases, `--adjust` controls the SVG text `lengthAdjust` mode. See the [CLI reference](/reference/cli-reference/) for every layout-related option.
+`--font`でCSSのfont-family、`--fontsize`でフォントサイズをピクセル指定できます。`--forecolor`と`--backcolor`はテーマを丸ごと変えずに端末の前景色・背景色だけを上書きします。
+
+`--with-command` (`-c`)を付けると実行コマンドを画像先頭へ追加し、`--prompt`と`--header`で表示内容を変更できます。
+
+```bash
+console2svg capture -w 100 -h 4 --font 'JetBrains Mono' --fontsize 16 \
+  --prompt '[HELLO!] $' --header my-custom-header \
+  --forecolor '#00f040' --backcolor '#042515' -- echo hi
+```
+
+![プロンプト・ヘッダー・色を変更したキャプチャ](/assets/cmd-term-custom.svg)
+
+文字幅の特殊なケースでは`--adjust`でSVGの`lengthAdjust`を変更できます。各オプションの一覧は[CLIリファレンス](/ja/reference/cli-reference/)を参照してください。

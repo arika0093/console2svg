@@ -17,7 +17,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'console2svg',
-      description: 'Convert terminal output into crisp, scalable SVG images.',
+      description: 'ターミナルの出力を、綺麗で拡大可能なSVG画像に変換します。',
       defaultLocale: 'ja', //en
       locales: {
         // en: {
@@ -49,11 +49,11 @@ export default defineConfig({
       ],
       sidebar: [
         {
-          label: 'Getting started',
+          label: 'はじめに',
           items: ['gallery', 'getting-started/installation', 'getting-started/quick-start'],
         },
         {
-          label: 'Basic usage',
+          label: '基本的な使い方',
           items: [
             'basic-usage/capturing-command-output',
             'basic-usage/interactive-capture',
@@ -63,7 +63,7 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Advanced usage',
+          label: '高度な使い方',
           items: [
             'advanced-usage/live-server',
             'advanced-usage/tmux',
@@ -72,7 +72,7 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Appearance',
+          label: '見た目の調整',
           items: [
             'appearance/themes',
             'appearance/window-chrome-and-backgrounds',
@@ -80,11 +80,11 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Automation',
+          label: '自動化',
           items: ['automation/ci-cd-support', 'automation/github-actions'],
         },
         {
-          label: 'Reference',
+          label: 'リファレンス',
           items: [
             'reference/cli-reference',
             'reference/file-formats-and-embedded-metadata',
@@ -92,7 +92,7 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Concepts',
+          label: '仕組み',
           items: ['concepts/how-console2svg-works', 'concepts/svg-format-and-style'],
         },
       ],

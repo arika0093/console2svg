@@ -1,11 +1,11 @@
 ---
 title: 実際に使ってみる
-description: Create your first console2svg capture.
+description: はじめてのconsole2svgキャプチャを作成します。
 ---
 
 import { Steps } from '@astrojs/starlight/components';
 
-console2svgの[インストール](/getting-started/installation/)が完了したら、早速使ってみましょう。
+console2svgの[インストール](/ja/getting-started/installation/)が完了したら、早速使ってみましょう。
 
 ## 静止画を撮影する
 ### 簡単な例
@@ -22,52 +22,47 @@ console2svgの[インストール](/getting-started/installation/)が完了し�
 
 3. 生成された`output.svg`をブラウザで開いてみましょう。以下のような出力になっているはずです。
 
-   ![The output of `console2svg capture -- console2svg`](/assets/cmd.svg)
-
+   ![`console2svg capture -- console2svg`の出力](/assets/cmd.svg)
 
 </Steps>
 
-
 ### オプションを指定する
 
-`capture`はいくつか(いくつも)のオプション引数を受け付けます。
+`capture`はいくつもオプション引数を受け付けます。
 例えば、`fastfetch`を以下のような条件で表示させてみます。
 
 * `-o fastfetch.svg`: 出力先を`fastfetch.svg`に変更します。
-* `-w 100`: ウインドウ幅を固定します(標準では自動)
-* `-c`: 出力の先頭部分に `$ fastfetch`のような実行コマンドの表示を追加する。
+* `-w 100`: 端末の横幅を100文字に固定します。
+* `-c`: 出力の先頭部分に`$ fastfetch`のような実行コマンドの表示を追加します。
 * `-d macos-pc`: macOSのウインドウのような見た目にし、周囲に余白を設けます。
-   * `-d`のみ指定した場合、`macos`(余白なし)として取り扱われます。
+   * `-d`のみ指定した場合、`macos`として取り扱われます。
 * `-t github-dark`: GitHub Dark風のカラーパレットを適用します。
 * `--background "#006090"`: 青色の背景にします。
 
 ```bash
 console2svg capture -o fastfetch.svg -w 100 -c -d macos-pc -t github-dark \
-            --background "#006090" -- fastfetch
+  --background "#006090" -- fastfetch
 ```
 
-![console2svg capture -o fastfetch.svg -w 100 -c -d macos-pc -t github-dark --background "#006090" -- fastfetch](/assets/cmd-quickstart-fastfetch.svg)
-
-詳しくは [Capture command output](/basic-usage/capturing-command-output/)のページを参照ください。
-
+詳しくは[コマンド出力をキャプチャする](/ja/basic-usage/capturing-command-output/)を参照してください。
 
 ## 動画を撮影する
 ### 簡単な例
 
 <Steps>
 
-1. `capture`コマンドに`-v`を渡したうえで、で好きなコマンドを実行します。
+1. SVGをアニメーションにする場合は`capture`へ`-v`を渡してコマンドを実行します。
 
    ```bash
    console2svg capture -c -d -v -- sl
    ```
 
    > [!NOTE]
-   > <code>-v</code>を指定しない場合、最終フレームのみが描画された静止SVGになります。
+   > <code>-v</code>を指定しないSVG出力では、最終フレームだけを描画した静止画になります。
 
 2. 以上で完了です。生成された結果は以下のようになります。
 
-   ![console2svg capture -c -d -v -- sl](/assets/cmd-sl.svg)
+   ![`console2svg capture -c -d -v -- sl`の出力](/assets/cmd-sl.svg)
 
 </Steps>
 
@@ -75,24 +70,24 @@ console2svg capture -o fastfetch.svg -w 100 -c -d macos-pc -t github-dark \
 
 例えば、`nyancat`を以下のような条件で表示させてみます。
 
-* `-w 160 -h 32`: 幅160, 高さ32にします。
-* `-c`: 出力の先頭部分に `$ nyancat`のような実行コマンドの表示を追加する。
-* `-d`: macOSのウインドウのような見た目にします（余白なし）。`-d macos`と同等。
-* `-v`: 動画出力を有効にします。
+* `-w 160 -h 32`: 幅160文字、高さ32行にします。
+* `-c`: 出力の先頭部分に`$ nyancat`のような実行コマンドの表示を追加します。
+* `-d`: macOSのウインドウのような見た目にします。`-d macos`と同等です。
+* `-v`: アニメーションSVGを有効にします。
 * `--timeout 5`: 5秒経過後に自動で終了させます。
-* `--sleep 0.5`: 最終フレームからリピートするまでの間に0.5秒待機を入れます。
+* `--sleep 0.5`: 最終フレームからリピートするまで0.5秒待機します。
 
 ```bash
 console2svg capture -w 160 -h 32 -c -d -v \
-            --timeout 5 --sleep 0.5 -- nyancat -d 10
+  --timeout 5 --sleep 0.5 -- nyancat -d 10
 ```
 
-![console2svg capture -w 160 -h 32 -c -d -v --timeout 5 --sleep 0.5 -- nyancat -d 10](/assets/cmd-nyancat.svg)
+![`nyancat`のアニメーションキャプチャ](/assets/cmd-nyancat.svg)
 
-詳しくは [Capture command output](/basic-usage/capturing-command-output/)のページを参照ください。
+詳しくは[コマンド出力をキャプチャする](/ja/basic-usage/capturing-command-output/)を参照してください。
 
-## Where to go next
+## 次に読む
 
-- [Capture command output](/basic-usage/capturing-command-output/): 静止画・動画キャプチャの基本オプション。
-- [Gallery](/gallery/): テーマ・背景・マスキングなどの実例集。
-- [Themes](/appearance/themes/): `--theme` の一覧と見た目の比較。
+- [使用例](/ja/gallery/): テーマ、背景、マスキングなどの実例を確認できます。
+- [テーマ](/ja/appearance/themes/): `--theme`の一覧と使い方を確認できます。
+- [出力フォーマットを変換する](/ja/basic-usage/converting-output-formats/): PNG、GIF、MP4などへ出力する方法です。

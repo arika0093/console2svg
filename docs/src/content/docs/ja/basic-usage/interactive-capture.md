@@ -1,21 +1,31 @@
 ---
-title: Interactive capture
-description: Capture an interactive shell and save terminal states or recordings.
+title: インタラクティブキャプチャ
+description: 普通にターミナルを操作しながら、好きなタイミングで静止画や動画を保存します。
 ---
 
-The `interactive` workflow starts your normal shell in a PTY and forwards it to your terminal. Keep working as usual, then save the screen you are currently looking at or record a portion of the session. On Unix it uses `$SHELL`; on Windows it uses the system command shell.
+`interactive`は通常のシェルをPTY上で起動し、そのまま手元のターミナルへ転送します。普段どおり作業しながら、欲しい瞬間だけスクリーンショットや録画を保存できます。
 
 ```bash
 console2svg interactive -d macos -o captures/output.svg
 ```
 
-During an interactive session:
+特定のプログラムを最初から開きたい場合は、`--`の後ろに指定します。
 
-- Press `F10` to save the current screen as a static SVG.
-- Press `F9` to start or stop an animated recording.
-- Press `F12` to pause or resume an active recording.
-- Press `Ctrl+D` or exit the shell to finish the session.
+```bash
+console2svg interactive -d macos -- vim README.md
+```
 
-The capture controls are handled by console2svg and are not sent to the shell. While a recording is paused, output and elapsed time are excluded. Use [recording and replay](/advanced-usage/recording-replay-and-cast-files/) when you need to reproduce the same input later.
+操作中に使えるキーは次のとおりです。
 
-![An interactive terminal capture](/assets/cmd-interactive.svg)
+- `F10`: 現在の画面を静止画として保存
+- `F9`: アニメーション録画を開始 / 停止
+- `F12`: 録画中の一時停止 / 再開
+- `Ctrl+D`またはシェルの`exit`: セッションを終了
+
+これらのキー入力はconsole2svg側で処理され、シェルには送られません。録画を一時停止している間の出力と経過時間は録画対象から除外されます。
+
+`-o captures/output.svg`のように指定した場合、実際の保存ファイル名にはタイムスタンプが付きます。たとえば`captures/output_20260916_123456789.svg`のような形です。連続して撮影しても同じファイルを上書きしません。
+
+同じキーボード入力をあとから再現したい場合は[録画・リプレイ・castファイル](/ja/advanced-usage/recording-replay-and-cast-files/)を参照してください。
+
+![インタラクティブキャプチャの例](/assets/cmd-interactive.svg)

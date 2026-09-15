@@ -1,11 +1,11 @@
 ---
 title: tmux
-description: Capture or stream a tmux pane as SVG.
+description: tmuxのpaneをSVGとしてキャプチャ、またはブラウザへライブ表示します。
 ---
 
-console2svg can capture a tmux pane on Linux and macOS. On Windows, run the workflow inside WSL. This is useful when a command sequence already lives in tmux: keep working in one pane and save the current state or full history from another.
+console2svgはLinuxとmacOSでtmuxのpaneを直接扱えます。WindowsではWSL内で実行してください。すでにtmux上で作業しているセッションを、そのまま画像にしたい場合に便利です。
 
-## Capture a pane
+## paneをキャプチャする
 
 ```bash
 console2svg tmux capture \
@@ -15,18 +15,22 @@ console2svg tmux capture \
   -o capture.svg
 ```
 
-If `--target` is omitted, console2svg lets you select a pane interactively.
+`--target`を省略すると、対象paneを対話的に選択できます。
 
-## Stream a pane
-
-Use the live-server action to update a browser view as the pane changes:
+`--history`を付けるとscrollbackも含めます。行数を限定したい場合は値を指定してください。
 
 ```bash
-console2svg tmux live-server --target :0 --fps 2
+console2svg tmux capture --target :0 --history 1000 -o capture.svg
 ```
 
-The same `--target`, appearance, output, and timing options can be used across tmux workflows. Omit `--target` to choose a pane interactively. Add `--history=<lines>` to include a fixed number of previous lines, or use `--history` by itself to include all history.
+## paneをLive Serverで表示する
 
-![A tmux pane capture](/assets/cmd-tmux-cap.svg)
+```bash
+console2svg tmux live-server 127.0.0.1:8080 --target :0
+```
 
-![A tmux recording rendered as an animated SVG](/assets/cmd-tmux-replay.svg)
+`tmux live-server`はブラウザへ現在のpaneを配信します。`--history`は`tmux capture`専用で、Live Serverでは利用できません。また、Live Serverはファイルを書き出さないため`-o`も使いません。
+
+![tmux paneのキャプチャ](/assets/cmd-tmux-cap.svg)
+
+![tmuxセッションをリプレイして生成したアニメーションSVG](/assets/cmd-tmux-replay.svg)

@@ -1,6 +1,6 @@
 ---
 title: インストール
-description: Install console2svg on Windows, macOS, and Linux.
+description: Windows、macOS、Linuxへconsole2svgをインストールします。
 ---
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
@@ -14,7 +14,7 @@ console2svgをお好きな手段でインストールしましょう。
 <Tabs>
   <TabItem label="Windows">
     * x64 / arm64
-    * Windows 10 以上のみサポート(`ConPTY`が必須)
+    * Windows 10以上のみサポート(`ConPTY`が必須)
   </TabItem>
   <TabItem label="Linux">
     * x64 / arm64
@@ -27,17 +27,16 @@ console2svgをお好きな手段でインストールしましょう。
 
 ## Windows
 
-
 <Tabs>
   <TabItem label="winget">
-    ![WinGet Package Version](https://img.shields.io/winget/v/arika0093.console2svg?style=flat-square&logo=gitlfs&label=WinGet&color=%230080CC)
-    
+    ![WinGetパッケージバージョン](https://img.shields.io/winget/v/arika0093.console2svg?style=flat-square&logo=gitlfs&label=WinGet&color=%230080CC)
+
     ```powershell
     winget install arika0093.console2svg
     ```
   </TabItem>
   <TabItem label="npm">
-    [![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg) 
+    [![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg)
 
     ```bash
     npm install --global console2svg
@@ -48,14 +47,13 @@ console2svgをお好きな手段でインストールしましょう。
 
     * [`console2svg-win-x64.zip`](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-x64.zip)
     * [`console2svg-win-arm64.zip`](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-win-arm64.zip)
-
   </TabItem>
 </Tabs>
 
 ## macOS
 
 <Tabs>
-  <TabItem label="Install script">
+  <TabItem label="インストールスクリプト">
     [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest)
 
     ```bash
@@ -69,7 +67,7 @@ console2svgをお好きな手段でインストールしましょう。
     ```
   </TabItem>
   <TabItem label="npm">
-    [![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg) 
+    [![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg)
 
     ```bash
     npm install --global console2svg
@@ -80,15 +78,13 @@ console2svgをお好きな手段でインストールしましょう。
 
     * [`console2svg-osx-x64.tar.gz`](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-osx-x64.tar.gz)
     * [`console2svg-osx-arm64.tar.gz`](https://github.com/arika0093/console2svg/releases/latest/download/console2svg-osx-arm64.tar.gz)
-
   </TabItem>
 </Tabs>
-
 
 ## Linux
 
 <Tabs>
-  <TabItem label="Install script">
+  <TabItem label="インストールスクリプト">
     [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest)
 
     ```bash
@@ -96,16 +92,14 @@ console2svgをお好きな手段でインストールしましょう。
     ```
   </TabItem>
   <TabItem label="apt">
-
     ```bash
     echo 'deb [trusted=yes] https://raw.githubusercontent.com/arika0093/console2svg-apt/apt stable main' | sudo tee /etc/apt/sources.list.d/console2svg.list
     sudo apt update
     sudo apt install console2svg
     ```
-    
   </TabItem>
   <TabItem label="npm">
-    [![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg) 
+    [![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg)
 
     ```bash
     npm install --global console2svg
@@ -120,14 +114,12 @@ console2svgをお好きな手段でインストールしましょう。
     * [`console2svg.x64.deb`](https://github.com/arika0093/console2svg/releases/latest/download/console2svg.x64.deb)
     * [`console2svg.arm64.rpm`](https://github.com/arika0093/console2svg/releases/latest/download/console2svg.arm64.rpm)
     * [`console2svg.x64.rpm`](https://github.com/arika0093/console2svg/releases/latest/download/console2svg.x64.rpm)
-
   </TabItem>
 </Tabs>
 
-
 ## 内蔵アップデート機能
 
-GitHub Releaseまたはインストールスクリプトで導入した場合、自己更新型のアップデートを利用することができます。
+GitHub Releaseまたはインストールスクリプトで導入した場合、自己更新型のアップデートを利用できます。
 
 ```bash
 console2svg update

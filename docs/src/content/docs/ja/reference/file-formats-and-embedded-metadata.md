@@ -1,62 +1,57 @@
 ---
-title: File formats and embedded metadata
-description: Understand replay, cast, theme, and SVG metadata formats.
+title: ファイル形式と埋め込みメタデータ
+description: replay、cast、テーマ、SVGメタデータの役割を説明します。
 ---
 
-console2svg works with several file formats, each serving a different purpose. Keep the generated image separate from the source recording when you want an artifact that is easy to embed but do not want to disclose the underlying session.
+console2svgでは用途ごとに複数のファイル形式を使います。公開用の画像と、再現・デバッグ用の元データは分けて扱うのがおすすめです。
 
-## SVG output
+## SVG出力
 
-SVG is the native output format. It contains terminal text, styles, optional window chrome, backgrounds, and animation timing. An SVG can be embedded in Markdown or viewed directly in a browser.
+SVGはconsole2svgのネイティブ出力です。端末文字、スタイル、ウインドウ装飾、背景、必要に応じてアニメーション情報を含みます。
 
-## Replay files
+## replayファイル
 
-Replay files are JSON documents containing recorded keyboard input and timing information. They can be rendered again with different visual options.
+replayファイルは、キーボード入力とタイミングを保存するJSONです。`capture --replay-save`で保存し、`replay`コマンドで指定したコマンドへ再生します。
 
-## Cast files
-
-Asciicast-compatible cast files contain timed terminal output events and metadata. They are useful for exchanging recordings with terminal-recording tools.
-
-## Theme manifests
-
-Theme manifests define palette colors and terminal defaults for reusable themes.
-
-## Embedded metadata
-
-Captures can optionally embed source information such as cast data, replay input, or verbose diagnostic logs in SVG metadata.
-
-> [!CAUTION]
-> Embedded metadata travels with the SVG. Do not publish an image with embedded input or logs unless you have reviewed that information for secrets and local paths.
-
-## Rendered SVG vs. embedded metadata
-
-```text
-+---------------------+      +---------------------------+
-| replay.json         |      | console.cast              |
-| (keyboard + timing) |      | (timed output + metadata) |
-+----------+----------+      +-------------+-------------+
-           |                               |
-           v                               v
-+--------------------------------------------------+
-| console2svg capture / replay / convert           |
-+------------------------+-------------------------+
-                         |
-                         v
-+--------------------------------------------------+
-| output.svg (rendered)                            |
-|  - terminal text, styles, window chrome          |
-|  - backgrounds, animation timing                 |
-+--------------------------------------------------+
-                         |
-        +----------------+----------------+
-        |                                 |
-        v                                 v
-+------------------+            +-------------------+
-| plain artifact   |            | with embedded     |
-| (default)        |            | --embed-replay /  |
-| shareable image  |            | --embed-cast /    |
-| only             |            | --embed-log       |
-+------------------+            +-------------------+
+```bash
+console2svg capture --replay-save replay.json -- bash
+console2svg replay replay.json -- bash
 ```
 
-Use the left path for docs and blog images. Use the right path only when another machine must re-render the exact session with different visual options.
+## castファイル
+
+castファイルはAsciicast v2互換で、時刻付きのターミナル出力イベントとメタデータを保存します。
+
+```bash
+console2svg capture --save-cast capture.cast -- my-command
+console2svg cast capture.cast -o output.svg
+```
+
+現在のCLIではcastファイルの描画に`cast`を使い、`convert`サブコマンドはありません。
+
+## テーマ
+
+カスタムテーマにはカラーパレットや見た目の初期値を定義したmanifestが含まれます。ディレクトリ、アーカイブ、URLから`theme install`で追加できます。
+
+## SVGへ埋め込める情報
+
+通常のSVGには、replay入力、cast元データ、verboseログは埋め込まれません。必要な場合だけ次のオプションを使います。
+
+```text
+--embed-replay  replay入力を埋め込む
+--embed-cast    asciicastデータを埋め込む
+--embed-logs    verbose診断ログを埋め込む
+--embed-debug   上記の埋め込み診断をまとめて有効化する
+```
+
+```text
+replay.json ─┐
+             ├─> capture / replay ─> output.svg
+command ─────┘                      └─ <metadata> (任意)
+
+capture.cast ───> cast ────────────> output.svg
+                                  └─ <metadata> (任意)
+```
+
+> [!CAUTION]
+> 埋め込みメタデータはSVGと一緒に配布されます。入力したコマンド、ローカルパス、診断情報などを含む可能性があるため、公開前に内容を確認してください。

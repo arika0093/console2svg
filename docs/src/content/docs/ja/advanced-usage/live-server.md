@@ -1,25 +1,44 @@
 ---
-title: Live server
-description: Preview a terminal capture in a browser while it is running.
+title: Live Server
+description: 実行中のターミナルをブラウザへリアルタイム表示します。
 ---
 
-`live-server` renders the running terminal in a local browser page instead of writing a capture file. It is useful for streaming, screen sharing, or checking how a command looks before choosing final capture options.
+`live-server`は、キャプチャファイルを書き出す代わりに、実行中のターミナルをブラウザへリアルタイム表示する機能です。配信や画面共有、見た目を確認しながらテーマを調整したい場合に便利です。
 
 ```bash
 console2svg live-server
 ```
 
-The server prints a local URL such as `http://127.0.0.1:38473/`. Open it in a browser to view the current terminal state. Stop the server with `Ctrl+C` when you are done.
+標準では`127.0.0.1:38473`で待ち受けます。起動すると`Live terminal: http://127.0.0.1:38473/`のようなURLが表示されるので、ブラウザで開いてください。終了するときは`Ctrl+C`です。
 
-## Run a command in the live terminal
+## ポート・待受アドレスを変更する
+
+ポートは位置引数で指定します。
 
 ```bash
-console2svg live-server -d macos-pc --background your-bg.png
+console2svg live-server 8080
 ```
 
-Use `--port` to select a different port and `--listen` when the server needs to be reachable from another host.
+別ホストから接続できるようにする場合は、`host:port`形式で指定します。
+
+```bash
+console2svg live-server 0.0.0.0:8080
+```
+
+以前の`--port`や`--listen`オプションは現在のCLIにはありません。
+
+## コマンドを実行する
+
+コマンドを指定しなければ通常のインタラクティブシェルが開きます。特定のコマンドを表示したい場合は、`--`の後ろに指定できます。
+
+```bash
+console2svg live-server 127.0.0.1:38473 -d macos-pc \
+  --background '#003060' -- btop
+```
+
+端末サイズはウインドウに追従します。固定したい場合は`--no-resize`を指定してください。
 
 > [!CAUTION]
-> The default address is localhost. Do not expose a live terminal beyond a trusted network without considering who can see its output; it may contain commands, paths, or secrets.
+> 標準ではlocalhostだけに公開されます。`0.0.0.0`などへ変更すると、同じネットワーク上の別端末から内容を見られる可能性があります。コマンド、パス、機密情報が表示されることを考慮して、信頼できるネットワーク以外には公開しないでください。
 
-![A live terminal server preview](/assets/cmd-liveserver.png)
+![Live Serverで表示したターミナル](/assets/cmd-liveserver.png)

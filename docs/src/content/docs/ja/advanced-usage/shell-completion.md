@@ -1,43 +1,42 @@
 ---
-title: Shell completion
-description: Enable command completion for supported shells.
+title: シェル補完
+description: console2svgのコマンドやオプションをTab補完できるようにします。
 ---
 
-Shell completion makes subcommands and options easier to discover. console2svg uses the .NET `completions` command to generate a script for a supported shell; save that script in the shell's normal completion directory, then reload its configuration.
+シェル補完を有効にすると、サブコマンドやオプションをすべて覚えなくてもTabキーで候補を表示できます。
 
-For example, generate a Bash completion script with:
-
-```bash
-console2svg completions generate bash
-```
-
-The command supports Bash, Zsh, Fish, and PowerShell. Run `console2svg completions generate --help` to see the shell names accepted by the installed version and the redirection command appropriate to your shell.
-
-## Installation snippets
-
-Generate the script first, then load it from your shell configuration. Replace the target path with your platform's normal completion directory.
+現在のCLIでは`completions script`で補完スクリプトを生成します。
 
 ```bash
-# Bash (~/.bashrc or ~/.bash_profile)
-console2svg completions generate bash > ~/.local/share/bash-completion/completions/console2svg
-echo 'source ~/.local/share/bash-completion/completions/console2svg' >> ~/.bashrc
+console2svg completions script bash
 ```
+
+利用しているバージョンで対応しているシェル名は、次のヘルプで確認してください。
+
+```bash
+console2svg completions script --help
+```
+
+## Bash
+
+補完スクリプトを一般的なユーザー用ディレクトリへ保存する例です。
+
+```bash
+mkdir -p ~/.local/share/bash-completion/completions
+console2svg completions script bash > ~/.local/share/bash-completion/completions/console2svg
+```
+
+環境によっては`bash-completion`パッケージの導入やシェルの再起動が必要です。
+
+## Zsh
+
+`$fpath`に含めるディレクトリへ保存します。
 
 ```zsh
-# Zsh (any directory in $fpath, e.g. ~/.zsh/completions)
 mkdir -p ~/.zsh/completions
-console2svg completions generate zsh > ~/.zsh/completions/_console2svg
-echo 'fpath=(~/.zsh/completions $fpath)' >> ~/.zshrc
+console2svg completions script zsh > ~/.zsh/completions/_console2svg
 ```
 
-```fish
-# Fish
-console2svg completions generate fish > ~/.config/fish/completions/console2svg.fish
-```
+`~/.zshrc`で`~/.zsh/completions`を`fpath`へ追加し、`compinit`を実行してください。
 
-```powershell
-# PowerShell ($PROFILE)
-console2svg completions generate powershell >> $PROFILE
-```
-
-After reloading the shell, `console2svg <Tab>` should complete subcommands such as `capture`, `replay`, `convert`, `theme`, and `status`.
+補完が読み込まれると、`console2svg <Tab>`から`capture`、`replay`、`cast`、`theme`、`status`などを選べるようになります。

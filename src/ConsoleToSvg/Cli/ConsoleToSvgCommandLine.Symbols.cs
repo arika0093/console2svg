@@ -38,7 +38,8 @@ public sealed partial class ConsoleToSvgCommandLine
             RequiredString("--crop-bottom", "Crop bottom by px, ch, or text.");
         public Option<string> CropLeft { get; } =
             RequiredString("--crop-left", "Crop left by px or ch.");
-        public Option<string[]> Theme { get; } = MultipleStrings("--theme", "Appearance theme ID.");
+        public Option<string[]> Theme { get; } =
+            new("--theme", "-t") { Description = "Appearance theme ID." };
         public Option<string> ForeColor { get; } =
             RequiredString("--forecolor", "Override the foreground color.");
         public Option<string> BackColor { get; } =
@@ -481,9 +482,6 @@ public sealed partial class ConsoleToSvgCommandLine
             });
             return option;
         }
-
-        private static Option<string[]> MultipleStrings(string name, string description) =>
-            new(name) { Description = description };
 
         private static Option<string[]> MaskOption() =>
             new("--mask")

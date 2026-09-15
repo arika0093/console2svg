@@ -27,7 +27,7 @@ internal static partial class Program
         var commandLine = ConsoleToSvgCommandLine.Create(
             async (options, parseResult, cancellationToken) =>
             {
-                if (parseResult.Tokens.Count == 0 && !Console.IsInputRedirected)
+                if (parseResult.Tokens.Count == 0)
                 {
                     WritePagedHelp(
                         ColorizeIfSupported(ConsoleToSvgCommandLine.FormatHelp(parseResult))
@@ -73,7 +73,6 @@ internal static partial class Program
             options.Workflow == Workflow.Capture
             && string.IsNullOrWhiteSpace(options.Command)
             && string.IsNullOrWhiteSpace(options.InputCastPath)
-            && !Console.IsInputRedirected
         )
         {
             WritePagedHelp(ColorizeIfSupported(ConsoleToSvgCommandLine.FormatHelp(parseResult)));

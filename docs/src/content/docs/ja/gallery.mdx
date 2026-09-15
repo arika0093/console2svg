@@ -5,8 +5,8 @@ description: console2svgの使用例を紹介します。
 
 import { Steps } from '@astrojs/starlight/components';
 
-機能の説明を文字でするより、実際の使用例を見てもらった方がきっと良いでしょう。
-そういうわけなので、このページは実物の使用例がたくさん掲載されています。
+機能の説明を文字で長々とするより、実際の使用例を見てもらった方がきっと良いでしょう。
+このページは実物の使用例がたくさん掲載されています。
 
 > [!TIP]
 > ぜひ画像を新しいタブで開いてみてください。拡大しても綺麗なことがわかるはずです。
@@ -52,6 +52,14 @@ console2svg capture -c -d -v -- sl
 ```
 
 ![console2svg capture -c -d -v -- sl](/assets/cmd-sl.svg)
+
+### cmatrix
+
+```sh
+console2svg capture -d -v -- cmatrix ab
+```
+
+{/* TODO */}
 
 ### nyancat
 
@@ -101,7 +109,7 @@ console2svg capture -c -t "cyberpunk-pc" -- fastfetch
 ## 機密情報マスキング
 
 ```bash
-cat <<EOF > .secret.env
+cat <<EOF > .env
 CURRENT_DIRECTORY=$(pwd)
 APP_SECRET_TOKEN=1234567890thankyou
 HTTP_PROXY=http://username:superSecurePassword@10.0.0.1:8080
@@ -112,7 +120,7 @@ GIT_EMAIL_ADDRESS=hidden_truth_name@example.com
 COMMON_HASH=$(openssl rand -hex 16)
 EOF
 
-console2svg capture -d macos-pc -t github-dark -- cat .secret.env
+console2svg capture -d macos-pc -t github-dark -- cat .env
 ```
 
 {/* TODO */}

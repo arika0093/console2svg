@@ -48,10 +48,9 @@ export default defineConfig({
         starlightGithubAlerts(),
       ],
       sidebar: [
-        { label: 'Overview', items: ['gallery'] },
         {
           label: 'Getting started',
-          items: ['getting-started/quick-start', 'getting-started/installation'],
+          items: ['gallery', 'getting-started/installation', 'getting-started/quick-start'],
         },
         {
           label: 'Basic usage',

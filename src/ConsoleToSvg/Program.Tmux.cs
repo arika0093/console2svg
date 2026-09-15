@@ -18,7 +18,8 @@ internal static partial class Program
         string Title,
         string Command,
         int Width,
-        int Height
+        int Height,
+        int HistorySize
     );
 
     private static async Task<string?> PrepareTmuxAsync(AppOptions options)
@@ -57,6 +58,12 @@ internal static partial class Program
         if (options.HeightAdjust)
         {
             options.Height = pane.Height;
+            if (options.TmuxHistory)
+            {
+                options.Height += pane.HistorySize;
+                if (options.TmuxHistoryLines is int historyLines)
+                    options.Height = Math.Min(historyLines, options.Height.Value);
+            }
             options.HeightAdjust = false;
         }
 
@@ -112,7 +119,7 @@ internal static partial class Program
     private static async Task<List<TmuxPane>> GetTmuxPanesAsync()
     {
         const string format =
-            "#{pane_id}\t#{session_name}:#{window_index}.#{pane_index}\t#{pane_title}\t#{pane_current_command}\t#{pane_width}\t#{pane_height}";
+            "#{pane_id}\t#{session_name}:#{window_index}.#{pane_index}\t#{pane_title}\t#{pane_current_command}\t#{pane_width}\t#{pane_height}\t#{history_size}";
         var tmuxPath = FindExecutableInPath("tmux");
         if (tmuxPath is null)
             return [];
@@ -139,7 +146,7 @@ internal static partial class Program
                 .Split('\n', StringSplitOptions.RemoveEmptyEntries)
                 .Select(line => line.TrimEnd('\r').Split('\t'))
                 .Where(parts =>
-                    parts.Length == 6
+                    parts.Length == 7
                     && int.TryParse(
                         parts[4],
                         NumberStyles.Integer,
@@ -152,6 +159,12 @@ internal static partial class Program
                         CultureInfo.InvariantCulture,
                         out _
                     )
+                    && int.TryParse(
+                        parts[6],
+                        NumberStyles.Integer,
+                        CultureInfo.InvariantCulture,
+                        out _
+                    )
                 )
                 .Select(parts => new TmuxPane(
                     parts[0],
@@ -159,7 +172,8 @@ internal static partial class Program
                     parts[2],
                     parts[3],
                     int.Parse(parts[4], CultureInfo.InvariantCulture),
-                    int.Parse(parts[5], CultureInfo.InvariantCulture)
+                    int.Parse(parts[5], CultureInfo.InvariantCulture),
+                    int.Parse(parts[6], CultureInfo.InvariantCulture)
                 ))
                 .ToList();
         }
@@ -172,7 +186,7 @@ internal static partial class Program
     private static async Task<TmuxPane?> GetTmuxPaneAsync(string target)
     {
         const string format =
-            "#{pane_id}\t#{session_name}:#{window_index}.#{pane_index}\t#{pane_title}\t#{pane_current_command}\t#{pane_width}\t#{pane_height}";
+            "#{pane_id}\t#{session_name}:#{window_index}.#{pane_index}\t#{pane_title}\t#{pane_current_command}\t#{pane_width}\t#{pane_height}\t#{history_size}";
         var tmuxPath = FindExecutableInPath("tmux");
         if (tmuxPath is null)
             return null;
@@ -198,7 +212,7 @@ internal static partial class Program
             var parts = output.TrimEnd('\r', '\n').Split('\t');
             if (
                 process.ExitCode != 0
-                || parts.Length != 6
+                || parts.Length != 7
                 || !int.TryParse(
                     parts[4],
                     NumberStyles.Integer,
@@ -211,11 +225,17 @@ internal static partial class Program
                     CultureInfo.InvariantCulture,
                     out var height
                 )
+                || !int.TryParse(
+                    parts[6],
+                    NumberStyles.Integer,
+                    CultureInfo.InvariantCulture,
+                    out var historySize
+                )
             )
             {
                 return null;
             }
-            return new TmuxPane(parts[0], parts[1], parts[2], parts[3], width, height);
+            return new TmuxPane(parts[0], parts[1], parts[2], parts[3], width, height, historySize);
         }
         catch (System.ComponentModel.Win32Exception)
         {

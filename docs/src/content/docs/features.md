@@ -6,7 +6,7 @@ description: The main features that make console2svg useful for terminal screens
 console2svg turns terminal output into presentation-ready images and animations without sacrificing the sharpness of terminal text. It is useful whenever the terminal is part of the story: documenting a command, preserving a reproducible build result, or explaining an interactive workflow.
 
 ## Crisp, scalable output
-
+ 
 SVG output keeps terminal text sharp at any zoom level. It is useful for documentation, blog posts, issue reports, and social media images.
 
 ## Static and animated captures

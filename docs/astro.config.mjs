@@ -11,10 +11,17 @@ import githubAlerts from './src/integrations/github-alerts.mjs';
 const currentDocsVersion = process.env.CONSOLE2SVG_DOCS_VERSION ?? 'develop';
 
 export default defineConfig({
+  server: {
+    host: true,
+  },
   integrations: [
     starlight({
       title: 'console2svg',
       description: 'Convert terminal output into crisp, scalable SVG images.',
+      components: {
+        ThemeProvider: 'starlight-theme-nova/components/ThemeProvider.astro',
+        ThemeSelect: 'starlight-theme-nova/components/ThemeSelect.astro',
+      },
       customCss: [
         '@fontsource/jetbrains-mono/400.css',
         '@fontsource/jetbrains-mono/600.css',

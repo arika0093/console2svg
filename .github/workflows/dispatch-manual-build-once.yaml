@@ -1,0 +1,21 @@
+name: Dispatch Manual Build Once
+
+on:
+  push:
+    branches:
+      - feat/add-document-site
+    paths:
+      - '.github/workflows/dispatch-manual-build-once.yaml'
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch Manual Build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run manual-build.yaml --ref feat/add-document-site

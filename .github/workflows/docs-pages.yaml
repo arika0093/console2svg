@@ -8,6 +8,7 @@ on:
     paths:
       - 'docs/**'
       - 'action.yml'
+      - 'scripts/action-build-develop.sh'
       - '.github/workflows/docs-pages.yaml'
   workflow_dispatch:
 

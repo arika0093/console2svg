@@ -21,6 +21,17 @@ runs:
       if: ${{ inputs.version == 'develop' }}
       uses: dtolnay/rust-toolchain@stable
 
+    - name: Fetch full Git history (develop)
+      if: ${{ inputs.version == 'develop' }}
+      shell: bash
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+      run: |
+        if git -C "$ACTION_PATH" rev-parse --is-inside-work-tree >/dev/null 2>&1 \
+          && [ "$(git -C "$ACTION_PATH" rev-parse --is-shallow-repository)" = "true" ]; then
+          git -C "$ACTION_PATH" fetch --unshallow --tags
+        fi
+
     - name: Build and install console2svg from source (develop)
       if: ${{ inputs.version == 'develop' }}
       shell: bash

@@ -321,6 +321,15 @@ public sealed class ConsoleToSvgCommandLineTests
     }
 
     [Test]
+    public async Task ThemeOptionAcceptsShortAlias()
+    {
+        var invocation = await InvokeAsync("capture", "-t", "cyberpunk-pc", "--", "echo");
+
+        invocation.ExitCode.ShouldBe(0);
+        invocation.Options!.Themes.ShouldBe(["cyberpunk-pc"]);
+    }
+
+    [Test]
     public async Task GeneratedHelpKeepsSvgConverterColumnCompact()
     {
         var invocation = await InvokeAsync("capture", "--help");

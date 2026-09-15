@@ -58,6 +58,8 @@ public sealed class QuickLeaksTests
     public void GenericPasswordMasksOnlyTheValue()
     {
         var text = "\"password\": \"123456\"";
+        text = "https://user:secret@example.test/path";
+        text = "\"password\": \"123456\"";
         var findings = Filter.Scan(text);
 
         findings.Any(finding => finding.RuleId == "generic-password").ShouldBeTrue();
@@ -88,19 +90,22 @@ public sealed class QuickLeaksTests
     }
 
     [Test]
-    public void CredentialUriMasksOnlyThePassword()
+    public void CredentialUriMasksUsernameAndPasswordIndependently()
     {
         var text = "https://user:secret@example.test/path";
         var findings = Filter.Scan(text);
 
-        foreach (
-            var finding in findings.Where(finding =>
+        text = "https://user:secret@example.test/path";
+        findings = Filter.Scan(text);
+        var credentialFindings = findings
+            .Where(finding =>
                 finding.RuleId is "generic-credential-uri" or "console2svg-credential-uri"
             )
-        )
-        {
-            text.Substring(finding.Start, finding.End - finding.Start).ShouldBe("secret");
-        }
+            .Select(finding => text.Substring(finding.Start, finding.End - finding.Start))
+            .Distinct()
+            .ToArray();
+
+        credentialFindings.ShouldBe(["user", "secret"]);
     }
 
     [Test]

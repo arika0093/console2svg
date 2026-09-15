@@ -62,7 +62,7 @@ internal static partial class Program
             {
                 options.Height += pane.HistorySize;
                 if (options.TmuxHistoryLines is int historyLines)
-                    options.Height = Math.Min(historyLines, options.Height.Value);
+                    options.Height = Math.Min(pane.Height + historyLines, options.Height.Value);
             }
             options.HeightAdjust = false;
         }
@@ -252,36 +252,48 @@ internal static partial class Program
         var sizeWidth = panes.Max(pane => $"{pane.Width}x{pane.Height}".Length);
         try
         {
+            Console.SetCursorPosition(0, top);
+            Console.WriteLine(
+                "Select a tmux pane (↑/↓, Enter; Esc to cancel):".PadRight(
+                    Math.Max(1, Console.WindowWidth - 1)
+                )
+            );
+
+            void WriteRow(int index)
+            {
+                var pane = panes[index];
+                var prefix = index == selected ? "> " : "  ";
+                var dimensions = $"{pane.Width}x{pane.Height}";
+                var text =
+                    $"{prefix}{pane.Label.PadRight(labelWidth)}  {pane.Command.PadRight(commandWidth)}  {dimensions.PadRight(sizeWidth)}  {TruncateTmuxTitle(pane.Title)}";
+                Console.SetCursorPosition(0, top + index + 1);
+                Console.WriteLine(
+                    text.Length >= Console.WindowWidth
+                        ? text[..Math.Max(0, Console.WindowWidth - 1)]
+                        : text.PadRight(Math.Max(1, Console.WindowWidth - 1))
+                );
+            }
+
+            for (var index = 0; index < panes.Count; index++)
+                WriteRow(index);
+
             while (true)
             {
-                Console.SetCursorPosition(0, top);
-                Console.WriteLine(
-                    "Select a tmux pane (↑/↓, Enter; Esc to cancel):".PadRight(
-                        Math.Max(1, Console.WindowWidth - 1)
-                    )
-                );
-                for (var index = 0; index < panes.Count; index++)
-                {
-                    var pane = panes[index];
-                    var prefix = index == selected ? "> " : "  ";
-                    var dimensions = $"{pane.Width}x{pane.Height}";
-                    var text =
-                        $"{prefix}{pane.Label.PadRight(labelWidth)}  {pane.Command.PadRight(commandWidth)}  {dimensions.PadRight(sizeWidth)}  {TruncateTmuxTitle(pane.Title)}";
-                    Console.WriteLine(
-                        text.Length >= Console.WindowWidth
-                            ? text[..Math.Max(0, Console.WindowWidth - 1)]
-                            : text.PadRight(Math.Max(1, Console.WindowWidth - 1))
-                    );
-                }
                 var key = Console.ReadKey(intercept: true).Key;
                 if (key == ConsoleKey.Enter)
                     return panes[selected];
                 if (key == ConsoleKey.Escape)
                     return null;
+                var previous = selected;
                 if (key == ConsoleKey.UpArrow)
                     selected = (selected + panes.Count - 1) % panes.Count;
                 if (key == ConsoleKey.DownArrow)
                     selected = (selected + 1) % panes.Count;
+                if (selected != previous)
+                {
+                    WriteRow(previous);
+                    WriteRow(selected);
+                }
             }
         }
         finally

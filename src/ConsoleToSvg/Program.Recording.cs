@@ -59,7 +59,7 @@ internal static partial class Program
                     ptyHeight,
                     cancellationToken,
                     loggerFactory.CreateLogger("ConsoleToSvg.PtyRecorder"),
-                    forwardToConsole: !options.StdOut,
+                    forwardToConsole: !options.StdOut && options.RequestedTmuxAction is null,
                     noDeleteEnvs: options.NoDeleteEnvs,
                     replaySavePath: options.ReplaySavePath,
                     replayPath: options.ReplayPath,

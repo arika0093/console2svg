@@ -89,7 +89,7 @@ console2svg live-server -d --background your-bg.png
 ![console2svg live-server -d macos-pc --background assets/image3.png --opacity 0.9](./assets/cmd-liveserver.png)
 
 ## Install
-### Linux/macOS
+### Linux
 
 The easiest way is the install script.
 
@@ -100,21 +100,40 @@ curl -sSL https://raw.githubusercontent.com/arika0093/console2svg/main/install.s
 You can also install via package managers.
 
 ```sh
-# npm global package (Windows / Linux / macOS)
 npm install -g console2svg
 ```
 
-You can also install from the [release archives](https://github.com/arika0093/console2svg/releases/latest) manually, or use the `.deb` / `.rpm` packages on Linux.
+You can also install from the [release archives](https://github.com/arika0093/console2svg/releases/latest) manually,
+or use the `.deb` / `.rpm` packages on Linux.
 
 ```sh
 # ubuntu
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg.amd64.deb -o console2svg.deb
 dpkg -i console2svg.deb
 
-# Linux
+# linux (general)
 curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg.linux-x64.tar.gz -o console2svg.tar.gz
 tar -xzf console2svg.tar.gz
 chmod +x console2svg
+```
+
+### macOS
+
+The easiest way is the install script.
+
+```sh
+curl -sSL https://raw.githubusercontent.com/arika0093/console2svg/main/install.sh | bash
+```
+
+You can also install via Homebrew or npm.
+
+```sh
+# npm
+npm install -g console2svg
+
+# Homebrew
+brew tap arika0093/console2svg
+brew install console2svg
 ```
 
 ### Windows

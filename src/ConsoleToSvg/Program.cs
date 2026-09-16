@@ -64,7 +64,10 @@ internal static partial class Program
             var tmuxError = await PrepareTmuxAsync(options).ConfigureAwait(false);
             if (tmuxError is not null)
             {
-                await Console.Error.WriteLineAsync(tmuxError);
+                await Console.Error.WriteLineAsync(
+                    tmuxError.AsMemory(),
+                    invocationCancellationToken
+                );
                 return 1;
             }
         }
@@ -542,7 +545,10 @@ internal static partial class Program
             }
 
             await Console.Error.WriteLineAsync(
-                options.StdOut ? "Generated: (stdout)" : $"Generated: {options.OutputPath}"
+                (
+                    options.StdOut ? "Generated: (stdout)" : $"Generated: {options.OutputPath}"
+                ).AsMemory(),
+                invocationCancellationToken
             );
             if (tempCleanup is not null)
             {
@@ -554,13 +560,13 @@ internal static partial class Program
         {
             var cause = GetCancellationCause(options, canceledByCtrlC);
             logger.ZLogDebug($"Execution canceled. Cause={cause}");
-            await Console.Error.WriteLineAsync("Canceled.");
+            await Console.Error.WriteLineAsync("Canceled.".AsMemory(), CancellationToken.None);
             return 0;
         }
         catch (Exception ex)
         {
             logger.ZLogError(ex, $"Unhandled exception occurred: {ex.Message}");
-            await Console.Error.WriteLineAsync(ex.Message);
+            await Console.Error.WriteLineAsync(ex.Message.AsMemory(), CancellationToken.None);
             return 1;
         }
         finally

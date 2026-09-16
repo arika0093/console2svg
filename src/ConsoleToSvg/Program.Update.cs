@@ -47,7 +47,10 @@ internal static partial class Program
         )
         {
             await Console
-                .Out.WriteLineAsync($"Already up to date ({currentVersion}).")
+                .Out.WriteLineAsync(
+                    $"Already up to date ({currentVersion}).".AsMemory(),
+                    cancellationToken
+                )
                 .ConfigureAwait(false);
             return 0;
         }
@@ -55,7 +58,10 @@ internal static partial class Program
         if (options.UpdateCheck)
         {
             await Console
-                .Out.WriteLineAsync($"Update available: {currentVersion} -> {release.Version}")
+                .Out.WriteLineAsync(
+                    $"Update available: {currentVersion} -> {release.Version}".AsMemory(),
+                    cancellationToken
+                )
                 .ConfigureAwait(false);
             return 0;
         }
@@ -63,13 +69,19 @@ internal static partial class Program
         if (channel.IsPackageManaged && !options.UpdateForce)
         {
             await Console
-                .Error.WriteLineAsync($"This installation is managed by {channel.Name}.")
+                .Error.WriteLineAsync(
+                    $"This installation is managed by {channel.Name}.".AsMemory(),
+                    cancellationToken
+                )
                 .ConfigureAwait(false);
             await Console
-                .Error.WriteLineAsync($"Use: {channel.UpdateCommand}")
+                .Error.WriteLineAsync($"Use: {channel.UpdateCommand}".AsMemory(), cancellationToken)
                 .ConfigureAwait(false);
             await Console
-                .Error.WriteLineAsync("Use --force to replace the package-managed files directly.")
+                .Error.WriteLineAsync(
+                    "Use --force to replace the package-managed files directly.".AsMemory(),
+                    cancellationToken
+                )
                 .ConfigureAwait(false);
             return 1;
         }
@@ -78,7 +90,8 @@ internal static partial class Program
         {
             await Console
                 .Error.WriteLineAsync(
-                    $"Warning: replacing files owned by {channel.Name} will desynchronize its package database."
+                    $"Warning: replacing files owned by {channel.Name} will desynchronize its package database.".AsMemory(),
+                    cancellationToken
                 )
                 .ConfigureAwait(false);
         }
@@ -89,7 +102,8 @@ internal static partial class Program
             {
                 await Console
                     .Error.WriteLineAsync(
-                        "Confirmation is required. Re-run with --yes in a non-interactive environment."
+                        "Confirmation is required. Re-run with --yes in a non-interactive environment.".AsMemory(),
+                        cancellationToken
                     )
                     .ConfigureAwait(false);
                 return 1;
@@ -97,13 +111,16 @@ internal static partial class Program
 
             await Console
                 .Out.WriteAsync(
-                    $"Update console2svg from {currentVersion} to {release.Version}? [y/N] "
+                    $"Update console2svg from {currentVersion} to {release.Version}? [y/N] ".AsMemory(),
+                    cancellationToken
                 )
                 .ConfigureAwait(false);
             var answer = Console.ReadLine();
             if (!string.Equals(answer?.Trim(), "y", StringComparison.OrdinalIgnoreCase))
             {
-                await Console.Out.WriteLineAsync("Update cancelled.").ConfigureAwait(false);
+                await Console
+                    .Out.WriteLineAsync("Update cancelled.".AsMemory(), cancellationToken)
+                    .ConfigureAwait(false);
                 return 0;
             }
         }
@@ -112,7 +129,10 @@ internal static partial class Program
         if (!CanWriteDirectory(installDirectory))
         {
             await Console
-                .Error.WriteLineAsync($"Installation directory is not writable: {installDirectory}")
+                .Error.WriteLineAsync(
+                    $"Installation directory is not writable: {installDirectory}".AsMemory(),
+                    cancellationToken
+                )
                 .ConfigureAwait(false);
             return 1;
         }
@@ -123,7 +143,10 @@ internal static partial class Program
         if (asset is null)
         {
             await Console
-                .Error.WriteLineAsync($"Release asset not found: {GetArchiveName()}")
+                .Error.WriteLineAsync(
+                    $"Release asset not found: {GetArchiveName()}".AsMemory(),
+                    cancellationToken
+                )
                 .ConfigureAwait(false);
             return 1;
         }
@@ -150,7 +173,8 @@ internal static partial class Program
                 StartWindowsReplacement(extractedDirectory, installDirectory, tempDirectory);
                 await Console
                     .Out.WriteLineAsync(
-                        "Update scheduled. It will be applied after this process exits."
+                        "Update scheduled. It will be applied after this process exits.".AsMemory(),
+                        cancellationToken
                     )
                     .ConfigureAwait(false);
             }
@@ -158,7 +182,10 @@ internal static partial class Program
             {
                 ReplaceFiles(extractedDirectory, installDirectory);
                 await Console
-                    .Out.WriteLineAsync($"Updated console2svg to {release.Version}.")
+                    .Out.WriteLineAsync(
+                        $"Updated console2svg to {release.Version}.".AsMemory(),
+                        cancellationToken
+                    )
                     .ConfigureAwait(false);
                 Directory.Delete(tempDirectory, recursive: true);
             }
@@ -175,7 +202,7 @@ internal static partial class Program
             )
         {
             await Console
-                .Error.WriteLineAsync($"Update failed: {ex.Message}")
+                .Error.WriteLineAsync($"Update failed: {ex.Message}".AsMemory(), cancellationToken)
                 .ConfigureAwait(false);
             TryDeleteDirectory(tempDirectory);
             return 1;

@@ -28,7 +28,10 @@ internal static partial class Program
     {
         if (options.LiveServerPort is < 1 or > 65535)
         {
-            await Console.Error.WriteLineAsync("live-server port must be between 1 and 65535.");
+            await Console.Error.WriteLineAsync(
+                "live-server port must be between 1 and 65535.".AsMemory(),
+                cancellationToken
+            );
             return 1;
         }
         var listenHost = options.ListenAddress ?? "127.0.0.1";
@@ -36,7 +39,8 @@ internal static partial class Program
         if (address is null)
         {
             await Console.Error.WriteLineAsync(
-                $"live-server host '{listenHost}' is not a valid IP address or host name."
+                $"live-server host '{listenHost}' is not a valid IP address or host name.".AsMemory(),
+                cancellationToken
             );
             return 1;
         }
@@ -83,17 +87,19 @@ internal static partial class Program
         catch (SocketException ex)
         {
             await Console.Error.WriteLineAsync(
-                $"Unable to listen on http://{address}:{options.LiveServerPort}/: {ex.Message}"
+                $"Unable to listen on http://{address}:{options.LiveServerPort}/: {ex.Message}".AsMemory(),
+                cancellationToken
             );
             return 1;
         }
         if (!Console.IsOutputRedirected)
         {
-            await Console.Out.WriteAsync("\u001b[2J\u001b[H");
+            await Console.Out.WriteAsync("\u001b[2J\u001b[H".AsMemory(), cancellationToken);
             await Console.Out.FlushAsync(cancellationToken);
         }
         await Console.Error.WriteLineAsync(
-            $"Live terminal: http://{address}:{options.LiveServerPort}/"
+            $"Live terminal: http://{address}:{options.LiveServerPort}/".AsMemory(),
+            cancellationToken
         );
         await Console.Error.FlushAsync(cancellationToken);
         using var listenerRegistration = cancellationToken.Register(listener.Stop);
@@ -215,7 +221,10 @@ internal static partial class Program
         }
         catch (Exception ex)
         {
-            await Console.Error.WriteLineAsync($"live-server error: {ex.Message}");
+            await Console.Error.WriteLineAsync(
+                $"live-server error: {ex.Message}".AsMemory(),
+                CancellationToken.None
+            );
             return 1;
         }
         finally

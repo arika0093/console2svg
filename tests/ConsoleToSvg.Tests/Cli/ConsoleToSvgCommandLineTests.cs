@@ -240,6 +240,23 @@ public sealed class ConsoleToSvgCommandLineTests
     }
 
     [Test]
+    public async Task MouseIsOnlyAvailableWithInteractiveOrLiveServer()
+    {
+        var interactive = await InvokeAsync("interactive", "--mouse", "true", "--", "vim");
+        interactive.ExitCode.ShouldBe(0);
+        interactive.Options!.Mouse.ShouldBeTrue();
+
+        var liveServer = await InvokeAsync("live-server", "--mouse", "false");
+        liveServer.ExitCode.ShouldBe(0);
+        liveServer.Options!.Mouse.ShouldBeFalse();
+
+        var capture = await InvokeAsync("capture", "--mouse", "true", "--", "echo");
+        capture.ExitCode.ShouldBe(1);
+        capture.Options.ShouldBeNull();
+        capture.Error.ShouldContain("--mouse is only available with interactive/live-server.");
+    }
+
+    [Test]
     public async Task GeneratedHelpIsDecoratedByTheCustomAnsiFormatter()
     {
         var invocation = await InvokeAsync("capture", "--help");

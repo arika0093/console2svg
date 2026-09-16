@@ -188,7 +188,8 @@ internal static partial class Program
                             )
                         )
                         : null,
-                    saveCastPath: options.SaveCastPath
+                    saveCastPath: options.SaveCastPath,
+                    mousePassthrough: options.Mouse
                 )
                 .ConfigureAwait(false);
             await liveLifetime.CancelAsync().ConfigureAwait(false);

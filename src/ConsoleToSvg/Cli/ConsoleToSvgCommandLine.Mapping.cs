@@ -90,6 +90,7 @@ public sealed partial class ConsoleToSvgCommandLine
             NoDeleteEnvs = result.GetValue(_symbols.NoDeleteEnvs),
             Loop = !result.GetValue(_symbols.NoLoop),
             LiveServerResize = !result.GetValue(_symbols.NoResize),
+            Mouse = result.GetValue(_symbols.Mouse),
             EmbedCast = result.GetValue(_symbols.EmbedCast),
             EmbedLogs = result.GetValue(_symbols.EmbedLogs),
             EmbedReplay = result.GetValue(_symbols.EmbedReplay),
@@ -478,6 +479,17 @@ public sealed partial class ConsoleToSvgCommandLine
         )
         {
             error = "--target and --history are only available with console2svg tmux.";
+            return false;
+        }
+
+        if (
+            options.Mouse
+            && options.Workflow != Workflow.Interactive
+            && options.Workflow != Workflow.LiveServer
+            && !options.Interactive
+        )
+        {
+            error = "--mouse is only available with interactive/live-server.";
             return false;
         }
 

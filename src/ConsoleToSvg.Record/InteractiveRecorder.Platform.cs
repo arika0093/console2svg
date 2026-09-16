@@ -189,6 +189,8 @@ public static partial class InteractiveRecorder
 
     public sealed class HostTerminalSequenceFilter
     {
+        // Passthrough is enabled by --mouse (see AppOptions.Mouse).
+        private readonly bool _mousePassthrough;
         private static readonly HashSet<string> SuppressedPrivateModes =
         [
             "9",
@@ -204,9 +206,20 @@ public static partial class InteractiveRecorder
         ];
         private readonly StringBuilder _pending = new();
 
+        public HostTerminalSequenceFilter(bool mousePassthrough = false)
+        {
+            _mousePassthrough = mousePassthrough;
+        }
+
         public string Filter(string text)
         {
             _pending.Append(text);
+            if (_mousePassthrough)
+            {
+                var passthrough = _pending.ToString();
+                _pending.Clear();
+                return passthrough;
+            }
             var output = new StringBuilder(_pending.Length);
             var index = 0;
             while (index < _pending.Length)

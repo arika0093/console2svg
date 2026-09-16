@@ -84,6 +84,14 @@ public sealed partial class ConsoleToSvgCommandLine
             );
         public Option<bool> NoResize { get; } =
             Flag("--no-resize", "Keep the initial TTY size in live-server.");
+        public Option<bool> Mouse { get; } =
+            new("--mouse")
+            {
+                Description =
+                    "Forward mouse tracking in interactive/live-server (default: false). Lets TUI apps scroll with the wheel; host selection is owned by the child while enabled.",
+                Arity = ArgumentArity.ZeroOrOne,
+                DefaultValueFactory = _ => false,
+            };
         public Option<bool> NoLoop { get; } = Flag("--no-loop", "Disable animated SVG looping.");
         public Option<double?> Fps { get; } =
             PositiveDouble("--fps", "Maximum frame sampling rate.");
@@ -185,6 +193,7 @@ public sealed partial class ConsoleToSvgCommandLine
                 Coalesce,
                 Interactive,
                 NoResize,
+                Mouse,
                 NoColorEnv,
                 NoDeleteEnvs,
                 Adjust,

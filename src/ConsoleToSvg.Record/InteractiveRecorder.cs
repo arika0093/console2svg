@@ -34,7 +34,9 @@ public static partial class InteractiveRecorder
         bool forwardToConsole = true,
         bool captureControlsEnabled = true,
         Func<(int Width, int Height)>? terminalSizeProvider = null,
-        string? saveCastPath = null
+        string? saveCastPath = null,
+        // Opt-in mouse passthrough (--mouse, default false; see AppOptions.Mouse).
+        bool mousePassthrough = false
     )
     {
         if (screenshotKey.IsEmpty || recordingKey.IsEmpty || pauseKey.IsEmpty)
@@ -72,7 +74,9 @@ public static partial class InteractiveRecorder
             ? Console.OpenStandardInput()
             : null;
 
-        var rawInput = forwardToConsole ? PtyRecorder.ConsoleInputMode.TryEnableRaw(logger) : null;
+        var rawInput = forwardToConsole
+            ? PtyRecorder.ConsoleInputMode.TryEnableRaw(logger, mousePassthrough)
+            : null;
         using var utf8OutputScope = PtyRecorder.TryUseUtf8ConsoleOutputEncoding(
             forwardToConsole,
             logger
@@ -668,7 +672,7 @@ public static partial class InteractiveRecorder
                 var bytes = new byte[4096];
                 var chars = new char[8192];
                 var decoder = Encoding.UTF8.GetDecoder();
-                var hostSequenceFilter = new HostTerminalSequenceFilter();
+                var hostSequenceFilter = new HostTerminalSequenceFilter(mousePassthrough);
                 try
                 {
                     while (!lifetime.IsCancellationRequested)
@@ -816,7 +820,8 @@ public static partial class InteractiveRecorder
                     var router = new InteractiveInputRouter(
                         screenshotKey.Span,
                         recordingKey.Span,
-                        pauseKey.Span
+                        pauseKey.Span,
+                        mousePassthrough
                     );
                     var maxForwardedLength = Math.Max(
                         1,

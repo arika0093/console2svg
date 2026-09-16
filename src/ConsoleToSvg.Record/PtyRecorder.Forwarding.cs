@@ -430,7 +430,7 @@ public static partial class PtyRecorder
             _originalUnixTermios = originalUnixTermios;
         }
 
-        public static ConsoleInputMode? TryEnableRaw(ILogger logger)
+        public static ConsoleInputMode? TryEnableRaw(ILogger logger, bool allowMouseInput = false)
         {
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -458,9 +458,12 @@ public static partial class PtyRecorder
                 var newMode = mode;
                 newMode |= EnableVirtualTerminalInput | EnableExtendedFlags | EnableQuickEditMode;
                 newMode &= ~(EnableLineInput | EnableEchoInput | EnableProcessedInput);
-                // Keep host-side text selection available. Mouse reports, if a host
-                // still emits them as VT input, are discarded by InteractiveRecorder.
-                newMode &= ~EnableMouseInput;
+                // Disabled by default so the host keeps text selection;
+                // --mouse leaves the host flag as-is (see AppOptions.Mouse).
+                if (!allowMouseInput)
+                {
+                    newMode &= ~EnableMouseInput;
+                }
 
                 if (newMode == mode)
                 {

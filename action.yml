@@ -13,6 +13,9 @@ runs:
     - name: Setup .NET SDK (develop)
       if: ${{ inputs.version == 'develop' }}
       uses: actions/setup-dotnet@v6
+      with:
+        dotnet-version: 11.0.x
+        dotnet-quality: preview
 
     - name: Setup Rust (develop)
       if: ${{ inputs.version == 'develop' }}

@@ -6,7 +6,8 @@ permissions:
   pull-requests: write
 
 env:
-  DOTNET_VERSION: '10.0.x'
+  DOTNET_VERSION: '11.0.x'
+  DOTNET_QUALITY: preview
 
 jobs:
   package-test:
@@ -22,6 +23,7 @@ jobs:
         uses: actions/setup-dotnet@v6
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: ${{ env.DOTNET_QUALITY }}
 
       - name: Restore dependencies
         run: dotnet restore

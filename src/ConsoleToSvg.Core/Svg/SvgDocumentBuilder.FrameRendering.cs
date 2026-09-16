@@ -74,7 +74,7 @@ internal static partial class SvgDocumentBuilder
         }
     }
 
-    private static void CollectRowTextStyles(
+    internal static void CollectRowTextStyles(
         ScreenBuffer buffer,
         int row,
         in Context context,
@@ -83,11 +83,10 @@ internal static partial class SvgDocumentBuilder
     )
     {
         var pendingWhitespace = false;
+        var visibleCells = includeScrollback ? default : buffer.GetVisibleRow(row);
         for (var col = context.StartCol; col < context.EndColExclusive; col++)
         {
-            var cell = includeScrollback
-                ? buffer.GetCellFromTop(row, col)
-                : buffer.GetCell(row, col);
+            var cell = includeScrollback ? buffer.GetCellFromTop(row, col) : visibleCells[col];
             if (
                 cell.IsWideContinuation
                 || cell.Hidden
@@ -137,7 +136,8 @@ internal static partial class SvgDocumentBuilder
         bool renderBaseBackground = true,
         bool renderForeground = true,
         bool autoMask = true,
-        QuickLeaksScanMode autoMaskMode = QuickLeaksScanMode.Normal
+        QuickLeaksScanMode autoMaskMode = QuickLeaksScanMode.Normal,
+        FrameRenderWorkspace? workspace = null
     )
     {
         var effectiveLengthAdjust = string.IsNullOrWhiteSpace(lengthAdjust)
@@ -222,14 +222,23 @@ internal static partial class SvgDocumentBuilder
         }
 
         // Collect box drawing segments for merging
-        var hSegments = renderForeground ? new List<AxisSegment>() : null;
-        var vSegments = renderForeground ? new List<AxisSegment>() : null;
-        var roundedCorners = renderForeground ? new List<RoundedCorner>() : null;
-        var blockRects = renderForeground ? new List<BlockRect>() : null;
-        var fgRunText = new StringBuilder(context.EndColExclusive - context.StartCol);
+        workspace?.Reset(context.EndColExclusive - context.StartCol);
+        var hSegments = renderForeground ? workspace?.HorizontalSegments ?? [] : null;
+        var vSegments = renderForeground ? workspace?.VerticalSegments ?? [] : null;
+        var roundedCorners = renderForeground ? workspace?.RoundedCorners ?? [] : null;
+        var blockRects = renderForeground ? workspace?.BlockRects ?? [] : null;
+        var fgRunText =
+            workspace?.ForegroundText
+            ?? new StringBuilder(context.EndColExclusive - context.StartCol);
         var autoMaskedCells =
             autoMask && renderForeground
-                ? FindAutoMaskedCells(buffer, context, includeScrollback, autoMaskMode)
+                ? FindAutoMaskedCells(
+                    buffer,
+                    context,
+                    includeScrollback,
+                    autoMaskMode,
+                    workspace?.NormalizedText
+                )
                 : null;
         var maskedCells =
             renderForeground && maskPatterns is { Length: > 0 }
@@ -250,6 +259,7 @@ internal static partial class SvgDocumentBuilder
         for (var row = context.StartRow; row < context.EndRowExclusive; row++)
         {
             var y = (row - context.StartRow) * context.CellHeight;
+            var visibleCells = includeScrollback ? default : buffer.GetVisibleRow(row);
 
             if (renderBackground)
             {
@@ -263,7 +273,7 @@ internal static partial class SvgDocumentBuilder
                     {
                         var c = includeScrollback
                             ? buffer.GetCellFromTop(row, col)
-                            : buffer.GetCell(row, col);
+                            : visibleCells[col];
                         var eBg = c.Reversed ? c.Foreground : c.Background;
                         if (
                             !string.Equals(
@@ -434,9 +444,7 @@ internal static partial class SvgDocumentBuilder
 
             for (var col = context.StartCol; col < context.EndColExclusive; col++)
             {
-                var cell = includeScrollback
-                    ? buffer.GetCellFromTop(row, col)
-                    : buffer.GetCell(row, col);
+                var cell = includeScrollback ? buffer.GetCellFromTop(row, col) : visibleCells[col];
 
                 if (cell.IsWideContinuation)
                 {
@@ -602,7 +610,9 @@ internal static partial class SvgDocumentBuilder
                 vSegments!,
                 context.CellWidth,
                 context.CellHeight,
-                elements
+                elements,
+                workspace?.MergedBoxRects,
+                workspace?.PathData
             );
             RenderRoundedCorners(sb, roundedCorners!);
             if (renderCursor)
@@ -618,13 +628,16 @@ internal static partial class SvgDocumentBuilder
         ScreenBuffer buffer,
         in Context context,
         bool includeScrollback,
-        QuickLeaksScanMode mode
+        QuickLeaksScanMode mode,
+        StringBuilder? normalizedBuffer = null
     )
     {
-        var normalized = new StringBuilder(
+        var capacity =
             (context.EndRowExclusive - context.StartRow)
-                * (context.EndColExclusive - context.StartCol)
-        );
+            * (context.EndColExclusive - context.StartCol);
+        var normalized = normalizedBuffer ?? new StringBuilder(capacity);
+        normalized.Clear();
+        normalized.EnsureCapacity(capacity);
         AppendNormalizedText(buffer, context, includeScrollback, normalized, coordinates: null);
 
         List<QuickLeaksFinding>? findings = null;
@@ -677,11 +690,10 @@ internal static partial class SvgDocumentBuilder
         {
             var rowStart = normalized.Length;
             var rowEndColumn = -1;
+            var visibleCells = includeScrollback ? default : buffer.GetVisibleRow(row);
             for (var col = context.StartCol; col < context.EndColExclusive; col++)
             {
-                var cell = includeScrollback
-                    ? buffer.GetCellFromTop(row, col)
-                    : buffer.GetCell(row, col);
+                var cell = includeScrollback ? buffer.GetCellFromTop(row, col) : visibleCells[col];
                 var cellText = cell.IsWideContinuation ? " " : cell.Text;
                 foreach (var character in cellText)
                 {
@@ -705,7 +717,7 @@ internal static partial class SvgDocumentBuilder
             {
                 var nextCell = includeScrollback
                     ? buffer.GetCellFromTop(row + 1, context.StartCol)
-                    : buffer.GetCell(row + 1, context.StartCol);
+                    : buffer.GetVisibleRow(row + 1)[context.StartCol];
                 var isWrappedText =
                     rowEndColumn == context.EndColExclusive - 1
                     && nextCell.Text != " "
@@ -733,11 +745,10 @@ internal static partial class SvgDocumentBuilder
         var coordinates = new List<(int Row, int Column)?>(normalized.Capacity);
         for (var row = context.StartRow; row < context.EndRowExclusive; row++)
         {
+            var visibleCells = includeScrollback ? default : buffer.GetVisibleRow(row);
             for (var col = context.StartCol; col < context.EndColExclusive; col++)
             {
-                var cell = includeScrollback
-                    ? buffer.GetCellFromTop(row, col)
-                    : buffer.GetCell(row, col);
+                var cell = includeScrollback ? buffer.GetCellFromTop(row, col) : visibleCells[col];
                 var cellText = cell.IsWideContinuation ? " " : cell.Text;
                 foreach (var character in cellText)
                 {
@@ -1133,7 +1144,9 @@ internal static partial class SvgDocumentBuilder
         List<AxisSegment> vSegments,
         double cellWidth,
         double cellHeight,
-        SvgElementRegistry? elements
+        SvgElementRegistry? elements,
+        List<BoxRect>? mergedRectBuffer = null,
+        StringBuilder? pathDataBuffer = null
     )
     {
         if (hSegments.Count == 0 && vSegments.Count == 0)
@@ -1141,14 +1154,16 @@ internal static partial class SvgDocumentBuilder
             return;
         }
 
-        var mergedRects = new List<BoxRect>(hSegments.Count + vSegments.Count);
+        var mergedRects = mergedRectBuffer ?? new List<BoxRect>(hSegments.Count + vSegments.Count);
+        mergedRects.Clear();
+        mergedRects.EnsureCapacity(hSegments.Count + vSegments.Count);
         // Use a tolerance relative to cell size to avoid merging across real gaps at tiny font sizes
         var mergeTolerance = Math.Min(cellWidth, cellHeight) * 0.01;
         MergeAxis(hSegments, horizontal: true, mergeTolerance, mergedRects);
         MergeAxis(vSegments, horizontal: false, mergeTolerance, mergedRects);
 
         mergedRects.Sort(static (left, right) => string.CompareOrdinal(left.Color, right.Color));
-        var pathData = elements is null ? null : new StringBuilder();
+        var pathData = elements is null ? null : pathDataBuffer ?? new StringBuilder();
         for (var groupStart = 0; groupStart < mergedRects.Count; )
         {
             var color = mergedRects[groupStart].Color;
@@ -1310,7 +1325,32 @@ internal static partial class SvgDocumentBuilder
         );
     }
 
-    private readonly record struct AxisSegment(
+    internal sealed class FrameRenderWorkspace
+    {
+        public List<AxisSegment> HorizontalSegments { get; } = [];
+        public List<AxisSegment> VerticalSegments { get; } = [];
+        public List<RoundedCorner> RoundedCorners { get; } = [];
+        public List<BlockRect> BlockRects { get; } = [];
+        public List<BoxRect> MergedBoxRects { get; } = [];
+        public StringBuilder ForegroundText { get; } = new();
+        public StringBuilder NormalizedText { get; } = new();
+        public StringBuilder PathData { get; } = new();
+
+        public void Reset(int textCapacity)
+        {
+            HorizontalSegments.Clear();
+            VerticalSegments.Clear();
+            RoundedCorners.Clear();
+            BlockRects.Clear();
+            MergedBoxRects.Clear();
+            ForegroundText.Clear();
+            ForegroundText.EnsureCapacity(textCapacity);
+            NormalizedText.Clear();
+            PathData.Clear();
+        }
+    }
+
+    internal readonly record struct AxisSegment(
         double Position,
         double Start,
         double End,
@@ -1336,7 +1376,7 @@ internal static partial class SvgDocumentBuilder
         double StrokeWidth
     );
 
-    private readonly record struct RoundedCorner(
+    internal readonly record struct RoundedCorner(
         char Character,
         double X,
         double Y,
@@ -1346,7 +1386,7 @@ internal static partial class SvgDocumentBuilder
         double StrokeWidth
     );
 
-    private readonly record struct BoxRect(
+    internal readonly record struct BoxRect(
         double X,
         double Y,
         double Width,
@@ -1354,7 +1394,7 @@ internal static partial class SvgDocumentBuilder
         string Color
     );
 
-    private readonly record struct BlockRect(
+    internal readonly record struct BlockRect(
         double X,
         double Y,
         double Width,

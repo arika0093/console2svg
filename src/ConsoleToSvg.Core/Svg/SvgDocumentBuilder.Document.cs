@@ -620,21 +620,11 @@ internal static partial class SvgDocumentBuilder
         sb.Append("</metadata>\n");
     }
 
-    /// <summary>
-    /// Renders unique row contents into a &lt;defs&gt; block and returns the row definition
-    /// used by each frame.
-    /// </summary>
-    public static int[][] AppendAnimatedRowDefs(
-        SvgWriter sb,
+    public static AnimatedRowCatalog PrepareAnimatedRows(
         ReadOnlySpan<TerminalFrame> frames,
         in Context context,
-        Theme theme,
         SvgStyleRegistry styles,
-        string lengthAdjust,
-        double opacity = 1d,
-        string[]? maskPatterns = null,
-        bool autoMask = true,
-        QuickLeaksScanMode autoMaskMode = QuickLeaksScanMode.Normal
+        string[]? maskPatterns = null
     )
     {
         var rowCount = context.EndRowExclusive - context.StartRow;
@@ -642,7 +632,6 @@ internal static partial class SvgDocumentBuilder
         var hashToRowDefinitionIndices = new Dictionary<ulong, List<int>>();
         var frameRowDefinitions = new int[frames.Length][];
         var lastDefinitionByRow = new int[rowCount];
-        var elements = new SvgElementRegistry();
         Array.Fill(lastDefinitionByRow, -1);
 
         for (var frameIndex = 0; frameIndex < frames.Length; frameIndex++)
@@ -722,12 +711,35 @@ internal static partial class SvgDocumentBuilder
                             depth
                         )
                     );
+                    CollectRowTextStyles(buffer, row, context, styles, includeScrollback: false);
                 }
 
                 rowMappings[row - context.StartRow] = definitionIndex;
                 lastDefinitionByRow[row - context.StartRow] = definitionIndex;
             }
         }
+
+        return new AnimatedRowCatalog(rowDefinitions, frameRowDefinitions);
+    }
+
+    /// <summary>Renders the previously catalogued unique row contents into a defs block.</summary>
+    public static int[][] AppendAnimatedRowDefs(
+        SvgWriter sb,
+        ReadOnlySpan<TerminalFrame> frames,
+        AnimatedRowCatalog catalog,
+        in Context context,
+        Theme theme,
+        SvgStyleRegistry styles,
+        string lengthAdjust,
+        double opacity = 1d,
+        string[]? maskPatterns = null,
+        bool autoMask = true,
+        QuickLeaksScanMode autoMaskMode = QuickLeaksScanMode.Normal
+    )
+    {
+        var rowDefinitions = catalog.Definitions;
+        var elements = new SvgElementRegistry();
+        var workspace = new FrameRenderWorkspace();
 
         sb.Append("<defs>\n");
         for (var definitionIndex = 0; definitionIndex < rowDefinitions.Count; definitionIndex++)
@@ -749,7 +761,8 @@ internal static partial class SvgDocumentBuilder
                     renderCursor: false,
                     elements: elements,
                     autoMask: autoMask,
-                    autoMaskMode: autoMaskMode
+                    autoMaskMode: autoMaskMode,
+                    workspace: workspace
                 );
             }
             else
@@ -780,14 +793,15 @@ internal static partial class SvgDocumentBuilder
                     overlapBaseBackground: true,
                     elements: elements,
                     autoMask: autoMask,
-                    autoMaskMode: autoMaskMode
+                    autoMaskMode: autoMaskMode,
+                    workspace: workspace
                 );
                 sb.Append("</g>\n");
             }
         }
 
         sb.Append("</defs>\n");
-        return frameRowDefinitions;
+        return catalog.FrameRowDefinitions;
     }
 
     private static Context CreateRowContext(in Context context, int row) =>
@@ -854,12 +868,9 @@ internal static partial class SvgDocumentBuilder
         }
 
         var baseBuffer = frames[baseDefinition.FrameIndex].Buffer;
-        while (
-            startCol < endColExclusive
-            && buffer
-                .GetCell(row, startCol)
-                .Equals(baseBuffer.GetCell(baseDefinition.Row, startCol))
-        )
+        var cells = buffer.GetVisibleRow(row);
+        var baseCells = baseBuffer.GetVisibleRow(baseDefinition.Row);
+        while (startCol < endColExclusive && cells[startCol].Equals(baseCells[startCol]))
         {
             startCol++;
         }
@@ -871,9 +882,7 @@ internal static partial class SvgDocumentBuilder
 
         while (
             endColExclusive > startCol
-            && buffer
-                .GetCell(row, endColExclusive - 1)
-                .Equals(baseBuffer.GetCell(baseDefinition.Row, endColExclusive - 1))
+            && cells[endColExclusive - 1].Equals(baseCells[endColExclusive - 1])
         )
         {
             endColExclusive--;
@@ -881,10 +890,7 @@ internal static partial class SvgDocumentBuilder
 
         if (
             startCol > context.StartCol
-            && (
-                buffer.GetCell(row, startCol).IsWideContinuation
-                || baseBuffer.GetCell(baseDefinition.Row, startCol).IsWideContinuation
-            )
+            && (cells[startCol].IsWideContinuation || baseCells[startCol].IsWideContinuation)
         )
         {
             startCol--;
@@ -892,10 +898,7 @@ internal static partial class SvgDocumentBuilder
 
         if (
             endColExclusive < context.EndColExclusive
-            && (
-                buffer.GetCell(row, endColExclusive - 1).IsWide
-                || baseBuffer.GetCell(baseDefinition.Row, endColExclusive - 1).IsWide
-            )
+            && (cells[endColExclusive - 1].IsWide || baseCells[endColExclusive - 1].IsWide)
         )
         {
             endColExclusive++;
@@ -906,7 +909,12 @@ internal static partial class SvgDocumentBuilder
         return deltaColumns <= maxDeltaColumns && deltaColumns * 4 <= visibleColumns;
     }
 
-    private readonly record struct RowDefinition(
+    internal sealed record AnimatedRowCatalog(
+        List<RowDefinition> Definitions,
+        int[][] FrameRowDefinitions
+    );
+
+    internal readonly record struct RowDefinition(
         int FrameIndex,
         int Row,
         int BaseDefinitionIndex,

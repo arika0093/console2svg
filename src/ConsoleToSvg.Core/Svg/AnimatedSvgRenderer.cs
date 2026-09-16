@@ -77,14 +77,13 @@ public static partial class AnimatedSvgRenderer
         }
 
         var theme = SvgRenderShared.ResolveTheme(options);
-        var signatureCache = new Dictionary<ScreenBuffer, ulong>();
         var reducedFrames =
             frames[0].EventIndex >= 0
                 ? frames
                 : ReduceFrames(
                     NormalizeTiming(frames, options.VideoFps, options.VideoTiming),
                     options.VideoFps,
-                    signatureCache
+                    new Dictionary<ScreenBuffer, ulong>()
                 );
         reducedFrames = SpreadCollapsedFrameTimes(reducedFrames, options.VideoFps);
 

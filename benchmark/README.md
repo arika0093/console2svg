@@ -13,6 +13,7 @@ Linux `perf` is available) CPU hardware-counter diagnostics. No Python is involv
 | `RealWorldBenchmarks` | static/animated render and write, cast parsing × `nyancat`/`cmatrix`/`btop` | Pre-recorded asciicast fixtures (`benchmark/fixtures/*.cast`). |
 | `AnimatedPipelineBenchmarks` | replay without snapshots, production frame preparation, prepared-frame render, complete render | Separates the actual FPS-reduced, copy-on-write animated pipeline stages. |
 | `AnimatedOptionsBenchmarks` | `VideoFps` 0/12/30/60 × automatic masking off/on | Isolates the main frame-retention and per-row scanning controls on `btop`. |
+| `AnimatedRenderingStageBenchmarks` | style collection, row definition construction, SMIL row animation emission, prepared-frame write | Separates the hot stages after production replay and frame reduction. |
 
 `SvgGenerationBenchmarks` also includes dedicated `ParseWideCharacters` and
 `ParseScrollStress` cases. The regular synthetic workload accounts for display width,

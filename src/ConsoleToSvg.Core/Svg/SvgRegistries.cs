@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using ConsoleToSvg.Terminal;
 
 namespace ConsoleToSvg.Svg;
@@ -47,13 +48,18 @@ internal sealed class SvgStyleRegistry
             overline,
             underlineColor
         );
-        if (_classes.TryGetValue(key, out var existing))
+        ref var existing = ref CollectionsMarshal.GetValueRefOrAddDefault(
+            _classes,
+            key,
+            out var exists
+        );
+        if (exists)
         {
-            return existing;
+            return existing!;
         }
 
         var className = GetClassName(_styles.Count);
-        _classes.Add(key, className);
+        existing = className;
         _styles.Add(key);
         return className;
     }
@@ -166,12 +172,11 @@ internal sealed class SvgElementRegistry
             nonScalingStroke,
             null
         );
-        if (TryAppendUse(sb, key))
+        if (TryAppendUseOrAdd(sb, key, out var id))
         {
             return;
         }
 
-        var id = Add(key);
         sb.Append("<rect");
         if (!string.IsNullOrWhiteSpace(@class))
         {
@@ -221,12 +226,11 @@ internal sealed class SvgElementRegistry
             false,
             pathData
         );
-        if (TryAppendUse(sb, key))
+        if (TryAppendUseOrAdd(sb, key, out var id))
         {
             return;
         }
 
-        var id = Add(key);
         sb.Append("<path d=\"");
         sb.Append(pathData);
         sb.Append("\" id=\"c2e");
@@ -236,24 +240,25 @@ internal sealed class SvgElementRegistry
         sb.Append("\"/>\n");
     }
 
-    private bool TryAppendUse(SvgWriter sb, in ElementKey key)
+    private bool TryAppendUseOrAdd(SvgWriter sb, in ElementKey key, out int id)
     {
-        if (!_elements.TryGetValue(key, out var id))
+        ref var existing = ref CollectionsMarshal.GetValueRefOrAddDefault(
+            _elements,
+            key,
+            out var exists
+        );
+        if (!exists)
         {
+            id = _elements.Count - 1;
+            existing = id;
             return false;
         }
 
+        id = existing;
         sb.Append("<use href=\"#c2e");
         sb.Append(id);
         sb.Append("\"/>\n");
         return true;
-    }
-
-    private int Add(in ElementKey key)
-    {
-        var id = _elements.Count;
-        _elements.Add(key, id);
-        return id;
     }
 
     private static double? NormalizePosition(double? value) =>

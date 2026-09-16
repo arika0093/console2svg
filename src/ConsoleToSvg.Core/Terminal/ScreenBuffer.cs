@@ -450,6 +450,13 @@ public sealed partial class ScreenBuffer
             return false;
         }
 
+        // Visible snapshots share unchanged row arrays through copy-on-write.
+        // Most animated-frame row comparisons can therefore avoid scanning cells.
+        if (ReferenceEquals(_cells[row], other._cells[otherRow]))
+        {
+            return true;
+        }
+
         for (var col = 0; col < Width; col++)
         {
             if (!_cells[row][col].Equals(other._cells[otherRow][col]))
@@ -656,11 +663,8 @@ public sealed partial class ScreenBuffer
         var sourceCells = source._cells;
         var targetCells = _isAltScreen ? _altCells : _mainCells;
         var targetRowsShared = _isAltScreen ? _altRowsShared : _mainRowsShared;
-        for (var row = 0; row < Height; row++)
-        {
-            targetCells[row] = sourceCells[row];
-            targetRowsShared[row] = true;
-        }
+        Array.Copy(sourceCells, targetCells, Height);
+        Array.Fill(targetRowsShared, true);
         Array.Fill(source._rowsShared, true);
         Array.Copy(source._rowSignatures, _rowSignatures, Height);
         Array.Copy(source._rowSignatureDirty, _rowSignatureDirty, Height);

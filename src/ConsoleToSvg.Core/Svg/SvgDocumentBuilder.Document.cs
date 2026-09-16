@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using ConsoleToSvg.QuickLeaks;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
@@ -654,9 +655,14 @@ internal static partial class SvgDocumentBuilder
             {
                 var signature = buffer.GetRowVisualSignature(row);
                 var definitionIndex = -1;
-                if (hashToRowDefinitionIndices.TryGetValue(signature, out var candidates))
+                ref var candidates = ref CollectionsMarshal.GetValueRefOrAddDefault(
+                    hashToRowDefinitionIndices,
+                    signature,
+                    out var signatureExists
+                );
+                if (signatureExists)
                 {
-                    foreach (var candidateIndex in candidates)
+                    foreach (var candidateIndex in candidates!)
                     {
                         var candidate = rowDefinitions[candidateIndex];
                         if (
@@ -678,7 +684,6 @@ internal static partial class SvgDocumentBuilder
                     candidates ??= [];
                     definitionIndex = rowDefinitions.Count;
                     candidates.Add(definitionIndex);
-                    hashToRowDefinitionIndices[signature] = candidates;
                     var baseDefinitionIndex = lastDefinitionByRow[row - context.StartRow];
                     var startCol = context.StartCol;
                     var endColExclusive = context.EndColExclusive;
@@ -1072,7 +1077,7 @@ internal static partial class SvgDocumentBuilder
 
     private static void AppendKeyTime(SvgWriter sb, double keyTime)
     {
-        sb.Append(Math.Clamp(keyTime, 0d, 1d).ToString("0.######", CultureInfo.InvariantCulture));
+        sb.Append(Math.Clamp(keyTime, 0d, 1d), "0.######");
     }
 
     private static void AppendSmilRepeatOrFreeze(SvgWriter sb, bool loop)

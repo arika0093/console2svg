@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using ConsoleToSvg.QuickLeaks;
 using ConsoleToSvg.Recording;
@@ -42,10 +43,15 @@ internal static partial class SvgDocumentBuilder
             for (var row = context.StartRow; row < context.EndRowExclusive; row++)
             {
                 var signature = buffer.GetRowVisualSignature(row);
-                if (rowsBySignature.TryGetValue(signature, out var candidates))
+                ref var candidates = ref CollectionsMarshal.GetValueRefOrAddDefault(
+                    rowsBySignature,
+                    signature,
+                    out var signatureExists
+                );
+                if (signatureExists)
                 {
                     var duplicate = false;
-                    for (var i = 0; i < candidates.Count; i++)
+                    for (var i = 0; i < candidates!.Count; i++)
                     {
                         var candidate = candidates[i];
                         if (buffer.HasSameVisualRow(row, candidate.Buffer, candidate.Row))
@@ -63,7 +69,6 @@ internal static partial class SvgDocumentBuilder
 
                 candidates ??= [];
                 candidates.Add((buffer, row));
-                rowsBySignature[signature] = candidates;
                 CollectRowTextStyles(buffer, row, context, styles, includeScrollback: false);
             }
         }

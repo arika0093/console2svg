@@ -3,6 +3,7 @@ using BenchmarkDotNet.Attributes;
 using ConsoleToSvg.Benchmarks.Workloads;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;
+using ConsoleToSvg.Terminal;
 
 namespace ConsoleToSvg.Benchmarks;
 
@@ -13,7 +14,6 @@ namespace ConsoleToSvg.Benchmarks;
 /// A short job is used because animated rendering of a multi-second capture can take
 /// hundreds of milliseconds to seconds per operation.
 /// </summary>
-[ShortRunJob]
 public class RealWorldBenchmarks
 {
     [ParamsAllValues]
@@ -29,6 +29,9 @@ public class RealWorldBenchmarks
         // Loop=true mirrors the CLI default for animated output; SvgRenderer.Render
         // ignores it, so the static path is unaffected.
         _options = new SvgRenderOptions { Loop = true };
+#if !CONSOLE_TO_SVG_BASELINE
+        _options.TerminalTheme = Theme.Resolve("dark");
+#endif
     }
 
     /// <summary>Render the session to a single static SVG document.</summary>
@@ -47,5 +50,9 @@ public class RealWorldBenchmarks
     /// <summary>Stream an animated SVG without materializing the final string.</summary>
     [Benchmark]
     public void WriteAnimated() => AnimatedSvgRenderer.Write(TextWriter.Null, _session, _options);
+
+    /// <summary>Read and parse the asciicast fixture from disk.</summary>
+    [Benchmark]
+    public RecordingSession LoadAsciicast() => AsciicastFixture.Load(Fixture);
 #endif
 }

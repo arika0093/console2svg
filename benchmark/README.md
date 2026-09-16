@@ -10,8 +10,9 @@ Linux `perf` is available) CPU hardware-counter diagnostics. No Python is involv
 | Benchmark class | Cases | Notes |
 | --- | --- | --- |
 | `SvgGenerationBenchmarks` | `RenderSvg`, `ParseOnly` × `Small`/`Medium`/`Large` | Deterministic synthetic sessions: full pipeline vs. terminal replay only. |
-| `RealWorldBenchmarks` | `RenderStatic`, `RenderAnimated` × `nyancat`/`cmatrix`/`btop` | Pre-recorded asciicast fixtures (`benchmark/fixtures/*.cast`). |
-| `AnimatedPipelineBenchmarks` | replay, snapshots, signatures, frame render, complete render | Separates the animated pipeline stages for the real-world fixtures. |
+| `RealWorldBenchmarks` | static/animated render and write, cast parsing × `nyancat`/`cmatrix`/`btop` | Pre-recorded asciicast fixtures (`benchmark/fixtures/*.cast`). |
+| `AnimatedPipelineBenchmarks` | replay without snapshots, production frame preparation, prepared-frame render, complete render | Separates the actual FPS-reduced, copy-on-write animated pipeline stages. |
+| `AnimatedOptionsBenchmarks` | `VideoFps` 0/12/30/60 × automatic masking off/on | Isolates the main frame-retention and per-row scanning controls on `btop`. |
 
 `SvgGenerationBenchmarks` also includes dedicated `ParseWideCharacters` and
 `ParseScrollStress` cases. The regular synthetic workload accounts for display width,
@@ -98,6 +99,13 @@ dotnet run -c Release --project benchmark/ConsoleToSvg.Benchmarks -- --list flat
 dotnet run -c Release --project benchmark/ConsoleToSvg.Benchmarks \
     -- --filter "*RealWorldBenchmarks.RenderAnimated*" --job short
 ```
+
+Benchmark classes do not force a job. Use `--job short` for smoke checks and omit it
+for statistically stronger default runs used to evaluate optimizations.
+
+Themes are resolved during global setup, matching the CLI path where render options carry
+an already-resolved terminal theme. Theme catalog discovery is therefore not mixed into
+the parser and renderer measurements.
 
 ## Why tag-vs-HEAD instead of a published package
 

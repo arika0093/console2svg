@@ -4,5 +4,6 @@
   "paddingBottom": 1,
   "paddingLeft": 1,
   "shadowOffset": 6,
+  "themeBackgroundOverride": "#0c0c0c",
   "svgTemplate": "window.svg"
 }

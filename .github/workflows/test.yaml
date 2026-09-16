@@ -19,7 +19,8 @@ permissions:
   contents: read
 
 env:
-  DOTNET_VERSION: '10.0.x'
+  DOTNET_VERSION: '11.0.x'
+  DOTNET_QUALITY: preview
 
 jobs:
   test:
@@ -38,6 +39,7 @@ jobs:
         uses: actions/setup-dotnet@v6
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: ${{ env.DOTNET_QUALITY }}
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable

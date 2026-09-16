@@ -23,15 +23,20 @@ public sealed class InteractiveInputRouter
     private bool _discardingSgrMouseReport;
     private byte? _pendingWindowsExtendedKey;
 
+    // Passthrough is enabled by --mouse (see AppOptions.Mouse).
+    private readonly bool _mousePassthrough;
+
     public InteractiveInputRouter(
         ReadOnlySpan<byte> screenshotKey,
         ReadOnlySpan<byte> recordingKey,
-        ReadOnlySpan<byte> pauseKey
+        ReadOnlySpan<byte> pauseKey,
+        bool mousePassthrough = false
     )
     {
         _screenshotKey = screenshotKey.ToArray();
         _recordingKey = recordingKey.ToArray();
         _pauseKey = pauseKey.ToArray();
+        _mousePassthrough = mousePassthrough;
         _pending = new List<byte>(
             Math.Max(_screenshotKey.Length, Math.Max(_recordingKey.Length, _pauseKey.Length))
         );
@@ -70,7 +75,7 @@ public sealed class InteractiveInputRouter
             return InteractiveInputAction.None;
         }
 
-        if (_discardingSgrMouseReport)
+        if (_discardingSgrMouseReport && !_mousePassthrough)
         {
             if (value is (byte)'M' or (byte)'m')
             {
@@ -79,6 +84,7 @@ public sealed class InteractiveInputRouter
 
             return InteractiveInputAction.None;
         }
+        _discardingSgrMouseReport = false;
 
         _pending.Add(value);
         if (
@@ -108,7 +114,7 @@ public sealed class InteractiveInputRouter
             return InteractiveInputAction.None;
         }
 
-        if (IsSgrMouseReportPrefix(_pending))
+        if (!_mousePassthrough && IsSgrMouseReportPrefix(_pending))
         {
             _pending.Clear();
             _discardingSgrMouseReport = true;

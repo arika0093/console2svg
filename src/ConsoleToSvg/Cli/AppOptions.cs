@@ -80,6 +80,14 @@ public sealed class AppOptions
     public bool LiveServerForwardToConsole { get; set; } = true;
 
     /// <summary>
+    /// Forward mouse tracking between the child PTY and the host terminal
+    /// (interactive/live-server only, default false). Lets TUI apps like
+    /// opencode scroll with the wheel; while enabled the host mouse is owned
+    /// by the child. See the commit message for background.
+    /// </summary>
+    public bool Mouse { get; set; }
+
+    /// <summary>
     /// Unmodified arguments following <c>--</c>. Interactive mode uses these to
     /// start the requested program without losing argument boundaries.
     /// </summary>

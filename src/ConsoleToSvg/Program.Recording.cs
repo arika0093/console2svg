@@ -146,7 +146,8 @@ internal static partial class Program
                 },
                 cancellationToken,
                 loggerFactory.CreateLogger("ConsoleToSvg.InteractiveRecorder"),
-                saveCastPath: options.SaveCastPath
+                saveCastPath: options.SaveCastPath,
+                mousePassthrough: options.Mouse
             )
             .ConfigureAwait(false);
         return 0;

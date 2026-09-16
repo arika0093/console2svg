@@ -71,6 +71,26 @@ public sealed class InteractiveRecorderTests
     }
 
     [Test]
+    public void SgrMouseReportsAreForwardedWhenMousePassthroughIsEnabled()
+    {
+        var router = new InteractiveInputRouter(
+            ScreenshotKey,
+            RecordingKey,
+            PauseKey,
+            mousePassthrough: true
+        );
+        var forwarded = new List<byte>();
+        var report = Encoding.ASCII.GetBytes("\u001b[<35;10;5M");
+
+        foreach (var value in report)
+        {
+            router.Process(value, forwarded).ShouldBe(InteractiveInputAction.None);
+        }
+
+        forwarded.ToArray().ShouldBe(report);
+    }
+
+    [Test]
     public void CtrlDRequestsInteractiveExit()
     {
         var router = new InteractiveInputRouter(ScreenshotKey, RecordingKey, PauseKey);
@@ -335,6 +355,16 @@ public sealed class InteractiveRecorderTests
         var result = filter.Filter("\u001b[?1000;1006hready");
 
         result.ShouldBe("ready");
+    }
+
+    [Test]
+    public void HostFilterPassesMouseModesWhenMousePassthroughIsEnabled()
+    {
+        var filter = new InteractiveRecorder.HostTerminalSequenceFilter(mousePassthrough: true);
+
+        var result = filter.Filter("\u001b[?1000;1006hready");
+
+        result.ShouldBe("\u001b[?1000;1006hready");
     }
 
     private static InteractiveInputAction Process(

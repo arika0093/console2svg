@@ -3,6 +3,7 @@ using System.Text;
 using BenchmarkDotNet.Running;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;
+using ConsoleToSvg.Terminal;
 
 namespace ConsoleToSvg.Benchmarks.Workloads;
 
@@ -35,6 +36,30 @@ public static class WorkloadCatalog
 
     public static string RenderAnimated(RecordingSession session, SvgRenderOptions options) =>
         AnimatedSvgRenderer.Render(session, options);
+
+    public static SvgRenderOptions ResolveOptions(BenchmarkCase benchmarkCase)
+    {
+        var options = new SvgRenderOptions { Loop = true };
+#if !CONSOLE_TO_SVG_BASELINE
+        options.TerminalTheme = Theme.Resolve("dark");
+#endif
+        foreach (var item in benchmarkCase.Parameters.Items)
+        {
+            switch (item.Value)
+            {
+                case double videoFps:
+                    options.VideoFps = videoFps;
+                    break;
+                case bool autoMask:
+#if !CONSOLE_TO_SVG_BASELINE
+                    options.MaskAuto = autoMask;
+#endif
+                    break;
+            }
+        }
+
+        return options;
+    }
 
     public static long SizeBytes(string svg) => Encoding.UTF8.GetByteCount(svg);
 }

@@ -217,17 +217,19 @@ internal static partial class SvgDocumentBuilder
         }
 
         // Collect box drawing segments for merging
-        var hSegments = new List<AxisSegment>();
-        var vSegments = new List<AxisSegment>();
-        var roundedCorners = new List<RoundedCorner>();
-        var blockRects = new List<BlockRect>();
+        var hSegments = renderForeground ? new List<AxisSegment>() : null;
+        var vSegments = renderForeground ? new List<AxisSegment>() : null;
+        var roundedCorners = renderForeground ? new List<RoundedCorner>() : null;
+        var blockRects = renderForeground ? new List<BlockRect>() : null;
         var fgRunText = new StringBuilder(context.EndColExclusive - context.StartCol);
-        var autoMaskedCells = autoMask
-            ? FindAutoMaskedCells(buffer, context, includeScrollback, autoMaskMode)
-            : null;
-        var maskedCells = maskPatterns is { Length: > 0 }
-            ? FindMaskedCells(buffer, context, includeScrollback, maskPatterns)
-            : null;
+        var autoMaskedCells =
+            autoMask && renderForeground
+                ? FindAutoMaskedCells(buffer, context, includeScrollback, autoMaskMode)
+                : null;
+        var maskedCells =
+            renderForeground && maskPatterns is { Length: > 0 }
+                ? FindMaskedCells(buffer, context, includeScrollback, maskPatterns)
+                : null;
         if (autoMaskedCells is not null)
         {
             if (maskedCells is null)
@@ -486,7 +488,7 @@ internal static partial class SvgDocumentBuilder
                         cellW,
                         context.CellHeight,
                         effectiveFg,
-                        blockRects
+                        blockRects!
                     );
                     fgRunStart = col + (cell.IsWide ? 2 : 1);
                     continue;
@@ -501,15 +503,15 @@ internal static partial class SvgDocumentBuilder
                     var centerY = y + context.CellHeight / 2d;
                     var sw = context.FontSize / 14d * boxDrawing.StrokeWidth;
                     if (boxDrawing.Left)
-                        hSegments.Add(new AxisSegment(centerY, cellX, centerX, effectiveFg, sw));
+                        hSegments!.Add(new AxisSegment(centerY, cellX, centerX, effectiveFg, sw));
                     if (boxDrawing.Right)
-                        hSegments.Add(
+                        hSegments!.Add(
                             new AxisSegment(centerY, centerX, cellX + cellW, effectiveFg, sw)
                         );
                     if (boxDrawing.Up)
-                        vSegments.Add(new AxisSegment(centerX, y, centerY, effectiveFg, sw));
+                        vSegments!.Add(new AxisSegment(centerX, y, centerY, effectiveFg, sw));
                     if (boxDrawing.Down)
-                        vSegments.Add(
+                        vSegments!.Add(
                             new AxisSegment(
                                 centerX,
                                 centerY,
@@ -527,7 +529,7 @@ internal static partial class SvgDocumentBuilder
                 {
                     pendingSpaces = 0;
                     FlushFgRun();
-                    roundedCorners.Add(
+                    roundedCorners!.Add(
                         new RoundedCorner(
                             cellText[0],
                             cellX,
@@ -588,16 +590,16 @@ internal static partial class SvgDocumentBuilder
             {
                 AppendAutoMaskOverlays(sb, context, maskedCells);
             }
-            RenderMergedBlockRects(sb, blockRects, elements);
+            RenderMergedBlockRects(sb, blockRects!, elements);
             RenderMergedBoxSegments(
                 sb,
-                hSegments,
-                vSegments,
+                hSegments!,
+                vSegments!,
                 context.CellWidth,
                 context.CellHeight,
                 elements
             );
-            RenderRoundedCorners(sb, roundedCorners);
+            RenderRoundedCorners(sb, roundedCorners!);
             if (renderCursor)
             {
                 RenderCursor(sb, buffer, context, theme, includeScrollback);
@@ -607,7 +609,7 @@ internal static partial class SvgDocumentBuilder
         sb.Append("</g>\n");
     }
 
-    private static HashSet<(int Row, int Column)> FindAutoMaskedCells(
+    private static HashSet<(int Row, int Column)>? FindAutoMaskedCells(
         ScreenBuffer buffer,
         in Context context,
         bool includeScrollback,
@@ -618,7 +620,54 @@ internal static partial class SvgDocumentBuilder
             (context.EndRowExclusive - context.StartRow)
                 * (context.EndColExclusive - context.StartCol)
         );
-        var coordinates = new List<(int Row, int Column)?>(normalized.Capacity);
+        AppendNormalizedText(buffer, context, includeScrollback, normalized, coordinates: null);
+
+        List<QuickLeaksFinding>? findings = null;
+        foreach (var finding in Filter.Enumerate(normalized.ToString(), mode))
+        {
+            var start = Math.Max(0, finding.Start);
+            var end = Math.Min(normalized.Length, finding.End);
+            if (end > start)
+            {
+                findings ??= [];
+                findings.Add(new QuickLeaksFinding(finding.RuleId, start, end));
+            }
+        }
+
+        if (findings is null)
+        {
+            return null;
+        }
+
+        // Most rows contain no secret. Build the character-to-cell map only after a
+        // detector reports a match, avoiding a List entry for every rendered character
+        // on the overwhelmingly common no-match path.
+        var coordinates = new List<(int Row, int Column)?>(normalized.Length);
+        normalized.Clear();
+        AppendNormalizedText(buffer, context, includeScrollback, normalized, coordinates);
+
+        var maskedCells = new HashSet<(int Row, int Column)>();
+        foreach (var finding in findings)
+        {
+            for (var index = finding.Start; index < finding.End; index++)
+            {
+                if (coordinates[index] is { } coordinate)
+                {
+                    maskedCells.Add(coordinate);
+                }
+            }
+        }
+        return maskedCells.Count == 0 ? null : maskedCells;
+    }
+
+    private static void AppendNormalizedText(
+        ScreenBuffer buffer,
+        in Context context,
+        bool includeScrollback,
+        StringBuilder normalized,
+        List<(int Row, int Column)?>? coordinates
+    )
+    {
         for (var row = context.StartRow; row < context.EndRowExclusive; row++)
         {
             var rowStart = normalized.Length;
@@ -632,7 +681,7 @@ internal static partial class SvgDocumentBuilder
                 foreach (var character in cellText)
                 {
                     normalized.Append(character);
-                    coordinates.Add((row, col));
+                    coordinates?.Add((row, col));
                 }
                 if (cellText != " " || cell.IsWideContinuation)
                 {
@@ -642,7 +691,10 @@ internal static partial class SvgDocumentBuilder
             while (normalized.Length > rowStart && normalized[normalized.Length - 1] == ' ')
             {
                 normalized.Length--;
-                coordinates.RemoveAt(coordinates.Count - 1);
+                if (coordinates is not null)
+                {
+                    coordinates.RemoveAt(coordinates.Count - 1);
+                }
             }
             if (row + 1 < context.EndRowExclusive)
             {
@@ -656,26 +708,10 @@ internal static partial class SvgDocumentBuilder
                 if (!isWrappedText)
                 {
                     normalized.Append('\n');
-                    coordinates.Add(null);
+                    coordinates?.Add(null);
                 }
             }
         }
-
-        var maskedCells = new HashSet<(int Row, int Column)>();
-        foreach (var finding in Filter.Enumerate(normalized.ToString(), mode))
-        {
-            var start = Math.Max(0, finding.Start);
-            var end = Math.Min(coordinates.Count, finding.End);
-            for (var index = start; index < end; index++)
-            {
-                if (coordinates[index] is not { } coordinate)
-                {
-                    continue;
-                }
-                maskedCells.Add(coordinate);
-            }
-        }
-        return maskedCells;
     }
 
     private static HashSet<(int Row, int Column)> FindMaskedCells(

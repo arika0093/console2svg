@@ -6,7 +6,6 @@ using ConsoleToSvg.Terminal;
 
 namespace ConsoleToSvg.Benchmarks;
 
-[ShortRunJob]
 public class AnimatedPipelineBenchmarks
 {
     [ParamsAllValues]
@@ -14,49 +13,42 @@ public class AnimatedPipelineBenchmarks
 
     private RecordingSession _session = null!;
     private SvgRenderOptions _options = null!;
-    private IReadOnlyList<TerminalFrame> _frames = null!;
+    private IReadOnlyList<TerminalFrame> _productionFrames = null!;
 
     [GlobalSetup]
     public void GlobalSetup()
     {
         _session = AsciicastFixture.Load(Fixture);
         _options = new SvgRenderOptions { Loop = true };
-        _frames = CreateEmulator().ReplayFrames(_session);
+#if !CONSOLE_TO_SVG_BASELINE
+        _options.TerminalTheme = Theme.Resolve("dark");
+        _productionFrames = AnimatedSvgRenderer.PrepareFrames(_session, _options);
+#else
+        _productionFrames = CreateEmulator().ReplayFrames(_session);
+#endif
     }
 
     [Benchmark]
     public ScreenBuffer ReplayWithoutSnapshots() =>
         CreateEmulator().Replay(_session, _session.Events.Count - 1);
 
-    [Benchmark]
-    public IReadOnlyList<TerminalFrame> ReplayWithSnapshots() =>
-        CreateEmulator().ReplayFrames(_session);
-
 #if !CONSOLE_TO_SVG_BASELINE
     [Benchmark]
-    public ulong ReplayWithFrameSignatures()
-    {
-        var frames = CreateEmulator().ReplayFrames(_session);
-        var signature = 0UL;
-        for (var i = 0; i < frames.Count; i++)
-        {
-            signature ^= frames[i].Buffer.GetVisualSignature();
-        }
-
-        return signature;
-    }
+    public IReadOnlyList<TerminalFrame> PrepareProductionFrames() =>
+        AnimatedSvgRenderer.PrepareFrames(_session, _options);
 #endif
 
     [Benchmark]
-    public string RenderFrames() =>
-        AnimatedSvgRenderer.RenderFrames(
-            _frames,
-            new SvgRenderOptions { Loop = true, VideoFps = 0 }
-        );
+    public string RenderPreparedFrames() =>
+        AnimatedSvgRenderer.RenderFrames(_productionFrames, _options);
 
     [Benchmark]
     public string CompleteAnimatedRender() => AnimatedSvgRenderer.Render(_session, _options);
 
     private TerminalEmulator CreateEmulator() =>
+#if !CONSOLE_TO_SVG_BASELINE
+        new(_session.Header.width, _session.Header.height, _options.TerminalTheme!);
+#else
         new(_session.Header.width, _session.Header.height, Theme.Resolve("dark"));
+#endif
 }

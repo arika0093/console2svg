@@ -58,7 +58,7 @@ public abstract class SvgSizeColumn : IColumn
     private long Compute(BenchmarkCase benchmarkCase)
     {
         var session = WorkloadCatalog.Resolve(benchmarkCase);
-        var options = new SvgRenderOptions { Loop = true };
+        var options = WorkloadCatalog.ResolveOptions(benchmarkCase);
         var svg = _animated
             ? WorkloadCatalog.RenderAnimated(session, options)
             : WorkloadCatalog.RenderStatic(session, options);

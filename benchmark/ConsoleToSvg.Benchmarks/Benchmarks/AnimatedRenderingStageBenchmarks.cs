@@ -15,6 +15,7 @@ public class AnimatedRenderingStageBenchmarks
     private Theme _theme = null!;
     private SvgDocumentBuilder.Context _context;
     private SvgStyleRegistry _styles = null!;
+    private SvgDocumentBuilder.AnimatedRowCatalog _catalog = null!;
     private int[][] _rowDefinitions = null!;
     private double _totalDuration;
 
@@ -35,8 +36,13 @@ public class AnimatedRenderingStageBenchmarks
             commandHeaderRows: 0
         );
         _styles = new SvgStyleRegistry();
-        SvgDocumentBuilder.CollectTextStyles(_frames, _context, _styles);
-        _rowDefinitions = BuildRowDefinitions();
+        _catalog = SvgDocumentBuilder.PrepareAnimatedRows(
+            _frames,
+            _context,
+            _styles,
+            _options.MaskPatterns
+        );
+        _rowDefinitions = _catalog.FrameRowDefinitions;
         _totalDuration = Math.Max(0.05d, _frames[^1].Time) + _options.VideoSleep;
 
         var uniqueDefinitions = _rowDefinitions.SelectMany(static rows => rows).Max() + 1;
@@ -46,15 +52,34 @@ public class AnimatedRenderingStageBenchmarks
     }
 
     [Benchmark]
-    public object CollectTextStyles()
+    public object PrepareAnimatedRows()
     {
         var styles = new SvgStyleRegistry();
-        SvgDocumentBuilder.CollectTextStyles(_frames, _context, styles);
-        return styles;
+        return SvgDocumentBuilder.PrepareAnimatedRows(
+            _frames,
+            _context,
+            styles,
+            _options.MaskPatterns
+        );
     }
 
     [Benchmark]
-    public int[][] BuildAnimatedRowDefinitions() => BuildRowDefinitions();
+    public int[][] AppendAnimatedRowDefinitions()
+    {
+        var svgWriter = new SvgWriter(TextWriter.Null);
+        return SvgDocumentBuilder.AppendAnimatedRowDefs(
+            svgWriter,
+            _frames,
+            _catalog,
+            _context,
+            _theme,
+            _styles,
+            _options.LengthAdjust,
+            maskPatterns: _options.MaskPatterns,
+            autoMask: _options.MaskAuto,
+            autoMaskMode: _options.AutoMaskMode
+        );
+    }
 
     [Benchmark]
     public void AppendAnimatedRows()
@@ -75,21 +100,5 @@ public class AnimatedRenderingStageBenchmarks
     [Benchmark]
     public void WritePreparedFrames() =>
         AnimatedSvgRenderer.WriteFrames(TextWriter.Null, _frames, _options);
-
-    private int[][] BuildRowDefinitions()
-    {
-        var svgWriter = new SvgWriter(TextWriter.Null);
-        return SvgDocumentBuilder.AppendAnimatedRowDefs(
-            svgWriter,
-            _frames,
-            _context,
-            _theme,
-            _styles,
-            _options.LengthAdjust,
-            maskPatterns: _options.MaskPatterns,
-            autoMask: _options.MaskAuto,
-            autoMaskMode: _options.AutoMaskMode
-        );
-    }
 }
 #endif

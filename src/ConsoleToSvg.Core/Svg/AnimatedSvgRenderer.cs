@@ -187,7 +187,12 @@ public static partial class AnimatedSvgRenderer
         {
             styles.GetTextClass(theme.Foreground);
         }
-        SvgDocumentBuilder.CollectTextStyles(animationFrames, context, styles);
+        var animatedRows = SvgDocumentBuilder.PrepareAnimatedRows(
+            animationFrames,
+            context,
+            styles,
+            options.MaskPatterns
+        );
         SvgDocumentBuilder.BeginSvg(
             svgWriter,
             context,
@@ -209,6 +214,7 @@ public static partial class AnimatedSvgRenderer
         var frameRowDefinitions = SvgDocumentBuilder.AppendAnimatedRowDefs(
             svgWriter,
             animationFrames,
+            animatedRows,
             context,
             theme,
             styles,

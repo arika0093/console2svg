@@ -457,15 +457,7 @@ public sealed partial class ScreenBuffer
             return true;
         }
 
-        for (var col = 0; col < Width; col++)
-        {
-            if (!_cells[row][col].Equals(other._cells[otherRow][col]))
-            {
-                return false;
-            }
-        }
-
-        return true;
+        return _cells[row].AsSpan().SequenceEqual(other._cells[otherRow]);
     }
 
     private void EnsureRowVisualSignature(int row)
@@ -515,6 +507,8 @@ public sealed partial class ScreenBuffer
 
         return _cells[row][col];
     }
+
+    internal ReadOnlySpan<ScreenCell> GetVisibleRow(int row) => _cells[row];
 
     internal bool HasSameVisualState(ScreenBuffer other)
     {

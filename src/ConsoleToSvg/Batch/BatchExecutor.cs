@@ -58,8 +58,7 @@ public static class BatchExecutor
         if (job.Setup.Length > 0 && setupLogPath is not null)
         {
             var setup = string.Join(" & ", SplitScriptLines(job.Setup));
-            segments.Add($"( {setup} ) > \"{setupLogPath}\" 2>&1");
-            segments.Add("if errorlevel 1 exit /b %errorlevel%");
+            segments.Add($"( {setup} ) > \"{setupLogPath}\" 2>&1 || exit /b 1");
         }
 
         segments.Add($"echo {BatchMarkdown.CaptureMarker}");

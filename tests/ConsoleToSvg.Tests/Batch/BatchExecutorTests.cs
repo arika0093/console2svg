@@ -109,8 +109,8 @@ public sealed class BatchExecutorTests
 
         var script = BatchExecutor.BuildScript(job, "C:/temp/setup.log", isWindows: true);
 
-        script.ShouldContain("if errorlevel 1 exit /b %errorlevel%");
-        script.IndexOf("if errorlevel").ShouldBeLessThan(script.IndexOf("__C2S_CAPTURE_START__"));
+        script.ShouldContain("|| exit /b 1");
+        script.IndexOf("|| exit /b 1").ShouldBeLessThan(script.IndexOf("__C2S_CAPTURE_START__"));
     }
 
     [Test]
@@ -130,8 +130,7 @@ public sealed class BatchExecutorTests
         var script = BatchExecutor.BuildScript(job, "C:/temp/setup.log", isWindows: true);
 
         script.ShouldNotContain("\n");
-        script.ShouldContain("( echo setup ) > \"C:/temp/setup.log\" 2>&1");
-        script.ShouldContain("if errorlevel 1 exit /b %errorlevel%");
+        script.ShouldContain("( echo setup ) > \"C:/temp/setup.log\" 2>&1 || exit /b 1");
         script.ShouldContain("echo __C2S_CAPTURE_START__ & cls & echo one & echo two");
     }
 

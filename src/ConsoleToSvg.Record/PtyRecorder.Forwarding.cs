@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Porta.Pty;
 using ZLogger;
 
 namespace ConsoleToSvg.Recording;
@@ -160,12 +161,11 @@ public static partial class PtyRecorder
         return builder.ToString();
     }
 
-    private static NativePtyOptions BuildOptions(
+    private static PtyOptions BuildOptions(
         ILogger logger,
         string command,
         int width,
         int height,
-        bool disableInputEcho,
         bool noDeleteEnvs
     )
     {
@@ -186,7 +186,10 @@ public static partial class PtyRecorder
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            return new NativePtyOptions
+            // The backend joins CommandLine verbatim, so arguments are
+            // pre-quoted with PtyCommandLine (cmd.exe /c payloads need plain
+            // wrapping, which generic ""-doubling would break).
+            return new PtyOptions
             {
                 Name = "console2svg",
                 Cols = width,
@@ -197,22 +200,21 @@ public static partial class PtyRecorder
                 // and keep the interior verbatim. Without it, inner quotes
                 // must be C-runtime escaped (\") which cmd.exe does not
                 // understand and leaks into the command as backslashes.
-                Args = ["/d", "/s", "/c", shellCommand],
+                CommandLine = PtyCommandLine.QuoteArgs("cmd.exe", ["/d", "/s", "/c", shellCommand]),
+                VerbatimCommandLine = true,
                 Environment = env,
-                DisableInputEcho = false,
             };
         }
 
-        return new NativePtyOptions
+        return new PtyOptions
         {
             Name = "console2svg",
             Cols = width,
             Rows = height,
             Cwd = Environment.CurrentDirectory,
             App = "/bin/sh",
-            Args = ["-c", shellCommand],
+            CommandLine = ["-c", shellCommand],
             Environment = env,
-            DisableInputEcho = disableInputEcho,
         };
     }
 

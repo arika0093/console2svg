@@ -371,10 +371,6 @@ internal static partial class Program
     {
         var scope = new EnvironmentVariableScope(logger);
 
-        // Ensure DOTNET_EnableWriteXorExecute=0 is set to prevent potential issues with
-        // memory protection on some platforms, especially when dynamic code is involved.
-        scope.Set("DOTNET_EnableWriteXorExecute", "0");
-
         if (!string.IsNullOrWhiteSpace(options.Command) && !options.NoColorEnv)
         {
             logger.ZLogDebug($"Applying color-related environment overrides.");

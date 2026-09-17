@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Terminal;
+using Porta.Pty;
 
 namespace ConsoleToSvg.Tests.Recording;
 
@@ -209,24 +210,24 @@ public sealed class InteractiveRecorderTests
         // `pause` keeps the root shell alive without needing stdin and never
         // spawns children. Only the ConPTY host (conhost.exe, excluded) may be
         // attached, so this must read as "no nested shell" the whole time.
-        using var connection = await NativePty.SpawnAsync(
-            new NativePtyOptions
+        using var connection = await PtyProvider.SpawnAsync(
+            new PtyOptions
             {
                 Name = "console2svg-test",
                 Cols = 80,
                 Rows = 24,
                 Cwd = Environment.CurrentDirectory,
                 App = cmd,
-                Args = ["/d", "/c", "pause"],
+                CommandLine = ["/d", "/c", "pause"],
             },
             CancellationToken.None
         );
-        (connection.ProcessId > 0).ShouldBeTrue();
+        (connection.Pid > 0).ShouldBeTrue();
         var stopwatch = Stopwatch.StartNew();
         while (stopwatch.Elapsed < TimeSpan.FromSeconds(3))
         {
             InteractiveRecorder
-                .HasNestedChildProcesses(connection.ProcessId)
+                .HasNestedChildProcesses(connection.Pid)
                 .ShouldBeFalse();
             await Task.Delay(100, CancellationToken.None);
         }
@@ -295,15 +296,15 @@ public sealed class InteractiveRecorderTests
             Environment.GetFolderPath(Environment.SpecialFolder.System),
             "cmd.exe"
         );
-        using var connection = await NativePty.SpawnAsync(
-            new NativePtyOptions
+        using var connection = await PtyProvider.SpawnAsync(
+            new PtyOptions
             {
                 Name = "console2svg-test",
                 Cols = 80,
                 Rows = 24,
                 Cwd = Environment.CurrentDirectory,
                 App = cmd,
-                Args = ["/d", "/c", "exit"],
+                CommandLine = ["/d", "/c", "exit"],
             },
             CancellationToken.None
         );

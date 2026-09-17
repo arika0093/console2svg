@@ -54,7 +54,9 @@ jobs:
           dotnet-quality: preview
 
       - name: Run benchmark (full)
-        run: dotnet run -c Release --project benchmark/ConsoleToSvg.Benchmarks -- --artifacts "$GITHUB_WORKSPACE/benchmark-artifacts/${{ inputs.artifact-name }}"
+        # --filter '*' selects every benchmark non-interactively.
+        # Without it BenchmarkSwitcher prompts for a selection and CI runs nothing.
+        run: dotnet run -c Release --project benchmark/ConsoleToSvg.Benchmarks -- --artifacts "$GITHUB_WORKSPACE/benchmark-artifacts/${{ inputs.artifact-name }}" --filter '*'
 
       - name: Upload artifacts
         if: always()
@@ -63,4 +65,4 @@ jobs:
           name: ${{ inputs.artifact-name }}
           path: benchmark-artifacts/${{ inputs.artifact-name }}
           retention-days: 14
-          if-no-files-found: warn
+          if-no-files-found: error

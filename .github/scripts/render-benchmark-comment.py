@@ -132,7 +132,10 @@ def compare_table(
         "| Benchmark | base Mean | head Mean | Δ Mean | base Allocated | head Allocated | Δ Allocated |",
         "| --- | --- | --- | --- | --- | --- | --- |",
     ]
-    for label in sorted(set(base_rows) | set(head_rows)):
+    # Head is the source of truth for row order (dicts preserve CSV order):
+    # list head rows first (matched + newly added benchmarks), then
+    # base-only rows (removed benchmarks).
+    for label in list(head_rows) + [l for l in base_rows if l not in head_rows]:
         base = base_rows.get(label, {})
         head = head_rows.get(label, {})
         if label not in base_rows:

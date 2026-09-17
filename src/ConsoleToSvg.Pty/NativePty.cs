@@ -278,24 +278,44 @@ internal static class NativePtyWindows
         }
     }
 
-    private static string BuildCommandLine(string app, string[]? args)
+    internal static string BuildCommandLine(string app, string[]? args)
     {
         var builder = new StringBuilder();
         builder.Append(QuoteWindowsArg(app));
         if (args is not null)
         {
-            foreach (var arg in args)
+            for (var i = 0; i < args.Length; i++)
             {
                 builder.Append(' ');
-                builder.Append(QuoteWindowsArg(arg));
+                builder.Append(QuoteWindowsArg(args[i], isCmdPayload: IsCmdPayload(app, args, i)));
             }
         }
 
         return builder.ToString();
     }
 
-    private static string QuoteWindowsArg(string value)
+    private static bool IsCmdPayload(string app, string[] args, int index) =>
+        index == args.Length - 1
+        && args.Length >= 3
+        && string.Equals(app, "cmd.exe", StringComparison.OrdinalIgnoreCase)
+        && string.Equals(args[index - 1], "/c", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Quotes a <c>cmd.exe /s /c</c> payload. cmd.exe does not understand the
+    /// C-runtime <c>\"</c> escaping that <see cref="QuoteWindowsArg"/> produces
+    /// (it would leak literal backslashes into the command); with
+    /// <c>/s</c>, cmd strips the outermost quotes and keeps the interior
+    /// verbatim, so a plain wrap is both sufficient and correct.
+    /// </summary>
+    private static string QuoteCmdPayload(string value) => "\"" + value + "\"";
+
+    private static string QuoteWindowsArg(string value, bool isCmdPayload = false)
     {
+        if (isCmdPayload)
+        {
+            return QuoteCmdPayload(value);
+        }
+
         if (string.IsNullOrEmpty(value))
         {
             return "\"\"";

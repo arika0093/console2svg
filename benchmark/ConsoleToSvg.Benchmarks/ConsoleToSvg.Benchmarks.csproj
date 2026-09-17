@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <ProjectReference Include="$(ConsoleToSvgCoreProject)" />
+    <ProjectReference Include="../../src/ConsoleToSvg.QuickLeaks/ConsoleToSvg.QuickLeaks.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -27,10 +27,11 @@ def update_readme_metadata(config_hash: str) -> None:
         f"- Generated rules: `{rule_count}`\n"
         "<!-- QUICKLEAKS-METADATA:END -->"
     )
-    updated = marker.sub(metadata, current, count=1)
-    if updated == current:
+    if not marker.search(current):
         raise RuntimeError("README metadata markers were not found")
-    README.write_text(updated)
+    updated = marker.sub(metadata, current, count=1)
+    if updated != current:
+        README.write_text(updated)
 
 
 parser = argparse.ArgumentParser(description=__doc__)

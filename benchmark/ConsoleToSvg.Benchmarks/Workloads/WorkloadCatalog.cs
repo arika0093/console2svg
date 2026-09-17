@@ -13,6 +13,9 @@ namespace ConsoleToSvg.Benchmarks.Workloads;
 /// </summary>
 public static class WorkloadCatalog
 {
+    public static bool CanResolve(BenchmarkCase benchmarkCase) =>
+        benchmarkCase.Parameters.Items.Any(item => item.Value is RealFixture or WorkloadSize);
+
     public static RecordingSession Resolve(BenchmarkCase benchmarkCase)
     {
         foreach (var item in benchmarkCase.Parameters.Items)

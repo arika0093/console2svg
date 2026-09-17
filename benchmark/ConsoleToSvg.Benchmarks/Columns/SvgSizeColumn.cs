@@ -51,6 +51,10 @@ public abstract class SvgSizeColumn : IColumn
 
     public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style)
     {
+        if (!WorkloadCatalog.CanResolve(benchmarkCase))
+        {
+            return "N/A";
+        }
         var bytes = _cache.GetOrAdd(benchmarkCase, Compute);
         return bytes.ToString("N0", CultureInfo.InvariantCulture);
     }

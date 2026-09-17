@@ -131,11 +131,14 @@ internal static partial class Program
             foreach (var resolved in plan.Jobs)
             {
                 ct.ThrowIfCancellationRequested();
-                var jobOptions = BuildBatchJobOptions(options, resolved.Job);
+                var workingDirectory =
+                    Path.GetDirectoryName(plan.Path) ?? Environment.CurrentDirectory;
+                var jobOptions = BuildBatchJobOptions(options, resolved.Job, workingDirectory);
                 var error = await ExecuteBatchJobAsync(
                         resolved.Job,
                         jobOptions,
                         resolved.OutputPath,
+                        workingDirectory,
                         loggerFactory,
                         logger,
                         ct
@@ -240,9 +243,7 @@ internal static partial class Program
         List<string> failures
     )
     {
-        var comparer = OperatingSystem.IsWindows()
-            ? StringComparer.OrdinalIgnoreCase
-            : StringComparer.Ordinal;
+        var comparer = GetBatchPathComparer();
         var owners = new Dictionary<string, string>(comparer);
 
         foreach (var plan in plans)
@@ -323,12 +324,27 @@ internal static partial class Program
         return null;
     }
 
-    private static AppOptions BuildBatchJobOptions(AppOptions defaults, BatchParsedJob job)
+    private static AppOptions BuildBatchJobOptions(
+        AppOptions defaults,
+        BatchParsedJob job,
+        string workingDirectory
+    )
     {
         var jobOptions = job.CaptureOptions.ShallowClone();
         jobOptions.Verbose = defaults.Verbose;
         jobOptions.VerboseLogPath = defaults.VerboseLogPath;
         jobOptions.Command = FirstBatchLine(job.Capture);
+        if (
+            jobOptions.IsBackgroundExplicit
+            && jobOptions.Background.Count == 1
+            && IsBatchLocalImagePath(jobOptions.Background[0])
+        )
+        {
+            jobOptions.Background =
+            [
+                Path.GetFullPath(jobOptions.Background[0], workingDirectory),
+            ];
+        }
         if (string.IsNullOrWhiteSpace(jobOptions.Prompt))
         {
             jobOptions.Prompt = GetDefaultPrompt();
@@ -347,9 +363,7 @@ internal static partial class Program
         CancellationToken ct
     )
     {
-        var comparer = OperatingSystem.IsWindows()
-            ? StringComparer.OrdinalIgnoreCase
-            : StringComparer.Ordinal;
+        var comparer = GetBatchPathComparer();
         var selected = selectedFiles.ToHashSet(comparer);
         var excludedProducers = new Dictionary<string, string>(comparer);
 
@@ -403,6 +417,7 @@ internal static partial class Program
         BatchParsedJob job,
         AppOptions jobOptions,
         string outputPath,
+        string workingDirectory,
         ILoggerFactory loggerFactory,
         ILogger logger,
         CancellationToken ct
@@ -421,6 +436,7 @@ internal static partial class Program
                     job,
                     jobOptions,
                     outputPath,
+                    workingDirectory,
                     setupLog,
                     loggerFactory,
                     logger,
@@ -438,6 +454,7 @@ internal static partial class Program
                 {
                     var (exitCode, output) = await RunShellScriptAsync(
                             job.Teardown,
+                            workingDirectory,
                             teardownCts.Token
                         )
                         .ConfigureAwait(false);
@@ -470,6 +487,7 @@ internal static partial class Program
         BatchParsedJob job,
         AppOptions jobOptions,
         string outputPath,
+        string workingDirectory,
         string? setupLog,
         ILoggerFactory loggerFactory,
         ILogger logger,
@@ -518,7 +536,8 @@ internal static partial class Program
                         replaySavePath: jobOptions.ReplaySavePath,
                         replayPath: jobOptions.ReplayPath,
                         outputCoalesceMs: jobOptions.Mode == OutputMode.Video ? null : 0d,
-                        videoFps: jobOptions.VideoFps
+                        videoFps: jobOptions.VideoFps,
+                        workingDirectory: workingDirectory
                     )
                     .ConfigureAwait(false);
             }
@@ -526,6 +545,15 @@ internal static partial class Program
         catch (OperationCanceledException) when (!ct.IsCancellationRequested)
         {
             return $"timed out after {jobOptions.Timeout}s.";
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            logger.LogDebug(ex, "Batch recording failed.");
+            return $"recording failed: {ex.Message}";
         }
 
         if (!BatchExecutor.TryTrimBeforeMarker(session))
@@ -657,6 +685,7 @@ internal static partial class Program
 
     private static async Task<(int ExitCode, string Output)> RunShellScriptAsync(
         string script,
+        string workingDirectory,
         CancellationToken ct
     )
     {
@@ -666,7 +695,7 @@ internal static partial class Program
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             CreateNoWindow = true,
-            WorkingDirectory = Environment.CurrentDirectory,
+            WorkingDirectory = workingDirectory,
         };
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
@@ -732,6 +761,27 @@ internal static partial class Program
 
             throw;
         }
+    }
+
+    private static StringComparer GetBatchPathComparer() =>
+        OperatingSystem.IsWindows() || OperatingSystem.IsMacOS()
+            ? StringComparer.OrdinalIgnoreCase
+            : StringComparer.Ordinal;
+
+    private static bool IsBatchLocalImagePath(string value)
+    {
+        if (
+            string.IsNullOrWhiteSpace(value)
+            || value.StartsWith("data:image/", StringComparison.OrdinalIgnoreCase)
+            || value.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            || value.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            return false;
+        }
+
+        return Path.GetExtension(value).ToLowerInvariant()
+            is ".png" or ".jpg" or ".jpeg" or ".gif" or ".svg" or ".webp" or ".bmp";
     }
 
     private static async Task WriteBatchFailuresAsync(

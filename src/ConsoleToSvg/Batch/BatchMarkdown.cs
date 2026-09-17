@@ -224,6 +224,43 @@ public static class BatchMarkdown
         return true;
     }
 
+    private static bool TryValidateBatchCaptureOptions(AppOptions options, out string? error)
+    {
+        string? unsupported = null;
+        if (options.Workflow != Workflow.Capture)
+            unsupported = "--legacy-root";
+        else if (!string.IsNullOrWhiteSpace(options.InputCastPath))
+            unsupported = "--in";
+        else if (!string.IsNullOrWhiteSpace(options.SaveCastPath))
+            unsupported = "--save-cast";
+        else if (!string.IsNullOrWhiteSpace(options.SaveFramesDir))
+            unsupported = "--save-frames";
+        else if (options.StdOut)
+            unsupported = "--stdout";
+        else if (options.EmbedDebug)
+            unsupported = "--embed-debug";
+        else if (options.EmbedCast)
+            unsupported = "--embed-cast";
+        else if (options.EmbedLogs)
+            unsupported = "--embed-logs";
+        else if (options.EmbedReplay)
+            unsupported = "--embed-replay";
+        else if (options.Verbose)
+            unsupported = "--verbose";
+        else if (!string.IsNullOrWhiteSpace(options.VerboseLogPath))
+            unsupported = "--verbose-log";
+        else if (!options.LiveServerResize)
+            unsupported = "--no-resize";
+        else if (options.Mouse)
+            unsupported = "--mouse";
+
+        error =
+            unsupported is null
+                ? null
+                : $"unsupported marker option '{unsupported}': this capture side effect is not implemented by batch markdown.";
+        return unsupported is null;
+    }
+
     public static string RewriteLinks(string markdown, IReadOnlyList<BatchLink> links)
     {
         if (links.Count == 0)
@@ -291,6 +328,12 @@ public static class BatchMarkdown
         )
         {
             errors.Add(new BatchParseError(line, optionError ?? "invalid capture options."));
+            return null;
+        }
+
+        if (!TryValidateBatchCaptureOptions(captureOptions!, out var batchOptionError))
+        {
+            errors.Add(new BatchParseError(line, batchOptionError!));
             return null;
         }
 
@@ -729,9 +772,10 @@ public static class BatchMarkdown
 
     private static string ApplyLink(string markdown, BatchLink link, string newline)
     {
-        if (HasAssociatedHtmlImage(markdown, link.Job.MarkerEnd))
+        var htmlRewrite = RewriteAssociatedHtmlImage(markdown, link);
+        if (htmlRewrite is not null)
         {
-            return markdown;
+            return htmlRewrite;
         }
 
         var imageLine = $"![{link.Job.Alt}]({link.RelativeLink})";
@@ -781,27 +825,39 @@ public static class BatchMarkdown
         return markdown;
     }
 
-    private static bool HasAssociatedHtmlImage(string markdown, int markerEnd)
+    private static string? RewriteAssociatedHtmlImage(string markdown, BatchLink link)
     {
-        var cursor = markerEnd;
+        var cursor = link.Job.MarkerEnd;
         while (cursor <= markdown.Length)
         {
             var lineEnd = markdown.IndexOf('\n', cursor);
             var line = lineEnd < 0 ? markdown[cursor..] : markdown[cursor..lineEnd];
-            if (line.Trim().Length > 0)
+            if (line.Trim().Length == 0)
             {
-                return HtmlImagePattern.IsMatch(line);
+                if (lineEnd < 0)
+                {
+                    return null;
+                }
+
+                cursor = lineEnd + 1;
+                continue;
             }
 
-            if (lineEnd < 0)
+            var match = HtmlImagePattern.Match(line);
+            if (!match.Success)
             {
-                return false;
+                return null;
             }
 
-            cursor = lineEnd + 1;
+            var target = match.Groups["target"];
+            var updatedLine =
+                line[..target.Index] + link.RelativeLink + line[(target.Index + target.Length)..];
+            return markdown[..cursor]
+                + updatedLine
+                + (lineEnd < 0 ? string.Empty : markdown[lineEnd..]);
         }
 
-        return false;
+        return null;
     }
 
     private static List<string>? Tokenize(string text, int line, List<BatchParseError> errors)

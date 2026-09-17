@@ -166,7 +166,8 @@ public static partial class PtyRecorder
         string command,
         int width,
         int height,
-        bool noDeleteEnvs
+        bool noDeleteEnvs,
+        string workingDirectory
     )
     {
         var env = new Dictionary<string, string>();
@@ -194,7 +195,7 @@ public static partial class PtyRecorder
                 Name = "console2svg",
                 Cols = width,
                 Rows = height,
-                Cwd = Environment.CurrentDirectory,
+                Cwd = workingDirectory,
                 App = "cmd.exe",
                 // /s makes cmd strip the outermost quotes of the /c payload
                 // and keep the interior verbatim. Without it, inner quotes
@@ -211,14 +212,18 @@ public static partial class PtyRecorder
             Name = "console2svg",
             Cols = width,
             Rows = height,
-            Cwd = Environment.CurrentDirectory,
+            Cwd = workingDirectory,
             App = "/bin/sh",
             CommandLine = ["-c", shellCommand],
             Environment = env,
         };
     }
 
-    private static ProcessStartInfo BuildFallbackProcessStartInfo(string command, bool noDeleteEnvs)
+    private static ProcessStartInfo BuildFallbackProcessStartInfo(
+        string command,
+        bool noDeleteEnvs,
+        string workingDirectory
+    )
     {
         var shellCommand = BuildShellCommand(command, noDeleteEnvs);
 
@@ -235,7 +240,7 @@ public static partial class PtyRecorder
                 RedirectStandardInput = true,
                 RedirectStandardError = false,
                 CreateNoWindow = true,
-                WorkingDirectory = Environment.CurrentDirectory,
+                WorkingDirectory = workingDirectory,
             };
         }
 
@@ -251,7 +256,7 @@ public static partial class PtyRecorder
             RedirectStandardInput = true,
             RedirectStandardError = false,
             CreateNoWindow = true,
-            WorkingDirectory = Environment.CurrentDirectory,
+            WorkingDirectory = workingDirectory,
         };
     }
 

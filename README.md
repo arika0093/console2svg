@@ -239,9 +239,16 @@ console2svg batch markdown -i ./docs -o ./assets
 > including files checked out from an untrusted pull request.
 
 Place a marker immediately after a shell code block to capture that block. Marker options
-use the regular `capture` options. An omitted `-o` generates an image name such
-as `assets/reference/guide-1.svg`, preserving the Markdown file's input-relative directory.
+use the regular `capture` rendering and recording options; capture-only side effects such as
+`--save-cast`, `--save-frames`, `--embed-*`, and `--stdout` are rejected rather than
+silently ignored. An omitted `-o` generates an image name such as
+`assets/reference/guide-1.svg`, preserving the Markdown file's input-relative directory.
 Once an image link has been written, later runs continue using that path.
+
+Each job runs with the Markdown/MDX file's directory as its working directory. Relative
+runtime paths in `setup`, `capture`, and `teardown`, plus marker options such as
+`--replay`, `--replay-save`, and a local `--background` image, therefore resolve from
+the document's directory. Marker `-o` remains relative to the batch `--output` directory.
 
 ````markdown
 ```bash

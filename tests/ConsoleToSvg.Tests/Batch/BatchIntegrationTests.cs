@@ -221,6 +221,88 @@ public sealed class BatchIntegrationTests
         }
     }
 
+    [Test]
+    public async Task RuntimeRelativePathsUseMarkdownDirectory()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var docs = Path.Combine(root, "docs");
+            var markdownDirectory = Path.Combine(docs, "nested");
+            var markdownPath = Path.Combine(markdownDirectory, "guide.md");
+            var output = Path.Combine(root, "assets");
+            Directory.CreateDirectory(markdownDirectory);
+            await File.WriteAllTextAsync(
+                Path.Combine(markdownDirectory, "replay.json"),
+                """{"version":"1","totalDuration":0.0,"replay":[]}"""
+            );
+            await File.WriteAllTextAsync(
+                markdownPath,
+                """
+                <!-- c2s:: -o replay.svg --replay replay.json -- echo replay -->
+
+                <!-- c2s:: -o cwd.svg --replay-save recordings/captured.json
+                setup: echo setup > setup-relative.txt
+                capture: echo capture > capture-relative.txt && echo capture
+                teardown: echo teardown > teardown-relative.txt
+                -->
+                """
+            );
+
+            var exitCode = await Program.Main(["batch", "markdown", "-i", docs, "-o", output]);
+
+            exitCode.ShouldBe(0);
+            File.Exists(Path.Combine(output, "replay.svg")).ShouldBeTrue();
+            File.Exists(Path.Combine(output, "cwd.svg")).ShouldBeTrue();
+            File.Exists(Path.Combine(markdownDirectory, "setup-relative.txt")).ShouldBeTrue();
+            File.Exists(Path.Combine(markdownDirectory, "capture-relative.txt")).ShouldBeTrue();
+            File.Exists(Path.Combine(markdownDirectory, "teardown-relative.txt")).ShouldBeTrue();
+            File.Exists(
+                Path.Combine(markdownDirectory, "recordings", "captured.json")
+            ).ShouldBeTrue();
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task RecorderFailureDoesNotSkipLaterBatchJobs()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var markdownPath = Path.Combine(root, "docs", "guide.md");
+            var output = Path.Combine(root, "assets");
+            Directory.CreateDirectory(Path.GetDirectoryName(markdownPath)!);
+            await File.WriteAllTextAsync(
+                markdownPath,
+                """
+                <!-- c2s:: -o missing.svg --replay missing.json -- echo unreachable -->
+                <!-- c2s:: -o later.svg -- echo later -->
+                """
+            );
+
+            var exitCode = await Program.Main([
+                "batch",
+                "markdown",
+                "-i",
+                markdownPath,
+                "-o",
+                output,
+            ]);
+
+            exitCode.ShouldBe(1);
+            File.Exists(Path.Combine(output, "missing.svg")).ShouldBeFalse();
+            File.Exists(Path.Combine(output, "later.svg")).ShouldBeTrue();
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
     private static string CreateTempDirectory()
     {
         var path = Path.Combine(

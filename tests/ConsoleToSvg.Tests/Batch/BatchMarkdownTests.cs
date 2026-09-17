@@ -312,7 +312,7 @@ public sealed class BatchMarkdownTests
     }
 
     [Test]
-    public void ExistingHtmlImageIsRememberedAndPreserved()
+    public void ExistingHtmlImageIsRememberedAndRewritten()
     {
         var markdown =
             "| <!-- c2s:: -o window/macos.svg -- echo hi --><img src=\"./assets/window/macos.svg\" width=\"400\"> |";
@@ -320,9 +320,13 @@ public sealed class BatchMarkdownTests
 
         result.Errors.ShouldBeEmpty();
         result.Jobs[0].ExistingLinkTarget.ShouldBe("./assets/window/macos.svg");
-        BatchMarkdown
-            .RewriteLinks(markdown, [new(result.Jobs[0], "assets/window/macos.svg")])
-            .ShouldBe(markdown);
+        var rewritten = BatchMarkdown.RewriteLinks(
+            markdown,
+            [new(result.Jobs[0], "assets/window/new-macos.svg")]
+        );
+
+        rewritten.ShouldContain("src=\"assets/window/new-macos.svg\" width=\"400\"");
+        rewritten.ShouldNotContain("./assets/window/macos.svg");
     }
 
     [Test]
@@ -349,6 +353,30 @@ public sealed class BatchMarkdownTests
 
         result.Jobs.ShouldBeEmpty();
         result.Errors.Single().Message.ShouldContain("unsupported marker option");
+    }
+
+    [Test]
+    public void CaptureSideEffectOptionsNotImplementedByBatchAreRejected()
+    {
+        foreach (
+            var option in new[]
+            {
+                "--in input.cast",
+                "--save-cast output.cast",
+                "--save-frames frames",
+                "--embed-cast",
+                "--embed-logs",
+                "--embed-replay",
+                "--embed-debug",
+                "--stdout",
+            }
+        )
+        {
+            var result = Parse($"<!-- c2s:: {option} -- echo hi -->");
+
+            result.Jobs.ShouldBeEmpty();
+            result.Errors.Single().Message.ShouldContain("not implemented by batch markdown");
+        }
     }
 
     [Test]

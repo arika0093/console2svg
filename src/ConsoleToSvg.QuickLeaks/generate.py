@@ -47,10 +47,102 @@ def convert(pattern: str) -> str:
     )
 
 
+def is_capturing_group(pattern: str, index: int) -> bool:
+    if index + 1 >= len(pattern) or pattern[index + 1] != "?":
+        return True
+    if pattern.startswith("(?<", index):
+        # (?<=...) and (?<!...) are lookbehinds; other (?<...>...) groups are named captures.
+        return index + 3 < len(pattern) and pattern[index + 3] not in "=!"
+    return pattern.startswith("(?'", index)
+
+
+def has_capturing_group(pattern: str) -> bool:
+    in_character_class = False
+    index = 0
+    while index < len(pattern):
+        character = pattern[index]
+        if character == "\\":
+            index += 2
+            continue
+        if character == "[" and not in_character_class:
+            in_character_class = True
+        elif character == "]" and in_character_class:
+            in_character_class = False
+        elif not in_character_class and character == "(" and is_capturing_group(pattern, index):
+            return True
+        index += 1
+    return False
+
+
 def early_pattern(pattern: str) -> str:
-    # Let token rules match the prefix and the partially entered value.
-    pattern = re.sub(r"\{(\d+),(\d+)\}", r"{0,\2}", pattern)
-    return re.sub(r"\{(\d+)\}", r"{0,\1}", pattern)
+    """Relax fixed token lengths only inside the rule's secret-value capture."""
+    output = []
+    group_stack = []
+    whole_match_is_value = not has_capturing_group(pattern)
+    in_character_class = False
+    index = 0
+    quantifier = re.compile(r"\{(\d+)(?:,(\d+))?\}")
+
+    while index < len(pattern):
+        character = pattern[index]
+        if character == "\\":
+            output.append(pattern[index:index + 2])
+            index += 2
+            continue
+        if character == "[" and not in_character_class:
+            in_character_class = True
+            output.append(character)
+            index += 1
+            continue
+        if character == "]" and in_character_class:
+            in_character_class = False
+            output.append(character)
+            index += 1
+            continue
+        if not in_character_class and character == "(":
+            group_stack.append(is_capturing_group(pattern, index))
+            output.append(character)
+            index += 1
+            continue
+        if not in_character_class and character == ")":
+            if group_stack:
+                group_stack.pop()
+            output.append(character)
+            index += 1
+            continue
+        if not in_character_class and character == "{" and (
+            whole_match_is_value or any(group_stack)
+        ):
+            match = quantifier.match(pattern, index)
+            if match:
+                minimum, maximum = match.groups()
+                output.append(f"{{0,{maximum or minimum}}}")
+                index = match.end()
+                continue
+
+        output.append(character)
+        index += 1
+
+    return "".join(output)
+
+
+def validate_early_pattern() -> None:
+    cases = {
+        r"prefix(?:[\r\n]{1,2}.*?){1,5}(token[A-Z]{32})":
+            r"prefix(?:[\r\n]{1,2}.*?){1,5}(token[A-Z]{0,32})",
+        r"(?i)(?<token>[A-Z]{8})-(?:[0-9]{4})":
+            r"(?i)(?<token>[A-Z]{0,8})-(?:[0-9]{4})",
+        r"(?<=prefix)([a-z]{3,12})": r"(?<=prefix)([a-z]{0,12})",
+        r"(?:literal\{4\})(value[0-9]{6})": r"(?:literal\{4\})(value[0-9]{0,6})",
+        r"ghp_[0-9A-Za-z]{36}": r"ghp_[0-9A-Za-z]{0,36}",
+    }
+    for pattern, expected in cases.items():
+        actual = early_pattern(pattern)
+        if actual != expected:
+            raise RuntimeError(f"Early-pattern rewrite failed: {pattern!r} -> {actual!r}")
+
+
+validate_early_pattern()
 
 
 parser = argparse.ArgumentParser(description=__doc__)
@@ -80,78 +172,111 @@ if patch_path.exists():
                  tuple(keyword.lower() for keyword in rule.get("keywords", [])))
             )
 
+keyword_index = {}
+for index, (_, _, _, keywords) in enumerate(rules):
+    for keyword in dict.fromkeys(keyword for keyword in keywords if keyword):
+        keyword_index.setdefault(keyword[0], []).append((keyword, index))
+
+keyword_entries = []
+for initial, keywords in sorted(keyword_index.items()):
+    values = ", ".join(
+        f"new KeywordRule({json.dumps(keyword)}, {index})"
+        for keyword, index in keywords
+    )
+    keyword_entries.append(f"            [{json.dumps(initial)}[0]] = [{values}],")
+keyword_entries = "\n".join(keyword_entries)
+
+rule_dispatch = "\n".join(
+    f"        if (candidates[{index}]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule{index}() : Rule{index}(), text, {json.dumps(rule_id)})) yield return finding;"
+    for index, (rule_id, _, _, _) in enumerate(rules)
+)
+regex_declarations = "\n".join(
+    f"    [GeneratedRegex({json.dumps(pattern)}, RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]\n"
+    f"    private static partial Regex Rule{index}();\n"
+    f"    [GeneratedRegex({json.dumps(early)}, RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]\n"
+    f"    private static partial Regex EarlyRule{index}();"
+    for index, (_, pattern, early, _) in enumerate(rules)
+)
+
 with args.output.open("w") as output:
-    output.write("// <auto-generated />\n")
-    output.write(f"// Generated from Betterleaks config: {URL}\n")
-    output.write(f"// Betterleaks commit: {SHA}\n")
-    output.write("// Betterleaks is MIT licensed; see upstream LICENSE.\n")
-    output.write("// ConsoleToSvg rules are defined in betterleaks.toml.patch.\n\n")
-    output.write("using System;\nusing System.Collections.Generic;\nusing System.Collections.Frozen;\n")
-    output.write("using System.Linq;\nusing System.Text.RegularExpressions;\n\n")
-    output.write("namespace ConsoleToSvg.QuickLeaks;\n\n")
-    output.write(
-        "/// <summary>Generated Betterleaks and ConsoleToSvg secret detection rules.</summary>\n"
-        "public static partial class QuickLeaks\n{\n"
-        "    /// <summary>Associates a keyword with the generated rule that should be tested.</summary>\n"
-        "    /// <param name=\"Value\">The case-insensitive keyword.</param>\n"
-        "    /// <param name=\"RuleIndex\">The generated rule index.</param>\n"
-        "    private readonly record struct KeywordRule(string Value, int RuleIndex);\n\n"
-    )
-    output.write(
-        "    private static readonly FrozenDictionary<char, KeywordRule[]> KeywordIndex =\n"
-        "        new Dictionary<char, KeywordRule[]>\n"
-        "        {\n"
-    )
-    keyword_index = {}
-    for index, (_, _, _, keywords) in enumerate(rules):
-        for keyword in dict.fromkeys(keyword for keyword in keywords if keyword):
-            keyword_index.setdefault(keyword[0], []).append((keyword, index))
-    for initial, keywords in sorted(keyword_index.items()):
-        values = ", ".join(
-            f"new KeywordRule({json.dumps(keyword)}, {index})"
-            for keyword, index in keywords
-        )
-        output.write(f"            [{json.dumps(initial)}[0]] = [{values}],\n")
-    output.write(
-        "        }.ToFrozenDictionary();\n\n"
-        "    private static bool[] FindCandidateRules(string text)\n"
-        "    {\n"
-        f"        var candidates = new bool[{len(rules)}];\n"
-        "        var textSpan = text.AsSpan();\n"
-        "        for (var index = 0; index < textSpan.Length; index++)\n"
-        "        {\n"
-        "            if (!KeywordIndex.TryGetValue(char.ToLowerInvariant(textSpan[index]), out var keywords))\n"
-        "            {\n"
-        "                continue;\n"
-        "            }\n"
-        "            foreach (var keyword in keywords)\n"
-        "            {\n"
-        "                if (!candidates[keyword.RuleIndex] && textSpan[index..].StartsWith(keyword.Value, StringComparison.OrdinalIgnoreCase))\n"
-        "                {\n"
-        "                    candidates[keyword.RuleIndex] = true;\n"
-        "                }\n"
-        "            }\n"
-        "        }\n"
-        "        return candidates;\n"
-        "    }\n\n"
-        "    private static IEnumerable<QuickLeaksFinding> EnumerateGeneratedRules(string text, QuickLeaksScanMode mode)\n"
-        "    {\n"
-        "        var candidates = FindCandidateRules(text);\n"
-    )
-    for index, (rule_id, _, _, _) in enumerate(rules):
-        output.write(
-            f"        if (candidates[{index}]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule{index}() : Rule{index}()).Matches(text)) "
-            f"yield return new QuickLeaksFinding({json.dumps(rule_id)}, m.Index, m.Index + m.Length);\n"
-        )
-    output.write("    }\n\n")
-    for index, (_, pattern, early, _) in enumerate(rules):
-        output.write(
-            f"    [GeneratedRegex({json.dumps(pattern)}, RegexOptions.CultureInvariant)]\n"
-            f"    private static partial Regex Rule{index}();\n"
-            f"    [GeneratedRegex({json.dumps(early)}, RegexOptions.CultureInvariant)]\n"
-            f"    private static partial Regex EarlyRule{index}();\n"
-        )
-    output.write("}\n")
+    output.write(rf"""// <auto-generated />
+// Generated from Betterleaks config: {URL}
+// Betterleaks commit: {SHA}
+// Betterleaks is MIT licensed; see upstream LICENSE.
+// ConsoleToSvg rules are defined in betterleaks.toml.patch.
+
+using System;
+using System.Collections.Generic;
+using System.Collections.Frozen;
+using System.Linq;
+using System.Text.RegularExpressions;
+
+namespace ConsoleToSvg.QuickLeaks;
+
+/// <summary>Generated Betterleaks and ConsoleToSvg secret detection rules.</summary>
+public static partial class QuickLeaks
+{{
+    private const int MatchTimeoutMilliseconds = 10;
+
+    /// <summary>Associates a keyword with the generated rule that should be tested.</summary>
+    /// <param name="Value">The case-insensitive keyword.</param>
+    /// <param name="RuleIndex">The generated rule index.</param>
+    private readonly record struct KeywordRule(string Value, int RuleIndex);
+
+    private static readonly FrozenDictionary<char, KeywordRule[]> KeywordIndex =
+        new Dictionary<char, KeywordRule[]>
+        {{
+{keyword_entries}
+        }}.ToFrozenDictionary();
+
+    private static bool[] FindCandidateRules(string text)
+    {{
+        var candidates = new bool[{len(rules)}];
+        var textSpan = text.AsSpan();
+        for (var index = 0; index < textSpan.Length; index++)
+        {{
+            if (!KeywordIndex.TryGetValue(char.ToLowerInvariant(textSpan[index]), out var keywords))
+            {{
+                continue;
+            }}
+            foreach (var keyword in keywords)
+            {{
+                if (!candidates[keyword.RuleIndex] && textSpan[index..].StartsWith(keyword.Value, StringComparison.OrdinalIgnoreCase))
+                {{
+                    candidates[keyword.RuleIndex] = true;
+                }}
+            }}
+        }}
+        return candidates;
+    }}
+
+    private static IEnumerable<QuickLeaksFinding> EnumerateGeneratedRules(string text, QuickLeaksScanMode mode)
+    {{
+        var candidates = FindCandidateRules(text);
+{rule_dispatch}
+    }}
+
+    private static IReadOnlyList<QuickLeaksFinding> FindRuleMatches(Regex regex, string text, string ruleId)
+    {{
+        var findings = new List<QuickLeaksFinding>();
+        try
+        {{
+            for (var match = regex.Match(text); match.Success; match = match.NextMatch())
+            {{
+                findings.Add(new QuickLeaksFinding(ruleId, match.Index, match.Index + match.Length));
+            }}
+        }}
+        catch (RegexMatchTimeoutException)
+        {{
+            return [];
+        }}
+
+        return findings;
+    }}
+
+{regex_declarations}
+}}
+""")
 
 print(f"generated {len(rules)} rules")
 update_readme_metadata(args.config, len(rules))

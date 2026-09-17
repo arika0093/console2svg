@@ -15,6 +15,8 @@ namespace ConsoleToSvg.QuickLeaks;
 /// <summary>Generated Betterleaks and ConsoleToSvg secret detection rules.</summary>
 public static partial class QuickLeaks
 {
+    private const int MatchTimeoutMilliseconds = 10;
+
     /// <summary>Associates a keyword with the generated rule that should be tested.</summary>
     /// <param name="Value">The case-insensitive keyword.</param>
     /// <param name="RuleIndex">The generated rule index.</param>
@@ -27,7 +29,6 @@ public static partial class QuickLeaks
             ["-"[0]] = [new KeywordRule("-prd-", 136), new KeywordRule("-pw", 170), new KeywordRule("-----begin", 335)],
             ["."[0]] = [new KeywordRule(".acc_", 37), new KeywordRule(".acc-", 37), new KeywordRule(".apps.googleusercontent.com", 165), new KeywordRule(".pw", 170)],
             ["0"[0]] = [new KeywordRule("0q~", 42)],
-            ["@"[0]] = [new KeywordRule("@", 464)],
             ["1"[0]] = [new KeywordRule("1q~", 42)],
             ["2"[0]] = [new KeywordRule("2q~", 42)],
             ["3"[0]] = [new KeywordRule("3q~", 42)],
@@ -39,6 +40,7 @@ public static partial class QuickLeaks
             ["9"[0]] = [new KeywordRule("9q~", 42)],
             [":"[0]] = [new KeywordRule("://", 463)],
             ["<"[0]] = [new KeywordRule("<add key=", 285)],
+            ["@"[0]] = [new KeywordRule("@", 464)],
             ["_"[0]] = [new KeywordRule("_pw", 170), new KeywordRule("_gitlab_session=", 194), new KeywordRule("_mmk", 257)],
             ["a"[0]] = [new KeywordRule("a3-", 0), new KeywordRule("abuseipdb", 2), new KeywordRule("adafruit", 3), new KeywordRule("adobe", 4), new KeywordRule("age-secret-key-1", 6), new KeywordRule("aik_ci_", 7), new KeywordRule("aik_client_", 8), new KeywordRule("aik_secret_", 9), new KeywordRule("airtable", 10), new KeywordRule("airtable", 11), new KeywordRule("airtable", 12), new KeywordRule("aiven", 13), new KeywordRule("algolia", 14), new KeywordRule("algolia", 15), new KeywordRule("alibaba", 17), new KeywordRule("aliyun", 17), new KeywordRule("alibaba", 19), new KeywordRule("aliyun", 19), new KeywordRule("alibaba", 20), new KeywordRule("aliyun", 20), new KeywordRule("amplitude", 21), new KeywordRule("apify_api_", 24), new KeywordRule("apollo", 25), new KeywordRule("akcp", 26), new KeywordRule("asana", 30), new KeywordRule("asana", 31), new KeywordRule("assemblyai", 32), new KeywordRule("atat", 33), new KeywordRule("auth0", 34), new KeywordRule("auth0", 35), new KeywordRule("auth0.com", 36), new KeywordRule("a3t", 38), new KeywordRule("akia", 38), new KeywordRule("asia", 38), new KeywordRule("abia", 38), new KeywordRule("acca", 38), new KeywordRule("absk", 39), new KeywordRule("access", 41), new KeywordRule("azconfig.io", 43), new KeywordRule("accountkey", 46), new KeywordRule("accesskey", 46), new KeywordRule("access_key", 46), new KeywordRule("access-key", 46), new KeywordRule("accountname", 47), new KeywordRule("astracs:", 105), new KeywordRule("apk_user_", 113), new KeywordRule("apk_", 114), new KeywordRule("aiza", 164), new KeywordRule("aq.ab8rn6", 166), new KeywordRule("access", 168), new KeywordRule("api", 168), new KeywordRule("auth", 168), new KeywordRule("amqp://", 169), new KeywordRule("amqps://", 169), new KeywordRule("authenticate(", 170), new KeywordRule("authenticate (", 170), new KeywordRule("account", 171), new KeywordRule("atlasv1", 204), new KeywordRule("administrator_login_password", 205), new KeywordRule("api_org_", 212), new KeywordRule("api-", 289), new KeywordRule("api_live_ca.", 293), new KeywordRule("api_live.", 294), new KeywordRule("api_live_us.", 295)],
             ["b"[0]] = [new KeywordRule("bedrock-api-key-", 40), new KeywordRule("blob.core.windows.net", 47), new KeywordRule("beamer", 49), new KeywordRule("bitbucket", 50), new KeywordRule("bitbucket", 51), new KeywordRule("bbdc", 52), new KeywordRule("bitly", 53), new KeywordRule("bitrise", 54), new KeywordRule("bittrex", 55), new KeywordRule("bittrex", 56), new KeywordRule("box_", 57), new KeywordRule("box-", 57), new KeywordRule("boxt", 57), new KeywordRule("boxk", 57), new KeywordRule("boxa", 57), new KeywordRule("bsa", 58), new KeywordRule("browserstack", 59), new KeywordRule("browserstack", 60), new KeywordRule("bkaa_", 61), new KeywordRule("bkaj_", 61), new KeywordRule("bkar_", 61), new KeywordRule("bkct_", 61), new KeywordRule("bkpt_", 61), new KeywordRule("bkpat_", 61), new KeywordRule("bkps_", 61), new KeywordRule("bkua_", 62), new KeywordRule("bundle_enterprise__contribsys__com", 377), new KeywordRule("bundle_gems__contribsys__com", 377)],
@@ -91,2331 +93,2349 @@ public static partial class QuickLeaks
     private static IEnumerable<QuickLeaksFinding> EnumerateGeneratedRules(string text, QuickLeaksScanMode mode)
     {
         var candidates = FindCandidateRules(text);
-        if (candidates[0]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule0() : Rule0()).Matches(text)) yield return new QuickLeaksFinding("1password-secret-key", m.Index, m.Index + m.Length);
-        if (candidates[1]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule1() : Rule1()).Matches(text)) yield return new QuickLeaksFinding("1password-service-account-token", m.Index, m.Index + m.Length);
-        if (candidates[2]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule2() : Rule2()).Matches(text)) yield return new QuickLeaksFinding("abuseipdb-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[3]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule3() : Rule3()).Matches(text)) yield return new QuickLeaksFinding("adafruit-api-key", m.Index, m.Index + m.Length);
-        if (candidates[4]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule4() : Rule4()).Matches(text)) yield return new QuickLeaksFinding("adobe-client-id", m.Index, m.Index + m.Length);
-        if (candidates[5]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule5() : Rule5()).Matches(text)) yield return new QuickLeaksFinding("adobe-client-secret", m.Index, m.Index + m.Length);
-        if (candidates[6]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule6() : Rule6()).Matches(text)) yield return new QuickLeaksFinding("age-secret-key", m.Index, m.Index + m.Length);
-        if (candidates[7]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule7() : Rule7()).Matches(text)) yield return new QuickLeaksFinding("aikido-ci-token", m.Index, m.Index + m.Length);
-        if (candidates[8]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule8() : Rule8()).Matches(text)) yield return new QuickLeaksFinding("aikido-client-id", m.Index, m.Index + m.Length);
-        if (candidates[9]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule9() : Rule9()).Matches(text)) yield return new QuickLeaksFinding("aikido-client-secret", m.Index, m.Index + m.Length);
-        if (candidates[10]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule10() : Rule10()).Matches(text)) yield return new QuickLeaksFinding("airtable-api-key", m.Index, m.Index + m.Length);
-        if (candidates[11]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule11() : Rule11()).Matches(text)) yield return new QuickLeaksFinding("airtable-oauth-token", m.Index, m.Index + m.Length);
-        if (candidates[12]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule12() : Rule12()).Matches(text)) yield return new QuickLeaksFinding("airtable-personnal-access-token", m.Index, m.Index + m.Length);
-        if (candidates[13]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule13() : Rule13()).Matches(text)) yield return new QuickLeaksFinding("aiven-auth-token", m.Index, m.Index + m.Length);
-        if (candidates[14]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule14() : Rule14()).Matches(text)) yield return new QuickLeaksFinding("algolia-api-key", m.Index, m.Index + m.Length);
-        if (candidates[15]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule15() : Rule15()).Matches(text)) yield return new QuickLeaksFinding("algolia-application-id", m.Index, m.Index + m.Length);
-        if (candidates[16]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule16() : Rule16()).Matches(text)) yield return new QuickLeaksFinding("alibaba-access-key-id", m.Index, m.Index + m.Length);
-        if (candidates[17]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule17() : Rule17()).Matches(text)) yield return new QuickLeaksFinding("alibaba-secret-key", m.Index, m.Index + m.Length);
-        if (candidates[18]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule18() : Rule18()).Matches(text)) yield return new QuickLeaksFinding("alibaba-sts-access-key-id", m.Index, m.Index + m.Length);
-        if (candidates[19]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule19() : Rule19()).Matches(text)) yield return new QuickLeaksFinding("alibaba-sts-access-key-secret", m.Index, m.Index + m.Length);
-        if (candidates[20]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule20() : Rule20()).Matches(text)) yield return new QuickLeaksFinding("alibaba-sts-security-token", m.Index, m.Index + m.Length);
-        if (candidates[21]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule21() : Rule21()).Matches(text)) yield return new QuickLeaksFinding("amplitude-secret-key", m.Index, m.Index + m.Length);
-        if (candidates[22]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule22() : Rule22()).Matches(text)) yield return new QuickLeaksFinding("anthropic-admin-api-key", m.Index, m.Index + m.Length);
-        if (candidates[23]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule23() : Rule23()).Matches(text)) yield return new QuickLeaksFinding("anthropic-api-key", m.Index, m.Index + m.Length);
-        if (candidates[24]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule24() : Rule24()).Matches(text)) yield return new QuickLeaksFinding("apify-api-token", m.Index, m.Index + m.Length);
-        if (candidates[25]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule25() : Rule25()).Matches(text)) yield return new QuickLeaksFinding("apollo-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[26]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule26() : Rule26()).Matches(text)) yield return new QuickLeaksFinding("artifactory-api-key", m.Index, m.Index + m.Length);
-        if (candidates[27]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule27() : Rule27()).Matches(text)) yield return new QuickLeaksFinding("artifactory-jfrog-url", m.Index, m.Index + m.Length);
-        if (candidates[28]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule28() : Rule28()).Matches(text)) yield return new QuickLeaksFinding("artifactory-reference-token", m.Index, m.Index + m.Length);
-        if (candidates[29]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule29() : Rule29()).Matches(text)) yield return new QuickLeaksFinding("asaas-api-token", m.Index, m.Index + m.Length);
-        if (candidates[30]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule30() : Rule30()).Matches(text)) yield return new QuickLeaksFinding("asana-client-id", m.Index, m.Index + m.Length);
-        if (candidates[31]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule31() : Rule31()).Matches(text)) yield return new QuickLeaksFinding("asana-client-secret", m.Index, m.Index + m.Length);
-        if (candidates[32]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule32() : Rule32()).Matches(text)) yield return new QuickLeaksFinding("assemblyai-api-key", m.Index, m.Index + m.Length);
-        if (candidates[33]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule33() : Rule33()).Matches(text)) yield return new QuickLeaksFinding("atlassian-api-token", m.Index, m.Index + m.Length);
-        if (candidates[34]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule34() : Rule34()).Matches(text)) yield return new QuickLeaksFinding("auth0-client-id.1", m.Index, m.Index + m.Length);
-        if (candidates[35]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule35() : Rule35()).Matches(text)) yield return new QuickLeaksFinding("auth0-client-secret.1", m.Index, m.Index + m.Length);
-        if (candidates[36]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule36() : Rule36()).Matches(text)) yield return new QuickLeaksFinding("auth0-domain.1", m.Index, m.Index + m.Length);
-        if (candidates[37]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule37() : Rule37()).Matches(text)) yield return new QuickLeaksFinding("authress-service-client-access-key", m.Index, m.Index + m.Length);
-        if (candidates[38]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule38() : Rule38()).Matches(text)) yield return new QuickLeaksFinding("aws-access-token", m.Index, m.Index + m.Length);
-        if (candidates[39]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule39() : Rule39()).Matches(text)) yield return new QuickLeaksFinding("aws-amazon-bedrock-api-key-long-lived", m.Index, m.Index + m.Length);
-        if (candidates[40]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule40() : Rule40()).Matches(text)) yield return new QuickLeaksFinding("aws-amazon-bedrock-api-key-short-lived", m.Index, m.Index + m.Length);
-        if (candidates[41]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule41() : Rule41()).Matches(text)) yield return new QuickLeaksFinding("aws-secret-access-key", m.Index, m.Index + m.Length);
-        if (candidates[42]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule42() : Rule42()).Matches(text)) yield return new QuickLeaksFinding("azure-ad-client-secret", m.Index, m.Index + m.Length);
-        if (candidates[43]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule43() : Rule43()).Matches(text)) yield return new QuickLeaksFinding("azure-app-configuration-connection-string", m.Index, m.Index + m.Length);
-        if (candidates[44]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule44() : Rule44()).Matches(text)) yield return new QuickLeaksFinding("azure-client-id", m.Index, m.Index + m.Length);
-        if (candidates[45]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule45() : Rule45()).Matches(text)) yield return new QuickLeaksFinding("azure-servicebus-connection-string", m.Index, m.Index + m.Length);
-        if (candidates[46]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule46() : Rule46()).Matches(text)) yield return new QuickLeaksFinding("azure-storage-account-key", m.Index, m.Index + m.Length);
-        if (candidates[47]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule47() : Rule47()).Matches(text)) yield return new QuickLeaksFinding("azure-storage-account-name", m.Index, m.Index + m.Length);
-        if (candidates[48]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule48() : Rule48()).Matches(text)) yield return new QuickLeaksFinding("azure-tenant-id", m.Index, m.Index + m.Length);
-        if (candidates[49]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule49() : Rule49()).Matches(text)) yield return new QuickLeaksFinding("beamer-api-token", m.Index, m.Index + m.Length);
-        if (candidates[50]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule50() : Rule50()).Matches(text)) yield return new QuickLeaksFinding("bitbucket-client-id", m.Index, m.Index + m.Length);
-        if (candidates[51]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule51() : Rule51()).Matches(text)) yield return new QuickLeaksFinding("bitbucket-client-secret", m.Index, m.Index + m.Length);
-        if (candidates[52]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule52() : Rule52()).Matches(text)) yield return new QuickLeaksFinding("bitbucket-data-center-token", m.Index, m.Index + m.Length);
-        if (candidates[53]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule53() : Rule53()).Matches(text)) yield return new QuickLeaksFinding("bitly-access-token", m.Index, m.Index + m.Length);
-        if (candidates[54]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule54() : Rule54()).Matches(text)) yield return new QuickLeaksFinding("bitrise-access-token", m.Index, m.Index + m.Length);
-        if (candidates[55]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule55() : Rule55()).Matches(text)) yield return new QuickLeaksFinding("bittrex-access-key", m.Index, m.Index + m.Length);
-        if (candidates[56]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule56() : Rule56()).Matches(text)) yield return new QuickLeaksFinding("bittrex-secret-key", m.Index, m.Index + m.Length);
-        if (candidates[57]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule57() : Rule57()).Matches(text)) yield return new QuickLeaksFinding("box-api-access-token", m.Index, m.Index + m.Length);
-        if (candidates[58]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule58() : Rule58()).Matches(text)) yield return new QuickLeaksFinding("brave-search-api-key", m.Index, m.Index + m.Length);
-        if (candidates[59]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule59() : Rule59()).Matches(text)) yield return new QuickLeaksFinding("browserstack-access-key.1", m.Index, m.Index + m.Length);
-        if (candidates[60]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule60() : Rule60()).Matches(text)) yield return new QuickLeaksFinding("browserstack-username.1", m.Index, m.Index + m.Length);
-        if (candidates[61]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule61() : Rule61()).Matches(text)) yield return new QuickLeaksFinding("buildkite-service-token", m.Index, m.Index + m.Length);
-        if (candidates[62]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule62() : Rule62()).Matches(text)) yield return new QuickLeaksFinding("buildkite-user-access-token", m.Index, m.Index + m.Length);
-        if (candidates[63]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule63() : Rule63()).Matches(text)) yield return new QuickLeaksFinding("canadian-digital-service-notify-api-key", m.Index, m.Index + m.Length);
-        if (candidates[64]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule64() : Rule64()).Matches(text)) yield return new QuickLeaksFinding("canva-client-id", m.Index, m.Index + m.Length);
-        if (candidates[65]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule65() : Rule65()).Matches(text)) yield return new QuickLeaksFinding("canva-client-secret", m.Index, m.Index + m.Length);
-        if (candidates[66]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule66() : Rule66()).Matches(text)) yield return new QuickLeaksFinding("cartesia-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[67]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule67() : Rule67()).Matches(text)) yield return new QuickLeaksFinding("cerebras-api-key", m.Index, m.Index + m.Length);
-        if (candidates[68]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule68() : Rule68()).Matches(text)) yield return new QuickLeaksFinding("checkout-secret-key", m.Index, m.Index + m.Length);
-        if (candidates[69]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule69() : Rule69()).Matches(text)) yield return new QuickLeaksFinding("circleci-personal-token", m.Index, m.Index + m.Length);
-        if (candidates[70]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule70() : Rule70()).Matches(text)) yield return new QuickLeaksFinding("circleci-project-token", m.Index, m.Index + m.Length);
-        if (candidates[71]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule71() : Rule71()).Matches(text)) yield return new QuickLeaksFinding("cisco-meraki-api-key", m.Index, m.Index + m.Length);
-        if (candidates[72]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule72() : Rule72()).Matches(text)) yield return new QuickLeaksFinding("civo-api-key", m.Index, m.Index + m.Length);
-        if (candidates[73]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule73() : Rule73()).Matches(text)) yield return new QuickLeaksFinding("clerk-secret-key", m.Index, m.Index + m.Length);
-        if (candidates[74]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule74() : Rule74()).Matches(text)) yield return new QuickLeaksFinding("clickhouse-cloud-api-secret-key", m.Index, m.Index + m.Length);
-        if (candidates[75]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule75() : Rule75()).Matches(text)) yield return new QuickLeaksFinding("clickhouse-cloud-key-id", m.Index, m.Index + m.Length);
-        if (candidates[76]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule76() : Rule76()).Matches(text)) yield return new QuickLeaksFinding("clickup-personal-api-token", m.Index, m.Index + m.Length);
-        if (candidates[77]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule77() : Rule77()).Matches(text)) yield return new QuickLeaksFinding("clojars-api-token", m.Index, m.Index + m.Length);
-        if (candidates[78]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule78() : Rule78()).Matches(text)) yield return new QuickLeaksFinding("cloudflare-api-key", m.Index, m.Index + m.Length);
-        if (candidates[79]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule79() : Rule79()).Matches(text)) yield return new QuickLeaksFinding("cloudflare-global-api-key", m.Index, m.Index + m.Length);
-        if (candidates[80]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule80() : Rule80()).Matches(text)) yield return new QuickLeaksFinding("cloudflare-origin-ca-key", m.Index, m.Index + m.Length);
-        if (candidates[81]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule81() : Rule81()).Matches(text)) yield return new QuickLeaksFinding("cloudinary-api-key", m.Index, m.Index + m.Length);
-        if (candidates[82]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule82() : Rule82()).Matches(text)) yield return new QuickLeaksFinding("cloudinary-api-secret", m.Index, m.Index + m.Length);
-        if (candidates[83]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule83() : Rule83()).Matches(text)) yield return new QuickLeaksFinding("cloudinary-cloud-name", m.Index, m.Index + m.Length);
-        if (candidates[84]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule84() : Rule84()).Matches(text)) yield return new QuickLeaksFinding("cloudsmith-api-key", m.Index, m.Index + m.Length);
-        if (candidates[85]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule85() : Rule85()).Matches(text)) yield return new QuickLeaksFinding("cockroachlabs-cloud-api-key", m.Index, m.Index + m.Length);
-        if (candidates[86]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule86() : Rule86()).Matches(text)) yield return new QuickLeaksFinding("codecov-access-token", m.Index, m.Index + m.Length);
-        if (candidates[87]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule87() : Rule87()).Matches(text)) yield return new QuickLeaksFinding("cohere-api-token", m.Index, m.Index + m.Length);
-        if (candidates[88]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule88() : Rule88()).Matches(text)) yield return new QuickLeaksFinding("coinbase-access-token", m.Index, m.Index + m.Length);
-        if (candidates[89]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule89() : Rule89()).Matches(text)) yield return new QuickLeaksFinding("configcat-sdk-key", m.Index, m.Index + m.Length);
-        if (candidates[90]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule90() : Rule90()).Matches(text)) yield return new QuickLeaksFinding("configcat-sdk-key-extended", m.Index, m.Index + m.Length);
-        if (candidates[91]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule91() : Rule91()).Matches(text)) yield return new QuickLeaksFinding("confluent-access-token", m.Index, m.Index + m.Length);
-        if (candidates[92]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule92() : Rule92()).Matches(text)) yield return new QuickLeaksFinding("confluent-secret-key", m.Index, m.Index + m.Length);
-        if (candidates[93]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule93() : Rule93()).Matches(text)) yield return new QuickLeaksFinding("contentful-delivery-api-token", m.Index, m.Index + m.Length);
-        if (candidates[94]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule94() : Rule94()).Matches(text)) yield return new QuickLeaksFinding("couchbase-capella-api-key", m.Index, m.Index + m.Length);
-        if (candidates[95]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule95() : Rule95()).Matches(text)) yield return new QuickLeaksFinding("coveralls-personal-api-token", m.Index, m.Index + m.Length);
-        if (candidates[96]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule96() : Rule96()).Matches(text)) yield return new QuickLeaksFinding("crates-io-api-key", m.Index, m.Index + m.Length);
-        if (candidates[97]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule97() : Rule97()).Matches(text)) yield return new QuickLeaksFinding("curl-auth-header", m.Index, m.Index + m.Length);
-        if (candidates[98]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule98() : Rule98()).Matches(text)) yield return new QuickLeaksFinding("curl-auth-user", m.Index, m.Index + m.Length);
-        if (candidates[99]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule99() : Rule99()).Matches(text)) yield return new QuickLeaksFinding("cursor-api-key", m.Index, m.Index + m.Length);
-        if (candidates[100]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule100() : Rule100()).Matches(text)) yield return new QuickLeaksFinding("databento-api-key", m.Index, m.Index + m.Length);
-        if (candidates[101]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule101() : Rule101()).Matches(text)) yield return new QuickLeaksFinding("databricks-api-token", m.Index, m.Index + m.Length);
-        if (candidates[102]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule102() : Rule102()).Matches(text)) yield return new QuickLeaksFinding("datadog-api-key", m.Index, m.Index + m.Length);
-        if (candidates[103]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule103() : Rule103()).Matches(text)) yield return new QuickLeaksFinding("datadog-application-key", m.Index, m.Index + m.Length);
-        if (candidates[104]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule104() : Rule104()).Matches(text)) yield return new QuickLeaksFinding("datagov-api-key", m.Index, m.Index + m.Length);
-        if (candidates[105]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule105() : Rule105()).Matches(text)) yield return new QuickLeaksFinding("datastax-astra-application-token", m.Index, m.Index + m.Length);
-        if (candidates[106]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule106() : Rule106()).Matches(text)) yield return new QuickLeaksFinding("deepgram-api-key", m.Index, m.Index + m.Length);
-        if (candidates[107]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule107() : Rule107()).Matches(text)) yield return new QuickLeaksFinding("deepseek-api-key", m.Index, m.Index + m.Length);
-        if (candidates[108]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule108() : Rule108()).Matches(text)) yield return new QuickLeaksFinding("defined-networking-api-token", m.Index, m.Index + m.Length);
-        if (candidates[109]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule109() : Rule109()).Matches(text)) yield return new QuickLeaksFinding("deno-account-token", m.Index, m.Index + m.Length);
-        if (candidates[110]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule110() : Rule110()).Matches(text)) yield return new QuickLeaksFinding("devcycle-client-sdk-key", m.Index, m.Index + m.Length);
-        if (candidates[111]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule111() : Rule111()).Matches(text)) yield return new QuickLeaksFinding("devcycle-mobile-sdk-key", m.Index, m.Index + m.Length);
-        if (candidates[112]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule112() : Rule112()).Matches(text)) yield return new QuickLeaksFinding("devcycle-server-sdk-key", m.Index, m.Index + m.Length);
-        if (candidates[113]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule113() : Rule113()).Matches(text)) yield return new QuickLeaksFinding("devin-personal-api-key", m.Index, m.Index + m.Length);
-        if (candidates[114]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule114() : Rule114()).Matches(text)) yield return new QuickLeaksFinding("devin-service-api-key", m.Index, m.Index + m.Length);
-        if (candidates[115]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule115() : Rule115()).Matches(text)) yield return new QuickLeaksFinding("devin-service-user-token", m.Index, m.Index + m.Length);
-        if (candidates[116]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule116() : Rule116()).Matches(text)) yield return new QuickLeaksFinding("digitalocean-access-token", m.Index, m.Index + m.Length);
-        if (candidates[117]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule117() : Rule117()).Matches(text)) yield return new QuickLeaksFinding("digitalocean-pat", m.Index, m.Index + m.Length);
-        if (candidates[118]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule118() : Rule118()).Matches(text)) yield return new QuickLeaksFinding("digitalocean-refresh-token", m.Index, m.Index + m.Length);
-        if (candidates[119]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule119() : Rule119()).Matches(text)) yield return new QuickLeaksFinding("discord-api-token", m.Index, m.Index + m.Length);
-        if (candidates[120]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule120() : Rule120()).Matches(text)) yield return new QuickLeaksFinding("discord-client-id", m.Index, m.Index + m.Length);
-        if (candidates[121]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule121() : Rule121()).Matches(text)) yield return new QuickLeaksFinding("discord-client-secret", m.Index, m.Index + m.Length);
-        if (candidates[122]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule122() : Rule122()).Matches(text)) yield return new QuickLeaksFinding("disqus-api-key", m.Index, m.Index + m.Length);
-        if (candidates[123]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule123() : Rule123()).Matches(text)) yield return new QuickLeaksFinding("docker-swarm-join-token", m.Index, m.Index + m.Length);
-        if (candidates[124]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule124() : Rule124()).Matches(text)) yield return new QuickLeaksFinding("docker-swarm-unlock-key", m.Index, m.Index + m.Length);
-        if (candidates[125]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule125() : Rule125()).Matches(text)) yield return new QuickLeaksFinding("dockerhub-organization-access-token", m.Index, m.Index + m.Length);
-        if (candidates[126]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule126() : Rule126()).Matches(text)) yield return new QuickLeaksFinding("dockerhub-personal-access-token", m.Index, m.Index + m.Length);
-        if (candidates[127]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule127() : Rule127()).Matches(text)) yield return new QuickLeaksFinding("doppler-api-token", m.Index, m.Index + m.Length);
-        if (candidates[128]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule128() : Rule128()).Matches(text)) yield return new QuickLeaksFinding("droneci-access-token", m.Index, m.Index + m.Length);
-        if (candidates[129]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule129() : Rule129()).Matches(text)) yield return new QuickLeaksFinding("dropbox-api-token", m.Index, m.Index + m.Length);
-        if (candidates[130]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule130() : Rule130()).Matches(text)) yield return new QuickLeaksFinding("dropbox-long-lived-api-token", m.Index, m.Index + m.Length);
-        if (candidates[131]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule131() : Rule131()).Matches(text)) yield return new QuickLeaksFinding("dropbox-short-lived-api-token", m.Index, m.Index + m.Length);
-        if (candidates[132]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule132() : Rule132()).Matches(text)) yield return new QuickLeaksFinding("duffel-api-token", m.Index, m.Index + m.Length);
-        if (candidates[133]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule133() : Rule133()).Matches(text)) yield return new QuickLeaksFinding("dynatrace-api-token", m.Index, m.Index + m.Length);
-        if (candidates[134]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule134() : Rule134()).Matches(text)) yield return new QuickLeaksFinding("easypost-api-token", m.Index, m.Index + m.Length);
-        if (candidates[135]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule135() : Rule135()).Matches(text)) yield return new QuickLeaksFinding("easypost-test-api-token", m.Index, m.Index + m.Length);
-        if (candidates[136]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule136() : Rule136()).Matches(text)) yield return new QuickLeaksFinding("ebay-client-id", m.Index, m.Index + m.Length);
-        if (candidates[137]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule137() : Rule137()).Matches(text)) yield return new QuickLeaksFinding("ebay-client-secret", m.Index, m.Index + m.Length);
-        if (candidates[138]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule138() : Rule138()).Matches(text)) yield return new QuickLeaksFinding("elastic-cloud-api-key", m.Index, m.Index + m.Length);
-        if (candidates[139]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule139() : Rule139()).Matches(text)) yield return new QuickLeaksFinding("elevenlabs-api-key", m.Index, m.Index + m.Length);
-        if (candidates[140]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule140() : Rule140()).Matches(text)) yield return new QuickLeaksFinding("endorlabs-api-key", m.Index, m.Index + m.Length);
-        if (candidates[141]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule141() : Rule141()).Matches(text)) yield return new QuickLeaksFinding("endorlabs-api-secret", m.Index, m.Index + m.Length);
-        if (candidates[142]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule142() : Rule142()).Matches(text)) yield return new QuickLeaksFinding("etsy-open-api-key", m.Index, m.Index + m.Length);
-        if (candidates[143]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule143() : Rule143()).Matches(text)) yield return new QuickLeaksFinding("exoscale-api-key", m.Index, m.Index + m.Length);
-        if (candidates[144]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule144() : Rule144()).Matches(text)) yield return new QuickLeaksFinding("exoscale-api-secret", m.Index, m.Index + m.Length);
-        if (candidates[145]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule145() : Rule145()).Matches(text)) yield return new QuickLeaksFinding("facebook-access-token", m.Index, m.Index + m.Length);
-        if (candidates[146]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule146() : Rule146()).Matches(text)) yield return new QuickLeaksFinding("facebook-page-access-token", m.Index, m.Index + m.Length);
-        if (candidates[147]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule147() : Rule147()).Matches(text)) yield return new QuickLeaksFinding("facebook-secret", m.Index, m.Index + m.Length);
-        if (candidates[148]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule148() : Rule148()).Matches(text)) yield return new QuickLeaksFinding("fal-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[149]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule149() : Rule149()).Matches(text)) yield return new QuickLeaksFinding("fastly-api-token", m.Index, m.Index + m.Length);
-        if (candidates[150]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule150() : Rule150()).Matches(text)) yield return new QuickLeaksFinding("figma-personal-access-header-token", m.Index, m.Index + m.Length);
-        if (candidates[151]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule151() : Rule151()).Matches(text)) yield return new QuickLeaksFinding("figma-personal-access-token", m.Index, m.Index + m.Length);
-        if (candidates[152]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule152() : Rule152()).Matches(text)) yield return new QuickLeaksFinding("finicity-api-token", m.Index, m.Index + m.Length);
-        if (candidates[153]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule153() : Rule153()).Matches(text)) yield return new QuickLeaksFinding("finicity-client-secret", m.Index, m.Index + m.Length);
-        if (candidates[154]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule154() : Rule154()).Matches(text)) yield return new QuickLeaksFinding("finnhub-access-token", m.Index, m.Index + m.Length);
-        if (candidates[155]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule155() : Rule155()).Matches(text)) yield return new QuickLeaksFinding("flickr-access-token", m.Index, m.Index + m.Length);
-        if (candidates[156]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule156() : Rule156()).Matches(text)) yield return new QuickLeaksFinding("flutterwave-encryption-key", m.Index, m.Index + m.Length);
-        if (candidates[157]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule157() : Rule157()).Matches(text)) yield return new QuickLeaksFinding("flutterwave-public-key", m.Index, m.Index + m.Length);
-        if (candidates[158]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule158() : Rule158()).Matches(text)) yield return new QuickLeaksFinding("flutterwave-secret-key", m.Index, m.Index + m.Length);
-        if (candidates[159]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule159() : Rule159()).Matches(text)) yield return new QuickLeaksFinding("flyio-access-token", m.Index, m.Index + m.Length);
-        if (candidates[160]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule160() : Rule160()).Matches(text)) yield return new QuickLeaksFinding("frameio-api-token", m.Index, m.Index + m.Length);
-        if (candidates[161]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule161() : Rule161()).Matches(text)) yield return new QuickLeaksFinding("freemius-secret-key", m.Index, m.Index + m.Length);
-        if (candidates[162]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule162() : Rule162()).Matches(text)) yield return new QuickLeaksFinding("freshbooks-access-token", m.Index, m.Index + m.Length);
-        if (candidates[163]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule163() : Rule163()).Matches(text)) yield return new QuickLeaksFinding("fullstory-api-key", m.Index, m.Index + m.Length);
-        if (candidates[164]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule164() : Rule164()).Matches(text)) yield return new QuickLeaksFinding("gcp-api-key", m.Index, m.Index + m.Length);
-        if (candidates[165]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule165() : Rule165()).Matches(text)) yield return new QuickLeaksFinding("gcp-application-default-credentials", m.Index, m.Index + m.Length);
-        if (candidates[166]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule166() : Rule166()).Matches(text)) yield return new QuickLeaksFinding("gcp-gemini-api", m.Index, m.Index + m.Length);
-        if (candidates[167]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule167() : Rule167()).Matches(text)) yield return new QuickLeaksFinding("gcp-service-account", m.Index, m.Index + m.Length);
-        if (candidates[168]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule168() : Rule168()).Matches(text)) yield return new QuickLeaksFinding("generic-api-key", m.Index, m.Index + m.Length);
-        if (candidates[169]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule169() : Rule169()).Matches(text)) yield return new QuickLeaksFinding("generic-credential-uri", m.Index, m.Index + m.Length);
-        if (candidates[170]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule170() : Rule170()).Matches(text)) yield return new QuickLeaksFinding("generic-password", m.Index, m.Index + m.Length);
-        if (candidates[171]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule171() : Rule171()).Matches(text)) yield return new QuickLeaksFinding("generic-username", m.Index, m.Index + m.Length);
-        if (candidates[172]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule172() : Rule172()).Matches(text)) yield return new QuickLeaksFinding("gitea-access-token", m.Index, m.Index + m.Length);
-        if (candidates[173]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule173() : Rule173()).Matches(text)) yield return new QuickLeaksFinding("github-app-token", m.Index, m.Index + m.Length);
-        if (candidates[174]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule174() : Rule174()).Matches(text)) yield return new QuickLeaksFinding("github-fine-grained-pat", m.Index, m.Index + m.Length);
-        if (candidates[175]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule175() : Rule175()).Matches(text)) yield return new QuickLeaksFinding("github-oauth", m.Index, m.Index + m.Length);
-        if (candidates[176]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule176() : Rule176()).Matches(text)) yield return new QuickLeaksFinding("github-pat", m.Index, m.Index + m.Length);
-        if (candidates[177]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule177() : Rule177()).Matches(text)) yield return new QuickLeaksFinding("github-refresh-token", m.Index, m.Index + m.Length);
-        if (candidates[178]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule178() : Rule178()).Matches(text)) yield return new QuickLeaksFinding("gitlab-cicd-job-token", m.Index, m.Index + m.Length);
-        if (candidates[179]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule179() : Rule179()).Matches(text)) yield return new QuickLeaksFinding("gitlab-deploy-token", m.Index, m.Index + m.Length);
-        if (candidates[180]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule180() : Rule180()).Matches(text)) yield return new QuickLeaksFinding("gitlab-feature-flag-client-token", m.Index, m.Index + m.Length);
-        if (candidates[181]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule181() : Rule181()).Matches(text)) yield return new QuickLeaksFinding("gitlab-feed-token", m.Index, m.Index + m.Length);
-        if (candidates[182]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule182() : Rule182()).Matches(text)) yield return new QuickLeaksFinding("gitlab-incoming-mail-address-token", m.Index, m.Index + m.Length);
-        if (candidates[183]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule183() : Rule183()).Matches(text)) yield return new QuickLeaksFinding("gitlab-incoming-mail-token", m.Index, m.Index + m.Length);
-        if (candidates[184]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule184() : Rule184()).Matches(text)) yield return new QuickLeaksFinding("gitlab-kubernetes-agent-token", m.Index, m.Index + m.Length);
-        if (candidates[185]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule185() : Rule185()).Matches(text)) yield return new QuickLeaksFinding("gitlab-oauth-app-secret", m.Index, m.Index + m.Length);
-        if (candidates[186]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule186() : Rule186()).Matches(text)) yield return new QuickLeaksFinding("gitlab-pat", m.Index, m.Index + m.Length);
-        if (candidates[187]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule187() : Rule187()).Matches(text)) yield return new QuickLeaksFinding("gitlab-pat-routable", m.Index, m.Index + m.Length);
-        if (candidates[188]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule188() : Rule188()).Matches(text)) yield return new QuickLeaksFinding("gitlab-pat-routable-versioned", m.Index, m.Index + m.Length);
-        if (candidates[189]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule189() : Rule189()).Matches(text)) yield return new QuickLeaksFinding("gitlab-ptt", m.Index, m.Index + m.Length);
-        if (candidates[190]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule190() : Rule190()).Matches(text)) yield return new QuickLeaksFinding("gitlab-rrt", m.Index, m.Index + m.Length);
-        if (candidates[191]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule191() : Rule191()).Matches(text)) yield return new QuickLeaksFinding("gitlab-runner-authentication-token", m.Index, m.Index + m.Length);
-        if (candidates[192]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule192() : Rule192()).Matches(text)) yield return new QuickLeaksFinding("gitlab-runner-authentication-token-routable", m.Index, m.Index + m.Length);
-        if (candidates[193]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule193() : Rule193()).Matches(text)) yield return new QuickLeaksFinding("gitlab-scim-token", m.Index, m.Index + m.Length);
-        if (candidates[194]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule194() : Rule194()).Matches(text)) yield return new QuickLeaksFinding("gitlab-session-cookie", m.Index, m.Index + m.Length);
-        if (candidates[195]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule195() : Rule195()).Matches(text)) yield return new QuickLeaksFinding("gitter-access-token", m.Index, m.Index + m.Length);
-        if (candidates[196]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule196() : Rule196()).Matches(text)) yield return new QuickLeaksFinding("gocardless-api-token", m.Index, m.Index + m.Length);
-        if (candidates[197]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule197() : Rule197()).Matches(text)) yield return new QuickLeaksFinding("grafana-api-key", m.Index, m.Index + m.Length);
-        if (candidates[198]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule198() : Rule198()).Matches(text)) yield return new QuickLeaksFinding("grafana-cloud-api-token", m.Index, m.Index + m.Length);
-        if (candidates[199]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule199() : Rule199()).Matches(text)) yield return new QuickLeaksFinding("grafana-service-account-token", m.Index, m.Index + m.Length);
-        if (candidates[200]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule200() : Rule200()).Matches(text)) yield return new QuickLeaksFinding("greptile-api-key", m.Index, m.Index + m.Length);
-        if (candidates[201]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule201() : Rule201()).Matches(text)) yield return new QuickLeaksFinding("groq-api-key", m.Index, m.Index + m.Length);
-        if (candidates[202]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule202() : Rule202()).Matches(text)) yield return new QuickLeaksFinding("gumroad-access-token", m.Index, m.Index + m.Length);
-        if (candidates[203]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule203() : Rule203()).Matches(text)) yield return new QuickLeaksFinding("harness-api-key", m.Index, m.Index + m.Length);
-        if (candidates[204]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule204() : Rule204()).Matches(text)) yield return new QuickLeaksFinding("hashicorp-tf-api-token", m.Index, m.Index + m.Length);
-        if (candidates[205]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule205() : Rule205()).Matches(text)) yield return new QuickLeaksFinding("hashicorp-tf-password", m.Index, m.Index + m.Length);
-        if (candidates[206]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule206() : Rule206()).Matches(text)) yield return new QuickLeaksFinding("heroku-api-key", m.Index, m.Index + m.Length);
-        if (candidates[207]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule207() : Rule207()).Matches(text)) yield return new QuickLeaksFinding("heroku-api-key-v2", m.Index, m.Index + m.Length);
-        if (candidates[208]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule208() : Rule208()).Matches(text)) yield return new QuickLeaksFinding("highnote-secret-live-key", m.Index, m.Index + m.Length);
-        if (candidates[209]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule209() : Rule209()).Matches(text)) yield return new QuickLeaksFinding("honeycomb-api-key", m.Index, m.Index + m.Length);
-        if (candidates[210]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule210() : Rule210()).Matches(text)) yield return new QuickLeaksFinding("hubspot-api-key", m.Index, m.Index + m.Length);
-        if (candidates[211]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule211() : Rule211()).Matches(text)) yield return new QuickLeaksFinding("huggingface-access-token", m.Index, m.Index + m.Length);
-        if (candidates[212]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule212() : Rule212()).Matches(text)) yield return new QuickLeaksFinding("huggingface-organization-api-token", m.Index, m.Index + m.Length);
-        if (candidates[213]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule213() : Rule213()).Matches(text)) yield return new QuickLeaksFinding("hunter-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[214]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule214() : Rule214()).Matches(text)) yield return new QuickLeaksFinding("ibm-cloud-user-api-key", m.Index, m.Index + m.Length);
-        if (candidates[215]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule215() : Rule215()).Matches(text)) yield return new QuickLeaksFinding("influxdb-api-token", m.Index, m.Index + m.Length);
-        if (candidates[216]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule216() : Rule216()).Matches(text)) yield return new QuickLeaksFinding("infomaniak-api-token", m.Index, m.Index + m.Length);
-        if (candidates[217]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule217() : Rule217()).Matches(text)) yield return new QuickLeaksFinding("infracost-api-token", m.Index, m.Index + m.Length);
-        if (candidates[218]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule218() : Rule218()).Matches(text)) yield return new QuickLeaksFinding("instantly-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[219]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule219() : Rule219()).Matches(text)) yield return new QuickLeaksFinding("intercom-api-key", m.Index, m.Index + m.Length);
-        if (candidates[220]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule220() : Rule220()).Matches(text)) yield return new QuickLeaksFinding("intra42-client-secret", m.Index, m.Index + m.Length);
-        if (candidates[221]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule221() : Rule221()).Matches(text)) yield return new QuickLeaksFinding("ionic-personal-access-token", m.Index, m.Index + m.Length);
-        if (candidates[222]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule222() : Rule222()).Matches(text)) yield return new QuickLeaksFinding("jumpcloud-api-key", m.Index, m.Index + m.Length);
-        if (candidates[223]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule223() : Rule223()).Matches(text)) yield return new QuickLeaksFinding("jwt", m.Index, m.Index + m.Length);
-        if (candidates[224]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule224() : Rule224()).Matches(text)) yield return new QuickLeaksFinding("jwt-base64", m.Index, m.Index + m.Length);
-        if (candidates[225]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule225() : Rule225()).Matches(text)) yield return new QuickLeaksFinding("kagi-api-key", m.Index, m.Index + m.Length);
-        if (candidates[226]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule226() : Rule226()).Matches(text)) yield return new QuickLeaksFinding("kimi-api-key", m.Index, m.Index + m.Length);
-        if (candidates[227]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule227() : Rule227()).Matches(text)) yield return new QuickLeaksFinding("klaviyo-api-key", m.Index, m.Index + m.Length);
-        if (candidates[228]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule228() : Rule228()).Matches(text)) yield return new QuickLeaksFinding("kraken-access-token", m.Index, m.Index + m.Length);
-        if (candidates[229]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule229() : Rule229()).Matches(text)) yield return new QuickLeaksFinding("kubernetes-secret-yaml", m.Index, m.Index + m.Length);
-        if (candidates[230]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule230() : Rule230()).Matches(text)) yield return new QuickLeaksFinding("kucoin-access-token", m.Index, m.Index + m.Length);
-        if (candidates[231]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule231() : Rule231()).Matches(text)) yield return new QuickLeaksFinding("kucoin-secret-key", m.Index, m.Index + m.Length);
-        if (candidates[232]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule232() : Rule232()).Matches(text)) yield return new QuickLeaksFinding("langchain-langsmith-personal-access-token", m.Index, m.Index + m.Length);
-        if (candidates[233]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule233() : Rule233()).Matches(text)) yield return new QuickLeaksFinding("langchain-langsmith-service-key", m.Index, m.Index + m.Length);
-        if (candidates[234]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule234() : Rule234()).Matches(text)) yield return new QuickLeaksFinding("langfuse-public-key.1", m.Index, m.Index + m.Length);
-        if (candidates[235]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule235() : Rule235()).Matches(text)) yield return new QuickLeaksFinding("langfuse-secret-key.1", m.Index, m.Index + m.Length);
-        if (candidates[236]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule236() : Rule236()).Matches(text)) yield return new QuickLeaksFinding("lark-app-id", m.Index, m.Index + m.Length);
-        if (candidates[237]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule237() : Rule237()).Matches(text)) yield return new QuickLeaksFinding("lark-app-secret", m.Index, m.Index + m.Length);
-        if (candidates[238]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule238() : Rule238()).Matches(text)) yield return new QuickLeaksFinding("launchdarkly-access-token", m.Index, m.Index + m.Length);
-        if (candidates[239]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule239() : Rule239()).Matches(text)) yield return new QuickLeaksFinding("lichess-personal-access-token", m.Index, m.Index + m.Length);
-        if (candidates[240]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule240() : Rule240()).Matches(text)) yield return new QuickLeaksFinding("lighton-paradigm-api-key", m.Index, m.Index + m.Length);
-        if (candidates[241]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule241() : Rule241()).Matches(text)) yield return new QuickLeaksFinding("linear-api-key", m.Index, m.Index + m.Length);
-        if (candidates[242]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule242() : Rule242()).Matches(text)) yield return new QuickLeaksFinding("linear-client-secret", m.Index, m.Index + m.Length);
-        if (candidates[243]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule243() : Rule243()).Matches(text)) yield return new QuickLeaksFinding("linkedin-client-id", m.Index, m.Index + m.Length);
-        if (candidates[244]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule244() : Rule244()).Matches(text)) yield return new QuickLeaksFinding("linkedin-client-secret", m.Index, m.Index + m.Length);
-        if (candidates[245]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule245() : Rule245()).Matches(text)) yield return new QuickLeaksFinding("llama-cloud-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[246]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule246() : Rule246()).Matches(text)) yield return new QuickLeaksFinding("lob-api-key", m.Index, m.Index + m.Length);
-        if (candidates[247]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule247() : Rule247()).Matches(text)) yield return new QuickLeaksFinding("lob-pub-api-key", m.Index, m.Index + m.Length);
-        if (candidates[248]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule248() : Rule248()).Matches(text)) yield return new QuickLeaksFinding("looker-client-id", m.Index, m.Index + m.Length);
-        if (candidates[249]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule249() : Rule249()).Matches(text)) yield return new QuickLeaksFinding("looker-client-secret", m.Index, m.Index + m.Length);
-        if (candidates[250]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule250() : Rule250()).Matches(text)) yield return new QuickLeaksFinding("mailchimp-api-key", m.Index, m.Index + m.Length);
-        if (candidates[251]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule251() : Rule251()).Matches(text)) yield return new QuickLeaksFinding("mailersend-api-token", m.Index, m.Index + m.Length);
-        if (candidates[252]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule252() : Rule252()).Matches(text)) yield return new QuickLeaksFinding("mailgun-private-api-token", m.Index, m.Index + m.Length);
-        if (candidates[253]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule253() : Rule253()).Matches(text)) yield return new QuickLeaksFinding("mailgun-pub-key", m.Index, m.Index + m.Length);
-        if (candidates[254]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule254() : Rule254()).Matches(text)) yield return new QuickLeaksFinding("mailgun-signing-key", m.Index, m.Index + m.Length);
-        if (candidates[255]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule255() : Rule255()).Matches(text)) yield return new QuickLeaksFinding("mapbox-api-token", m.Index, m.Index + m.Length);
-        if (candidates[256]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule256() : Rule256()).Matches(text)) yield return new QuickLeaksFinding("mattermost-access-token", m.Index, m.Index + m.Length);
-        if (candidates[257]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule257() : Rule257()).Matches(text)) yield return new QuickLeaksFinding("maxmind-license-key", m.Index, m.Index + m.Length);
-        if (candidates[258]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule258() : Rule258()).Matches(text)) yield return new QuickLeaksFinding("mem0-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[259]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule259() : Rule259()).Matches(text)) yield return new QuickLeaksFinding("mercury-production-api-token", m.Index, m.Index + m.Length);
-        if (candidates[260]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule260() : Rule260()).Matches(text)) yield return new QuickLeaksFinding("mergify-application-key", m.Index, m.Index + m.Length);
-        if (candidates[261]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule261() : Rule261()).Matches(text)) yield return new QuickLeaksFinding("messagebird-api-token", m.Index, m.Index + m.Length);
-        if (candidates[262]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule262() : Rule262()).Matches(text)) yield return new QuickLeaksFinding("messagebird-client-id", m.Index, m.Index + m.Length);
-        if (candidates[263]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule263() : Rule263()).Matches(text)) yield return new QuickLeaksFinding("microsoft-teams-webhook", m.Index, m.Index + m.Length);
-        if (candidates[264]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule264() : Rule264()).Matches(text)) yield return new QuickLeaksFinding("midtrans-production-server-client-key", m.Index, m.Index + m.Length);
-        if (candidates[265]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule265() : Rule265()).Matches(text)) yield return new QuickLeaksFinding("minimax-api-key", m.Index, m.Index + m.Length);
-        if (candidates[266]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule266() : Rule266()).Matches(text)) yield return new QuickLeaksFinding("miro-access-token", m.Index, m.Index + m.Length);
-        if (candidates[267]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule267() : Rule267()).Matches(text)) yield return new QuickLeaksFinding("miro-client-id", m.Index, m.Index + m.Length);
-        if (candidates[268]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule268() : Rule268()).Matches(text)) yield return new QuickLeaksFinding("miro-client-secret", m.Index, m.Index + m.Length);
-        if (candidates[269]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule269() : Rule269()).Matches(text)) yield return new QuickLeaksFinding("mistral-api-key", m.Index, m.Index + m.Length);
-        if (candidates[270]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule270() : Rule270()).Matches(text)) yield return new QuickLeaksFinding("monday-api-token.1", m.Index, m.Index + m.Length);
-        if (candidates[271]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule271() : Rule271()).Matches(text)) yield return new QuickLeaksFinding("mongodb-atlas-service-account-id", m.Index, m.Index + m.Length);
-        if (candidates[272]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule272() : Rule272()).Matches(text)) yield return new QuickLeaksFinding("mongodb-atlas-service-account-secret", m.Index, m.Index + m.Length);
-        if (candidates[273]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule273() : Rule273()).Matches(text)) yield return new QuickLeaksFinding("mongodb-connection-string", m.Index, m.Index + m.Length);
-        if (candidates[274]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule274() : Rule274()).Matches(text)) yield return new QuickLeaksFinding("mux-access-token-id.1", m.Index, m.Index + m.Length);
-        if (candidates[275]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule275() : Rule275()).Matches(text)) yield return new QuickLeaksFinding("mux-access-token-secret.1", m.Index, m.Index + m.Length);
-        if (candidates[276]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule276() : Rule276()).Matches(text)) yield return new QuickLeaksFinding("neon-api-key", m.Index, m.Index + m.Length);
-        if (candidates[277]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule277() : Rule277()).Matches(text)) yield return new QuickLeaksFinding("netlify-access-token", m.Index, m.Index + m.Length);
-        if (candidates[278]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule278() : Rule278()).Matches(text)) yield return new QuickLeaksFinding("new-relic-browser-api-token", m.Index, m.Index + m.Length);
-        if (candidates[279]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule279() : Rule279()).Matches(text)) yield return new QuickLeaksFinding("new-relic-insert-key", m.Index, m.Index + m.Length);
-        if (candidates[280]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule280() : Rule280()).Matches(text)) yield return new QuickLeaksFinding("new-relic-user-api-id", m.Index, m.Index + m.Length);
-        if (candidates[281]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule281() : Rule281()).Matches(text)) yield return new QuickLeaksFinding("new-relic-user-api-key", m.Index, m.Index + m.Length);
-        if (candidates[282]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule282() : Rule282()).Matches(text)) yield return new QuickLeaksFinding("ngrok-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[283]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule283() : Rule283()).Matches(text)) yield return new QuickLeaksFinding("notion-api-token", m.Index, m.Index + m.Length);
-        if (candidates[284]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule284() : Rule284()).Matches(text)) yield return new QuickLeaksFinding("npm-access-token", m.Index, m.Index + m.Length);
-        if (candidates[285]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule285() : Rule285()).Matches(text)) yield return new QuickLeaksFinding("nuget-config-password", m.Index, m.Index + m.Length);
-        if (candidates[286]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule286() : Rule286()).Matches(text)) yield return new QuickLeaksFinding("nvidia-api-key", m.Index, m.Index + m.Length);
-        if (candidates[287]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule287() : Rule287()).Matches(text)) yield return new QuickLeaksFinding("nylas-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[288]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule288() : Rule288()).Matches(text)) yield return new QuickLeaksFinding("nytimes-access-token", m.Index, m.Index + m.Length);
-        if (candidates[289]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule289() : Rule289()).Matches(text)) yield return new QuickLeaksFinding("octopus-deploy-api-key", m.Index, m.Index + m.Length);
-        if (candidates[290]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule290() : Rule290()).Matches(text)) yield return new QuickLeaksFinding("okta-access-token", m.Index, m.Index + m.Length);
-        if (candidates[291]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule291() : Rule291()).Matches(text)) yield return new QuickLeaksFinding("ollama-api-key", m.Index, m.Index + m.Length);
-        if (candidates[292]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule292() : Rule292()).Matches(text)) yield return new QuickLeaksFinding("onesignal-rich-authentication-token", m.Index, m.Index + m.Length);
-        if (candidates[293]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule293() : Rule293()).Matches(text)) yield return new QuickLeaksFinding("onfido-live-api-token-ca", m.Index, m.Index + m.Length);
-        if (candidates[294]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule294() : Rule294()).Matches(text)) yield return new QuickLeaksFinding("onfido-live-api-token-eu", m.Index, m.Index + m.Length);
-        if (candidates[295]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule295() : Rule295()).Matches(text)) yield return new QuickLeaksFinding("onfido-live-api-token-us", m.Index, m.Index + m.Length);
-        if (candidates[296]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule296() : Rule296()).Matches(text)) yield return new QuickLeaksFinding("openai-api-key", m.Index, m.Index + m.Length);
-        if (candidates[297]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule297() : Rule297()).Matches(text)) yield return new QuickLeaksFinding("openrouter-api-key", m.Index, m.Index + m.Length);
-        if (candidates[298]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule298() : Rule298()).Matches(text)) yield return new QuickLeaksFinding("openshift-user-token", m.Index, m.Index + m.Length);
-        if (candidates[299]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule299() : Rule299()).Matches(text)) yield return new QuickLeaksFinding("openweather-api-key", m.Index, m.Index + m.Length);
-        if (candidates[300]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule300() : Rule300()).Matches(text)) yield return new QuickLeaksFinding("opsgenie-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[301]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule301() : Rule301()).Matches(text)) yield return new QuickLeaksFinding("ovh-application-key", m.Index, m.Index + m.Length);
-        if (candidates[302]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule302() : Rule302()).Matches(text)) yield return new QuickLeaksFinding("ovh-application-secret", m.Index, m.Index + m.Length);
-        if (candidates[303]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule303() : Rule303()).Matches(text)) yield return new QuickLeaksFinding("ovh-consumer-key", m.Index, m.Index + m.Length);
-        if (candidates[304]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule304() : Rule304()).Matches(text)) yield return new QuickLeaksFinding("paddle-live-api-key", m.Index, m.Index + m.Length);
-        if (candidates[305]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule305() : Rule305()).Matches(text)) yield return new QuickLeaksFinding("pagerduty-authorization-token.1", m.Index, m.Index + m.Length);
-        if (candidates[306]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule306() : Rule306()).Matches(text)) yield return new QuickLeaksFinding("paypal-client-id.1", m.Index, m.Index + m.Length);
-        if (candidates[307]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule307() : Rule307()).Matches(text)) yield return new QuickLeaksFinding("paypal-client-secret.1", m.Index, m.Index + m.Length);
-        if (candidates[308]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule308() : Rule308()).Matches(text)) yield return new QuickLeaksFinding("perplexity-api-key", m.Index, m.Index + m.Length);
-        if (candidates[309]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule309() : Rule309()).Matches(text)) yield return new QuickLeaksFinding("persona-production-api-key", m.Index, m.Index + m.Length);
-        if (candidates[310]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule310() : Rule310()).Matches(text)) yield return new QuickLeaksFinding("pinecone-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[311]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule311() : Rule311()).Matches(text)) yield return new QuickLeaksFinding("pinecone-api-key.2", m.Index, m.Index + m.Length);
-        if (candidates[312]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule312() : Rule312()).Matches(text)) yield return new QuickLeaksFinding("pinterest-access-token", m.Index, m.Index + m.Length);
-        if (candidates[313]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule313() : Rule313()).Matches(text)) yield return new QuickLeaksFinding("plaid-api-token", m.Index, m.Index + m.Length);
-        if (candidates[314]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule314() : Rule314()).Matches(text)) yield return new QuickLeaksFinding("plaid-client-id", m.Index, m.Index + m.Length);
-        if (candidates[315]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule315() : Rule315()).Matches(text)) yield return new QuickLeaksFinding("plaid-secret-key", m.Index, m.Index + m.Length);
-        if (candidates[316]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule316() : Rule316()).Matches(text)) yield return new QuickLeaksFinding("planetscale-api-token", m.Index, m.Index + m.Length);
-        if (candidates[317]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule317() : Rule317()).Matches(text)) yield return new QuickLeaksFinding("planetscale-id", m.Index, m.Index + m.Length);
-        if (candidates[318]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule318() : Rule318()).Matches(text)) yield return new QuickLeaksFinding("planetscale-oauth-token", m.Index, m.Index + m.Length);
-        if (candidates[319]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule319() : Rule319()).Matches(text)) yield return new QuickLeaksFinding("planetscale-password", m.Index, m.Index + m.Length);
-        if (candidates[320]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule320() : Rule320()).Matches(text)) yield return new QuickLeaksFinding("plivo-auth-id", m.Index, m.Index + m.Length);
-        if (candidates[321]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule321() : Rule321()).Matches(text)) yield return new QuickLeaksFinding("plivo-auth-token", m.Index, m.Index + m.Length);
-        if (candidates[322]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule322() : Rule322()).Matches(text)) yield return new QuickLeaksFinding("polar-oauth-access-token", m.Index, m.Index + m.Length);
-        if (candidates[323]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule323() : Rule323()).Matches(text)) yield return new QuickLeaksFinding("polar-organization-access-token", m.Index, m.Index + m.Length);
-        if (candidates[324]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule324() : Rule324()).Matches(text)) yield return new QuickLeaksFinding("polar-personal-access-token", m.Index, m.Index + m.Length);
-        if (candidates[325]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule325() : Rule325()).Matches(text)) yield return new QuickLeaksFinding("polymarket-address", m.Index, m.Index + m.Length);
-        if (candidates[326]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule326() : Rule326()).Matches(text)) yield return new QuickLeaksFinding("polymarket-api-key", m.Index, m.Index + m.Length);
-        if (candidates[327]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule327() : Rule327()).Matches(text)) yield return new QuickLeaksFinding("polymarket-api-secret", m.Index, m.Index + m.Length);
-        if (candidates[328]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule328() : Rule328()).Matches(text)) yield return new QuickLeaksFinding("polymarket-passphrase", m.Index, m.Index + m.Length);
-        if (candidates[329]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule329() : Rule329()).Matches(text)) yield return new QuickLeaksFinding("polymarket-private-key", m.Index, m.Index + m.Length);
-        if (candidates[330]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule330() : Rule330()).Matches(text)) yield return new QuickLeaksFinding("posthog-personal-api-key", m.Index, m.Index + m.Length);
-        if (candidates[331]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule331() : Rule331()).Matches(text)) yield return new QuickLeaksFinding("posthog-project-api-key", m.Index, m.Index + m.Length);
-        if (candidates[332]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule332() : Rule332()).Matches(text)) yield return new QuickLeaksFinding("postman-api-token", m.Index, m.Index + m.Length);
-        if (candidates[333]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule333() : Rule333()).Matches(text)) yield return new QuickLeaksFinding("postmark-api-token.1", m.Index, m.Index + m.Length);
-        if (candidates[334]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule334() : Rule334()).Matches(text)) yield return new QuickLeaksFinding("prefect-api-token", m.Index, m.Index + m.Length);
-        if (candidates[335]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule335() : Rule335()).Matches(text)) yield return new QuickLeaksFinding("private-key", m.Index, m.Index + m.Length);
-        if (candidates[336]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule336() : Rule336()).Matches(text)) yield return new QuickLeaksFinding("privateai-api-token", m.Index, m.Index + m.Length);
-        if (candidates[337]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule337() : Rule337()).Matches(text)) yield return new QuickLeaksFinding("proof-full-access-api-key", m.Index, m.Index + m.Length);
-        if (candidates[338]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule338() : Rule338()).Matches(text)) yield return new QuickLeaksFinding("pulumi-api-token", m.Index, m.Index + m.Length);
-        if (candidates[339]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule339() : Rule339()).Matches(text)) yield return new QuickLeaksFinding("pypi-upload-token", m.Index, m.Index + m.Length);
-        if (candidates[340]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule340() : Rule340()).Matches(text)) yield return new QuickLeaksFinding("rainforest-pay-production-api-key", m.Index, m.Index + m.Length);
-        if (candidates[341]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule341() : Rule341()).Matches(text)) yield return new QuickLeaksFinding("ramp-client-id", m.Index, m.Index + m.Length);
-        if (candidates[342]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule342() : Rule342()).Matches(text)) yield return new QuickLeaksFinding("ramp-client-secret", m.Index, m.Index + m.Length);
-        if (candidates[343]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule343() : Rule343()).Matches(text)) yield return new QuickLeaksFinding("rapidapi-access-token", m.Index, m.Index + m.Length);
-        if (candidates[344]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule344() : Rule344()).Matches(text)) yield return new QuickLeaksFinding("razorpay-key-id.1", m.Index, m.Index + m.Length);
-        if (candidates[345]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule345() : Rule345()).Matches(text)) yield return new QuickLeaksFinding("razorpay-key-secret.1", m.Index, m.Index + m.Length);
-        if (candidates[346]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule346() : Rule346()).Matches(text)) yield return new QuickLeaksFinding("readme-api-token", m.Index, m.Index + m.Length);
-        if (candidates[347]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule347() : Rule347()).Matches(text)) yield return new QuickLeaksFinding("redirect-pizza-api-token.1", m.Index, m.Index + m.Length);
-        if (candidates[348]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule348() : Rule348()).Matches(text)) yield return new QuickLeaksFinding("render-api-key", m.Index, m.Index + m.Length);
-        if (candidates[349]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule349() : Rule349()).Matches(text)) yield return new QuickLeaksFinding("replicate-api-token", m.Index, m.Index + m.Length);
-        if (candidates[350]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule350() : Rule350()).Matches(text)) yield return new QuickLeaksFinding("resend-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[351]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule351() : Rule351()).Matches(text)) yield return new QuickLeaksFinding("retell-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[352]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule352() : Rule352()).Matches(text)) yield return new QuickLeaksFinding("rootly-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[353]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule353() : Rule353()).Matches(text)) yield return new QuickLeaksFinding("rubygems-api-token", m.Index, m.Index + m.Length);
-        if (candidates[354]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule354() : Rule354()).Matches(text)) yield return new QuickLeaksFinding("runpod-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[355]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule355() : Rule355()).Matches(text)) yield return new QuickLeaksFinding("salesforce-access-token.1", m.Index, m.Index + m.Length);
-        if (candidates[356]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule356() : Rule356()).Matches(text)) yield return new QuickLeaksFinding("salesforce-instance-url.1", m.Index, m.Index + m.Length);
-        if (candidates[357]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule357() : Rule357()).Matches(text)) yield return new QuickLeaksFinding("samsara-api-token.1", m.Index, m.Index + m.Length);
-        if (candidates[358]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule358() : Rule358()).Matches(text)) yield return new QuickLeaksFinding("scaleway-secret-key", m.Index, m.Index + m.Length);
-        if (candidates[359]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule359() : Rule359()).Matches(text)) yield return new QuickLeaksFinding("scalingo-api-token", m.Index, m.Index + m.Length);
-        if (candidates[360]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule360() : Rule360()).Matches(text)) yield return new QuickLeaksFinding("scalr-api-access-token.1", m.Index, m.Index + m.Length);
-        if (candidates[361]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule361() : Rule361()).Matches(text)) yield return new QuickLeaksFinding("segment-public-api-token.1", m.Index, m.Index + m.Length);
-        if (candidates[362]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule362() : Rule362()).Matches(text)) yield return new QuickLeaksFinding("sendbird-access-id", m.Index, m.Index + m.Length);
-        if (candidates[363]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule363() : Rule363()).Matches(text)) yield return new QuickLeaksFinding("sendbird-access-token", m.Index, m.Index + m.Length);
-        if (candidates[364]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule364() : Rule364()).Matches(text)) yield return new QuickLeaksFinding("sendgrid-api-token", m.Index, m.Index + m.Length);
-        if (candidates[365]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule365() : Rule365()).Matches(text)) yield return new QuickLeaksFinding("sendinblue-api-token", m.Index, m.Index + m.Length);
-        if (candidates[366]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule366() : Rule366()).Matches(text)) yield return new QuickLeaksFinding("sentry-access-token", m.Index, m.Index + m.Length);
-        if (candidates[367]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule367() : Rule367()).Matches(text)) yield return new QuickLeaksFinding("sentry-org-token", m.Index, m.Index + m.Length);
-        if (candidates[368]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule368() : Rule368()).Matches(text)) yield return new QuickLeaksFinding("sentry-user-token", m.Index, m.Index + m.Length);
-        if (candidates[369]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule369() : Rule369()).Matches(text)) yield return new QuickLeaksFinding("settlemint-application-access-token", m.Index, m.Index + m.Length);
-        if (candidates[370]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule370() : Rule370()).Matches(text)) yield return new QuickLeaksFinding("settlemint-personal-access-token", m.Index, m.Index + m.Length);
-        if (candidates[371]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule371() : Rule371()).Matches(text)) yield return new QuickLeaksFinding("settlemint-service-access-token", m.Index, m.Index + m.Length);
-        if (candidates[372]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule372() : Rule372()).Matches(text)) yield return new QuickLeaksFinding("shippo-api-token", m.Index, m.Index + m.Length);
-        if (candidates[373]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule373() : Rule373()).Matches(text)) yield return new QuickLeaksFinding("shopify-access-token", m.Index, m.Index + m.Length);
-        if (candidates[374]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule374() : Rule374()).Matches(text)) yield return new QuickLeaksFinding("shopify-custom-access-token", m.Index, m.Index + m.Length);
-        if (candidates[375]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule375() : Rule375()).Matches(text)) yield return new QuickLeaksFinding("shopify-private-app-access-token", m.Index, m.Index + m.Length);
-        if (candidates[376]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule376() : Rule376()).Matches(text)) yield return new QuickLeaksFinding("shopify-shared-secret", m.Index, m.Index + m.Length);
-        if (candidates[377]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule377() : Rule377()).Matches(text)) yield return new QuickLeaksFinding("sidekiq-secret", m.Index, m.Index + m.Length);
-        if (candidates[378]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule378() : Rule378()).Matches(text)) yield return new QuickLeaksFinding("sidekiq-sensitive-url", m.Index, m.Index + m.Length);
-        if (candidates[379]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule379() : Rule379()).Matches(text)) yield return new QuickLeaksFinding("slack-app-token", m.Index, m.Index + m.Length);
-        if (candidates[380]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule380() : Rule380()).Matches(text)) yield return new QuickLeaksFinding("slack-bot-token", m.Index, m.Index + m.Length);
-        if (candidates[381]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule381() : Rule381()).Matches(text)) yield return new QuickLeaksFinding("slack-config-access-token", m.Index, m.Index + m.Length);
-        if (candidates[382]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule382() : Rule382()).Matches(text)) yield return new QuickLeaksFinding("slack-config-refresh-token", m.Index, m.Index + m.Length);
-        if (candidates[383]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule383() : Rule383()).Matches(text)) yield return new QuickLeaksFinding("slack-legacy-bot-token", m.Index, m.Index + m.Length);
-        if (candidates[384]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule384() : Rule384()).Matches(text)) yield return new QuickLeaksFinding("slack-legacy-token", m.Index, m.Index + m.Length);
-        if (candidates[385]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule385() : Rule385()).Matches(text)) yield return new QuickLeaksFinding("slack-legacy-workspace-token", m.Index, m.Index + m.Length);
-        if (candidates[386]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule386() : Rule386()).Matches(text)) yield return new QuickLeaksFinding("slack-session-cookie", m.Index, m.Index + m.Length);
-        if (candidates[387]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule387() : Rule387()).Matches(text)) yield return new QuickLeaksFinding("slack-session-token", m.Index, m.Index + m.Length);
-        if (candidates[388]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule388() : Rule388()).Matches(text)) yield return new QuickLeaksFinding("slack-user-token", m.Index, m.Index + m.Length);
-        if (candidates[389]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule389() : Rule389()).Matches(text)) yield return new QuickLeaksFinding("slack-webhook-url", m.Index, m.Index + m.Length);
-        if (candidates[390]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule390() : Rule390()).Matches(text)) yield return new QuickLeaksFinding("snowflake-account-host.1", m.Index, m.Index + m.Length);
-        if (candidates[391]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule391() : Rule391()).Matches(text)) yield return new QuickLeaksFinding("snowflake-programmatic-access-token.1", m.Index, m.Index + m.Length);
-        if (candidates[392]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule392() : Rule392()).Matches(text)) yield return new QuickLeaksFinding("snyk-api-token", m.Index, m.Index + m.Length);
-        if (candidates[393]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule393() : Rule393()).Matches(text)) yield return new QuickLeaksFinding("sonar-api-token", m.Index, m.Index + m.Length);
-        if (candidates[394]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule394() : Rule394()).Matches(text)) yield return new QuickLeaksFinding("sourcegraph-access-token", m.Index, m.Index + m.Length);
-        if (candidates[395]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule395() : Rule395()).Matches(text)) yield return new QuickLeaksFinding("square-access-token", m.Index, m.Index + m.Length);
-        if (candidates[396]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule396() : Rule396()).Matches(text)) yield return new QuickLeaksFinding("squarespace-access-token", m.Index, m.Index + m.Length);
-        if (candidates[397]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule397() : Rule397()).Matches(text)) yield return new QuickLeaksFinding("sslmate-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[398]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule398() : Rule398()).Matches(text)) yield return new QuickLeaksFinding("stability-ai-api-key", m.Index, m.Index + m.Length);
-        if (candidates[399]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule399() : Rule399()).Matches(text)) yield return new QuickLeaksFinding("stripe-access-token", m.Index, m.Index + m.Length);
-        if (candidates[400]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule400() : Rule400()).Matches(text)) yield return new QuickLeaksFinding("sumologic-access-id", m.Index, m.Index + m.Length);
-        if (candidates[401]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule401() : Rule401()).Matches(text)) yield return new QuickLeaksFinding("sumologic-access-token", m.Index, m.Index + m.Length);
-        if (candidates[402]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule402() : Rule402()).Matches(text)) yield return new QuickLeaksFinding("supabase-management-token", m.Index, m.Index + m.Length);
-        if (candidates[403]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule403() : Rule403()).Matches(text)) yield return new QuickLeaksFinding("supabase-project-api-key", m.Index, m.Index + m.Length);
-        if (candidates[404]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule404() : Rule404()).Matches(text)) yield return new QuickLeaksFinding("supabase-project-url", m.Index, m.Index + m.Length);
-        if (candidates[405]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule405() : Rule405()).Matches(text)) yield return new QuickLeaksFinding("tableau-personal-access-token-name.1", m.Index, m.Index + m.Length);
-        if (candidates[406]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule406() : Rule406()).Matches(text)) yield return new QuickLeaksFinding("tableau-personal-access-token.1", m.Index, m.Index + m.Length);
-        if (candidates[407]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule407() : Rule407()).Matches(text)) yield return new QuickLeaksFinding("tableau-server-host.1", m.Index, m.Index + m.Length);
-        if (candidates[408]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule408() : Rule408()).Matches(text)) yield return new QuickLeaksFinding("tailscale-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[409]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule409() : Rule409()).Matches(text)) yield return new QuickLeaksFinding("telegram-bot-api-token", m.Index, m.Index + m.Length);
-        if (candidates[410]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule410() : Rule410()).Matches(text)) yield return new QuickLeaksFinding("telnyx-api-v2-key.1", m.Index, m.Index + m.Length);
-        if (candidates[411]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule411() : Rule411()).Matches(text)) yield return new QuickLeaksFinding("temporal-cloud-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[412]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule412() : Rule412()).Matches(text)) yield return new QuickLeaksFinding("thunderstore-api-token.1", m.Index, m.Index + m.Length);
-        if (candidates[413]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule413() : Rule413()).Matches(text)) yield return new QuickLeaksFinding("togetherai-api-key", m.Index, m.Index + m.Length);
-        if (candidates[414]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule414() : Rule414()).Matches(text)) yield return new QuickLeaksFinding("travisci-access-token", m.Index, m.Index + m.Length);
-        if (candidates[415]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule415() : Rule415()).Matches(text)) yield return new QuickLeaksFinding("twilio-api-key", m.Index, m.Index + m.Length);
-        if (candidates[416]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule416() : Rule416()).Matches(text)) yield return new QuickLeaksFinding("twitch-api-token", m.Index, m.Index + m.Length);
-        if (candidates[417]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule417() : Rule417()).Matches(text)) yield return new QuickLeaksFinding("twitter-access-secret", m.Index, m.Index + m.Length);
-        if (candidates[418]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule418() : Rule418()).Matches(text)) yield return new QuickLeaksFinding("twitter-access-token", m.Index, m.Index + m.Length);
-        if (candidates[419]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule419() : Rule419()).Matches(text)) yield return new QuickLeaksFinding("twitter-api-key", m.Index, m.Index + m.Length);
-        if (candidates[420]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule420() : Rule420()).Matches(text)) yield return new QuickLeaksFinding("twitter-api-secret", m.Index, m.Index + m.Length);
-        if (candidates[421]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule421() : Rule421()).Matches(text)) yield return new QuickLeaksFinding("twitter-bearer-token", m.Index, m.Index + m.Length);
-        if (candidates[422]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule422() : Rule422()).Matches(text)) yield return new QuickLeaksFinding("typeform-api-token", m.Index, m.Index + m.Length);
-        if (candidates[423]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule423() : Rule423()).Matches(text)) yield return new QuickLeaksFinding("unkey-root-key.1", m.Index, m.Index + m.Length);
-        if (candidates[424]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule424() : Rule424()).Matches(text)) yield return new QuickLeaksFinding("upcloud-api-token", m.Index, m.Index + m.Length);
-        if (candidates[425]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule425() : Rule425()).Matches(text)) yield return new QuickLeaksFinding("upstage-api-key", m.Index, m.Index + m.Length);
-        if (candidates[426]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule426() : Rule426()).Matches(text)) yield return new QuickLeaksFinding("upstash-redis-rest-token.1", m.Index, m.Index + m.Length);
-        if (candidates[427]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule427() : Rule427()).Matches(text)) yield return new QuickLeaksFinding("upstash-redis-rest-url.1", m.Index, m.Index + m.Length);
-        if (candidates[428]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule428() : Rule428()).Matches(text)) yield return new QuickLeaksFinding("val-town-api-token.1", m.Index, m.Index + m.Length);
-        if (candidates[429]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule429() : Rule429()).Matches(text)) yield return new QuickLeaksFinding("vault-batch-token", m.Index, m.Index + m.Length);
-        if (candidates[430]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule430() : Rule430()).Matches(text)) yield return new QuickLeaksFinding("vault-service-token", m.Index, m.Index + m.Length);
-        if (candidates[431]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule431() : Rule431()).Matches(text)) yield return new QuickLeaksFinding("vercel-ai-gateway-key", m.Index, m.Index + m.Length);
-        if (candidates[432]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule432() : Rule432()).Matches(text)) yield return new QuickLeaksFinding("vercel-api-token", m.Index, m.Index + m.Length);
-        if (candidates[433]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule433() : Rule433()).Matches(text)) yield return new QuickLeaksFinding("vercel-app-access-token", m.Index, m.Index + m.Length);
-        if (candidates[434]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule434() : Rule434()).Matches(text)) yield return new QuickLeaksFinding("vercel-app-refresh-token", m.Index, m.Index + m.Length);
-        if (candidates[435]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule435() : Rule435()).Matches(text)) yield return new QuickLeaksFinding("vercel-integration-token", m.Index, m.Index + m.Length);
-        if (candidates[436]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule436() : Rule436()).Matches(text)) yield return new QuickLeaksFinding("vercel-personal-access-token", m.Index, m.Index + m.Length);
-        if (candidates[437]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule437() : Rule437()).Matches(text)) yield return new QuickLeaksFinding("virustotal-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[438]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule438() : Rule438()).Matches(text)) yield return new QuickLeaksFinding("voyageai-api-key", m.Index, m.Index + m.Length);
-        if (candidates[439]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule439() : Rule439()).Matches(text)) yield return new QuickLeaksFinding("vultr-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[440]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule440() : Rule440()).Matches(text)) yield return new QuickLeaksFinding("wakatime-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[441]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule441() : Rule441()).Matches(text)) yield return new QuickLeaksFinding("wakatime-api-key.2", m.Index, m.Index + m.Length);
-        if (candidates[442]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule442() : Rule442()).Matches(text)) yield return new QuickLeaksFinding("weatherstack-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[443]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule443() : Rule443()).Matches(text)) yield return new QuickLeaksFinding("weights-and-biases-api-key", m.Index, m.Index + m.Length);
-        if (candidates[444]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule444() : Rule444()).Matches(text)) yield return new QuickLeaksFinding("weights-and-biases-api-key-v1", m.Index, m.Index + m.Length);
-        if (candidates[445]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule445() : Rule445()).Matches(text)) yield return new QuickLeaksFinding("wiz-client-id.1", m.Index, m.Index + m.Length);
-        if (candidates[446]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule446() : Rule446()).Matches(text)) yield return new QuickLeaksFinding("wiz-client-secret.1", m.Index, m.Index + m.Length);
-        if (candidates[447]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule447() : Rule447()).Matches(text)) yield return new QuickLeaksFinding("woocommerce-consumer-secret.1", m.Index, m.Index + m.Length);
-        if (candidates[448]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule448() : Rule448()).Matches(text)) yield return new QuickLeaksFinding("workato-developer-api-token.1", m.Index, m.Index + m.Length);
-        if (candidates[449]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule449() : Rule449()).Matches(text)) yield return new QuickLeaksFinding("workos-production-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[450]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule450() : Rule450()).Matches(text)) yield return new QuickLeaksFinding("xai-api-key", m.Index, m.Index + m.Length);
-        if (candidates[451]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule451() : Rule451()).Matches(text)) yield return new QuickLeaksFinding("xendit-production-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[452]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule452() : Rule452()).Matches(text)) yield return new QuickLeaksFinding("yandex-access-token", m.Index, m.Index + m.Length);
-        if (candidates[453]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule453() : Rule453()).Matches(text)) yield return new QuickLeaksFinding("yandex-api-key", m.Index, m.Index + m.Length);
-        if (candidates[454]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule454() : Rule454()).Matches(text)) yield return new QuickLeaksFinding("yandex-aws-access-token", m.Index, m.Index + m.Length);
-        if (candidates[455]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule455() : Rule455()).Matches(text)) yield return new QuickLeaksFinding("zai-api-key", m.Index, m.Index + m.Length);
-        if (candidates[456]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule456() : Rule456()).Matches(text)) yield return new QuickLeaksFinding("zendesk-secret-key", m.Index, m.Index + m.Length);
-        if (candidates[457]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule457() : Rule457()).Matches(text)) yield return new QuickLeaksFinding("zoho-client-id.1", m.Index, m.Index + m.Length);
-        if (candidates[458]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule458() : Rule458()).Matches(text)) yield return new QuickLeaksFinding("zoho-client-secret.1", m.Index, m.Index + m.Length);
-        if (candidates[459]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule459() : Rule459()).Matches(text)) yield return new QuickLeaksFinding("zoho-oauth-token.1", m.Index, m.Index + m.Length);
-        if (candidates[460]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule460() : Rule460()).Matches(text)) yield return new QuickLeaksFinding("zoho-zapi-key.1", m.Index, m.Index + m.Length);
-        if (candidates[461]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule461() : Rule461()).Matches(text)) yield return new QuickLeaksFinding("zuplo-consumer-api-key.1", m.Index, m.Index + m.Length);
-        if (candidates[462]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule462() : Rule462()).Matches(text)) yield return new QuickLeaksFinding("console2svg-home-directory", m.Index, m.Index + m.Length);
-        if (candidates[463]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule463() : Rule463()).Matches(text)) yield return new QuickLeaksFinding("console2svg-credential-uri", m.Index, m.Index + m.Length);
-        if (candidates[464]) foreach (Match m in (mode == QuickLeaksScanMode.Early ? EarlyRule464() : Rule464()).Matches(text)) yield return new QuickLeaksFinding("console2svg-git-identity", m.Index, m.Index + m.Length);
+        if (candidates[0]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule0() : Rule0(), text, "1password-secret-key")) yield return finding;
+        if (candidates[1]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule1() : Rule1(), text, "1password-service-account-token")) yield return finding;
+        if (candidates[2]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule2() : Rule2(), text, "abuseipdb-api-key.1")) yield return finding;
+        if (candidates[3]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule3() : Rule3(), text, "adafruit-api-key")) yield return finding;
+        if (candidates[4]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule4() : Rule4(), text, "adobe-client-id")) yield return finding;
+        if (candidates[5]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule5() : Rule5(), text, "adobe-client-secret")) yield return finding;
+        if (candidates[6]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule6() : Rule6(), text, "age-secret-key")) yield return finding;
+        if (candidates[7]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule7() : Rule7(), text, "aikido-ci-token")) yield return finding;
+        if (candidates[8]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule8() : Rule8(), text, "aikido-client-id")) yield return finding;
+        if (candidates[9]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule9() : Rule9(), text, "aikido-client-secret")) yield return finding;
+        if (candidates[10]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule10() : Rule10(), text, "airtable-api-key")) yield return finding;
+        if (candidates[11]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule11() : Rule11(), text, "airtable-oauth-token")) yield return finding;
+        if (candidates[12]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule12() : Rule12(), text, "airtable-personnal-access-token")) yield return finding;
+        if (candidates[13]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule13() : Rule13(), text, "aiven-auth-token")) yield return finding;
+        if (candidates[14]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule14() : Rule14(), text, "algolia-api-key")) yield return finding;
+        if (candidates[15]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule15() : Rule15(), text, "algolia-application-id")) yield return finding;
+        if (candidates[16]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule16() : Rule16(), text, "alibaba-access-key-id")) yield return finding;
+        if (candidates[17]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule17() : Rule17(), text, "alibaba-secret-key")) yield return finding;
+        if (candidates[18]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule18() : Rule18(), text, "alibaba-sts-access-key-id")) yield return finding;
+        if (candidates[19]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule19() : Rule19(), text, "alibaba-sts-access-key-secret")) yield return finding;
+        if (candidates[20]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule20() : Rule20(), text, "alibaba-sts-security-token")) yield return finding;
+        if (candidates[21]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule21() : Rule21(), text, "amplitude-secret-key")) yield return finding;
+        if (candidates[22]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule22() : Rule22(), text, "anthropic-admin-api-key")) yield return finding;
+        if (candidates[23]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule23() : Rule23(), text, "anthropic-api-key")) yield return finding;
+        if (candidates[24]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule24() : Rule24(), text, "apify-api-token")) yield return finding;
+        if (candidates[25]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule25() : Rule25(), text, "apollo-api-key.1")) yield return finding;
+        if (candidates[26]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule26() : Rule26(), text, "artifactory-api-key")) yield return finding;
+        if (candidates[27]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule27() : Rule27(), text, "artifactory-jfrog-url")) yield return finding;
+        if (candidates[28]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule28() : Rule28(), text, "artifactory-reference-token")) yield return finding;
+        if (candidates[29]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule29() : Rule29(), text, "asaas-api-token")) yield return finding;
+        if (candidates[30]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule30() : Rule30(), text, "asana-client-id")) yield return finding;
+        if (candidates[31]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule31() : Rule31(), text, "asana-client-secret")) yield return finding;
+        if (candidates[32]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule32() : Rule32(), text, "assemblyai-api-key")) yield return finding;
+        if (candidates[33]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule33() : Rule33(), text, "atlassian-api-token")) yield return finding;
+        if (candidates[34]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule34() : Rule34(), text, "auth0-client-id.1")) yield return finding;
+        if (candidates[35]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule35() : Rule35(), text, "auth0-client-secret.1")) yield return finding;
+        if (candidates[36]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule36() : Rule36(), text, "auth0-domain.1")) yield return finding;
+        if (candidates[37]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule37() : Rule37(), text, "authress-service-client-access-key")) yield return finding;
+        if (candidates[38]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule38() : Rule38(), text, "aws-access-token")) yield return finding;
+        if (candidates[39]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule39() : Rule39(), text, "aws-amazon-bedrock-api-key-long-lived")) yield return finding;
+        if (candidates[40]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule40() : Rule40(), text, "aws-amazon-bedrock-api-key-short-lived")) yield return finding;
+        if (candidates[41]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule41() : Rule41(), text, "aws-secret-access-key")) yield return finding;
+        if (candidates[42]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule42() : Rule42(), text, "azure-ad-client-secret")) yield return finding;
+        if (candidates[43]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule43() : Rule43(), text, "azure-app-configuration-connection-string")) yield return finding;
+        if (candidates[44]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule44() : Rule44(), text, "azure-client-id")) yield return finding;
+        if (candidates[45]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule45() : Rule45(), text, "azure-servicebus-connection-string")) yield return finding;
+        if (candidates[46]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule46() : Rule46(), text, "azure-storage-account-key")) yield return finding;
+        if (candidates[47]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule47() : Rule47(), text, "azure-storage-account-name")) yield return finding;
+        if (candidates[48]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule48() : Rule48(), text, "azure-tenant-id")) yield return finding;
+        if (candidates[49]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule49() : Rule49(), text, "beamer-api-token")) yield return finding;
+        if (candidates[50]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule50() : Rule50(), text, "bitbucket-client-id")) yield return finding;
+        if (candidates[51]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule51() : Rule51(), text, "bitbucket-client-secret")) yield return finding;
+        if (candidates[52]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule52() : Rule52(), text, "bitbucket-data-center-token")) yield return finding;
+        if (candidates[53]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule53() : Rule53(), text, "bitly-access-token")) yield return finding;
+        if (candidates[54]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule54() : Rule54(), text, "bitrise-access-token")) yield return finding;
+        if (candidates[55]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule55() : Rule55(), text, "bittrex-access-key")) yield return finding;
+        if (candidates[56]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule56() : Rule56(), text, "bittrex-secret-key")) yield return finding;
+        if (candidates[57]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule57() : Rule57(), text, "box-api-access-token")) yield return finding;
+        if (candidates[58]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule58() : Rule58(), text, "brave-search-api-key")) yield return finding;
+        if (candidates[59]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule59() : Rule59(), text, "browserstack-access-key.1")) yield return finding;
+        if (candidates[60]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule60() : Rule60(), text, "browserstack-username.1")) yield return finding;
+        if (candidates[61]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule61() : Rule61(), text, "buildkite-service-token")) yield return finding;
+        if (candidates[62]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule62() : Rule62(), text, "buildkite-user-access-token")) yield return finding;
+        if (candidates[63]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule63() : Rule63(), text, "canadian-digital-service-notify-api-key")) yield return finding;
+        if (candidates[64]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule64() : Rule64(), text, "canva-client-id")) yield return finding;
+        if (candidates[65]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule65() : Rule65(), text, "canva-client-secret")) yield return finding;
+        if (candidates[66]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule66() : Rule66(), text, "cartesia-api-key.1")) yield return finding;
+        if (candidates[67]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule67() : Rule67(), text, "cerebras-api-key")) yield return finding;
+        if (candidates[68]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule68() : Rule68(), text, "checkout-secret-key")) yield return finding;
+        if (candidates[69]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule69() : Rule69(), text, "circleci-personal-token")) yield return finding;
+        if (candidates[70]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule70() : Rule70(), text, "circleci-project-token")) yield return finding;
+        if (candidates[71]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule71() : Rule71(), text, "cisco-meraki-api-key")) yield return finding;
+        if (candidates[72]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule72() : Rule72(), text, "civo-api-key")) yield return finding;
+        if (candidates[73]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule73() : Rule73(), text, "clerk-secret-key")) yield return finding;
+        if (candidates[74]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule74() : Rule74(), text, "clickhouse-cloud-api-secret-key")) yield return finding;
+        if (candidates[75]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule75() : Rule75(), text, "clickhouse-cloud-key-id")) yield return finding;
+        if (candidates[76]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule76() : Rule76(), text, "clickup-personal-api-token")) yield return finding;
+        if (candidates[77]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule77() : Rule77(), text, "clojars-api-token")) yield return finding;
+        if (candidates[78]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule78() : Rule78(), text, "cloudflare-api-key")) yield return finding;
+        if (candidates[79]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule79() : Rule79(), text, "cloudflare-global-api-key")) yield return finding;
+        if (candidates[80]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule80() : Rule80(), text, "cloudflare-origin-ca-key")) yield return finding;
+        if (candidates[81]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule81() : Rule81(), text, "cloudinary-api-key")) yield return finding;
+        if (candidates[82]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule82() : Rule82(), text, "cloudinary-api-secret")) yield return finding;
+        if (candidates[83]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule83() : Rule83(), text, "cloudinary-cloud-name")) yield return finding;
+        if (candidates[84]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule84() : Rule84(), text, "cloudsmith-api-key")) yield return finding;
+        if (candidates[85]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule85() : Rule85(), text, "cockroachlabs-cloud-api-key")) yield return finding;
+        if (candidates[86]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule86() : Rule86(), text, "codecov-access-token")) yield return finding;
+        if (candidates[87]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule87() : Rule87(), text, "cohere-api-token")) yield return finding;
+        if (candidates[88]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule88() : Rule88(), text, "coinbase-access-token")) yield return finding;
+        if (candidates[89]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule89() : Rule89(), text, "configcat-sdk-key")) yield return finding;
+        if (candidates[90]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule90() : Rule90(), text, "configcat-sdk-key-extended")) yield return finding;
+        if (candidates[91]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule91() : Rule91(), text, "confluent-access-token")) yield return finding;
+        if (candidates[92]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule92() : Rule92(), text, "confluent-secret-key")) yield return finding;
+        if (candidates[93]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule93() : Rule93(), text, "contentful-delivery-api-token")) yield return finding;
+        if (candidates[94]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule94() : Rule94(), text, "couchbase-capella-api-key")) yield return finding;
+        if (candidates[95]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule95() : Rule95(), text, "coveralls-personal-api-token")) yield return finding;
+        if (candidates[96]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule96() : Rule96(), text, "crates-io-api-key")) yield return finding;
+        if (candidates[97]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule97() : Rule97(), text, "curl-auth-header")) yield return finding;
+        if (candidates[98]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule98() : Rule98(), text, "curl-auth-user")) yield return finding;
+        if (candidates[99]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule99() : Rule99(), text, "cursor-api-key")) yield return finding;
+        if (candidates[100]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule100() : Rule100(), text, "databento-api-key")) yield return finding;
+        if (candidates[101]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule101() : Rule101(), text, "databricks-api-token")) yield return finding;
+        if (candidates[102]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule102() : Rule102(), text, "datadog-api-key")) yield return finding;
+        if (candidates[103]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule103() : Rule103(), text, "datadog-application-key")) yield return finding;
+        if (candidates[104]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule104() : Rule104(), text, "datagov-api-key")) yield return finding;
+        if (candidates[105]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule105() : Rule105(), text, "datastax-astra-application-token")) yield return finding;
+        if (candidates[106]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule106() : Rule106(), text, "deepgram-api-key")) yield return finding;
+        if (candidates[107]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule107() : Rule107(), text, "deepseek-api-key")) yield return finding;
+        if (candidates[108]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule108() : Rule108(), text, "defined-networking-api-token")) yield return finding;
+        if (candidates[109]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule109() : Rule109(), text, "deno-account-token")) yield return finding;
+        if (candidates[110]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule110() : Rule110(), text, "devcycle-client-sdk-key")) yield return finding;
+        if (candidates[111]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule111() : Rule111(), text, "devcycle-mobile-sdk-key")) yield return finding;
+        if (candidates[112]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule112() : Rule112(), text, "devcycle-server-sdk-key")) yield return finding;
+        if (candidates[113]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule113() : Rule113(), text, "devin-personal-api-key")) yield return finding;
+        if (candidates[114]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule114() : Rule114(), text, "devin-service-api-key")) yield return finding;
+        if (candidates[115]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule115() : Rule115(), text, "devin-service-user-token")) yield return finding;
+        if (candidates[116]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule116() : Rule116(), text, "digitalocean-access-token")) yield return finding;
+        if (candidates[117]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule117() : Rule117(), text, "digitalocean-pat")) yield return finding;
+        if (candidates[118]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule118() : Rule118(), text, "digitalocean-refresh-token")) yield return finding;
+        if (candidates[119]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule119() : Rule119(), text, "discord-api-token")) yield return finding;
+        if (candidates[120]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule120() : Rule120(), text, "discord-client-id")) yield return finding;
+        if (candidates[121]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule121() : Rule121(), text, "discord-client-secret")) yield return finding;
+        if (candidates[122]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule122() : Rule122(), text, "disqus-api-key")) yield return finding;
+        if (candidates[123]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule123() : Rule123(), text, "docker-swarm-join-token")) yield return finding;
+        if (candidates[124]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule124() : Rule124(), text, "docker-swarm-unlock-key")) yield return finding;
+        if (candidates[125]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule125() : Rule125(), text, "dockerhub-organization-access-token")) yield return finding;
+        if (candidates[126]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule126() : Rule126(), text, "dockerhub-personal-access-token")) yield return finding;
+        if (candidates[127]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule127() : Rule127(), text, "doppler-api-token")) yield return finding;
+        if (candidates[128]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule128() : Rule128(), text, "droneci-access-token")) yield return finding;
+        if (candidates[129]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule129() : Rule129(), text, "dropbox-api-token")) yield return finding;
+        if (candidates[130]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule130() : Rule130(), text, "dropbox-long-lived-api-token")) yield return finding;
+        if (candidates[131]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule131() : Rule131(), text, "dropbox-short-lived-api-token")) yield return finding;
+        if (candidates[132]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule132() : Rule132(), text, "duffel-api-token")) yield return finding;
+        if (candidates[133]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule133() : Rule133(), text, "dynatrace-api-token")) yield return finding;
+        if (candidates[134]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule134() : Rule134(), text, "easypost-api-token")) yield return finding;
+        if (candidates[135]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule135() : Rule135(), text, "easypost-test-api-token")) yield return finding;
+        if (candidates[136]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule136() : Rule136(), text, "ebay-client-id")) yield return finding;
+        if (candidates[137]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule137() : Rule137(), text, "ebay-client-secret")) yield return finding;
+        if (candidates[138]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule138() : Rule138(), text, "elastic-cloud-api-key")) yield return finding;
+        if (candidates[139]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule139() : Rule139(), text, "elevenlabs-api-key")) yield return finding;
+        if (candidates[140]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule140() : Rule140(), text, "endorlabs-api-key")) yield return finding;
+        if (candidates[141]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule141() : Rule141(), text, "endorlabs-api-secret")) yield return finding;
+        if (candidates[142]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule142() : Rule142(), text, "etsy-open-api-key")) yield return finding;
+        if (candidates[143]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule143() : Rule143(), text, "exoscale-api-key")) yield return finding;
+        if (candidates[144]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule144() : Rule144(), text, "exoscale-api-secret")) yield return finding;
+        if (candidates[145]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule145() : Rule145(), text, "facebook-access-token")) yield return finding;
+        if (candidates[146]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule146() : Rule146(), text, "facebook-page-access-token")) yield return finding;
+        if (candidates[147]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule147() : Rule147(), text, "facebook-secret")) yield return finding;
+        if (candidates[148]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule148() : Rule148(), text, "fal-api-key.1")) yield return finding;
+        if (candidates[149]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule149() : Rule149(), text, "fastly-api-token")) yield return finding;
+        if (candidates[150]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule150() : Rule150(), text, "figma-personal-access-header-token")) yield return finding;
+        if (candidates[151]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule151() : Rule151(), text, "figma-personal-access-token")) yield return finding;
+        if (candidates[152]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule152() : Rule152(), text, "finicity-api-token")) yield return finding;
+        if (candidates[153]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule153() : Rule153(), text, "finicity-client-secret")) yield return finding;
+        if (candidates[154]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule154() : Rule154(), text, "finnhub-access-token")) yield return finding;
+        if (candidates[155]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule155() : Rule155(), text, "flickr-access-token")) yield return finding;
+        if (candidates[156]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule156() : Rule156(), text, "flutterwave-encryption-key")) yield return finding;
+        if (candidates[157]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule157() : Rule157(), text, "flutterwave-public-key")) yield return finding;
+        if (candidates[158]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule158() : Rule158(), text, "flutterwave-secret-key")) yield return finding;
+        if (candidates[159]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule159() : Rule159(), text, "flyio-access-token")) yield return finding;
+        if (candidates[160]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule160() : Rule160(), text, "frameio-api-token")) yield return finding;
+        if (candidates[161]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule161() : Rule161(), text, "freemius-secret-key")) yield return finding;
+        if (candidates[162]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule162() : Rule162(), text, "freshbooks-access-token")) yield return finding;
+        if (candidates[163]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule163() : Rule163(), text, "fullstory-api-key")) yield return finding;
+        if (candidates[164]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule164() : Rule164(), text, "gcp-api-key")) yield return finding;
+        if (candidates[165]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule165() : Rule165(), text, "gcp-application-default-credentials")) yield return finding;
+        if (candidates[166]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule166() : Rule166(), text, "gcp-gemini-api")) yield return finding;
+        if (candidates[167]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule167() : Rule167(), text, "gcp-service-account")) yield return finding;
+        if (candidates[168]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule168() : Rule168(), text, "generic-api-key")) yield return finding;
+        if (candidates[169]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule169() : Rule169(), text, "generic-credential-uri")) yield return finding;
+        if (candidates[170]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule170() : Rule170(), text, "generic-password")) yield return finding;
+        if (candidates[171]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule171() : Rule171(), text, "generic-username")) yield return finding;
+        if (candidates[172]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule172() : Rule172(), text, "gitea-access-token")) yield return finding;
+        if (candidates[173]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule173() : Rule173(), text, "github-app-token")) yield return finding;
+        if (candidates[174]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule174() : Rule174(), text, "github-fine-grained-pat")) yield return finding;
+        if (candidates[175]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule175() : Rule175(), text, "github-oauth")) yield return finding;
+        if (candidates[176]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule176() : Rule176(), text, "github-pat")) yield return finding;
+        if (candidates[177]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule177() : Rule177(), text, "github-refresh-token")) yield return finding;
+        if (candidates[178]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule178() : Rule178(), text, "gitlab-cicd-job-token")) yield return finding;
+        if (candidates[179]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule179() : Rule179(), text, "gitlab-deploy-token")) yield return finding;
+        if (candidates[180]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule180() : Rule180(), text, "gitlab-feature-flag-client-token")) yield return finding;
+        if (candidates[181]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule181() : Rule181(), text, "gitlab-feed-token")) yield return finding;
+        if (candidates[182]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule182() : Rule182(), text, "gitlab-incoming-mail-address-token")) yield return finding;
+        if (candidates[183]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule183() : Rule183(), text, "gitlab-incoming-mail-token")) yield return finding;
+        if (candidates[184]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule184() : Rule184(), text, "gitlab-kubernetes-agent-token")) yield return finding;
+        if (candidates[185]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule185() : Rule185(), text, "gitlab-oauth-app-secret")) yield return finding;
+        if (candidates[186]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule186() : Rule186(), text, "gitlab-pat")) yield return finding;
+        if (candidates[187]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule187() : Rule187(), text, "gitlab-pat-routable")) yield return finding;
+        if (candidates[188]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule188() : Rule188(), text, "gitlab-pat-routable-versioned")) yield return finding;
+        if (candidates[189]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule189() : Rule189(), text, "gitlab-ptt")) yield return finding;
+        if (candidates[190]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule190() : Rule190(), text, "gitlab-rrt")) yield return finding;
+        if (candidates[191]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule191() : Rule191(), text, "gitlab-runner-authentication-token")) yield return finding;
+        if (candidates[192]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule192() : Rule192(), text, "gitlab-runner-authentication-token-routable")) yield return finding;
+        if (candidates[193]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule193() : Rule193(), text, "gitlab-scim-token")) yield return finding;
+        if (candidates[194]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule194() : Rule194(), text, "gitlab-session-cookie")) yield return finding;
+        if (candidates[195]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule195() : Rule195(), text, "gitter-access-token")) yield return finding;
+        if (candidates[196]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule196() : Rule196(), text, "gocardless-api-token")) yield return finding;
+        if (candidates[197]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule197() : Rule197(), text, "grafana-api-key")) yield return finding;
+        if (candidates[198]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule198() : Rule198(), text, "grafana-cloud-api-token")) yield return finding;
+        if (candidates[199]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule199() : Rule199(), text, "grafana-service-account-token")) yield return finding;
+        if (candidates[200]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule200() : Rule200(), text, "greptile-api-key")) yield return finding;
+        if (candidates[201]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule201() : Rule201(), text, "groq-api-key")) yield return finding;
+        if (candidates[202]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule202() : Rule202(), text, "gumroad-access-token")) yield return finding;
+        if (candidates[203]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule203() : Rule203(), text, "harness-api-key")) yield return finding;
+        if (candidates[204]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule204() : Rule204(), text, "hashicorp-tf-api-token")) yield return finding;
+        if (candidates[205]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule205() : Rule205(), text, "hashicorp-tf-password")) yield return finding;
+        if (candidates[206]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule206() : Rule206(), text, "heroku-api-key")) yield return finding;
+        if (candidates[207]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule207() : Rule207(), text, "heroku-api-key-v2")) yield return finding;
+        if (candidates[208]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule208() : Rule208(), text, "highnote-secret-live-key")) yield return finding;
+        if (candidates[209]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule209() : Rule209(), text, "honeycomb-api-key")) yield return finding;
+        if (candidates[210]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule210() : Rule210(), text, "hubspot-api-key")) yield return finding;
+        if (candidates[211]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule211() : Rule211(), text, "huggingface-access-token")) yield return finding;
+        if (candidates[212]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule212() : Rule212(), text, "huggingface-organization-api-token")) yield return finding;
+        if (candidates[213]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule213() : Rule213(), text, "hunter-api-key.1")) yield return finding;
+        if (candidates[214]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule214() : Rule214(), text, "ibm-cloud-user-api-key")) yield return finding;
+        if (candidates[215]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule215() : Rule215(), text, "influxdb-api-token")) yield return finding;
+        if (candidates[216]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule216() : Rule216(), text, "infomaniak-api-token")) yield return finding;
+        if (candidates[217]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule217() : Rule217(), text, "infracost-api-token")) yield return finding;
+        if (candidates[218]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule218() : Rule218(), text, "instantly-api-key.1")) yield return finding;
+        if (candidates[219]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule219() : Rule219(), text, "intercom-api-key")) yield return finding;
+        if (candidates[220]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule220() : Rule220(), text, "intra42-client-secret")) yield return finding;
+        if (candidates[221]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule221() : Rule221(), text, "ionic-personal-access-token")) yield return finding;
+        if (candidates[222]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule222() : Rule222(), text, "jumpcloud-api-key")) yield return finding;
+        if (candidates[223]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule223() : Rule223(), text, "jwt")) yield return finding;
+        if (candidates[224]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule224() : Rule224(), text, "jwt-base64")) yield return finding;
+        if (candidates[225]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule225() : Rule225(), text, "kagi-api-key")) yield return finding;
+        if (candidates[226]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule226() : Rule226(), text, "kimi-api-key")) yield return finding;
+        if (candidates[227]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule227() : Rule227(), text, "klaviyo-api-key")) yield return finding;
+        if (candidates[228]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule228() : Rule228(), text, "kraken-access-token")) yield return finding;
+        if (candidates[229]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule229() : Rule229(), text, "kubernetes-secret-yaml")) yield return finding;
+        if (candidates[230]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule230() : Rule230(), text, "kucoin-access-token")) yield return finding;
+        if (candidates[231]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule231() : Rule231(), text, "kucoin-secret-key")) yield return finding;
+        if (candidates[232]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule232() : Rule232(), text, "langchain-langsmith-personal-access-token")) yield return finding;
+        if (candidates[233]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule233() : Rule233(), text, "langchain-langsmith-service-key")) yield return finding;
+        if (candidates[234]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule234() : Rule234(), text, "langfuse-public-key.1")) yield return finding;
+        if (candidates[235]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule235() : Rule235(), text, "langfuse-secret-key.1")) yield return finding;
+        if (candidates[236]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule236() : Rule236(), text, "lark-app-id")) yield return finding;
+        if (candidates[237]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule237() : Rule237(), text, "lark-app-secret")) yield return finding;
+        if (candidates[238]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule238() : Rule238(), text, "launchdarkly-access-token")) yield return finding;
+        if (candidates[239]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule239() : Rule239(), text, "lichess-personal-access-token")) yield return finding;
+        if (candidates[240]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule240() : Rule240(), text, "lighton-paradigm-api-key")) yield return finding;
+        if (candidates[241]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule241() : Rule241(), text, "linear-api-key")) yield return finding;
+        if (candidates[242]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule242() : Rule242(), text, "linear-client-secret")) yield return finding;
+        if (candidates[243]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule243() : Rule243(), text, "linkedin-client-id")) yield return finding;
+        if (candidates[244]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule244() : Rule244(), text, "linkedin-client-secret")) yield return finding;
+        if (candidates[245]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule245() : Rule245(), text, "llama-cloud-api-key.1")) yield return finding;
+        if (candidates[246]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule246() : Rule246(), text, "lob-api-key")) yield return finding;
+        if (candidates[247]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule247() : Rule247(), text, "lob-pub-api-key")) yield return finding;
+        if (candidates[248]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule248() : Rule248(), text, "looker-client-id")) yield return finding;
+        if (candidates[249]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule249() : Rule249(), text, "looker-client-secret")) yield return finding;
+        if (candidates[250]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule250() : Rule250(), text, "mailchimp-api-key")) yield return finding;
+        if (candidates[251]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule251() : Rule251(), text, "mailersend-api-token")) yield return finding;
+        if (candidates[252]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule252() : Rule252(), text, "mailgun-private-api-token")) yield return finding;
+        if (candidates[253]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule253() : Rule253(), text, "mailgun-pub-key")) yield return finding;
+        if (candidates[254]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule254() : Rule254(), text, "mailgun-signing-key")) yield return finding;
+        if (candidates[255]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule255() : Rule255(), text, "mapbox-api-token")) yield return finding;
+        if (candidates[256]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule256() : Rule256(), text, "mattermost-access-token")) yield return finding;
+        if (candidates[257]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule257() : Rule257(), text, "maxmind-license-key")) yield return finding;
+        if (candidates[258]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule258() : Rule258(), text, "mem0-api-key.1")) yield return finding;
+        if (candidates[259]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule259() : Rule259(), text, "mercury-production-api-token")) yield return finding;
+        if (candidates[260]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule260() : Rule260(), text, "mergify-application-key")) yield return finding;
+        if (candidates[261]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule261() : Rule261(), text, "messagebird-api-token")) yield return finding;
+        if (candidates[262]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule262() : Rule262(), text, "messagebird-client-id")) yield return finding;
+        if (candidates[263]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule263() : Rule263(), text, "microsoft-teams-webhook")) yield return finding;
+        if (candidates[264]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule264() : Rule264(), text, "midtrans-production-server-client-key")) yield return finding;
+        if (candidates[265]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule265() : Rule265(), text, "minimax-api-key")) yield return finding;
+        if (candidates[266]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule266() : Rule266(), text, "miro-access-token")) yield return finding;
+        if (candidates[267]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule267() : Rule267(), text, "miro-client-id")) yield return finding;
+        if (candidates[268]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule268() : Rule268(), text, "miro-client-secret")) yield return finding;
+        if (candidates[269]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule269() : Rule269(), text, "mistral-api-key")) yield return finding;
+        if (candidates[270]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule270() : Rule270(), text, "monday-api-token.1")) yield return finding;
+        if (candidates[271]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule271() : Rule271(), text, "mongodb-atlas-service-account-id")) yield return finding;
+        if (candidates[272]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule272() : Rule272(), text, "mongodb-atlas-service-account-secret")) yield return finding;
+        if (candidates[273]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule273() : Rule273(), text, "mongodb-connection-string")) yield return finding;
+        if (candidates[274]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule274() : Rule274(), text, "mux-access-token-id.1")) yield return finding;
+        if (candidates[275]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule275() : Rule275(), text, "mux-access-token-secret.1")) yield return finding;
+        if (candidates[276]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule276() : Rule276(), text, "neon-api-key")) yield return finding;
+        if (candidates[277]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule277() : Rule277(), text, "netlify-access-token")) yield return finding;
+        if (candidates[278]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule278() : Rule278(), text, "new-relic-browser-api-token")) yield return finding;
+        if (candidates[279]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule279() : Rule279(), text, "new-relic-insert-key")) yield return finding;
+        if (candidates[280]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule280() : Rule280(), text, "new-relic-user-api-id")) yield return finding;
+        if (candidates[281]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule281() : Rule281(), text, "new-relic-user-api-key")) yield return finding;
+        if (candidates[282]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule282() : Rule282(), text, "ngrok-api-key.1")) yield return finding;
+        if (candidates[283]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule283() : Rule283(), text, "notion-api-token")) yield return finding;
+        if (candidates[284]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule284() : Rule284(), text, "npm-access-token")) yield return finding;
+        if (candidates[285]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule285() : Rule285(), text, "nuget-config-password")) yield return finding;
+        if (candidates[286]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule286() : Rule286(), text, "nvidia-api-key")) yield return finding;
+        if (candidates[287]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule287() : Rule287(), text, "nylas-api-key.1")) yield return finding;
+        if (candidates[288]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule288() : Rule288(), text, "nytimes-access-token")) yield return finding;
+        if (candidates[289]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule289() : Rule289(), text, "octopus-deploy-api-key")) yield return finding;
+        if (candidates[290]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule290() : Rule290(), text, "okta-access-token")) yield return finding;
+        if (candidates[291]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule291() : Rule291(), text, "ollama-api-key")) yield return finding;
+        if (candidates[292]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule292() : Rule292(), text, "onesignal-rich-authentication-token")) yield return finding;
+        if (candidates[293]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule293() : Rule293(), text, "onfido-live-api-token-ca")) yield return finding;
+        if (candidates[294]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule294() : Rule294(), text, "onfido-live-api-token-eu")) yield return finding;
+        if (candidates[295]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule295() : Rule295(), text, "onfido-live-api-token-us")) yield return finding;
+        if (candidates[296]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule296() : Rule296(), text, "openai-api-key")) yield return finding;
+        if (candidates[297]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule297() : Rule297(), text, "openrouter-api-key")) yield return finding;
+        if (candidates[298]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule298() : Rule298(), text, "openshift-user-token")) yield return finding;
+        if (candidates[299]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule299() : Rule299(), text, "openweather-api-key")) yield return finding;
+        if (candidates[300]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule300() : Rule300(), text, "opsgenie-api-key.1")) yield return finding;
+        if (candidates[301]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule301() : Rule301(), text, "ovh-application-key")) yield return finding;
+        if (candidates[302]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule302() : Rule302(), text, "ovh-application-secret")) yield return finding;
+        if (candidates[303]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule303() : Rule303(), text, "ovh-consumer-key")) yield return finding;
+        if (candidates[304]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule304() : Rule304(), text, "paddle-live-api-key")) yield return finding;
+        if (candidates[305]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule305() : Rule305(), text, "pagerduty-authorization-token.1")) yield return finding;
+        if (candidates[306]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule306() : Rule306(), text, "paypal-client-id.1")) yield return finding;
+        if (candidates[307]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule307() : Rule307(), text, "paypal-client-secret.1")) yield return finding;
+        if (candidates[308]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule308() : Rule308(), text, "perplexity-api-key")) yield return finding;
+        if (candidates[309]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule309() : Rule309(), text, "persona-production-api-key")) yield return finding;
+        if (candidates[310]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule310() : Rule310(), text, "pinecone-api-key.1")) yield return finding;
+        if (candidates[311]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule311() : Rule311(), text, "pinecone-api-key.2")) yield return finding;
+        if (candidates[312]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule312() : Rule312(), text, "pinterest-access-token")) yield return finding;
+        if (candidates[313]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule313() : Rule313(), text, "plaid-api-token")) yield return finding;
+        if (candidates[314]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule314() : Rule314(), text, "plaid-client-id")) yield return finding;
+        if (candidates[315]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule315() : Rule315(), text, "plaid-secret-key")) yield return finding;
+        if (candidates[316]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule316() : Rule316(), text, "planetscale-api-token")) yield return finding;
+        if (candidates[317]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule317() : Rule317(), text, "planetscale-id")) yield return finding;
+        if (candidates[318]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule318() : Rule318(), text, "planetscale-oauth-token")) yield return finding;
+        if (candidates[319]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule319() : Rule319(), text, "planetscale-password")) yield return finding;
+        if (candidates[320]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule320() : Rule320(), text, "plivo-auth-id")) yield return finding;
+        if (candidates[321]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule321() : Rule321(), text, "plivo-auth-token")) yield return finding;
+        if (candidates[322]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule322() : Rule322(), text, "polar-oauth-access-token")) yield return finding;
+        if (candidates[323]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule323() : Rule323(), text, "polar-organization-access-token")) yield return finding;
+        if (candidates[324]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule324() : Rule324(), text, "polar-personal-access-token")) yield return finding;
+        if (candidates[325]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule325() : Rule325(), text, "polymarket-address")) yield return finding;
+        if (candidates[326]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule326() : Rule326(), text, "polymarket-api-key")) yield return finding;
+        if (candidates[327]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule327() : Rule327(), text, "polymarket-api-secret")) yield return finding;
+        if (candidates[328]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule328() : Rule328(), text, "polymarket-passphrase")) yield return finding;
+        if (candidates[329]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule329() : Rule329(), text, "polymarket-private-key")) yield return finding;
+        if (candidates[330]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule330() : Rule330(), text, "posthog-personal-api-key")) yield return finding;
+        if (candidates[331]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule331() : Rule331(), text, "posthog-project-api-key")) yield return finding;
+        if (candidates[332]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule332() : Rule332(), text, "postman-api-token")) yield return finding;
+        if (candidates[333]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule333() : Rule333(), text, "postmark-api-token.1")) yield return finding;
+        if (candidates[334]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule334() : Rule334(), text, "prefect-api-token")) yield return finding;
+        if (candidates[335]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule335() : Rule335(), text, "private-key")) yield return finding;
+        if (candidates[336]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule336() : Rule336(), text, "privateai-api-token")) yield return finding;
+        if (candidates[337]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule337() : Rule337(), text, "proof-full-access-api-key")) yield return finding;
+        if (candidates[338]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule338() : Rule338(), text, "pulumi-api-token")) yield return finding;
+        if (candidates[339]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule339() : Rule339(), text, "pypi-upload-token")) yield return finding;
+        if (candidates[340]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule340() : Rule340(), text, "rainforest-pay-production-api-key")) yield return finding;
+        if (candidates[341]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule341() : Rule341(), text, "ramp-client-id")) yield return finding;
+        if (candidates[342]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule342() : Rule342(), text, "ramp-client-secret")) yield return finding;
+        if (candidates[343]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule343() : Rule343(), text, "rapidapi-access-token")) yield return finding;
+        if (candidates[344]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule344() : Rule344(), text, "razorpay-key-id.1")) yield return finding;
+        if (candidates[345]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule345() : Rule345(), text, "razorpay-key-secret.1")) yield return finding;
+        if (candidates[346]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule346() : Rule346(), text, "readme-api-token")) yield return finding;
+        if (candidates[347]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule347() : Rule347(), text, "redirect-pizza-api-token.1")) yield return finding;
+        if (candidates[348]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule348() : Rule348(), text, "render-api-key")) yield return finding;
+        if (candidates[349]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule349() : Rule349(), text, "replicate-api-token")) yield return finding;
+        if (candidates[350]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule350() : Rule350(), text, "resend-api-key.1")) yield return finding;
+        if (candidates[351]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule351() : Rule351(), text, "retell-api-key.1")) yield return finding;
+        if (candidates[352]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule352() : Rule352(), text, "rootly-api-key.1")) yield return finding;
+        if (candidates[353]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule353() : Rule353(), text, "rubygems-api-token")) yield return finding;
+        if (candidates[354]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule354() : Rule354(), text, "runpod-api-key.1")) yield return finding;
+        if (candidates[355]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule355() : Rule355(), text, "salesforce-access-token.1")) yield return finding;
+        if (candidates[356]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule356() : Rule356(), text, "salesforce-instance-url.1")) yield return finding;
+        if (candidates[357]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule357() : Rule357(), text, "samsara-api-token.1")) yield return finding;
+        if (candidates[358]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule358() : Rule358(), text, "scaleway-secret-key")) yield return finding;
+        if (candidates[359]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule359() : Rule359(), text, "scalingo-api-token")) yield return finding;
+        if (candidates[360]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule360() : Rule360(), text, "scalr-api-access-token.1")) yield return finding;
+        if (candidates[361]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule361() : Rule361(), text, "segment-public-api-token.1")) yield return finding;
+        if (candidates[362]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule362() : Rule362(), text, "sendbird-access-id")) yield return finding;
+        if (candidates[363]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule363() : Rule363(), text, "sendbird-access-token")) yield return finding;
+        if (candidates[364]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule364() : Rule364(), text, "sendgrid-api-token")) yield return finding;
+        if (candidates[365]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule365() : Rule365(), text, "sendinblue-api-token")) yield return finding;
+        if (candidates[366]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule366() : Rule366(), text, "sentry-access-token")) yield return finding;
+        if (candidates[367]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule367() : Rule367(), text, "sentry-org-token")) yield return finding;
+        if (candidates[368]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule368() : Rule368(), text, "sentry-user-token")) yield return finding;
+        if (candidates[369]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule369() : Rule369(), text, "settlemint-application-access-token")) yield return finding;
+        if (candidates[370]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule370() : Rule370(), text, "settlemint-personal-access-token")) yield return finding;
+        if (candidates[371]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule371() : Rule371(), text, "settlemint-service-access-token")) yield return finding;
+        if (candidates[372]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule372() : Rule372(), text, "shippo-api-token")) yield return finding;
+        if (candidates[373]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule373() : Rule373(), text, "shopify-access-token")) yield return finding;
+        if (candidates[374]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule374() : Rule374(), text, "shopify-custom-access-token")) yield return finding;
+        if (candidates[375]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule375() : Rule375(), text, "shopify-private-app-access-token")) yield return finding;
+        if (candidates[376]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule376() : Rule376(), text, "shopify-shared-secret")) yield return finding;
+        if (candidates[377]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule377() : Rule377(), text, "sidekiq-secret")) yield return finding;
+        if (candidates[378]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule378() : Rule378(), text, "sidekiq-sensitive-url")) yield return finding;
+        if (candidates[379]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule379() : Rule379(), text, "slack-app-token")) yield return finding;
+        if (candidates[380]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule380() : Rule380(), text, "slack-bot-token")) yield return finding;
+        if (candidates[381]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule381() : Rule381(), text, "slack-config-access-token")) yield return finding;
+        if (candidates[382]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule382() : Rule382(), text, "slack-config-refresh-token")) yield return finding;
+        if (candidates[383]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule383() : Rule383(), text, "slack-legacy-bot-token")) yield return finding;
+        if (candidates[384]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule384() : Rule384(), text, "slack-legacy-token")) yield return finding;
+        if (candidates[385]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule385() : Rule385(), text, "slack-legacy-workspace-token")) yield return finding;
+        if (candidates[386]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule386() : Rule386(), text, "slack-session-cookie")) yield return finding;
+        if (candidates[387]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule387() : Rule387(), text, "slack-session-token")) yield return finding;
+        if (candidates[388]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule388() : Rule388(), text, "slack-user-token")) yield return finding;
+        if (candidates[389]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule389() : Rule389(), text, "slack-webhook-url")) yield return finding;
+        if (candidates[390]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule390() : Rule390(), text, "snowflake-account-host.1")) yield return finding;
+        if (candidates[391]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule391() : Rule391(), text, "snowflake-programmatic-access-token.1")) yield return finding;
+        if (candidates[392]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule392() : Rule392(), text, "snyk-api-token")) yield return finding;
+        if (candidates[393]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule393() : Rule393(), text, "sonar-api-token")) yield return finding;
+        if (candidates[394]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule394() : Rule394(), text, "sourcegraph-access-token")) yield return finding;
+        if (candidates[395]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule395() : Rule395(), text, "square-access-token")) yield return finding;
+        if (candidates[396]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule396() : Rule396(), text, "squarespace-access-token")) yield return finding;
+        if (candidates[397]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule397() : Rule397(), text, "sslmate-api-key.1")) yield return finding;
+        if (candidates[398]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule398() : Rule398(), text, "stability-ai-api-key")) yield return finding;
+        if (candidates[399]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule399() : Rule399(), text, "stripe-access-token")) yield return finding;
+        if (candidates[400]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule400() : Rule400(), text, "sumologic-access-id")) yield return finding;
+        if (candidates[401]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule401() : Rule401(), text, "sumologic-access-token")) yield return finding;
+        if (candidates[402]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule402() : Rule402(), text, "supabase-management-token")) yield return finding;
+        if (candidates[403]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule403() : Rule403(), text, "supabase-project-api-key")) yield return finding;
+        if (candidates[404]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule404() : Rule404(), text, "supabase-project-url")) yield return finding;
+        if (candidates[405]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule405() : Rule405(), text, "tableau-personal-access-token-name.1")) yield return finding;
+        if (candidates[406]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule406() : Rule406(), text, "tableau-personal-access-token.1")) yield return finding;
+        if (candidates[407]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule407() : Rule407(), text, "tableau-server-host.1")) yield return finding;
+        if (candidates[408]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule408() : Rule408(), text, "tailscale-api-key.1")) yield return finding;
+        if (candidates[409]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule409() : Rule409(), text, "telegram-bot-api-token")) yield return finding;
+        if (candidates[410]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule410() : Rule410(), text, "telnyx-api-v2-key.1")) yield return finding;
+        if (candidates[411]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule411() : Rule411(), text, "temporal-cloud-api-key.1")) yield return finding;
+        if (candidates[412]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule412() : Rule412(), text, "thunderstore-api-token.1")) yield return finding;
+        if (candidates[413]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule413() : Rule413(), text, "togetherai-api-key")) yield return finding;
+        if (candidates[414]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule414() : Rule414(), text, "travisci-access-token")) yield return finding;
+        if (candidates[415]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule415() : Rule415(), text, "twilio-api-key")) yield return finding;
+        if (candidates[416]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule416() : Rule416(), text, "twitch-api-token")) yield return finding;
+        if (candidates[417]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule417() : Rule417(), text, "twitter-access-secret")) yield return finding;
+        if (candidates[418]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule418() : Rule418(), text, "twitter-access-token")) yield return finding;
+        if (candidates[419]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule419() : Rule419(), text, "twitter-api-key")) yield return finding;
+        if (candidates[420]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule420() : Rule420(), text, "twitter-api-secret")) yield return finding;
+        if (candidates[421]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule421() : Rule421(), text, "twitter-bearer-token")) yield return finding;
+        if (candidates[422]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule422() : Rule422(), text, "typeform-api-token")) yield return finding;
+        if (candidates[423]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule423() : Rule423(), text, "unkey-root-key.1")) yield return finding;
+        if (candidates[424]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule424() : Rule424(), text, "upcloud-api-token")) yield return finding;
+        if (candidates[425]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule425() : Rule425(), text, "upstage-api-key")) yield return finding;
+        if (candidates[426]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule426() : Rule426(), text, "upstash-redis-rest-token.1")) yield return finding;
+        if (candidates[427]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule427() : Rule427(), text, "upstash-redis-rest-url.1")) yield return finding;
+        if (candidates[428]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule428() : Rule428(), text, "val-town-api-token.1")) yield return finding;
+        if (candidates[429]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule429() : Rule429(), text, "vault-batch-token")) yield return finding;
+        if (candidates[430]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule430() : Rule430(), text, "vault-service-token")) yield return finding;
+        if (candidates[431]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule431() : Rule431(), text, "vercel-ai-gateway-key")) yield return finding;
+        if (candidates[432]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule432() : Rule432(), text, "vercel-api-token")) yield return finding;
+        if (candidates[433]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule433() : Rule433(), text, "vercel-app-access-token")) yield return finding;
+        if (candidates[434]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule434() : Rule434(), text, "vercel-app-refresh-token")) yield return finding;
+        if (candidates[435]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule435() : Rule435(), text, "vercel-integration-token")) yield return finding;
+        if (candidates[436]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule436() : Rule436(), text, "vercel-personal-access-token")) yield return finding;
+        if (candidates[437]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule437() : Rule437(), text, "virustotal-api-key.1")) yield return finding;
+        if (candidates[438]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule438() : Rule438(), text, "voyageai-api-key")) yield return finding;
+        if (candidates[439]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule439() : Rule439(), text, "vultr-api-key.1")) yield return finding;
+        if (candidates[440]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule440() : Rule440(), text, "wakatime-api-key.1")) yield return finding;
+        if (candidates[441]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule441() : Rule441(), text, "wakatime-api-key.2")) yield return finding;
+        if (candidates[442]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule442() : Rule442(), text, "weatherstack-api-key.1")) yield return finding;
+        if (candidates[443]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule443() : Rule443(), text, "weights-and-biases-api-key")) yield return finding;
+        if (candidates[444]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule444() : Rule444(), text, "weights-and-biases-api-key-v1")) yield return finding;
+        if (candidates[445]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule445() : Rule445(), text, "wiz-client-id.1")) yield return finding;
+        if (candidates[446]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule446() : Rule446(), text, "wiz-client-secret.1")) yield return finding;
+        if (candidates[447]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule447() : Rule447(), text, "woocommerce-consumer-secret.1")) yield return finding;
+        if (candidates[448]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule448() : Rule448(), text, "workato-developer-api-token.1")) yield return finding;
+        if (candidates[449]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule449() : Rule449(), text, "workos-production-api-key.1")) yield return finding;
+        if (candidates[450]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule450() : Rule450(), text, "xai-api-key")) yield return finding;
+        if (candidates[451]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule451() : Rule451(), text, "xendit-production-api-key.1")) yield return finding;
+        if (candidates[452]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule452() : Rule452(), text, "yandex-access-token")) yield return finding;
+        if (candidates[453]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule453() : Rule453(), text, "yandex-api-key")) yield return finding;
+        if (candidates[454]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule454() : Rule454(), text, "yandex-aws-access-token")) yield return finding;
+        if (candidates[455]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule455() : Rule455(), text, "zai-api-key")) yield return finding;
+        if (candidates[456]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule456() : Rule456(), text, "zendesk-secret-key")) yield return finding;
+        if (candidates[457]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule457() : Rule457(), text, "zoho-client-id.1")) yield return finding;
+        if (candidates[458]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule458() : Rule458(), text, "zoho-client-secret.1")) yield return finding;
+        if (candidates[459]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule459() : Rule459(), text, "zoho-oauth-token.1")) yield return finding;
+        if (candidates[460]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule460() : Rule460(), text, "zoho-zapi-key.1")) yield return finding;
+        if (candidates[461]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule461() : Rule461(), text, "zuplo-consumer-api-key.1")) yield return finding;
+        if (candidates[462]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule462() : Rule462(), text, "console2svg-home-directory")) yield return finding;
+        if (candidates[463]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule463() : Rule463(), text, "console2svg-credential-uri")) yield return finding;
+        if (candidates[464]) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule464() : Rule464(), text, "console2svg-git-identity")) yield return finding;
     }
 
-    [GeneratedRegex("\\bA3-[A-Z0-9]{6}-(?:(?:[A-Z0-9]{11})|(?:[A-Z0-9]{6}-[A-Z0-9]{5}))-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}\\b", RegexOptions.CultureInvariant)]
+    private static IReadOnlyList<QuickLeaksFinding> FindRuleMatches(Regex regex, string text, string ruleId)
+    {
+        var findings = new List<QuickLeaksFinding>();
+        try
+        {
+            for (var match = regex.Match(text); match.Success; match = match.NextMatch())
+            {
+                findings.Add(new QuickLeaksFinding(ruleId, match.Index, match.Index + match.Length));
+            }
+        }
+        catch (RegexMatchTimeoutException)
+        {
+            return [];
+        }
+
+        return findings;
+    }
+
+    [GeneratedRegex("\\bA3-[A-Z0-9]{6}-(?:(?:[A-Z0-9]{11})|(?:[A-Z0-9]{6}-[A-Z0-9]{5}))-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule0();
-    [GeneratedRegex("\\bA3-[A-Z0-9]{0,6}-(?:(?:[A-Z0-9]{0,11})|(?:[A-Z0-9]{0,6}-[A-Z0-9]{0,5}))-[A-Z0-9]{0,5}-[A-Z0-9]{0,5}-[A-Z0-9]{0,5}\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bA3-[A-Z0-9]{0,6}-(?:(?:[A-Z0-9]{0,11})|(?:[A-Z0-9]{0,6}-[A-Z0-9]{0,5}))-[A-Z0-9]{0,5}-[A-Z0-9]{0,5}-[A-Z0-9]{0,5}\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule0();
-    [GeneratedRegex("ops_eyJ[a-zA-Z0-9+/]{250,}={0,3}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("ops_eyJ[a-zA-Z0-9+/]{250,}={0,3}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule1();
-    [GeneratedRegex("ops_eyJ[a-zA-Z0-9+/]{250,}={0,3}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("ops_eyJ[a-zA-Z0-9+/]{250,}={0,3}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule1();
-    [GeneratedRegex("(?i)(?:abuseipdb)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:abuseipdb)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule2();
-    [GeneratedRegex("(?i)(?:abuseipdb)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:abuseipdb)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule2();
-    [GeneratedRegex("(?i)(?:adafruit)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:adafruit)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule3();
-    [GeneratedRegex("(?i)(?:adafruit)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:adafruit)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule3();
-    [GeneratedRegex("(?i)(?:adobe)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:adobe)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule4();
-    [GeneratedRegex("(?i)(?:adobe)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:adobe)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule4();
-    [GeneratedRegex("\\b(p8e-(?i)[a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(p8e-(?i)[a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule5();
-    [GeneratedRegex("\\b(p8e-(?i)[a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(p8e-(?i)[a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule5();
-    [GeneratedRegex("AGE-SECRET-KEY-1[QPZRY9X8GF2TVDW0S3JN54KHCE6MUA7L]{58}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("AGE-SECRET-KEY-1[QPZRY9X8GF2TVDW0S3JN54KHCE6MUA7L]{58}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule6();
-    [GeneratedRegex("AGE-SECRET-KEY-1[QPZRY9X8GF2TVDW0S3JN54KHCE6MUA7L]{0,58}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("AGE-SECRET-KEY-1[QPZRY9X8GF2TVDW0S3JN54KHCE6MUA7L]{0,58}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule6();
-    [GeneratedRegex("\\b(AIK_CI_[A-Za-z0-9]{20,44})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(AIK_CI_[A-Za-z0-9]{20,44})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule7();
-    [GeneratedRegex("\\b(AIK_CI_[A-Za-z0-9]{0,44})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(AIK_CI_[A-Za-z0-9]{0,44})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule7();
-    [GeneratedRegex("\\b(AIK_CLIENT_[A-Za-z0-9]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(AIK_CLIENT_[A-Za-z0-9]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule8();
-    [GeneratedRegex("\\b(AIK_CLIENT_[A-Za-z0-9]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(AIK_CLIENT_[A-Za-z0-9]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule8();
-    [GeneratedRegex("\\b(AIK_SECRET_[A-Za-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(AIK_SECRET_[A-Za-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule9();
-    [GeneratedRegex("\\b(AIK_SECRET_[A-Za-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(AIK_SECRET_[A-Za-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule9();
-    [GeneratedRegex("(?i)(?:airtable)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{17})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:airtable)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{17})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule10();
-    [GeneratedRegex("(?i)(?:airtable)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,17})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:airtable)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,17})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule10();
-    [GeneratedRegex("(?i)(?:airtable)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Z0-9]+\\.v1\\.[A-Z0-9_-]+\\.[a-f0-9]+)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:airtable)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Z0-9]+\\.v1\\.[A-Z0-9_-]+\\.[a-f0-9]+)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule11();
-    [GeneratedRegex("(?i)(?:airtable)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Z0-9]+\\.v1\\.[A-Z0-9_-]+\\.[a-f0-9]+)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:airtable)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Z0-9]+\\.v1\\.[A-Z0-9_-]+\\.[a-f0-9]+)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule11();
-    [GeneratedRegex("\\b(patA-Za-z0-9{14}\\.[a-f0-9]{64})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(patA-Za-z0-9{14}\\.[a-f0-9]{64})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule12();
-    [GeneratedRegex("\\b(patA-Za-z0-9{0,14}\\.[a-f0-9]{0,64})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(patA-Za-z0-9{0,14}\\.[a-f0-9]{0,64})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule12();
-    [GeneratedRegex("(?i:aiven)[\\s\\S]{0,32}?\\b([A-Za-z0-9/+=]{372})(?:[^A-Za-z0-9/+=]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:aiven)[\\s\\S]{0,32}?\\b([A-Za-z0-9/+=]{372})(?:[^A-Za-z0-9/+=]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule13();
-    [GeneratedRegex("(?i:aiven)[\\s\\S]{0,32}?\\b([A-Za-z0-9/+=]{0,372})(?:[^A-Za-z0-9/+=]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:aiven)[\\s\\S]{0,32}?\\b([A-Za-z0-9/+=]{0,372})(?:[^A-Za-z0-9/+=]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule13();
-    [GeneratedRegex("(?i)(?:algolia)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:algolia)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule14();
-    [GeneratedRegex("(?i)(?:algolia)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:algolia)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule14();
-    [GeneratedRegex("(?i)(?:algolia)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{10})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:algolia)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{10})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule15();
-    [GeneratedRegex("(?i)(?:algolia)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,10})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:algolia)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,10})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule15();
-    [GeneratedRegex("\\b(LTAI[A-Za-z0-9]{17,21})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(LTAI[A-Za-z0-9]{17,21})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule16();
-    [GeneratedRegex("\\b(LTAI[A-Za-z0-9]{0,21})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(LTAI[A-Za-z0-9]{0,21})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule16();
-    [GeneratedRegex("(?i)(?:alibaba|aliyun|secret|key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:alibaba|aliyun|secret|key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule17();
-    [GeneratedRegex("(?i)(?:alibaba|aliyun|secret|key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:alibaba|aliyun|secret|key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule17();
-    [GeneratedRegex("\\b(STS\\.[A-Za-z0-9]{16,64})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(STS\\.[A-Za-z0-9]{16,64})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule18();
-    [GeneratedRegex("\\b(STS\\.[A-Za-z0-9]{0,64})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(STS\\.[A-Za-z0-9]{0,64})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule18();
-    [GeneratedRegex("(?i)(?:alibaba|aliyun|secret|key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{30,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:alibaba|aliyun|secret|key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{30,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule19();
-    [GeneratedRegex("(?i)(?:alibaba|aliyun|secret|key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:alibaba|aliyun|secret|key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule19();
-    [GeneratedRegex("(?i)(?:alibaba|aliyun|secret|key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(CAIS[A-Za-z0-9+/_=-]{20,1000}[A-Za-z0-9+/_=-]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:alibaba|aliyun|secret|key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(CAIS[A-Za-z0-9+/_=-]{20,1000}[A-Za-z0-9+/_=-]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule20();
-    [GeneratedRegex("(?i)(?:alibaba|aliyun|secret|key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(CAIS[A-Za-z0-9+/_=-]{0,1000}[A-Za-z0-9+/_=-]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:alibaba|aliyun|secret|key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(CAIS[A-Za-z0-9+/_=-]{0,1000}[A-Za-z0-9+/_=-]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule20();
-    [GeneratedRegex("(?i)\\bamplitude(?:.|[\\n\\r]){0,32}?(?:SECRET|PRIVATE|ACCESS|KEY|TOKEN|AUTHORIZATION)(?:.|[\\n\\r]){0,16}?\\b([a-f0-9]{32})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\bamplitude(?:.|[\\n\\r]){0,32}?(?:SECRET|PRIVATE|ACCESS|KEY|TOKEN|AUTHORIZATION)(?:.|[\\n\\r]){0,16}?\\b([a-f0-9]{32})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule21();
-    [GeneratedRegex("(?i)\\bamplitude(?:.|[\\n\\r]){0,32}?(?:SECRET|PRIVATE|ACCESS|KEY|TOKEN|AUTHORIZATION)(?:.|[\\n\\r]){0,16}?\\b([a-f0-9]{0,32})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\bamplitude(?:.|[\\n\\r]){0,32}?(?:SECRET|PRIVATE|ACCESS|KEY|TOKEN|AUTHORIZATION)(?:.|[\\n\\r]){0,16}?\\b([a-f0-9]{0,32})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule21();
-    [GeneratedRegex("\\b(sk-ant-admin01-[a-zA-Z0-9_\\-]{93}AA)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sk-ant-admin01-[a-zA-Z0-9_\\-]{93}AA)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule22();
-    [GeneratedRegex("\\b(sk-ant-admin01-[a-zA-Z0-9_\\-]{0,93}AA)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sk-ant-admin01-[a-zA-Z0-9_\\-]{0,93}AA)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule22();
-    [GeneratedRegex("\\b(sk-ant-api03-[a-zA-Z0-9_\\-]{93}AA)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sk-ant-api03-[a-zA-Z0-9_\\-]{93}AA)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule23();
-    [GeneratedRegex("\\b(sk-ant-api03-[a-zA-Z0-9_\\-]{0,93}AA)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sk-ant-api03-[a-zA-Z0-9_\\-]{0,93}AA)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule23();
-    [GeneratedRegex("\\b(apify_api_[A-Za-z0-9]{34,38})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(apify_api_[A-Za-z0-9]{34,38})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule24();
-    [GeneratedRegex("\\b(apify_api_[A-Za-z0-9]{0,38})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(apify_api_[A-Za-z0-9]{0,38})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule24();
-    [GeneratedRegex("(?i:(?:apollo)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:apollo)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule25();
-    [GeneratedRegex("(?i:(?:apollo)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{0,22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:apollo)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{0,22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule25();
-    [GeneratedRegex("\\bAKCp[A-Za-z0-9]{68,70}\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bAKCp[A-Za-z0-9]{68,70}\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule26();
-    [GeneratedRegex("\\bAKCp[A-Za-z0-9]{0,70}\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bAKCp[A-Za-z0-9]{0,70}\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule26();
-    [GeneratedRegex("(?i)(?:^|[^a-z0-9-])([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.jfrog\\.io)(?:$|[^a-z0-9-])", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:^|[^a-z0-9-])([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.jfrog\\.io)(?:$|[^a-z0-9-])", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule27();
-    [GeneratedRegex("(?i)(?:^|[^a-z0-9-])([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.jfrog\\.io)(?:$|[^a-z0-9-])", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:^|[^a-z0-9-])([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.jfrog\\.io)(?:$|[^a-z0-9-])", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule27();
-    [GeneratedRegex("\\bcmVmd[A-Za-z0-9]{59}\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bcmVmd[A-Za-z0-9]{59}\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule28();
-    [GeneratedRegex("\\bcmVmd[A-Za-z0-9]{0,59}\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bcmVmd[A-Za-z0-9]{0,59}\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule28();
-    [GeneratedRegex("(?:^|[^A-Za-z0-9_-])(\\$aact_(?:prod|hmlg)_[A-Za-z0-9_-]{20,100})(?:[^A-Za-z0-9_-]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?:^|[^A-Za-z0-9_-])(\\$aact_(?:prod|hmlg)_[A-Za-z0-9_-]{20,100})(?:[^A-Za-z0-9_-]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule29();
-    [GeneratedRegex("(?:^|[^A-Za-z0-9_-])(\\$aact_(?:prod|hmlg)_[A-Za-z0-9_-]{0,100})(?:[^A-Za-z0-9_-]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?:^|[^A-Za-z0-9_-])(\\$aact_(?:prod|hmlg)_[A-Za-z0-9_-]{0,100})(?:[^A-Za-z0-9_-]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule29();
-    [GeneratedRegex("(?i)(?:asana)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:asana)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule30();
-    [GeneratedRegex("(?i)(?:asana)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:asana)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule30();
-    [GeneratedRegex("(?i)(?:asana)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:asana)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule31();
-    [GeneratedRegex("(?i)(?:asana)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:asana)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule31();
-    [GeneratedRegex("(?i)(?:assemblyai)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:assemblyai)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule32();
-    [GeneratedRegex("(?i)(?:assemblyai)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:assemblyai)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule32();
-    [GeneratedRegex("\\b(ATAT[A-Za-z0-9_\\-=]{100,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ATAT[A-Za-z0-9_\\-=]{100,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule33();
-    [GeneratedRegex("\\b(ATAT[A-Za-z0-9_\\-=]{100,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ATAT[A-Za-z0-9_\\-=]{100,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule33();
-    [GeneratedRegex("(?i:(?:auth0[_.-]?(?:client[_.-]?)?(?:id|identifier))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{32,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:auth0[_.-]?(?:client[_.-]?)?(?:id|identifier))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{32,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule34();
-    [GeneratedRegex("(?i:(?:auth0[_.-]?(?:client[_.-]?)?(?:id|identifier))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{0,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:auth0[_.-]?(?:client[_.-]?)?(?:id|identifier))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{0,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule34();
-    [GeneratedRegex("(?i:(?:auth0[_.-]?(?:client[_.-]?)?(?:secret|private|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{64,128})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:auth0[_.-]?(?:client[_.-]?)?(?:secret|private|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{64,128})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule35();
-    [GeneratedRegex("(?i:(?:auth0[_.-]?(?:client[_.-]?)?(?:secret|private|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{0,128})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:auth0[_.-]?(?:client[_.-]?)?(?:secret|private|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{0,128})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule35();
-    [GeneratedRegex("(?i)\\b((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+auth0\\.com)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+auth0\\.com)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule36();
-    [GeneratedRegex("(?i)\\b((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+auth0\\.com)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+auth0\\.com)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule36();
-    [GeneratedRegex("(?i)\\b((?:sc|ext|scauth|authress)_[a-z0-9]{5,30}\\.[a-z0-9]{4,6}\\.acc[_-][a-z0-9-]{10,32}\\.[a-z0-9+/_=-]{30,120})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b((?:sc|ext|scauth|authress)_[a-z0-9]{5,30}\\.[a-z0-9]{4,6}\\.acc[_-][a-z0-9-]{10,32}\\.[a-z0-9+/_=-]{30,120})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule37();
-    [GeneratedRegex("(?i)\\b((?:sc|ext|scauth|authress)_[a-z0-9]{0,30}\\.[a-z0-9]{0,6}\\.acc[_-][a-z0-9-]{0,32}\\.[a-z0-9+/_=-]{0,120})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b((?:sc|ext|scauth|authress)_[a-z0-9]{0,30}\\.[a-z0-9]{0,6}\\.acc[_-][a-z0-9-]{0,32}\\.[a-z0-9+/_=-]{0,120})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule37();
-    [GeneratedRegex("\\b((?:A3T[A-Z0-9]|AKIA|ASIA|ABIA|ACCA)[A-Z2-7]{16})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b((?:A3T[A-Z0-9]|AKIA|ASIA|ABIA|ACCA)[A-Z2-7]{16})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule38();
-    [GeneratedRegex("\\b((?:A3T[A-Z0-9]|AKIA|ASIA|ABIA|ACCA)[A-Z2-7]{0,16})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b((?:A3T[A-Z0-9]|AKIA|ASIA|ABIA|ACCA)[A-Z2-7]{0,16})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule38();
-    [GeneratedRegex("\\b(ABSK[A-Za-z0-9+/]{109,269}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ABSK[A-Za-z0-9+/]{109,269}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule39();
-    [GeneratedRegex("\\b(ABSK[A-Za-z0-9+/]{0,269}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ABSK[A-Za-z0-9+/]{0,269}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule39();
-    [GeneratedRegex("bedrock-api-key-YmVkcm9jay5hbWF6b25hd3MuY29t", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("bedrock-api-key-YmVkcm9jay5hbWF6b25hd3MuY29t", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule40();
-    [GeneratedRegex("bedrock-api-key-YmVkcm9jay5hbWF6b25hd3MuY29t", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("bedrock-api-key-YmVkcm9jay5hbWF6b25hd3MuY29t", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule40();
-    [GeneratedRegex("(?i:(?:secret|access|key|token)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9/+=]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:secret|access|key|token)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9/+=]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule41();
-    [GeneratedRegex("(?i:(?:secret|access|key|token)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9/+=]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:secret|access|key|token)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9/+=]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule41();
-    [GeneratedRegex("(?:^|[\\\\'\"\\x60\\s>=:(,)])([a-zA-Z0-9_~.]{3}\\dQ~[a-zA-Z0-9_~.-]{31,34})(?:$|[\\\\'\"\\x60\\s<),])", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?:^|[\\\\'\"\\x60\\s>=:(,)])([a-zA-Z0-9_~.]{3}\\dQ~[a-zA-Z0-9_~.-]{31,34})(?:$|[\\\\'\"\\x60\\s<),])", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule42();
-    [GeneratedRegex("(?:^|[\\\\'\"\\x60\\s>=:(,)])([a-zA-Z0-9_~.]{0,3}\\dQ~[a-zA-Z0-9_~.-]{0,34})(?:$|[\\\\'\"\\x60\\s<),])", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?:^|[\\\\'\"\\x60\\s>=:(,)])([a-zA-Z0-9_~.]{0,3}\\dQ~[a-zA-Z0-9_~.-]{0,34})(?:$|[\\\\'\"\\x60\\s<),])", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule42();
-    [GeneratedRegex("(?i)Endpoint=(?<azure_appconfig_endpoint>https://[a-z0-9-]+\\.azconfig\\.io);Id=(?<azure_appconfig_id>[^;\\s'\"]{4,80});Secret=([A-Za-z0-9+/]{36,100}={0,2})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)Endpoint=(?<azure_appconfig_endpoint>https://[a-z0-9-]+\\.azconfig\\.io);Id=(?<azure_appconfig_id>[^;\\s'\"]{4,80});Secret=([A-Za-z0-9+/]{36,100}={0,2})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule43();
-    [GeneratedRegex("(?i)Endpoint=(?<azure_appconfig_endpoint>https://[a-z0-9-]+\\.azconfig\\.io);Id=(?<azure_appconfig_id>[^;\\s'\"]{0,80});Secret=([A-Za-z0-9+/]{0,100}={0,2})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)Endpoint=(?<azure_appconfig_endpoint>https://[a-z0-9-]+\\.azconfig\\.io);Id=(?<azure_appconfig_id>[^;\\s'\"]{0,80});Secret=([A-Za-z0-9+/]{0,100}={0,2})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule43();
-    [GeneratedRegex("(?i)\\b(?:client[_\\s.-]*id|AZURE_CLIENT_ID)\\b(?s:.{0,24}?)([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(?:client[_\\s.-]*id|AZURE_CLIENT_ID)\\b(?s:.{0,24}?)([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule44();
-    [GeneratedRegex("(?i)\\b(?:client[_\\s.-]*id|AZURE_CLIENT_ID)\\b(?s:.{0,24}?)([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(?:client[_\\s.-]*id|AZURE_CLIENT_ID)\\b(?s:.{0,24}?)([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule44();
-    [GeneratedRegex("(?i)(Endpoint=sb://[a-z0-9-]+\\.servicebus\\.windows\\.net/;SharedAccessKeyName=[^;=\\s'\"]{1,128};SharedAccessKey=[A-Za-z0-9+/]{32,100}={0,2}(?:;EntityPath=[^;\\s'\"]{1,128})?)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(Endpoint=sb://[a-z0-9-]+\\.servicebus\\.windows\\.net/;SharedAccessKeyName=[^;=\\s'\"]{1,128};SharedAccessKey=[A-Za-z0-9+/]{32,100}={0,2}(?:;EntityPath=[^;\\s'\"]{1,128})?)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule45();
-    [GeneratedRegex("(?i)(Endpoint=sb://[a-z0-9-]+\\.servicebus\\.windows\\.net/;SharedAccessKeyName=[^;=\\s'\"]{0,128};SharedAccessKey=[A-Za-z0-9+/]{0,100}={0,2}(?:;EntityPath=[^;\\s'\"]{0,128})?)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(Endpoint=sb://[a-z0-9-]+\\.servicebus\\.windows\\.net/;SharedAccessKeyName=[^;=\\s'\"]{0,128};SharedAccessKey=[A-Za-z0-9+/]{0,100}={0,2}(?:;EntityPath=[^;\\s'\"]{0,128})?)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule45();
-    [GeneratedRegex("(?i)\\b(?:AccountKey|(?:azure[_\\s.-]*)?(?:storage[_\\s.-]*)?(?:account[_\\s.-]*)?(?:access[_\\s.-]*)?key)\\b(?s:.{0,24}?)([A-Za-z0-9+/]{86}==)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(?:AccountKey|(?:azure[_\\s.-]*)?(?:storage[_\\s.-]*)?(?:account[_\\s.-]*)?(?:access[_\\s.-]*)?key)\\b(?s:.{0,24}?)([A-Za-z0-9+/]{86}==)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule46();
-    [GeneratedRegex("(?i)\\b(?:AccountKey|(?:azure[_\\s.-]*)?(?:storage[_\\s.-]*)?(?:account[_\\s.-]*)?(?:access[_\\s.-]*)?key)\\b(?s:.{0,24}?)([A-Za-z0-9+/]{0,86}==)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(?:AccountKey|(?:azure[_\\s.-]*)?(?:storage[_\\s.-]*)?(?:account[_\\s.-]*)?(?:access[_\\s.-]*)?key)\\b(?s:.{0,24}?)([A-Za-z0-9+/]{0,86}==)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule46();
-    [GeneratedRegex("(?i)(?:\\bAccountName\\s*=\\s*([a-z0-9]{3,24})\\b|https://([a-z0-9]{3,24})\\.blob\\.core\\.windows\\.net\\b|\\b(?:azure[_\\s.-]*storage[_\\s.-]*(?:account[_\\s.-]*)?name|storage[_\\s.-]*account[_\\s.-]*name)\\b(?s:.{0,24}?)([a-z0-9]{3,24})\\b)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:\\bAccountName\\s*=\\s*([a-z0-9]{3,24})\\b|https://([a-z0-9]{3,24})\\.blob\\.core\\.windows\\.net\\b|\\b(?:azure[_\\s.-]*storage[_\\s.-]*(?:account[_\\s.-]*)?name|storage[_\\s.-]*account[_\\s.-]*name)\\b(?s:.{0,24}?)([a-z0-9]{3,24})\\b)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule47();
-    [GeneratedRegex("(?i)(?:\\bAccountName\\s*=\\s*([a-z0-9]{0,24})\\b|https://([a-z0-9]{0,24})\\.blob\\.core\\.windows\\.net\\b|\\b(?:azure[_\\s.-]*storage[_\\s.-]*(?:account[_\\s.-]*)?name|storage[_\\s.-]*account[_\\s.-]*name)\\b(?s:.{0,24}?)([a-z0-9]{0,24})\\b)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:\\bAccountName\\s*=\\s*([a-z0-9]{0,24})\\b|https://([a-z0-9]{0,24})\\.blob\\.core\\.windows\\.net\\b|\\b(?:azure[_\\s.-]*storage[_\\s.-]*(?:account[_\\s.-]*)?name|storage[_\\s.-]*account[_\\s.-]*name)\\b(?s:.{0,24}?)([a-z0-9]{0,24})\\b)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule47();
-    [GeneratedRegex("(?i)\\b(?:tenant[_\\s.-]*(?:id)?|AZURE_TENANT_ID)\\b(?s:.{0,24}?)([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(?:tenant[_\\s.-]*(?:id)?|AZURE_TENANT_ID)\\b(?s:.{0,24}?)([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule48();
-    [GeneratedRegex("(?i)\\b(?:tenant[_\\s.-]*(?:id)?|AZURE_TENANT_ID)\\b(?s:.{0,24}?)([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(?:tenant[_\\s.-]*(?:id)?|AZURE_TENANT_ID)\\b(?s:.{0,24}?)([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule48();
-    [GeneratedRegex("(?i)(?:beamer)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(b_[a-z0-9=_\\-]{44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:beamer)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(b_[a-z0-9=_\\-]{44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule49();
-    [GeneratedRegex("(?i)(?:beamer)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(b_[a-z0-9=_\\-]{0,44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:beamer)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(b_[a-z0-9=_\\-]{0,44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule49();
-    [GeneratedRegex("(?i)(?:bitbucket)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:bitbucket)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule50();
-    [GeneratedRegex("(?i)(?:bitbucket)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:bitbucket)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule50();
-    [GeneratedRegex("(?i)(?:bitbucket)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:bitbucket)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule51();
-    [GeneratedRegex("(?i)(?:bitbucket)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:bitbucket)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule51();
-    [GeneratedRegex("\\b(BBDC-[A-Za-z0-9+/=]{32,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(BBDC-[A-Za-z0-9+/=]{32,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule52();
-    [GeneratedRegex("\\b(BBDC-[A-Za-z0-9+/=]{32,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(BBDC-[A-Za-z0-9+/=]{32,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule52();
-    [GeneratedRegex("(?i)\\bbitly(?:.|[\\n\\r]){0,32}?(?:SECRET|PRIVATE|ACCESS|KEY|TOKEN)(?:.|[\\n\\r]){0,32}?([a-f0-9]{40})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\bbitly(?:.|[\\n\\r]){0,32}?(?:SECRET|PRIVATE|ACCESS|KEY|TOKEN)(?:.|[\\n\\r]){0,32}?([a-f0-9]{40})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule53();
-    [GeneratedRegex("(?i)\\bbitly(?:.|[\\n\\r]){0,32}?(?:SECRET|PRIVATE|ACCESS|KEY|TOKEN)(?:.|[\\n\\r]){0,32}?([a-f0-9]{0,40})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\bbitly(?:.|[\\n\\r]){0,32}?(?:SECRET|PRIVATE|ACCESS|KEY|TOKEN)(?:.|[\\n\\r]){0,32}?([a-f0-9]{0,40})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule53();
-    [GeneratedRegex("(?i:(?:bitrise(?:[ _-]*(?:personal|workspace))?(?:[ _-]*(?:access|api))?[ _-]*token)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{60,120})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:bitrise(?:[ _-]*(?:personal|workspace))?(?:[ _-]*(?:access|api))?[ _-]*token)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{60,120})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule54();
-    [GeneratedRegex("(?i:(?:bitrise(?:[ _-]*(?:personal|workspace))?(?:[ _-]*(?:access|api))?[ _-]*token)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{0,120})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:bitrise(?:[ _-]*(?:personal|workspace))?(?:[ _-]*(?:access|api))?[ _-]*token)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{0,120})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule54();
-    [GeneratedRegex("(?i)(?:bittrex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:bittrex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule55();
-    [GeneratedRegex("(?i)(?:bittrex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:bittrex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule55();
-    [GeneratedRegex("(?i)(?:bittrex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:bittrex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule56();
-    [GeneratedRegex("(?i)(?:bittrex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:bittrex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule56();
-    [GeneratedRegex("(?i)(?:box)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:box)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule57();
-    [GeneratedRegex("(?i)(?:box)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:box)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule57();
-    [GeneratedRegex("\\b(BSA[A-Za-z0-9_-]{24,40})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(BSA[A-Za-z0-9_-]{24,40})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule58();
-    [GeneratedRegex("\\b(BSA[A-Za-z0-9_-]{0,40})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(BSA[A-Za-z0-9_-]{0,40})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule58();
-    [GeneratedRegex("(?i:(?:browserstack[_.-]?(?:access[_.-]?)?(?:key|secret|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:browserstack[_.-]?(?:access[_.-]?)?(?:key|secret|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule59();
-    [GeneratedRegex("(?i:(?:browserstack[_.-]?(?:access[_.-]?)?(?:key|secret|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:browserstack[_.-]?(?:access[_.-]?)?(?:key|secret|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule59();
-    [GeneratedRegex("(?i:(?:browserstack[_.-]?(?:username|user))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9][A-Za-z0-9._-]{2,39})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:browserstack[_.-]?(?:username|user))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9][A-Za-z0-9._-]{2,39})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule60();
-    [GeneratedRegex("(?i:(?:browserstack[_.-]?(?:username|user))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9][A-Za-z0-9._-]{0,39})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:browserstack[_.-]?(?:username|user))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9][A-Za-z0-9._-]{0,39})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule60();
-    [GeneratedRegex("\\b(bkaa_[A-Za-z0-9_-]{75}|bkaj_[A-Za-z0-9_-]{333}|bkar_[A-Za-z0-9_-]{73}|bkct_[A-Za-z0-9_-]{73}|bkpt_[A-Za-z0-9_-]{199}|bkpat_[A-Za-z0-9_-]{54}|bkps_[A-Za-z0-9_-]{64})(?:$|[^A-Za-z0-9_-])", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(bkaa_[A-Za-z0-9_-]{75}|bkaj_[A-Za-z0-9_-]{333}|bkar_[A-Za-z0-9_-]{73}|bkct_[A-Za-z0-9_-]{73}|bkpt_[A-Za-z0-9_-]{199}|bkpat_[A-Za-z0-9_-]{54}|bkps_[A-Za-z0-9_-]{64})(?:$|[^A-Za-z0-9_-])", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule61();
-    [GeneratedRegex("\\b(bkaa_[A-Za-z0-9_-]{0,75}|bkaj_[A-Za-z0-9_-]{0,333}|bkar_[A-Za-z0-9_-]{0,73}|bkct_[A-Za-z0-9_-]{0,73}|bkpt_[A-Za-z0-9_-]{0,199}|bkpat_[A-Za-z0-9_-]{0,54}|bkps_[A-Za-z0-9_-]{0,64})(?:$|[^A-Za-z0-9_-])", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(bkaa_[A-Za-z0-9_-]{0,75}|bkaj_[A-Za-z0-9_-]{0,333}|bkar_[A-Za-z0-9_-]{0,73}|bkct_[A-Za-z0-9_-]{0,73}|bkpt_[A-Za-z0-9_-]{0,199}|bkpat_[A-Za-z0-9_-]{0,54}|bkps_[A-Za-z0-9_-]{0,64})(?:$|[^A-Za-z0-9_-])", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule61();
-    [GeneratedRegex("\\b(bkua_(?:[a-z0-9]{40}|[a-z0-9]{53}))\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(bkua_(?:[a-z0-9]{40}|[a-z0-9]{53}))\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule62();
-    [GeneratedRegex("\\b(bkua_(?:[a-z0-9]{0,40}|[a-z0-9]{0,53}))\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(bkua_(?:[a-z0-9]{0,40}|[a-z0-9]{0,53}))\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule62();
-    [GeneratedRegex("(?i:\\b(ApiKey-v1\\s+gcntfy-[a-z0-9_]+-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\\b)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:\\b(ApiKey-v1\\s+gcntfy-[a-z0-9_]+-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\\b)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule63();
-    [GeneratedRegex("(?i:\\b(ApiKey-v1\\s+gcntfy-[a-z0-9_]+-[0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12}-[0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})\\b)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:\\b(ApiKey-v1\\s+gcntfy-[a-z0-9_]+-[0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12}-[0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})\\b)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule63();
-    [GeneratedRegex("(?i)\\b(?:canva|CANVA_CLIENT_ID)(?:.|[\\n\\r]){0,32}?(?:client[_\\s-]*id|app[_\\s-]*id)(?:.|[\\n\\r]){0,16}?\\b(OC-[A-Za-z0-9_-]{8,16})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(?:canva|CANVA_CLIENT_ID)(?:.|[\\n\\r]){0,32}?(?:client[_\\s-]*id|app[_\\s-]*id)(?:.|[\\n\\r]){0,16}?\\b(OC-[A-Za-z0-9_-]{8,16})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule64();
-    [GeneratedRegex("(?i)\\b(?:canva|CANVA_CLIENT_ID)(?:.|[\\n\\r]){0,32}?(?:client[_\\s-]*id|app[_\\s-]*id)(?:.|[\\n\\r]){0,16}?\\b(OC-[A-Za-z0-9_-]{0,16})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(?:canva|CANVA_CLIENT_ID)(?:.|[\\n\\r]){0,32}?(?:client[_\\s-]*id|app[_\\s-]*id)(?:.|[\\n\\r]){0,16}?\\b(OC-[A-Za-z0-9_-]{0,16})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule64();
-    [GeneratedRegex("\\b(cnvca[a-zA-Z0-9_-]{51})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(cnvca[a-zA-Z0-9_-]{51})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule65();
-    [GeneratedRegex("\\b(cnvca[a-zA-Z0-9_-]{0,51})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(cnvca[a-zA-Z0-9_-]{0,51})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule65();
-    [GeneratedRegex("\\b(sk_car_[A-Za-z0-9_]{20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sk_car_[A-Za-z0-9_]{20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule66();
-    [GeneratedRegex("\\b(sk_car_[A-Za-z0-9_]{0,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sk_car_[A-Za-z0-9_]{0,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule66();
-    [GeneratedRegex("(?i)\\b(csk-[a-z0-9]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(csk-[a-z0-9]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule67();
-    [GeneratedRegex("(?i)\\b(csk-[a-z0-9]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(csk-[a-z0-9]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule67();
-    [GeneratedRegex("(?i)(?:checkout)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:checkout)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule68();
-    [GeneratedRegex("(?i)(?:checkout)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_[a-f0-9]{0,8}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:checkout)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_[a-f0-9]{0,8}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule68();
-    [GeneratedRegex("\\b(CCIPAT_[a-zA-Z0-9]{22}_[a-z0-9]{40})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(CCIPAT_[a-zA-Z0-9]{22}_[a-z0-9]{40})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule69();
-    [GeneratedRegex("\\b(CCIPAT_[a-zA-Z0-9]{0,22}_[a-z0-9]{0,40})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(CCIPAT_[a-zA-Z0-9]{0,22}_[a-z0-9]{0,40})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule69();
-    [GeneratedRegex("(?i)(?:circleci)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:circleci)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule70();
-    [GeneratedRegex("(?i)(?:circleci)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:circleci)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule70();
-    [GeneratedRegex("(?i:(?:(?-i:[Mm]eraki|MERAKI))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:(?-i:[Mm]eraki|MERAKI))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule71();
-    [GeneratedRegex("(?i:(?:(?-i:[Mm]eraki|MERAKI))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:(?-i:[Mm]eraki|MERAKI))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule71();
-    [GeneratedRegex("(?i)(?:civo)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:civo)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule72();
-    [GeneratedRegex("(?i)(?:civo)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:civo)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule72();
-    [GeneratedRegex("(?i)(?:clerk)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_(?:test|live)_[A-Za-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:clerk)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_(?:test|live)_[A-Za-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule73();
-    [GeneratedRegex("(?i)(?:clerk)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_(?:test|live)_[A-Za-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:clerk)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_(?:test|live)_[A-Za-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule73();
-    [GeneratedRegex("\\b(4b1d[A-Za-z0-9]{38})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(4b1d[A-Za-z0-9]{38})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule74();
-    [GeneratedRegex("\\b(4b1d[A-Za-z0-9]{0,38})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(4b1d[A-Za-z0-9]{0,38})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule74();
-    [GeneratedRegex("(?i)\\bclickhouse(?:.|[\\n\\r]){0,16}?(?:ID|USER)(?:.|[\\n\\r]){0,16}?([a-z0-9]{20})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\bclickhouse(?:.|[\\n\\r]){0,16}?(?:ID|USER)(?:.|[\\n\\r]){0,16}?([a-z0-9]{20})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule75();
-    [GeneratedRegex("(?i)\\bclickhouse(?:.|[\\n\\r]){0,16}?(?:ID|USER)(?:.|[\\n\\r]){0,16}?([a-z0-9]{0,20})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\bclickhouse(?:.|[\\n\\r]){0,16}?(?:ID|USER)(?:.|[\\n\\r]){0,16}?([a-z0-9]{0,20})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule75();
-    [GeneratedRegex("(?i)(?:clickup)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(pk_[0-9]{8,9}_[a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:clickup)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(pk_[0-9]{8,9}_[a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule76();
-    [GeneratedRegex("(?i)(?:clickup)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(pk_[0-9]{0,9}_[a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:clickup)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(pk_[0-9]{0,9}_[a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule76();
-    [GeneratedRegex("(?i)CLOJARS_[a-z0-9]{60}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)CLOJARS_[a-z0-9]{60}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule77();
-    [GeneratedRegex("(?i)CLOJARS_[a-z0-9]{0,60}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)CLOJARS_[a-z0-9]{0,60}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule77();
-    [GeneratedRegex("(?i)(?:cloudflare)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:cloudflare)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule78();
-    [GeneratedRegex("(?i)(?:cloudflare)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:cloudflare)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule78();
-    [GeneratedRegex("(?i)(?:cloudflare)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{37})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:cloudflare)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{37})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule79();
-    [GeneratedRegex("(?i)(?:cloudflare)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,37})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:cloudflare)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,37})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule79();
-    [GeneratedRegex("\\b(v1\\.0-[a-f0-9]{24}-[a-f0-9]{146})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(v1\\.0-[a-f0-9]{24}-[a-f0-9]{146})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule80();
-    [GeneratedRegex("\\b(v1\\.0-[a-f0-9]{0,24}-[a-f0-9]{0,146})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(v1\\.0-[a-f0-9]{0,24}-[a-f0-9]{0,146})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule80();
-    [GeneratedRegex("(?i)\\bcloudinary(?:.|[\\n\\r]){0,32}?(?:API[_\\s]?KEY|KEY)(?:.|[\\n\\r]){0,16}?\\b([0-9]{15})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\bcloudinary(?:.|[\\n\\r]){0,32}?(?:API[_\\s]?KEY|KEY)(?:.|[\\n\\r]){0,16}?\\b([0-9]{15})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule81();
-    [GeneratedRegex("(?i)\\bcloudinary(?:.|[\\n\\r]){0,32}?(?:API[_\\s]?KEY|KEY)(?:.|[\\n\\r]){0,16}?\\b([0-9]{0,15})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\bcloudinary(?:.|[\\n\\r]){0,32}?(?:API[_\\s]?KEY|KEY)(?:.|[\\n\\r]){0,16}?\\b([0-9]{0,15})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule81();
-    [GeneratedRegex("(?i)\\bcloudinary(?:.|[\\n\\r]){0,32}?(?:SECRET|PRIVATE|API[_\\s]?SECRET)(?:.|[\\n\\r]){0,32}?\\b([A-Za-z0-9]{32})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\bcloudinary(?:.|[\\n\\r]){0,32}?(?:SECRET|PRIVATE|API[_\\s]?SECRET)(?:.|[\\n\\r]){0,32}?\\b([A-Za-z0-9]{32})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule82();
-    [GeneratedRegex("(?i)\\bcloudinary(?:.|[\\n\\r]){0,32}?(?:SECRET|PRIVATE|API[_\\s]?SECRET)(?:.|[\\n\\r]){0,32}?\\b([A-Za-z0-9]{0,32})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\bcloudinary(?:.|[\\n\\r]){0,32}?(?:SECRET|PRIVATE|API[_\\s]?SECRET)(?:.|[\\n\\r]){0,32}?\\b([A-Za-z0-9]{0,32})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule82();
-    [GeneratedRegex("(?i)\\bcloudinary(?:.|[\\n\\r]){0,32}?(?:CLOUD[_\\s]?NAME|CLOUD)(?:.|[\\n\\r]){0,16}?\\b([a-z0-9_-]{3,32})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\bcloudinary(?:.|[\\n\\r]){0,32}?(?:CLOUD[_\\s]?NAME|CLOUD)(?:.|[\\n\\r]){0,16}?\\b([a-z0-9_-]{3,32})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule83();
-    [GeneratedRegex("(?i)\\bcloudinary(?:.|[\\n\\r]){0,32}?(?:CLOUD[_\\s]?NAME|CLOUD)(?:.|[\\n\\r]){0,16}?\\b([a-z0-9_-]{0,32})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\bcloudinary(?:.|[\\n\\r]){0,32}?(?:CLOUD[_\\s]?NAME|CLOUD)(?:.|[\\n\\r]){0,16}?\\b([a-z0-9_-]{0,32})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule83();
-    [GeneratedRegex("\\b(csa_[a-f0-9]{30}[A-Za-z0-9]{6})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(csa_[a-f0-9]{30}[A-Za-z0-9]{6})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule84();
-    [GeneratedRegex("\\b(csa_[a-f0-9]{0,30}[A-Za-z0-9]{0,6})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(csa_[a-f0-9]{0,30}[A-Za-z0-9]{0,6})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule84();
-    [GeneratedRegex("\\b(CCDB1_[A-Za-z0-9]{22}_[A-Za-z0-9]{40})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(CCDB1_[A-Za-z0-9]{22}_[A-Za-z0-9]{40})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule85();
-    [GeneratedRegex("\\b(CCDB1_[A-Za-z0-9]{0,22}_[A-Za-z0-9]{0,40})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(CCDB1_[A-Za-z0-9]{0,22}_[A-Za-z0-9]{0,40})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule85();
-    [GeneratedRegex("(?i)(?:codecov)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Z0-9-]{36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:codecov)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Z0-9-]{36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule86();
-    [GeneratedRegex("(?i)(?:codecov)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Z0-9-]{0,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:codecov)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Z0-9-]{0,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule86();
-    [GeneratedRegex("(?i:(?:cohere|CO_API_KEY)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:cohere|CO_API_KEY)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule87();
-    [GeneratedRegex("(?i:(?:cohere|CO_API_KEY)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:cohere|CO_API_KEY)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule87();
-    [GeneratedRegex("(?i)(?:coinbase)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:coinbase)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule88();
-    [GeneratedRegex("(?i)(?:coinbase)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:coinbase)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule88();
-    [GeneratedRegex("(?i)(?:configcat)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{22}/[A-Za-z0-9_-]{22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:configcat)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{22}/[A-Za-z0-9_-]{22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule89();
-    [GeneratedRegex("(?i)(?:configcat)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{0,22}/[A-Za-z0-9_-]{0,22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:configcat)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{0,22}/[A-Za-z0-9_-]{0,22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule89();
-    [GeneratedRegex("\\b(configcat-sdk-1/[A-Za-z0-9_-]{22}/[A-Za-z0-9_-]{22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(configcat-sdk-1/[A-Za-z0-9_-]{22}/[A-Za-z0-9_-]{22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule90();
-    [GeneratedRegex("\\b(configcat-sdk-1/[A-Za-z0-9_-]{0,22}/[A-Za-z0-9_-]{0,22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(configcat-sdk-1/[A-Za-z0-9_-]{0,22}/[A-Za-z0-9_-]{0,22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule90();
-    [GeneratedRegex("(?i)(?:confluent)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:confluent)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule91();
-    [GeneratedRegex("(?i)(?:confluent)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:confluent)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule91();
-    [GeneratedRegex("(?i)(?:confluent)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:confluent)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule92();
-    [GeneratedRegex("(?i)(?:confluent)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:confluent)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule92();
-    [GeneratedRegex("(?i)(?:contentful)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:contentful)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule93();
-    [GeneratedRegex("(?i)(?:contentful)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{0,43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:contentful)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{0,43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule93();
-    [GeneratedRegex("(?i)\\b(?:couchbase|capella)(?:.|[\\n\\r]){0,32}?(?:api(?:.|[\\n\\r]){0,12}?(?:key|secret)|key(?:.|[\\n\\r]){0,12}?secret)(?:.|[\\n\\r]){0,32}?\\b([A-Za-z0-9+/]{60,120}={0,2})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(?:couchbase|capella)(?:.|[\\n\\r]){0,32}?(?:api(?:.|[\\n\\r]){0,12}?(?:key|secret)|key(?:.|[\\n\\r]){0,12}?secret)(?:.|[\\n\\r]){0,32}?\\b([A-Za-z0-9+/]{60,120}={0,2})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule94();
-    [GeneratedRegex("(?i)\\b(?:couchbase|capella)(?:.|[\\n\\r]){0,32}?(?:api(?:.|[\\n\\r]){0,12}?(?:key|secret)|key(?:.|[\\n\\r]){0,12}?secret)(?:.|[\\n\\r]){0,32}?\\b([A-Za-z0-9+/]{0,120}={0,2})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(?:couchbase|capella)(?:.|[\\n\\r]){0,32}?(?:api(?:.|[\\n\\r]){0,12}?(?:key|secret)|key(?:.|[\\n\\r]){0,12}?secret)(?:.|[\\n\\r]){0,32}?\\b([A-Za-z0-9+/]{0,120}={0,2})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule94();
-    [GeneratedRegex("(?i)(?:coveralls)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{37})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:coveralls)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{37})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule95();
-    [GeneratedRegex("(?i)(?:coveralls)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{0,37})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:coveralls)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{0,37})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule95();
-    [GeneratedRegex("(?i)(?:crates(?:[_.-]?io)?)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(cio[A-Za-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:crates(?:[_.-]?io)?)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(cio[A-Za-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule96();
-    [GeneratedRegex("(?i)(?:crates(?:[_.-]?io)?)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(cio[A-Za-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:crates(?:[_.-]?io)?)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(cio[A-Za-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule96();
-    [GeneratedRegex("\\bcurl\\b(?:.*?|.*?(?:[\\r\\n]{1,2}.*?){1,5})[ \\t\\n\\r](?:-H|--header)(?:=|[ \\t]{0,5})(?:\"(?i)(?:Authorization:[ \\t]{0,5}(?:Basic[ \\t]([a-z0-9+/]{8,}={0,3})|(?:Bearer|(?:Api-)?Token)[ \\t]([\\w=~@.+/-]{8,})|([\\w=~@.+/-]{8,}))|(?:(?:X-(?:[a-z]+-)?)?(?:Api-?)?(?:Key|Token)):[ \\t]{0,5}([\\w=~@.+/-]{8,}))\"|'(?i)(?:Authorization:[ \\t]{0,5}(?:Basic[ \\t]([a-z0-9+/]{8,}={0,3})|(?:Bearer|(?:Api-)?Token)[ \\t]([\\w=~@.+/-]{8,})|([\\w=~@.+/-]{8,}))|(?:(?:X-(?:[a-z]+-)?)?(?:Api-?)?(?:Key|Token)):[ \\t]{0,5}([\\w=~@.+/-]{8,}))')(?:\\B|\\s|\\z)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bcurl\\b(?:.*?|.*?(?:[\\r\\n]{1,2}.*?){1,5})[ \\t\\n\\r](?:-H|--header)(?:=|[ \\t]{0,5})(?:\"(?i)(?:Authorization:[ \\t]{0,5}(?:Basic[ \\t]([a-z0-9+/]{8,}={0,3})|(?:Bearer|(?:Api-)?Token)[ \\t]([\\w=~@.+/-]{8,})|([\\w=~@.+/-]{8,}))|(?:(?:X-(?:[a-z]+-)?)?(?:Api-?)?(?:Key|Token)):[ \\t]{0,5}([\\w=~@.+/-]{8,}))\"|'(?i)(?:Authorization:[ \\t]{0,5}(?:Basic[ \\t]([a-z0-9+/]{8,}={0,3})|(?:Bearer|(?:Api-)?Token)[ \\t]([\\w=~@.+/-]{8,})|([\\w=~@.+/-]{8,}))|(?:(?:X-(?:[a-z]+-)?)?(?:Api-?)?(?:Key|Token)):[ \\t]{0,5}([\\w=~@.+/-]{8,}))')(?:\\B|\\s|\\z)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule97();
-    [GeneratedRegex("\\bcurl\\b(?:.*?|.*?(?:[\\r\\n]{0,2}.*?){0,5})[ \\t\\n\\r](?:-H|--header)(?:=|[ \\t]{0,5})(?:\"(?i)(?:Authorization:[ \\t]{0,5}(?:Basic[ \\t]([a-z0-9+/]{8,}={0,3})|(?:Bearer|(?:Api-)?Token)[ \\t]([\\w=~@.+/-]{8,})|([\\w=~@.+/-]{8,}))|(?:(?:X-(?:[a-z]+-)?)?(?:Api-?)?(?:Key|Token)):[ \\t]{0,5}([\\w=~@.+/-]{8,}))\"|'(?i)(?:Authorization:[ \\t]{0,5}(?:Basic[ \\t]([a-z0-9+/]{8,}={0,3})|(?:Bearer|(?:Api-)?Token)[ \\t]([\\w=~@.+/-]{8,})|([\\w=~@.+/-]{8,}))|(?:(?:X-(?:[a-z]+-)?)?(?:Api-?)?(?:Key|Token)):[ \\t]{0,5}([\\w=~@.+/-]{8,}))')(?:\\B|\\s|\\z)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bcurl\\b(?:.*?|.*?(?:[\\r\\n]{1,2}.*?){1,5})[ \\t\\n\\r](?:-H|--header)(?:=|[ \\t]{0,5})(?:\"(?i)(?:Authorization:[ \\t]{0,5}(?:Basic[ \\t]([a-z0-9+/]{8,}={0,3})|(?:Bearer|(?:Api-)?Token)[ \\t]([\\w=~@.+/-]{8,})|([\\w=~@.+/-]{8,}))|(?:(?:X-(?:[a-z]+-)?)?(?:Api-?)?(?:Key|Token)):[ \\t]{0,5}([\\w=~@.+/-]{8,}))\"|'(?i)(?:Authorization:[ \\t]{0,5}(?:Basic[ \\t]([a-z0-9+/]{8,}={0,3})|(?:Bearer|(?:Api-)?Token)[ \\t]([\\w=~@.+/-]{8,})|([\\w=~@.+/-]{8,}))|(?:(?:X-(?:[a-z]+-)?)?(?:Api-?)?(?:Key|Token)):[ \\t]{0,5}([\\w=~@.+/-]{8,}))')(?:\\B|\\s|\\z)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule97();
-    [GeneratedRegex("\\bcurl\\b(?:.*|.*(?:[\\r\\n]{1,2}.*){1,5})[ \\t\\n\\r](?:-u|--user)(?:=|[ \\t]{0,5})(\"(:[^\"]{3,}|[^:\"]{3,}:|[^:\"]{3,}:[^\"]{3,})\"|'([^:']{3,}:[^']{3,})'|((?:\"[^\"]{3,}\"|'[^']{3,}'|[\\w$@.-]+):(?:\"[^\"]{3,}\"|'[^']{3,}'|[\\w${}@.-]+)))(?:\\s|\\z)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bcurl\\b(?:.*|.*(?:[\\r\\n]{1,2}.*){1,5})[ \\t\\n\\r](?:-u|--user)(?:=|[ \\t]{0,5})(\"(:[^\"]{3,}|[^:\"]{3,}:|[^:\"]{3,}:[^\"]{3,})\"|'([^:']{3,}:[^']{3,})'|((?:\"[^\"]{3,}\"|'[^']{3,}'|[\\w$@.-]+):(?:\"[^\"]{3,}\"|'[^']{3,}'|[\\w${}@.-]+)))(?:\\s|\\z)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule98();
-    [GeneratedRegex("\\bcurl\\b(?:.*|.*(?:[\\r\\n]{0,2}.*){0,5})[ \\t\\n\\r](?:-u|--user)(?:=|[ \\t]{0,5})(\"(:[^\"]{3,}|[^:\"]{3,}:|[^:\"]{3,}:[^\"]{3,})\"|'([^:']{3,}:[^']{3,})'|((?:\"[^\"]{3,}\"|'[^']{3,}'|[\\w$@.-]+):(?:\"[^\"]{3,}\"|'[^']{3,}'|[\\w${}@.-]+)))(?:\\s|\\z)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bcurl\\b(?:.*|.*(?:[\\r\\n]{1,2}.*){1,5})[ \\t\\n\\r](?:-u|--user)(?:=|[ \\t]{0,5})(\"(:[^\"]{3,}|[^:\"]{3,}:|[^:\"]{3,}:[^\"]{3,})\"|'([^:']{3,}:[^']{3,})'|((?:\"[^\"]{3,}\"|'[^']{3,}'|[\\w$@.-]+):(?:\"[^\"]{3,}\"|'[^']{3,}'|[\\w${}@.-]+)))(?:\\s|\\z)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule98();
-    [GeneratedRegex("(?i)(?:cursor)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(key_[0-9a-f]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:cursor)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(key_[0-9a-f]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule99();
-    [GeneratedRegex("(?i)(?:cursor)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(key_[0-9a-f]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:cursor)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(key_[0-9a-f]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule99();
-    [GeneratedRegex("(?i)(?:databento)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(db-[A-Za-z0-9]{29})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:databento)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(db-[A-Za-z0-9]{29})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule100();
-    [GeneratedRegex("(?i)(?:databento)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(db-[A-Za-z0-9]{0,29})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:databento)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(db-[A-Za-z0-9]{0,29})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule100();
-    [GeneratedRegex("\\b(dapi[a-f0-9]{32}(?:-\\d)?)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(dapi[a-f0-9]{32}(?:-\\d)?)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule101();
-    [GeneratedRegex("\\b(dapi[a-f0-9]{0,32}(?:-\\d)?)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(dapi[a-f0-9]{0,32}(?:-\\d)?)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule101();
-    [GeneratedRegex("(?i)(?:datadog)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:datadog)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule102();
-    [GeneratedRegex("(?i)(?:datadog)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:datadog)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule102();
-    [GeneratedRegex("(?i)(?:datadog)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:datadog)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule103();
-    [GeneratedRegex("(?i)(?:datadog)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:datadog)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule103();
-    [GeneratedRegex("(?i)(?:data\\.gov)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:data\\.gov)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule104();
-    [GeneratedRegex("(?i)(?:data\\.gov)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:data\\.gov)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule104();
-    [GeneratedRegex("\\b(AstraCS:[A-Za-z0-9]{20,})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(AstraCS:[A-Za-z0-9]{20,})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule105();
-    [GeneratedRegex("\\b(AstraCS:[A-Za-z0-9]{20,})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(AstraCS:[A-Za-z0-9]{20,})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule105();
-    [GeneratedRegex("(?i)(?:deepgram)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:deepgram)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule106();
-    [GeneratedRegex("(?i)(?:deepgram)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:deepgram)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule106();
-    [GeneratedRegex("(?i)(?:deepseek)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk-[a-f0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:deepseek)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk-[a-f0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule107();
-    [GeneratedRegex("(?i)(?:deepseek)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk-[a-f0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:deepseek)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk-[a-f0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule107();
-    [GeneratedRegex("(?i)(?:dnkey)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(dnkey-[a-z0-9=_\\-]{26}-[a-z0-9=_\\-]{52})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:dnkey)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(dnkey-[a-z0-9=_\\-]{26}-[a-z0-9=_\\-]{52})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule108();
-    [GeneratedRegex("(?i)(?:dnkey)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(dnkey-[a-z0-9=_\\-]{0,26}-[a-z0-9=_\\-]{0,52})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:dnkey)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(dnkey-[a-z0-9=_\\-]{0,26}-[a-z0-9=_\\-]{0,52})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule108();
-    [GeneratedRegex("\\b(ddp_[A-Za-z0-9]{36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ddp_[A-Za-z0-9]{36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule109();
-    [GeneratedRegex("\\b(ddp_[A-Za-z0-9]{0,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ddp_[A-Za-z0-9]{0,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule109();
-    [GeneratedRegex("\\b(dvc_client_[A-Za-z0-9]{8,32})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(dvc_client_[A-Za-z0-9]{8,32})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule110();
-    [GeneratedRegex("\\b(dvc_client_[A-Za-z0-9]{0,32})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(dvc_client_[A-Za-z0-9]{0,32})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule110();
-    [GeneratedRegex("\\b(dvc_mobile_[A-Za-z0-9]{8,32})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(dvc_mobile_[A-Za-z0-9]{8,32})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule111();
-    [GeneratedRegex("\\b(dvc_mobile_[A-Za-z0-9]{0,32})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(dvc_mobile_[A-Za-z0-9]{0,32})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule111();
-    [GeneratedRegex("\\b(dvc_server_[A-Za-z0-9]{8,32})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(dvc_server_[A-Za-z0-9]{8,32})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule112();
-    [GeneratedRegex("\\b(dvc_server_[A-Za-z0-9]{0,32})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(dvc_server_[A-Za-z0-9]{0,32})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule112();
-    [GeneratedRegex("\\b(apk_user_[A-Za-z0-9+/]{120,180}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(apk_user_[A-Za-z0-9+/]{120,180}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule113();
-    [GeneratedRegex("\\b(apk_user_[A-Za-z0-9+/]{0,180}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(apk_user_[A-Za-z0-9+/]{0,180}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule113();
-    [GeneratedRegex("\\b(apk_[A-Za-z0-9+/]{80,100}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(apk_[A-Za-z0-9+/]{80,100}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule114();
-    [GeneratedRegex("\\b(apk_[A-Za-z0-9+/]{0,100}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(apk_[A-Za-z0-9+/]{0,100}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule114();
-    [GeneratedRegex("\\b(cog_[a-z2-7]{52})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(cog_[a-z2-7]{52})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule115();
-    [GeneratedRegex("\\b(cog_[a-z2-7]{0,52})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(cog_[a-z2-7]{0,52})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule115();
-    [GeneratedRegex("\\b(doo_v1_[a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(doo_v1_[a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule116();
-    [GeneratedRegex("\\b(doo_v1_[a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(doo_v1_[a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule116();
-    [GeneratedRegex("\\b(dop_v1_[a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(dop_v1_[a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule117();
-    [GeneratedRegex("\\b(dop_v1_[a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(dop_v1_[a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule117();
-    [GeneratedRegex("(?i)\\b(dor_v1_[a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(dor_v1_[a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule118();
-    [GeneratedRegex("(?i)\\b(dor_v1_[a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(dor_v1_[a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule118();
-    [GeneratedRegex("(?i)(?:discord)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:discord)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule119();
-    [GeneratedRegex("(?i)(?:discord)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:discord)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule119();
-    [GeneratedRegex("(?i)(?:discord)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{18})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:discord)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{18})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule120();
-    [GeneratedRegex("(?i)(?:discord)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{0,18})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:discord)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{0,18})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule120();
-    [GeneratedRegex("(?i)(?:discord)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:discord)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule121();
-    [GeneratedRegex("(?i)(?:discord)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:discord)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule121();
-    [GeneratedRegex("(?i)(?:disqus)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:disqus)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule122();
-    [GeneratedRegex("(?i)(?:disqus)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:disqus)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule122();
-    [GeneratedRegex("\\b(SWMTKN-1-[a-z0-9]{50,60}-[a-z0-9]{24,30})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(SWMTKN-1-[a-z0-9]{50,60}-[a-z0-9]{24,30})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule123();
-    [GeneratedRegex("\\b(SWMTKN-1-[a-z0-9]{0,60}-[a-z0-9]{0,30})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(SWMTKN-1-[a-z0-9]{0,60}-[a-z0-9]{0,30})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule123();
-    [GeneratedRegex("\\b(SWMKEY-1-[A-Za-z0-9+/]{40,50})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(SWMKEY-1-[A-Za-z0-9+/]{40,50})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule124();
-    [GeneratedRegex("\\b(SWMKEY-1-[A-Za-z0-9+/]{0,50})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(SWMKEY-1-[A-Za-z0-9+/]{0,50})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule124();
-    [GeneratedRegex("\\b(dckr_oat_[A-Za-z0-9_-]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(dckr_oat_[A-Za-z0-9_-]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule125();
-    [GeneratedRegex("\\b(dckr_oat_[A-Za-z0-9_-]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(dckr_oat_[A-Za-z0-9_-]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule125();
-    [GeneratedRegex("\\b(dckr_pat_[A-Za-z0-9_-]{27})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(dckr_pat_[A-Za-z0-9_-]{27})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule126();
-    [GeneratedRegex("\\b(dckr_pat_[A-Za-z0-9_-]{0,27})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(dckr_pat_[A-Za-z0-9_-]{0,27})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule126();
-    [GeneratedRegex("dp\\.pt\\.(?i)[a-z0-9]{43}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("dp\\.pt\\.(?i)[a-z0-9]{43}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule127();
-    [GeneratedRegex("dp\\.pt\\.(?i)[a-z0-9]{0,43}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("dp\\.pt\\.(?i)[a-z0-9]{0,43}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule127();
-    [GeneratedRegex("(?i)(?:droneci)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:droneci)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule128();
-    [GeneratedRegex("(?i)(?:droneci)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:droneci)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule128();
-    [GeneratedRegex("(?i)(?:dropbox)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{15})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:dropbox)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{15})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule129();
-    [GeneratedRegex("(?i)(?:dropbox)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,15})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:dropbox)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,15})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule129();
-    [GeneratedRegex("(?i)(?:dropbox)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{11}(AAAAAAAAAA)[a-z0-9\\-_=]{43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:dropbox)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{11}(AAAAAAAAAA)[a-z0-9\\-_=]{43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule130();
-    [GeneratedRegex("(?i)(?:dropbox)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,11}(AAAAAAAAAA)[a-z0-9\\-_=]{0,43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:dropbox)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,11}(AAAAAAAAAA)[a-z0-9\\-_=]{0,43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule130();
-    [GeneratedRegex("(?i)(?:dropbox)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sl\\.[a-z0-9\\-=_]{135})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:dropbox)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sl\\.[a-z0-9\\-=_]{135})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule131();
-    [GeneratedRegex("(?i)(?:dropbox)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sl\\.[a-z0-9\\-=_]{0,135})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:dropbox)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sl\\.[a-z0-9\\-=_]{0,135})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule131();
-    [GeneratedRegex("duffel_(?:test|live)_(?i)[a-z0-9_\\-=]{43}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("duffel_(?:test|live)_(?i)[a-z0-9_\\-=]{43}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule132();
-    [GeneratedRegex("duffel_(?:test|live)_(?i)[a-z0-9_\\-=]{0,43}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("duffel_(?:test|live)_(?i)[a-z0-9_\\-=]{0,43}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule132();
-    [GeneratedRegex("dt0c01\\.(?i)[a-z0-9]{24}\\.[a-z0-9]{64}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("dt0c01\\.(?i)[a-z0-9]{24}\\.[a-z0-9]{64}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule133();
-    [GeneratedRegex("dt0c01\\.(?i)[a-z0-9]{0,24}\\.[a-z0-9]{0,64}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("dt0c01\\.(?i)[a-z0-9]{0,24}\\.[a-z0-9]{0,64}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule133();
-    [GeneratedRegex("\\bEZAK(?i)[a-z0-9]{54}\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bEZAK(?i)[a-z0-9]{54}\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule134();
-    [GeneratedRegex("\\bEZAK(?i)[a-z0-9]{0,54}\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bEZAK(?i)[a-z0-9]{0,54}\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule134();
-    [GeneratedRegex("\\bEZTK(?i)[a-z0-9]{54}\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bEZTK(?i)[a-z0-9]{54}\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule135();
-    [GeneratedRegex("\\bEZTK(?i)[a-z0-9]{0,54}\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bEZTK(?i)[a-z0-9]{0,54}\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule135();
-    [GeneratedRegex("\\b([a-zA-Z0-9_-]+-[a-zA-Z0-9_-]+-PRD-[a-f0-9]{8,12}-[a-f0-9]{8,12})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b([a-zA-Z0-9_-]+-[a-zA-Z0-9_-]+-PRD-[a-f0-9]{8,12}-[a-f0-9]{8,12})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule136();
-    [GeneratedRegex("\\b([a-zA-Z0-9_-]+-[a-zA-Z0-9_-]+-PRD-[a-f0-9]{0,12}-[a-f0-9]{0,12})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b([a-zA-Z0-9_-]+-[a-zA-Z0-9_-]+-PRD-[a-f0-9]{0,12}-[a-f0-9]{0,12})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule136();
-    [GeneratedRegex("(?i:(?:ebay(?:[_. -]*(?:client|api))?[_. -]*(?:secret|key))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(PRD-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:ebay(?:[_. -]*(?:client|api))?[_. -]*(?:secret|key))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(PRD-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule137();
-    [GeneratedRegex("(?i:(?:ebay(?:[_. -]*(?:client|api))?[_. -]*(?:secret|key))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(PRD-[a-f0-9]{0,8}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:ebay(?:[_. -]*(?:client|api))?[_. -]*(?:secret|key))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(PRD-[a-f0-9]{0,8}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule137();
-    [GeneratedRegex("\\b(essu_[A-Za-z0-9_\\-]{60,200}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(essu_[A-Za-z0-9_\\-]{60,200}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule138();
-    [GeneratedRegex("\\b(essu_[A-Za-z0-9_\\-]{0,200}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(essu_[A-Za-z0-9_\\-]{0,200}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule138();
-    [GeneratedRegex("(?i)(?:elevenlabs)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_[0-9a-f]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:elevenlabs)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_[0-9a-f]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule139();
-    [GeneratedRegex("(?i)(?:elevenlabs)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_[0-9a-f]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:elevenlabs)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_[0-9a-f]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule139();
-    [GeneratedRegex("(?i)(?:endor(?:labs)?|key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(endr\\+[A-Za-z0-9-]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:endor(?:labs)?|key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(endr\\+[A-Za-z0-9-]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule140();
-    [GeneratedRegex("(?i)(?:endor(?:labs)?|key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(endr\\+[A-Za-z0-9-]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:endor(?:labs)?|key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(endr\\+[A-Za-z0-9-]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule140();
-    [GeneratedRegex("(?i)(?:endor(?:labs)?|secret)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(endr\\+[A-Za-z0-9-]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:endor(?:labs)?|secret)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(endr\\+[A-Za-z0-9-]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule141();
-    [GeneratedRegex("(?i)(?:endor(?:labs)?|secret)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(endr\\+[A-Za-z0-9-]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:endor(?:labs)?|secret)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(endr\\+[A-Za-z0-9-]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule141();
-    [GeneratedRegex("(?i)(?:etsy|x-api-key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{24}:[a-z0-9]{10,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:etsy|x-api-key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{24}:[a-z0-9]{10,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule142();
-    [GeneratedRegex("(?i)(?:etsy|x-api-key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,24}:[a-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:etsy|x-api-key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,24}:[a-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule142();
-    [GeneratedRegex("\\b(EXO[a-zA-Z0-9]{24,30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(EXO[a-zA-Z0-9]{24,30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule143();
-    [GeneratedRegex("\\b(EXO[a-zA-Z0-9]{0,30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(EXO[a-zA-Z0-9]{0,30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule143();
-    [GeneratedRegex("(?i)(?:exoscale)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_\\-]{40,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:exoscale)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_\\-]{40,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule144();
-    [GeneratedRegex("(?i)(?:exoscale)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_\\-]{0,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:exoscale)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_\\-]{0,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule144();
-    [GeneratedRegex("(?i)\\b(\\d{15,16}(\\||%)[0-9a-z\\-_]{27,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(\\d{15,16}(\\||%)[0-9a-z\\-_]{27,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule145();
-    [GeneratedRegex("(?i)\\b(\\d{0,16}(\\||%)[0-9a-z\\-_]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(\\d{0,16}(\\||%)[0-9a-z\\-_]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule145();
-    [GeneratedRegex("\\b(EAA[MC](?i)[a-z0-9]{100,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(EAA[MC](?i)[a-z0-9]{100,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule146();
-    [GeneratedRegex("\\b(EAA[MC](?i)[a-z0-9]{100,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(EAA[MC](?i)[a-z0-9]{100,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule146();
-    [GeneratedRegex("(?i)(?:facebook)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:facebook)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule147();
-    [GeneratedRegex("(?i)(?:facebook)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:facebook)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule147();
-    [GeneratedRegex("(?i:(?:falai|fal_ai|fal-ai|fal.ai|fal-api|fal_api|fal_key|fal-key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}:[a-f0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:falai|fal_ai|fal-ai|fal.ai|fal-api|fal_api|fal_key|fal-key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}:[a-f0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule148();
-    [GeneratedRegex("(?i:(?:falai|fal_ai|fal-ai|fal.ai|fal-api|fal_api|fal_key|fal-key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,8}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,12}:[a-f0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:falai|fal_ai|fal-ai|fal.ai|fal-api|fal_api|fal_key|fal-key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,8}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,12}:[a-f0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule148();
-    [GeneratedRegex("(?i)(?:fastly)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:fastly)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule149();
-    [GeneratedRegex("(?i)(?:fastly)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:fastly)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule149();
-    [GeneratedRegex("(?i)(?:x-figma-token|xfigmatoken|x_figma_token)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9A-F]{4}-[0-9A-F]{8}(?:-[0-9A-F]{4}){3}-[0-9A-F]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:x-figma-token|xfigmatoken|x_figma_token)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9A-F]{4}-[0-9A-F]{8}(?:-[0-9A-F]{4}){3}-[0-9A-F]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule150();
-    [GeneratedRegex("(?i)(?:x-figma-token|xfigmatoken|x_figma_token)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9A-F]{0,4}-[0-9A-F]{0,8}(?:-[0-9A-F]{0,4}){0,3}-[0-9A-F]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:x-figma-token|xfigmatoken|x_figma_token)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9A-F]{0,4}-[0-9A-F]{0,8}(?:-[0-9A-F]{0,4}){0,3}-[0-9A-F]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule150();
-    [GeneratedRegex("(?i)\\b(figd_[A-Z0-9_-]{38,42})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(figd_[A-Z0-9_-]{38,42})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule151();
-    [GeneratedRegex("(?i)\\b(figd_[A-Z0-9_-]{0,42})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(figd_[A-Z0-9_-]{0,42})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule151();
-    [GeneratedRegex("(?i)(?:finicity)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:finicity)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule152();
-    [GeneratedRegex("(?i)(?:finicity)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:finicity)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule152();
-    [GeneratedRegex("(?i)(?:finicity)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:finicity)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule153();
-    [GeneratedRegex("(?i)(?:finicity)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:finicity)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule153();
-    [GeneratedRegex("(?i)(?:finnhub)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:finnhub)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule154();
-    [GeneratedRegex("(?i)(?:finnhub)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:finnhub)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule154();
-    [GeneratedRegex("(?i)(?:flickr)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:flickr)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule155();
-    [GeneratedRegex("(?i)(?:flickr)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:flickr)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule155();
-    [GeneratedRegex("FLWSECK_TEST-(?i)[a-h0-9]{12}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("FLWSECK_TEST-(?i)[a-h0-9]{12}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule156();
-    [GeneratedRegex("FLWSECK_TEST-(?i)[a-h0-9]{0,12}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("FLWSECK_TEST-(?i)[a-h0-9]{0,12}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule156();
-    [GeneratedRegex("FLWPUBK_TEST-(?i)[a-h0-9]{32}-X", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("FLWPUBK_TEST-(?i)[a-h0-9]{32}-X", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule157();
-    [GeneratedRegex("FLWPUBK_TEST-(?i)[a-h0-9]{0,32}-X", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("FLWPUBK_TEST-(?i)[a-h0-9]{0,32}-X", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule157();
-    [GeneratedRegex("FLWSECK_TEST-(?i)[a-h0-9]{32}-X", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("FLWSECK_TEST-(?i)[a-h0-9]{32}-X", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule158();
-    [GeneratedRegex("FLWSECK_TEST-(?i)[a-h0-9]{0,32}-X", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("FLWSECK_TEST-(?i)[a-h0-9]{0,32}-X", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule158();
-    [GeneratedRegex("\\b(FlyV1\\s[A-Za-z0-9=_\\-,/+]{100,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(FlyV1\\s[A-Za-z0-9=_\\-,/+]{100,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule159();
-    [GeneratedRegex("\\b(FlyV1\\s[A-Za-z0-9=_\\-,/+]{100,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(FlyV1\\s[A-Za-z0-9=_\\-,/+]{100,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule159();
-    [GeneratedRegex("fio-u-(?i)[a-z0-9\\-_=]{64}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("fio-u-(?i)[a-z0-9\\-_=]{64}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule160();
-    [GeneratedRegex("fio-u-(?i)[a-z0-9\\-_=]{0,64}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("fio-u-(?i)[a-z0-9\\-_=]{0,64}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule160();
-    [GeneratedRegex("(?i)[\"']secret_key[\"']\\s*=>\\s*[\"'](sk_[\\S]{29})[\"']", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)[\"']secret_key[\"']\\s*=>\\s*[\"'](sk_[\\S]{29})[\"']", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule161();
-    [GeneratedRegex("(?i)[\"']secret_key[\"']\\s*=>\\s*[\"'](sk_[\\S]{0,29})[\"']", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)[\"']secret_key[\"']\\s*=>\\s*[\"'](sk_[\\S]{0,29})[\"']", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule161();
-    [GeneratedRegex("(?i)(?:freshbooks)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:freshbooks)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule162();
-    [GeneratedRegex("(?i)(?:freshbooks)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:freshbooks)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule162();
-    [GeneratedRegex("(?i)(?:(?:fullstory|fs_api|fullstory_api))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:na1|eu1)\\.[A-Za-z0-9]{20,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:(?:fullstory|fs_api|fullstory_api))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:na1|eu1)\\.[A-Za-z0-9]{20,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule163();
-    [GeneratedRegex("(?i)(?:(?:fullstory|fs_api|fullstory_api))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:na1|eu1)\\.[A-Za-z0-9]{20,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:(?:fullstory|fs_api|fullstory_api))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:na1|eu1)\\.[A-Za-z0-9]{20,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule163();
-    [GeneratedRegex("\\b(AIza[\\w-]{35})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(AIza[\\w-]{35})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule164();
-    [GeneratedRegex("\\b(AIza[\\w-]{0,35})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(AIza[\\w-]{0,35})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule164();
-    [GeneratedRegex("\\{[^{]+(?:(?:\"client_secret\"\\s*:\\s*\"[^\"]+\"[^}]+\"refresh_token\"\\s*:\\s*\"[^\"]+\")|(?:\"refresh_token\"\\s*:\\s*\"[^\"]+\"[^}]+\"client_secret\"\\s*:\\s*\"[^\"]+\"))[^}]+\\}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\{[^{]+(?:(?:\"client_secret\"\\s*:\\s*\"[^\"]+\"[^}]+\"refresh_token\"\\s*:\\s*\"[^\"]+\")|(?:\"refresh_token\"\\s*:\\s*\"[^\"]+\"[^}]+\"client_secret\"\\s*:\\s*\"[^\"]+\"))[^}]+\\}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule165();
-    [GeneratedRegex("\\{[^{]+(?:(?:\"client_secret\"\\s*:\\s*\"[^\"]+\"[^}]+\"refresh_token\"\\s*:\\s*\"[^\"]+\")|(?:\"refresh_token\"\\s*:\\s*\"[^\"]+\"[^}]+\"client_secret\"\\s*:\\s*\"[^\"]+\"))[^}]+\\}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\{[^{]+(?:(?:\"client_secret\"\\s*:\\s*\"[^\"]+\"[^}]+\"refresh_token\"\\s*:\\s*\"[^\"]+\")|(?:\"refresh_token\"\\s*:\\s*\"[^\"]+\"[^}]+\"client_secret\"\\s*:\\s*\"[^\"]+\"))[^}]+\\}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule165();
-    [GeneratedRegex("\\b(AQ\\.Ab8RN6[A-Za-z0-9_-]{44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(AQ\\.Ab8RN6[A-Za-z0-9_-]{44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule166();
-    [GeneratedRegex("\\b(AQ\\.Ab8RN6[A-Za-z0-9_-]{0,44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(AQ\\.Ab8RN6[A-Za-z0-9_-]{0,44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule166();
-    [GeneratedRegex("\\{[^{]+(?:(?:\"private_key\"\\s*:\\s*\"-----BEGIN (?:RSA )?PRIVATE KEY-----[^}]+auth_provider_x509_cert_url)|(?:auth_provider_x509_cert_url[^}]+\"private_key\"\\s*:\\s*\"-----BEGIN (?:RSA )?PRIVATE KEY-----))[^}]+\\}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\{[^{]+(?:(?:\"private_key\"\\s*:\\s*\"-----BEGIN (?:RSA )?PRIVATE KEY-----[^}]+auth_provider_x509_cert_url)|(?:auth_provider_x509_cert_url[^}]+\"private_key\"\\s*:\\s*\"-----BEGIN (?:RSA )?PRIVATE KEY-----))[^}]+\\}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule167();
-    [GeneratedRegex("\\{[^{]+(?:(?:\"private_key\"\\s*:\\s*\"-----BEGIN (?:RSA )?PRIVATE KEY-----[^}]+auth_provider_x509_cert_url)|(?:auth_provider_x509_cert_url[^}]+\"private_key\"\\s*:\\s*\"-----BEGIN (?:RSA )?PRIVATE KEY-----))[^}]+\\}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\{[^{]+(?:(?:\"private_key\"\\s*:\\s*\"-----BEGIN (?:RSA )?PRIVATE KEY-----[^}]+auth_provider_x509_cert_url)|(?:auth_provider_x509_cert_url[^}]+\"private_key\"\\s*:\\s*\"-----BEGIN (?:RSA )?PRIVATE KEY-----))[^}]+\\}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule167();
-    [GeneratedRegex("(?i)(?:access|auth|(?-i:[Aa]pi|API)|credential|creds|key|secret|token)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([\\w.=-]{10,150}|[a-z0-9][a-z0-9+/]{11,}={0,3})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:access|auth|(?-i:[Aa]pi|API)|credential|creds|key|secret|token)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([\\w.=-]{10,150}|[a-z0-9][a-z0-9+/]{11,}={0,3})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule168();
-    [GeneratedRegex("(?i)(?:access|auth|(?-i:[Aa]pi|API)|credential|creds|key|secret|token)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([\\w.=-]{0,150}|[a-z0-9][a-z0-9+/]{11,}={0,3})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:access|auth|(?-i:[Aa]pi|API)|credential|creds|key|secret|token)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([\\w.=-]{0,150}|[a-z0-9][a-z0-9+/]{11,}={0,3})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule168();
-    [GeneratedRegex("(?i)\\b(?<uri>(?<scheme>https?|postgres(?:ql)?|mysql|mariadb|mongodb(?:\\+srv)?|rediss?|amqps?|ldaps?|smtps?|ftps?|ssh)://(?<username>[^:/@\\s'\"\\x60]{0,128}):(?<password>[^/@\\s'\"\\x60]{1,256})@(?<host>(?:\\[[0-9a-f:.%]+\\]|[a-z0-9][a-z0-9._-]{0,252}))(?::[0-9]{1,5})?(?:,(?:\\[[0-9a-f:.%]+\\]|[a-z0-9][a-z0-9._-]{0,252})(?::[0-9]{1,5})?)*(?:[/?][a-z0-9._~!$&(*+,;=:@%/?-]*)?)(?:[\\s'\"\\x60#<>{}\\[\\],;)]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(?<uri>(?<scheme>https?|postgres(?:ql)?|mysql|mariadb|mongodb(?:\\+srv)?|rediss?|amqps?|ldaps?|smtps?|ftps?|ssh)://(?<username>[^:/@\\s'\"\\x60]{0,128}):(?<password>[^/@\\s'\"\\x60]{1,256})@(?<host>(?:\\[[0-9a-f:.%]+\\]|[a-z0-9][a-z0-9._-]{0,252}))(?::[0-9]{1,5})?(?:,(?:\\[[0-9a-f:.%]+\\]|[a-z0-9][a-z0-9._-]{0,252})(?::[0-9]{1,5})?)*(?:[/?][a-z0-9._~!$&(*+,;=:@%/?-]*)?)(?:[\\s'\"\\x60#<>{}\\[\\],;)]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule169();
-    [GeneratedRegex("(?i)\\b(?<uri>(?<scheme>https?|postgres(?:ql)?|mysql|mariadb|mongodb(?:\\+srv)?|rediss?|amqps?|ldaps?|smtps?|ftps?|ssh)://(?<username>[^:/@\\s'\"\\x60]{0,128}):(?<password>[^/@\\s'\"\\x60]{0,256})@(?<host>(?:\\[[0-9a-f:.%]+\\]|[a-z0-9][a-z0-9._-]{0,252}))(?::[0-9]{0,5})?(?:,(?:\\[[0-9a-f:.%]+\\]|[a-z0-9][a-z0-9._-]{0,252})(?::[0-9]{0,5})?)*(?:[/?][a-z0-9._~!$&(*+,;=:@%/?-]*)?)(?:[\\s'\"\\x60#<>{}\\[\\],;)]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(?<uri>(?<scheme>https?|postgres(?:ql)?|mysql|mariadb|mongodb(?:\\+srv)?|rediss?|amqps?|ldaps?|smtps?|ftps?|ssh)://(?<username>[^:/@\\s'\"\\x60]{0,128}):(?<password>[^/@\\s'\"\\x60]{0,256})@(?<host>(?:\\[[0-9a-f:.%]+\\]|[a-z0-9][a-z0-9._-]{0,252}))(?::[0-9]{0,5})?(?:,(?:\\[[0-9a-f:.%]+\\]|[a-z0-9][a-z0-9._-]{0,252})(?::[0-9]{0,5})?)*(?:[/?][a-z0-9._~!$&(*+,;=:@%/?-]*)?)(?:[\\s'\"\\x60#<>{}\\[\\],;)]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule169();
-    [GeneratedRegex("(?i)(?:(?:passw(?:or)?d|psw|[_.-]pw)\\b[ \\t'\"\\\\]{0,3}(?:=>|:=|=|:)[ \\t]{0,5}(?:\"((?:\\\\.|[^\"\\\\\\r\\n]){5,250})\"|'((?:\\\\.|[^'\\\\\\r\\n]){5,250})'|\\x60((?:\\\\.|[^\\x60\\\\\\r\\n]){5,250})\\x60|([^:=\\s'\"\\x60,;][^\\s'\"\\x60,;]{4,249}))(?:[ \\t]*[,;)}\\]\\r\\n]|[ \\t]+(?:#|//|/\\*|--)|[ \\t]*$|\\\\[nr])|\\b(?:login|log_in|authenticate)\\b[ \\t]*\\([ \\t]*[^,()\\r\\n]{1,250}[ \\t]*,[ \\t]*(?:\"((?:\\\\.|[^\"\\\\\\r\\n]){4,250})\"|'((?:\\\\.|[^'\\\\\\r\\n]){4,250})'|\\x60((?:\\\\.|[^\\x60\\\\\\r\\n]){4,250})\\x60)[ \\t]*\\))", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:(?:passw(?:or)?d|psw|[_.-]pw)\\b[ \\t'\"\\\\]{0,3}(?:=>|:=|=|:)[ \\t]{0,5}(?:\"((?:\\\\.|[^\"\\\\\\r\\n]){5,250})\"|'((?:\\\\.|[^'\\\\\\r\\n]){5,250})'|\\x60((?:\\\\.|[^\\x60\\\\\\r\\n]){5,250})\\x60|([^:=\\s'\"\\x60,;][^\\s'\"\\x60,;]{4,249}))(?:[ \\t]*[,;)}\\]\\r\\n]|[ \\t]+(?:#|//|/\\*|--)|[ \\t]*$|\\\\[nr])|\\b(?:login|log_in|authenticate)\\b[ \\t]*\\([ \\t]*[^,()\\r\\n]{1,250}[ \\t]*,[ \\t]*(?:\"((?:\\\\.|[^\"\\\\\\r\\n]){4,250})\"|'((?:\\\\.|[^'\\\\\\r\\n]){4,250})'|\\x60((?:\\\\.|[^\\x60\\\\\\r\\n]){4,250})\\x60)[ \\t]*\\))", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule170();
-    [GeneratedRegex("(?i)(?:(?:passw(?:or)?d|psw|[_.-]pw)\\b[ \\t'\"\\\\]{0,3}(?:=>|:=|=|:)[ \\t]{0,5}(?:\"((?:\\\\.|[^\"\\\\\\r\\n]){0,250})\"|'((?:\\\\.|[^'\\\\\\r\\n]){0,250})'|\\x60((?:\\\\.|[^\\x60\\\\\\r\\n]){0,250})\\x60|([^:=\\s'\"\\x60,;][^\\s'\"\\x60,;]{0,249}))(?:[ \\t]*[,;)}\\]\\r\\n]|[ \\t]+(?:#|//|/\\*|--)|[ \\t]*$|\\\\[nr])|\\b(?:login|log_in|authenticate)\\b[ \\t]*\\([ \\t]*[^,()\\r\\n]{0,250}[ \\t]*,[ \\t]*(?:\"((?:\\\\.|[^\"\\\\\\r\\n]){0,250})\"|'((?:\\\\.|[^'\\\\\\r\\n]){0,250})'|\\x60((?:\\\\.|[^\\x60\\\\\\r\\n]){0,250})\\x60)[ \\t]*\\))", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:(?:passw(?:or)?d|psw|[_.-]pw)\\b[ \\t'\"\\\\]{0,3}(?:=>|:=|=|:)[ \\t]{0,5}(?:\"((?:\\\\.|[^\"\\\\\\r\\n]){0,250})\"|'((?:\\\\.|[^'\\\\\\r\\n]){0,250})'|\\x60((?:\\\\.|[^\\x60\\\\\\r\\n]){0,250})\\x60|([^:=\\s'\"\\x60,;][^\\s'\"\\x60,;]{0,249}))(?:[ \\t]*[,;)}\\]\\r\\n]|[ \\t]+(?:#|//|/\\*|--)|[ \\t]*$|\\\\[nr])|\\b(?:login|log_in|authenticate)\\b[ \\t]*\\([ \\t]*[^,()\\r\\n]{1,250}[ \\t]*,[ \\t]*(?:\"((?:\\\\.|[^\"\\\\\\r\\n]){0,250})\"|'((?:\\\\.|[^'\\\\\\r\\n]){0,250})'|\\x60((?:\\\\.|[^\\x60\\\\\\r\\n]){0,250})\\x60)[ \\t]*\\))", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule170();
-    [GeneratedRegex("(?m)(?:^|[^a-zA-Z0-9])(?i:username|user|login(?:[_.-]?name)?|email(?:[_.-]?address)?|uid|account(?:[_.-]?name)?|client(?:[_.-]?(?:id|name))?)\\b[ \\t'\"\\\\]{0,3}(?:=>|:=|=|:)[ \\t]{0,5}(?:\"((?:\\\\.|[^\"\\\\\\r\\n]){3,250})\"|'((?:\\\\.|[^'\\\\\\r\\n]){3,250})'|\\x60((?:\\\\.|[^\\x60\\\\\\r\\n]){3,250})\\x60|([^:=\\s'\"\\x60,;][^\\s'\"\\x60,;]{2,249}))(?:[ \\t]*[,;)}\\]\\r\\n]|[ \\t]*$|\\\\[nr])", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?m)(?:^|[^a-zA-Z0-9])(?i:username|user|login(?:[_.-]?name)?|email(?:[_.-]?address)?|uid|account(?:[_.-]?name)?|client(?:[_.-]?(?:id|name))?)\\b[ \\t'\"\\\\]{0,3}(?:=>|:=|=|:)[ \\t]{0,5}(?:\"((?:\\\\.|[^\"\\\\\\r\\n]){3,250})\"|'((?:\\\\.|[^'\\\\\\r\\n]){3,250})'|\\x60((?:\\\\.|[^\\x60\\\\\\r\\n]){3,250})\\x60|([^:=\\s'\"\\x60,;][^\\s'\"\\x60,;]{2,249}))(?:[ \\t]*[,;)}\\]\\r\\n]|[ \\t]*$|\\\\[nr])", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule171();
-    [GeneratedRegex("(?m)(?:^|[^a-zA-Z0-9])(?i:username|user|login(?:[_.-]?name)?|email(?:[_.-]?address)?|uid|account(?:[_.-]?name)?|client(?:[_.-]?(?:id|name))?)\\b[ \\t'\"\\\\]{0,3}(?:=>|:=|=|:)[ \\t]{0,5}(?:\"((?:\\\\.|[^\"\\\\\\r\\n]){0,250})\"|'((?:\\\\.|[^'\\\\\\r\\n]){0,250})'|\\x60((?:\\\\.|[^\\x60\\\\\\r\\n]){0,250})\\x60|([^:=\\s'\"\\x60,;][^\\s'\"\\x60,;]{0,249}))(?:[ \\t]*[,;)}\\]\\r\\n]|[ \\t]*$|\\\\[nr])", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?m)(?:^|[^a-zA-Z0-9])(?i:username|user|login(?:[_.-]?name)?|email(?:[_.-]?address)?|uid|account(?:[_.-]?name)?|client(?:[_.-]?(?:id|name))?)\\b[ \\t'\"\\\\]{0,3}(?:=>|:=|=|:)[ \\t]{0,5}(?:\"((?:\\\\.|[^\"\\\\\\r\\n]){0,250})\"|'((?:\\\\.|[^'\\\\\\r\\n]){0,250})'|\\x60((?:\\\\.|[^\\x60\\\\\\r\\n]){0,250})\\x60|([^:=\\s'\"\\x60,;][^\\s'\"\\x60,;]{0,249}))(?:[ \\t]*[,;)}\\]\\r\\n]|[ \\t]*$|\\\\[nr])", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule171();
-    [GeneratedRegex("(?i)(?:gitea[_.-]?(?:token|key|secret|access))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:gitea[_.-]?(?:token|key|secret|access))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule172();
-    [GeneratedRegex("(?i)(?:gitea[_.-]?(?:token|key|secret|access))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:gitea[_.-]?(?:token|key|secret|access))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule172();
-    [GeneratedRegex("(?:ghu|ghs)_[0-9a-zA-Z]{36}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?:ghu|ghs)_[0-9a-zA-Z]{36}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule173();
-    [GeneratedRegex("(?:ghu|ghs)_[0-9a-zA-Z]{0,36}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?:ghu|ghs)_[0-9a-zA-Z]{0,36}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule173();
-    [GeneratedRegex("github_pat_\\w{82}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("github_pat_\\w{82}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule174();
-    [GeneratedRegex("github_pat_\\w{0,82}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("github_pat_\\w{0,82}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule174();
-    [GeneratedRegex("gho_[0-9a-zA-Z]{36}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("gho_[0-9a-zA-Z]{36}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule175();
-    [GeneratedRegex("gho_[0-9a-zA-Z]{0,36}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("gho_[0-9a-zA-Z]{0,36}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule175();
-    [GeneratedRegex("ghp_[0-9a-zA-Z]{36}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("ghp_[0-9a-zA-Z]{36}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule176();
-    [GeneratedRegex("ghp_[0-9a-zA-Z]{0,36}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("ghp_[0-9a-zA-Z]{0,36}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule176();
-    [GeneratedRegex("ghr_[0-9a-zA-Z]{36}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("ghr_[0-9a-zA-Z]{36}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule177();
-    [GeneratedRegex("ghr_[0-9a-zA-Z]{0,36}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("ghr_[0-9a-zA-Z]{0,36}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule177();
-    [GeneratedRegex("glcbt-[0-9a-zA-Z]{1,5}_[0-9a-zA-Z_-]{20}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("glcbt-[0-9a-zA-Z]{1,5}_[0-9a-zA-Z_-]{20}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule178();
-    [GeneratedRegex("glcbt-[0-9a-zA-Z]{0,5}_[0-9a-zA-Z_-]{0,20}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("glcbt-[0-9a-zA-Z]{0,5}_[0-9a-zA-Z_-]{0,20}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule178();
-    [GeneratedRegex("gldt-[0-9a-zA-Z_\\-]{20}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("gldt-[0-9a-zA-Z_\\-]{20}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule179();
-    [GeneratedRegex("gldt-[0-9a-zA-Z_\\-]{0,20}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("gldt-[0-9a-zA-Z_\\-]{0,20}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule179();
-    [GeneratedRegex("glffct-[0-9a-zA-Z_\\-]{20}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("glffct-[0-9a-zA-Z_\\-]{20}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule180();
-    [GeneratedRegex("glffct-[0-9a-zA-Z_\\-]{0,20}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("glffct-[0-9a-zA-Z_\\-]{0,20}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule180();
-    [GeneratedRegex("glft-[0-9a-zA-Z_\\-]{20}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("glft-[0-9a-zA-Z_\\-]{20}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule181();
-    [GeneratedRegex("glft-[0-9a-zA-Z_\\-]{0,20}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("glft-[0-9a-zA-Z_\\-]{0,20}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule181();
-    [GeneratedRegex("incoming\\+(?:[A-Za-z0-9._-]+-)?\\d+-([A-Za-z0-9_-]+)-(?:issue(?:-\\d+)?|merge-request)@", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("incoming\\+(?:[A-Za-z0-9._-]+-)?\\d+-([A-Za-z0-9_-]+)-(?:issue(?:-\\d+)?|merge-request)@", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule182();
-    [GeneratedRegex("incoming\\+(?:[A-Za-z0-9._-]+-)?\\d+-([A-Za-z0-9_-]+)-(?:issue(?:-\\d+)?|merge-request)@", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("incoming\\+(?:[A-Za-z0-9._-]+-)?\\d+-([A-Za-z0-9_-]+)-(?:issue(?:-\\d+)?|merge-request)@", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule182();
-    [GeneratedRegex("glimt-[0-9a-zA-Z_\\-]{25}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("glimt-[0-9a-zA-Z_\\-]{25}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule183();
-    [GeneratedRegex("glimt-[0-9a-zA-Z_\\-]{0,25}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("glimt-[0-9a-zA-Z_\\-]{0,25}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule183();
-    [GeneratedRegex("glagent-[0-9a-zA-Z_\\-]{50}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("glagent-[0-9a-zA-Z_\\-]{50}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule184();
-    [GeneratedRegex("glagent-[0-9a-zA-Z_\\-]{0,50}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("glagent-[0-9a-zA-Z_\\-]{0,50}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule184();
-    [GeneratedRegex("gloas-[0-9a-zA-Z_\\-]{64}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("gloas-[0-9a-zA-Z_\\-]{64}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule185();
-    [GeneratedRegex("gloas-[0-9a-zA-Z_\\-]{0,64}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("gloas-[0-9a-zA-Z_\\-]{0,64}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule185();
-    [GeneratedRegex("glpat-[\\w-]{20}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("glpat-[\\w-]{20}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule186();
-    [GeneratedRegex("glpat-[\\w-]{0,20}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("glpat-[\\w-]{0,20}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule186();
-    [GeneratedRegex("\\bglpat-[0-9a-zA-Z_-]{27,300}\\.[0-9a-z]{2}[0-9a-z]{7}\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bglpat-[0-9a-zA-Z_-]{27,300}\\.[0-9a-z]{2}[0-9a-z]{7}\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule187();
-    [GeneratedRegex("\\bglpat-[0-9a-zA-Z_-]{0,300}\\.[0-9a-z]{0,2}[0-9a-z]{0,7}\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bglpat-[0-9a-zA-Z_-]{0,300}\\.[0-9a-z]{0,2}[0-9a-z]{0,7}\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule187();
-    [GeneratedRegex("\\bglpat-[0-9a-zA-Z_-]{27,300}\\.[0-9a-z]{2}\\.[0-9a-z]{9}\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bglpat-[0-9a-zA-Z_-]{27,300}\\.[0-9a-z]{2}\\.[0-9a-z]{9}\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule188();
-    [GeneratedRegex("\\bglpat-[0-9a-zA-Z_-]{0,300}\\.[0-9a-z]{0,2}\\.[0-9a-z]{0,9}\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bglpat-[0-9a-zA-Z_-]{0,300}\\.[0-9a-z]{0,2}\\.[0-9a-z]{0,9}\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule188();
-    [GeneratedRegex("glptt-[0-9a-f]{40}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("glptt-[0-9a-f]{40}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule189();
-    [GeneratedRegex("glptt-[0-9a-f]{0,40}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("glptt-[0-9a-f]{0,40}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule189();
-    [GeneratedRegex("GR1348941[\\w-]{20}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("GR1348941[\\w-]{20}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule190();
-    [GeneratedRegex("GR1348941[\\w-]{0,20}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("GR1348941[\\w-]{0,20}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule190();
-    [GeneratedRegex("glrt-[0-9a-zA-Z_\\-]{20}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("glrt-[0-9a-zA-Z_\\-]{20}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule191();
-    [GeneratedRegex("glrt-[0-9a-zA-Z_\\-]{0,20}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("glrt-[0-9a-zA-Z_\\-]{0,20}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule191();
-    [GeneratedRegex("\\bglrt-t\\d_[0-9a-zA-Z_\\-]{27,300}\\.[0-9a-z]{2}[0-9a-z]{7}\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bglrt-t\\d_[0-9a-zA-Z_\\-]{27,300}\\.[0-9a-z]{2}[0-9a-z]{7}\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule192();
-    [GeneratedRegex("\\bglrt-t\\d_[0-9a-zA-Z_\\-]{0,300}\\.[0-9a-z]{0,2}[0-9a-z]{0,7}\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bglrt-t\\d_[0-9a-zA-Z_\\-]{0,300}\\.[0-9a-z]{0,2}[0-9a-z]{0,7}\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule192();
-    [GeneratedRegex("glsoat-[0-9a-zA-Z_\\-]{20}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("glsoat-[0-9a-zA-Z_\\-]{20}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule193();
-    [GeneratedRegex("glsoat-[0-9a-zA-Z_\\-]{0,20}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("glsoat-[0-9a-zA-Z_\\-]{0,20}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule193();
-    [GeneratedRegex("_gitlab_session=[0-9a-z]{32}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("_gitlab_session=[0-9a-z]{32}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule194();
-    [GeneratedRegex("_gitlab_session=[0-9a-z]{0,32}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("_gitlab_session=[0-9a-z]{0,32}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule194();
-    [GeneratedRegex("(?i)(?:gitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:gitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule195();
-    [GeneratedRegex("(?i)(?:gitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:gitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule195();
-    [GeneratedRegex("(?i)(?:gocardless)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(live_(?i)[a-z0-9\\-_=]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:gocardless)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(live_(?i)[a-z0-9\\-_=]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule196();
-    [GeneratedRegex("(?i)(?:gocardless)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(live_(?i)[a-z0-9\\-_=]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:gocardless)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(live_(?i)[a-z0-9\\-_=]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule196();
-    [GeneratedRegex("\\b(eyJrIjoi[A-Za-z0-9+/]{40,380}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(eyJrIjoi[A-Za-z0-9+/]{40,380}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule197();
-    [GeneratedRegex("\\b(eyJrIjoi[A-Za-z0-9+/]{0,380}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(eyJrIjoi[A-Za-z0-9+/]{0,380}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule197();
-    [GeneratedRegex("\\b(glc_[A-Za-z0-9+/]{40,150}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(glc_[A-Za-z0-9+/]{40,150}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule198();
-    [GeneratedRegex("\\b(glc_[A-Za-z0-9+/]{0,150}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(glc_[A-Za-z0-9+/]{0,150}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule198();
-    [GeneratedRegex("\\b(glsa_[A-Za-z0-9]{32}_[A-Fa-f0-9]{8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(glsa_[A-Za-z0-9]{32}_[A-Fa-f0-9]{8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule199();
-    [GeneratedRegex("\\b(glsa_[A-Za-z0-9]{0,32}_[A-Fa-f0-9]{0,8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(glsa_[A-Za-z0-9]{0,32}_[A-Fa-f0-9]{0,8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule199();
-    [GeneratedRegex("(?i)(?:greptile)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9+/]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:greptile)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9+/]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule200();
-    [GeneratedRegex("(?i)(?:greptile)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9+/]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:greptile)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9+/]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule200();
-    [GeneratedRegex("(?i)\\b(gsk_[A-Z0-9]{52})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(gsk_[A-Z0-9]{52})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule201();
-    [GeneratedRegex("(?i)\\b(gsk_[A-Z0-9]{0,52})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(gsk_[A-Z0-9]{0,52})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule201();
-    [GeneratedRegex("(?i)(?:gumroad)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:[a-f0-9]{64}|[A-Za-z0-9-]{43}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:gumroad)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:[a-f0-9]{64}|[A-Za-z0-9-]{43}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule202();
-    [GeneratedRegex("(?i)(?:gumroad)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:[a-f0-9]{0,64}|[A-Za-z0-9-]{0,43}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:gumroad)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:[a-f0-9]{0,64}|[A-Za-z0-9-]{0,43}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule202();
-    [GeneratedRegex("(?:pat|sat)\\.[a-zA-Z0-9_-]{22}\\.[0-9a-f]{24}\\.[a-zA-Z0-9]{20}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?:pat|sat)\\.[a-zA-Z0-9_-]{22}\\.[0-9a-f]{24}\\.[a-zA-Z0-9]{20}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule203();
-    [GeneratedRegex("(?:pat|sat)\\.[a-zA-Z0-9_-]{0,22}\\.[0-9a-f]{0,24}\\.[a-zA-Z0-9]{0,20}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?:pat|sat)\\.[a-zA-Z0-9_-]{0,22}\\.[0-9a-f]{0,24}\\.[a-zA-Z0-9]{0,20}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule203();
-    [GeneratedRegex("(?i)[a-z0-9]{14}\\.(?-i:atlasv1)\\.[a-z0-9\\-_=]{60,70}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)[a-z0-9]{14}\\.(?-i:atlasv1)\\.[a-z0-9\\-_=]{60,70}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule204();
-    [GeneratedRegex("(?i)[a-z0-9]{0,14}\\.(?-i:atlasv1)\\.[a-z0-9\\-_=]{0,70}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)[a-z0-9]{0,14}\\.(?-i:atlasv1)\\.[a-z0-9\\-_=]{0,70}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule204();
-    [GeneratedRegex("(?i)(?:administrator_login_password|password)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(\"[a-z0-9=_\\-]{8,20}\")(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:administrator_login_password|password)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(\"[a-z0-9=_\\-]{8,20}\")(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule205();
-    [GeneratedRegex("(?i)(?:administrator_login_password|password)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(\"[a-z0-9=_\\-]{0,20}\")(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:administrator_login_password|password)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(\"[a-z0-9=_\\-]{0,20}\")(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule205();
-    [GeneratedRegex("(?i)(?:heroku)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:heroku)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule206();
-    [GeneratedRegex("(?i)(?:heroku)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:heroku)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule206();
-    [GeneratedRegex("\\b((HRKU-AA[0-9a-zA-Z_-]{58}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b((HRKU-AA[0-9a-zA-Z_-]{58}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule207();
-    [GeneratedRegex("\\b((HRKU-AA[0-9a-zA-Z_-]{0,58}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b((HRKU-AA[0-9a-zA-Z_-]{0,58}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule207();
-    [GeneratedRegex("(?i:(?:highnote(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token|sk[_. -]*live))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_live_a2V5Xz[A-Za-z0-9+/]{69}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:highnote(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token|sk[_. -]*live))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_live_a2V5Xz[A-Za-z0-9+/]{69}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule208();
-    [GeneratedRegex("(?i:(?:highnote(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token|sk[_. -]*live))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_live_a2V5Xz[A-Za-z0-9+/]{0,69}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:highnote(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token|sk[_. -]*live))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_live_a2V5Xz[A-Za-z0-9+/]{0,69}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule208();
-    [GeneratedRegex("(?i)(?:honeycomb)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:[a-f0-9]{32}|[a-z0-9]{22}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:honeycomb)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:[a-f0-9]{32}|[a-z0-9]{22}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule209();
-    [GeneratedRegex("(?i)(?:honeycomb)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:[a-f0-9]{0,32}|[a-z0-9]{0,22}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:honeycomb)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:[a-f0-9]{0,32}|[a-z0-9]{0,22}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule209();
-    [GeneratedRegex("(?i)(?:hubspot)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:hubspot)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule210();
-    [GeneratedRegex("(?i)(?:hubspot)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9A-F]{0,8}-[0-9A-F]{0,4}-[0-9A-F]{0,4}-[0-9A-F]{0,4}-[0-9A-F]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:hubspot)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9A-F]{0,8}-[0-9A-F]{0,4}-[0-9A-F]{0,4}-[0-9A-F]{0,4}-[0-9A-F]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule210();
-    [GeneratedRegex("\\b(hf_(?i:[a-z]{34}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(hf_(?i:[a-z]{34}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule211();
-    [GeneratedRegex("\\b(hf_(?i:[a-z]{0,34}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(hf_(?i:[a-z]{0,34}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule211();
-    [GeneratedRegex("\\b(api_org_(?i:[a-z]{34}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(api_org_(?i:[a-z]{34}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule212();
-    [GeneratedRegex("\\b(api_org_(?i:[a-z]{0,34}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(api_org_(?i:[a-z]{0,34}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule212();
-    [GeneratedRegex("(?i:(?:hunter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:hunter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule213();
-    [GeneratedRegex("(?i:(?:hunter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:hunter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule213();
-    [GeneratedRegex("(?i)(?:ibm(?:cloud)?|bx)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{42,44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:ibm(?:cloud)?|bx)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{42,44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule214();
-    [GeneratedRegex("(?i)(?:ibm(?:cloud)?|bx)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{0,44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:ibm(?:cloud)?|bx)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{0,44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule214();
-    [GeneratedRegex("(?i)(?:\\binflux(?:db)?\\b(?:.|[\\n\\r]){0,64}?\\b(?:token|api[_-]?key)\\b(?:.|[\\n\\r]){0,32}?)[=:\"'\\s]{1,8}([A-Za-z0-9+/=_-]{88,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:\\binflux(?:db)?\\b(?:.|[\\n\\r]){0,64}?\\b(?:token|api[_-]?key)\\b(?:.|[\\n\\r]){0,32}?)[=:\"'\\s]{1,8}([A-Za-z0-9+/=_-]{88,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule215();
-    [GeneratedRegex("(?i)(?:\\binflux(?:db)?\\b(?:.|[\\n\\r]){0,64}?\\b(?:token|api[_-]?key)\\b(?:.|[\\n\\r]){0,32}?)[=:\"'\\s]{0,8}([A-Za-z0-9+/=_-]{88,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:\\binflux(?:db)?\\b(?:.|[\\n\\r]){0,64}?\\b(?:token|api[_-]?key)\\b(?:.|[\\n\\r]){0,32}?)[=:\"'\\s]{1,8}([A-Za-z0-9+/=_-]{88,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule215();
-    [GeneratedRegex("(?i)(?:infomaniak)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_\\-]{60,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:infomaniak)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_\\-]{60,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule216();
-    [GeneratedRegex("(?i)(?:infomaniak)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_\\-]{0,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:infomaniak)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_\\-]{0,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule216();
-    [GeneratedRegex("\\b(ico-[a-zA-Z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ico-[a-zA-Z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule217();
-    [GeneratedRegex("\\b(ico-[a-zA-Z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ico-[a-zA-Z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule217();
-    [GeneratedRegex("(?i:(?:instantly)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9+/]{66}==)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:instantly)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9+/]{66}==)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule218();
-    [GeneratedRegex("(?i:(?:instantly)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9+/]{0,66}==)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:instantly)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9+/]{0,66}==)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule218();
-    [GeneratedRegex("(?i)(?:intercom)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:intercom)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule219();
-    [GeneratedRegex("(?i)(?:intercom)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{0,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:intercom)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{0,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule219();
-    [GeneratedRegex("\\b(s-s4t2(?:ud|af)-(?i)[abcdef0123456789]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(s-s4t2(?:ud|af)-(?i)[abcdef0123456789]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule220();
-    [GeneratedRegex("\\b(s-s4t2(?:ud|af)-(?i)[abcdef0123456789]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(s-s4t2(?:ud|af)-(?i)[abcdef0123456789]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule220();
-    [GeneratedRegex("\\b(ion_[A-Za-z0-9]{42})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ion_[A-Za-z0-9]{42})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule221();
-    [GeneratedRegex("\\b(ion_[A-Za-z0-9]{0,42})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ion_[A-Za-z0-9]{0,42})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule221();
-    [GeneratedRegex("(?i)(?:jumpcloud)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:jumpcloud)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule222();
-    [GeneratedRegex("(?i)(?:jumpcloud)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:jumpcloud)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule222();
-    [GeneratedRegex("\\b(ey[a-zA-Z0-9]{17,}\\.ey[a-zA-Z0-9\\/\\\\_-]{17,}\\.(?:[a-zA-Z0-9\\/\\\\_-]{10,}={0,2})?)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ey[a-zA-Z0-9]{17,}\\.ey[a-zA-Z0-9\\/\\\\_-]{17,}\\.(?:[a-zA-Z0-9\\/\\\\_-]{10,}={0,2})?)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule223();
-    [GeneratedRegex("\\b(ey[a-zA-Z0-9]{17,}\\.ey[a-zA-Z0-9\\/\\\\_-]{17,}\\.(?:[a-zA-Z0-9\\/\\\\_-]{10,}={0,2})?)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ey[a-zA-Z0-9]{17,}\\.ey[a-zA-Z0-9\\/\\\\_-]{17,}\\.(?:[a-zA-Z0-9\\/\\\\_-]{10,}={0,2})?)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule223();
-    [GeneratedRegex("\\bZXlK(?:(?<alg>aGJHY2lPaU)|(?<apu>aGNIVWlPaU)|(?<apv>aGNIWWlPaU)|(?<aud>aGRXUWlPaU)|(?<b64>aU5qUWlP)|(?<crit>amNtbDBJanBi)|(?<cty>amRIa2lPaU)|(?<epk>bGNHc2lPbn)|(?<enc>bGJtTWlPaU)|(?<jku>cWEzVWlPaU)|(?<jwk>cWQyc2lPb)|(?<iss>cGMzTWlPaU)|(?<iv>cGRpSTZJ)|(?<kid>cmFXUWlP)|(?<key_ops>clpYbGZiM0J6SWpwY)|(?<kty>cmRIa2lPaUp)|(?<nonce>dWIyNWpaU0k2)|(?<p2c>d01tTWlP)|(?<p2s>d01uTWlPaU)|(?<ppt>d2NIUWlPaU)|(?<sub>emRXSWlPaU)|(?<svt>emRuUWlP)|(?<tag>MFlXY2lPaU)|(?<typ>MGVYQWlPaUp)|(?<url>MWNtd2l)|(?<use>MWMyVWlPaUp)|(?<ver>MlpYSWlPaU)|(?<version>MlpYSnphVzl1SWpv)|(?<x>NElqb2)|(?<x5c>NE5XTWlP)|(?<x5t>NE5YUWlPaU)|(?<x5ts256>NE5YUWpVekkxTmlJNkl)|(?<x5u>NE5YVWlPaU)|(?<zip>NmFYQWlPaU))[a-zA-Z0-9\\/\\\\_+\\-\\r\\n]{40,}={0,2}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bZXlK(?:(?<alg>aGJHY2lPaU)|(?<apu>aGNIVWlPaU)|(?<apv>aGNIWWlPaU)|(?<aud>aGRXUWlPaU)|(?<b64>aU5qUWlP)|(?<crit>amNtbDBJanBi)|(?<cty>amRIa2lPaU)|(?<epk>bGNHc2lPbn)|(?<enc>bGJtTWlPaU)|(?<jku>cWEzVWlPaU)|(?<jwk>cWQyc2lPb)|(?<iss>cGMzTWlPaU)|(?<iv>cGRpSTZJ)|(?<kid>cmFXUWlP)|(?<key_ops>clpYbGZiM0J6SWpwY)|(?<kty>cmRIa2lPaUp)|(?<nonce>dWIyNWpaU0k2)|(?<p2c>d01tTWlP)|(?<p2s>d01uTWlPaU)|(?<ppt>d2NIUWlPaU)|(?<sub>emRXSWlPaU)|(?<svt>emRuUWlP)|(?<tag>MFlXY2lPaU)|(?<typ>MGVYQWlPaUp)|(?<url>MWNtd2l)|(?<use>MWMyVWlPaUp)|(?<ver>MlpYSWlPaU)|(?<version>MlpYSnphVzl1SWpv)|(?<x>NElqb2)|(?<x5c>NE5XTWlP)|(?<x5t>NE5YUWlPaU)|(?<x5ts256>NE5YUWpVekkxTmlJNkl)|(?<x5u>NE5YVWlPaU)|(?<zip>NmFYQWlPaU))[a-zA-Z0-9\\/\\\\_+\\-\\r\\n]{40,}={0,2}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule224();
-    [GeneratedRegex("\\bZXlK(?:(?<alg>aGJHY2lPaU)|(?<apu>aGNIVWlPaU)|(?<apv>aGNIWWlPaU)|(?<aud>aGRXUWlPaU)|(?<b64>aU5qUWlP)|(?<crit>amNtbDBJanBi)|(?<cty>amRIa2lPaU)|(?<epk>bGNHc2lPbn)|(?<enc>bGJtTWlPaU)|(?<jku>cWEzVWlPaU)|(?<jwk>cWQyc2lPb)|(?<iss>cGMzTWlPaU)|(?<iv>cGRpSTZJ)|(?<kid>cmFXUWlP)|(?<key_ops>clpYbGZiM0J6SWpwY)|(?<kty>cmRIa2lPaUp)|(?<nonce>dWIyNWpaU0k2)|(?<p2c>d01tTWlP)|(?<p2s>d01uTWlPaU)|(?<ppt>d2NIUWlPaU)|(?<sub>emRXSWlPaU)|(?<svt>emRuUWlP)|(?<tag>MFlXY2lPaU)|(?<typ>MGVYQWlPaUp)|(?<url>MWNtd2l)|(?<use>MWMyVWlPaUp)|(?<ver>MlpYSWlPaU)|(?<version>MlpYSnphVzl1SWpv)|(?<x>NElqb2)|(?<x5c>NE5XTWlP)|(?<x5t>NE5YUWlPaU)|(?<x5ts256>NE5YUWpVekkxTmlJNkl)|(?<x5u>NE5YVWlPaU)|(?<zip>NmFYQWlPaU))[a-zA-Z0-9\\/\\\\_+\\-\\r\\n]{40,}={0,2}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bZXlK(?:(?<alg>aGJHY2lPaU)|(?<apu>aGNIVWlPaU)|(?<apv>aGNIWWlPaU)|(?<aud>aGRXUWlPaU)|(?<b64>aU5qUWlP)|(?<crit>amNtbDBJanBi)|(?<cty>amRIa2lPaU)|(?<epk>bGNHc2lPbn)|(?<enc>bGJtTWlPaU)|(?<jku>cWEzVWlPaU)|(?<jwk>cWQyc2lPb)|(?<iss>cGMzTWlPaU)|(?<iv>cGRpSTZJ)|(?<kid>cmFXUWlP)|(?<key_ops>clpYbGZiM0J6SWpwY)|(?<kty>cmRIa2lPaUp)|(?<nonce>dWIyNWpaU0k2)|(?<p2c>d01tTWlP)|(?<p2s>d01uTWlPaU)|(?<ppt>d2NIUWlPaU)|(?<sub>emRXSWlPaU)|(?<svt>emRuUWlP)|(?<tag>MFlXY2lPaU)|(?<typ>MGVYQWlPaUp)|(?<url>MWNtd2l)|(?<use>MWMyVWlPaUp)|(?<ver>MlpYSWlPaU)|(?<version>MlpYSnphVzl1SWpv)|(?<x>NElqb2)|(?<x5c>NE5XTWlP)|(?<x5t>NE5YUWlPaU)|(?<x5ts256>NE5YUWpVekkxTmlJNkl)|(?<x5u>NE5YVWlPaU)|(?<zip>NmFYQWlPaU))[a-zA-Z0-9\\/\\\\_+\\-\\r\\n]{40,}={0,2}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule224();
-    [GeneratedRegex("(?i)(?:kagi)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{11}\\.[a-z0-9_-]{43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:kagi)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{11}\\.[a-z0-9_-]{43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule225();
-    [GeneratedRegex("(?i)(?:kagi)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{0,11}\\.[a-z0-9_-]{0,43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:kagi)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{0,11}\\.[a-z0-9_-]{0,43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule225();
-    [GeneratedRegex("(?i)(?:kimi|moonshot)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk-[A-Za-z0-9_-]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:kimi|moonshot)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk-[A-Za-z0-9_-]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule226();
-    [GeneratedRegex("(?i)(?:kimi|moonshot)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk-[A-Za-z0-9_-]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:kimi|moonshot)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk-[A-Za-z0-9_-]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule226();
-    [GeneratedRegex("(?i)(?:klaviyo)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(pk_[a-z0-9]{34})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:klaviyo)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(pk_[a-z0-9]{34})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule227();
-    [GeneratedRegex("(?i)(?:klaviyo)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(pk_[a-z0-9]{0,34})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:klaviyo)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(pk_[a-z0-9]{0,34})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule227();
-    [GeneratedRegex("(?i)(?:kraken)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9\\/=_\\+\\-]{80,90})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:kraken)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9\\/=_\\+\\-]{80,90})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule228();
-    [GeneratedRegex("(?i)(?:kraken)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9\\/=_\\+\\-]{0,90})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:kraken)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9\\/=_\\+\\-]{0,90})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule228();
-    [GeneratedRegex("(?i)(?:\\bkind:[ \\t]*[\"']?\\bsecret\\b[\"']?(?s:.){0,1000}?\\bdata:(?s:.){0,100}?\\s+([\\w.-]+:(?:[ \\t]*(?:\\||>[-+]?)\\s+)?[ \\t]*(?:[\"']?[a-z0-9+/]{10,}={0,3}[\"']?|\\{\\{[ \\t\\w\"|$:=,.-]+}}|\"\"|''))|\\bdata:(?s:.){0,100}?\\s+([\\w.-]+:(?:[ \\t]*(?:\\||>[-+]?)\\s+)?[ \\t]*(?:[\"']?[a-z0-9+/]{10,}={0,3}[\"']?|\\{\\{[ \\t\\w\"|$:=,.-]+}}|\"\"|''))(?s:.){0,1000}?\\bkind:[ \\t]*[\"']?\\bsecret\\b[\"']?)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:\\bkind:[ \\t]*[\"']?\\bsecret\\b[\"']?(?s:.){0,1000}?\\bdata:(?s:.){0,100}?\\s+([\\w.-]+:(?:[ \\t]*(?:\\||>[-+]?)\\s+)?[ \\t]*(?:[\"']?[a-z0-9+/]{10,}={0,3}[\"']?|\\{\\{[ \\t\\w\"|$:=,.-]+}}|\"\"|''))|\\bdata:(?s:.){0,100}?\\s+([\\w.-]+:(?:[ \\t]*(?:\\||>[-+]?)\\s+)?[ \\t]*(?:[\"']?[a-z0-9+/]{10,}={0,3}[\"']?|\\{\\{[ \\t\\w\"|$:=,.-]+}}|\"\"|''))(?s:.){0,1000}?\\bkind:[ \\t]*[\"']?\\bsecret\\b[\"']?)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule229();
-    [GeneratedRegex("(?i)(?:\\bkind:[ \\t]*[\"']?\\bsecret\\b[\"']?(?s:.){0,1000}?\\bdata:(?s:.){0,100}?\\s+([\\w.-]+:(?:[ \\t]*(?:\\||>[-+]?)\\s+)?[ \\t]*(?:[\"']?[a-z0-9+/]{10,}={0,3}[\"']?|\\{\\{[ \\t\\w\"|$:=,.-]+}}|\"\"|''))|\\bdata:(?s:.){0,100}?\\s+([\\w.-]+:(?:[ \\t]*(?:\\||>[-+]?)\\s+)?[ \\t]*(?:[\"']?[a-z0-9+/]{10,}={0,3}[\"']?|\\{\\{[ \\t\\w\"|$:=,.-]+}}|\"\"|''))(?s:.){0,1000}?\\bkind:[ \\t]*[\"']?\\bsecret\\b[\"']?)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:\\bkind:[ \\t]*[\"']?\\bsecret\\b[\"']?(?s:.){0,1000}?\\bdata:(?s:.){0,100}?\\s+([\\w.-]+:(?:[ \\t]*(?:\\||>[-+]?)\\s+)?[ \\t]*(?:[\"']?[a-z0-9+/]{10,}={0,3}[\"']?|\\{\\{[ \\t\\w\"|$:=,.-]+}}|\"\"|''))|\\bdata:(?s:.){0,100}?\\s+([\\w.-]+:(?:[ \\t]*(?:\\||>[-+]?)\\s+)?[ \\t]*(?:[\"']?[a-z0-9+/]{10,}={0,3}[\"']?|\\{\\{[ \\t\\w\"|$:=,.-]+}}|\"\"|''))(?s:.){0,1000}?\\bkind:[ \\t]*[\"']?\\bsecret\\b[\"']?)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule229();
-    [GeneratedRegex("(?i)(?:kucoin)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:kucoin)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule230();
-    [GeneratedRegex("(?i)(?:kucoin)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:kucoin)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule230();
-    [GeneratedRegex("(?i)(?:kucoin)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:kucoin)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule231();
-    [GeneratedRegex("(?i)(?:kucoin)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:kucoin)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule231();
-    [GeneratedRegex("\\b(lsv2_pt_[0-9a-fA-F]{32}_[0-9a-fA-F]{10})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(lsv2_pt_[0-9a-fA-F]{32}_[0-9a-fA-F]{10})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule232();
-    [GeneratedRegex("\\b(lsv2_pt_[0-9a-fA-F]{0,32}_[0-9a-fA-F]{0,10})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(lsv2_pt_[0-9a-fA-F]{0,32}_[0-9a-fA-F]{0,10})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule232();
-    [GeneratedRegex("\\b(lsv2_sk_[0-9a-fA-F]{32}_[0-9a-fA-F]{10})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(lsv2_sk_[0-9a-fA-F]{32}_[0-9a-fA-F]{10})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule233();
-    [GeneratedRegex("\\b(lsv2_sk_[0-9a-fA-F]{0,32}_[0-9a-fA-F]{0,10})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(lsv2_sk_[0-9a-fA-F]{0,32}_[0-9a-fA-F]{0,10})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule233();
-    [GeneratedRegex("\\b(pk-lf-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(pk-lf-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule234();
-    [GeneratedRegex("\\b(pk-lf-[a-f0-9]{0,8}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(pk-lf-[a-f0-9]{0,8}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule234();
-    [GeneratedRegex("\\b(sk-lf-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sk-lf-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule235();
-    [GeneratedRegex("\\b(sk-lf-[a-f0-9]{0,8}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sk-lf-[a-f0-9]{0,8}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,4}-[a-f0-9]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule235();
-    [GeneratedRegex("\\b(cli_[A-Za-z0-9]{16})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(cli_[A-Za-z0-9]{16})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule236();
-    [GeneratedRegex("\\b(cli_[A-Za-z0-9]{0,16})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(cli_[A-Za-z0-9]{0,16})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule236();
-    [GeneratedRegex("(?i)(?:lark|larksuite)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:lark|larksuite)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule237();
-    [GeneratedRegex("(?i)(?:lark|larksuite)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:lark|larksuite)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule237();
-    [GeneratedRegex("(?i)(?:launchdarkly)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:launchdarkly)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule238();
-    [GeneratedRegex("(?i)(?:launchdarkly)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:launchdarkly)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule238();
-    [GeneratedRegex("\\b(lip_[A-Za-z0-9_]{16,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(lip_[A-Za-z0-9_]{16,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule239();
-    [GeneratedRegex("\\b(lip_[A-Za-z0-9_]{0,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(lip_[A-Za-z0-9_]{0,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule239();
-    [GeneratedRegex("(?i)(?:lighton|paradigm)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_\\-]{40,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:lighton|paradigm)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_\\-]{40,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule240();
-    [GeneratedRegex("(?i)(?:lighton|paradigm)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_\\-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:lighton|paradigm)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_\\-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule240();
-    [GeneratedRegex("lin_api_(?i)[a-z0-9]{40}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("lin_api_(?i)[a-z0-9]{40}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule241();
-    [GeneratedRegex("lin_api_(?i)[a-z0-9]{0,40}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("lin_api_(?i)[a-z0-9]{0,40}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule241();
-    [GeneratedRegex("(?i)(?:linear)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:linear)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule242();
-    [GeneratedRegex("(?i)(?:linear)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:linear)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule242();
-    [GeneratedRegex("(?i)(?:linked[_-]?in)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{14})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:linked[_-]?in)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{14})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule243();
-    [GeneratedRegex("(?i)(?:linked[_-]?in)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,14})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:linked[_-]?in)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,14})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule243();
-    [GeneratedRegex("(?i)(?:linked[_-]?in)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:linked[_-]?in)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule244();
-    [GeneratedRegex("(?i)(?:linked[_-]?in)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:linked[_-]?in)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule244();
-    [GeneratedRegex("\\b(llx-[A-Za-z0-9]{44,52})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(llx-[A-Za-z0-9]{44,52})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule245();
-    [GeneratedRegex("\\b(llx-[A-Za-z0-9]{0,52})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(llx-[A-Za-z0-9]{0,52})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule245();
-    [GeneratedRegex("(?i)(?:lob)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((live|test)_[a-f0-9]{35})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:lob)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((live|test)_[a-f0-9]{35})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule246();
-    [GeneratedRegex("(?i)(?:lob)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((live|test)_[a-f0-9]{0,35})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:lob)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((live|test)_[a-f0-9]{0,35})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule246();
-    [GeneratedRegex("(?i)(?:lob)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((test|live)_pub_[a-f0-9]{31})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:lob)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((test|live)_pub_[a-f0-9]{31})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule247();
-    [GeneratedRegex("(?i)(?:lob)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((test|live)_pub_[a-f0-9]{0,31})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:lob)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((test|live)_pub_[a-f0-9]{0,31})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule247();
-    [GeneratedRegex("(?i)(?:looker)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:looker)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule248();
-    [GeneratedRegex("(?i)(?:looker)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:looker)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule248();
-    [GeneratedRegex("(?i)(?:looker)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:looker)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule249();
-    [GeneratedRegex("(?i)(?:looker)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:looker)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule249();
-    [GeneratedRegex("(?i)(?:MailchimpSDK.initialize|mailchimp)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{32}-us\\d\\d)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:MailchimpSDK.initialize|mailchimp)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{32}-us\\d\\d)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule250();
-    [GeneratedRegex("(?i)(?:MailchimpSDK.initialize|mailchimp)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,32}-us\\d\\d)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:MailchimpSDK.initialize|mailchimp)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,32}-us\\d\\d)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule250();
-    [GeneratedRegex("\\b(mlsn\\.[A-Za-z0-9]{30,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(mlsn\\.[A-Za-z0-9]{30,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule251();
-    [GeneratedRegex("\\b(mlsn\\.[A-Za-z0-9]{0,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(mlsn\\.[A-Za-z0-9]{0,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule251();
-    [GeneratedRegex("(?i)(?:mailgun)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(key-[a-f0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:mailgun)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(key-[a-f0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule252();
-    [GeneratedRegex("(?i)(?:mailgun)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(key-[a-f0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:mailgun)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(key-[a-f0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule252();
-    [GeneratedRegex("(?i)(?:mailgun)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(pubkey-[a-f0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:mailgun)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(pubkey-[a-f0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule253();
-    [GeneratedRegex("(?i)(?:mailgun)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(pubkey-[a-f0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:mailgun)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(pubkey-[a-f0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule253();
-    [GeneratedRegex("(?i)(?:mailgun)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-h0-9]{32}-[a-h0-9]{8}-[a-h0-9]{8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:mailgun)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-h0-9]{32}-[a-h0-9]{8}-[a-h0-9]{8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule254();
-    [GeneratedRegex("(?i)(?:mailgun)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-h0-9]{0,32}-[a-h0-9]{0,8}-[a-h0-9]{0,8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:mailgun)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-h0-9]{0,32}-[a-h0-9]{0,8}-[a-h0-9]{0,8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule254();
-    [GeneratedRegex("(?i)(?:mapbox)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(pk\\.[a-z0-9]{60}\\.[a-z0-9]{22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:mapbox)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(pk\\.[a-z0-9]{60}\\.[a-z0-9]{22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule255();
-    [GeneratedRegex("(?i)(?:mapbox)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(pk\\.[a-z0-9]{0,60}\\.[a-z0-9]{0,22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:mapbox)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(pk\\.[a-z0-9]{0,60}\\.[a-z0-9]{0,22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule255();
-    [GeneratedRegex("(?i)(?:mattermost)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{26})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:mattermost)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{26})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule256();
-    [GeneratedRegex("(?i)(?:mattermost)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,26})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:mattermost)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,26})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule256();
-    [GeneratedRegex("\\b([A-Za-z0-9]{6}_[A-Za-z0-9]{29}_mmk)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b([A-Za-z0-9]{6}_[A-Za-z0-9]{29}_mmk)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule257();
-    [GeneratedRegex("\\b([A-Za-z0-9]{0,6}_[A-Za-z0-9]{0,29}_mmk)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b([A-Za-z0-9]{0,6}_[A-Za-z0-9]{0,29}_mmk)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule257();
-    [GeneratedRegex("(?i:(?:mem0)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(m0-[A-Za-z0-9]{24,44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:mem0)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(m0-[A-Za-z0-9]{24,44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule258();
-    [GeneratedRegex("(?i:(?:mem0)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(m0-[A-Za-z0-9]{0,44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:mem0)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(m0-[A-Za-z0-9]{0,44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule258();
-    [GeneratedRegex("\\b(mercury_production_[a-z]{3,6}_[A-Za-z0-9]{40,50}_yrucrem)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(mercury_production_[a-z]{3,6}_[A-Za-z0-9]{40,50}_yrucrem)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule259();
-    [GeneratedRegex("\\b(mercury_production_[a-z]{0,6}_[A-Za-z0-9]{0,50}_yrucrem)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(mercury_production_[a-z]{0,6}_[A-Za-z0-9]{0,50}_yrucrem)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule259();
-    [GeneratedRegex("\\b(mergify_application_key_[A-Za-z0-9_-]{40,200})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(mergify_application_key_[A-Za-z0-9_-]{40,200})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule260();
-    [GeneratedRegex("\\b(mergify_application_key_[A-Za-z0-9_-]{0,200})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(mergify_application_key_[A-Za-z0-9_-]{0,200})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule260();
-    [GeneratedRegex("(?i)(?:message[_-]?bird)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{25})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:message[_-]?bird)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{25})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule261();
-    [GeneratedRegex("(?i)(?:message[_-]?bird)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,25})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:message[_-]?bird)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,25})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule261();
-    [GeneratedRegex("(?i)(?:message[_-]?bird)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:message[_-]?bird)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule262();
-    [GeneratedRegex("(?i)(?:message[_-]?bird)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:message[_-]?bird)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule262();
-    [GeneratedRegex("https://[a-z0-9]+\\.webhook\\.office\\.com/webhookb2/[a-z0-9]{8}-([a-z0-9]{4}-){3}[a-z0-9]{12}@[a-z0-9]{8}-([a-z0-9]{4}-){3}[a-z0-9]{12}/IncomingWebhook/[a-z0-9]{32}/[a-z0-9]{8}-([a-z0-9]{4}-){3}[a-z0-9]{12}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("https://[a-z0-9]+\\.webhook\\.office\\.com/webhookb2/[a-z0-9]{8}-([a-z0-9]{4}-){3}[a-z0-9]{12}@[a-z0-9]{8}-([a-z0-9]{4}-){3}[a-z0-9]{12}/IncomingWebhook/[a-z0-9]{32}/[a-z0-9]{8}-([a-z0-9]{4}-){3}[a-z0-9]{12}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule263();
-    [GeneratedRegex("https://[a-z0-9]+\\.webhook\\.office\\.com/webhookb2/[a-z0-9]{0,8}-([a-z0-9]{0,4}-){0,3}[a-z0-9]{0,12}@[a-z0-9]{0,8}-([a-z0-9]{0,4}-){0,3}[a-z0-9]{0,12}/IncomingWebhook/[a-z0-9]{0,32}/[a-z0-9]{0,8}-([a-z0-9]{0,4}-){0,3}[a-z0-9]{0,12}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("https://[a-z0-9]+\\.webhook\\.office\\.com/webhookb2/[a-z0-9]{8}-([a-z0-9]{0,4}-){3}[a-z0-9]{12}@[a-z0-9]{8}-([a-z0-9]{0,4}-){3}[a-z0-9]{12}/IncomingWebhook/[a-z0-9]{32}/[a-z0-9]{8}-([a-z0-9]{0,4}-){3}[a-z0-9]{12}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule263();
-    [GeneratedRegex("(?i)(?:midtrans|mid[_-]?)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(Mid-(?:server|client)-[A-Za-z0-9_]{10,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:midtrans|mid[_-]?)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(Mid-(?:server|client)-[A-Za-z0-9_]{10,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule264();
-    [GeneratedRegex("(?i)(?:midtrans|mid[_-]?)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(Mid-(?:server|client)-[A-Za-z0-9_]{0,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:midtrans|mid[_-]?)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(Mid-(?:server|client)-[A-Za-z0-9_]{0,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule264();
-    [GeneratedRegex("(?i)\\b(sk-api-[A-Za-z0-9_-]{119})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(sk-api-[A-Za-z0-9_-]{119})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule265();
-    [GeneratedRegex("(?i)\\b(sk-api-[A-Za-z0-9_-]{0,119})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(sk-api-[A-Za-z0-9_-]{0,119})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule265();
-    [GeneratedRegex("\\b(eyJtaXJv[A-Za-z0-9-]{10,64}_[A-Za-z0-9_-]{20,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(eyJtaXJv[A-Za-z0-9-]{10,64}_[A-Za-z0-9_-]{20,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule266();
-    [GeneratedRegex("\\b(eyJtaXJv[A-Za-z0-9-]{0,64}_[A-Za-z0-9_-]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(eyJtaXJv[A-Za-z0-9-]{0,64}_[A-Za-z0-9_-]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule266();
-    [GeneratedRegex("(?i)(?:miro[_. -]*client[_. -]*id)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{15,21})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:miro[_. -]*client[_. -]*id)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{15,21})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule267();
-    [GeneratedRegex("(?i)(?:miro[_. -]*client[_. -]*id)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{0,21})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:miro[_. -]*client[_. -]*id)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{0,21})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule267();
-    [GeneratedRegex("(?i)(?:miro)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:miro)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule268();
-    [GeneratedRegex("(?i)(?:miro)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:miro)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule268();
-    [GeneratedRegex("(?i)(?:mistral)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:mistral)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule269();
-    [GeneratedRegex("(?i)(?:mistral)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:mistral)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule269();
-    [GeneratedRegex("(?i:(?:monday)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(eyJ[A-Za-z0-9_-]{10,200}\\.eyJ[A-Za-z0-9_-]{50,1000}\\.[A-Za-z0-9_-]{20,500})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:monday)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(eyJ[A-Za-z0-9_-]{10,200}\\.eyJ[A-Za-z0-9_-]{50,1000}\\.[A-Za-z0-9_-]{20,500})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule270();
-    [GeneratedRegex("(?i:(?:monday)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(eyJ[A-Za-z0-9_-]{0,200}\\.eyJ[A-Za-z0-9_-]{0,1000}\\.[A-Za-z0-9_-]{0,500})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:monday)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(eyJ[A-Za-z0-9_-]{0,200}\\.eyJ[A-Za-z0-9_-]{0,1000}\\.[A-Za-z0-9_-]{0,500})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule270();
-    [GeneratedRegex("\\b(mdb_sa_id_[a-f0-9]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(mdb_sa_id_[a-f0-9]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule271();
-    [GeneratedRegex("\\b(mdb_sa_id_[a-f0-9]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(mdb_sa_id_[a-f0-9]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule271();
-    [GeneratedRegex("\\b(mdb_sa_sk_[A-Za-z0-9_-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(mdb_sa_sk_[A-Za-z0-9_-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule272();
-    [GeneratedRegex("\\b(mdb_sa_sk_[A-Za-z0-9_-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(mdb_sa_sk_[A-Za-z0-9_-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule272();
-    [GeneratedRegex("\\b(mongodb(?:\\+srv)?://(?<username>[!-9;-~]{3,50}):(?<password>[!-?A-~]{3,88})@(?<host>(?:[a-zA-Z0-9][\\w.-]+|\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})(?::\\d{1,5})?(?:,(?:[a-zA-Z0-9][\\w.-]+|\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})(?::\\d{1,5})?)*)/?(?:(?<authdb>[\\w-]+)?(?<options>\\?\\w+=[\\w@/.$-]+(?:&(?:amp;)?\\w+=[\\w@/.$-]+)*)?)?)(?:['\"\\s;\\x60]|\\\\[nr]|\\b|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(mongodb(?:\\+srv)?://(?<username>[!-9;-~]{3,50}):(?<password>[!-?A-~]{3,88})@(?<host>(?:[a-zA-Z0-9][\\w.-]+|\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})(?::\\d{1,5})?(?:,(?:[a-zA-Z0-9][\\w.-]+|\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})(?::\\d{1,5})?)*)/?(?:(?<authdb>[\\w-]+)?(?<options>\\?\\w+=[\\w@/.$-]+(?:&(?:amp;)?\\w+=[\\w@/.$-]+)*)?)?)(?:['\"\\s;\\x60]|\\\\[nr]|\\b|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule273();
-    [GeneratedRegex("\\b(mongodb(?:\\+srv)?://(?<username>[!-9;-~]{0,50}):(?<password>[!-?A-~]{0,88})@(?<host>(?:[a-zA-Z0-9][\\w.-]+|\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}\\.\\d{0,3})(?::\\d{0,5})?(?:,(?:[a-zA-Z0-9][\\w.-]+|\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}\\.\\d{0,3})(?::\\d{0,5})?)*)/?(?:(?<authdb>[\\w-]+)?(?<options>\\?\\w+=[\\w@/.$-]+(?:&(?:amp;)?\\w+=[\\w@/.$-]+)*)?)?)(?:['\"\\s;\\x60]|\\\\[nr]|\\b|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(mongodb(?:\\+srv)?://(?<username>[!-9;-~]{0,50}):(?<password>[!-?A-~]{0,88})@(?<host>(?:[a-zA-Z0-9][\\w.-]+|\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}\\.\\d{0,3})(?::\\d{0,5})?(?:,(?:[a-zA-Z0-9][\\w.-]+|\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}\\.\\d{0,3})(?::\\d{0,5})?)*)/?(?:(?<authdb>[\\w-]+)?(?<options>\\?\\w+=[\\w@/.$-]+(?:&(?:amp;)?\\w+=[\\w@/.$-]+)*)?)?)(?:['\"\\s;\\x60]|\\\\[nr]|\\b|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule273();
-    [GeneratedRegex("(?i)(?:mux[_.-]?(?:access[_.-]?)?token[_.-]?(?:id|identifier))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:mux[_.-]?(?:access[_.-]?)?token[_.-]?(?:id|identifier))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule274();
-    [GeneratedRegex("(?i)(?:mux[_.-]?(?:access[_.-]?)?token[_.-]?(?:id|identifier))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:mux[_.-]?(?:access[_.-]?)?token[_.-]?(?:id|identifier))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule274();
-    [GeneratedRegex("(?i:(?:mux[_.-]?(?:access[_.-]?)?token[_.-]?(?:secret|private|key))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9+/]{75})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:mux[_.-]?(?:access[_.-]?)?token[_.-]?(?:secret|private|key))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9+/]{75})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule275();
-    [GeneratedRegex("(?i:(?:mux[_.-]?(?:access[_.-]?)?token[_.-]?(?:secret|private|key))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9+/]{0,75})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:mux[_.-]?(?:access[_.-]?)?token[_.-]?(?:secret|private|key))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9+/]{0,75})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule275();
-    [GeneratedRegex("\\b(napi_[A-Za-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(napi_[A-Za-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule276();
-    [GeneratedRegex("\\b(napi_[A-Za-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(napi_[A-Za-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule276();
-    [GeneratedRegex("(?i)(?:netlify)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{40,46})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:netlify)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{40,46})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule277();
-    [GeneratedRegex("(?i)(?:netlify)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{0,46})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:netlify)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{0,46})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule277();
-    [GeneratedRegex("(?i)(?:new-relic|newrelic|new_relic)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(NRJS-[a-f0-9]{19})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:new-relic|newrelic|new_relic)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(NRJS-[a-f0-9]{19})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule278();
-    [GeneratedRegex("(?i)(?:new-relic|newrelic|new_relic)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(NRJS-[a-f0-9]{0,19})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:new-relic|newrelic|new_relic)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(NRJS-[a-f0-9]{0,19})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule278();
-    [GeneratedRegex("(?i)(?:new-relic|newrelic|new_relic)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(NRII-[a-z0-9-]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:new-relic|newrelic|new_relic)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(NRII-[a-z0-9-]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule279();
-    [GeneratedRegex("(?i)(?:new-relic|newrelic|new_relic)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(NRII-[a-z0-9-]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:new-relic|newrelic|new_relic)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(NRII-[a-z0-9-]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule279();
-    [GeneratedRegex("(?i)(?:new-relic|newrelic|new_relic)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:new-relic|newrelic|new_relic)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule280();
-    [GeneratedRegex("(?i)(?:new-relic|newrelic|new_relic)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:new-relic|newrelic|new_relic)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule280();
-    [GeneratedRegex("(?i)(?:new-relic|newrelic|new_relic)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(NRAK-[a-z0-9]{27})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:new-relic|newrelic|new_relic)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(NRAK-[a-z0-9]{27})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule281();
-    [GeneratedRegex("(?i)(?:new-relic|newrelic|new_relic)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(NRAK-[a-z0-9]{0,27})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:new-relic|newrelic|new_relic)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(NRAK-[a-z0-9]{0,27})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule281();
-    [GeneratedRegex("(?i:(?:ngrok[_. -]*(?:(?:api|agent)[_. -]*)?(?:secret|key|token|authtoken))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(2[A-Za-z0-9]{26}_[0-9][A-Za-z0-9]{20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:ngrok[_. -]*(?:(?:api|agent)[_. -]*)?(?:secret|key|token|authtoken))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(2[A-Za-z0-9]{26}_[0-9][A-Za-z0-9]{20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule282();
-    [GeneratedRegex("(?i:(?:ngrok[_. -]*(?:(?:api|agent)[_. -]*)?(?:secret|key|token|authtoken))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(2[A-Za-z0-9]{0,26}_[0-9][A-Za-z0-9]{0,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:ngrok[_. -]*(?:(?:api|agent)[_. -]*)?(?:secret|key|token|authtoken))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(2[A-Za-z0-9]{0,26}_[0-9][A-Za-z0-9]{0,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule282();
-    [GeneratedRegex("\\b(ntn_[0-9]{11}[A-Za-z0-9]{32}[A-Za-z0-9]{3})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ntn_[0-9]{11}[A-Za-z0-9]{32}[A-Za-z0-9]{3})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule283();
-    [GeneratedRegex("\\b(ntn_[0-9]{0,11}[A-Za-z0-9]{0,32}[A-Za-z0-9]{0,3})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ntn_[0-9]{0,11}[A-Za-z0-9]{0,32}[A-Za-z0-9]{0,3})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule283();
-    [GeneratedRegex("(?i)\\b(npm_[a-z0-9]{36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(npm_[a-z0-9]{36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule284();
-    [GeneratedRegex("(?i)\\b(npm_[a-z0-9]{0,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(npm_[a-z0-9]{0,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule284();
-    [GeneratedRegex("(?i)<add key=\\\"(?:(?:ClearText)?Password)\\\"\\s*value=\\\"(.{8,})\\\"\\s*/>", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)<add key=\\\"(?:(?:ClearText)?Password)\\\"\\s*value=\\\"(.{8,})\\\"\\s*/>", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule285();
-    [GeneratedRegex("(?i)<add key=\\\"(?:(?:ClearText)?Password)\\\"\\s*value=\\\"(.{8,})\\\"\\s*/>", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)<add key=\\\"(?:(?:ClearText)?Password)\\\"\\s*value=\\\"(.{8,})\\\"\\s*/>", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule285();
-    [GeneratedRegex("(?i)\\b(nvapi-[A-Z0-9_-]{60,70})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(nvapi-[A-Z0-9_-]{60,70})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule286();
-    [GeneratedRegex("(?i)\\b(nvapi-[A-Z0-9_-]{0,70})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(nvapi-[A-Z0-9_-]{0,70})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule286();
-    [GeneratedRegex("\\b(nyk_[A-Za-z0-9]{67})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(nyk_[A-Za-z0-9]{67})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule287();
-    [GeneratedRegex("\\b(nyk_[A-Za-z0-9]{0,67})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(nyk_[A-Za-z0-9]{0,67})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule287();
-    [GeneratedRegex("(?i)(?:nytimes|new-york-times|newyorktimes)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:nytimes|new-york-times|newyorktimes)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule288();
-    [GeneratedRegex("(?i)(?:nytimes|new-york-times|newyorktimes)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:nytimes|new-york-times|newyorktimes)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9=_\\-]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule288();
-    [GeneratedRegex("\\b(API-[A-Z0-9]{26})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(API-[A-Z0-9]{26})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule289();
-    [GeneratedRegex("\\b(API-[A-Z0-9]{0,26})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(API-[A-Z0-9]{0,26})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule289();
-    [GeneratedRegex("(?i:(?:(?-i:[Oo]kta|OKTA))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(00[\\w=\\-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:(?-i:[Oo]kta|OKTA))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(00[\\w=\\-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule290();
-    [GeneratedRegex("(?i:(?:(?-i:[Oo]kta|OKTA))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(00[\\w=\\-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:(?-i:[Oo]kta|OKTA))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(00[\\w=\\-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule290();
-    [GeneratedRegex("(?i)(?:ollama)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{32}\\.[a-zA-Z0-9_-]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:ollama)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{32}\\.[a-zA-Z0-9_-]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule291();
-    [GeneratedRegex("(?i)(?:ollama)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,32}\\.[a-zA-Z0-9_-]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:ollama)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,32}\\.[a-zA-Z0-9_-]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule291();
-    [GeneratedRegex("\\b(os_v2_(?:app|org)_[a-z2-7]{103})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(os_v2_(?:app|org)_[a-z2-7]{103})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule292();
-    [GeneratedRegex("\\b(os_v2_(?:app|org)_[a-z2-7]{0,103})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(os_v2_(?:app|org)_[a-z2-7]{0,103})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule292();
-    [GeneratedRegex("\\b(api_live_ca\\.[A-Za-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(api_live_ca\\.[A-Za-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule293();
-    [GeneratedRegex("\\b(api_live_ca\\.[A-Za-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(api_live_ca\\.[A-Za-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule293();
-    [GeneratedRegex("\\b(api_live\\.[A-Za-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(api_live\\.[A-Za-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule294();
-    [GeneratedRegex("\\b(api_live\\.[A-Za-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(api_live\\.[A-Za-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule294();
-    [GeneratedRegex("\\b(api_live_us\\.[A-Za-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(api_live_us\\.[A-Za-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule295();
-    [GeneratedRegex("\\b(api_live_us\\.[A-Za-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(api_live_us\\.[A-Za-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule295();
-    [GeneratedRegex("\\b(sk-(?:proj|svcacct|admin)-(?:[A-Za-z0-9_-]{74}|[A-Za-z0-9_-]{58}|[A-Za-z0-9_-]{20})T3BlbkFJ(?:[A-Za-z0-9_-]{74}|[A-Za-z0-9_-]{58}|[A-Za-z0-9_-]{20})\\b|sk-[a-zA-Z0-9]{20}T3BlbkFJ[a-zA-Z0-9]{20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sk-(?:proj|svcacct|admin)-(?:[A-Za-z0-9_-]{74}|[A-Za-z0-9_-]{58}|[A-Za-z0-9_-]{20})T3BlbkFJ(?:[A-Za-z0-9_-]{74}|[A-Za-z0-9_-]{58}|[A-Za-z0-9_-]{20})\\b|sk-[a-zA-Z0-9]{20}T3BlbkFJ[a-zA-Z0-9]{20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule296();
-    [GeneratedRegex("\\b(sk-(?:proj|svcacct|admin)-(?:[A-Za-z0-9_-]{0,74}|[A-Za-z0-9_-]{0,58}|[A-Za-z0-9_-]{0,20})T3BlbkFJ(?:[A-Za-z0-9_-]{0,74}|[A-Za-z0-9_-]{0,58}|[A-Za-z0-9_-]{0,20})\\b|sk-[a-zA-Z0-9]{0,20}T3BlbkFJ[a-zA-Z0-9]{0,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sk-(?:proj|svcacct|admin)-(?:[A-Za-z0-9_-]{0,74}|[A-Za-z0-9_-]{0,58}|[A-Za-z0-9_-]{0,20})T3BlbkFJ(?:[A-Za-z0-9_-]{0,74}|[A-Za-z0-9_-]{0,58}|[A-Za-z0-9_-]{0,20})\\b|sk-[a-zA-Z0-9]{0,20}T3BlbkFJ[a-zA-Z0-9]{0,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule296();
-    [GeneratedRegex("(?i)\\b(sk-or-v1-[0-9a-f]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(sk-or-v1-[0-9a-f]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule297();
-    [GeneratedRegex("(?i)\\b(sk-or-v1-[0-9a-f]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(sk-or-v1-[0-9a-f]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule297();
-    [GeneratedRegex("\\b(sha256~[\\w-]{43})(?:[^\\w-]|\\z)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sha256~[\\w-]{43})(?:[^\\w-]|\\z)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule298();
-    [GeneratedRegex("\\b(sha256~[\\w-]{0,43})(?:[^\\w-]|\\z)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sha256~[\\w-]{0,43})(?:[^\\w-]|\\z)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule298();
-    [GeneratedRegex("(?i:(?:openweather|pyowm)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:openweather|pyowm)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule299();
-    [GeneratedRegex("(?i:(?:openweather|pyowm)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:openweather|pyowm)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule299();
-    [GeneratedRegex("(?i)(?:opsgenie)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:opsgenie)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule300();
-    [GeneratedRegex("(?i)(?:opsgenie)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:opsgenie)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule300();
-    [GeneratedRegex("(?i)(?:app(?:lication)?[_.-]{0,1}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:app(?:lication)?[_.-]{0,1}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule301();
-    [GeneratedRegex("(?i)(?:app(?:lication)?[_.-]{0,1}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:app(?:lication)?[_.-]{0,1}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule301();
-    [GeneratedRegex("(?i)(?:app(?:lication)?[_.-]{0,1}secret)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:app(?:lication)?[_.-]{0,1}secret)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule302();
-    [GeneratedRegex("(?i)(?:app(?:lication)?[_.-]{0,1}secret)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:app(?:lication)?[_.-]{0,1}secret)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule302();
-    [GeneratedRegex("(?i)(?:consumer[_.-]{0,1}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:consumer[_.-]{0,1}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule303();
-    [GeneratedRegex("(?i)(?:consumer[_.-]{0,1}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:consumer[_.-]{0,1}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule303();
-    [GeneratedRegex("\\b(pdl_live_apikey_[a-z0-9]{26}_[A-Za-z0-9]{22}_[A-Za-z0-9]{3})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(pdl_live_apikey_[a-z0-9]{26}_[A-Za-z0-9]{22}_[A-Za-z0-9]{3})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule304();
-    [GeneratedRegex("\\b(pdl_live_apikey_[a-z0-9]{0,26}_[A-Za-z0-9]{0,22}_[A-Za-z0-9]{0,3})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(pdl_live_apikey_[a-z0-9]{0,26}_[A-Za-z0-9]{0,22}_[A-Za-z0-9]{0,3})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule304();
-    [GeneratedRegex("(?i:(?:pagerduty)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(u\\+[A-Za-z0-9_+-]{18})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:pagerduty)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(u\\+[A-Za-z0-9_+-]{18})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule305();
-    [GeneratedRegex("(?i:(?:pagerduty)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(u\\+[A-Za-z0-9_+-]{0,18})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:pagerduty)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(u\\+[A-Za-z0-9_+-]{0,18})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule305();
-    [GeneratedRegex("(?i:(?:paypal[_.-]?(?:client[_.-]?)?(?:id|user))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(A[A-Za-z0-9_-]{78,99})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:paypal[_.-]?(?:client[_.-]?)?(?:id|user))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(A[A-Za-z0-9_-]{78,99})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule306();
-    [GeneratedRegex("(?i:(?:paypal[_.-]?(?:client[_.-]?)?(?:id|user))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(A[A-Za-z0-9_-]{0,99})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:paypal[_.-]?(?:client[_.-]?)?(?:id|user))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(A[A-Za-z0-9_-]{0,99})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule306();
-    [GeneratedRegex("(?i:(?:paypal[_.-]?(?:client[_.-]?)?(?:secret|private|access|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_.-]{78,120})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:paypal[_.-]?(?:client[_.-]?)?(?:secret|private|access|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_.-]{78,120})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule307();
-    [GeneratedRegex("(?i:(?:paypal[_.-]?(?:client[_.-]?)?(?:secret|private|access|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_.-]{0,120})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:paypal[_.-]?(?:client[_.-]?)?(?:secret|private|access|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_.-]{0,120})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule307();
-    [GeneratedRegex("\\b(pplx-[a-zA-Z0-9]{48})(?:[\\x60'\"\\s;]|\\\\[nr]|$|\\b)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(pplx-[a-zA-Z0-9]{48})(?:[\\x60'\"\\s;]|\\\\[nr]|$|\\b)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule308();
-    [GeneratedRegex("\\b(pplx-[a-zA-Z0-9]{0,48})(?:[\\x60'\"\\s;]|\\\\[nr]|$|\\b)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(pplx-[a-zA-Z0-9]{0,48})(?:[\\x60'\"\\s;]|\\\\[nr]|$|\\b)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule308();
-    [GeneratedRegex("\\b(persona_production_[a-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(persona_production_[a-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule309();
-    [GeneratedRegex("\\b(persona_production_[a-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(persona_production_[a-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule309();
-    [GeneratedRegex("(?i:(?:pinecone(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:pinecone(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule310();
-    [GeneratedRegex("(?i:(?:pinecone(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-fA-F]{0,8}-[0-9a-fA-F]{0,4}-[0-9a-fA-F]{0,4}-[0-9a-fA-F]{0,4}-[0-9a-fA-F]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:pinecone(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-fA-F]{0,8}-[0-9a-fA-F]{0,4}-[0-9a-fA-F]{0,4}-[0-9a-fA-F]{0,4}-[0-9a-fA-F]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule310();
-    [GeneratedRegex("\\b(pcsk_[A-Za-z0-9]{5,6}_[A-Za-z0-9]{63})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(pcsk_[A-Za-z0-9]{5,6}_[A-Za-z0-9]{63})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule311();
-    [GeneratedRegex("\\b(pcsk_[A-Za-z0-9]{0,6}_[A-Za-z0-9]{0,63})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(pcsk_[A-Za-z0-9]{0,6}_[A-Za-z0-9]{0,63})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule311();
-    [GeneratedRegex("\\b(pina_[A-Za-z0-9_-]{20,200})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(pina_[A-Za-z0-9_-]{20,200})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule312();
-    [GeneratedRegex("\\b(pina_[A-Za-z0-9_-]{0,200})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(pina_[A-Za-z0-9_-]{0,200})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule312();
-    [GeneratedRegex("(?i)(?:plaid)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(access-(?:sandbox|development|production)-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:plaid)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(access-(?:sandbox|development|production)-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule313();
-    [GeneratedRegex("(?i)(?:plaid)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(access-(?:sandbox|development|production)-[0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:plaid)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(access-(?:sandbox|development|production)-[0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule313();
-    [GeneratedRegex("(?i)(?:plaid)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:plaid)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule314();
-    [GeneratedRegex("(?i)(?:plaid)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:plaid)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule314();
-    [GeneratedRegex("(?i)(?:plaid)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:plaid)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule315();
-    [GeneratedRegex("(?i)(?:plaid)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:plaid)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule315();
-    [GeneratedRegex("\\b(pscale_tkn_(?i)[\\w=\\.-]{32,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(pscale_tkn_(?i)[\\w=\\.-]{32,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule316();
-    [GeneratedRegex("\\b(pscale_tkn_(?i)[\\w=\\.-]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(pscale_tkn_(?i)[\\w=\\.-]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule316();
-    [GeneratedRegex("(?i)(?:pscale|planetscale)(?:.|[\\n\\r]){0,16}?(?:USER|ID|NAME)(?:.|[\\n\\r]){0,16}?([a-z0-9]{12})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:pscale|planetscale)(?:.|[\\n\\r]){0,16}?(?:USER|ID|NAME)(?:.|[\\n\\r]){0,16}?([a-z0-9]{12})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule317();
-    [GeneratedRegex("(?i)(?:pscale|planetscale)(?:.|[\\n\\r]){0,16}?(?:USER|ID|NAME)(?:.|[\\n\\r]){0,16}?([a-z0-9]{0,12})", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:pscale|planetscale)(?:.|[\\n\\r]){0,16}?(?:USER|ID|NAME)(?:.|[\\n\\r]){0,16}?([a-z0-9]{0,12})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule317();
-    [GeneratedRegex("\\b(pscale_oauth_[\\w=\\.-]{32,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(pscale_oauth_[\\w=\\.-]{32,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule318();
-    [GeneratedRegex("\\b(pscale_oauth_[\\w=\\.-]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(pscale_oauth_[\\w=\\.-]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule318();
-    [GeneratedRegex("(?i)\\b(pscale_pw_(?i)[\\w=\\.-]{32,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(pscale_pw_(?i)[\\w=\\.-]{32,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule319();
-    [GeneratedRegex("(?i)\\b(pscale_pw_(?i)[\\w=\\.-]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(pscale_pw_(?i)[\\w=\\.-]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule319();
-    [GeneratedRegex("(?i)(?:plivo(?:[_. -]*(?:auth|account))?[_. -]*(?:id|sid))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(MA[A-Z0-9]{18})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:plivo(?:[_. -]*(?:auth|account))?[_. -]*(?:id|sid))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(MA[A-Z0-9]{18})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule320();
-    [GeneratedRegex("(?i)(?:plivo(?:[_. -]*(?:auth|account))?[_. -]*(?:id|sid))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(MA[A-Z0-9]{0,18})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:plivo(?:[_. -]*(?:auth|account))?[_. -]*(?:id|sid))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(MA[A-Z0-9]{0,18})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule320();
-    [GeneratedRegex("(?i:(?:plivo(?:[_. -]*(?:auth))?[_. -]*(?:secret|token|key))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:plivo(?:[_. -]*(?:auth))?[_. -]*(?:secret|token|key))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule321();
-    [GeneratedRegex("(?i:(?:plivo(?:[_. -]*(?:auth))?[_. -]*(?:secret|token|key))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:plivo(?:[_. -]*(?:auth))?[_. -]*(?:secret|token|key))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule321();
-    [GeneratedRegex("\\b(polar_at_[A-Za-z0-9_-]{20,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(polar_at_[A-Za-z0-9_-]{20,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule322();
-    [GeneratedRegex("\\b(polar_at_[A-Za-z0-9_-]{0,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(polar_at_[A-Za-z0-9_-]{0,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule322();
-    [GeneratedRegex("\\b(polar_oat_[A-Za-z0-9_-]{20,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(polar_oat_[A-Za-z0-9_-]{20,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule323();
-    [GeneratedRegex("\\b(polar_oat_[A-Za-z0-9_-]{0,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(polar_oat_[A-Za-z0-9_-]{0,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule323();
-    [GeneratedRegex("\\b(polar_pat_[A-Za-z0-9_-]{20,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(polar_pat_[A-Za-z0-9_-]{20,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule324();
-    [GeneratedRegex("\\b(polar_pat_[A-Za-z0-9_-]{0,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(polar_pat_[A-Za-z0-9_-]{0,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule324();
-    [GeneratedRegex("(?i:(?:poly.{0,20}address)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(0x[a-fA-F0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:poly.{0,20}address)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(0x[a-fA-F0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule325();
-    [GeneratedRegex("(?i:(?:poly.{0,20}address)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(0x[a-fA-F0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:poly.{0,20}address)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(0x[a-fA-F0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule325();
-    [GeneratedRegex("(?i:(?:poly.{0,20}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:poly.{0,20}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule326();
-    [GeneratedRegex("(?i:(?:poly.{0,20}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:poly.{0,20}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule326();
-    [GeneratedRegex("(?i:(?:poly.{0,20}secret)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9+/]{40,}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:poly.{0,20}secret)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9+/]{40,}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule327();
-    [GeneratedRegex("(?i:(?:poly.{0,20}secret)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9+/]{40,}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:poly.{0,20}secret)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9+/]{40,}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule327();
-    [GeneratedRegex("(?i:(?:poly.{0,20}passphrase)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9_]{8,128})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:poly.{0,20}passphrase)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9_]{8,128})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule328();
-    [GeneratedRegex("(?i:(?:poly.{0,20}passphrase)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9_]{0,128})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:poly.{0,20}passphrase)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9_]{0,128})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule328();
-    [GeneratedRegex("(?i:(?:poly.{0,20}private.{0,20}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(0x[a-fA-F0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:poly.{0,20}private.{0,20}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(0x[a-fA-F0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule329();
-    [GeneratedRegex("(?i:(?:poly.{0,20}private.{0,20}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(0x[a-fA-F0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:poly.{0,20}private.{0,20}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(0x[a-fA-F0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule329();
-    [GeneratedRegex("(?i)\\b(phx_[a-zA-Z0-9_\\-]{41,49})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(phx_[a-zA-Z0-9_\\-]{41,49})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule330();
-    [GeneratedRegex("(?i)\\b(phx_[a-zA-Z0-9_\\-]{0,49})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(phx_[a-zA-Z0-9_\\-]{0,49})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule330();
-    [GeneratedRegex("(?i)\\b(phc_[a-zA-Z0-9_\\-]{41,44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(phc_[a-zA-Z0-9_\\-]{41,44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule331();
-    [GeneratedRegex("(?i)\\b(phc_[a-zA-Z0-9_\\-]{0,44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(phc_[a-zA-Z0-9_\\-]{0,44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule331();
-    [GeneratedRegex("\\b(PMAK-(?i)[a-f0-9]{24}\\-[a-f0-9]{34})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(PMAK-(?i)[a-f0-9]{24}\\-[a-f0-9]{34})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule332();
-    [GeneratedRegex("\\b(PMAK-(?i)[a-f0-9]{0,24}\\-[a-f0-9]{0,34})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(PMAK-(?i)[a-f0-9]{0,24}\\-[a-f0-9]{0,34})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule332();
-    [GeneratedRegex("(?i)(?:postmark)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:postmark)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule333();
-    [GeneratedRegex("(?i)(?:postmark)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:postmark)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule333();
-    [GeneratedRegex("\\b(pnu_[a-zA-Z0-9]{36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(pnu_[a-zA-Z0-9]{36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule334();
-    [GeneratedRegex("\\b(pnu_[a-zA-Z0-9]{0,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(pnu_[a-zA-Z0-9]{0,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule334();
-    [GeneratedRegex("(?i)-----BEGIN[ A-Z0-9_-]{0,100}PRIVATE KEY(?: BLOCK)?-----[\\s\\S-]{64,}?KEY(?: BLOCK)?-----", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)-----BEGIN[ A-Z0-9_-]{0,100}PRIVATE KEY(?: BLOCK)?-----[\\s\\S-]{64,}?KEY(?: BLOCK)?-----", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule335();
-    [GeneratedRegex("(?i)-----BEGIN[ A-Z0-9_-]{0,100}PRIVATE KEY(?: BLOCK)?-----[\\s\\S-]{64,}?KEY(?: BLOCK)?-----", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)-----BEGIN[ A-Z0-9_-]{0,100}PRIVATE KEY(?: BLOCK)?-----[\\s\\S-]{64,}?KEY(?: BLOCK)?-----", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule335();
-    [GeneratedRegex("(?i:(?:private[_-]?ai)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:private[_-]?ai)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule336();
-    [GeneratedRegex("(?i:(?:private[_-]?ai)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:private[_-]?ai)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule336();
-    [GeneratedRegex("\\b(prf_(?:cli_)?[A-Za-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(prf_(?:cli_)?[A-Za-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule337();
-    [GeneratedRegex("\\b(prf_(?:cli_)?[A-Za-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(prf_(?:cli_)?[A-Za-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule337();
-    [GeneratedRegex("\\b(pul-[a-f0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(pul-[a-f0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule338();
-    [GeneratedRegex("\\b(pul-[a-f0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(pul-[a-f0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule338();
-    [GeneratedRegex("pypi-AgEIcHlwaS5vcmc[\\w-]{50,1000}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("pypi-AgEIcHlwaS5vcmc[\\w-]{50,1000}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule339();
-    [GeneratedRegex("pypi-AgEIcHlwaS5vcmc[\\w-]{0,1000}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("pypi-AgEIcHlwaS5vcmc[\\w-]{0,1000}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule339();
-    [GeneratedRegex("(?i:(?:rainforest(?:[_. -]*pay)?(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(apikey_[a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:rainforest(?:[_. -]*pay)?(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(apikey_[a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule340();
-    [GeneratedRegex("(?i:(?:rainforest(?:[_. -]*pay)?(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(apikey_[a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:rainforest(?:[_. -]*pay)?(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(apikey_[a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule340();
-    [GeneratedRegex("\\b(ramp_id_[A-Za-z0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ramp_id_[A-Za-z0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule341();
-    [GeneratedRegex("\\b(ramp_id_[A-Za-z0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ramp_id_[A-Za-z0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule341();
-    [GeneratedRegex("\\b(ramp_sec_[A-Za-z0-9]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ramp_sec_[A-Za-z0-9]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule342();
-    [GeneratedRegex("\\b(ramp_sec_[A-Za-z0-9]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ramp_sec_[A-Za-z0-9]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule342();
-    [GeneratedRegex("(?i)(?:rapidapi)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:rapidapi)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule343();
-    [GeneratedRegex("(?i)(?:rapidapi)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{0,50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:rapidapi)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{0,50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule343();
-    [GeneratedRegex("\\b(rzp_(?:live|test)_[A-Za-z0-9]{14})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(rzp_(?:live|test)_[A-Za-z0-9]{14})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule344();
-    [GeneratedRegex("\\b(rzp_(?:live|test)_[A-Za-z0-9]{0,14})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(rzp_(?:live|test)_[A-Za-z0-9]{0,14})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule344();
-    [GeneratedRegex("(?i:(?:razorpay[_.-]?(?:(?:api|key)[_.-]?)?(?:secret|private|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:razorpay[_.-]?(?:(?:api|key)[_.-]?)?(?:secret|private|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule345();
-    [GeneratedRegex("(?i:(?:razorpay[_.-]?(?:(?:api|key)[_.-]?)?(?:secret|private|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:razorpay[_.-]?(?:(?:api|key)[_.-]?)?(?:secret|private|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule345();
-    [GeneratedRegex("\\b(rdme_[a-z0-9]{70})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(rdme_[a-z0-9]{70})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule346();
-    [GeneratedRegex("\\b(rdme_[a-z0-9]{0,70})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(rdme_[a-z0-9]{0,70})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule346();
-    [GeneratedRegex("\\b(rpa_[A-Za-z0-9]{30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(rpa_[A-Za-z0-9]{30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule347();
-    [GeneratedRegex("\\b(rpa_[A-Za-z0-9]{0,30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(rpa_[A-Za-z0-9]{0,30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule347();
-    [GeneratedRegex("\\b(rnd_[A-Za-z0-9]{28})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(rnd_[A-Za-z0-9]{28})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule348();
-    [GeneratedRegex("\\b(rnd_[A-Za-z0-9]{0,28})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(rnd_[A-Za-z0-9]{0,28})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule348();
-    [GeneratedRegex("(?i)\\b(r8_[A-Za-z0-9]{37})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(r8_[A-Za-z0-9]{37})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule349();
-    [GeneratedRegex("(?i)\\b(r8_[A-Za-z0-9]{0,37})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(r8_[A-Za-z0-9]{0,37})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule349();
-    [GeneratedRegex("\\b(re_[1-9A-HJ-NP-Za-km-z]{8}_[1-9A-HJ-NP-Za-km-z]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(re_[1-9A-HJ-NP-Za-km-z]{8}_[1-9A-HJ-NP-Za-km-z]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule350();
-    [GeneratedRegex("\\b(re_[1-9A-HJ-NP-Za-km-z]{0,8}_[1-9A-HJ-NP-Za-km-z]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(re_[1-9A-HJ-NP-Za-km-z]{0,8}_[1-9A-HJ-NP-Za-km-z]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule350();
-    [GeneratedRegex("(?i:(?:retell)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(key_[a-f0-9]{28})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:retell)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(key_[a-f0-9]{28})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule351();
-    [GeneratedRegex("(?i:(?:retell)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(key_[a-f0-9]{0,28})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:retell)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(key_[a-f0-9]{0,28})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule351();
-    [GeneratedRegex("\\b(rootly_[a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(rootly_[a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule352();
-    [GeneratedRegex("\\b(rootly_[a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(rootly_[a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule352();
-    [GeneratedRegex("\\b(rubygems_[a-f0-9]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(rubygems_[a-f0-9]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule353();
-    [GeneratedRegex("\\b(rubygems_[a-f0-9]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(rubygems_[a-f0-9]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule353();
-    [GeneratedRegex("\\b(rpa_[A-Z0-9]{40}[A-Za-z0-9]{6})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(rpa_[A-Z0-9]{40}[A-Za-z0-9]{6})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule354();
-    [GeneratedRegex("\\b(rpa_[A-Z0-9]{0,40}[A-Za-z0-9]{0,6})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(rpa_[A-Z0-9]{0,40}[A-Za-z0-9]{0,6})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule354();
-    [GeneratedRegex("\\b(00[A-Za-z0-9]{13}![A-Za-z0-9._-]{80,260})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(00[A-Za-z0-9]{13}![A-Za-z0-9._-]{80,260})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule355();
-    [GeneratedRegex("\\b(00[A-Za-z0-9]{0,13}![A-Za-z0-9._-]{0,260})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(00[A-Za-z0-9]{0,13}![A-Za-z0-9._-]{0,260})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule355();
-    [GeneratedRegex("(?i)(?:^|[^a-z0-9.-])(?:https?://)?((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?){0,4}\\.my\\.salesforce\\.com|[a-z]{2,8}[0-9]{1,4}\\.salesforce\\.com))(?:[^a-z0-9.-]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:^|[^a-z0-9.-])(?:https?://)?((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?){0,4}\\.my\\.salesforce\\.com|[a-z]{2,8}[0-9]{1,4}\\.salesforce\\.com))(?:[^a-z0-9.-]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule356();
-    [GeneratedRegex("(?i)(?:^|[^a-z0-9.-])(?:https?://)?((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?){0,4}\\.my\\.salesforce\\.com|[a-z]{0,8}[0-9]{0,4}\\.salesforce\\.com))(?:[^a-z0-9.-]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:^|[^a-z0-9.-])(?:https?://)?((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?){0,4}\\.my\\.salesforce\\.com|[a-z]{0,8}[0-9]{0,4}\\.salesforce\\.com))(?:[^a-z0-9.-]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule356();
-    [GeneratedRegex("\\b(samsara_api_[A-Za-z0-9]{26,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(samsara_api_[A-Za-z0-9]{26,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule357();
-    [GeneratedRegex("\\b(samsara_api_[A-Za-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(samsara_api_[A-Za-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule357();
-    [GeneratedRegex("(?i)(?:(?:scaleway|scw).{0,20}?(?:secret|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:(?:scaleway|scw).{0,20}?(?:secret|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule358();
-    [GeneratedRegex("(?i)(?:(?:scaleway|scw).{0,20}?(?:secret|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:(?:scaleway|scw).{0,20}?(?:secret|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule358();
-    [GeneratedRegex("\\b(tk-us-[\\w-]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(tk-us-[\\w-]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule359();
-    [GeneratedRegex("\\b(tk-us-[\\w-]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(tk-us-[\\w-]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule359();
-    [GeneratedRegex("(?i:(?:scalr(?:[_. -]*(?:api|access))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\\.eyJpc3MiOiJ1c2VyIiwianRpIjoiYXQt[A-Za-z0-9_-]{20,40}\\.[A-Za-z0-9_-]{43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:scalr(?:[_. -]*(?:api|access))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\\.eyJpc3MiOiJ1c2VyIiwianRpIjoiYXQt[A-Za-z0-9_-]{20,40}\\.[A-Za-z0-9_-]{43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule360();
-    [GeneratedRegex("(?i:(?:scalr(?:[_. -]*(?:api|access))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\\.eyJpc3MiOiJ1c2VyIiwianRpIjoiYXQt[A-Za-z0-9_-]{0,40}\\.[A-Za-z0-9_-]{0,43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:scalr(?:[_. -]*(?:api|access))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\\.eyJpc3MiOiJ1c2VyIiwianRpIjoiYXQt[A-Za-z0-9_-]{0,40}\\.[A-Za-z0-9_-]{0,43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule360();
-    [GeneratedRegex("\\b(sgp_[A-Za-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sgp_[A-Za-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule361();
-    [GeneratedRegex("\\b(sgp_[A-Za-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sgp_[A-Za-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule361();
-    [GeneratedRegex("(?i)(?:sendbird)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:sendbird)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule362();
-    [GeneratedRegex("(?i)(?:sendbird)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:sendbird)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule362();
-    [GeneratedRegex("(?i)(?:sendbird)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:sendbird)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule363();
-    [GeneratedRegex("(?i)(?:sendbird)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:sendbird)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule363();
-    [GeneratedRegex("\\b(SG\\.(?i)[a-z0-9=_\\-\\.]{66})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(SG\\.(?i)[a-z0-9=_\\-\\.]{66})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule364();
-    [GeneratedRegex("\\b(SG\\.(?i)[a-z0-9=_\\-\\.]{0,66})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(SG\\.(?i)[a-z0-9=_\\-\\.]{0,66})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule364();
-    [GeneratedRegex("\\b(xkeysib-[a-fA-F0-9]{64}-[a-zA-Z0-9]{16})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(xkeysib-[a-fA-F0-9]{64}-[a-zA-Z0-9]{16})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule365();
-    [GeneratedRegex("\\b(xkeysib-[a-fA-F0-9]{0,64}-[a-zA-Z0-9]{0,16})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(xkeysib-[a-fA-F0-9]{0,64}-[a-zA-Z0-9]{0,16})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule365();
-    [GeneratedRegex("(?i)(?:sentry)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:sentry)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule366();
-    [GeneratedRegex("(?i)(?:sentry)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:sentry)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule366();
-    [GeneratedRegex("\\bsntrys_eyJpYXQiO[a-zA-Z0-9+/]{10,200}(?:LCJyZWdpb25fdXJs|InJlZ2lvbl91cmwi|cmVnaW9uX3VybCI6)[a-zA-Z0-9+/]{10,200}={0,2}_[a-zA-Z0-9+/]{43}(?:[^a-zA-Z0-9+/]|\\z)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bsntrys_eyJpYXQiO[a-zA-Z0-9+/]{10,200}(?:LCJyZWdpb25fdXJs|InJlZ2lvbl91cmwi|cmVnaW9uX3VybCI6)[a-zA-Z0-9+/]{10,200}={0,2}_[a-zA-Z0-9+/]{43}(?:[^a-zA-Z0-9+/]|\\z)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule367();
-    [GeneratedRegex("\\bsntrys_eyJpYXQiO[a-zA-Z0-9+/]{0,200}(?:LCJyZWdpb25fdXJs|InJlZ2lvbl91cmwi|cmVnaW9uX3VybCI6)[a-zA-Z0-9+/]{0,200}={0,2}_[a-zA-Z0-9+/]{0,43}(?:[^a-zA-Z0-9+/]|\\z)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\bsntrys_eyJpYXQiO[a-zA-Z0-9+/]{0,200}(?:LCJyZWdpb25fdXJs|InJlZ2lvbl91cmwi|cmVnaW9uX3VybCI6)[a-zA-Z0-9+/]{0,200}={0,2}_[a-zA-Z0-9+/]{0,43}(?:[^a-zA-Z0-9+/]|\\z)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule367();
-    [GeneratedRegex("\\b(sntryu_[a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sntryu_[a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule368();
-    [GeneratedRegex("\\b(sntryu_[a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sntryu_[a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule368();
-    [GeneratedRegex("\\b(sm_aat_[a-zA-Z0-9]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sm_aat_[a-zA-Z0-9]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule369();
-    [GeneratedRegex("\\b(sm_aat_[a-zA-Z0-9]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sm_aat_[a-zA-Z0-9]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule369();
-    [GeneratedRegex("\\b(sm_pat_[a-zA-Z0-9]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sm_pat_[a-zA-Z0-9]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule370();
-    [GeneratedRegex("\\b(sm_pat_[a-zA-Z0-9]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sm_pat_[a-zA-Z0-9]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule370();
-    [GeneratedRegex("\\b(sm_sat_[a-zA-Z0-9]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sm_sat_[a-zA-Z0-9]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule371();
-    [GeneratedRegex("\\b(sm_sat_[a-zA-Z0-9]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sm_sat_[a-zA-Z0-9]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule371();
-    [GeneratedRegex("\\b(shippo_(?:live|test)_[a-fA-F0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(shippo_(?:live|test)_[a-fA-F0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule372();
-    [GeneratedRegex("\\b(shippo_(?:live|test)_[a-fA-F0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(shippo_(?:live|test)_[a-fA-F0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule372();
-    [GeneratedRegex("shpat_[a-fA-F0-9]{32}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("shpat_[a-fA-F0-9]{32}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule373();
-    [GeneratedRegex("shpat_[a-fA-F0-9]{0,32}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("shpat_[a-fA-F0-9]{0,32}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule373();
-    [GeneratedRegex("shpca_[a-fA-F0-9]{32}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("shpca_[a-fA-F0-9]{32}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule374();
-    [GeneratedRegex("shpca_[a-fA-F0-9]{0,32}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("shpca_[a-fA-F0-9]{0,32}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule374();
-    [GeneratedRegex("shppa_[a-fA-F0-9]{32}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("shppa_[a-fA-F0-9]{32}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule375();
-    [GeneratedRegex("shppa_[a-fA-F0-9]{0,32}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("shppa_[a-fA-F0-9]{0,32}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule375();
-    [GeneratedRegex("shpss_[a-fA-F0-9]{32}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("shpss_[a-fA-F0-9]{32}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule376();
-    [GeneratedRegex("shpss_[a-fA-F0-9]{0,32}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("shpss_[a-fA-F0-9]{0,32}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule376();
-    [GeneratedRegex("(?i)(?:BUNDLE_ENTERPRISE__CONTRIBSYS__COM|BUNDLE_GEMS__CONTRIBSYS__COM)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{8}:[a-f0-9]{8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:BUNDLE_ENTERPRISE__CONTRIBSYS__COM|BUNDLE_GEMS__CONTRIBSYS__COM)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{8}:[a-f0-9]{8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule377();
-    [GeneratedRegex("(?i)(?:BUNDLE_ENTERPRISE__CONTRIBSYS__COM|BUNDLE_GEMS__CONTRIBSYS__COM)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,8}:[a-f0-9]{0,8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:BUNDLE_ENTERPRISE__CONTRIBSYS__COM|BUNDLE_GEMS__CONTRIBSYS__COM)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,8}:[a-f0-9]{0,8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule377();
-    [GeneratedRegex("(?i)\\bhttps?://([a-f0-9]{8}:[a-f0-9]{8})@(?:gems.contribsys.com|enterprise.contribsys.com)(?:[\\/|\\#|\\?|:]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\bhttps?://([a-f0-9]{8}:[a-f0-9]{8})@(?:gems.contribsys.com|enterprise.contribsys.com)(?:[\\/|\\#|\\?|:]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule378();
-    [GeneratedRegex("(?i)\\bhttps?://([a-f0-9]{0,8}:[a-f0-9]{0,8})@(?:gems.contribsys.com|enterprise.contribsys.com)(?:[\\/|\\#|\\?|:]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\bhttps?://([a-f0-9]{0,8}:[a-f0-9]{0,8})@(?:gems.contribsys.com|enterprise.contribsys.com)(?:[\\/|\\#|\\?|:]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule378();
-    [GeneratedRegex("(?i)xapp-\\d-[A-Z0-9]+-\\d+-[a-z0-9]+", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)xapp-\\d-[A-Z0-9]+-\\d+-[a-z0-9]+", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule379();
-    [GeneratedRegex("(?i)xapp-\\d-[A-Z0-9]+-\\d+-[a-z0-9]+", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)xapp-\\d-[A-Z0-9]+-\\d+-[a-z0-9]+", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule379();
-    [GeneratedRegex("xoxb-[0-9]{10,13}-[0-9]{10,13}[a-zA-Z0-9-]*", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("xoxb-[0-9]{10,13}-[0-9]{10,13}[a-zA-Z0-9-]*", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule380();
-    [GeneratedRegex("xoxb-[0-9]{0,13}-[0-9]{0,13}[a-zA-Z0-9-]*", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("xoxb-[0-9]{0,13}-[0-9]{0,13}[a-zA-Z0-9-]*", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule380();
-    [GeneratedRegex("(?i)xoxe.xox[bp]-\\d-[A-Z0-9]{163,166}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)xoxe.xox[bp]-\\d-[A-Z0-9]{163,166}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule381();
-    [GeneratedRegex("(?i)xoxe.xox[bp]-\\d-[A-Z0-9]{0,166}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)xoxe.xox[bp]-\\d-[A-Z0-9]{0,166}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule381();
-    [GeneratedRegex("(?i)xoxe-\\d-[A-Z0-9]{146}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)xoxe-\\d-[A-Z0-9]{146}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule382();
-    [GeneratedRegex("(?i)xoxe-\\d-[A-Z0-9]{0,146}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)xoxe-\\d-[A-Z0-9]{0,146}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule382();
-    [GeneratedRegex("xoxb-[0-9]{8,14}-[a-zA-Z0-9]{18,26}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("xoxb-[0-9]{8,14}-[a-zA-Z0-9]{18,26}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule383();
-    [GeneratedRegex("xoxb-[0-9]{0,14}-[a-zA-Z0-9]{0,26}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("xoxb-[0-9]{0,14}-[a-zA-Z0-9]{0,26}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule383();
-    [GeneratedRegex("xox[os]-\\d+-\\d+-\\d+-[a-fA-F\\d]+", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("xox[os]-\\d+-\\d+-\\d+-[a-fA-F\\d]+", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule384();
-    [GeneratedRegex("xox[os]-\\d+-\\d+-\\d+-[a-fA-F\\d]+", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("xox[os]-\\d+-\\d+-\\d+-[a-fA-F\\d]+", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule384();
-    [GeneratedRegex("xox[ar]-(?:\\d-)?[0-9a-zA-Z]{8,48}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("xox[ar]-(?:\\d-)?[0-9a-zA-Z]{8,48}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule385();
-    [GeneratedRegex("xox[ar]-(?:\\d-)?[0-9a-zA-Z]{0,48}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("xox[ar]-(?:\\d-)?[0-9a-zA-Z]{0,48}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule385();
-    [GeneratedRegex("(xoxd-[\\w\\/\\\\+-]{100,}={0,2})(?:[^\\w\\/+=-]|\\z)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(xoxd-[\\w\\/\\\\+-]{100,}={0,2})(?:[^\\w\\/+=-]|\\z)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule386();
-    [GeneratedRegex("(xoxd-[\\w\\/\\\\+-]{100,}={0,2})(?:[^\\w\\/+=-]|\\z)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(xoxd-[\\w\\/\\\\+-]{100,}={0,2})(?:[^\\w\\/+=-]|\\z)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule386();
-    [GeneratedRegex("xoxc-\\d{9,15}-\\d{9,15}-\\d{9,15}-[a-f0-9]{64}\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("xoxc-\\d{9,15}-\\d{9,15}-\\d{9,15}-[a-f0-9]{64}\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule387();
-    [GeneratedRegex("xoxc-\\d{0,15}-\\d{0,15}-\\d{0,15}-[a-f0-9]{0,64}\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("xoxc-\\d{0,15}-\\d{0,15}-\\d{0,15}-[a-f0-9]{0,64}\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule387();
-    [GeneratedRegex("xox[pe](?:-[0-9]{10,13}){3}-[a-zA-Z0-9-]{28,34}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("xox[pe](?:-[0-9]{10,13}){3}-[a-zA-Z0-9-]{28,34}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule388();
-    [GeneratedRegex("xox[pe](?:-[0-9]{0,13}){0,3}-[a-zA-Z0-9-]{0,34}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("xox[pe](?:-[0-9]{0,13}){0,3}-[a-zA-Z0-9-]{0,34}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule388();
-    [GeneratedRegex("(?:https?://)?hooks.slack.com/(?:services|workflows|triggers)/[A-Za-z0-9+/]{43,56}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?:https?://)?hooks.slack.com/(?:services|workflows|triggers)/[A-Za-z0-9+/]{43,56}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule389();
-    [GeneratedRegex("(?:https?://)?hooks.slack.com/(?:services|workflows|triggers)/[A-Za-z0-9+/]{0,56}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?:https?://)?hooks.slack.com/(?:services|workflows|triggers)/[A-Za-z0-9+/]{0,56}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule389();
-    [GeneratedRegex("(?i)\\b([a-z0-9_-]+(?:\\.[a-z0-9_-]+)*\\.snowflakecomputing\\.com)\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b([a-z0-9_-]+(?:\\.[a-z0-9_-]+)*\\.snowflakecomputing\\.com)\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule390();
-    [GeneratedRegex("(?i)\\b([a-z0-9_-]+(?:\\.[a-z0-9_-]+)*\\.snowflakecomputing\\.com)\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b([a-z0-9_-]+(?:\\.[a-z0-9_-]+)*\\.snowflakecomputing\\.com)\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule390();
-    [GeneratedRegex("(?i:(?:(?:snowflake[_. -]*(?:programmatic[_. -]*)?(?:access[_. -]*)?token|sf[_. -]*token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{100,500})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:(?:snowflake[_. -]*(?:programmatic[_. -]*)?(?:access[_. -]*)?token|sf[_. -]*token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{100,500})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule391();
-    [GeneratedRegex("(?i:(?:(?:snowflake[_. -]*(?:programmatic[_. -]*)?(?:access[_. -]*)?token|sf[_. -]*token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{0,500})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:(?:snowflake[_. -]*(?:programmatic[_. -]*)?(?:access[_. -]*)?token|sf[_. -]*token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{0,500})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule391();
-    [GeneratedRegex("(?i)(?:snyk[_.-]?(?:(?:api|oauth)[_.-]?)?(?:key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:snyk[_.-]?(?:(?:api|oauth)[_.-]?)?(?:key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule392();
-    [GeneratedRegex("(?i)(?:snyk[_.-]?(?:(?:api|oauth)[_.-]?)?(?:key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:snyk[_.-]?(?:(?:api|oauth)[_.-]?)?(?:key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule392();
-    [GeneratedRegex("(?i)(?:sonar[_.-]?(login|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:squ_|sqp_|sqa_)?[a-z0-9=_\\-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:sonar[_.-]?(login|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:squ_|sqp_|sqa_)?[a-z0-9=_\\-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule393();
-    [GeneratedRegex("(?i)(?:sonar[_.-]?(login|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:squ_|sqp_|sqa_)?[a-z0-9=_\\-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:sonar[_.-]?(login|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:squ_|sqp_|sqa_)?[a-z0-9=_\\-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule393();
-    [GeneratedRegex("(?i)\\b(sgp_(?:[a-fA-F0-9]{16}|local)_[a-fA-F0-9]{40}|sgp_[a-fA-F0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(sgp_(?:[a-fA-F0-9]{16}|local)_[a-fA-F0-9]{40}|sgp_[a-fA-F0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule394();
-    [GeneratedRegex("(?i)\\b(sgp_(?:[a-fA-F0-9]{0,16}|local)_[a-fA-F0-9]{0,40}|sgp_[a-fA-F0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(sgp_(?:[a-fA-F0-9]{0,16}|local)_[a-fA-F0-9]{0,40}|sgp_[a-fA-F0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule394();
-    [GeneratedRegex("\\b((?:EAAA|sq0atp-)[\\w-]{22,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b((?:EAAA|sq0atp-)[\\w-]{22,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule395();
-    [GeneratedRegex("\\b((?:EAAA|sq0atp-)[\\w-]{0,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b((?:EAAA|sq0atp-)[\\w-]{0,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule395();
-    [GeneratedRegex("(?i)(?:squarespace)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:squarespace)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule396();
-    [GeneratedRegex("(?i)(?:squarespace)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:squarespace)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule396();
-    [GeneratedRegex("(?i:(?:sslmate(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:sslmate(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule397();
-    [GeneratedRegex("(?i:(?:sslmate(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:sslmate(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule397();
-    [GeneratedRegex("(?i)(?:stability)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk-[A-Za-z0-9]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:stability)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk-[A-Za-z0-9]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule398();
-    [GeneratedRegex("(?i)(?:stability)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk-[A-Za-z0-9]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:stability)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk-[A-Za-z0-9]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule398();
-    [GeneratedRegex("\\b((?:sk|rk)_(?:test|live|prod)_[a-zA-Z0-9]{10,99})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b((?:sk|rk)_(?:test|live|prod)_[a-zA-Z0-9]{10,99})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule399();
-    [GeneratedRegex("\\b((?:sk|rk)_(?:test|live|prod)_[a-zA-Z0-9]{0,99})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b((?:sk|rk)_(?:test|live|prod)_[a-zA-Z0-9]{0,99})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule399();
-    [GeneratedRegex("(?i)(?:(?-i:[Ss]umo|SUMO))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?-i:su)[a-zA-Z0-9]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:(?-i:[Ss]umo|SUMO))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?-i:su)[a-zA-Z0-9]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule400();
-    [GeneratedRegex("(?i)(?:(?-i:[Ss]umo|SUMO))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?-i:su)[a-zA-Z0-9]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:(?-i:[Ss]umo|SUMO))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?-i:su)[a-zA-Z0-9]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule400();
-    [GeneratedRegex("(?i)(?:(?-i:[Ss]umo|SUMO))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:(?-i:[Ss]umo|SUMO))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule401();
-    [GeneratedRegex("(?i)(?:(?-i:[Ss]umo|SUMO))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:(?-i:[Ss]umo|SUMO))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule401();
-    [GeneratedRegex("\\b(sbp_[a-z0-9_-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sbp_[a-z0-9_-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule402();
-    [GeneratedRegex("\\b(sbp_[a-z0-9_-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sbp_[a-z0-9_-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule402();
-    [GeneratedRegex("\\b(sb_secret_[A-Za-z0-9_-]{31})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sb_secret_[A-Za-z0-9_-]{31})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule403();
-    [GeneratedRegex("\\b(sb_secret_[A-Za-z0-9_-]{0,31})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(sb_secret_[A-Za-z0-9_-]{0,31})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule403();
-    [GeneratedRegex("\\b(https://[a-z0-9]{16,32}\\.supabase\\.co)\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(https://[a-z0-9]{16,32}\\.supabase\\.co)\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule404();
-    [GeneratedRegex("\\b(https://[a-z0-9]{0,32}\\.supabase\\.co)\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(https://[a-z0-9]{0,32}\\.supabase\\.co)\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule404();
-    [GeneratedRegex("(?i:(?:tableau(?:[_. -]*(?:personal[_. -]*access|pat))?[_. -]*(?:token[_. -]*)?name)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z][A-Za-z0-9_-]{2,50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:tableau(?:[_. -]*(?:personal[_. -]*access|pat))?[_. -]*(?:token[_. -]*)?name)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z][A-Za-z0-9_-]{2,50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule405();
-    [GeneratedRegex("(?i:(?:tableau(?:[_. -]*(?:personal[_. -]*access|pat))?[_. -]*(?:token[_. -]*)?name)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z][A-Za-z0-9_-]{0,50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:tableau(?:[_. -]*(?:personal[_. -]*access|pat))?[_. -]*(?:token[_. -]*)?name)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z][A-Za-z0-9_-]{0,50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule405();
-    [GeneratedRegex("\\b([A-Za-z0-9+/]{22}==:[A-Za-z0-9]{32})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b([A-Za-z0-9+/]{22}==:[A-Za-z0-9]{32})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule406();
-    [GeneratedRegex("\\b([A-Za-z0-9+/]{0,22}==:[A-Za-z0-9]{0,32})\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b([A-Za-z0-9+/]{0,22}==:[A-Za-z0-9]{0,32})\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule406();
-    [GeneratedRegex("(?i)\\b([a-z0-9-]+\\.online\\.tableau\\.com)\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b([a-z0-9-]+\\.online\\.tableau\\.com)\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule407();
-    [GeneratedRegex("(?i)\\b([a-z0-9-]+\\.online\\.tableau\\.com)\\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b([a-z0-9-]+\\.online\\.tableau\\.com)\\b", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule407();
-    [GeneratedRegex("\\b(tskey-api-[A-Za-z0-9_-]{20,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(tskey-api-[A-Za-z0-9_-]{20,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule408();
-    [GeneratedRegex("\\b(tskey-api-[A-Za-z0-9_-]{0,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(tskey-api-[A-Za-z0-9_-]{0,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule408();
-    [GeneratedRegex("(?i)(?:telegr)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{5,16}:(?-i:A)[a-z0-9_\\-]{34})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:telegr)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{5,16}:(?-i:A)[a-z0-9_\\-]{34})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule409();
-    [GeneratedRegex("(?i)(?:telegr)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{0,16}:(?-i:A)[a-z0-9_\\-]{0,34})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:telegr)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{0,16}:(?-i:A)[a-z0-9_\\-]{0,34})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule409();
-    [GeneratedRegex("(?i:(?:telnyx(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(KEY[0-9A-Za-z_-]{55})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:telnyx(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(KEY[0-9A-Za-z_-]{55})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule410();
-    [GeneratedRegex("(?i:(?:telnyx(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(KEY[0-9A-Za-z_-]{0,55})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:telnyx(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(KEY[0-9A-Za-z_-]{0,55})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule410();
-    [GeneratedRegex("\\b(eyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]*Y2NvdW50X2lk[A-Za-z0-9_-]*InRlbXBvcmFsLmlv[A-Za-z0-9_-]*(?:ICJrZXlfaWQiOi|a2V5X2lk|rZXlfaWQi)[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{20,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(eyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]*Y2NvdW50X2lk[A-Za-z0-9_-]*InRlbXBvcmFsLmlv[A-Za-z0-9_-]*(?:ICJrZXlfaWQiOi|a2V5X2lk|rZXlfaWQi)[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{20,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule411();
-    [GeneratedRegex("\\b(eyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]*Y2NvdW50X2lk[A-Za-z0-9_-]*InRlbXBvcmFsLmlv[A-Za-z0-9_-]*(?:ICJrZXlfaWQiOi|a2V5X2lk|rZXlfaWQi)[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{20,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(eyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]*Y2NvdW50X2lk[A-Za-z0-9_-]*InRlbXBvcmFsLmlv[A-Za-z0-9_-]*(?:ICJrZXlfaWQiOi|a2V5X2lk|rZXlfaWQi)[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{20,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule411();
-    [GeneratedRegex("\\b(tss_[A-Za-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(tss_[A-Za-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule412();
-    [GeneratedRegex("\\b(tss_[A-Za-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(tss_[A-Za-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule412();
-    [GeneratedRegex("(?i)\\b(tgp_v1_[A-Za-z0-9_-]{43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(tgp_v1_[A-Za-z0-9_-]{43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule413();
-    [GeneratedRegex("(?i)\\b(tgp_v1_[A-Za-z0-9_-]{0,43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(tgp_v1_[A-Za-z0-9_-]{0,43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule413();
-    [GeneratedRegex("(?i)(?:travis)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:travis)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule414();
-    [GeneratedRegex("(?i)(?:travis)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:travis)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,22})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule414();
-    [GeneratedRegex("SK[0-9a-fA-F]{32}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("SK[0-9a-fA-F]{32}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule415();
-    [GeneratedRegex("SK[0-9a-fA-F]{0,32}", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("SK[0-9a-fA-F]{0,32}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule415();
-    [GeneratedRegex("(?i)(?:twitch)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:twitch)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule416();
-    [GeneratedRegex("(?i)(?:twitch)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:twitch)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule416();
-    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{45})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{45})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule417();
-    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,45})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,45})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule417();
-    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{15,25}-[a-zA-Z0-9]{20,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{15,25}-[a-zA-Z0-9]{20,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule418();
-    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{0,25}-[a-zA-Z0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{0,25}-[a-zA-Z0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule418();
-    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{25})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{25})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule419();
-    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,25})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,25})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule419();
-    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule420();
-    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule420();
-    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(A{22}[a-zA-Z0-9%]{80,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(A{22}[a-zA-Z0-9%]{80,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule421();
-    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(A{0,22}[a-zA-Z0-9%]{0,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(A{0,22}[a-zA-Z0-9%]{0,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule421();
-    [GeneratedRegex("(?i)(?:typeform)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(tfp_[a-z0-9\\-_\\.=]{59})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:typeform)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(tfp_[a-z0-9\\-_\\.=]{59})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule422();
-    [GeneratedRegex("(?i)(?:typeform)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(tfp_[a-z0-9\\-_\\.=]{0,59})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:typeform)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(tfp_[a-z0-9\\-_\\.=]{0,59})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule422();
-    [GeneratedRegex("\\b(unkey_[A-Za-z0-9]{20,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(unkey_[A-Za-z0-9]{20,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule423();
-    [GeneratedRegex("\\b(unkey_[A-Za-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(unkey_[A-Za-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule423();
-    [GeneratedRegex("\\b(ucat_[0-9A-Za-z]{24,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ucat_[0-9A-Za-z]{24,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule424();
-    [GeneratedRegex("\\b(ucat_[0-9A-Za-z]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(ucat_[0-9A-Za-z]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule424();
-    [GeneratedRegex("(?i)(?:upstage)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{40,50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:upstage)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{40,50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule425();
-    [GeneratedRegex("(?i)(?:upstage)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:upstage)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule425();
-    [GeneratedRegex("(?i:(?:upstash)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:[A-Za-z0-9]{32,48}|AYNgAS[A-Za-z0-9+/_-]{26,90}={0,2}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:upstash)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:[A-Za-z0-9]{32,48}|AYNgAS[A-Za-z0-9+/_-]{26,90}={0,2}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule426();
-    [GeneratedRegex("(?i:(?:upstash)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:[A-Za-z0-9]{0,48}|AYNgAS[A-Za-z0-9+/_-]{0,90}={0,2}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:upstash)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:[A-Za-z0-9]{0,48}|AYNgAS[A-Za-z0-9+/_-]{0,90}={0,2}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule426();
-    [GeneratedRegex("(?i)\\b(https://[a-z0-9][a-z0-9-]{2,63}\\.upstash\\.io)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(https://[a-z0-9][a-z0-9-]{2,63}\\.upstash\\.io)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule427();
-    [GeneratedRegex("(?i)\\b(https://[a-z0-9][a-z0-9-]{0,63}\\.upstash\\.io)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(https://[a-z0-9][a-z0-9-]{0,63}\\.upstash\\.io)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule427();
-    [GeneratedRegex("\\b(vtwn_[A-Za-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(vtwn_[A-Za-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule428();
-    [GeneratedRegex("\\b(vtwn_[A-Za-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(vtwn_[A-Za-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule428();
-    [GeneratedRegex("\\b(hvb\\.[\\w-]{138,300})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(hvb\\.[\\w-]{138,300})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule429();
-    [GeneratedRegex("\\b(hvb\\.[\\w-]{0,300})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(hvb\\.[\\w-]{0,300})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule429();
-    [GeneratedRegex("\\b((?:hvs\\.[\\w-]{90,120}|s\\.(?i:[a-z0-9]{24})))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b((?:hvs\\.[\\w-]{90,120}|s\\.(?i:[a-z0-9]{24})))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule430();
-    [GeneratedRegex("\\b((?:hvs\\.[\\w-]{0,120}|s\\.(?i:[a-z0-9]{0,24})))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b((?:hvs\\.[\\w-]{0,120}|s\\.(?i:[a-z0-9]{0,24})))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule430();
-    [GeneratedRegex("(?i)\\b(vck_[A-Za-z0-9_-]{56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(vck_[A-Za-z0-9_-]{56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule431();
-    [GeneratedRegex("(?i)\\b(vck_[A-Za-z0-9_-]{0,56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(vck_[A-Za-z0-9_-]{0,56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule431();
-    [GeneratedRegex("(?i)(?:vercel)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Z0-9]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:vercel)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Z0-9]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule432();
-    [GeneratedRegex("(?i)(?:vercel)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Z0-9]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:vercel)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Z0-9]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule432();
-    [GeneratedRegex("(?i)\\b(vca_[A-Za-z0-9_-]{56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(vca_[A-Za-z0-9_-]{56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule433();
-    [GeneratedRegex("(?i)\\b(vca_[A-Za-z0-9_-]{0,56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(vca_[A-Za-z0-9_-]{0,56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule433();
-    [GeneratedRegex("(?i)\\b(vcr_[A-Za-z0-9_-]{56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(vcr_[A-Za-z0-9_-]{56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule434();
-    [GeneratedRegex("(?i)\\b(vcr_[A-Za-z0-9_-]{0,56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(vcr_[A-Za-z0-9_-]{0,56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule434();
-    [GeneratedRegex("(?i)\\b(vci_[A-Za-z0-9_-]{56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(vci_[A-Za-z0-9_-]{56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule435();
-    [GeneratedRegex("(?i)\\b(vci_[A-Za-z0-9_-]{0,56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(vci_[A-Za-z0-9_-]{0,56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule435();
-    [GeneratedRegex("(?i)\\b(vcp_[A-Za-z0-9_-]{56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(vcp_[A-Za-z0-9_-]{56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule436();
-    [GeneratedRegex("(?i)\\b(vcp_[A-Za-z0-9_-]{0,56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(vcp_[A-Za-z0-9_-]{0,56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule436();
-    [GeneratedRegex("(?i)(?:virustotal)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:virustotal)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule437();
-    [GeneratedRegex("(?i)(?:virustotal)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:virustotal)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule437();
-    [GeneratedRegex("(?i:(?:voyage)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:pa|al)-[A-Za-z0-9_-]{43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:voyage)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:pa|al)-[A-Za-z0-9_-]{43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule438();
-    [GeneratedRegex("(?i:(?:voyage)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:pa|al)-[A-Za-z0-9_-]{0,43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:voyage)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:pa|al)-[A-Za-z0-9_-]{0,43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule438();
-    [GeneratedRegex("(?i)(?:vultr)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:vultr)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule439();
-    [GeneratedRegex("(?i)(?:vultr)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:vultr)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule439();
-    [GeneratedRegex("(?i:(?:waka[_. -]?time(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:waka[_. -]?time(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule440();
-    [GeneratedRegex("(?i:(?:waka[_. -]?time(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-fA-F]{0,8}-[0-9a-fA-F]{0,4}-[0-9a-fA-F]{0,4}-[0-9a-fA-F]{0,4}-[0-9a-fA-F]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:waka[_. -]?time(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-fA-F]{0,8}-[0-9a-fA-F]{0,4}-[0-9a-fA-F]{0,4}-[0-9a-fA-F]{0,4}-[0-9a-fA-F]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule440();
-    [GeneratedRegex("(?i)\\b(waka_[a-z0-9]{36,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(waka_[a-z0-9]{36,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule441();
-    [GeneratedRegex("(?i)\\b(waka_[a-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(waka_[a-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule441();
-    [GeneratedRegex("(?i:(?:weatherstack(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-z]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:weatherstack(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-z]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule442();
-    [GeneratedRegex("(?i:(?:weatherstack(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-z]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:weatherstack(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-z]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule442();
-    [GeneratedRegex("(?i)(?:wandb|weightsandbiases)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:wandb|weightsandbiases)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule443();
-    [GeneratedRegex("(?i)(?:wandb|weightsandbiases)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:wandb|weightsandbiases)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule443();
-    [GeneratedRegex("(?i)\\b(wandb_v1_[A-Za-z0-9_]{77})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(wandb_v1_[A-Za-z0-9_]{77})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule444();
-    [GeneratedRegex("(?i)\\b(wandb_v1_[A-Za-z0-9_]{0,77})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(wandb_v1_[A-Za-z0-9_]{0,77})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule444();
-    [GeneratedRegex("(?i:(?:wiz)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{53,56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:wiz)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{53,56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule445();
-    [GeneratedRegex("(?i:(?:wiz)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:wiz)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,56})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule445();
-    [GeneratedRegex("(?i:(?:wiz)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:wiz)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule446();
-    [GeneratedRegex("(?i:(?:wiz)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:wiz)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule446();
-    [GeneratedRegex("(?i)(?:woo)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(cs_[a-f0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:woo)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(cs_[a-f0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule447();
-    [GeneratedRegex("(?i)(?:woo)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(cs_[a-f0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:woo)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(cs_[a-f0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule447();
-    [GeneratedRegex("\\b(wrka(?:[a-z]{2})?-eyJ[A-Za-z0-9_-]{8,}\\.[A-Za-z0-9_-]{16,}\\.[A-Za-z0-9_-]{64,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(wrka(?:[a-z]{2})?-eyJ[A-Za-z0-9_-]{8,}\\.[A-Za-z0-9_-]{16,}\\.[A-Za-z0-9_-]{64,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule448();
-    [GeneratedRegex("\\b(wrka(?:[a-z]{0,2})?-eyJ[A-Za-z0-9_-]{8,}\\.[A-Za-z0-9_-]{16,}\\.[A-Za-z0-9_-]{64,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(wrka(?:[a-z]{0,2})?-eyJ[A-Za-z0-9_-]{8,}\\.[A-Za-z0-9_-]{16,}\\.[A-Za-z0-9_-]{64,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule448();
-    [GeneratedRegex("(?i:(?:workos(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_live_a2V5Xz[A-Za-z0-9+/]{69}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:workos(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_live_a2V5Xz[A-Za-z0-9+/]{69}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule449();
-    [GeneratedRegex("(?i:(?:workos(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_live_a2V5Xz[A-Za-z0-9+/]{0,69}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i:(?:workos(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk_live_a2V5Xz[A-Za-z0-9+/]{0,69}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule449();
-    [GeneratedRegex("(?i)\\b(xai-[A-Za-z0-9_-]{70,120})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(xai-[A-Za-z0-9_-]{70,120})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule450();
-    [GeneratedRegex("(?i)\\b(xai-[A-Za-z0-9_-]{0,120})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b(xai-[A-Za-z0-9_-]{0,120})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule450();
-    [GeneratedRegex("\\b(xnd_production_[A-Za-z0-9]{56,72})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(xnd_production_[A-Za-z0-9]{56,72})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule451();
-    [GeneratedRegex("\\b(xnd_production_[A-Za-z0-9]{0,72})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(xnd_production_[A-Za-z0-9]{0,72})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule451();
-    [GeneratedRegex("(?i)(?:yandex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(t1\\.[A-Z0-9a-z_-]+[=]{0,2}\\.[A-Z0-9a-z_-]{86}[=]{0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:yandex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(t1\\.[A-Z0-9a-z_-]+[=]{0,2}\\.[A-Z0-9a-z_-]{86}[=]{0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule452();
-    [GeneratedRegex("(?i)(?:yandex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(t1\\.[A-Z0-9a-z_-]+[=]{0,2}\\.[A-Z0-9a-z_-]{0,86}[=]{0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:yandex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(t1\\.[A-Z0-9a-z_-]+[=]{0,2}\\.[A-Z0-9a-z_-]{0,86}[=]{0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule452();
-    [GeneratedRegex("(?i)(?:yandex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(AQVN[A-Za-z0-9_\\-]{35,38})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:yandex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(AQVN[A-Za-z0-9_\\-]{35,38})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule453();
-    [GeneratedRegex("(?i)(?:yandex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(AQVN[A-Za-z0-9_\\-]{0,38})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:yandex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(AQVN[A-Za-z0-9_\\-]{0,38})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule453();
-    [GeneratedRegex("(?i)(?:yandex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(YC[a-zA-Z0-9_\\-]{38})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:yandex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(YC[a-zA-Z0-9_\\-]{38})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule454();
-    [GeneratedRegex("(?i)(?:yandex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(YC[a-zA-Z0-9_\\-]{0,38})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:yandex)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(YC[a-zA-Z0-9_\\-]{0,38})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule454();
-    [GeneratedRegex("(?i)(?:zai|z_ai|z\\.ai|glm|zlm)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{32}\\.[a-z0-9]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:zai|z_ai|z\\.ai|glm|zlm)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{32}\\.[a-z0-9]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule455();
-    [GeneratedRegex("(?i)(?:zai|z_ai|z\\.ai|glm|zlm)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,32}\\.[a-z0-9]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:zai|z_ai|z\\.ai|glm|zlm)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,32}\\.[a-z0-9]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule455();
-    [GeneratedRegex("(?i)(?:zendesk)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:zendesk)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule456();
-    [GeneratedRegex("(?i)(?:zendesk)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:zendesk)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule456();
-    [GeneratedRegex("(?i)(?:zoho)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(1000\\.[a-z0-9]{30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:zoho)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(1000\\.[a-z0-9]{30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule457();
-    [GeneratedRegex("(?i)(?:zoho)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(1000\\.[a-z0-9]{0,30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:zoho)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(1000\\.[a-z0-9]{0,30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule457();
-    [GeneratedRegex("(?i)(?:zoho)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{42})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:zoho)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{42})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule458();
-    [GeneratedRegex("(?i)(?:zoho)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,42})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:zoho)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,42})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule458();
-    [GeneratedRegex("(?i)(?:zoho)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(1000\\.[a-f0-9]{32}\\.[a-f0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:zoho)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(1000\\.[a-f0-9]{32}\\.[a-f0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule459();
-    [GeneratedRegex("(?i)(?:zoho)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(1000\\.[a-f0-9]{0,32}\\.[a-f0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:zoho)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(1000\\.[a-f0-9]{0,32}\\.[a-f0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule459();
-    [GeneratedRegex("(?i)(?:zoho)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:1001\\.[a-f0-9]{32}\\.[a-f0-9]{32}(?:-d)?|1003\\.[a-f0-9]{32,64}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:zoho)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:1001\\.[a-f0-9]{32}\\.[a-f0-9]{32}(?:-d)?|1003\\.[a-f0-9]{32,64}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule460();
-    [GeneratedRegex("(?i)(?:zoho)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{0,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:1001\\.[a-f0-9]{0,32}\\.[a-f0-9]{0,32}(?:-d)?|1003\\.[a-f0-9]{0,64}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:zoho)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:1001\\.[a-f0-9]{0,32}\\.[a-f0-9]{0,32}(?:-d)?|1003\\.[a-f0-9]{0,64}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule460();
-    [GeneratedRegex("\\b(zpka_[a-z0-9]{32}_[0-9a-f]{8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(zpka_[a-z0-9]{32}_[0-9a-f]{8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule461();
-    [GeneratedRegex("\\b(zpka_[a-z0-9]{0,32}_[0-9a-f]{0,8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("\\b(zpka_[a-z0-9]{0,32}_[0-9a-f]{0,8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule461();
-    [GeneratedRegex("(?i)(?:/(?:home|Users)/[A-Za-z0-9._-]+|(?:[A-Za-z]:)?(?:\\\\|/)Users(?:\\\\|/)[A-Za-z0-9._-]+)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:/(?:home|Users)/[A-Za-z0-9._-]+|(?:[A-Za-z]:)?(?:\\\\|/)Users(?:\\\\|/)[A-Za-z0-9._-]+)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule462();
-    [GeneratedRegex("(?i)(?:/(?:home|Users)/[A-Za-z0-9._-]*|(?:[A-Za-z]:)?(?:\\\\|/)Users(?:\\\\|/)[A-Za-z0-9._-]*)", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)(?:/(?:home|Users)/[A-Za-z0-9._-]*|(?:[A-Za-z]:)?(?:\\\\|/)Users(?:\\\\|/)[A-Za-z0-9._-]*)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule462();
-    [GeneratedRegex("(?i)\\b[a-z][a-z0-9+.-]{1,20}://[^/\\s:@]+:[^/\\s@]+@", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b[a-z][a-z0-9+.-]{1,20}://[^/\\s:@]+:[^/\\s@]+@", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule463();
-    [GeneratedRegex("(?i)\\b[a-z][a-z0-9+.-]{1,20}://[^/\\s:@]+:[^/\\s@]*(?:@|(?=$|[\\s]))", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?i)\\b[a-z][a-z0-9+.-]{1,20}://[^/\\s:@]+:[^/\\s@]*(?:@|(?=$|[\\s]))", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule463();
-    [GeneratedRegex("(?m)(?:^|[ \\t])[^\\r\\n<>]+<[^\\s<>@]+@[^\\s<>@]+>", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?m)(?:^|[ \\t])[^\\r\\n<>]+<[^\\s<>@]+@[^\\s<>@]+>", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule464();
-    [GeneratedRegex("(?m)(?:^|[ \\t])[^\\r\\n<>]+<[^\\s<>@]+@[^\\s<>@]+>", RegexOptions.CultureInvariant)]
+    [GeneratedRegex("(?m)(?:^|[ \\t])[^\\r\\n<>]+<[^\\s<>@]+@[^\\s<>@]+>", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule464();
 }

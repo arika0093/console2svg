@@ -1,5 +1,6 @@
 using System.CommandLine;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using ConsoleToSvg.Batch;
 using ConsoleToSvg.Cli;
@@ -9,246 +10,320 @@ namespace ConsoleToSvg.Tests.Batch;
 public sealed class BatchMarkdownTests
 {
     [Test]
-    public void FenceFallbackUsesPrecedingBashBlock()
+    public void ImmediatelyPrecedingShellFenceIsImplicitCapture()
     {
-        var md = """
+        var result = Parse(
+            """
             ```bash
             dotnet --info
             ```
             <!-- c2s:: -w 100 -o cmd-info.svg -->
-            """;
-        var result = BatchMarkdown.Parse(md, "guide.md");
+            """
+        );
 
         result.Errors.ShouldBeEmpty();
         result.Jobs.Count.ShouldBe(1);
         result.Jobs[0].Capture.ShouldBe("dotnet --info");
-        result.Jobs[0].Setup.ShouldBe(string.Empty);
         result.Jobs[0].Width.ShouldBe(100);
         result.Jobs[0].OutputRelative.ShouldBe("cmd-info.svg");
-        result.Jobs[0].OutputAuto.ShouldBeFalse();
     }
 
     [Test]
-    public void ExplicitCommandOverridesFence()
+    public void NonAdjacentUnnamedFenceIsNotImplicitlySelected()
     {
-        var md = """
+        var result = Parse(
+            """
             ```bash
-            dotnet --info
+            echo wrong
             ```
-            <!-- c2s:: -w 100 -o cmd-crop.svg -- dotnet --list-sdks -->
-            """;
-        var result = BatchMarkdown.Parse(md, "guide.md");
+
+            Explanatory text.
+
+            <!-- c2s:: -->
+            """
+        );
+
+        result.Jobs.ShouldBeEmpty();
+        result.Errors.Single().Message.ShouldContain("immediately after");
+    }
+
+    [Test]
+    public void InlineCommandOverridesImplicitFence()
+    {
+        var result = Parse(
+            """
+            ```bash
+            echo wrong
+            ```
+            <!-- c2s:: -h 10 -- echo right -->
+            """
+        );
 
         result.Errors.ShouldBeEmpty();
-        result.Jobs[0].Capture.ShouldBe("dotnet --list-sdks");
+        result.Jobs[0].Capture.ShouldBe("echo right");
+        result.Jobs[0].Height.ShouldBe(10);
     }
 
     [Test]
-    public void Console2SvgAliasAndAutoNaming()
+    public void YamlSectionsAreParsedByVYaml()
     {
-        var md = """
+        var result = Parse(
+            """
+            <!-- c2s:: -w 90 -d macos
+            setup: |
+              echo prepare
+              echo ready
+            capture: |
+              echo first
+              echo second
+            teardown: echo clean
+            -->
+            """
+        );
+
+        result.Errors.ShouldBeEmpty();
+        result.Jobs[0].Setup.ShouldBe("echo prepare\necho ready");
+        result.Jobs[0].Capture.ShouldBe("echo first\necho second");
+        result.Jobs[0].Teardown.ShouldBe("echo clean");
+        result.Jobs[0].Window.ShouldBe("macos");
+    }
+
+    [Test]
+    public void EmptyYamlCaptureUsesImmediatelyPrecedingFence()
+    {
+        var result = Parse(
+            """
             ```sh
-            echo hi
+            echo captured
             ```
-            <!-- console2svg:: -h 10 -->
-            """;
-        var result = BatchMarkdown.Parse(md, "guide.md");
+            <!-- c2s::
+            setup: echo setup
+            capture:
+            teardown:
+            -->
+            """
+        );
+
+        result.Errors.ShouldBeEmpty();
+        result.Jobs[0].Setup.ShouldBe("echo setup");
+        result.Jobs[0].Capture.ShouldBe("echo captured");
+        result.Jobs[0].Teardown.ShouldBeEmpty();
+    }
+
+    [Test]
+    public void NamedCodeBlocksCanBeReferencedFromYaml()
+    {
+        var result = Parse(
+            """
+            ```csharp c2s-id=program
+            Console.WriteLine("hi");
+            ```
+
+            ```bash c2s-id=run
+            dotnet run test.cs > result.txt
+            ```
+
+            ```bash c2s-id=result
+            cat result.txt
+            ```
+
+            <!-- c2s:: -o test.svg
+            setup: |
+              cat > test.cs <<'EOF'
+              {code:program}
+              EOF
+              {code:run}
+            capture: "{code:result}"
+            teardown: rm -f test.cs result.txt
+            -->
+            """
+        );
+
+        result.Errors.ShouldBeEmpty();
+        result.Jobs[0].Setup.ShouldContain("Console.WriteLine(\"hi\");");
+        result.Jobs[0].Setup.ShouldContain("dotnet run test.cs > result.txt");
+        result.Jobs[0].Capture.ShouldBe("cat result.txt");
+    }
+
+    [Test]
+    public void DuplicateCodeBlockIdsAreRejected()
+    {
+        var result = Parse(
+            """
+            ```text c2s-id=sample
+            first
+            ```
+            ```text c2s-id=sample
+            second
+            ```
+            """
+        );
+
+        result.Errors.Single().Message.ShouldContain("duplicate c2s-id");
+    }
+
+    [Test]
+    public void ForwardCodeBlockReferenceIsRejected()
+    {
+        var result = Parse(
+            """
+            <!-- c2s::
+            capture: "{code:later}"
+            -->
+            ```bash c2s-id=later
+            echo later
+            ```
+            """
+        );
+
+        result.Jobs.ShouldBeEmpty();
+        result.Errors.Single().Message.ShouldContain("no preceding code block");
+    }
+
+    [Test]
+    public void PositionalAndLanguagePlaceholdersAreRejected()
+    {
+        foreach (var placeholder in new[] { "{code}", "{code/bash}", "{code:1}" })
+        {
+            var result = Parse($"<!-- c2s:: -- echo {placeholder} -->");
+            result.Jobs.ShouldBeEmpty();
+            result.Errors.Single().Message.ShouldContain("use '{code:<c2s-id>}'");
+        }
+    }
+
+    [Test]
+    public void MarkersInsideCodeFencesAreIgnored()
+    {
+        var result = Parse(
+            """
+            ````markdown
+            ```bash
+            echo example
+            ```
+            <!-- c2s:: -- echo must-not-run -->
+            ````
+            """
+        );
+
+        result.Errors.ShouldBeEmpty();
+        result.Jobs.ShouldBeEmpty();
+    }
+
+    [Test]
+    public void TildeFenceCanBeImplicitCapture()
+    {
+        var result = Parse(
+            """
+            ~~~bash
+            echo hi
+            ~~~
+            <!-- c2s:: -->
+            """
+        );
 
         result.Errors.ShouldBeEmpty();
         result.Jobs[0].Capture.ShouldBe("echo hi");
-        result.Jobs[0].Height.ShouldBe(10);
-        result.Jobs[0].OutputRelative.ShouldBe("guide-1.svg");
-        result.Jobs[0].OutputAuto.ShouldBeTrue();
     }
 
     [Test]
-    public void SetupCaptureTeardownSplit()
+    public void InlineAndYamlCaptureConflictIsRejected()
     {
-        var md = """
-            <!-- c2s:: -o server.svg --
-            echo starting
-            ---
-            echo hello
-            ---
-            echo done
+        var result = Parse(
+            """
+            <!-- c2s:: -- echo inline
+            capture: echo yaml
             -->
-            """;
-        var result = BatchMarkdown.Parse(md, "guide.md");
-
-        result.Errors.ShouldBeEmpty();
-        result.Jobs[0].Setup.ShouldBe("echo starting");
-        result.Jobs[0].Capture.ShouldBe("echo hello");
-        result.Jobs[0].Teardown.ShouldBe("echo done");
-    }
-
-    [Test]
-    public void MultilineWithoutSeparatorIsError()
-    {
-        var md = """
-            <!-- c2s:: -o x.svg --
-            echo a
-            echo b
-            -->
-            """;
-        var result = BatchMarkdown.Parse(md, "guide.md");
+            """
+        );
 
         result.Jobs.ShouldBeEmpty();
-        result.Errors.Count.ShouldBe(1);
-        result.Errors[0].Message.ShouldContain("---");
+        result.Errors.Single().Message.ShouldContain("both");
     }
 
     [Test]
-    public void ThreeSeparatorsIsError()
+    public void UnknownYamlKeyIsRejected()
     {
-        var md = """
-            <!-- c2s:: -o x.svg --
-            a
-            ---
-            b
-            ---
-            c
-            ---
-            d
+        var result = Parse(
+            """
+            <!-- c2s::
+            command: echo nope
             -->
-            """;
-        var result = BatchMarkdown.Parse(md, "guide.md");
+            """
+        );
 
         result.Jobs.ShouldBeEmpty();
-        result.Errors.Count.ShouldBe(1);
+        result.Errors.Single().Message.ShouldContain("unknown marker YAML key");
     }
 
     [Test]
-    public void MissingCommandIsError()
+    public void OutputTraversalAndNonSvgAreRejected()
     {
-        var md = """
-            ```csharp
-            var x = 1;
-            ```
-            <!-- c2s:: -o x.svg -->
-            """;
-        var result = BatchMarkdown.Parse(md, "guide.md");
-
-        result.Jobs.ShouldBeEmpty();
-        result.Errors.Count.ShouldBe(1);
-        result.Errors[0].Message.ShouldContain("no command found");
-    }
-
-    [Test]
-    public void OutputTraversalIsRejected()
-    {
-        foreach (var bad in new[] { "../evil.svg", "/abs.svg", "sub/../../evil.svg", "x.png" })
+        foreach (var output in new[] { "../evil.svg", "/abs.svg", "sub/../../evil.svg", "x.png" })
         {
-            var md = $"""
-                ```bash
-                echo hi
-                ```
-                <!-- c2s:: -o {bad} -->
-                """;
-            var result = BatchMarkdown.Parse(md, "guide.md");
+            var result = Parse($"<!-- c2s:: -o {output} -- echo hi -->");
             result.Jobs.ShouldBeEmpty();
             result.Errors.Count.ShouldBe(1);
         }
     }
 
     [Test]
-    public void SubdirectoryOutputIsAllowed()
+    public void ExistingAssociatedImageTargetIsRememberedForAutoOutput()
     {
-        var md = """
+        var result = Parse(
+            """
             ```bash
             echo hi
             ```
-            <!-- c2s:: -o ./sub/cmd.svg -->
-            """;
-        var result = BatchMarkdown.Parse(md, "guide.md");
+            <!-- c2s:: -->
+
+            ![old](../../assets/original/test-7.svg)
+            """
+        );
 
         result.Errors.ShouldBeEmpty();
-        result.Jobs[0].OutputRelative.ShouldBe("sub/cmd.svg");
-    }
-
-    [Test]
-    public void CodePlaceholderExpandsRaw()
-    {
-        var md = """
-            ```csharp
-            Console.WriteLine("hi");
-            ```
-            ```bash
-            dotnet run test.cs
-            ```
-            <!-- c2s:: -o test.svg --
-            cat <<'EOF' > test.cs
-            {code/csharp}
-            EOF
-            ---
-            dotnet run test.cs
-            -->
-            """;
-        var result = BatchMarkdown.Parse(md, "guide.md");
-
-        result.Errors.ShouldBeEmpty();
-        result.Jobs[0].Setup.ShouldContain("Console.WriteLine(\"hi\");");
-        result.Jobs[0].Capture.ShouldBe("dotnet run test.cs");
-    }
-
-    [Test]
-    public void MissingPlaceholderTargetIsError()
-    {
-        var md = """
-            ```bash
-            echo hi
-            ```
-            <!-- c2s:: -o x.svg -- echo {code/python} -->
-            """;
-        var result = BatchMarkdown.Parse(md, "guide.md");
-
-        result.Jobs.ShouldBeEmpty();
-        result.Errors.Count.ShouldBe(1);
+        result.Jobs[0].OutputAuto.ShouldBeTrue();
+        result.Jobs[0].ExistingLinkTarget.ShouldBe("../../assets/original/test-7.svg");
     }
 
     [Test]
     public void MdxMarkerIsParsed()
     {
-        var md = """
+        var result = Parse(
+            """
             ```bash
             echo hi
             ```
             {/* c2s:: -o mdx.svg */}
-            """;
-        var result = BatchMarkdown.Parse(md, "page.mdx");
+            """,
+            "page.mdx"
+        );
 
         result.Errors.ShouldBeEmpty();
-        result.Jobs.Count.ShouldBe(1);
         result.Jobs[0].Kind.ShouldBe(BatchMarkerKind.Mdx);
-        result.Jobs[0].Capture.ShouldBe("echo hi");
     }
 
     [Test]
-    public void UnsupportedOptionIsError()
+    public void UnsupportedMarkerOptionIsRejected()
     {
-        var md = """
-            ```bash
-            echo hi
-            ```
-            <!-- c2s:: --bogus 1 -->
-            """;
-        var result = BatchMarkdown.Parse(md, "guide.md");
+        var result = Parse("<!-- c2s:: --bogus 1 -- echo hi -->");
 
         result.Jobs.ShouldBeEmpty();
-        result.Errors.Count.ShouldBe(1);
+        result.Errors.Single().Message.ShouldContain("unsupported marker option");
     }
 
     [Test]
     public void RewriteInsertsMissingLink()
     {
-        var md = """
+        var markdown = """
             ```bash
             echo hi
             ```
             <!-- c2s:: -o a.svg -->
             """;
-        var result = BatchMarkdown.Parse(md, "guide.md");
+        var result = Parse(markdown);
+
         var rewritten = BatchMarkdown.RewriteLinks(
-            md,
+            markdown,
             [new BatchLink(result.Jobs[0], "../assets/a.svg")]
         );
 
@@ -256,67 +331,66 @@ public sealed class BatchMarkdownTests
     }
 
     [Test]
-    public void RewriteUpdatesExistingLink()
+    public void RewriteUpdatesExistingLinkAndIsIdempotent()
     {
-        var md = """
+        var markdown = """
             ```bash
             echo hi
             ```
             <!-- c2s:: -o a.svg -->
             ![old](./old.svg)
             """;
-        var result = BatchMarkdown.Parse(md, "guide.md");
-        var rewritten = BatchMarkdown.RewriteLinks(
-            md,
-            [new BatchLink(result.Jobs[0], "../assets/a.svg")]
+        var result = Parse(markdown);
+        var link = new BatchLink(result.Jobs[0], "../assets/a.svg");
+
+        var rewritten = BatchMarkdown.RewriteLinks(markdown, [link]);
+        var reparsed = Parse(rewritten);
+        var second = BatchMarkdown.RewriteLinks(
+            rewritten,
+            [new BatchLink(reparsed.Jobs[0], "../assets/a.svg")]
         );
 
         rewritten.ShouldContain("![echo hi](../assets/a.svg)");
         rewritten.ShouldNotContain("old.svg");
+        second.ShouldBe(rewritten);
     }
 
     [Test]
-    public void RewriteIsIdempotent()
-    {
-        var md = """
-            ```bash
-            echo hi
-            ```
-            <!-- c2s:: -o a.svg -->
-            ![echo hi](../assets/a.svg)
-            """;
-        var result = BatchMarkdown.Parse(md, "guide.md");
-        var rewritten = BatchMarkdown.RewriteLinks(
-            md,
-            [new BatchLink(result.Jobs[0], "../assets/a.svg")]
-        );
-
-        rewritten.ShouldBe(md);
-    }
-
-    [Test]
-    public async Task BatchRunCliMapping()
+    public async Task BatchMarkdownCliMapsOnlyBatchControls()
     {
         var invocation = await InvokeAsync(
             "batch",
-            "run",
+            "markdown",
             "-i",
-            "docs",
+            "docs/guide.md",
             "-o",
             "assets",
-            "--dry",
-            "--cached",
-            "-w",
-            "80"
+            "--filter",
+            "reference/**",
+            "tutorial/*.md",
+            "--dry-run"
         );
 
         invocation.ExitCode.ShouldBe(0);
         invocation.Options.ShouldNotBeNull();
         invocation.Options!.Workflow.ShouldBe(Workflow.Batch);
-        invocation.Options.BatchDry.ShouldBeTrue();
-        invocation.Options.BatchCached.ShouldBeTrue();
-        invocation.Options.Width.ShouldBe(80);
+        invocation.Options.BatchInputPath.ShouldBe("docs/guide.md");
+        invocation.Options.BatchOutputDir.ShouldBe("assets");
+        invocation.Options.BatchFilters.ShouldBe(["reference/**", "tutorial/*.md"]);
+        invocation.Options.BatchDryRun.ShouldBeTrue();
     }
+
+    [Test]
+    public async Task LegacyBatchRunCommandIsNotAccepted()
+    {
+        var invocation = await InvokeAsync("batch", "run");
+
+        invocation.ExitCode.ShouldNotBe(0);
+        invocation.Options.ShouldBeNull();
+    }
+
+    private static BatchParseResult Parse(string markdown, string path = "guide.md") =>
+        BatchMarkdown.Parse(markdown, path);
 
     private static async Task<Invocation> InvokeAsync(params string[] args)
     {

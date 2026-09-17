@@ -238,17 +238,17 @@ public sealed class AppOptions
     /// </summary>
     public SvgConverterMode SvgConverter { get; set; } = SvgConverterMode.Auto;
 
-    /// <summary>Batch mode: markdown input directory.</summary>
-    public string? BatchInputDir { get; set; }
+    /// <summary>Batch markdown mode: input markdown file or directory.</summary>
+    public string? BatchInputPath { get; set; }
 
-    /// <summary>Batch mode: image assets directory.</summary>
-    public string? BatchAssetsDir { get; set; }
+    /// <summary>Batch markdown mode: generated image output directory.</summary>
+    public string? BatchOutputDir { get; set; }
 
-    /// <summary>Batch mode: list planned jobs without executing.</summary>
-    public bool BatchDry { get; set; }
+    /// <summary>Batch markdown mode: input-relative glob filters.</summary>
+    public string[] BatchFilters { get; set; } = [];
 
-    /// <summary>Batch mode: skip jobs whose input hash matches the sidecar file.</summary>
-    public bool BatchCached { get; set; }
+    /// <summary>Batch markdown mode: list planned jobs without changing the filesystem.</summary>
+    public bool BatchDryRun { get; set; }
 
     /// <summary>
     /// Shallow copy for per-block overrides. List properties are shared by reference;

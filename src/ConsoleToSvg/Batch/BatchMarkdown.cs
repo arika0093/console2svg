@@ -1,20 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using VYaml.Parser;
 
 namespace ConsoleToSvg.Batch;
 
-/// <summary>Marker comment style.</summary>
 public enum BatchMarkerKind
 {
     Html,
     Mdx,
 }
 
-/// <summary>A single c2s block parsed from markdown.</summary>
 public sealed record BatchParsedJob(
     int Index,
     int MarkerStart,
@@ -31,26 +30,26 @@ public sealed record BatchParsedJob(
     bool WindowExplicit,
     bool Video,
     double? Timeout,
-    string OutputRelative,
-    bool OutputAuto,
+    string? OutputRelative,
+    string? ExistingLinkTarget,
     string Alt
-);
+)
+{
+    public bool OutputAuto => OutputRelative is null;
+}
 
-/// <summary>A parse problem with a 1-based line number.</summary>
 public sealed record BatchParseError(int Line, string Message);
 
-/// <summary>Result of parsing a markdown document.</summary>
 public sealed record BatchParseResult(
     IReadOnlyList<BatchParsedJob> Jobs,
     IReadOnlyList<BatchParseError> Errors
 );
 
-/// <summary>Link target resolved for a parsed job.</summary>
 public sealed record BatchLink(BatchParsedJob Job, string RelativeLink);
 
 /// <summary>
-/// Parses <c>c2s::</c> markers in markdown/MDX and rewrites image links.
-/// Pure string processing; no process execution here so it stays unit-testable.
+/// Parses c2s markers in Markdown/MDX and rewrites their associated image links.
+/// This class performs string processing only; commands are executed elsewhere.
 /// </summary>
 public static class BatchMarkdown
 {
@@ -72,23 +71,47 @@ public static class BatchMarkdown
 
     private static readonly Regex OptionsSplitterPattern = new(
         @"(?:^|\s)--(?:\s|$)",
-        RegexOptions.Singleline | RegexOptions.Compiled,
+        RegexOptions.Compiled,
         PatternTimeout
     );
 
     private static readonly Regex CodePlaceholderPattern = new(
-        @"\{code(?:(?::(\d+))|(?:/([A-Za-z0-9#+_\-]+)(?::(\d+))?))?\}",
+        @"\{code:([A-Za-z][A-Za-z0-9_-]*)\}",
+        RegexOptions.Compiled,
+        PatternTimeout
+    );
+
+    private static readonly Regex AnyCodePlaceholderPattern = new(
+        @"\{code[^}]*\}",
+        RegexOptions.Compiled,
+        PatternTimeout
+    );
+
+    private static readonly Regex FenceOpeningPattern = new(
+        @"^( {0,3})(`{3,}|~{3,})(.*)$",
+        RegexOptions.Compiled,
+        PatternTimeout
+    );
+
+    private static readonly Regex FenceIdPattern = new(
+        @"(?:^|\s)c2s-id=([A-Za-z][A-Za-z0-9_-]*)(?=\s|$)",
         RegexOptions.Compiled,
         PatternTimeout
     );
 
     private static readonly Regex ImageLinePattern = new(
-        @"^[ \t]*!\[[^\]]*\]\([^)]*\)[ \t]*$",
+        "^[ \\t]*!\\[(?<alt>[^\\]]*)\\]\\((?<target><[^>]+>|[^)\\s]+)(?:\\s+(?:\"[^\"]*\"|'[^']*'|\\([^)]*\\)))?\\)[ \\t]*\\r?$",
         RegexOptions.Compiled,
         PatternTimeout
     );
 
-    private static readonly HashSet<string> BashLanguages = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly Regex MarkdownImagePattern = new(
+        "!\\[[^\\]]*\\]\\((?<target><[^>]+>|[^)\\s]+)(?:\\s+(?:\"[^\"]*\"|'[^']*'|\\([^)]*\\)))?\\)",
+        RegexOptions.Compiled,
+        PatternTimeout
+    );
+
+    private static readonly HashSet<string> ShellLanguages = new(StringComparer.OrdinalIgnoreCase)
     {
         "bash",
         "sh",
@@ -107,41 +130,33 @@ public static class BatchMarkdown
         "shell-session",
     };
 
-    private static readonly Dictionary<string, string> LanguageAliases = new(
-        StringComparer.OrdinalIgnoreCase
-    )
-    {
-        ["c#"] = "csharp",
-        ["cs"] = "csharp",
-        ["js"] = "javascript",
-        ["py"] = "python",
-        ["ts"] = "typescript",
-        ["ps1"] = "powershell",
-    };
-
-    private sealed record CodeFence(string Language, string Content, int Start, int End);
+    private sealed record CodeFence(
+        string Language,
+        string? Id,
+        string Content,
+        int Start,
+        int End,
+        int Line
+    );
 
     private sealed record FoundMarker(BatchMarkerKind Kind, int Start, int End, string Inner);
 
-    /// <summary>Parses all c2s jobs in a markdown document.</summary>
+    private sealed record MarkerBody(string Setup, string Capture, string Teardown);
+
     public static BatchParseResult Parse(string markdown, string mdPath)
     {
-        var fences = FindCodeFences(markdown);
-        var markers = FindMarkers(markdown);
-        var jobs = new List<BatchParsedJob>();
         var errors = new List<BatchParseError>();
-        var mdBase = Path.GetFileNameWithoutExtension(mdPath);
-        if (string.IsNullOrWhiteSpace(mdBase))
-        {
-            mdBase = "doc";
-        }
+        var fences = FindCodeFences(markdown);
+        ValidateFenceIds(fences, errors);
+        var markers = FindMarkers(markdown, fences);
+        var jobs = new List<BatchParsedJob>();
 
         var index = 0;
         foreach (var marker in markers)
         {
             index++;
             var line = GetLineNumber(markdown, marker.Start);
-            var parsed = ParseMarker(marker, fences, index, mdBase, line, errors);
+            var parsed = ParseMarker(markdown, marker, fences, index, line, errors);
             if (parsed is not null)
             {
                 jobs.Add(parsed);
@@ -151,7 +166,6 @@ public static class BatchMarkdown
         return new BatchParseResult(jobs, errors);
     }
 
-    /// <summary>Validates a marker -o value without touching the filesystem.</summary>
     public static bool TryValidateOutputRelative(
         string value,
         out string normalized,
@@ -174,26 +188,23 @@ public static class BatchMarkdown
         if (
             Path.IsPathRooted(normalized)
             || normalized.StartsWith('/', StringComparison.Ordinal)
-            || normalized.StartsWith("~", StringComparison.Ordinal)
+            || normalized.StartsWith('~')
         )
         {
-            error = $"-o must be a relative file name (got '{value}').";
+            error = $"-o must be relative to the output directory (got '{value}').";
             return false;
         }
 
-        foreach (var segment in normalized.Split('/'))
+        if (
+            normalized
+                .Split('/')
+                .Any(segment =>
+                    segment is ".." || string.IsNullOrWhiteSpace(segment) || segment.Contains(':')
+                )
+        )
         {
-            if (segment is ".." || (segment.Contains(':') && segment.Length == 2))
-            {
-                error = $"-o must stay inside the assets directory (got '{value}').";
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(segment))
-            {
-                error = $"-o contains an empty path segment (got '{value}').";
-                return false;
-            }
+            error = $"-o must stay inside the output directory (got '{value}').";
+            return false;
         }
 
         if (
@@ -204,37 +215,13 @@ public static class BatchMarkdown
             )
         )
         {
-            error = $"batch MVP only supports .svg output (got '{value}').";
+            error = $"batch markdown currently supports .svg output only (got '{value}').";
             return false;
         }
 
         return true;
     }
 
-    /// <summary>Computes the --cached fingerprint for a job.</summary>
-    public static string ComputeJobHash(
-        string setup,
-        string capture,
-        string teardown,
-        string optionsFingerprint,
-        string appVersion
-    )
-    {
-        var payload =
-            setup
-            + "\n---\n"
-            + capture
-            + "\n---\n"
-            + teardown
-            + "\n---\n"
-            + optionsFingerprint
-            + "\n---\n"
-            + appVersion;
-        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(payload));
-        return Convert.ToHexString(bytes).ToLowerInvariant();
-    }
-
-    /// <summary>Rewrites (or inserts) image links for executed jobs.</summary>
     public static string RewriteLinks(string markdown, IReadOnlyList<BatchLink> links)
     {
         if (links.Count == 0)
@@ -243,9 +230,7 @@ public static class BatchMarkdown
         }
 
         var newline = markdown.Contains("\r\n", StringComparison.Ordinal) ? "\r\n" : "\n";
-        // Apply from the end so earlier offsets stay valid.
-        var ordered = new List<BatchLink>(links);
-        ordered.Sort((a, b) => b.Job.MarkerStart.CompareTo(a.Job.MarkerStart));
+        var ordered = links.OrderByDescending(link => link.Job.MarkerStart);
         var result = markdown;
         foreach (var link in ordered)
         {
@@ -255,62 +240,38 @@ public static class BatchMarkdown
         return result;
     }
 
-    private static string ApplyLink(string markdown, BatchLink link, string newline)
+    public static IReadOnlyList<string> FindImageTargets(string markdown)
     {
-        var imageLine = $"![{link.Job.Alt}]({link.RelativeLink})";
-        var markerLineEnd = markdown.IndexOf('\n', link.Job.MarkerEnd);
-        if (markerLineEnd < 0)
-        {
-            return markdown + newline + imageLine + newline;
-        }
-
-        var cursor = markerLineEnd + 1;
-        while (true)
-        {
-            var lineEnd = markdown.IndexOf('\n', cursor);
-            var line = lineEnd < 0 ? markdown[cursor..] : markdown[cursor..lineEnd];
-            var trimmed = line.Trim();
-            if (trimmed.Length == 0)
-            {
-                if (lineEnd < 0)
-                {
-                    return markdown[..cursor] + imageLine + newline;
-                }
-
-                cursor = lineEnd + 1;
-                continue;
-            }
-
-            if (ImageLinePattern.IsMatch(line.TrimEnd('\r')))
-            {
-                var before = markdown[..cursor];
-                var hasNewline = lineEnd >= 0;
-                var after = hasNewline ? markdown[(lineEnd + 1)..] : string.Empty;
-                var suffix = line.EndsWith("\r", StringComparison.Ordinal) ? "\r" : string.Empty;
-                return before + imageLine + suffix + (hasNewline ? newline + after : string.Empty);
-            }
-
-            // Next content is not an image: insert right after the marker line.
-            var insertAt = markerLineEnd + 1;
-            return markdown[..insertAt] + imageLine + newline + markdown[insertAt..];
-        }
+        var fences = FindCodeFences(markdown);
+        return MarkdownImagePattern
+            .Matches(markdown)
+            .Cast<Match>()
+            .Where(match =>
+                !fences.Any(fence => match.Index >= fence.Start && match.Index < fence.End)
+            )
+            .Select(match => match.Groups["target"].Value.Trim('<', '>'))
+            .ToArray();
     }
 
     private static BatchParsedJob? ParseMarker(
+        string markdown,
         FoundMarker marker,
         IReadOnlyList<CodeFence> fences,
         int index,
-        string mdBase,
         int line,
         List<BatchParseError> errors
     )
     {
-        var split = OptionsSplitterPattern.Match(marker.Inner);
-        var optionsText = split.Success ? marker.Inner[..split.Index].Trim() : marker.Inner.Trim();
-        var scriptText = split.Success
-            ? marker.Inner[(split.Index + split.Length)..].Trim('\r', '\n', ' ', '\t').TrimEnd()
+        var inner = marker.Inner.Replace("\r\n", "\n", StringComparison.Ordinal);
+        var firstLineEnd = inner.IndexOf('\n');
+        var header = (firstLineEnd < 0 ? inner : inner[..firstLineEnd]).Trim();
+        var yaml = firstLineEnd < 0 ? string.Empty : inner[(firstLineEnd + 1)..].Trim();
+
+        var split = OptionsSplitterPattern.Match(header);
+        var optionsText = split.Success ? header[..split.Index].Trim() : header;
+        var inlineCapture = split.Success
+            ? header[(split.Index + split.Length)..].Trim()
             : string.Empty;
-        var hasExplicitScript = split.Success;
 
         if (
             !TryParseOptions(
@@ -331,107 +292,64 @@ public static class BatchMarkdown
             return null;
         }
 
-        string setup = string.Empty;
-        string capture;
-        string teardown = string.Empty;
-
-        if (!hasExplicitScript || scriptText.Length == 0)
+        var body = ParseYamlBody(yaml, line, errors);
+        if (body is null)
         {
-            var fence = FindPrecedingFence(fences, marker.Start, bashOnly: true);
+            return null;
+        }
+
+        if (inlineCapture.Length > 0 && body.Capture.Length > 0)
+        {
+            errors.Add(
+                new BatchParseError(
+                    line,
+                    "capture is specified both after '--' and in the YAML body."
+                )
+            );
+            return null;
+        }
+
+        var capture = inlineCapture.Length > 0 ? inlineCapture : body.Capture;
+        if (capture.Length == 0)
+        {
+            var fence = FindImmediatelyPrecedingShellFence(markdown, fences, marker.Start);
             if (fence is null)
             {
                 errors.Add(
                     new BatchParseError(
                         line,
-                        "no command found: add `-- <command>` or a preceding bash code block."
+                        "no command found: add `-- <command>`, a YAML capture value, or place the marker immediately after a shell code block."
                     )
                 );
                 return null;
             }
 
             capture = fence.Content.TrimEnd();
-            if (capture.Length == 0)
-            {
-                errors.Add(new BatchParseError(line, "preceding code block is empty."));
-                return null;
-            }
-        }
-        else
-        {
-            var sections = SplitSections(scriptText);
-            if (sections is null)
-            {
-                errors.Add(
-                    new BatchParseError(
-                        line,
-                        "'---' separators: use 0, 1, or 2 (setup --- capture --- teardown)."
-                    )
-                );
-                return null;
-            }
-
-            if (sections.Count == 1)
-            {
-                var single = sections[0].Trim();
-                if (single.Contains('\n'))
-                {
-                    errors.Add(
-                        new BatchParseError(
-                            line,
-                            "multi-line scripts require '---' separators (setup --- capture)."
-                        )
-                    );
-                    return null;
-                }
-
-                capture = single;
-            }
-            else if (sections.Count == 2)
-            {
-                setup = sections[0].Trim('\r', '\n', ' ', '\t');
-                capture = sections[1].Trim();
-            }
-            else
-            {
-                setup = sections[0].Trim('\r', '\n', ' ', '\t');
-                capture = sections[1].Trim();
-                teardown = sections[2].Trim('\r', '\n', ' ', '\t');
-            }
-
-            if (capture.Length == 0)
-            {
-                errors.Add(new BatchParseError(line, "capture section after '---' is empty."));
-                return null;
-            }
         }
 
-        setup = ExpandPlaceholders(setup, fences, marker.Start, line, errors);
-        capture = ExpandPlaceholders(capture, fences, marker.Start, line, errors);
-        teardown = ExpandPlaceholders(teardown, fences, marker.Start, line, errors);
-        if (HasErrorAtLine(errors, line))
+        var setup = ExpandNamedCode(body.Setup, fences, marker.Start, line, errors);
+        capture = ExpandNamedCode(capture, fences, marker.Start, line, errors);
+        var teardown = ExpandNamedCode(body.Teardown, fences, marker.Start, line, errors);
+        if (HasErrorAtLine(errors, line) || string.IsNullOrWhiteSpace(capture))
         {
+            if (string.IsNullOrWhiteSpace(capture) && !HasErrorAtLine(errors, line))
+            {
+                errors.Add(new BatchParseError(line, "capture command is empty."));
+            }
+
             return null;
         }
 
-        var outputAuto = string.IsNullOrWhiteSpace(outputRelative);
-        string output;
-        if (outputAuto)
-        {
-            output = $"{mdBase}-{index}.svg";
-        }
-        else if (
-            TryValidateOutputRelative(outputRelative!, out var normalized, out var outputError)
+        string? output = null;
+        if (
+            !string.IsNullOrWhiteSpace(outputRelative)
+            && !TryValidateOutputRelative(outputRelative, out output, out var outputError)
         )
-        {
-            output = normalized;
-        }
-        else
         {
             errors.Add(new BatchParseError(line, outputError!));
             return null;
         }
 
-        var alt = FirstLine(capture);
         return new BatchParsedJob(
             index,
             marker.Start,
@@ -449,51 +367,106 @@ public static class BatchMarkdown
             video,
             timeout,
             output,
-            outputAuto,
-            alt
+            FindAssociatedImageTarget(markdown, marker.End),
+            FirstLine(capture)
         );
     }
 
-    private static bool HasErrorAtLine(List<BatchParseError> errors, int line)
+    private static MarkerBody? ParseYamlBody(
+        string yaml,
+        int markerLine,
+        List<BatchParseError> errors
+    )
     {
-        foreach (var error in errors)
+        if (yaml.Length == 0)
         {
-            if (error.Line == line)
-            {
-                return true;
-            }
+            return new MarkerBody(string.Empty, string.Empty, string.Empty);
         }
 
-        return false;
+        try
+        {
+            return ParseYamlMapping(Encoding.UTF8.GetBytes(yaml), markerLine, errors);
+        }
+        catch (Exception ex)
+        {
+            errors.Add(
+                new BatchParseError(
+                    markerLine,
+                    $"invalid marker YAML: {ex.Message.Replace(Environment.NewLine, " ")}"
+                )
+            );
+            return null;
+        }
     }
 
-    private static List<string>? SplitSections(string script)
+    private static MarkerBody? ParseYamlMapping(
+        byte[] yaml,
+        int markerLine,
+        List<BatchParseError> errors
+    )
     {
-        var lines = script.Split('\n');
-        var sections = new List<string> { new StringBuilder().ToString() };
-        var builders = new List<StringBuilder> { new() };
-        foreach (var rawLine in lines)
+        var parser = YamlParser.FromBytes(yaml);
+        parser.Read();
+        parser.Read();
+        parser.Read();
+        if (parser.CurrentEventType != ParseEventType.MappingStart)
         {
-            if (rawLine.Trim().TrimEnd('\r') == "---")
+            errors.Add(new BatchParseError(markerLine, "marker YAML must be a mapping."));
+            return null;
+        }
+
+        var values = new Dictionary<string, string>(StringComparer.Ordinal);
+        parser.Read();
+        while (parser.CurrentEventType != ParseEventType.MappingEnd)
+        {
+            if (parser.CurrentEventType != ParseEventType.Scalar)
             {
-                builders.Add(new StringBuilder());
-                continue;
+                errors.Add(new BatchParseError(markerLine, "marker YAML keys must be strings."));
+                return null;
             }
 
-            builders[^1].Append(rawLine);
-            builders[^1].Append('\n');
+            var key = parser.ReadScalarAsString();
+            if (key is not "setup" and not "capture" and not "teardown")
+            {
+                errors.Add(new BatchParseError(markerLine, $"unknown marker YAML key '{key}'."));
+                return null;
+            }
+
+            if (values.ContainsKey(key))
+            {
+                errors.Add(new BatchParseError(markerLine, $"duplicate marker YAML key '{key}'."));
+                return null;
+            }
+
+            if (parser.CurrentEventType != ParseEventType.Scalar)
+            {
+                errors.Add(
+                    new BatchParseError(markerLine, $"marker YAML '{key}' must be a string.")
+                );
+                return null;
+            }
+
+            string value;
+            if (parser.IsNullScalar())
+            {
+                value = string.Empty;
+                parser.Read();
+            }
+            else
+            {
+                value = parser.ReadScalarAsString() ?? string.Empty;
+            }
+            values.Add(key, value.TrimEnd('\r', '\n'));
         }
 
-        sections.Clear();
-        foreach (var builder in builders)
-        {
-            sections.Add(builder.ToString());
-        }
-
-        return sections.Count is 1 or 2 or 3 ? sections : null;
+        return new MarkerBody(
+            values.GetValueOrDefault("setup", string.Empty),
+            values.GetValueOrDefault("capture", string.Empty),
+            values.GetValueOrDefault("teardown", string.Empty)
+        );
     }
 
-    private static string ExpandPlaceholders(
+    private static string ExpandNamedCode(
         string script,
         IReadOnlyList<CodeFence> fences,
         int markerStart,
@@ -506,129 +479,77 @@ public static class BatchMarkdown
             return script;
         }
 
+        var unsupported = AnyCodePlaceholderPattern
+            .Matches(script)
+            .Cast<Match>()
+            .FirstOrDefault(match => !CodePlaceholderPattern.IsMatch(match.Value));
+        if (unsupported is not null)
+        {
+            errors.Add(
+                new BatchParseError(
+                    line,
+                    $"unsupported code placeholder '{unsupported.Value}'; use '{{code:<c2s-id>}}'."
+                )
+            );
+        }
+
         return CodePlaceholderPattern.Replace(
             script,
             match =>
             {
-                var indexGroup = match.Groups[1].Success ? match.Groups[1] : match.Groups[3];
-                var langGroup = match.Groups[2];
-                var skip = 0;
-                if (indexGroup.Success && !int.TryParse(indexGroup.Value, out skip))
+                var id = match.Groups[1].Value;
+                var fence = fences.LastOrDefault(item =>
+                    item.End <= markerStart && string.Equals(item.Id, id, StringComparison.Ordinal)
+                );
+                if (fence is null)
                 {
-                    errors.Add(new BatchParseError(line, $"invalid placeholder '{match.Value}'."));
+                    errors.Add(
+                        new BatchParseError(
+                            line,
+                            $"placeholder '{match.Value}' has no preceding code block with c2s-id={id}."
+                        )
+                    );
                     return match.Value;
                 }
 
-                string? content = null;
-                if (langGroup.Success)
-                {
-                    content = FindCodeByLanguage(fences, markerStart, langGroup.Value, skip);
-                    if (content is null)
-                    {
-                        errors.Add(
-                            new BatchParseError(
-                                line,
-                                $"placeholder '{match.Value}' has no matching '{langGroup.Value}' code block."
-                            )
-                        );
-                        return match.Value;
-                    }
-                }
-                else
-                {
-                    content = FindCodeByIndex(fences, markerStart, skip, bashOnly: false);
-                    if (content is null)
-                    {
-                        errors.Add(
-                            new BatchParseError(
-                                line,
-                                $"placeholder '{match.Value}' has no preceding code block."
-                            )
-                        );
-                        return match.Value;
-                    }
-                }
-
-                return content.TrimEnd();
+                return fence.Content.TrimEnd();
             }
         );
     }
 
-    private static string? FindCodeByIndex(
+    private static void ValidateFenceIds(
         IReadOnlyList<CodeFence> fences,
-        int markerStart,
-        int skip,
-        bool bashOnly
+        List<BatchParseError> errors
     )
     {
-        var seen = 0;
-        for (var i = fences.Count - 1; i >= 0; i--)
+        var ids = new Dictionary<string, CodeFence>(StringComparer.Ordinal);
+        foreach (var fence in fences)
         {
-            var fence = fences[i];
-            if (fence.End > markerStart)
+            if (fence.Id is null)
             {
                 continue;
             }
 
-            var isBash = IsBashLanguage(fence.Language);
-            if (bashOnly && !isBash)
+            if (ids.TryGetValue(fence.Id, out var previous))
             {
-                continue;
+                errors.Add(
+                    new BatchParseError(
+                        fence.Line,
+                        $"duplicate c2s-id '{fence.Id}' (first declared on line {previous.Line})."
+                    )
+                );
             }
-
-            if (!bashOnly && isBash)
+            else
             {
-                continue;
+                ids.Add(fence.Id, fence);
             }
-
-            if (seen == skip)
-            {
-                return fence.Content;
-            }
-
-            seen++;
         }
-
-        return null;
     }
 
-    private static string? FindCodeByLanguage(
+    private static CodeFence? FindImmediatelyPrecedingShellFence(
+        string markdown,
         IReadOnlyList<CodeFence> fences,
-        int markerStart,
-        string language,
-        int skip
-    )
-    {
-        var wanted = NormalizeLanguage(language);
-        var seen = 0;
-        for (var i = fences.Count - 1; i >= 0; i--)
-        {
-            var fence = fences[i];
-            if (fence.End > markerStart)
-            {
-                continue;
-            }
-
-            if (!string.Equals(NormalizeLanguage(fence.Language), wanted, StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            if (seen == skip)
-            {
-                return fence.Content;
-            }
-
-            seen++;
-        }
-
-        return null;
-    }
-
-    private static CodeFence? FindPrecedingFence(
-        IReadOnlyList<CodeFence> fences,
-        int markerStart,
-        bool bashOnly
+        int markerStart
     )
     {
         for (var i = fences.Count - 1; i >= 0; i--)
@@ -639,93 +560,212 @@ public static class BatchMarkdown
                 continue;
             }
 
-            if (bashOnly && !IsBashLanguage(fence.Language))
+            if (!string.IsNullOrWhiteSpace(markdown[fence.End..markerStart]))
             {
-                continue;
+                return null;
             }
 
-            return fence;
+            return IsShellLanguage(fence.Language) ? fence : null;
         }
 
         return null;
-    }
-
-    private static bool IsBashLanguage(string language) => BashLanguages.Contains(language);
-
-    private static string NormalizeLanguage(string language)
-    {
-        var trimmed = language.Trim();
-        return LanguageAliases.TryGetValue(trimmed, out var mapped)
-            ? mapped
-            : trimmed.ToLowerInvariant();
     }
 
     private static List<CodeFence> FindCodeFences(string markdown)
     {
         var fences = new List<CodeFence>();
-        var lines = markdown.Split('\n');
         var offset = 0;
-        var inFence = false;
-        var language = string.Empty;
-        var contentStart = 0;
+        var lineNumber = 1;
+        CodeFenceBuilder? open = null;
 
-        for (var i = 0; i < lines.Length; i++)
+        while (offset < markdown.Length)
         {
-            var line = lines[i];
-            var stripped = line.TrimEnd('\r');
-            if (!inFence && stripped.StartsWith("```", StringComparison.Ordinal))
+            var lineEnd = markdown.IndexOf('\n', offset);
+            var next = lineEnd < 0 ? markdown.Length : lineEnd + 1;
+            var rawLine = markdown[offset..(lineEnd < 0 ? markdown.Length : lineEnd)].TrimEnd('\r');
+
+            if (open is null)
             {
-                var info = stripped[3..].Trim();
-                var space = info.IndexOfAny([' ', '\t']);
-                language = (space < 0 ? info : info[..space]).Trim().ToLowerInvariant();
-                inFence = true;
-                contentStart = offset + line.Length + 1;
+                var opening = FenceOpeningPattern.Match(rawLine);
+                if (opening.Success)
+                {
+                    var fenceText = opening.Groups[2].Value;
+                    var info = opening.Groups[3].Value.Trim();
+                    var language = FirstToken(info);
+                    var idMatch = FenceIdPattern.Match(info);
+                    open = new CodeFenceBuilder(
+                        fenceText[0],
+                        fenceText.Length,
+                        language,
+                        idMatch.Success ? idMatch.Groups[1].Value : null,
+                        offset,
+                        next,
+                        lineNumber
+                    );
+                }
             }
-            else if (inFence && stripped.Trim() == "```")
+            else if (IsClosingFence(rawLine, open.Character, open.Length))
             {
-                var content = markdown[contentStart..offset];
+                var content = markdown[open.ContentStart..offset].TrimEnd('\r', '\n');
                 fences.Add(
-                    new CodeFence(language, content.TrimEnd('\r', '\n'), contentStart, offset)
+                    new CodeFence(open.Language, open.Id, content, open.Start, next, open.Line)
                 );
-                inFence = false;
-                language = string.Empty;
+                open = null;
             }
 
-            offset += line.Length + 1;
+            offset = next;
+            lineNumber++;
+        }
+
+        if (open is not null)
+        {
+            fences.Add(
+                new CodeFence(
+                    open.Language,
+                    open.Id,
+                    markdown[open.ContentStart..].TrimEnd('\r', '\n'),
+                    open.Start,
+                    markdown.Length,
+                    open.Line
+                )
+            );
         }
 
         return fences;
     }
 
-    private static List<FoundMarker> FindMarkers(string markdown)
+    private sealed record CodeFenceBuilder(
+        char Character,
+        int Length,
+        string Language,
+        string? Id,
+        int Start,
+        int ContentStart,
+        int Line
+    );
+
+    private static bool IsClosingFence(string line, char character, int minimumLength)
+    {
+        var trimmed = line.TrimStart();
+        if (line.Length - trimmed.Length > 3 || trimmed.Length < minimumLength)
+        {
+            return false;
+        }
+
+        var count = 0;
+        while (count < trimmed.Length && trimmed[count] == character)
+        {
+            count++;
+        }
+
+        return count >= minimumLength && string.IsNullOrWhiteSpace(trimmed[count..]);
+    }
+
+    private static List<FoundMarker> FindMarkers(string markdown, IReadOnlyList<CodeFence> fences)
     {
         var found = new List<FoundMarker>();
-        foreach (System.Text.RegularExpressions.Match match in HtmlMarkerPattern.Matches(markdown))
-        {
-            found.Add(
-                new FoundMarker(
-                    BatchMarkerKind.Html,
-                    match.Index,
-                    match.Index + match.Length,
-                    match.Groups[2].Value
-                )
-            );
-        }
-
-        foreach (System.Text.RegularExpressions.Match match in MdxMarkerPattern.Matches(markdown))
-        {
-            found.Add(
-                new FoundMarker(
-                    BatchMarkerKind.Mdx,
-                    match.Index,
-                    match.Index + match.Length,
-                    match.Groups[2].Value
-                )
-            );
-        }
-
-        found.Sort((a, b) => a.Start.CompareTo(b.Start));
+        AddMarkers(HtmlMarkerPattern, BatchMarkerKind.Html);
+        AddMarkers(MdxMarkerPattern, BatchMarkerKind.Mdx);
+        found.Sort((left, right) => left.Start.CompareTo(right.Start));
         return found;
+
+        void AddMarkers(Regex pattern, BatchMarkerKind kind)
+        {
+            foreach (Match match in pattern.Matches(markdown))
+            {
+                if (fences.Any(fence => match.Index >= fence.Start && match.Index < fence.End))
+                {
+                    continue;
+                }
+
+                found.Add(
+                    new FoundMarker(
+                        kind,
+                        match.Index,
+                        match.Index + match.Length,
+                        match.Groups[2].Value
+                    )
+                );
+            }
+        }
+    }
+
+    private static string? FindAssociatedImageTarget(string markdown, int markerEnd)
+    {
+        var lineEnd = markdown.IndexOf('\n', markerEnd);
+        if (lineEnd < 0)
+        {
+            return null;
+        }
+
+        var cursor = lineEnd + 1;
+        while (cursor <= markdown.Length)
+        {
+            var nextLineEnd = markdown.IndexOf('\n', cursor);
+            var line = nextLineEnd < 0 ? markdown[cursor..] : markdown[cursor..nextLineEnd];
+            if (line.Trim().Length == 0)
+            {
+                if (nextLineEnd < 0)
+                {
+                    return null;
+                }
+
+                cursor = nextLineEnd + 1;
+                continue;
+            }
+
+            var match = ImageLinePattern.Match(line);
+            if (!match.Success)
+            {
+                return null;
+            }
+
+            return match.Groups["target"].Value.Trim('<', '>');
+        }
+
+        return null;
+    }
+
+    private static string ApplyLink(string markdown, BatchLink link, string newline)
+    {
+        var imageLine = $"![{link.Job.Alt}]({link.RelativeLink})";
+        var markerLineEnd = markdown.IndexOf('\n', link.Job.MarkerEnd);
+        if (markerLineEnd < 0)
+        {
+            return markdown + newline + imageLine + newline;
+        }
+
+        var cursor = markerLineEnd + 1;
+        while (cursor <= markdown.Length)
+        {
+            var lineEnd = markdown.IndexOf('\n', cursor);
+            var line = lineEnd < 0 ? markdown[cursor..] : markdown[cursor..lineEnd];
+            if (line.Trim().Length == 0)
+            {
+                if (lineEnd < 0)
+                {
+                    return markdown[..cursor] + imageLine + newline;
+                }
+
+                cursor = lineEnd + 1;
+                continue;
+            }
+
+            if (ImageLinePattern.IsMatch(line))
+            {
+                var after = lineEnd < 0 ? string.Empty : markdown[(lineEnd + 1)..];
+                return markdown[..cursor]
+                    + imageLine
+                    + (lineEnd < 0 ? string.Empty : newline + after);
+            }
+
+            return markdown[..(markerLineEnd + 1)]
+                + imageLine
+                + newline
+                + markdown[(markerLineEnd + 1)..];
+        }
+
+        return markdown;
     }
 
     private static bool TryParseOptions(
@@ -751,7 +791,12 @@ public static class BatchMarkdown
         timeout = null;
         outputRelative = null;
 
-        var tokens = Tokenize(optionsText);
+        var tokens = Tokenize(optionsText, line, errors);
+        if (tokens is null)
+        {
+            return false;
+        }
+
         var i = 0;
         while (i < tokens.Count)
         {
@@ -759,30 +804,24 @@ public static class BatchMarkdown
             switch (token)
             {
                 case "-w" or "--width":
-                    if (!TakeInt(tokens, ref i, line, errors, "--width", out var w))
+                    if (!TakePositiveInt(tokens, ref i, line, errors, "--width", out var w))
                     {
                         return false;
                     }
-
                     width = w;
                     break;
                 case "-h" or "--height":
-                    if (!TakeInt(tokens, ref i, line, errors, "--height", out var h))
+                    if (!TakePositiveInt(tokens, ref i, line, errors, "--height", out var h))
                     {
                         return false;
                     }
-
                     height = h;
                     break;
                 case "-o" or "--out":
-                    if (i + 1 >= tokens.Count)
+                    if (!TakeString(tokens, ref i, line, errors, "-o", out outputRelative))
                     {
-                        errors.Add(new BatchParseError(line, "-o requires a file name."));
                         return false;
                     }
-
-                    outputRelative = tokens[++i];
-                    i++;
                     break;
                 case "-c" or "--with-command":
                     withCommand = true;
@@ -798,7 +837,6 @@ public static class BatchMarkdown
                     {
                         window = "macos";
                     }
-
                     i++;
                     break;
                 case "-v" or "--video":
@@ -806,21 +844,16 @@ public static class BatchMarkdown
                     i++;
                     break;
                 case "--mode":
-                    if (i + 1 >= tokens.Count)
+                    if (!TakeString(tokens, ref i, line, errors, "--mode", out var mode))
                     {
-                        errors.Add(new BatchParseError(line, "--mode requires image or video."));
                         return false;
                     }
-
-                    var mode = tokens[++i].ToLowerInvariant();
                     if (mode is not "image" and not "video")
                     {
                         errors.Add(new BatchParseError(line, "--mode must be image or video."));
                         return false;
                     }
-
                     video = mode == "video";
-                    i++;
                     break;
                 case "--timeout":
                     if (
@@ -837,7 +870,6 @@ public static class BatchMarkdown
                         errors.Add(new BatchParseError(line, "--timeout must be greater than 0."));
                         return false;
                     }
-
                     timeout = seconds;
                     i += 2;
                     break;
@@ -850,8 +882,8 @@ public static class BatchMarkdown
         return true;
     }
 
-    private static bool TakeInt(
-        List<string> tokens,
+    private static bool TakePositiveInt(
+        IReadOnlyList<string> tokens,
         ref int index,
         int line,
         List<BatchParseError> errors,
@@ -870,7 +902,28 @@ public static class BatchMarkdown
         return true;
     }
 
-    private static List<string> Tokenize(string text)
+    private static bool TakeString(
+        IReadOnlyList<string> tokens,
+        ref int index,
+        int line,
+        List<BatchParseError> errors,
+        string name,
+        out string? value
+    )
+    {
+        value = null;
+        if (index + 1 >= tokens.Count)
+        {
+            errors.Add(new BatchParseError(line, $"{name} requires a value."));
+            return false;
+        }
+
+        value = tokens[index + 1];
+        index += 2;
+        return true;
+    }
+
+    private static List<string>? Tokenize(string text, int line, List<BatchParseError> errors)
     {
         var tokens = new List<string>();
         var builder = new StringBuilder();
@@ -879,17 +932,17 @@ public static class BatchMarkdown
 
         void Flush()
         {
-            if (hasToken)
+            if (!hasToken)
             {
-                tokens.Add(builder.ToString());
-                builder.Clear();
-                hasToken = false;
+                return;
             }
+            tokens.Add(builder.ToString());
+            builder.Clear();
+            hasToken = false;
         }
 
-        for (var i = 0; i < text.Length; i++)
+        foreach (var ch in text)
         {
-            var ch = text[i];
             if (quote.HasValue)
             {
                 if (ch == quote.Value)
@@ -901,7 +954,6 @@ public static class BatchMarkdown
                     builder.Append(ch);
                     hasToken = true;
                 }
-
                 continue;
             }
 
@@ -909,21 +961,34 @@ public static class BatchMarkdown
             {
                 quote = ch;
                 hasToken = true;
-                continue;
             }
-
-            if (char.IsWhiteSpace(ch))
+            else if (char.IsWhiteSpace(ch))
             {
                 Flush();
-                continue;
             }
+            else
+            {
+                builder.Append(ch);
+                hasToken = true;
+            }
+        }
 
-            builder.Append(ch);
-            hasToken = true;
+        if (quote.HasValue)
+        {
+            errors.Add(new BatchParseError(line, "unterminated quote in marker options."));
+            return null;
         }
 
         Flush();
         return tokens;
+    }
+
+    private static bool IsShellLanguage(string language) => ShellLanguages.Contains(language);
+
+    private static string FirstToken(string text)
+    {
+        var end = text.IndexOfAny([' ', '\t']);
+        return (end < 0 ? text : text[..end]).Trim().ToLowerInvariant();
     }
 
     private static string FirstLine(string text)
@@ -931,15 +996,21 @@ public static class BatchMarkdown
         foreach (var line in text.Split('\n'))
         {
             var trimmed = line.Trim().TrimEnd('\r');
-            if (trimmed.Length > 0)
+            if (trimmed.Length == 0)
             {
-                var single = trimmed.Replace("]", ")").Replace("|", "/");
-                return single.Length > 80 ? single[..80] : single;
+                continue;
             }
+            var single = trimmed
+                .Replace("]", ")", StringComparison.Ordinal)
+                .Replace("|", "/", StringComparison.Ordinal);
+            return single.Length > 80 ? single[..80] : single;
         }
 
         return "console2svg";
     }
+
+    private static bool HasErrorAtLine(IReadOnlyList<BatchParseError> errors, int line) =>
+        errors.Any(error => error.Line == line);
 
     private static int GetLineNumber(string text, int offset)
     {
@@ -951,7 +1022,6 @@ public static class BatchMarkdown
                 line++;
             }
         }
-
         return line;
     }
 }

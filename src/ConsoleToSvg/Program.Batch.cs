@@ -18,218 +18,313 @@ namespace ConsoleToSvg;
 
 internal static partial class Program
 {
+    private sealed record BatchResolvedJob(BatchParsedJob Job, string OutputPath);
+
+    private sealed record BatchFilePlan(
+        string Path,
+        string RelativePath,
+        string Original,
+        BatchParseResult Parsed,
+        List<BatchResolvedJob> Jobs
+    );
+
     private static async Task<int> RunBatchAsync(AppOptions options, CancellationToken ct)
     {
-        var inputDir = Path.GetFullPath(options.BatchInputDir ?? "docs");
-        var assetsDir = Path.GetFullPath(options.BatchAssetsDir ?? "assets");
-        if (!Directory.Exists(inputDir))
+        var inputPath = Path.GetFullPath(options.BatchInputPath ?? "docs");
+        var outputDir = Path.GetFullPath(options.BatchOutputDir ?? "assets");
+        if (!TryFindBatchFiles(inputPath, out var inputRoot, out var files, out var inputError))
         {
-            await Console.Error.WriteLineAsync(
-                $"Input directory not found: {inputDir}".AsMemory(),
-                ct
-            );
+            await Console.Error.WriteLineAsync(inputError.AsMemory(), ct);
             return 1;
         }
 
-        Directory.CreateDirectory(assetsDir);
-
-        var files = Directory
-            .EnumerateFiles(inputDir, "*.md", SearchOption.AllDirectories)
-            .Concat(Directory.EnumerateFiles(inputDir, "*.mdx", SearchOption.AllDirectories))
-            .OrderBy(path => path, StringComparer.Ordinal)
+        var filters = options.BatchFilters.Select(BatchExecutor.NormalizeFilter).ToArray();
+        var selected = files
+            .Select(path => new
+            {
+                Path = path,
+                Relative = BatchExecutor.NormalizePath(Path.GetRelativePath(inputRoot, path)),
+            })
+            .Where(file =>
+                filters.Length == 0
+                || filters.Any(filter => BatchExecutor.MatchesFilter(file.Relative, filter))
+            )
+            .OrderBy(file => file.Relative, StringComparer.Ordinal)
             .ToArray();
-        if (files.Length == 0)
+
+        if (selected.Length == 0)
         {
+            var message =
+                filters.Length == 0
+                    ? $"No Markdown files found in {inputPath}"
+                    : $"No Markdown files matched the requested filters under {inputPath}";
+            await Console.Error.WriteLineAsync(message.AsMemory(), ct);
+            return 0;
+        }
+
+        var plans = new List<BatchFilePlan>(selected.Length);
+        var failures = new List<string>();
+        foreach (var file in selected)
+        {
+            var original = await File.ReadAllTextAsync(file.Path, ct).ConfigureAwait(false);
+            var parsed = BatchMarkdown.Parse(original, file.Path);
+            foreach (var error in parsed.Errors)
+            {
+                failures.Add($"{file.Relative}:{error.Line}: {error.Message}");
+            }
+
+            plans.Add(new BatchFilePlan(file.Path, file.Relative, original, parsed, []));
+        }
+
+        if (failures.Count == 0)
+        {
+            ResolveBatchOutputs(plans, inputRoot, outputDir, failures);
+        }
+
+        if (failures.Count == 0 && filters.Length > 0)
+        {
+            await ValidateFilteredSharedOutputsAsync(
+                    files,
+                    selected.Select(file => file.Path),
+                    plans,
+                    inputRoot,
+                    outputDir,
+                    failures,
+                    ct
+                )
+                .ConfigureAwait(false);
+        }
+
+        if (failures.Count > 0)
+        {
+            await WriteBatchFailuresAsync(failures, ct).ConfigureAwait(false);
+            return 1;
+        }
+
+        if (options.BatchDryRun)
+        {
+            foreach (var plan in plans)
+            {
+                foreach (var resolved in plan.Jobs)
+                {
+                    await Console.Error.WriteLineAsync(
+                        $"[dry-run] {plan.RelativePath}:{resolved.Job.MarkerLine} -> {resolved.OutputPath} : {resolved.Job.Alt}".AsMemory(),
+                        ct
+                    );
+                }
+            }
+
             await Console.Error.WriteLineAsync(
-                $"No markdown files found in {inputDir}".AsMemory(),
+                $"Batch markdown dry run: {plans.Sum(plan => plan.Jobs.Count)} job(s).".AsMemory(),
                 ct
             );
             return 0;
         }
 
         using var loggerFactory = CreateLoggerFactory(options.Verbose, options.VerboseLogPath);
-        var logger = loggerFactory.CreateLogger("ConsoleToSvg.Batch");
-        var failures = new List<string>();
+        var logger = loggerFactory.CreateLogger("ConsoleToSvg.BatchMarkdown");
         var generated = 0;
-        var cached = 0;
-        var lockObject = new object();
 
-        void Fail(string message)
+        foreach (var plan in plans)
         {
-            lock (lockObject)
+            var links = new List<BatchLink>();
+            foreach (var resolved in plan.Jobs)
             {
-                failures.Add(message);
-            }
-        }
-
-        await Parallel
-            .ForEachAsync(
-                files,
-                new ParallelOptions
+                ct.ThrowIfCancellationRequested();
+                var jobOptions = BuildBatchJobOptions(options, resolved.Job);
+                var error = await ExecuteBatchJobAsync(
+                        resolved.Job,
+                        jobOptions,
+                        resolved.OutputPath,
+                        loggerFactory,
+                        logger,
+                        ct
+                    )
+                    .ConfigureAwait(false);
+                if (error is not null)
                 {
-                    MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount),
-                    CancellationToken = ct,
-                },
-                async (file, fileCt) =>
-                {
-                    try
-                    {
-                        var counts = await RunBatchFileAsync(
-                                file,
-                                inputDir,
-                                assetsDir,
-                                options,
-                                loggerFactory,
-                                logger,
-                                Fail,
-                                fileCt
-                            )
-                            .ConfigureAwait(false);
-                        lock (lockObject)
-                        {
-                            generated += counts.Generated;
-                            cached += counts.Cached;
-                        }
-                    }
-                    catch (OperationCanceledException) when (fileCt.IsCancellationRequested)
-                    {
-                        throw;
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.ZLogDebug(ex, $"Batch failed for {file}");
-                        Fail($"{file}: {ex.Message}");
-                    }
+                    failures.Add($"{plan.RelativePath}:{resolved.Job.MarkerLine}: {error}");
+                    continue;
                 }
-            )
-            .ConfigureAwait(false);
 
-        foreach (var failure in failures.OrderBy(m => m, StringComparer.Ordinal))
-        {
-            await Console.Error.WriteLineAsync($"error: {failure}".AsMemory(), ct);
-        }
+                links.Add(
+                    new BatchLink(
+                        resolved.Job,
+                        BatchExecutor.Relativize(plan.Path, resolved.OutputPath)
+                    )
+                );
+                generated++;
+                await Console.Error.WriteLineAsync(
+                    $"Generated: {resolved.OutputPath}".AsMemory(),
+                    ct
+                );
+            }
 
-        await Console.Error.WriteLineAsync(
-            $"Batch done: {generated} generated, {cached} cached, {failures.Count} failed.".AsMemory(),
-            ct
-        );
-        return failures.Count > 0 ? 1 : 0;
-    }
-
-    private sealed record BatchFileCounts(int Generated, int Cached);
-
-    private static async Task<BatchFileCounts> RunBatchFileAsync(
-        string mdPath,
-        string inputDir,
-        string assetsDir,
-        AppOptions defaults,
-        ILoggerFactory loggerFactory,
-        ILogger logger,
-        Action<string> fail,
-        CancellationToken ct
-    )
-    {
-        var original = await File.ReadAllTextAsync(mdPath, ct).ConfigureAwait(false);
-        var parsed = BatchMarkdown.Parse(original, mdPath);
-        foreach (var error in parsed.Errors)
-        {
-            fail($"{RelativeTo(mdPath, inputDir)}:{error.Line}: {error.Message}");
-        }
-
-        if (parsed.Errors.Count > 0 || parsed.Jobs.Count == 0)
-        {
-            return new BatchFileCounts(0, 0);
-        }
-
-        if (defaults.BatchDry)
-        {
-            foreach (var job in parsed.Jobs)
+            if (links.Count == 0)
             {
-                var outputAbs = BatchExecutor.ResolveOutput(assetsDir, job.OutputRelative);
-                await Console
-                    .Error.WriteLineAsync(
-                        $"[dry] {RelativeTo(mdPath, inputDir)}:{job.MarkerLine} -> {outputAbs} : {job.Alt}".AsMemory(),
+                continue;
+            }
+
+            var rewritten = BatchMarkdown.RewriteLinks(plan.Original, links);
+            if (!string.Equals(rewritten, plan.Original, StringComparison.Ordinal))
+            {
+                await File.WriteAllTextAsync(
+                        plan.Path,
+                        rewritten,
+                        DetectBatchEncoding(plan.Path),
                         ct
                     )
                     .ConfigureAwait(false);
             }
-
-            return new BatchFileCounts(0, 0);
         }
 
-        var links = new List<BatchLink>();
-        var generated = 0;
-        var cached = 0;
-        foreach (var job in parsed.Jobs)
+        await WriteBatchFailuresAsync(failures, ct).ConfigureAwait(false);
+        await Console.Error.WriteLineAsync(
+            $"Batch markdown done: {generated} generated, {failures.Count} failed.".AsMemory(),
+            ct
+        );
+        return failures.Count == 0 ? 0 : 1;
+    }
+
+    private static bool TryFindBatchFiles(
+        string inputPath,
+        out string inputRoot,
+        out string[] files,
+        out string error
+    )
+    {
+        if (File.Exists(inputPath))
         {
-            ct.ThrowIfCancellationRequested();
-            var outputAbs = BatchExecutor.ResolveOutput(assetsDir, job.OutputRelative);
-            if (outputAbs is null)
+            if (!IsMarkdownPath(inputPath))
             {
-                fail(
-                    $"{RelativeTo(mdPath, inputDir)}:{job.MarkerLine}: output escapes assets dir."
-                );
-                continue;
+                inputRoot = string.Empty;
+                files = [];
+                error = $"Input file must use the .md or .mdx extension: {inputPath}";
+                return false;
             }
 
-            var jobOptions = BuildBatchJobOptions(defaults, job);
-            var fingerprint = BuildBatchFingerprint(jobOptions);
-            var hash = BatchMarkdown.ComputeJobHash(
-                job.Setup,
-                job.Capture,
-                job.Teardown,
-                fingerprint,
-                ThisAssembly.AssemblyInformationalVersion
-            );
-            var sidecar = outputAbs + ".sha256";
+            inputRoot = Path.GetDirectoryName(inputPath) ?? Environment.CurrentDirectory;
+            files = [inputPath];
+            error = string.Empty;
+            return true;
+        }
+
+        if (!Directory.Exists(inputPath))
+        {
+            inputRoot = string.Empty;
+            files = [];
+            error = $"Input path not found: {inputPath}";
+            return false;
+        }
+
+        inputRoot = inputPath;
+        files = Directory
+            .EnumerateFiles(inputPath, "*", SearchOption.AllDirectories)
+            .Where(IsMarkdownPath)
+            .ToArray();
+        error = string.Empty;
+        return true;
+    }
+
+    private static bool IsMarkdownPath(string path) =>
+        Path.GetExtension(path) is var extension
+        && (
+            extension.Equals(".md", StringComparison.OrdinalIgnoreCase)
+            || extension.Equals(".mdx", StringComparison.OrdinalIgnoreCase)
+        );
+
+    private static void ResolveBatchOutputs(
+        IReadOnlyList<BatchFilePlan> plans,
+        string inputRoot,
+        string outputDir,
+        List<string> failures
+    )
+    {
+        var comparer = OperatingSystem.IsWindows()
+            ? StringComparer.OrdinalIgnoreCase
+            : StringComparer.Ordinal;
+        var owners = new Dictionary<string, string>(comparer);
+
+        foreach (var plan in plans)
+        {
+            foreach (var job in plan.Parsed.Jobs)
+            {
+                var output = ResolveBatchOutput(plan, job, inputRoot, outputDir, owners.Keys);
+                if (output is null)
+                {
+                    failures.Add(
+                        $"{plan.RelativePath}:{job.MarkerLine}: output escapes the output directory."
+                    );
+                    continue;
+                }
+
+                var owner = $"{plan.RelativePath}:{job.MarkerLine}";
+                if (owners.TryGetValue(output, out var previous))
+                {
+                    failures.Add(
+                        $"{owner}: output '{BatchExecutor.NormalizePath(Path.GetRelativePath(outputDir, output))}' is already produced by {previous}."
+                    );
+                    continue;
+                }
+
+                owners.Add(output, owner);
+                plan.Jobs.Add(new BatchResolvedJob(job, output));
+            }
+        }
+    }
+
+    private static string? ResolveBatchOutput(
+        BatchFilePlan plan,
+        BatchParsedJob job,
+        string inputRoot,
+        string outputDir,
+        ICollection<string> plannedOutputs
+    )
+    {
+        if (job.OutputRelative is not null)
+        {
+            return BatchExecutor.ResolveOutput(outputDir, job.OutputRelative);
+        }
+
+        if (job.ExistingLinkTarget is not null)
+        {
+            var existing = BatchExecutor.ResolveMarkdownLink(plan.Path, job.ExistingLinkTarget);
             if (
-                defaults.BatchCached
-                && await BatchExecutor.IsCacheHitAsync(outputAbs, hash, ct).ConfigureAwait(false)
+                existing is not null
+                && BatchExecutor.IsPathInside(outputDir, existing)
+                && string.Equals(
+                    Path.GetExtension(existing),
+                    ".svg",
+                    StringComparison.OrdinalIgnoreCase
+                )
             )
             {
-                links.Add(new BatchLink(job, BatchExecutor.Relativize(mdPath, outputAbs)));
-                cached++;
-                await Console
-                    .Error.WriteLineAsync($"Cached: {outputAbs}".AsMemory(), ct)
-                    .ConfigureAwait(false);
-                continue;
+                return existing;
             }
-
-            var result = await ExecuteBatchJobAsync(
-                    job,
-                    jobOptions,
-                    outputAbs,
-                    loggerFactory,
-                    logger,
-                    ct
-                )
-                .ConfigureAwait(false);
-            if (result is not null)
-            {
-                fail($"{RelativeTo(mdPath, inputDir)}:{job.MarkerLine}: {result}");
-                continue;
-            }
-
-            await File.WriteAllTextAsync(sidecar, hash + "\n", Encoding.ASCII, ct)
-                .ConfigureAwait(false);
-            links.Add(new BatchLink(job, BatchExecutor.Relativize(mdPath, outputAbs)));
-            generated++;
-            await Console
-                .Error.WriteLineAsync($"Generated: {outputAbs}".AsMemory(), ct)
-                .ConfigureAwait(false);
         }
 
-        if (links.Count > 0)
+        var relativeMarkdown = Path.GetRelativePath(inputRoot, plan.Path);
+        var relativeDirectory = Path.GetDirectoryName(relativeMarkdown) ?? string.Empty;
+        var stem = Path.GetFileNameWithoutExtension(plan.Path);
+        var index = 1;
+        while (index < int.MaxValue)
         {
-            var rewritten = BatchMarkdown.RewriteLinks(original, links);
-            if (!string.Equals(rewritten, original, StringComparison.Ordinal))
+            var relativeOutput = Path.Combine(relativeDirectory, $"{stem}-{index}.svg");
+            var candidate = BatchExecutor.ResolveOutput(outputDir, relativeOutput);
+            if (candidate is null)
             {
-                await File.WriteAllTextAsync(mdPath, rewritten, DetectBatchEncoding(mdPath), ct)
-                    .ConfigureAwait(false);
+                return null;
             }
+
+            if (!File.Exists(candidate) && !plannedOutputs.Contains(candidate))
+            {
+                return candidate;
+            }
+
+            index++;
         }
 
-        return new BatchFileCounts(generated, cached);
+        return null;
     }
 
     private static AppOptions BuildBatchJobOptions(AppOptions defaults, BatchParsedJob job)
@@ -247,28 +342,16 @@ internal static partial class Program
             jobOptions.HeightAdjust = false;
         }
 
-        if (job.WithCommand)
-        {
-            jobOptions.WithCommand = true;
-        }
-
+        jobOptions.WithCommand = job.WithCommand;
         if (job.WindowExplicit)
         {
             jobOptions.Window = job.Window ?? "macos";
             jobOptions.IsWindowExplicit = true;
         }
 
-        if (job.Video)
-        {
-            jobOptions.Mode = OutputMode.Video;
-            jobOptions.IsModeExplicit = true;
-        }
-
-        if (job.Timeout.HasValue)
-        {
-            jobOptions.Timeout = job.Timeout;
-        }
-
+        jobOptions.Mode = job.Video ? OutputMode.Video : OutputMode.Image;
+        jobOptions.IsModeExplicit = true;
+        jobOptions.Timeout = job.Timeout;
         jobOptions.Command = FirstBatchLine(job.Capture);
         if (string.IsNullOrWhiteSpace(jobOptions.Prompt))
         {
@@ -278,30 +361,150 @@ internal static partial class Program
         return jobOptions;
     }
 
-    private static string BuildBatchFingerprint(AppOptions jobOptions) =>
-        $"w={jobOptions.Width}/{jobOptions.WidthAdjust};h={jobOptions.Height}/{jobOptions.HeightAdjust};"
-        + $"c={jobOptions.WithCommand};d={jobOptions.Window}/{jobOptions.IsWindowExplicit};"
-        + $"m={jobOptions.Mode};t={jobOptions.Theme};timeout={jobOptions.Timeout}";
+    private static async Task ValidateFilteredSharedOutputsAsync(
+        IReadOnlyList<string> allFiles,
+        IEnumerable<string> selectedFiles,
+        IReadOnlyList<BatchFilePlan> selectedPlans,
+        string inputRoot,
+        string outputDir,
+        List<string> failures,
+        CancellationToken ct
+    )
+    {
+        var comparer = OperatingSystem.IsWindows()
+            ? StringComparer.OrdinalIgnoreCase
+            : StringComparer.Ordinal;
+        var selected = selectedFiles.ToHashSet(comparer);
+        var excludedProducers = new Dictionary<string, string>(comparer);
+
+        foreach (var path in allFiles.Where(path => !selected.Contains(path)))
+        {
+            var markdown = await File.ReadAllTextAsync(path, ct).ConfigureAwait(false);
+            var parsed = BatchMarkdown.Parse(markdown, path);
+            foreach (var job in parsed.Jobs.Where(job => job.OutputRelative is not null))
+            {
+                var output = BatchExecutor.ResolveOutput(outputDir, job.OutputRelative!);
+                if (output is null)
+                {
+                    continue;
+                }
+
+                var producer =
+                    $"{BatchExecutor.NormalizePath(Path.GetRelativePath(inputRoot, path))}:{job.MarkerLine}";
+                if (!excludedProducers.TryAdd(output, producer))
+                {
+                    excludedProducers[output] = "multiple excluded markers";
+                }
+            }
+        }
+
+        foreach (var plan in selectedPlans)
+        {
+            foreach (var target in BatchMarkdown.FindImageTargets(plan.Original))
+            {
+                var resolved = BatchExecutor.ResolveMarkdownLink(plan.Path, target);
+                if (
+                    resolved is null
+                    || File.Exists(resolved)
+                    || !excludedProducers.TryGetValue(resolved, out var producer)
+                )
+                {
+                    continue;
+                }
+
+                failures.Add(
+                    $"{plan.RelativePath}: shared output '{target}' is missing; producer {producer} was excluded by --filter."
+                );
+            }
+        }
+    }
 
     /// <summary>
-    /// Returns null on success, otherwise an error message.
-    /// Setup runs silently in the same shell; only capture is recorded.
+    /// Returns null on success, otherwise an error message. Teardown is attempted
+    /// after every setup/capture outcome, including timeout, failure, and cancellation.
     /// </summary>
     private static async Task<string?> ExecuteBatchJobAsync(
         BatchParsedJob job,
         AppOptions jobOptions,
-        string outputAbs,
+        string outputPath,
         ILoggerFactory loggerFactory,
         ILogger logger,
         CancellationToken ct
     )
     {
-        var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
         var setupLog =
             job.Setup.Length > 0
                 ? Path.Combine(Path.GetTempPath(), $"c2s-batch-{Guid.NewGuid():N}.log")
                 : null;
-        var script = BatchExecutor.BuildScript(job, setupLog, isWindows);
+        string? result = null;
+        string? teardownError = null;
+
+        try
+        {
+            result = await ExecuteBatchJobCoreAsync(
+                    job,
+                    jobOptions,
+                    outputPath,
+                    setupLog,
+                    loggerFactory,
+                    logger,
+                    ct
+                )
+                .ConfigureAwait(false);
+        }
+        finally
+        {
+            CleanupTempFile(setupLog, logger);
+            if (job.Teardown.Length > 0)
+            {
+                using var teardownCts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+                try
+                {
+                    var (exitCode, output) = await RunShellScriptAsync(
+                            job.Teardown,
+                            teardownCts.Token
+                        )
+                        .ConfigureAwait(false);
+                    if (exitCode != 0)
+                    {
+                        teardownError = $"teardown exited with code {exitCode}: {output.Trim()}";
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    teardownError = "teardown timed out after 30 seconds.";
+                }
+                catch (Exception ex)
+                {
+                    logger.LogDebug(ex, "Batch teardown failed.");
+                    teardownError = $"teardown failed: {ex.Message}";
+                }
+            }
+        }
+
+        if (result is null)
+        {
+            return teardownError;
+        }
+
+        return teardownError is null ? result : result + " " + teardownError;
+    }
+
+    private static async Task<string?> ExecuteBatchJobCoreAsync(
+        BatchParsedJob job,
+        AppOptions jobOptions,
+        string outputPath,
+        string? setupLog,
+        ILoggerFactory loggerFactory,
+        ILogger logger,
+        CancellationToken ct
+    )
+    {
+        var script = BatchExecutor.BuildScript(
+            job,
+            setupLog,
+            RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+        );
         var width = ResolveSize(
             jobOptions.Width,
             jobOptions.WidthAdjust,
@@ -353,20 +556,17 @@ internal static partial class Program
                     ? " Setup log: "
                         + await File.ReadAllTextAsync(setupLog, ct).ConfigureAwait(false)
                     : string.Empty;
-            CleanupTempFile(setupLog, logger);
             return "setup failed before capture started." + hint;
         }
-
-        CleanupTempFile(setupLog, logger);
 
         try
         {
             var renderOptions = SvgRenderOptionsFactory.Create(jobOptions);
-            EnsureDirectory(outputAbs);
+            EnsureDirectory(outputPath);
             if (jobOptions.Mode is OutputMode.Video)
             {
                 await using var writer = new StreamWriter(
-                    outputAbs,
+                    outputPath,
                     append: false,
                     new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
                 );
@@ -377,7 +577,7 @@ internal static partial class Program
             {
                 var svg = SvgRenderer.Render(session, renderOptions);
                 await File.WriteAllTextAsync(
-                        outputAbs,
+                        outputPath,
                         svg,
                         new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
                         ct
@@ -387,18 +587,8 @@ internal static partial class Program
         }
         catch (Exception ex)
         {
-            logger.ZLogDebug(ex, $"Batch render failed for {outputAbs}");
+            logger.ZLogDebug(ex, $"Batch render failed for {outputPath}");
             return $"render failed: {ex.Message}";
-        }
-
-        if (job.Teardown.Length > 0)
-        {
-            var (exitCode, output) = await RunShellScriptAsync(job.Teardown, ct)
-                .ConfigureAwait(false);
-            if (exitCode != 0)
-            {
-                return $"teardown exited with code {exitCode}: {output.Trim()}";
-            }
         }
 
         return null;
@@ -423,9 +613,7 @@ internal static partial class Program
                 Environment.GetFolderPath(Environment.SpecialFolder.System),
                 "cmd.exe"
             );
-            startInfo.ArgumentList.Add("/d");
-            startInfo.ArgumentList.Add("/c");
-            startInfo.ArgumentList.Add(script);
+            startInfo.Arguments = $"/d /s /c \"{script}\"";
         }
         else
         {
@@ -446,9 +634,16 @@ internal static partial class Program
         return (process.ExitCode, output + error);
     }
 
-    private static string RelativeTo(string path, string baseDir) =>
-        Path.GetRelativePath(baseDir, Path.GetFullPath(path))
-            .Replace(Path.DirectorySeparatorChar, '/');
+    private static async Task WriteBatchFailuresAsync(
+        IEnumerable<string> failures,
+        CancellationToken ct
+    )
+    {
+        foreach (var failure in failures.OrderBy(message => message, StringComparer.Ordinal))
+        {
+            await Console.Error.WriteLineAsync($"error: {failure}".AsMemory(), ct);
+        }
+    }
 
     private static string FirstBatchLine(string text)
     {
@@ -471,9 +666,9 @@ internal static partial class Program
             using var stream = File.OpenRead(path);
             if (stream.Length >= 3)
             {
-                var preamble = new byte[3];
-                _ = stream.Read(preamble, 0, 3);
-                if (preamble[0] == 0xEF && preamble[1] == 0xBB && preamble[2] == 0xBF)
+                Span<byte> preamble = stackalloc byte[3];
+                _ = stream.Read(preamble);
+                if (preamble.SequenceEqual(Encoding.UTF8.Preamble))
                 {
                     return new UTF8Encoding(encoderShouldEmitUTF8Identifier: true);
                 }

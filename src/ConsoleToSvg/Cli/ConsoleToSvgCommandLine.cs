@@ -296,15 +296,13 @@ public sealed partial class ConsoleToSvgCommandLine
         var batch = new Command("batch", "Run multiple captures in bulk.");
         batch.SetAction(ColoredHelpAction.Write);
 
-        var run = new Command(
-            "run",
-            "Generate images for c2s markers in markdown files. "
-                + "Markers look like <!-- c2s:: -w 100 -o shot.svg -- command -->; "
-                + "multi-line scripts require '---' separators (setup --- capture --- teardown). "
+        var markdown = new Command(
+            "markdown",
+            "Generate terminal images declared by c2s markers in Markdown files and update their image links. "
                 + "Marker scripts execute shell commands."
         );
-        AddOptions(run, _symbols.BatchRunOptions);
-        run.SetAction(
+        AddOptions(markdown, _symbols.BatchMarkdownOptions);
+        markdown.SetAction(
             async (parseResult, cancellationToken) =>
             {
                 if (
@@ -331,17 +329,15 @@ public sealed partial class ConsoleToSvgCommandLine
                     return 1;
                 }
 
-                options!.BatchInputDir =
-                    parseResult.GetValue(_symbols.BatchInput)?.FullName ?? "docs";
-                options.BatchAssetsDir =
-                    parseResult.GetValue(_symbols.BatchAssets)?.FullName ?? "assets";
-                options.BatchDry = parseResult.GetValue(_symbols.BatchDry);
-                options.BatchCached = parseResult.GetValue(_symbols.BatchCached);
+                options!.BatchInputPath = parseResult.GetValue(_symbols.BatchInput) ?? "docs";
+                options.BatchOutputDir = parseResult.GetValue(_symbols.BatchOutput) ?? "assets";
+                options.BatchFilters = parseResult.GetValue(_symbols.BatchFilter) ?? [];
+                options.BatchDryRun = parseResult.GetValue(_symbols.BatchDryRun);
                 return await _handler(options, parseResult, cancellationToken)
                     .ConfigureAwait(false);
             }
         );
-        batch.Subcommands.Add(run);
+        batch.Subcommands.Add(markdown);
 
         root.Subcommands.Add(batch);
     }

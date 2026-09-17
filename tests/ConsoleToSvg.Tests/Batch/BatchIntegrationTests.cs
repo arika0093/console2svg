@@ -1,0 +1,234 @@
+using System;
+using System.IO;
+using System.Threading.Tasks;
+
+namespace ConsoleToSvg.Tests.Batch;
+
+public sealed class BatchIntegrationTests
+{
+    [Test]
+    public async Task AutoOutputPreservesInputRelativeDirectoryAndRewritesMarkdown()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var docs = Path.Combine(root, "docs");
+            var markdownPath = Path.Combine(docs, "reference", "guide.md");
+            var output = Path.Combine(root, "assets");
+            Directory.CreateDirectory(Path.GetDirectoryName(markdownPath)!);
+            await File.WriteAllTextAsync(
+                markdownPath,
+                """
+                ```bash
+                echo hello
+                ```
+                <!-- c2s:: -w 40 -h 5 -->
+                """
+            );
+
+            var exitCode = await Program.Main(["batch", "markdown", "-i", docs, "-o", output]);
+
+            exitCode.ShouldBe(0);
+            File.Exists(Path.Combine(output, "reference", "guide-1.svg")).ShouldBeTrue();
+            var rewritten = await File.ReadAllTextAsync(markdownPath);
+            rewritten.ShouldContain("![echo hello](../../assets/reference/guide-1.svg)");
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task ExistingAutoOutputLinkRemainsTheOutputOwnerAfterMovingContent()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var docs = Path.Combine(root, "docs");
+            var markdownPath = Path.Combine(docs, "hoge", "test.md");
+            var output = Path.Combine(root, "assets");
+            Directory.CreateDirectory(Path.GetDirectoryName(markdownPath)!);
+            await File.WriteAllTextAsync(
+                markdownPath,
+                """
+                ```bash
+                echo moved
+                ```
+                <!-- c2s:: -w 40 -h 5 -->
+                ![old](../../assets/sample/test-7.svg)
+                """
+            );
+
+            var exitCode = await Program.Main(["batch", "markdown", "-i", docs, "-o", output]);
+
+            exitCode.ShouldBe(0);
+            File.Exists(Path.Combine(output, "sample", "test-7.svg")).ShouldBeTrue();
+            File.Exists(Path.Combine(output, "hoge", "test-1.svg")).ShouldBeFalse();
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task DryRunDoesNotCreateOutputOrRewriteMarkdown()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var markdownPath = Path.Combine(root, "docs", "guide.md");
+            var output = Path.Combine(root, "assets");
+            Directory.CreateDirectory(Path.GetDirectoryName(markdownPath)!);
+            const string markdown = """
+                ```bash
+                echo hello
+                ```
+                <!-- c2s:: -->
+                """;
+            await File.WriteAllTextAsync(markdownPath, markdown);
+
+            var exitCode = await Program.Main([
+                "batch",
+                "markdown",
+                "-i",
+                markdownPath,
+                "-o",
+                output,
+                "--dry-run",
+            ]);
+
+            exitCode.ShouldBe(0);
+            Directory.Exists(output).ShouldBeFalse();
+            (await File.ReadAllTextAsync(markdownPath)).ShouldBe(markdown);
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task DuplicateOutputProducersFailBeforeCreatingOutput()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var markdownPath = Path.Combine(root, "docs", "guide.md");
+            var output = Path.Combine(root, "assets");
+            Directory.CreateDirectory(Path.GetDirectoryName(markdownPath)!);
+            await File.WriteAllTextAsync(
+                markdownPath,
+                """
+                <!-- c2s:: -o shared.svg -- echo first -->
+                <!-- c2s:: -o shared.svg -- echo second -->
+                """
+            );
+
+            var exitCode = await Program.Main([
+                "batch",
+                "markdown",
+                "-i",
+                markdownPath,
+                "-o",
+                output,
+            ]);
+
+            exitCode.ShouldBe(1);
+            Directory.Exists(output).ShouldBeFalse();
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task TeardownRunsWhenSetupFails()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var markdownPath = Path.Combine(root, "docs", "guide.md");
+            var output = Path.Combine(root, "assets");
+            var teardownMarker = Path.Combine(root, "teardown-ran.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(markdownPath)!);
+            await File.WriteAllTextAsync(
+                markdownPath,
+                $"""
+                <!-- c2s::
+                setup: console2svg-command-that-does-not-exist
+                capture: echo unreachable
+                teardown: echo cleaned > "{teardownMarker.Replace('\\', '/')}"
+                -->
+                """
+            );
+
+            var exitCode = await Program.Main([
+                "batch",
+                "markdown",
+                "-i",
+                markdownPath,
+                "-o",
+                output,
+            ]);
+
+            exitCode.ShouldBe(1);
+            File.Exists(teardownMarker).ShouldBeTrue();
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task MissingSharedOutputReportsProducerExcludedByFilter()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var docs = Path.Combine(root, "docs");
+            var output = Path.Combine(root, "assets");
+            Directory.CreateDirectory(docs);
+            await File.WriteAllTextAsync(
+                Path.Combine(docs, "producer.md"),
+                "<!-- c2s:: -o shared/version.svg -- echo version -->"
+            );
+            await File.WriteAllTextAsync(
+                Path.Combine(docs, "consumer.md"),
+                "![shared output](../assets/shared/version.svg)"
+            );
+
+            var exitCode = await Program.Main([
+                "batch",
+                "markdown",
+                "-i",
+                docs,
+                "-o",
+                output,
+                "--filter",
+                "consumer.md",
+            ]);
+
+            exitCode.ShouldBe(1);
+            Directory.Exists(output).ShouldBeFalse();
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    private static string CreateTempDirectory()
+    {
+        var path = Path.Combine(
+            Path.GetTempPath(),
+            "console2svg-tests",
+            Guid.NewGuid().ToString("N")
+        );
+        Directory.CreateDirectory(path);
+        return path;
+    }
+}

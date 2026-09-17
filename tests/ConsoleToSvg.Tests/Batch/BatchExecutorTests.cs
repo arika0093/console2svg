@@ -1,6 +1,5 @@
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Linq;
 using ConsoleToSvg.Batch;
 using ConsoleToSvg.Recording;
 
@@ -42,10 +41,9 @@ public sealed class BatchExecutorTests
     {
         var job = ParseSingle(
             """
-            <!-- c2s:: -o x.svg --
-            echo setup
-            ---
-            echo capture
+            <!-- c2s:: -o x.svg
+            setup: echo setup
+            capture: echo capture
             -->
             """
         );
@@ -55,74 +53,62 @@ public sealed class BatchExecutorTests
         script.ShouldContain("set -e");
         script.ShouldContain("{ echo setup ; } > \"/tmp/setup.log\" 2>&1");
         script.ShouldContain("printf '__C2S_CAPTURE_START__\\n'");
-        script.ShouldContain("echo capture");
         script.IndexOf("__C2S_CAPTURE_START__").ShouldBeLessThan(script.IndexOf("echo capture"));
     }
 
     [Test]
-    public void BuildScriptOmitsSetupWrapperWhenEmpty()
+    public void BuildScriptStopsAfterFailedSetupOnWindows()
     {
         var job = ParseSingle(
             """
-            ```bash
-            echo hi
-            ```
-            <!-- c2s:: -o x.svg -->
+            <!-- c2s::
+            setup: failing-command
+            capture: echo capture
+            -->
             """
         );
 
-        var script = BatchExecutor.BuildScript(job, null, isWindows: false);
+        var script = BatchExecutor.BuildScript(job, "C:/temp/setup.log", isWindows: true);
 
-        script.ShouldNotContain("setup.log");
-        script.ShouldContain("echo hi");
+        script.ShouldContain("if errorlevel 1 exit /b %errorlevel%");
+        script.IndexOf("if errorlevel").ShouldBeLessThan(script.IndexOf("__C2S_CAPTURE_START__"));
     }
 
     [Test]
     public void ResolveOutputRejectsEscape()
     {
-        var assets = Path.GetFullPath(Path.Combine(Path.GetTempPath(), "c2s-assets"));
-        BatchExecutor.ResolveOutput(assets, "../evil.svg").ShouldBeNull();
-        var ok = BatchExecutor.ResolveOutput(assets, "sub/x.svg");
-        ok.ShouldNotBeNull();
-        ok!.ShouldContain("sub");
+        var output = Path.GetFullPath(Path.Combine(Path.GetTempPath(), "c2s-assets"));
+
+        BatchExecutor.ResolveOutput(output, "../evil.svg").ShouldBeNull();
+        BatchExecutor.ResolveOutput(output, "sub/x.svg").ShouldNotBeNull();
     }
 
     [Test]
-    public async Task CacheHitMatchesSidecar()
+    public void ResolveMarkdownLinkUsesMarkdownDirectory()
     {
-        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        Directory.CreateDirectory(dir);
-        try
-        {
-            var output = Path.Combine(dir, "x.svg");
-            await File.WriteAllTextAsync(output, "<svg/>");
-            await File.WriteAllTextAsync(output + ".sha256", "abc123\n");
+        var root = Path.Combine(Path.GetTempPath(), "c2s-link-test");
+        var markdown = Path.Combine(root, "docs", "guide.md");
+        var expected = Path.GetFullPath(Path.Combine(root, "assets", "guide.svg"));
 
-            (
-                await BatchExecutor.IsCacheHitAsync(output, "abc123", CancellationToken.None)
-            ).ShouldBeTrue();
-            (
-                await BatchExecutor.IsCacheHitAsync(output, "stale", CancellationToken.None)
-            ).ShouldBeFalse();
-            (
-                await BatchExecutor.IsCacheHitAsync(
-                    Path.Combine(dir, "missing.svg"),
-                    "abc123",
-                    CancellationToken.None
-                )
-            ).ShouldBeFalse();
-        }
-        finally
-        {
-            Directory.Delete(dir, recursive: true);
-        }
+        var resolved = BatchExecutor.ResolveMarkdownLink(markdown, "../assets/guide.svg");
+
+        resolved.ShouldBe(expected);
+        BatchExecutor.ResolveMarkdownLink(markdown, "https://example.com/x.svg").ShouldBeNull();
     }
 
-    private static BatchParsedJob ParseSingle(string md)
+    [Test]
+    public void GlobFiltersUseNormalizedInputRelativePaths()
     {
-        var result = BatchMarkdown.Parse(md, "guide.md");
+        BatchExecutor.MatchesFilter("reference/cli.md", "reference/**").ShouldBeTrue();
+        BatchExecutor.MatchesFilter("reference/deep/cli.mdx", "reference/**").ShouldBeTrue();
+        BatchExecutor.MatchesFilter("tutorial/cli.md", "reference/**").ShouldBeFalse();
+        BatchExecutor.MatchesFilter("tutorial/cli.md", "**/cli.?d").ShouldBeTrue();
+    }
+
+    private static BatchParsedJob ParseSingle(string markdown)
+    {
+        var result = BatchMarkdown.Parse(markdown, "guide.md");
         result.Errors.ShouldBeEmpty();
-        result.Jobs.Count.ShouldBe(1);
-        return result.Jobs[0];
+        return result.Jobs.Single();
     }
 }

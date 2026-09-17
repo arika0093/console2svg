@@ -2,8 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using ConsoleToSvg.Recording;
 
 namespace ConsoleToSvg.Batch;
@@ -33,6 +32,10 @@ public static class BatchExecutor
                     ? $"( {job.Setup} ) > \"{setupLogPath}\" 2>&1"
                     : $"{{ {job.Setup} ; }} > \"{setupLogPath}\" 2>&1"
             );
+            if (isWindows)
+            {
+                builder.AppendLine("if errorlevel 1 exit /b %errorlevel%");
+            }
         }
 
         if (isWindows)
@@ -104,21 +107,13 @@ public static class BatchExecutor
         return true;
     }
 
-    /// <summary>Resolves a marker -o value under the assets directory.</summary>
-    public static string? ResolveOutput(string assetsDir, string outputRelative)
+    /// <summary>Resolves a marker -o value under the output directory.</summary>
+    public static string? ResolveOutput(string outputDir, string outputRelative)
     {
         var combined = Path.GetFullPath(
-            Path.Combine(assetsDir, outputRelative.Replace('/', Path.DirectorySeparatorChar))
+            Path.Combine(outputDir, outputRelative.Replace('/', Path.DirectorySeparatorChar))
         );
-        var root = assetsDir.EndsWith(Path.DirectorySeparatorChar)
-            ? assetsDir
-            : assetsDir + Path.DirectorySeparatorChar;
-        if (!combined.StartsWith(root, StringComparison.OrdinalIgnoreCase))
-        {
-            return null;
-        }
-
-        return combined;
+        return IsPathInside(outputDir, combined) ? combined : null;
     }
 
     /// <summary>Markdown-relative link target for a generated asset.</summary>
@@ -128,20 +123,90 @@ public static class BatchExecutor
         return Path.GetRelativePath(mdDir, outputAbs).Replace(Path.DirectorySeparatorChar, '/');
     }
 
-    /// <summary>True when the sidecar hash matches (dev fast path).</summary>
-    public static async Task<bool> IsCacheHitAsync(
-        string outputAbs,
-        string hash,
-        CancellationToken ct
-    )
+    public static string? ResolveMarkdownLink(string markdownPath, string target)
     {
-        var sidecar = outputAbs + ".sha256";
-        if (!File.Exists(outputAbs) || !File.Exists(sidecar))
+        if (
+            string.IsNullOrWhiteSpace(target)
+            || target.StartsWith('#')
+            || Uri.TryCreate(target, UriKind.Absolute, out _)
+        )
         {
-            return false;
+            return null;
         }
 
-        var saved = await File.ReadAllTextAsync(sidecar, ct).ConfigureAwait(false);
-        return string.Equals(saved.Trim(), hash, StringComparison.OrdinalIgnoreCase);
+        var markdownDir =
+            Path.GetDirectoryName(Path.GetFullPath(markdownPath)) ?? Environment.CurrentDirectory;
+        return Path.GetFullPath(
+            Path.Combine(
+                markdownDir,
+                Uri.UnescapeDataString(target).Replace('/', Path.DirectorySeparatorChar)
+            )
+        );
+    }
+
+    public static bool IsPathInside(string root, string path)
+    {
+        var relative = Path.GetRelativePath(Path.GetFullPath(root), Path.GetFullPath(path));
+        return !Path.IsPathRooted(relative)
+            && relative != ".."
+            && !relative.StartsWith(".." + Path.DirectorySeparatorChar, StringComparison.Ordinal);
+    }
+
+    public static string NormalizePath(string path) =>
+        path.Replace(Path.DirectorySeparatorChar, '/').Replace(Path.AltDirectorySeparatorChar, '/');
+
+    public static string NormalizeFilter(string filter)
+    {
+        var normalized = NormalizePath(filter.Trim());
+        while (normalized.StartsWith("./", StringComparison.Ordinal))
+        {
+            normalized = normalized[2..];
+        }
+        return normalized;
+    }
+
+    public static bool MatchesFilter(string relativePath, string filter)
+    {
+        var pattern = new StringBuilder("^");
+        for (var i = 0; i < filter.Length; i++)
+        {
+            switch (filter[i])
+            {
+                case '*' when i + 1 < filter.Length && filter[i + 1] == '*':
+                    i++;
+                    if (i + 1 < filter.Length && filter[i + 1] == '/')
+                    {
+                        i++;
+                        pattern.Append("(?:.*/)?");
+                    }
+                    else
+                    {
+                        pattern.Append(".*");
+                    }
+                    break;
+                case '*':
+                    pattern.Append("[^/]*");
+                    break;
+                case '?':
+                    pattern.Append("[^/]");
+                    break;
+                default:
+                    pattern.Append(Regex.Escape(filter[i].ToString()));
+                    break;
+            }
+        }
+        pattern.Append('$');
+
+        var options = RegexOptions.CultureInvariant;
+        if (OperatingSystem.IsWindows())
+        {
+            options |= RegexOptions.IgnoreCase;
+        }
+        return Regex.IsMatch(
+            NormalizePath(relativePath),
+            pattern.ToString(),
+            options,
+            TimeSpan.FromSeconds(1)
+        );
     }
 }

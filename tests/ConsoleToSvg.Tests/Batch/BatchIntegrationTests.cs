@@ -315,7 +315,7 @@ public sealed class BatchIntegrationTests
             Directory.CreateDirectory(markdownDirectory);
             await File.WriteAllTextAsync(
                 Path.Combine(markdownDirectory, "replay.json"),
-                """{"version":"1","totalDuration":0.0,"replay":[]}"""
+                """{"version":"1","totalDuration":10.0,"replay":[]}"""
             );
             await File.WriteAllTextAsync(
                 markdownPath,

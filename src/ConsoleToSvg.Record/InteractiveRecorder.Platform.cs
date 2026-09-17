@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ConsoleToSvg.Terminal;
 using Microsoft.Extensions.Logging;
+using Porta.Pty;
 using ZLogger;
 
 namespace ConsoleToSvg.Recording;
@@ -296,7 +297,7 @@ public static partial class InteractiveRecorder
         }
     }
 
-    private static NativePtyOptions BuildOptions(
+    private static PtyOptions BuildOptions(
         int width,
         int height,
         bool noDeleteEnvs,
@@ -325,16 +326,16 @@ public static partial class InteractiveRecorder
         {
             if (command is { Length: > 0 })
             {
-                return new NativePtyOptions
+                return new PtyOptions
                 {
                     Name = "console2svg",
                     Cols = width,
                     Rows = height,
                     Cwd = Environment.CurrentDirectory,
                     App = command[0],
-                    Args = command[1..],
+                    CommandLine = PtyCommandLine.QuoteArgs(command[0], command[1..]),
+                    VerbatimCommandLine = true,
                     Environment = environment,
-                    DisableInputEcho = false,
                 };
             }
 
@@ -347,7 +348,7 @@ public static partial class InteractiveRecorder
                 );
             }
 
-            return new NativePtyOptions
+            return new PtyOptions
             {
                 Name = "console2svg",
                 Cols = width,
@@ -357,9 +358,9 @@ public static partial class InteractiveRecorder
                 // Do not use cmd.exe's /d switch here: it disables the user's
                 // AutoRun configuration, including prompt integrations such as
                 // Starship. An interactive capture should behave like their shell.
-                Args = ["/k"],
+                CommandLine = PtyCommandLine.QuoteArgs(shell, ["/k"]),
+                VerbatimCommandLine = true,
                 Environment = environment,
-                DisableInputEcho = false,
             };
         }
 
@@ -373,29 +374,27 @@ public static partial class InteractiveRecorder
 
         if (command is { Length: > 0 })
         {
-            return new NativePtyOptions
+            return new PtyOptions
             {
                 Name = "console2svg",
                 Cols = width,
                 Rows = height,
                 Cwd = Environment.CurrentDirectory,
                 App = command[0],
-                Args = command[1..],
+                CommandLine = command[1..],
                 Environment = environment,
-                DisableInputEcho = false,
             };
         }
 
-        return new NativePtyOptions
+        return new PtyOptions
         {
             Name = "console2svg",
             Cols = width,
             Rows = height,
             Cwd = Environment.CurrentDirectory,
             App = unixShell,
-            Args = ["-i"],
+            CommandLine = ["-i"],
             Environment = environment,
-            DisableInputEcho = false,
         };
     }
 }

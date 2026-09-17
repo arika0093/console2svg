@@ -45,10 +45,6 @@
       AdditionalProperties="PublishAot=false"
     />
     <ProjectReference
-      Include="..\ConsoleToSvg.Pty\ConsoleToSvg.Pty.csproj"
-      AdditionalProperties="PublishAot=false"
-    />
-    <ProjectReference
       Include="..\ConsoleToSvg.Record\ConsoleToSvg.Record.csproj"
       AdditionalProperties="PublishAot=false"
     />

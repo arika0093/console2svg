@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using ConsoleToSvg.Svg;
 using ConsoleToSvg.Terminal;
 using Microsoft.Extensions.Logging;
+using Porta.Pty;
 using ZLogger;
 
 namespace ConsoleToSvg.Recording;
@@ -92,12 +93,12 @@ public static partial class InteractiveRecorder
             PtyRecorder.TryDisableTerminalMouseTracking(forwardToConsole: true, logger);
         }
 
-        var connection = await NativePty
+        var connection = await PtyProvider
             .SpawnAsync(options, cancellationToken)
             .ConfigureAwait(false);
         // Root PTY process id for Ctrl+D handling: EOT belongs to the active
         // (nested) shell when one exists, otherwise it exits the session.
-        var ptyRootProcessId = connection.ProcessId;
+        var ptyRootProcessId = connection.Pid;
         onScreenUpdated?.Invoke(emulator.Buffer.Clone());
         var resizeTask = terminalSizeProvider is null
             ? null

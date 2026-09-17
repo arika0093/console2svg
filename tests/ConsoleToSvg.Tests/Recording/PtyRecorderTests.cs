@@ -18,14 +18,7 @@ public sealed class PtyRecorderTests
     public async Task DisposeConnectionWithTimeoutAsync_ReturnsWhenDisposeBlocks()
     {
         using var releaseDispose = new ManualResetEventSlim();
-        using var reader = new MemoryStream();
-        using var writer = new MemoryStream();
-        using var connection = new NativePtyConnection(
-            reader,
-            writer,
-            _ => false,
-            () => releaseDispose.Wait()
-        );
+        using var connection = new BlockingDispose(() => releaseDispose.Wait());
         var disposeTask = InvokeDisposeConnectionWithTimeoutAsync(connection);
 
         try
@@ -255,7 +248,7 @@ public sealed class PtyRecorderTests
     }
 
     private static async Task InvokeDisposeConnectionWithTimeoutAsync(
-        NativePtyConnection connection
+        IDisposable connection
     )
     {
         var method =
@@ -272,6 +265,11 @@ public sealed class PtyRecorderTests
                 "PtyRecorder.DisposeConnectionWithTimeoutAsync did not return a Task."
             );
         await task.ConfigureAwait(false);
+    }
+
+    private sealed class BlockingDispose(Action onDispose) : IDisposable
+    {
+        public void Dispose() => onDispose();
     }
 
     private sealed class ChunkedReadStream : Stream

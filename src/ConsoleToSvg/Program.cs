@@ -154,7 +154,7 @@ internal static partial class Program
         if (options.StdOut)
         {
             // Redirect Console.Out → stderr before recording so that any third-party library
-            // debug messages written via Console.Write/WriteLine (e.g. Quick.PtyNet's
+            // debug messages written via Console.Write/WriteLine (e.g. Porta.Pty's
             // "Waiting on {pid}" / "Wait succeeded" from its ChildWatcherThreadProc)
             // are sent to stderr instead of polluting the SVG output pipe.
             var stderrWriter = new StreamWriter(

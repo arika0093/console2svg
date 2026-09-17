@@ -9,13 +9,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Porta.Pty;
 using ZLogger;
 
 namespace ConsoleToSvg.Recording;
 
 public static partial class PtyRecorder
 {
-    // This sequence disables various mouse tracking modes in the terminal, which can be left enabled by some applications and cause issues with input forwarding (e.g. mouse clicks not working in Vim). It's safe to send this on every recording stop, even if the child process has already exited or doesn't support these modes.
+    // This sequence disables various mouse tracking modes in the terminal,
+    // which can be left enabled by some applications and cause issues with
+    // input forwarding (e.g. mouse clicks not working in Vim).
+    // It's safe to send this on every recording stop, even if the child process
+    // has already exited or doesn't support these modes.
     private const string DisableMouseTrackingSequence =
         "\u001b[?9l\u001b[?1000l\u001b[?1002l\u001b[?1003l\u001b[?1004l\u001b[?1005l\u001b[?1006l\u001b[?1015l\u001b[?1016l\u001b[?9001l";
 
@@ -101,10 +106,10 @@ public static partial class PtyRecorder
                     || ex is TypeInitializationException
                     || ex is EntryPointNotFoundException
                     || ex is BadImageFormatException
-                    // Quick.PtyNet parses the kernel release string on Unix and
-                    // throws ArgumentException for formats it does not understand
-                    // (e.g. WSL2's "6.6.87.2-microsoft-standard-WSL2"). Fall back
-                    // to process execution instead of failing outright.
+                    // The PTY backend may fail to understand the kernel release
+                    // string on Unix (e.g. WSL2's
+                    // "6.6.87.2-microsoft-standard-WSL2"). Fall back to process
+                    // execution instead of failing outright.
                     || ex is ArgumentException
                 )
             {
@@ -149,9 +154,9 @@ public static partial class PtyRecorder
     )
     {
         var disableInputEcho = forwardToConsole && string.IsNullOrWhiteSpace(replayPath);
-        var options = BuildOptions(logger, command, width, height, disableInputEcho, noDeleteEnvs);
+        var options = BuildOptions(logger, command, width, height, noDeleteEnvs);
         logger.ZLogDebug(
-            $"Spawning PTY process. App={options.App} Args={string.Join(' ', options.Args ?? [])} Cwd={options.Cwd} Cols={options.Cols} Rows={options.Rows}"
+            $"Spawning PTY process. App={options.App} Args={string.Join(' ', options.CommandLine ?? [])} Cwd={options.Cwd} Cols={options.Cols} Rows={options.Rows}"
         );
         var session = new RecordingSession(width, height);
         var stopwatch = Stopwatch.StartNew();
@@ -172,10 +177,17 @@ public static partial class PtyRecorder
 
         try
         {
-            var connection = await NativePty
+            var connection = await PtyProvider
                 .SpawnAsync(options, cancellationToken)
                 .ConfigureAwait(false);
             logger.ZLogDebug($"PTY process spawned.");
+            if (disableInputEcho)
+            {
+                // Prevent echoed input bytes from being captured in the
+                // recording output with ECHOCTL caret-notation (e.g. ESC → "^[").
+                // Needed only when forwarding live host-terminal input.
+                PtyEcho.TrySetPtyEcho(connection.WriterStream, enabled: false);
+            }
             var outputForwardWriter = forwardToConsole ? TryOpenStandardOutputWriter(logger) : null;
             var outputForward =
                 outputForwardWriter is null && forwardToConsole
@@ -423,7 +435,7 @@ public static partial class PtyRecorder
     }
 
     private static async Task DisposeConnectionWithTimeoutAsync(
-        NativePtyConnection connection,
+        IDisposable connection,
         ILogger logger
     )
     {

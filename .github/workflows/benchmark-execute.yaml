@@ -1,0 +1,66 @@
+name: Benchmark Execute (reusable)
+
+# Shared benchmark runner, called by benchmark-pr and benchmark-manual.
+# Checks out the given ref with full history (Nerdbank.GitVersioning
+# fails on shallow clones), runs the full benchmark suite, and uploads
+# the artifacts under the given name.
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: 'Git ref to benchmark (branch / tag / SHA)'
+        required: true
+        type: string
+      repository:
+        description: 'Repository to check out (owner/name). Pass the PR head repo for forks.'
+        required: true
+        type: string
+      artifact-name:
+        description: 'Artifact name for the benchmark results'
+        required: true
+        type: string
+    outputs:
+      sha:
+        description: 'Resolved HEAD SHA that was benchmarked'
+        value: ${{ jobs.execute.outputs.sha }}
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    outputs:
+      sha: ${{ steps.resolve.outputs.sha }}
+    steps:
+      - name: Checkout ref
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ inputs.repository }}
+          ref: ${{ inputs.ref }}
+          # Full clone: NBGV cannot calculate the version height from a shallow clone.
+          fetch-depth: 0
+
+      - name: Resolve SHA
+        id: resolve
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: latest
+          dotnet-quality: preview
+
+      - name: Run benchmark (full)
+        run: dotnet run -c Release --project benchmark/ConsoleToSvg.Benchmarks -- --artifacts "$GITHUB_WORKSPACE/benchmark-artifacts/${{ inputs.artifact-name }}"
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: benchmark-artifacts/${{ inputs.artifact-name }}
+          retention-days: 14
+          if-no-files-found: warn

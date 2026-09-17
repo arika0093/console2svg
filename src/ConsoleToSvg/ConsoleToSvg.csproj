@@ -37,7 +37,6 @@
       Include="Resources\live-settings.html"
       LogicalName="console2svg.live-settings.html"
     />
-    <RuntimeHostConfigurationOption Include="System.Runtime.EnableWriteXorExecute" Value="false" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference

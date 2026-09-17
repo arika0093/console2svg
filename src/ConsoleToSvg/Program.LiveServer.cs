@@ -19,7 +19,17 @@ namespace ConsoleToSvg;
 internal static partial class Program
 {
     private static readonly TimeSpan LiveFrameSettleDelay = TimeSpan.FromMilliseconds(25);
-    private static readonly TimeSpan LiveFrameMaximumDelay = TimeSpan.FromMilliseconds(100);
+    private static readonly TimeSpan LiveFramePollInterval = TimeSpan.FromSeconds(1d / 60d);
+
+    internal sealed record LiveFrame(
+        ScreenBuffer? Screen,
+        string BackgroundSvg,
+        string WindowSvg,
+        string TextSvg
+    )
+    {
+        public static LiveFrame Empty { get; } = new(null, "", "", "");
+    }
 
     private static async Task<int> RunLiveServerAsync(
         AppOptions options,
@@ -72,9 +82,10 @@ internal static partial class Program
         textRenderOptions.IncludeTerminalBackground = true;
         textRenderOptions.IncludeTerminalBaseBackground = false;
         textRenderOptions.Opacity = 1d;
-        string latestBackgroundSvg = "";
-        string latestWindowSvg = "";
-        string latestTextSvg = "";
+        var snapshotRenderOptions = SvgRenderOptionsFactory.Create(options);
+        snapshotRenderOptions.AutoMaskMode = QuickLeaksScanMode.Early;
+        snapshotRenderOptions.RenderCursor = options.RequestedTmuxAction != TmuxAction.LiveServer;
+        var latestFrame = LiveFrame.Empty;
         var screenGate = new object();
         ScreenBuffer? latestScreen = null;
         var screenVersion = 0L;
@@ -111,8 +122,9 @@ internal static partial class Program
             var acceptTask = AcceptLiveClientsAsync(
                 listener,
                 clients,
-                () => (latestBackgroundSvg, latestWindowSvg, latestTextSvg),
+                () => Volatile.Read(ref latestFrame),
                 GetLiveHtml(),
+                snapshotRenderOptions,
                 liveLifetime.Token
             );
             var renderTask = RenderLiveFramesAsync(
@@ -123,30 +135,34 @@ internal static partial class Program
                         return (latestScreen, screenVersion);
                     }
                 },
-                (backgroundSvg, windowSvg, textSvg) =>
+                (screen, backgroundSvg, windowSvg, textSvg) =>
                 {
+                    var previous = Volatile.Read(ref latestFrame);
+                    var current = new LiveFrame(
+                        screen,
+                        backgroundSvg ?? previous.BackgroundSvg,
+                        windowSvg ?? previous.WindowSvg,
+                        textSvg
+                    );
+                    Volatile.Write(ref latestFrame, current);
                     if (backgroundSvg is not null && windowSvg is not null)
                     {
-                        latestBackgroundSvg = backgroundSvg;
-                        latestWindowSvg = windowSvg;
-                        latestTextSvg = textSvg;
                         BroadcastInitialSvg(clients, backgroundSvg, windowSvg, textSvg);
                         return;
                     }
-                    if (windowSvg is not null && windowSvg != latestWindowSvg)
+                    if (windowSvg is not null && windowSvg != previous.WindowSvg)
                     {
-                        latestWindowSvg = windowSvg;
                         BroadcastWindowSvg(clients, windowSvg);
                     }
-                    if (textSvg != latestTextSvg)
+                    if (textSvg != previous.TextSvg)
                     {
-                        latestTextSvg = textSvg;
                         BroadcastTextSvg(clients, textSvg);
                     }
                 },
                 backgroundRenderOptions,
                 windowRenderOptions,
                 textRenderOptions,
+                options.VideoFps,
                 liveLifetime.Token
             );
             var theme = textRenderOptions.TerminalTheme ?? Theme.Resolve(textRenderOptions.Theme);
@@ -269,8 +285,9 @@ internal static partial class Program
     private static async Task AcceptLiveClientsAsync(
         TcpListener listener,
         ConcurrentDictionary<int, LiveSseClient> clients,
-        Func<(string BackgroundSvg, string WindowSvg, string TextSvg)> latest,
+        Func<LiveFrame> latest,
         string liveHtml,
+        SvgRenderOptions snapshotRenderOptions,
         CancellationToken cancellationToken
     )
     {
@@ -303,17 +320,19 @@ internal static partial class Program
                 clients,
                 latest,
                 liveHtml,
+                snapshotRenderOptions,
                 cancellationToken
             );
         }
     }
 
-    private static async Task ServeLiveClientAsync(
+    internal static async Task ServeLiveClientAsync(
         TcpClient client,
         int id,
         ConcurrentDictionary<int, LiveSseClient> clients,
-        Func<(string BackgroundSvg, string WindowSvg, string TextSvg)> latest,
+        Func<LiveFrame> latest,
         string liveHtml,
+        SvgRenderOptions snapshotRenderOptions,
         CancellationToken cancellationToken
     )
     {
@@ -354,30 +373,66 @@ internal static partial class Program
                     }
                 );
                 clients[id] = sseClient;
-                var (backgroundSvg, windowSvg, textSvg) = latest();
-                await sseClient
-                    .SendInitialAsync(backgroundSvg, windowSvg, textSvg, cancellationToken)
-                    .ConfigureAwait(false);
-                _ = SendSseHeartbeatsAsync(sseClient, clientLifetime.Token);
+                Task? heartbeatTask = null;
                 try
                 {
-                    await Task.Delay(Timeout.Infinite, cancellationToken).ConfigureAwait(false);
+                    var frame = latest();
+                    await sseClient
+                        .SendInitialAsync(
+                            frame.BackgroundSvg,
+                            frame.WindowSvg,
+                            frame.TextSvg,
+                            cancellationToken
+                        )
+                        .ConfigureAwait(false);
+                    heartbeatTask = SendSseHeartbeatsAsync(sseClient, clientLifetime.Token);
+                    await Task.Delay(Timeout.Infinite, clientLifetime.Token).ConfigureAwait(false);
                 }
-                catch (OperationCanceledException)
+                catch (OperationCanceledException) when (clientLifetime.IsCancellationRequested)
+                {
+                    // Normal server shutdown or a failed heartbeat/write.
+                }
+                catch (IOException)
+                {
+                    // The browser disconnected while the initial frame was being sent.
+                }
+                finally
                 {
                     clients.TryRemove(id, out _);
+                    await clientLifetime.CancelAsync().ConfigureAwait(false);
+                    if (heartbeatTask is not null)
+                    {
+                        try
+                        {
+                            await heartbeatTask.ConfigureAwait(false);
+                        }
+                        catch (OperationCanceledException ex)
+                        {
+                            Debug.Assert(ex.CancellationToken.IsCancellationRequested);
+                        }
+                    }
                 }
-                clients.TryRemove(id, out _);
-                await clientLifetime.CancelAsync().ConfigureAwait(false);
                 return;
             }
             if (path == "/snapshot.svg")
             {
+                var frame = latest();
+                if (frame.Screen is null)
+                {
+                    await WriteHttpAsync(
+                            stream,
+                            "503 Service Unavailable",
+                            "text/plain; charset=utf-8",
+                            "No terminal frame is available yet."
+                        )
+                        .ConfigureAwait(false);
+                    return;
+                }
                 await WriteHttpAsync(
                         stream,
                         "200 OK",
                         "image/svg+xml; charset=utf-8",
-                        latest().TextSvg
+                        RenderLiveSnapshot(frame.Screen, snapshotRenderOptions)
                     )
                     .ConfigureAwait(false);
                 return;
@@ -451,14 +506,16 @@ internal static partial class Program
 
     private static async Task RenderLiveFramesAsync(
         Func<(ScreenBuffer? Screen, long Version)> getLatestScreen,
-        Action<string?, string?, string> publish,
+        Action<ScreenBuffer, string?, string?, string> publish,
         SvgRenderOptions backgroundRenderOptions,
         SvgRenderOptions windowRenderOptions,
         SvgRenderOptions textRenderOptions,
+        double maximumFps,
         CancellationToken cancellationToken
     )
     {
-        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(1d / 60d));
+        var frameInterval = ResolveLiveFrameInterval(maximumFps);
+        using var timer = new PeriodicTimer(LiveFramePollInterval);
         var renderedVersion = -1L;
         var staticRendered = false;
         var renderedWidth = 0;
@@ -494,7 +551,12 @@ internal static partial class Program
             }
 
             var settled = Stopwatch.GetElapsedTime(pendingSince) >= LiveFrameSettleDelay;
-            var overdue = Stopwatch.GetElapsedTime(publishedAt) >= LiveFrameMaximumDelay;
+            var firstFrame = renderedVersion < 0;
+            var overdue = Stopwatch.GetElapsedTime(publishedAt) >= frameInterval;
+            if (!firstFrame && !overdue)
+            {
+                continue;
+            }
             if (!settled && !overdue)
             {
                 continue;
@@ -504,17 +566,31 @@ internal static partial class Program
                 ? null
                 : SvgRenderer.Render(screen, backgroundRenderOptions);
             var windowSvg = SvgRenderer.Render(screen, windowRenderOptions);
-            publish(backgroundSvg, windowSvg, SvgRenderer.Render(screen, textRenderOptions));
+            publish(
+                screen,
+                backgroundSvg,
+                windowSvg,
+                SvgRenderer.Render(screen, textRenderOptions)
+            );
             staticRendered = true;
             renderedVersion = version;
             publishedAt = now;
         }
     }
 
-    private sealed class LiveSseClient(NetworkStream stream, Action disconnected) : IAsyncDisposable
+    internal static TimeSpan ResolveLiveFrameInterval(double maximumFps) =>
+        TimeSpan.FromSeconds(1d / Math.Max(0.1d, maximumFps));
+
+    internal static string RenderLiveSnapshot(
+        ScreenBuffer screen,
+        SvgRenderOptions renderOptions
+    ) => SvgRenderer.Render(screen, renderOptions);
+
+    internal sealed class LiveSseClient(Stream stream, Action disconnected) : IAsyncDisposable
     {
         private readonly object _sendGate = new();
         private int _sending = 1;
+        private string? _pendingBackground;
         private string? _pendingWindow;
         private string? _pendingText;
         private bool _heartbeatPending;
@@ -560,6 +636,8 @@ internal static partial class Program
         {
             lock (_sendGate)
             {
+                _pendingBackground = backgroundSvg;
+                _pendingWindow = windowSvg;
                 _pendingText = textSvg;
                 if (_sending != 0)
                 {
@@ -568,7 +646,7 @@ internal static partial class Program
 
                 _sending = 1;
             }
-            _ = SendInitialAndTextAsync(backgroundSvg, windowSvg);
+            _ = SendAsync();
         }
 
         public void TrySendText(string textSvg)
@@ -616,35 +694,16 @@ internal static partial class Program
             _ = SendAsync();
         }
 
-        private async Task SendInitialAndTextAsync(string backgroundSvg, string windowSvg)
-        {
-            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
-            try
-            {
-                await WriteSseAsync(stream, "background", backgroundSvg, timeout.Token)
-                    .ConfigureAwait(false);
-                await WriteSseAsync(stream, "window", windowSvg, timeout.Token)
-                    .ConfigureAwait(false);
-                await SendPendingUpdatesAsync(timeout.Token).ConfigureAwait(false);
-            }
-            catch
-            {
-                disconnected();
-                await stream.DisposeAsync().ConfigureAwait(false);
-            }
-            finally
-            {
-                CompleteSend();
-            }
-        }
-
         private async Task SendPendingUpdatesAsync(CancellationToken cancellationToken)
         {
+            string? backgroundSvg;
             string? windowSvg;
             string? textSvg;
             var heartbeatPending = false;
             lock (_sendGate)
             {
+                backgroundSvg = _pendingBackground;
+                _pendingBackground = null;
                 windowSvg = _pendingWindow;
                 _pendingWindow = null;
                 textSvg = _pendingText;
@@ -653,6 +712,11 @@ internal static partial class Program
                 _heartbeatPending = false;
             }
 
+            if (backgroundSvg is not null)
+            {
+                await WriteSseAsync(stream, "background", backgroundSvg, cancellationToken)
+                    .ConfigureAwait(false);
+            }
             if (windowSvg is not null)
             {
                 await WriteSseAsync(stream, "window", windowSvg, cancellationToken)
@@ -692,7 +756,12 @@ internal static partial class Program
         {
             lock (_sendGate)
             {
-                if (_pendingWindow is null && _pendingText is null)
+                if (
+                    _pendingBackground is null
+                    && _pendingWindow is null
+                    && _pendingText is null
+                    && !_heartbeatPending
+                )
                 {
                     _sending = 0;
                     return;
@@ -706,7 +775,7 @@ internal static partial class Program
     }
 
     private static async Task WriteSseAsync(
-        NetworkStream stream,
+        Stream stream,
         string eventName,
         string svg,
         CancellationToken token
@@ -737,11 +806,7 @@ internal static partial class Program
             )
             .ConfigureAwait(false);
 
-    private static async Task WriteBytesAsync(
-        NetworkStream stream,
-        string text,
-        CancellationToken token
-    )
+    private static async Task WriteBytesAsync(Stream stream, string text, CancellationToken token)
     {
         var bytes = Encoding.UTF8.GetBytes(text);
         await stream.WriteAsync(bytes, token).ConfigureAwait(false);

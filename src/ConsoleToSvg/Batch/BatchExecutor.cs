@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,36 +20,21 @@ public static class BatchExecutor
     /// </summary>
     public static string BuildScript(BatchParsedJob job, string? setupLogPath, bool isWindows)
     {
-        var builder = new StringBuilder();
-        if (!isWindows)
+        if (isWindows)
         {
-            builder.AppendLine("set -e");
+            return BuildWindowsScript(job, setupLogPath);
         }
+
+        var builder = new StringBuilder();
+        builder.AppendLine("set -e");
 
         if (job.Setup.Length > 0 && setupLogPath is not null)
         {
-            builder.AppendLine(
-                isWindows
-                    ? $"( {job.Setup} ) > \"{setupLogPath}\" 2>&1"
-                    : $"{{ {job.Setup} ; }} > \"{setupLogPath}\" 2>&1"
-            );
-            if (isWindows)
-            {
-                builder.AppendLine("if errorlevel 1 exit /b %errorlevel%");
-            }
+            builder.AppendLine($"{{ {job.Setup} ; }} > \"{setupLogPath}\" 2>&1");
         }
 
-        if (isWindows)
-        {
-            builder.AppendLine($"echo {BatchMarkdown.CaptureMarker}");
-            builder.AppendLine("cls");
-        }
-        else
-        {
-            builder.AppendLine($"printf '{BatchMarkdown.CaptureMarker}\\n'");
-            builder.AppendLine("printf '\\033[2J\\033[H'");
-        }
-
+        builder.AppendLine($"printf '{BatchMarkdown.CaptureMarker}\\n'");
+        builder.AppendLine("printf '\\033[2J\\033[H'");
         builder.Append(job.Capture);
         if (!job.Capture.EndsWith('\n'))
         {
@@ -57,6 +43,31 @@ public static class BatchExecutor
 
         return builder.ToString();
     }
+
+    private static string BuildWindowsScript(BatchParsedJob job, string? setupLogPath)
+    {
+        // cmd.exe /c ignores everything after the first newline in its payload,
+        // so the Windows script must be a single &-joined command line.
+        var segments = new List<string>();
+        if (job.Setup.Length > 0 && setupLogPath is not null)
+        {
+            var setup = string.Join(" & ", SplitScriptLines(job.Setup));
+            segments.Add($"( {setup} ) > \"{setupLogPath}\" 2>&1");
+            segments.Add("if errorlevel 1 exit /b %errorlevel%");
+        }
+
+        segments.Add($"echo {BatchMarkdown.CaptureMarker}");
+        segments.Add("cls");
+        segments.AddRange(SplitScriptLines(job.Capture));
+        return string.Join(" & ", segments);
+    }
+
+    private static IEnumerable<string> SplitScriptLines(string script) =>
+        script
+            .Replace("\r\n", "\n", StringComparison.Ordinal)
+            .Split('\n')
+            .Select(line => line.Trim())
+            .Where(line => line.Length > 0);
 
     /// <summary>
     /// Drops everything up to the capture marker and rebases the timeline so the
@@ -84,16 +95,35 @@ public static class BatchExecutor
             return false;
         }
 
-        var baseTime = session.Events[index].Time;
-        var kept = session
-            .Events.Skip(index + 1)
-            .Select(e => new AsciicastEvent
-            {
-                Time = Math.Max(0, e.Time - baseTime),
-                Type = e.Type,
-                Data = e.Data,
-            })
-            .ToList();
+        var markerEvent = session.Events[index];
+        var markerAt = markerEvent.Data.IndexOf(
+            BatchMarkdown.CaptureMarker,
+            StringComparison.Ordinal
+        );
+        var remainder = markerEvent.Data[(markerAt + BatchMarkdown.CaptureMarker.Length)..];
+        var baseTime = markerEvent.Time;
+        var kept = new List<AsciicastEvent>();
+        if (remainder.Length > 0)
+        {
+            kept.Add(
+                new AsciicastEvent
+                {
+                    Time = 0,
+                    Type = markerEvent.Type,
+                    Data = remainder,
+                }
+            );
+        }
+        kept.AddRange(
+            session
+                .Events.Skip(index + 1)
+                .Select(e => new AsciicastEvent
+                {
+                    Time = Math.Max(0, e.Time - baseTime),
+                    Type = e.Type,
+                    Data = e.Data,
+                })
+        );
         session.Events.Clear();
         session.Events.Add(
             new AsciicastEvent

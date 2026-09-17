@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using ConsoleToSvg.Cli;
 using VYaml.Parser;
 
 namespace ConsoleToSvg.Batch;
@@ -32,7 +33,8 @@ public sealed record BatchParsedJob(
     double? Timeout,
     string? OutputRelative,
     string? ExistingLinkTarget,
-    string Alt
+    string Alt,
+    AppOptions CaptureOptions
 )
 {
     public bool OutputAuto => OutputRelative is null;
@@ -108,6 +110,12 @@ public static class BatchMarkdown
     private static readonly Regex MarkdownImagePattern = new(
         "!\\[[^\\]]*\\]\\((?<target><[^>]+>|[^)\\s]+)(?:\\s+(?:\"[^\"]*\"|'[^']*'|\\([^)]*\\)))?\\)",
         RegexOptions.Compiled,
+        PatternTimeout
+    );
+
+    private static readonly Regex HtmlImagePattern = new(
+        "<img\\s+[^>]*src=[\"'](?<target>[^\"']+)[\"'][^>]*>",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled,
         PatternTimeout
     );
 
@@ -207,15 +215,9 @@ public static class BatchMarkdown
             return false;
         }
 
-        if (
-            !string.Equals(
-                Path.GetExtension(normalized),
-                ".svg",
-                StringComparison.OrdinalIgnoreCase
-            )
-        )
+        if (string.IsNullOrWhiteSpace(Path.GetExtension(normalized)))
         {
-            error = $"batch markdown currently supports .svg output only (got '{value}').";
+            error = $"-o must include a file extension (got '{value}').";
             return false;
         }
 
@@ -273,24 +275,26 @@ public static class BatchMarkdown
             ? header[(split.Index + split.Length)..].Trim()
             : string.Empty;
 
-        if (
-            !TryParseOptions(
-                optionsText,
-                line,
-                errors,
-                out var width,
-                out var height,
-                out var withCommand,
-                out var window,
-                out var windowExplicit,
-                out var video,
-                out var timeout,
-                out var outputRelative
-            )
-        )
+        var optionTokens = Tokenize(optionsText, line, errors);
+        if (optionTokens is null)
         {
             return null;
         }
+
+        if (
+            !ConsoleToSvgCommandLine.TryParseCaptureOptions(
+                optionTokens,
+                out var captureOptions,
+                out var hasOutput,
+                out var optionError
+            )
+        )
+        {
+            errors.Add(new BatchParseError(line, optionError ?? "invalid capture options."));
+            return null;
+        }
+
+        var outputRelative = hasOutput ? captureOptions!.OutputPath : null;
 
         var body = ParseYamlBody(yaml, line, errors);
         if (body is null)
@@ -359,16 +363,17 @@ public static class BatchMarkdown
             setup,
             capture,
             teardown,
-            width,
-            height,
-            withCommand,
-            window,
-            windowExplicit,
-            video,
-            timeout,
+            captureOptions!.Width,
+            captureOptions.Height,
+            captureOptions.WithCommand,
+            captureOptions.Window,
+            captureOptions.IsWindowExplicit,
+            captureOptions.Mode is OutputMode.Video,
+            captureOptions.Timeout,
             output,
             FindAssociatedImageTarget(markdown, marker.End),
-            FirstLine(capture)
+            FirstLine(capture),
+            captureOptions
         );
     }
 
@@ -692,13 +697,7 @@ public static class BatchMarkdown
 
     private static string? FindAssociatedImageTarget(string markdown, int markerEnd)
     {
-        var lineEnd = markdown.IndexOf('\n', markerEnd);
-        if (lineEnd < 0)
-        {
-            return null;
-        }
-
-        var cursor = lineEnd + 1;
+        var cursor = markerEnd;
         while (cursor <= markdown.Length)
         {
             var nextLineEnd = markdown.IndexOf('\n', cursor);
@@ -715,12 +714,13 @@ public static class BatchMarkdown
             }
 
             var match = ImageLinePattern.Match(line);
-            if (!match.Success)
+            if (match.Success)
             {
-                return null;
+                return match.Groups["target"].Value.Trim('<', '>');
             }
 
-            return match.Groups["target"].Value.Trim('<', '>');
+            var htmlMatch = HtmlImagePattern.Match(line);
+            return htmlMatch.Success ? htmlMatch.Groups["target"].Value : null;
         }
 
         return null;
@@ -728,6 +728,11 @@ public static class BatchMarkdown
 
     private static string ApplyLink(string markdown, BatchLink link, string newline)
     {
+        if (HasAssociatedHtmlImage(markdown, link.Job.MarkerEnd))
+        {
+            return markdown;
+        }
+
         var imageLine = $"![{link.Job.Alt}]({link.RelativeLink})";
         var markerLineEnd = markdown.IndexOf('\n', link.Job.MarkerEnd);
         if (markerLineEnd < 0)
@@ -751,11 +756,18 @@ public static class BatchMarkdown
                 continue;
             }
 
-            if (ImageLinePattern.IsMatch(line))
+            var existingImage = ImageLinePattern.Match(line);
+            if (existingImage.Success)
             {
+                var target = existingImage.Groups["target"];
+                var replacement = target.Value.StartsWith('<')
+                    ? $"<{link.RelativeLink}>"
+                    : link.RelativeLink;
+                var updatedLine =
+                    line[..target.Index] + replacement + line[(target.Index + target.Length)..];
                 var after = lineEnd < 0 ? string.Empty : markdown[(lineEnd + 1)..];
                 return markdown[..cursor]
-                    + imageLine
+                    + updatedLine
                     + (lineEnd < 0 ? string.Empty : newline + after);
             }
 
@@ -768,159 +780,27 @@ public static class BatchMarkdown
         return markdown;
     }
 
-    private static bool TryParseOptions(
-        string optionsText,
-        int line,
-        List<BatchParseError> errors,
-        out int? width,
-        out int? height,
-        out bool withCommand,
-        out string? window,
-        out bool windowExplicit,
-        out bool video,
-        out double? timeout,
-        out string? outputRelative
-    )
+    private static bool HasAssociatedHtmlImage(string markdown, int markerEnd)
     {
-        width = null;
-        height = null;
-        withCommand = false;
-        window = null;
-        windowExplicit = false;
-        video = false;
-        timeout = null;
-        outputRelative = null;
-
-        var tokens = Tokenize(optionsText, line, errors);
-        if (tokens is null)
+        var cursor = markerEnd;
+        while (cursor <= markdown.Length)
         {
-            return false;
-        }
-
-        var i = 0;
-        while (i < tokens.Count)
-        {
-            var token = tokens[i];
-            switch (token)
+            var lineEnd = markdown.IndexOf('\n', cursor);
+            var line = lineEnd < 0 ? markdown[cursor..] : markdown[cursor..lineEnd];
+            if (line.Trim().Length > 0)
             {
-                case "-w" or "--width":
-                    if (!TakePositiveInt(tokens, ref i, line, errors, "--width", out var w))
-                    {
-                        return false;
-                    }
-                    width = w;
-                    break;
-                case "-h" or "--height":
-                    if (!TakePositiveInt(tokens, ref i, line, errors, "--height", out var h))
-                    {
-                        return false;
-                    }
-                    height = h;
-                    break;
-                case "-o" or "--out":
-                    if (!TakeString(tokens, ref i, line, errors, "-o", out outputRelative))
-                    {
-                        return false;
-                    }
-                    break;
-                case "-c" or "--with-command":
-                    withCommand = true;
-                    i++;
-                    break;
-                case "-d" or "--window":
-                    windowExplicit = true;
-                    if (i + 1 < tokens.Count && !tokens[i + 1].StartsWith('-'))
-                    {
-                        window = tokens[++i];
-                    }
-                    else
-                    {
-                        window = "macos";
-                    }
-                    i++;
-                    break;
-                case "-v" or "--video":
-                    video = true;
-                    i++;
-                    break;
-                case "--mode":
-                    if (!TakeString(tokens, ref i, line, errors, "--mode", out var mode))
-                    {
-                        return false;
-                    }
-                    if (mode is not "image" and not "video")
-                    {
-                        errors.Add(new BatchParseError(line, "--mode must be image or video."));
-                        return false;
-                    }
-                    video = mode == "video";
-                    break;
-                case "--timeout":
-                    if (
-                        i + 1 >= tokens.Count
-                        || !double.TryParse(
-                            tokens[i + 1],
-                            System.Globalization.NumberStyles.Float,
-                            System.Globalization.CultureInfo.InvariantCulture,
-                            out var seconds
-                        )
-                        || seconds <= 0
-                    )
-                    {
-                        errors.Add(new BatchParseError(line, "--timeout must be greater than 0."));
-                        return false;
-                    }
-                    timeout = seconds;
-                    i += 2;
-                    break;
-                default:
-                    errors.Add(new BatchParseError(line, $"unsupported marker option '{token}'."));
-                    return false;
+                return HtmlImagePattern.IsMatch(line);
             }
+
+            if (lineEnd < 0)
+            {
+                return false;
+            }
+
+            cursor = lineEnd + 1;
         }
 
-        return true;
-    }
-
-    private static bool TakePositiveInt(
-        IReadOnlyList<string> tokens,
-        ref int index,
-        int line,
-        List<BatchParseError> errors,
-        string name,
-        out int value
-    )
-    {
-        value = 0;
-        if (index + 1 >= tokens.Count || !int.TryParse(tokens[index + 1], out value) || value <= 0)
-        {
-            errors.Add(new BatchParseError(line, $"{name} must be greater than 0."));
-            return false;
-        }
-
-        index += 2;
-        return true;
-    }
-
-    private static bool TakeString(
-        IReadOnlyList<string> tokens,
-        ref int index,
-        int line,
-        List<BatchParseError> errors,
-        string name,
-        out string? value
-    )
-    {
-        value = null;
-        if (index + 1 >= tokens.Count)
-        {
-            errors.Add(new BatchParseError(line, $"{name} requires a value."));
-            return false;
-        }
-
-        value = tokens[index + 1];
-        index += 2;
-        return true;
+        return false;
     }
 
     private static List<string>? Tokenize(string text, int line, List<BatchParseError> errors)

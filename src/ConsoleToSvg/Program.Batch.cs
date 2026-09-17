@@ -292,11 +292,7 @@ internal static partial class Program
             if (
                 existing is not null
                 && BatchExecutor.IsPathInside(outputDir, existing)
-                && string.Equals(
-                    Path.GetExtension(existing),
-                    ".svg",
-                    StringComparison.OrdinalIgnoreCase
-                )
+                && !string.IsNullOrWhiteSpace(Path.GetExtension(existing))
             )
             {
                 return existing;
@@ -329,29 +325,9 @@ internal static partial class Program
 
     private static AppOptions BuildBatchJobOptions(AppOptions defaults, BatchParsedJob job)
     {
-        var jobOptions = defaults.ShallowClone();
-        if (job.Width.HasValue)
-        {
-            jobOptions.Width = job.Width;
-            jobOptions.WidthAdjust = false;
-        }
-
-        if (job.Height.HasValue)
-        {
-            jobOptions.Height = job.Height;
-            jobOptions.HeightAdjust = false;
-        }
-
-        jobOptions.WithCommand = job.WithCommand;
-        if (job.WindowExplicit)
-        {
-            jobOptions.Window = job.Window ?? "macos";
-            jobOptions.IsWindowExplicit = true;
-        }
-
-        jobOptions.Mode = job.Video ? OutputMode.Video : OutputMode.Image;
-        jobOptions.IsModeExplicit = true;
-        jobOptions.Timeout = job.Timeout;
+        var jobOptions = job.CaptureOptions.ShallowClone();
+        jobOptions.Verbose = defaults.Verbose;
+        jobOptions.VerboseLogPath = defaults.VerboseLogPath;
         jobOptions.Command = FirstBatchLine(job.Capture);
         if (string.IsNullOrWhiteSpace(jobOptions.Prompt))
         {
@@ -500,6 +476,7 @@ internal static partial class Program
         CancellationToken ct
     )
     {
+        jobOptions.OutputPath = outputPath;
         var script = BatchExecutor.BuildScript(
             job,
             setupLog,
@@ -562,27 +539,109 @@ internal static partial class Program
         try
         {
             var renderOptions = SvgRenderOptionsFactory.Create(jobOptions);
-            EnsureDirectory(outputPath);
-            if (jobOptions.Mode is OutputMode.Video)
+            var outputExtension = Path.GetExtension(outputPath).TrimStart('.').ToLowerInvariant();
+            if (string.IsNullOrEmpty(outputExtension) || outputExtension == "svg")
             {
-                await using var writer = new StreamWriter(
-                    outputPath,
-                    append: false,
-                    new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
-                );
-                AnimatedSvgRenderer.Write(writer, session, renderOptions);
-                await writer.FlushAsync(ct).ConfigureAwait(false);
+                EnsureDirectory(outputPath);
+                if (jobOptions.Mode is OutputMode.Video)
+                {
+                    await using var writer = new StreamWriter(
+                        outputPath,
+                        append: false,
+                        new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
+                    );
+                    AnimatedSvgRenderer.Write(writer, session, renderOptions);
+                    await writer.FlushAsync(ct).ConfigureAwait(false);
+                }
+                else
+                {
+                    var svg = SvgRenderer.Render(session, renderOptions);
+                    await File.WriteAllTextAsync(
+                            outputPath,
+                            svg,
+                            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+                            ct
+                        )
+                        .ConfigureAwait(false);
+                }
             }
             else
             {
-                var svg = SvgRenderer.Render(session, renderOptions);
-                await File.WriteAllTextAsync(
-                        outputPath,
-                        svg,
-                        new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
-                        ct
-                    )
-                    .ConfigureAwait(false);
+                var ffmpegPath = FindFfmpegExecutable();
+                SvgConverter.SetFfmpegPath(ffmpegPath);
+                SvgConverter.VerifyConversionPipeline(
+                    jobOptions.SvgConverter,
+                    RequiresFfmpeg(jobOptions, outputExtension),
+                    logger
+                );
+                var converter = SvgConverter.ResolveConverter(
+                    jobOptions.SvgConverter,
+                    ffmpegAvailableOverride: SvgConverter.IsFfmpegAvailable,
+                    logger
+                );
+                var useVideoPath = jobOptions.IsModeExplicit
+                    ? jobOptions.Mode is OutputMode.Video
+                    : IsVideoFormat(outputExtension);
+                renderOptions.RenderCursor = useVideoPath;
+                EnsureDirectory(outputPath);
+
+                if (useVideoPath)
+                {
+                    await SvgConverter
+                        .ConvertSvgFramesToVideoAsync(
+                            RenderFrameSvgs(
+                                session,
+                                renderOptions,
+                                jobOptions.VideoFps,
+                                ct,
+                                includeFallback: true
+                            ),
+                            jobOptions.VideoFps,
+                            outputPath,
+                            converter,
+                            ffmpegPath,
+                            jobOptions.SizeWidth,
+                            jobOptions.SizeHeight,
+                            logger,
+                            ConsoleProgressReporter.Instance,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+                }
+                else
+                {
+                    var temporarySvg = Path.Combine(
+                        Path.GetTempPath(),
+                        $"c2s-batch-{Guid.NewGuid():N}.svg"
+                    );
+                    try
+                    {
+                        await File.WriteAllTextAsync(
+                                temporarySvg,
+                                SvgRenderer.Render(session, renderOptions),
+                                new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+                                ct
+                            )
+                            .ConfigureAwait(false);
+                        await SvgConverter
+                            .ConvertSvgToImageAsync(
+                                temporarySvg,
+                                outputPath,
+                                converter,
+                                ffmpegPath,
+                                jobOptions.SizeWidth,
+                                jobOptions.SizeHeight,
+                                logger,
+                                ConsoleProgressReporter.Instance,
+                                ct
+                            )
+                            .ConfigureAwait(false);
+                    }
+                    finally
+                    {
+                        CleanupTempFile(temporarySvg, logger);
+                    }
+                }
             }
         }
         catch (Exception ex)

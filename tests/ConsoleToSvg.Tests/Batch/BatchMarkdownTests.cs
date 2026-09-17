@@ -256,14 +256,40 @@ public sealed class BatchMarkdownTests
     }
 
     [Test]
-    public void OutputTraversalAndNonSvgAreRejected()
+    public void OutputTraversalAndMissingExtensionAreRejected()
     {
-        foreach (var output in new[] { "../evil.svg", "/abs.svg", "sub/../../evil.svg", "x.png" })
+        foreach (
+            var output in new[] { "../evil.svg", "/abs.svg", "sub/../../evil.svg", "no-extension" }
+        )
         {
             var result = Parse($"<!-- c2s:: -o {output} -- echo hi -->");
             result.Jobs.ShouldBeEmpty();
             result.Errors.Count.ShouldBe(1);
         }
+    }
+
+    [Test]
+    public void CaptureOptionsAndRasterOutputUseTheCaptureParser()
+    {
+        var result = Parse(
+            "<!-- c2s:: -o image.gif -w 100 -v --fps 30 --sleep 0.5 --background '#003060' '#0060c0' --opacity 0.85 -- echo hi -->"
+        );
+
+        result.Errors.ShouldBeEmpty();
+        result.Jobs[0].OutputRelative.ShouldBe("image.gif");
+        result.Jobs[0].CaptureOptions.Background.ShouldBe(["#003060", "#0060c0"]);
+        result.Jobs[0].CaptureOptions.Opacity.ShouldBe(0.85);
+        result.Jobs[0].CaptureOptions.VideoFps.ShouldBe(30);
+        result.Jobs[0].CaptureOptions.VideoSleep.ShouldBe(0.5);
+    }
+
+    [Test]
+    public void AttachedOutFormIsTreatedAsExplicitOutput()
+    {
+        var result = Parse("<!-- c2s:: --out=image.gif -w 40 -- echo hi -->");
+
+        result.Errors.ShouldBeEmpty();
+        result.Jobs[0].OutputRelative.ShouldBe("image.gif");
     }
 
     [Test]
@@ -283,6 +309,20 @@ public sealed class BatchMarkdownTests
         result.Errors.ShouldBeEmpty();
         result.Jobs[0].OutputAuto.ShouldBeTrue();
         result.Jobs[0].ExistingLinkTarget.ShouldBe("../../assets/original/test-7.svg");
+    }
+
+    [Test]
+    public void ExistingHtmlImageIsRememberedAndPreserved()
+    {
+        var markdown =
+            "| <!-- c2s:: -o window/macos.svg -- echo hi --><img src=\"./assets/window/macos.svg\" width=\"400\"> |";
+        var result = Parse(markdown);
+
+        result.Errors.ShouldBeEmpty();
+        result.Jobs[0].ExistingLinkTarget.ShouldBe("./assets/window/macos.svg");
+        BatchMarkdown
+            .RewriteLinks(markdown, [new(result.Jobs[0], "assets/window/macos.svg")])
+            .ShouldBe(markdown);
     }
 
     [Test]
@@ -327,7 +367,7 @@ public sealed class BatchMarkdownTests
             [new BatchLink(result.Jobs[0], "../assets/a.svg")]
         );
 
-        rewritten.ShouldContain("<!-- c2s:: -o a.svg -->\n![echo hi](../assets/a.svg)");
+        rewritten.ShouldContain("![echo hi](../assets/a.svg)");
     }
 
     [Test]
@@ -350,7 +390,7 @@ public sealed class BatchMarkdownTests
             [new BatchLink(reparsed.Jobs[0], "../assets/a.svg")]
         );
 
-        rewritten.ShouldContain("![echo hi](../assets/a.svg)");
+        rewritten.ShouldContain("![old](../assets/a.svg)");
         rewritten.ShouldNotContain("old.svg");
         second.ShouldBe(rewritten);
     }

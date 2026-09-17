@@ -18,12 +18,29 @@ public sealed class BatchExecutorTests
 
         BatchExecutor.TryTrimBeforeMarker(session).ShouldBeTrue();
 
-        session.Events.Count.ShouldBe(3);
+        session.Events.Count.ShouldBe(4);
         session.Events[0].Time.ShouldBe(0d);
         session.Events[0].Data.ShouldBe("\x1b[2J\x1b[H");
-        session.Events[1].Data.ShouldBe("hello\n");
-        session.Events[1].Time.ShouldBe(0.5d);
-        session.Events[2].Time.ShouldBe(1.0d);
+        session.Events[1].Data.ShouldBe(" suffix\n");
+        session.Events[1].Time.ShouldBe(0d);
+        session.Events[2].Data.ShouldBe("hello\n");
+        session.Events[2].Time.ShouldBe(0.5d);
+        session.Events[3].Time.ShouldBe(1.0d);
+    }
+
+    [Test]
+    public void TrimKeepsCaptureOutputCoalescedWithMarker()
+    {
+        var session = new RecordingSession(width: 80, height: 24);
+        session.AddEvent(0.5, "setup output\n");
+        session.AddEvent(1.0, "__C2S_CAPTURE_START__\r\nhi\r\n");
+
+        BatchExecutor.TryTrimBeforeMarker(session).ShouldBeTrue();
+
+        session.Events.Count.ShouldBe(2);
+        session.Events[0].Data.ShouldBe("\x1b[2J\x1b[H");
+        session.Events[1].Data.ShouldBe("\r\nhi\r\n");
+        session.Events[1].Time.ShouldBe(0d);
     }
 
     [Test]
@@ -72,6 +89,28 @@ public sealed class BatchExecutorTests
 
         script.ShouldContain("if errorlevel 1 exit /b %errorlevel%");
         script.IndexOf("if errorlevel").ShouldBeLessThan(script.IndexOf("__C2S_CAPTURE_START__"));
+    }
+
+    [Test]
+    public void BuildWindowsScriptIsSingleLine()
+    {
+        var job = ParseSingle(
+            """
+            <!-- c2s:: -o x.svg
+            setup: echo setup
+            capture: |
+              echo one
+              echo two
+            -->
+            """
+        );
+
+        var script = BatchExecutor.BuildScript(job, "C:/temp/setup.log", isWindows: true);
+
+        script.ShouldNotContain("\n");
+        script.ShouldContain("( echo setup ) > \"C:/temp/setup.log\" 2>&1");
+        script.ShouldContain("if errorlevel 1 exit /b %errorlevel%");
+        script.ShouldContain("echo __C2S_CAPTURE_START__ & cls & echo one & echo two");
     }
 
     [Test]

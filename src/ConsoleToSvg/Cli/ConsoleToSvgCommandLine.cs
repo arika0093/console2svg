@@ -20,6 +20,7 @@ public sealed partial class ConsoleToSvgCommandLine
 {
     private readonly Func<AppOptions, ParseResult, CancellationToken, Task<int>> _handler;
     private readonly Symbols _symbols;
+    private Argument<string[]>? _captureCommandArgument;
 
     private ConsoleToSvgCommandLine(
         Func<AppOptions, ParseResult, CancellationToken, Task<int>> handler
@@ -40,6 +41,58 @@ public sealed partial class ConsoleToSvgCommandLine
     /// <summary>Parses arguments after preserving console2svg's special option syntax.</summary>
     public ParseResult Parse(IReadOnlyList<string> args) =>
         RootCommand.Parse(NormalizeCompatibilitySyntax(args));
+
+    internal static bool TryParseCaptureOptions(
+        IReadOnlyList<string> args,
+        out AppOptions? options,
+        out bool hasOutput,
+        out string? error
+    )
+    {
+        var commandLine = Create((_, _, _) => Task.FromResult(0));
+        var parseResult = commandLine.Parse(["capture", .. args, "--", "__c2s_batch__"]);
+        if (parseResult.Errors.Count > 0)
+        {
+            options = null;
+            hasOutput = false;
+            error = string.Join(" ", parseResult.Errors.Select(item => item.Message));
+            return false;
+        }
+
+        hasOutput = parseResult.GetResult(commandLine._symbols.OutputPath) is { Implicit: false };
+
+        if (
+            !commandLine.TryCreateOptions(
+                parseResult,
+                Workflow.Capture,
+                commandLine._captureCommandArgument,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                out options,
+                out error
+            )
+        )
+        {
+            return false;
+        }
+
+        if (!string.Equals(options!.Command, "__c2s_batch__", StringComparison.Ordinal))
+        {
+            var unexpected = options.Command?[..^"__c2s_batch__".Length].TrimEnd();
+            options = null;
+            hasOutput = false;
+            error = $"unsupported marker option or argument '{unexpected}'.";
+            return false;
+        }
+
+        return true;
+    }
 
     /// <summary>Formats generated help without maintaining static help text.</summary>
     public static string FormatHelp(ParseResult parseResult)
@@ -66,7 +119,8 @@ public sealed partial class ConsoleToSvgCommandLine
 
         var capture = new Command("capture", "Capture terminal output as SVG.");
         AddOptions(capture, _symbols.CaptureOptions);
-        SetMappedAction(capture, Workflow.Capture, AddCommandArgument(capture));
+        _captureCommandArgument = AddCommandArgument(capture);
+        SetMappedAction(capture, Workflow.Capture, _captureCommandArgument);
         root.Subcommands.Add(capture);
 
         var interactive = new Command("interactive", "Capture an interactive shell or program.");

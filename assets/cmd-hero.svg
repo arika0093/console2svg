@@ -112,7 +112,7 @@
 
 <rect x="21" y="48" width="856" height="214" rx="9" ry="9" fill="#1e1e1e"/>
 <g class="c2 c"><rect x="29" y="56" width="840" height="18" fill="#1e1e1e"/>
-<text class="aa" x="29" y="70">$ oh-my-logo console2svg mint --filled --letter-spacing 0</text></g>
+<text class="aa" x="29" y="70">$ oh-my-logo &quot;console2svg&quot; mint --filled --letter-spacing 0</text></g>
 <g class="c2 c" transform="translate(29 74)">
 <rect width="840" height="180" fill="#1e1e1e"/>
 </g>

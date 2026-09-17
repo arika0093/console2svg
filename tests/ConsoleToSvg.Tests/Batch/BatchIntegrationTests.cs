@@ -322,11 +322,13 @@ public sealed class BatchIntegrationTests
                 """
                 <!-- c2s:: -o replay.svg --replay replay.json -- echo replay -->
 
-                <!-- c2s:: -o cwd.svg --replay-save recordings/captured.json
+                <!-- c2s:: -o cwd.svg
                 setup: echo setup > setup-relative.txt
                 capture: echo capture > capture-relative.txt && echo capture
                 teardown: echo teardown > teardown-relative.txt
                 -->
+
+                <!-- c2s:: -o replay-save.svg --replay-save recordings/captured.json -- echo replay-save -->
                 """
             );
 
@@ -335,6 +337,7 @@ public sealed class BatchIntegrationTests
             exitCode.ShouldBe(0);
             File.Exists(Path.Combine(output, "replay.svg")).ShouldBeTrue();
             File.Exists(Path.Combine(output, "cwd.svg")).ShouldBeTrue();
+            File.Exists(Path.Combine(output, "replay-save.svg")).ShouldBeTrue();
             File.Exists(Path.Combine(markdownDirectory, "setup-relative.txt")).ShouldBeTrue();
             File.Exists(Path.Combine(markdownDirectory, "capture-relative.txt")).ShouldBeTrue();
             File.Exists(Path.Combine(markdownDirectory, "teardown-relative.txt")).ShouldBeTrue();

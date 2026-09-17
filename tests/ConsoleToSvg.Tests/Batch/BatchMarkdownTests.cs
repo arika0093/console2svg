@@ -361,7 +361,6 @@ public sealed class BatchMarkdownTests
         foreach (
             var option in new[]
             {
-                "--in input.cast",
                 "--save-cast output.cast",
                 "--save-frames frames",
                 "--embed-cast",

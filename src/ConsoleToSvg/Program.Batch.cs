@@ -515,6 +515,8 @@ internal static partial class Program
                         loggerFactory.CreateLogger("ConsoleToSvg.BatchPty"),
                         forwardToConsole: false,
                         noDeleteEnvs: jobOptions.NoDeleteEnvs,
+                        replaySavePath: jobOptions.ReplaySavePath,
+                        replayPath: jobOptions.ReplayPath,
                         outputCoalesceMs: jobOptions.Mode == OutputMode.Video ? null : 0d,
                         videoFps: jobOptions.VideoFps
                     )
@@ -687,10 +689,49 @@ internal static partial class Program
             return (1, "failed to start shell.");
         }
 
-        var output = await process.StandardOutput.ReadToEndAsync(ct).ConfigureAwait(false);
-        var error = await process.StandardError.ReadToEndAsync(ct).ConfigureAwait(false);
-        await process.WaitForExitAsync(ct).ConfigureAwait(false);
-        return (process.ExitCode, output + error);
+        var outputTask = process.StandardOutput.ReadToEndAsync();
+        var errorTask = process.StandardError.ReadToEndAsync();
+        try
+        {
+            await process.WaitForExitAsync(ct).ConfigureAwait(false);
+            var output = await outputTask.ConfigureAwait(false);
+            var error = await errorTask.ConfigureAwait(false);
+            return (process.ExitCode, output + error);
+        }
+        catch (OperationCanceledException)
+        {
+            try
+            {
+                if (!process.HasExited)
+                {
+                    process.Kill(entireProcessTree: true);
+                }
+            }
+            catch
+            {
+                // Best-effort cleanup before propagating cancellation.
+            }
+
+            try
+            {
+                await process.WaitForExitAsync(CancellationToken.None).ConfigureAwait(false);
+            }
+            catch
+            {
+                // The process may already have disappeared while being terminated.
+            }
+
+            try
+            {
+                await Task.WhenAll(outputTask, errorTask).ConfigureAwait(false);
+            }
+            catch
+            {
+                // Stream teardown is best effort after forced termination.
+            }
+
+            throw;
+        }
     }
 
     private static async Task WriteBatchFailuresAsync(

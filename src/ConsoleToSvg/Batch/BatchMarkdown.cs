@@ -156,7 +156,7 @@ public static class BatchMarkdown
         var errors = new List<BatchParseError>();
         var fences = FindCodeFences(markdown);
         ValidateFenceIds(fences, errors);
-        var markers = FindMarkers(markdown, fences);
+        var markers = FindMarkers(markdown);
         var jobs = new List<BatchParsedJob>();
 
         var index = 0;
@@ -666,8 +666,9 @@ public static class BatchMarkdown
         return count >= minimumLength && string.IsNullOrWhiteSpace(trimmed[count..]);
     }
 
-    private static List<FoundMarker> FindMarkers(string markdown, IReadOnlyList<CodeFence> fences)
+    private static List<FoundMarker> FindMarkers(string markdown)
     {
+        var excludedRanges = MarkdownCodeContext.FindExcludedRanges(markdown);
         var found = new List<FoundMarker>();
         AddMarkers(HtmlMarkerPattern, BatchMarkerKind.Html);
         AddMarkers(MdxMarkerPattern, BatchMarkerKind.Mdx);
@@ -678,7 +679,7 @@ public static class BatchMarkdown
         {
             foreach (Match match in pattern.Matches(markdown))
             {
-                if (fences.Any(fence => match.Index >= fence.Start && match.Index < fence.End))
+                if (excludedRanges.Any(range => range.Contains(match.Index)))
                 {
                     continue;
                 }

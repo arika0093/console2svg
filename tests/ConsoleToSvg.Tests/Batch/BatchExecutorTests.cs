@@ -68,9 +68,31 @@ public sealed class BatchExecutorTests
         var script = BatchExecutor.BuildScript(job, "/tmp/setup.log", isWindows: false);
 
         script.ShouldContain("set -e");
-        script.ShouldContain("{ echo setup ; } > \"/tmp/setup.log\" 2>&1");
+        script.ShouldContain("echo setup");
+        script.ShouldContain("} > \"/tmp/setup.log\" 2>&1");
         script.ShouldContain("printf '__C2S_CAPTURE_START__\\n'");
         script.IndexOf("__C2S_CAPTURE_START__").ShouldBeLessThan(script.IndexOf("echo capture"));
+    }
+
+    [Test]
+    public void BuildScriptKeepsClosingBraceAfterTrailingSetupComment()
+    {
+        var job = ParseSingle(
+            """
+            <!-- c2s:: -o x.svg
+            setup: |
+              echo ready
+              # explanation
+            capture: echo capture
+            -->
+            """
+        );
+
+        var script = BatchExecutor.BuildScript(job, "/tmp/setup.log", isWindows: false);
+        var lines = script.Replace("\r\n", "\n").Split('\n');
+
+        lines.ShouldContain("# explanation");
+        lines.ShouldContain("} > \"/tmp/setup.log\" 2>&1");
     }
 
     [Test]

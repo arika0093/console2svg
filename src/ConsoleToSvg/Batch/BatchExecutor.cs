@@ -30,7 +30,13 @@ public static class BatchExecutor
 
         if (job.Setup.Length > 0 && setupLogPath is not null)
         {
-            builder.AppendLine($"{{ {job.Setup} ; }} > \"{setupLogPath}\" 2>&1");
+            builder.AppendLine("{");
+            builder.Append(job.Setup);
+            if (!job.Setup.EndsWith('\n'))
+            {
+                builder.AppendLine();
+            }
+            builder.AppendLine($"}} > \"{setupLogPath}\" 2>&1");
         }
 
         builder.AppendLine($"printf '{BatchMarkdown.CaptureMarker}\\n'");

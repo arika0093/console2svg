@@ -38,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.16.0-preview.1" />
   </ItemGroup>
 
   <!-- Pre-recorded asciicast fixtures (generated with the console2svg save-cast option). -->

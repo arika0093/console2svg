@@ -222,6 +222,87 @@ public sealed class BatchIntegrationTests
     }
 
     [Test]
+    public async Task CaseOnlyOutputCollisionIsRejectedOnCaseInsensitivePlatforms()
+    {
+        if (!OperatingSystem.IsWindows() && !OperatingSystem.IsMacOS())
+        {
+            return;
+        }
+
+        var root = CreateTempDirectory();
+        try
+        {
+            var markdownPath = Path.Combine(root, "docs", "guide.md");
+            var output = Path.Combine(root, "assets");
+            Directory.CreateDirectory(Path.GetDirectoryName(markdownPath)!);
+            await File.WriteAllTextAsync(
+                markdownPath,
+                """
+                <!-- c2s:: -o Case.svg -- echo first -->
+                <!-- c2s:: -o case.svg -- echo second -->
+                """
+            );
+
+            var exitCode = await Program.Main([
+                "batch",
+                "markdown",
+                "-i",
+                markdownPath,
+                "-o",
+                output,
+            ]);
+
+            exitCode.ShouldBe(1);
+            Directory.Exists(output).ShouldBeFalse();
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task RelativeBackgroundImageUsesMarkdownDirectory()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var markdownDirectory = Path.Combine(root, "docs", "nested");
+            var markdownPath = Path.Combine(markdownDirectory, "guide.md");
+            var output = Path.Combine(root, "assets");
+            Directory.CreateDirectory(markdownDirectory);
+            await File.WriteAllTextAsync(
+                Path.Combine(markdownDirectory, "background.png"),
+                "batch-background"
+            );
+            await File.WriteAllTextAsync(
+                markdownPath,
+                "<!-- c2s:: -o background.svg --background background.png -- echo background -->"
+            );
+
+            var exitCode = await Program.Main([
+                "batch",
+                "markdown",
+                "-i",
+                markdownPath,
+                "-o",
+                output,
+            ]);
+
+            exitCode.ShouldBe(0);
+            var svg = await File.ReadAllTextAsync(Path.Combine(output, "background.svg"));
+            svg.ShouldContain(
+                "data:image/png;base64,"
+                    + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("batch-background"))
+            );
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
     public async Task RuntimeRelativePathsUseMarkdownDirectory()
     {
         var root = CreateTempDirectory();

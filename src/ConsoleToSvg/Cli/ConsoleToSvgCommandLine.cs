@@ -101,6 +101,7 @@ public sealed partial class ConsoleToSvgCommandLine
         AddUpdateCommand(root);
         AddLiveServerCommand(root);
         AddTmuxCommand(root);
+        AddBatchCommand(root);
         AddCompletionsCommand(root);
         return root;
     }
@@ -288,6 +289,61 @@ public sealed partial class ConsoleToSvgCommandLine
         tmux.Subcommands.Add(liveServer);
 
         root.Subcommands.Add(tmux);
+    }
+
+    private void AddBatchCommand(RootCommand root)
+    {
+        var batch = new Command("batch", "Run multiple captures in bulk.");
+        batch.SetAction(ColoredHelpAction.Write);
+
+        var run = new Command(
+            "run",
+            "Generate images for c2s markers in markdown files. "
+                + "Markers look like <!-- c2s:: -w 100 -o shot.svg -- command -->; "
+                + "multi-line scripts require '---' separators (setup --- capture --- teardown). "
+                + "Marker scripts execute shell commands."
+        );
+        AddOptions(run, _symbols.BatchRunOptions);
+        run.SetAction(
+            async (parseResult, cancellationToken) =>
+            {
+                if (
+                    !TryCreateOptions(
+                        parseResult,
+                        Workflow.Batch,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        out var options,
+                        out var error
+                    )
+                )
+                {
+                    parseResult.InvocationConfiguration.Error.WriteLine(error);
+                    parseResult.InvocationConfiguration.Error.WriteLine();
+                    ColoredHelpAction.Write(parseResult);
+                    return 1;
+                }
+
+                options!.BatchInputDir =
+                    parseResult.GetValue(_symbols.BatchInput)?.FullName ?? "docs";
+                options.BatchAssetsDir =
+                    parseResult.GetValue(_symbols.BatchAssets)?.FullName ?? "assets";
+                options.BatchDry = parseResult.GetValue(_symbols.BatchDry);
+                options.BatchCached = parseResult.GetValue(_symbols.BatchCached);
+                return await _handler(options, parseResult, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+        );
+        batch.Subcommands.Add(run);
+
+        root.Subcommands.Add(batch);
     }
 
     private static void AddCompletionsCommand(RootCommand root)

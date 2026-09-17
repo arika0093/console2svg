@@ -142,6 +142,14 @@ public sealed partial class ConsoleToSvgCommandLine
             StringChoice("--format", "Output format.", ["json", "markdown", "table"]);
         public Option<string> ThemeFormat { get; } =
             StringChoice("--format", "Output format.", ["json", "markdown", "table"]);
+        public Option<DirectoryInfo> BatchInput { get; } =
+            new("--input", "-i") { Description = "Markdown input directory.", HelpName = "dir" };
+        public Option<DirectoryInfo> BatchAssets { get; } =
+            new("--assets", "-o") { Description = "Image assets directory.", HelpName = "dir" };
+        public Option<bool> BatchDry { get; } =
+            Flag("--dry", "List planned jobs without executing.");
+        public Option<bool> BatchCached { get; } =
+            Flag("--cached", "Skip jobs whose input hash is unchanged.");
 
         public IEnumerable<Option> Options =>
             [
@@ -269,9 +277,24 @@ public sealed partial class ConsoleToSvgCommandLine
             ]);
 
         public IEnumerable<Option> TmuxCaptureOptions =>
+            CaptureOptions.Except([Interactive, TmuxTarget, History]).Concat([TmuxTarget, History]);
+
+        public IEnumerable<Option> BatchRunOptions =>
             CaptureOptions
-                .Except([InputCastPath, StdOut, Interactive, NoResize, LegacyRoot])
-                .Concat([TmuxTarget, History]);
+                .Except([
+                    OutputPath,
+                    StdOut,
+                    InputCastPath,
+                    SaveCastPath,
+                    EmbedCast,
+                    EmbedLogs,
+                    EmbedReplay,
+                    EmbedDebug,
+                    ReplaySavePath,
+                    ReplayPath,
+                    SaveFramesPath,
+                ])
+                .Concat([BatchInput, BatchAssets, BatchDry, BatchCached]);
 
         public IEnumerable<Option> TmuxLiveServerOptions =>
             LiveServerOptions.Except([History]).Append(TmuxTarget);

@@ -59,6 +59,9 @@ internal static partial class Program
         if (options.Workflow == Workflow.Theme)
             return RunThemeCommand(options);
 
+        if (options.Workflow == Workflow.Batch)
+            return await RunBatchAsync(options, invocationCancellationToken).ConfigureAwait(false);
+
         if (options.Workflow == Workflow.Tmux)
         {
             var tmuxError = await PrepareTmuxAsync(options).ConfigureAwait(false);

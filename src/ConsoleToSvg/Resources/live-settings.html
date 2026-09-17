@@ -4,19 +4,42 @@
 <style>
   body {
     margin: 20px;
+    min-width: 300px;
+    max-width: 340px;
     color: #222;
     font: 14px system-ui, sans-serif;
   }
 
   fieldset {
-    margin: 0;
+    margin: 0 0 8px;
     padding: 0;
     border: 0;
+  }
+
+  fieldset + fieldset {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #ddd;
+  }
+
+  legend {
+    padding: 0;
+    font-weight: 600;
   }
 
   label {
     display: block;
     margin: 12px 0;
+  }
+
+  label.inline {
+    margin: 8px 0 0;
+  }
+
+  .hint {
+    margin: 4px 0 0 24px;
+    color: #666;
+    font-size: 12px;
   }
 
   button {
@@ -43,22 +66,41 @@
     1:1 display
   </label>
 </fieldset>
+<fieldset>
+  <legend>Diagnostics</legend>
+  <label class="inline">
+    <input type="checkbox" id="debug">
+    Debug Mode
+  </label>
+  <p class="hint">Show heartbeat, events/jank graph and event log.</p>
+</fieldset>
 <button type="button" onclick="window.close()">Close</button>
 <script>
-  const key = 'console2svg.live.fit';
+  const fitKey = 'console2svg.live.fit';
+  const debugKey = 'console2svg.live.debug';
   const modes = new Set(['width', 'height', 'contain', 'actual']);
+  const debugCheckbox = document.querySelector('#debug');
 
   function setMode(mode) {
     if (!modes.has(mode)) {
       mode = 'contain';
     }
-    localStorage.setItem(key, mode);
+    localStorage.setItem(fitKey, mode);
     opener?.postMessage({ type: 'console2svg-live-fit', mode }, location.origin);
     document.querySelector(`input[value="${mode}"]`).checked = true;
+  }
+
+  function setDebug(enabled) {
+    localStorage.setItem(debugKey, enabled ? '1' : '0');
+    opener?.postMessage({ type: 'console2svg-live-debug', enabled }, location.origin);
+    debugCheckbox.checked = enabled;
   }
 
   document.querySelectorAll('input[name=fit]').forEach(input => {
     input.onchange = () => setMode(input.value);
   });
-  setMode(localStorage.getItem(key) || 'contain');
+  debugCheckbox.onchange = () => setDebug(debugCheckbox.checked);
+  setMode(localStorage.getItem(fitKey) || 'contain');
+  // Initialize checkbox without notifying opener on first load.
+  debugCheckbox.checked = localStorage.getItem(debugKey) === '1';
 </script>

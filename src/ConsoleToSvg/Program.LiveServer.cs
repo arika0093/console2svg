@@ -665,7 +665,8 @@ internal static partial class Program
             }
             if (heartbeatPending)
             {
-                await WriteBytesAsync(stream, ":\n\n", cancellationToken).ConfigureAwait(false);
+                await WriteSseAsync(stream, "heartbeat", "ping", cancellationToken)
+                    .ConfigureAwait(false);
             }
         }
 

@@ -87,6 +87,139 @@
   #status.visible {
     display: grid;
   }
+
+  #debug {
+    position: fixed;
+    left: 12px;
+    bottom: 12px;
+    z-index: 2;
+    display: none;
+    width: 680px;
+    max-width: calc(100vw - 24px);
+    padding: 10px 12px 12px;
+    color: #eee;
+    background: #030455d0;
+    border: 1px solid #444;
+    border-radius: 8px;
+    font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  #debug.visible {
+    display: block;
+  }
+
+  #debug.collapsed #debug-body {
+    display: none;
+  }
+
+  #debug header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+  }
+
+  #debug header:active {
+    cursor: grabbing;
+  }
+
+  #debug.collapsed header {
+    margin-bottom: 0;
+  }
+
+  #debug header strong {
+    font-size: 12px;
+  }
+
+  #debug header span.subtitle {
+    color: #aaa;
+    font-size: 11px;
+  }
+
+  #debug-heartbeat {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #ccc;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  #debug-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #e5534b;
+  }
+
+  #debug header button {
+    margin-left: auto;
+    padding: 2px 8px;
+    color: #eee;
+    cursor: pointer;
+    background: #333;
+    border: 1px solid #555;
+    border-radius: 4px;
+    font-size: 11px;
+  }
+
+  #debug-toggle {
+    margin-left: auto;
+    min-width: 26px;
+    text-align: center;
+  }
+
+  #debug-clear {
+    margin-left: 0;
+  }
+
+  #debug-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    margin: 6px 0;
+    color: #ccc;
+    font-size: 11px;
+  }
+
+  #debug-legend i {
+    display: inline-block;
+    width: 14px;
+    height: 3px;
+    margin-right: 4px;
+    border-radius: 2px;
+    vertical-align: middle;
+  }
+
+  #debug-graph {
+    display: block;
+    width: 100%;
+    height: 110px;
+    background: #000;
+    border: 1px solid #333;
+    border-radius: 4px;
+  }
+
+  #debug-log {
+    display: block;
+    width: 100%;
+    height: 120px;
+    box-sizing: border-box;
+    padding: 6px;
+    color: #ddd;
+    resize: both;
+    overflow: auto;
+    white-space: pre;
+    word-break: normal;
+    background: #000;
+    border: 1px solid #333;
+    border-radius: 4px;
+    font: 11px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
 </style>
 <div id="screen">
   <div id="layers">
@@ -99,6 +232,33 @@
   <button id="settings" type="button" aria-label="Display settings">Settings</button>
 </div>
 <div id="status" role="status">Connection to the server was lost. Reconnecting...</div>
+<div id="debug" role="complementary" aria-label="Debug rendering stats">
+  <header id="debug-header">
+    <strong>Debug</strong>
+    <span class="subtitle">events/s + jank (0 when smooth)</span>
+    <span id="debug-heartbeat" title="SSE heartbeat">
+      <i id="debug-dot"></i>
+      <span id="debug-hb-text">no hb yet</span>
+    </span>
+    <button id="debug-toggle" type="button" aria-label="Collapse debug window">−</button>
+    <button id="debug-clear" type="button">Clear</button>
+  </header>
+  <div id="debug-body">
+  <canvas id="debug-graph" width="656" height="110"></canvas>
+  <div id="debug-legend">
+    <span>
+      <i style="background:#4aa8ff"></i>
+      <span id="debug-legend-events">events/s: 0.0</span>
+    </span>
+    <span>
+      <i style="background:#e5534b"></i>
+      <span id="debug-legend-jank">jank ms/s: 0.0</span>
+    </span>
+    <span style="color:#888">60s window · L: events, R: jank</span>
+  </div>
+  <textarea id="debug-log" readonly wrap="off" spellcheck="false" placeholder="event log"></textarea>
+  </div>
+</div>
 <script>
   const s = document.querySelector('#screen');
   const background = document.querySelector('#background');
@@ -107,12 +267,47 @@
   const textLayer = document.querySelector('#text');
   const settings = document.querySelector('#settings');
   const status = document.querySelector('#status');
+  const debugPanel = document.querySelector('#debug');
+  const debugHeader = document.querySelector('#debug-header');
+  const debugLogView = document.querySelector('#debug-log');
+  const debugGraph = document.querySelector('#debug-graph');
+  const debugClear = document.querySelector('#debug-clear');
+  const debugToggle = document.querySelector('#debug-toggle');
+  const debugDot = document.querySelector('#debug-dot');
+  const debugHbText = document.querySelector('#debug-hb-text');
+  const debugLegendEvents = document.querySelector('#debug-legend-events');
+  const debugLegendJank = document.querySelector('#debug-legend-jank');
   const modes = new Set(['width', 'height', 'contain', 'actual']);
   const key = 'console2svg.live.fit';
+  const debugKey = 'console2svg.live.debug';
+  const debugCollapsedKey = 'console2svg.live.debug.collapsed';
+  const debugPosKey = 'console2svg.live.debug.pos';
+  const colors = { events: '#4aa8ff', jank: '#e5534b' };
+  const heartbeatTimeoutMs = 5000;
+  const sampleMs = 250;
+  const avgWindowMs = 1000;
+  const avgSamples = Math.max(1, Math.round(avgWindowMs / sampleMs));
+  const plotWindow = 240;
+  const jankDeadlineScale = 1.5;
+  const jankGapMs = 250;
+  const fine = [];
+  const series = [];
+  const currentBucket = { count: 0, jank: 0 };
+  let vsyncMs = 16.7;
+  let lastRafAt = 0;
   let mode = 'contain';
+  let debugEnabled = false;
   let events;
   let reconnectTimer;
   let connectionWatchdog;
+  let lastHeartbeatAt = 0;
+  let heartbeatAlive = false;
+  // Burst coalescing for text frames (e.g. fast scroll in vim): a synchronous
+  // innerHTML reparse per event lets stale frames queue up behind the live
+  // one, so keep only the latest and apply it on the next animation frame.
+  let pendingText = null;
+  let textScheduled = false;
+  let coalescedText = 0;
 
   function applyMode() {
     const svg = textLayer.querySelector('svg');
@@ -145,40 +340,390 @@
     applyMode();
   }
 
+  function timestamp() {
+    const d = new Date();
+    return d.toTimeString().slice(0, 8) + '.' + String(d.getMilliseconds()).padStart(3, '0');
+  }
+
+  function debugLog(message) {
+    if (!debugEnabled) {
+      return;
+    }
+    const lines = debugLogView.value ? debugLogView.value.split('\n') : [];
+    lines.push(`[${timestamp()}] ${message}`);
+    while (lines.length > 300) {
+      lines.shift();
+    }
+    debugLogView.value = lines.join('\n');
+    debugLogView.scrollTop = debugLogView.scrollHeight;
+  }
+
+  function setDebug(enabled) {
+    debugEnabled = !!enabled;
+    localStorage.setItem(debugKey, debugEnabled ? '1' : '0');
+    debugPanel.classList.toggle('visible', debugEnabled);
+    if (debugEnabled) {
+      debugLog('debug mode on (paint itself is only visible in DevTools Performance; here: applied frames/s)');
+      updateHeartbeatDot();
+      drawGraph();
+    }
+  }
+
+  function setCollapsed(collapsed) {
+    debugPanel.classList.toggle('collapsed', collapsed);
+    localStorage.setItem(debugCollapsedKey, collapsed ? '1' : '0');
+    debugToggle.textContent = collapsed ? '+' : '−';
+    debugToggle.setAttribute('aria-label', collapsed ? 'Expand debug window' : 'Collapse debug window');
+    if (!collapsed && debugEnabled) {
+      drawGraph();
+    }
+  }
+
+  function clampDebugPos(left, top) {
+    const rect = debugPanel.getBoundingClientRect();
+    const maxLeft = Math.max(0, window.innerWidth - rect.width);
+    const maxTop = Math.max(0, window.innerHeight - debugHeader.offsetHeight);
+    return {
+      left: Math.min(Math.max(0, left), maxLeft),
+      top: Math.min(Math.max(0, top), maxTop),
+    };
+  }
+
+  function moveDebugTo(left, top) {
+    const clamped = clampDebugPos(left, top);
+    debugPanel.style.left = `${clamped.left}px`;
+    debugPanel.style.top = `${clamped.top}px`;
+    debugPanel.style.bottom = 'auto';
+    return clamped;
+  }
+
+  function restoreDebugPos() {
+    try {
+      const pos = JSON.parse(localStorage.getItem(debugPosKey) || 'null');
+      if (pos && Number.isFinite(pos.left) && Number.isFinite(pos.top)) {
+        moveDebugTo(pos.left, pos.top);
+      }
+    } catch {
+      // Corrupt position; keep the default bottom-left placement.
+    }
+  }
+
+  function initDebugDrag() {
+    let dragging = false;
+    let startX = 0;
+    let startY = 0;
+    let startLeft = 0;
+    let startTop = 0;
+    debugHeader.addEventListener('pointerdown', e => {
+      if (e.target.closest('button')) {
+        return;
+      }
+      e.preventDefault();
+      const rect = debugPanel.getBoundingClientRect();
+      dragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      startLeft = rect.left;
+      startTop = rect.top;
+      debugHeader.setPointerCapture(e.pointerId);
+    });
+    debugHeader.addEventListener('pointermove', e => {
+      if (!dragging) {
+        return;
+      }
+      moveDebugTo(startLeft + e.clientX - startX, startTop + e.clientY - startY);
+    });
+    const endDrag = e => {
+      if (!dragging) {
+        return;
+      }
+      dragging = false;
+      const rect = debugPanel.getBoundingClientRect();
+      const clamped = clampDebugPos(rect.left, rect.top);
+      debugPanel.style.left = `${clamped.left}px`;
+      debugPanel.style.top = `${clamped.top}px`;
+      try {
+        localStorage.setItem(debugPosKey, JSON.stringify(clamped));
+      } catch {
+        // Storage unavailable; position simply won't persist.
+      }
+    };
+    debugHeader.addEventListener('pointerup', endDrag);
+    debugHeader.addEventListener('pointercancel', endDrag);
+  }
+
+  function updateHeartbeatDot() {
+    const age = lastHeartbeatAt ? Date.now() - lastHeartbeatAt : Infinity;
+    const open = !!events && events.readyState === EventSource.OPEN;
+    const alive = open && age <= heartbeatTimeoutMs;
+    if (alive !== heartbeatAlive) {
+      heartbeatAlive = alive;
+      if (debugEnabled) {
+        debugLog(alive ? 'heartbeat ok' : 'heartbeat lost');
+      }
+    }
+    debugDot.style.background = alive ? '#4ecb71' : '#e5534b';
+    if (!lastHeartbeatAt) {
+      debugHbText.textContent = open ? 'waiting hb…' : 'no hb yet';
+    } else if (age <= heartbeatTimeoutMs) {
+      debugHbText.textContent = 'alive';
+    } else {
+      debugHbText.textContent = `last hb ${(age / 1000).toFixed(0)}s ago`;
+    }
+  }
+
+  function onHeartbeat() {
+    lastHeartbeatAt = Date.now();
+    updateHeartbeatDot();
+  }
+
+  function tickSample() {
+    fine.push({ count: currentBucket.count, jank: currentBucket.jank });
+    while (fine.length > avgSamples) {
+      fine.shift();
+    }
+    currentBucket.count = 0;
+    currentBucket.jank = 0;
+    let sumCount = 0;
+    let sumJank = 0;
+    for (const bucket of fine) {
+      sumCount += bucket.count;
+      sumJank += bucket.jank;
+    }
+    const elapsedSec = (fine.length * sampleMs) / 1000;
+    const point = { events: sumCount / elapsedSec, jank: sumJank / elapsedSec };
+    series.push(point);
+    while (series.length > plotWindow) {
+      series.shift();
+    }
+    debugLegendEvents.textContent = `events/s: ${point.events.toFixed(1)}`;
+    debugLegendJank.textContent = `jank ms/s: ${point.jank.toFixed(1)}`;
+    updateHeartbeatDot();
+    if (debugEnabled) {
+      drawGraph();
+    }
+  }
+
+  function drawGraph() {
+    const ctx = debugGraph.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const cssWidth = debugGraph.clientWidth || 656;
+    const cssHeight = 110;
+    if (debugGraph.width !== Math.round(cssWidth * dpr)) {
+      debugGraph.width = Math.round(cssWidth * dpr);
+      debugGraph.height = Math.round(cssHeight * dpr);
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, cssWidth, cssHeight);
+    // Separate Y scales: events/s (left) and jank ms/s (right) have
+    // different units, so each series is normalized by its own maximum.
+    let maxEvents = 1;
+    let maxJank = 1;
+    for (const item of series) {
+      maxEvents = Math.max(maxEvents, item.events);
+      maxJank = Math.max(maxJank, item.jank);
+    }
+    maxEvents *= 1.15;
+    maxJank *= 1.15;
+    const padTop = 8;
+    const padBottom = 8;
+    const plotH = cssHeight - padTop - padBottom;
+    const toYEvents = value => cssHeight - padBottom - (value / maxEvents) * plotH;
+    const toYJank = value => cssHeight - padBottom - (value / maxJank) * plotH;
+    const toX = index => (index / (plotWindow - 1)) * (cssWidth - 8) + 4;
+    const fmt = value => (value >= 10 ? value.toFixed(0) : value.toFixed(1));
+    ctx.font = '10px sans-serif';
+    ctx.setLineDash([]);
+    // Gridlines follow the left (events) scale.
+    ctx.strokeStyle = '#2a2a2a';
+    ctx.fillStyle = '#7fb8e8';
+    ctx.textAlign = 'left';
+    for (const value of [0, maxEvents / 2, maxEvents]) {
+      const y = toYEvents(value);
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(cssWidth, y);
+      ctx.stroke();
+      ctx.fillText(fmt(value), 4, y - 2);
+    }
+    // Right axis labels follow the jank scale (no gridlines to avoid clutter).
+    ctx.fillStyle = '#e08080';
+    ctx.textAlign = 'right';
+    for (const value of [0, maxJank / 2, maxJank]) {
+      ctx.fillText(fmt(value), cssWidth - 4, toYJank(value) - 2);
+    }
+    ctx.textAlign = 'left';
+    if (series.length === 0) {
+      ctx.fillStyle = '#888';
+      ctx.font = '11px sans-serif';
+      ctx.fillText('waiting for frames…', 8, 16);
+      return;
+    }
+    const offset = plotWindow - series.length;
+    const line = (getValue, toY, color) => {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      series.forEach((item, index) => {
+        const x = toX(offset + index);
+        const y = toY(getValue(item));
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+      ctx.stroke();
+      ctx.lineWidth = 1;
+    };
+    line(item => item.events, toYEvents, colors.events);
+    line(item => item.jank, toYJank, colors.jank);
+  }
+
+  // Jank meter: each rAF gap beyond 1.5x the estimated vsync period counts
+  // its excess as jank. Smooth frames contribute exactly 0, so the line sits
+  // at the bottom until a vsync is missed. The vsync estimate tracks the
+  // display refresh (fast down, slow up) instead of assuming 60Hz.
+  function startJankMeter() {
+    const frame = now => {
+      requestAnimationFrame(frame);
+      if (!lastRafAt) {
+        lastRafAt = now;
+        return;
+      }
+      const delta = now - lastRafAt;
+      lastRafAt = now;
+      if (!(delta > 0) || delta > jankGapMs) {
+        // Hidden tab or clamped timer: a gap in observation, not jank.
+        return;
+      }
+      if (delta < vsyncMs) {
+        vsyncMs = delta;
+      } else {
+        vsyncMs += (delta - vsyncMs) * 0.02;
+      }
+      const over = delta - vsyncMs * jankDeadlineScale;
+      if (over > 0) {
+        currentBucket.jank += over;
+      }
+    };
+    requestAnimationFrame(frame);
+  }
+
+  // Applied frames only count toward the events/s load signal and the event
+  // log. DOM update cost (innerHTML + applyMode) is deliberately not timed:
+  // it covers just the synchronous parse, not style/layout/paint, so it
+  // reads as noise next to real frame jank. For true render cost see DevTools
+  // Performance or the Long Animation Frames log below.
+  function applyFrame(kind, data, apply) {
+    apply();
+    currentBucket.count += 1;
+    if (debugEnabled) {
+      debugLog(`${kind} bytes=${data.length}`);
+    }
+  }
+
+  function startLongFrameObserver() {
+    try {
+      if (typeof PerformanceObserver === 'undefined') {
+        return;
+      }
+      const supported = PerformanceObserver.supportedEntryTypes;
+      if (!supported || !supported.includes('long-animation-frame')) {
+        return;
+      }
+      const observer = new PerformanceObserver(list => {
+        if (!debugEnabled) {
+          return;
+        }
+        for (const entry of list.getEntries()) {
+          const blocking = typeof entry.blockingDuration === 'number' ? entry.blockingDuration : NaN;
+          const render = typeof entry.duration === 'number' && typeof entry.renderStart === 'number'
+            ? entry.startTime + entry.duration - entry.renderStart
+            : NaN;
+          const blockingText = Number.isFinite(blocking) ? `${blocking.toFixed(1)}ms` : '?';
+          const renderText = Number.isFinite(render) && render >= 0 ? `${render.toFixed(1)}ms` : '?';
+          debugLog(`loaf dur=${entry.duration.toFixed(1)}ms blocking=${blockingText} render=${renderText}`);
+        }
+      });
+      observer.observe({ type: 'long-animation-frame', buffered: true });
+    } catch {
+      // Long Animation Frames API unavailable; per-second graph still works.
+    }
+  }
+
   function connect() {
     clearTimeout(reconnectTimer);
     clearInterval(connectionWatchdog);
     const source = new EventSource('/events');
     events = source;
+    updateHeartbeatDot();
     connectionWatchdog = setInterval(() => {
       if (events === source && source.readyState === EventSource.CLOSED) {
         reconnect(source);
       }
+      updateHeartbeatDot();
     }, 1000);
+    source.addEventListener('heartbeat', () => {
+      if (events !== source) {
+        return;
+      }
+      onHeartbeat();
+    });
     source.addEventListener('background', e => {
-      background.innerHTML = e.data;
-      applyMode();
+      applyFrame('background', e.data, () => {
+        background.innerHTML = e.data;
+        applyMode();
+      });
     });
     source.addEventListener('window', e => {
-      windowPaintLayer.innerHTML = e.data;
-      applyMode();
+      applyFrame('window', e.data, () => {
+        windowPaintLayer.innerHTML = e.data;
+        applyMode();
+      });
     });
     source.addEventListener('text', e => {
-      textLayer.innerHTML = e.data;
-      applyMode();
-      status.classList.remove('visible');
+      if (pendingText !== null) {
+        coalescedText++;
+      }
+      pendingText = e.data;
+      if (textScheduled) {
+        return;
+      }
+      textScheduled = true;
+      requestAnimationFrame(() => {
+        textScheduled = false;
+        if (pendingText === null) {
+          return;
+        }
+        const data = pendingText;
+        pendingText = null;
+        if (coalescedText > 0) {
+          debugLog(`text coalesced drops=${coalescedText}`);
+          coalescedText = 0;
+        }
+        applyFrame('text', data, () => {
+          textLayer.innerHTML = data;
+          applyMode();
+          status.classList.remove('visible');
+        });
+      });
     });
     source.onopen = () => {
       if (events !== source) {
         return;
       }
+      debugLog('sse open');
       status.classList.remove('visible');
+      updateHeartbeatDot();
     };
     source.onerror = () => {
       if (events !== source) {
         return;
       }
+      debugLog('sse error; reconnecting…');
       status.classList.add('visible');
+      updateHeartbeatDot();
       reconnect(source);
     };
   }
@@ -189,6 +734,7 @@
     }
     source.close();
     clearInterval(connectionWatchdog);
+    updateHeartbeatDot();
     reconnectTimer = setTimeout(connect, 1000);
   }
 
@@ -199,13 +745,53 @@
     s.classList.remove('show-settings');
   };
   settings.onclick = () => {
-    window.open('/settings', 'console2svg-live-settings', 'popup,width=260,height=230,resizable=no');
+    window.open('/settings', 'console2svg-live-settings', 'popup,width=360,height=340,resizable=yes');
   };
   window.addEventListener('message', e => {
-    if (e.origin === location.origin && e.data?.type === 'console2svg-live-fit') setMode(e.data.mode);
+    if (e.origin !== location.origin || !e.data) {
+      return;
+    }
+    if (e.data.type === 'console2svg-live-fit') {
+      setMode(e.data.mode);
+    } else if (e.data.type === 'console2svg-live-debug') {
+      setDebug(e.data.enabled);
+    }
   });
-  window.onresize = applyMode;
+  window.onresize = () => {
+    applyMode();
+    if (debugEnabled) {
+      drawGraph();
+    }
+  };
+  debugClear.onclick = () => {
+    fine.length = 0;
+    series.length = 0;
+    currentBucket.count = 0;
+    currentBucket.jank = 0;
+    debugLogView.value = '';
+    debugLegendEvents.textContent = 'events/s: 0.0';
+    debugLegendJank.textContent = 'jank ms/s: 0.0';
+    drawGraph();
+    debugLog('cleared');
+  };
+
+  debugToggle.onclick = () => {
+    setCollapsed(!debugPanel.classList.contains('collapsed'));
+  };
+  debugHeader.addEventListener('dblclick', e => {
+    if (e.target.closest('button')) {
+      return;
+    }
+    setCollapsed(!debugPanel.classList.contains('collapsed'));
+  });
 
   setMode(localStorage.getItem(key) || 'contain');
+  setDebug(localStorage.getItem(debugKey) === '1');
+  setCollapsed(localStorage.getItem(debugCollapsedKey) === '1');
+  restoreDebugPos();
+  initDebugDrag();
+  startLongFrameObserver();
+  startJankMeter();
+  setInterval(tickSample, sampleMs);
   connect();
 </script>

@@ -1,9 +1,21 @@
 name: PR Benchmark (full)
 
-# Add the `benchmark-full` label to a PR to run it. The label is removed automatically
+# Add the `benchmark-full` label to a PR to run it. The label is removed automatically.
+# Can also be run manually from the Actions tab with explicit base/head refs.
 on:
   pull_request:
     types: [labeled]
+  workflow_dispatch:
+    inputs:
+      base_ref:
+        description: 'Base ref to benchmark (branch / tag / SHA)'
+        required: false
+        default: 'main'
+        type: string
+      head_ref:
+        description: 'Head ref to benchmark (branch / tag / SHA)'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -12,7 +24,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: pr-benchmark-${{ github.event.pull_request.number }}
+  group: pr-benchmark-${{ github.event.pull_request.number || format('manual-{0}-{1}', inputs.base_ref, inputs.head_ref) }}
   cancel-in-progress: false
 
 env:
@@ -20,16 +32,22 @@ env:
 
 jobs:
   benchmark-base:
-    if: github.event.label.name == 'benchmark-full'
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'benchmark-full'
     runs-on: ubuntu-latest
     timeout-minutes: 360
+    outputs:
+      sha: ${{ steps.resolve.outputs.sha }}
     steps:
       - name: Checkout base (target branch)
         uses: actions/checkout@v7
         with:
           repository: ${{ github.repository }}
-          ref: ${{ github.event.pull_request.base.sha }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.base_ref || github.event.pull_request.base.sha }}
           fetch-depth: 1
+
+      - name: Resolve base SHA
+        id: resolve
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
@@ -50,17 +68,24 @@ jobs:
           if-no-files-found: warn
 
   benchmark-head:
-    if: github.event.label.name == 'benchmark-full'
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'benchmark-full'
     runs-on: ubuntu-latest
     timeout-minutes: 360
+    outputs:
+      sha: ${{ steps.resolve.outputs.sha }}
     steps:
       - name: Checkout head (PR branch)
         uses: actions/checkout@v7
         with:
           # Supports forks: check out the PR head repo, not the base repo.
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.sha }}
+          # Manual runs always use the base repo with the given head ref.
+          repository: ${{ github.event_name == 'workflow_dispatch' && github.repository || github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.head_ref || github.event.pull_request.head.sha }}
           fetch-depth: 1
+
+      - name: Resolve head SHA
+        id: resolve
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
@@ -83,7 +108,7 @@ jobs:
   compare-and-comment:
     needs: [benchmark-base, benchmark-head]
     # Run even when one side fails so the PR gets a status comment instead of silence.
-    if: ${{ always() && github.event.label.name == 'benchmark-full' }}
+    if: ${{ always() && (github.event_name == 'workflow_dispatch' || github.event.label.name == 'benchmark-full') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -108,23 +133,37 @@ jobs:
 
       - name: Render comparison comment
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
-          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          BASE_SHA: ${{ github.event_name == 'workflow_dispatch' && needs.benchmark-base.outputs.sha || github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event_name == 'workflow_dispatch' && needs.benchmark-head.outputs.sha || github.event.pull_request.head.sha }}
+          BASE_REF: ${{ inputs.base_ref || github.event.pull_request.base.ref }}
+          HEAD_REF: ${{ inputs.head_ref || github.event.pull_request.head.ref }}
           BASE_RESULT: ${{ needs.benchmark-base.result }}
           HEAD_RESULT: ${{ needs.benchmark-head.result }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: python3 .github/scripts/render-benchmark-comment.py --base benchmark-results/base --head benchmark-results/head --output benchmark-comment.md
 
       - name: Post / update PR comment
+        if: github.event_name != 'workflow_dispatch'
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: benchmark-full
           path: benchmark-comment.md
 
+      - name: Publish summary (manual run)
+        if: github.event_name == 'workflow_dispatch'
+        run: cat benchmark-comment.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload comparison comment (manual run)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v7
+        with:
+          name: benchmark-comparison
+          path: benchmark-comment.md
+          retention-days: 14
+          if-no-files-found: warn
+
       - name: Remove trigger label
-        if: always()
+        if: always() && github.event_name != 'workflow_dispatch'
         uses: actions/github-script@v7
         with:
           script: |

@@ -8,5 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ConsoleToSvg\ConsoleToSvg.csproj" />
+    <ProjectReference Include="..\..\src\ConsoleToSvg.Pty\ConsoleToSvg.Pty.csproj" />
   </ItemGroup>
 </Project>

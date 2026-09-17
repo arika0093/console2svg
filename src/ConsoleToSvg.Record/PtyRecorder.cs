@@ -101,6 +101,11 @@ public static partial class PtyRecorder
                     || ex is TypeInitializationException
                     || ex is EntryPointNotFoundException
                     || ex is BadImageFormatException
+                    // Quick.PtyNet parses the kernel release string on Unix and
+                    // throws ArgumentException for formats it does not understand
+                    // (e.g. WSL2's "6.6.87.2-microsoft-standard-WSL2"). Fall back
+                    // to process execution instead of failing outright.
+                    || ex is ArgumentException
                 )
             {
                 logger.ZLogDebug(

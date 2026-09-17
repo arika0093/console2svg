@@ -193,7 +193,11 @@ public static partial class PtyRecorder
                 Rows = height,
                 Cwd = Environment.CurrentDirectory,
                 App = "cmd.exe",
-                Args = ["/d", "/c", shellCommand],
+                // /s makes cmd strip the outermost quotes of the /c payload
+                // and keep the interior verbatim. Without it, inner quotes
+                // must be C-runtime escaped (\") which cmd.exe does not
+                // understand and leaks into the command as backslashes.
+                Args = ["/d", "/s", "/c", shellCommand],
                 Environment = env,
                 DisableInputEcho = false,
             };
@@ -221,7 +225,9 @@ public static partial class PtyRecorder
             return new ProcessStartInfo
             {
                 FileName = GetWindowsShellPath(),
-                Arguments = "/d /c " + shellCommand + " 2>&1",
+                // Same /s quoting rationale as the PTY path above: the payload
+                // is wrapped in plain quotes so inner quotes survive verbatim.
+                Arguments = "/d /s /c \"" + shellCommand + "\" 2>&1",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardInput = true,

@@ -56,7 +56,26 @@ jobs:
       - name: Run benchmark (full)
         # --filter '*' selects every benchmark non-interactively.
         # Without it BenchmarkSwitcher prompts for a selection and CI runs nothing.
+        env:
+          # GitHub-hosted runners are not root and lack PMU access, so perf-based
+          # diagnosers would invalidate every benchmark (BenchmarkDotNet escalates
+          # diagnoser validation warnings to errors). Force them off here; they stay
+          # auto-enabled locally where perf is usable (see BenchmarkConfig).
+          CONSOLE2SVG_BENCHMARK_PERF: "0"
         run: dotnet run -c Release --project benchmark/ConsoleToSvg.Benchmarks -- --artifacts "$GITHUB_WORKSPACE/benchmark-artifacts/${{ inputs.artifact-name }}" --filter '*'
+
+      - name: Verify benchmark reports
+        # A lone BenchmarkRun-*.log satisfies `if-no-files-found`, so explicitly
+        # require the comparison inputs: fail loudly when no CSV was produced
+        # (e.g. every benchmark invalidated during validation still exits 0).
+        run: |
+          dir="$GITHUB_WORKSPACE/benchmark-artifacts/${{ inputs.artifact-name }}"
+          echo "Contents of $dir:"
+          find "$dir" -type f | sort
+          if [ -z "$(find "$dir" -name '*-report.csv' -print -quit)" ]; then
+            echo "::error::No *-report.csv found under $dir. The benchmark run produced no reports."
+            exit 1
+          fi
 
       - name: Upload artifacts
         if: always()

@@ -15,10 +15,18 @@ namespace ConsoleToSvg.Benchmarks;
 ///     <item><see cref="DisassemblyDiagnoser"/> — machine code (per-benchmark .asm files).</item>
 ///   </list>
 /// Additionally, when the Linux <c>perf</c> tool is available, enables
-/// <see cref="HardwareCounter"/>s (CPU instructions retired, total cycles, branches, cache
-/// misses) and <see cref="PerfCollectProfiler"/> (a sampling profiler that emits a
-/// <c>.trace.zip</c> flame graph for hot-spot analysis). On systems without <c>perf</c>,
-/// those are skipped automatically rather than failing the run.
+/// <see cref="HardwareCounter"/>s (CPU instructions retired, total cycles, branches,
+/// cache misses) and <see cref="PerfCollectProfiler"/> (a sampling profiler that emits
+/// a <c>.trace.zip</c> flame graph for hot-spot analysis). On systems without
+/// <c>perf</c>, those are skipped automatically rather than failing the run.
+///
+/// Set `CONSOLE2SVG_BENCHMARK_PERF=0` to force these off on machines where
+/// <c>perf</c> cannot be used (not root, restricted perf_event_paranoid, unsupported
+/// kernel or no PMU access, e.g. GitHub-hosted runners): BenchmarkDotNet escalates
+/// diagnoser validation warnings to errors
+/// (<c>DiagnosersValidator.TreatsWarningsAsErrors</c>), so merely adding these
+/// diagnosers there invalidates every benchmark and the run produces no reports.
+/// The benchmark CI workflow sets this variable.
 ///
 /// Two custom columns (<see cref="StaticSvgSizeColumn"/>, <see cref="AnimatedSvgSizeColumn"/>)
 /// report the generated SVG document size in bytes.
@@ -40,7 +48,9 @@ public static class BenchmarkConfig
             .AddColumn(new StaticSvgSizeColumn())
             .AddColumn(new AnimatedSvgSizeColumn());
 
-        if (FindInPath("perf") is not null)
+        // Opt-out via CONSOLE2SVG_BENCHMARK_PERF=0 on machines where perf cannot be
+        // used (see the class comment): enabling there invalidates every benchmark.
+        if (!IsPerfDisabled() && FindInPath("perf") is not null)
         {
             config
                 .AddHardwareCounters(
@@ -70,6 +80,13 @@ public static class BenchmarkConfig
                 exportDiff: false
             )
         );
+
+    private static bool IsPerfDisabled() =>
+        Environment.GetEnvironmentVariable("CONSOLE2SVG_BENCHMARK_PERF")?.ToLowerInvariant() switch
+        {
+            "0" or "false" or "no" or "off" => true,
+            _ => false,
+        };
 
     private static string? FindInPath(string name)
     {

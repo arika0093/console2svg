@@ -30,7 +30,7 @@ SVG document size in bytes (`SVG size (static)` / `SVG size (animated)`).
   `*-disassembly-report.html` and per-benchmark `*-asm.md` are exported.
 - **Hardware counters** — `InstructionRetired`, `TotalCycles`, `BranchInstructions`,
   `CacheMisses`, enabled automatically when Linux `perf` is on `PATH` (and
-  `perf_event_paranoid` allows it); silently skipped otherwise.
+  `perf_event_paranoid` allows it); skipped when `perf` is absent, or forced off with `CONSOLE2SVG_BENCHMARK_PERF=0` (the CI workflow sets this).
 - **CPU sampling profiler** (`PerfCollectProfiler`) — also gated on Linux `perf`. When
   present it runs each benchmark under `perfcollect` and emits a `*.trace.zip` per
   benchmark plus a flame graph, so you can see *which functions are hot* (the disassembly

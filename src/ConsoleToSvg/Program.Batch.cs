@@ -689,8 +689,8 @@ internal static partial class Program
             return (1, "failed to start shell.");
         }
 
-        var outputTask = process.StandardOutput.ReadToEndAsync();
-        var errorTask = process.StandardError.ReadToEndAsync();
+        var outputTask = process.StandardOutput.ReadToEndAsync(CancellationToken.None);
+        var errorTask = process.StandardError.ReadToEndAsync(CancellationToken.None);
         try
         {
             await process.WaitForExitAsync(ct).ConfigureAwait(false);

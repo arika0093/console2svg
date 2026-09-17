@@ -1,4 +1,4 @@
-name: PR Benchmark (full)
+name: Benchmark PR (full)
 
 # Add the `benchmark-full` label to a PR to run it. The label is removed automatically
 on:

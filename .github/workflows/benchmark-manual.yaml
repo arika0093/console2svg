@@ -1,4 +1,4 @@
-name: Manual Benchmark (full)
+name: Benchmark Manual (full)
 
 # Run from the Actions tab with explicit base/head refs.
 # There is no PR to comment on, so the comparison is published to the

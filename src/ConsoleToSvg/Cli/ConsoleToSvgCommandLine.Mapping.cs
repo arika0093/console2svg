@@ -714,6 +714,7 @@ public sealed partial class ConsoleToSvgCommandLine
                 or "update"
                 or "live-server"
                 or "tmux"
+                or "batch"
                 or "completions"
             );
     }

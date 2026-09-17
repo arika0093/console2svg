@@ -35,6 +35,12 @@ for rid in linux-x64 linux-arm64; do
     exit 1
   fi
 
+  pty_so_src="./native-artifacts/native-${rid}/libporta_pty.so"
+  if [ ! -f "$pty_so_src" ]; then
+    echo "Porta PTY shim not found: $pty_so_src" >&2
+    exit 1
+  fi
+
   common_args=(
     -s dir
     -n console2svg
@@ -47,8 +53,10 @@ for rid in linux-x64 linux-arm64; do
 
   fpm "${common_args[@]}" -t deb -a "$deb_arch" -p "./release-upload/console2svg.${asset_arch}.deb" \
     "$src=/usr/local/bin/console2svg" \
-    "$so_src=/usr/local/lib/console2svg/libconsole2svg_resvg.so"
+    "$so_src=/usr/local/lib/console2svg/libconsole2svg_resvg.so" \
+    "$pty_so_src=/usr/local/lib/console2svg/libporta_pty.so"
   fpm "${common_args[@]}" -t rpm -a "$rpm_arch" -p "./release-upload/console2svg.${asset_arch}.rpm" \
     "$src=/usr/local/bin/console2svg" \
-    "$so_src=/usr/local/lib/console2svg/libconsole2svg_resvg.so"
+    "$so_src=/usr/local/lib/console2svg/libconsole2svg_resvg.so" \
+    "$pty_so_src=/usr/local/lib/console2svg/libporta_pty.so"
 done

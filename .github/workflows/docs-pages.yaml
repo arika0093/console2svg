@@ -20,8 +20,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  CONSOLE2SVG_DOCS_SITE: https://arika0093.github.io
-  CONSOLE2SVG_DOCS_BASE: /console2svg
+  CONSOLE2SVG_DOCS_SITE: https://console2svg.eclairs.cc
+  CONSOLE2SVG_DOCS_BASE: ''
   ASTRO_TELEMETRY_DISABLED: '1'
 
 jobs:

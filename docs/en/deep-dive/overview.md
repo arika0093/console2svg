@@ -65,6 +65,5 @@ The overall tool also uses the following external dependencies.
 | [resvg](https://github.com/linebender/resvg) | [Apache-2.0](https://github.com/linebender/resvg/blob/main/LICENSE-APACHE) / [MIT](https://github.com/linebender/resvg/blob/main/LICENSE-MIT) | Fast implementation for converting SVG to PNG. |
 | [betterleaks](https://github.com/betterleaks/betterleaks) | [MIT](https://github.com/betterleaks/betterleaks/blob/main/LICENSE) | [QuickLeaks](./conversion-process/quickleaks.md) is generated based on its [definition file](https://github.com/betterleaks/betterleaks/blob/main/config/betterleaks.toml). |
 
-
 [^1]: Excluding development dependencies such as analyzers and tests.
 [^2]: The Windows version bundles the [LGPL build](https://github.com/arika0093/console2svg/blob/433a29542a175dc7e806629d01ef42f4cc8509c6/scripts/release/build-native-archives.sh#L33-L34); other platforms do not bundle it.

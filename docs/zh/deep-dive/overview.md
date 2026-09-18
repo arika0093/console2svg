@@ -65,6 +65,5 @@ console2svg 旨在尽可能忠实地再现终端输出。
 | [resvg](https://github.com/linebender/resvg) | [Apache-2.0](https://github.com/linebender/resvg/blob/main/LICENSE-APACHE) / [MIT](https://github.com/linebender/resvg/blob/main/LICENSE-MIT) | 将 SVG 转换为 PNG 的高速实现。 |
 | [betterleaks](https://github.com/betterleaks/betterleaks) | [MIT](https://github.com/betterleaks/betterleaks/blob/main/LICENSE) | 但 [QuickLeaks](./conversion-process/quickleaks.md) 是基于其[定义文件](https://github.com/betterleaks/betterleaks/blob/main/config/betterleaks.toml)生成的。 |
 
-
 [^1]: 不包括开发时依赖（分析器/测试相关等）。
 [^2]: Windows 版本捆绑了 [LGPL 构建](https://github.com/arika0093/console2svg/blob/433a29542a175dc7e806629d01ef42f4cc8509c6/scripts/release/build-native-archives.sh#L33-L34)，其他平台不捆绑。

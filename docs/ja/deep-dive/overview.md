@@ -65,6 +65,5 @@ console2svg は、ターミナル出力を可能な限り忠実に再現する�
 | [resvg](https://github.com/linebender/resvg) | [Apache-2.0](https://github.com/linebender/resvg/blob/main/LICENSE-APACHE) / [MIT](https://github.com/linebender/resvg/blob/main/LICENSE-MIT) | SVGをPNGに変換するための高速実装。 |
 | [betterleaks](https://github.com/betterleaks/betterleaks) | [MIT](https://github.com/betterleaks/betterleaks/blob/main/LICENSE) | [定義ファイル](https://github.com/betterleaks/betterleaks/blob/main/config/betterleaks.toml)をベースに[QuickLeaks](./conversion-process/quickleaks.md)を生成しています。 |
 
-
 [^1]: 開発時の依存関係(アナライザー/テスト関係など)を除く。
 [^2]: Windows版では[LGPL版ビルド](https://github.com/arika0093/console2svg/blob/433a29542a175dc7e806629d01ef42f4cc8509c6/scripts/release/build-native-archives.sh#L33-L34)を同梱しており、それ以外では同梱していない。

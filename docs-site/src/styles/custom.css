@@ -54,3 +54,48 @@ ul:not(.top-level) details summary:hover .large {
   border-color: #1162f5;
   padding: .5ex 5px .5ex;
 }
+
+/* Footnotes: modest, compact, pinned to the bottom of the page. */
+.sl-markdown-content section[data-footnotes] {
+  margin-top: 3rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--sl-color-gray-5);
+  font-size: var(--sl-text-sm);
+  color: var(--sl-color-gray-3);
+}
+
+.sl-markdown-content section[data-footnotes] ol {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.sl-markdown-content section[data-footnotes] li {
+  margin: 0;
+}
+
+.sl-markdown-content section[data-footnotes] li + li {
+  margin-top: 0.15rem;
+}
+
+.sl-markdown-content section[data-footnotes] p {
+  margin: 0;
+}
+
+.sl-markdown-content section[data-footnotes] a {
+  color: var(--sl-color-gray-2);
+}
+
+.sl-markdown-content section[data-footnotes] .data-footnote-backref {
+  text-decoration: none;
+}
+
+/* Footnote refs in body text should stay subtle. */
+.sl-markdown-content sup a[data-footnote-ref] {
+  text-decoration: none;
+}
+
+/* Hide the auto-generated "Footnotes" heading from the table of contents. */
+starlight-toc li:has(> a[href="#footnote-label"]),
+mobile-starlight-toc li:has(> a[href="#footnote-label"]) {
+  display: none;
+}

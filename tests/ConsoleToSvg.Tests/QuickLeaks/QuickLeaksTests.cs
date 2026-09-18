@@ -201,22 +201,26 @@ public sealed class QuickLeaksTests
         protectedValues.ShouldContain("superSecurePassword");
     }
 
-    [TestCase("User ID=myUsername;Pwd=myPassword;", "myUsername", "myPassword")]
-    [TestCase("UserID=myUsername;Pwd=\"my;Password\";", "myUsername", "my;Password")]
-    public void ConnectionStringAliasesAreDetected(
-        string text,
-        string expectedUsername,
-        string expectedPassword
-    )
+    [Test]
+    public void ConnectionStringAliasesAreDetected()
     {
-        var protectedValues = Filter
-            .Scan(text)
-            .Select(finding => text.Substring(finding.Start, finding.End - finding.Start))
-            .Distinct()
-            .ToArray();
+        var cases = new[]
+        {
+            ("User ID=myUsername;Pwd=myPassword;", "myUsername", "myPassword"),
+            ("UserID=myUsername;Pwd=\"my;Password\";", "myUsername", "my;Password"),
+        };
 
-        protectedValues.ShouldContain(expectedUsername);
-        protectedValues.ShouldContain(expectedPassword);
+        foreach (var (text, expectedUsername, expectedPassword) in cases)
+        {
+            var protectedValues = Filter
+                .Scan(text)
+                .Select(finding => text.Substring(finding.Start, finding.End - finding.Start))
+                .Distinct()
+                .ToArray();
+
+            protectedValues.ShouldContain(expectedUsername);
+            protectedValues.ShouldContain(expectedPassword);
+        }
     }
 
     [Test]

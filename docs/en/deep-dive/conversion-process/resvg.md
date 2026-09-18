@@ -1,22 +1,55 @@
 ---
-title: Converting to PNG (resvg)
-description: A rasterization path that prioritizes the bundled native resvg library and reduces SVG interpretation differences and startup cost.
+title: Rasterizing SVG with resvg
+description: How the bundled native resvg path turns SVG into PNG while reusing font state and controlling managed/native memory ownership.
 ---
 
-PNG output requires an implementation that can draw SVG. Automatically launching a browser is powerful, but it brings startup time, browser-version differences, and distribution size into the conversion tool. To keep the stage after SVG generation lightweight, console2svg bundles Rust-based resvg as a small repository-owned C ABI wrapper and chooses it first for PNG conversion.
+PNG output needs an SVG renderer.
+console2svg bundles a small Rust C ABI wrapper around resvg so the normal PNG path does not depend on a browser process or on whether the installed ffmpeg was built with SVG support.
 
-## Why prefer the bundled version?
+## Keep rasterization inside the process
 
-The main reason for bundling the resvg host as an independent native asset is to prevent PNG output availability and interpretation from changing depending on whether the user's ffmpeg includes librsvg. resvg warms up the font database once inside the process and reuses the same database for subsequent frames. When converting many frames to PNG, as in video, avoiding an external process launch every time has a large effect.
+The native wrapper parses SVG with usvg, renders it through resvg and tiny-skia, and encodes the resulting pixmap as PNG.
 
-Default fonts are also ordered by monospaced fonts likely to be available in resvg. Completely identical glyph shapes depend on fonts installed in the OS, but cell width is fixed on the SVG side, limiting the range where renderer differences can move column coordinates.
+System-font discovery is process-wide state.
+A `OnceLock<Arc<Database>>` initializes the font database on first use and later renders clone the shared reference instead of scanning installed fonts for every frame.
+The .NET side can explicitly warm that database during converter detection so video rendering does not pay the discovery cost on an arbitrary later frame.
 
-## Managed/native boundary
+This matters most for video, where hundreds of SVG states may pass through the same renderer.
 
-`ResvgNative.RenderToPng` calculates only the UTF-8 byte count of the SVG string, encodes it into a buffer borrowed from `ArrayPool<byte>`, and passes it to the native function. The PNG buffer returned by the native side is always released with a dedicated free function after copying. By preventing the caller from guessing ownership, native memory does not accumulate even during long video processing.
+## Preserve output dimensions deliberately
 
-Return values distinguish failures in SVG parsing, PNG encoding, drawing, and memory allocation. Each state is converted to a meaningful exception on the .NET side, so an empty PNG is never treated as success.
+The native wrapper reads the SVG's intrinsic size and applies optional raster dimensions.
 
-DLL probing explicitly checks not only next to the executable but also bundled asset directories. This is to find where the native library is actually placed even through portable installs or symbolic links.
+When both width and height are supplied, those values are used.
+When only one dimension is supplied, the other is derived from the SVG aspect ratio.
+When neither is supplied, the SVG size is used directly.
 
-When the native library cannot be loaded, automatic selection proceeds to available `rsvg-convert` or SVG-capable ffmpeg. If resvg is explicitly specified, console2svg does not silently switch to another renderer and instead reports that the requested path cannot be used. This boundary prioritizes output reproducibility while still allowing normal usage to select an available converter.
+The resulting dimensions are clamped to 1 through 16,384 pixels before a tiny-skia pixmap is allocated.
+This prevents invalid zero dimensions and bounds an accidental request for an extreme raster surface at the native boundary.
+
+## Reuse the managed input buffer
+
+`ResvgNative.RenderToPng` first computes the UTF-8 byte count of the SVG string.
+It rents a byte array from `ArrayPool<byte>`, encodes the SVG into that array, invokes the native function, and returns the rented array afterward.
+
+The native renderer owns the PNG buffer it returns.
+The .NET wrapper copies that PNG into a managed byte array and calls the matching native free function in a `finally` block.
+The ownership rule is explicit: the caller receives managed PNG bytes and never has to infer how Rust allocated the native buffer.
+
+Native status codes distinguish SVG parse failure, PNG encoding failure, render failure, and allocation failure.
+The managed wrapper converts them into exceptions rather than treating an empty or partial buffer as successful output.
+
+## Resolve the bundled library before system locations
+
+The native-library resolver checks console2svg's bundled asset directories before falling back to ordinary loader resolution.
+This covers release layouts where the executable and native library are colocated as well as package layouts where native assets live in a sibling library directory.
+
+The explicit search is also useful for portable installations and paths reached through symbolic links, where relying only on the process working directory would be fragile.
+
+## Fall back only when the mode allows it
+
+Automatic converter selection prefers the bundled resvg path when it is available.
+Other image-conversion paths can fall back to `rsvg-convert` or an ffmpeg build that has been proven to decode SVG.
+
+An explicitly requested resvg mode does not silently change renderers when the native library fails to load.
+That distinction makes a user-selected renderer reproducible while still allowing automatic mode to select an available implementation.

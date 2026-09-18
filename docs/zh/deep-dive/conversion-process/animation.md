@@ -1,28 +1,107 @@
 ---
-title: 动画处理
-description: 将时间序列终端状态通过行定义复用和 SMIL 转换为小型动画 SVG 的机制。
+title: 生成动画 SVG
+description: 将保留的终端状态整理为共享行定义，并通过离散 SMIL 区间切换显示。
 ---
 
-动画输出的目的并不是排列帧图片，而是让“终端在每个时刻显示了什么”能够作为单个 SVG 携带。因此，`AnimatedSvgRenderer` 会按时间顺序将记录送入终端模拟器，为各个时刻生成 `ScreenBuffer`，再落到 SVG。写出视频时也会先使用同一状态序列，因此静态 SVG、动画 SVG、视频之间的画面解释不会分叉。
+动画 SVG 从终端状态序列生成，而不是从截图序列生成。
+`AnimatedSvgRenderer` 把录制按顺序送入与静态输出相同的 terminal emulator，只保留需要的状态，再转换为可复用行定义。
 
-## 为什么使用 SMIL 而不是 CSS 关键帧
+## 决定哪些终端状态需要保留
 
-如果直接实现，可以把每一帧输出为 `<g>`，并用 `@keyframes` 切换不透明度。但这种方式会让大量帧元素在播放中成为动画对象，记录越长，浏览器的样式计算和绘制对象就越多。另外，如果每帧复制整个画面，即使终端的大部分没有变化，SVG 也会迅速变大。
+PTY 或 asciicast 的事件边界不会自动成为动画帧边界。
+一次 TUI 重绘可能包含多次 write，有些事件也只改变 parser state 而不改变可见 cell。
 
-目前会为各个显示区间附加 `<animate attributeName="display" calcMode="discrete">`。由于 `display` 是离散切换，不需要合成中间帧，只有应该显示的行会在该时刻启用。CSS 只用于文字闪烁，而不是画面转场的主体。
+production replay 路径会在每个事件后比较 `ScreenBuffer.GetContentSignature()`。
+该签名不包含 cursor，因此 cursor-only 变化不会强制增加正文的 **保留帧**。
 
-## 避免帧数增加的两阶段削减
+`--fps` 为正数时会应用最小帧间隔。
+同一时间窗口中出现多次可见变化时，最后一个变化状态会作为 pending frame 保留。
 
-PTY 或 asciicast 的事件边界并不一定是视觉上的帧边界。如果把只改变颜色设置的事件，或短时间内分割送达的 TUI 更新原样保存，就会输出没有意义的中间状态。
+快照使用按行 copy-on-write。
+创建可见快照时，未变化行与 live buffer 共享；后续修改某行时才复制该行。
+更新 FPS 窗口中的 pending frame 时，也通过复制行引用和签名信息更新状态，而不是 deep copy 整个 cell grid。
 
-`TerminalEmulator.ReplayFrames` 会比较可见单元格签名，把显示没有变化的事件折叠到前一帧。如果 `--fps` 为正，还会应用最小间隔；在这个窗口内有多次更新时，会保留并采用最新变化。这是为了优先显示更新稳定后的画面，而不是连续显示只绘制了一部分的 TUI。
+首个和最终状态都会保留。
+时间正规化如果把多个 frame 压到同一 timestamp，会略微展开它们的时间，保证 SMIL key time 保持有序且不重复。
 
-首帧和末帧一定会保留。被量化到同一时刻的帧会进行微小分散，避免 SMIL 时间序列倒退或重复。
+## 建立行目录而不是完整帧目录
 
-在 SVG 化阶段，还会通过各行的视觉签名和实际单元格比较检测相同行。内容相同的行只在 `<defs>` 中绘制一次，各时刻用 `<use>` 引用。如果变化是局部的，就以前一个行定义为基础，只覆盖变化的列范围作为差分定义。这样可以避免“每帧全画面”的数据结构，使大小更接近实际画面变化量，而不是记录时长。
+确定保留状态后，console2svg 不会序列化每一个完整 screen。
 
-## 时间、末尾显示和光标
+`PrepareAnimatedRows` 读取每个可见行的视觉签名并建立 **行目录**。
+签名用于选择候选定义，但在复用之前还会比较实际 cell。
+签名只是加速结构，不是唯一的正确性依据。
 
-通常会原样使用记录时间。在固定 FPS 模式下，时间会舍入到帧间隔；实时模式下则保持输入时间。使用 `--time` 选择区间时，会把开始前的最后一帧补到开头，让开始时点的状态可见，并将时间线重置为 0 秒起点。
+发现新的唯一行时，会同时收集该行需要的文字 style。
+重复行不需要再为了 style collection 做一次 cell scan。
 
-如果指定了 `--sleep`，最终帧会保持该时长。未指定时也至少保持一帧，因此最终状态不会瞬间消失。`--fade-out` 只会在这段保持之后降低不透明度。由于光标与行正文分开定义和切换，仅光标移动不会复制正文行定义。也会检测全屏应用退出备用画面并返回空画面的末尾事件，将前一个非空帧保留为最终显示。
+每个 frame 保存一组行定义 index。
+SVG 在 `<defs>` 中只绘制唯一行，在需要显示该状态的位置通过 `<use>` 引用。
+
+## 用行差分表示小范围修改
+
+输入文字和 status 更新常常只改变一行中的少量列。
+这类情况可以使用 **行差分**，引用前一个行定义，只覆盖变化列范围。
+
+差分范围必须不超过16列，并且不超过可见行宽度的四分之一。
+差分链最大为四层。
+这些限制避免为了节省字节而产生很深的 `<use>` 引用树。
+
+边界碰到宽字符 continuation 或宽字符起始 cell 时会扩展，避免拆开一个字符。
+
+存在手动 mask pattern 时会关闭行差分。
+秘密 pattern 可能同时包含不变 prefix 和变化 suffix，拆成两个 fragment 会让 matcher 看不到完整字符串。
+
+## 复用行定义的临时渲染空间
+
+行定义仍然需要转换为 text、rectangle、box-drawing path、block element 和 mask overlay。
+renderer 使用 `FrameRenderWorkspace` 复用临时 segment List 和 `StringBuilder`。
+
+可见行通过 span 暴露给列循环。
+不涉及 scrollback 时，不需要在每个 cell 上重复调用通用 accessor。
+
+## 使用 SMIL 切换连续行状态
+
+对每一条物理行，连续引用同一行定义的 frame 会合并为一个 run。
+每个 run 只有一个 `<use>`，并用 **SMIL** 的 `display` animation 指定可见时间。
+
+`calcMode="discrete"` 不进行中间值插值。
+这与终端状态切换一致，边界前显示一个行状态，边界后显示另一个状态。
+
+例如：
+
+```xml
+<animate
+  attributeName="display"
+  values="none;inline;none"
+  keyTimes="0;0.25;0.5"
+  calcMode="discrete"
+  dur="4s"
+/>
+```
+
+循环输出增加 `repeatCount="indefinite"`。
+非循环输出冻结最终 animation state。
+fade-out 作用于包含这些行的 group，并在最终 hold 之后发生，不需要修改每个行 animation。
+
+文字 blink 与 screen-state animation 分开，仍通过 CSS animation 表示。
+
+## 单独保存 cursor 状态
+
+cursor 可见性和位置会形成独立的连续 run。
+cursor 移动时，文字行可以继续引用原来的行定义。
+
+正文 frame reduction 可以使用不含 cursor 的 content signature，就是因为 cursor timing 在 animation layer 独立保留。
+cursor 变化和正文行去重不必绑在同一个 frame 内容中。
+
+## 处理时间范围和最终画面
+
+指定开始时间时，如果此前存在状态，会把开始点之前最后一个状态作为选区初始状态。
+随后把所选 timeline 重新映射到0秒起点。
+
+`--sleep` 延长最终状态的显示时间。
+没有显式值时仍会提供最小 hold，避免最终状态刚出现就结束。
+`--fade-out` 在 hold 之后开始。
+
+full-screen application 退出时经常离开 alternate screen 并恢复空的 main screen。
+如果录制尾部只包含这种空画面恢复，renderer 可以去掉该尾段，让前一个有效 terminal state 留在最终画面。

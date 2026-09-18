@@ -1,20 +1,75 @@
 ---
-title: Interpreting sequences
-description: Terminal emulation that reads split VT output with state and reflects it into cell screens, scrolling, and attributes.
+title: Interpreting terminal control sequences
+description: How incremental VT parsing updates cursor state, cell contents, attributes, scrolling, and alternate screens.
 ---
 
-Terminal output is not decorated text; it is a sequence of instructions that manipulate the screen. For example, progress displays return the cursor without adding newlines, and TUIs clear and redraw only specific areas. The conversion side executes instructions as a small virtual terminal, rather than handling strings with ANSI removed, in order to restore final cell placement.
+Terminal output is a stream of drawing operations.
+A carriage return can overwrite an existing line, CSI can move the cursor without printing text, and a full-screen application can switch to an alternate screen and redraw only selected regions.
+Removing escape sequences would discard the operations needed to reconstruct that display.
 
-## Chunk boundaries are not instruction boundaries
+console2svg therefore parses output into a stateful `ScreenBuffer` before SVG generation.
 
-The OS read unit can split in the middle of `ESC [`, parameters, or the final byte. `AnsiParser` stores incomplete ESC sequences and incomplete OSC sequences displayed as `^[` by ECHOCTL, then prepends them to the next `Process` call. Without this state retention, the latter half of a split control instruction would be drawn as ordinary characters.
+## Preserve parser state across reads
 
-For CSI, private markers, parameters, and final bytes are separated. In the common case with few parameters, stack space is used; only when there are many parameters is an array from a shared pool used. This keeps GC from increasing even with large output and allows the parser to stay on the recording hot path. Unspecified values are resolved to each instruction's default, and unknown private CSI sequences are ignored rather than mistakenly interpreted as style instructions.
+An operating-system read can end in the middle of ESC, CSI, OSC, or another control sequence.
+`AnsiParser` retains incomplete sequence text and resumes it on the next `Process` call.
 
-## Screen operations and text attributes
+Unix echo handling can also expose a control sequence in caret notation, such as `^[` for ESC.
+The parser keeps a separate pending path for the OSC form that can arrive through that representation.
+Ordinary `^[` text is not treated broadly as an escape sequence; the special handling is constrained so visible text is not consumed accidentally.
 
-Implemented CSI includes cursor movement and absolute positioning, erase display/line, insert/delete characters, insert/delete lines, scrolling, scroll regions, tab stops, insert mode, and save/restore. DEC private mode handles alternate screen, origin mode, and cursor visibility. Full-screen applications use the alternate screen, so the main screen must be switched to a separate buffer without overwriting it and restored on exit.
+OSC and DCS payloads are skipped until their terminator because they are control strings rather than printable terminal cells.
+G0 and G1 character-set designation and SO/SI selection are retained as parser state.
+DEC special graphics can therefore be mapped to the corresponding box-drawing characters before rendering.
 
-SGR keeps bold, faint, italic, underline, blink, inverse, hidden, strikethrough, overline, 16 colors, 256 colors, RGB, and underline color in `TextStyle`. 256 colors are resolved as the first 16 theme colors, a 6×6×6 cube, and grayscale; truecolor is kept as RGB strings. Color arguments separated by `:` as well as `;` can be read, so differences in terminal SGR notation are reflected into the same color attributes.
+## Parse CSI without string splitting
 
-Printable characters are placed while considering cell width. Surrogate pairs, variation selectors, and combining characters are combined into the previous cell, and zero-width characters do not advance the column. DEC special graphics G0/G1 character sets are also translated into box-drawing characters. The parser is not merely a layer that “turns byte sequences into strings”; it is a layer that restores meaning to the point where later stages can create coordinate-aware SVG.
+CSI parameters are read from spans instead of being tokenized with `string.Split`.
+The parser counts the parameters first.
+Up to 16 integer parameters use a stack-allocated span; larger sequences rent an integer array from `ArrayPool<int>` and return it afterward.
+
+This keeps the common SGR and cursor-control path free from one array allocation per sequence.
+Private markers are parsed separately from the parameter list, and unsupported private sequences are ignored instead of being interpreted as unrelated standard commands.
+
+## Apply screen operations
+
+Implemented CSI operations include relative and absolute cursor movement, erase display and erase line, insert and delete characters, insert and delete lines, scrolling, scroll regions, tab control, insert mode, repeat, and save or restore operations.
+
+DEC private modes cover the alternate screen, origin mode, and cursor visibility.
+The alternate screen is a separate cell buffer.
+Leaving a TUI can therefore restore the main screen rather than leaving the full-screen application's cells mixed into shell history.
+
+Cursor save and restore includes the terminal state that affects subsequent placement.
+The emulator must reproduce the future effect of a control sequence, not only the cells visible at the instant that sequence is parsed.
+
+## Resolve text attributes into cell style
+
+SGR updates a `TextStyle` that includes bold, faint, italic, underline, blink, inverse, hidden, strikethrough, overline, foreground, background, and underline color.
+
+The parser accepts the conventional 16-color ranges, the xterm 256-color palette, and true RGB color.
+The 256-color palette resolves the first 16 entries through the active theme, followed by the 6 by 6 by 6 color cube and grayscale range.
+Extended color forms separated with either semicolons or colons are normalized into the same style state.
+
+`ScreenBuffer` interns equivalent styles so adjacent cells do not each need their own style object.
+A last-style fast path handles the common case where many characters are printed under the same SGR state.
+
+## Keep Unicode aligned to terminal cells
+
+A UTF-16 code unit is not necessarily one terminal cell.
+Surrogate pairs are combined before placement.
+Combining marks and variation selectors are appended to the preceding cell, and zero-width characters do not advance the cursor.
+
+Wide characters occupy two columns.
+The leading cell stores the text and the following cell is marked as a continuation.
+Operations that overwrite or take row deltas account for those continuation cells so later SVG text runs cannot drift by one column.
+
+Variation selector 16 can turn a previously narrow symbol into a wide emoji presentation when the grid has space for it.
+That adjustment happens in the cell model, before any SVG geometry is chosen.
+
+## Use the screen buffer as the conversion boundary
+
+After parsing, later renderers do not need to reason about raw CSI syntax.
+They receive rows of cells with resolved text, style, width flags, cursor position, active screen, and scroll state.
+
+The same buffer also carries visual signatures and copy-on-write row sharing used by animation and video sampling.
+That makes terminal interpretation a single semantic boundary: parsing happens once, while SVG, PNG, and video paths consume the resulting screen state.

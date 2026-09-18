@@ -1,26 +1,68 @@
 ---
-title: レイヤー構造
-description: 見た目の設定と端末本文を分離し、静的部分をアニメーション中も再利用するSVG階層。
+title: SVG のレイヤー構造
+description: 静的な chrome、端末背景、前景、cursor、mask を分離し、一つの座標系で描画する仕組み。
 ---
 
-出力SVGは「端末の内容」と「それを置く額縁」を混ぜません。画面内容だけを更新しても、背景画像、macOS風・Windows風のウインドウ装飾、余白、コマンド見出しまで再描画する必要はないからです。特にアニメーションでは、静的な外枠を一度だけ出し、その内側で端末の行だけを切り替えます。
+端末画面を構成する要素は、同じ頻度では変化しません。
+canvas 背景と window chrome は通常固定され、cell 背景と文字は別々に変わり、cursor は行本文を変えずに移動できます。
+SVG はこの違いを **レイヤー分離** として表し、animation で再利用できる内容を複製しません。
 
-## キャンバスから端末までの順序
+## 座標を一つの Context で決める
 
-最初にSVGの `width`、`height`、`viewBox`、共通フォントCSS、スタイル定義を置きます。次にキャンバス背景を描きます。
+`SvgDocumentBuilder.Context` は crop 後の可視行と可視列を決め、cell metric、margin、padding、chrome offset、command header の高さ、canvas size、output size、`viewBox` をまとめて計算します。
 
-デスクトップ付きのchromeでは既定のグラデーションまたは指定背景を画面全体へ、通常のchromeでは明示的に指定された背景だけを配置します。ローカル画像はデータURIへ埋め込めるので、単一ファイルとして配布しても背景への相対パスに依存しません。
+cell 幅は font size の0.6倍です。
+cell 高は font size の `18 / 14` 倍で、baseline offset は font size を基準にします。
 
-その上にウインドウの影・枠・タイトルバーを置き、さらに端末クライアント領域をテーマ背景で塗ります。これはpadding部分を透過させず、chromeの内側を一枚の端末として見せるためです。
+文字、背景矩形、罫線、block element、cursor、mask overlay は同じ `Context` の値を参照します。
+要素ごとに別の座標計算を持たせず、同じ terminal grid へ合わせます。
 
-`--with-command` の見出しもこの静的領域に入ります。最後に端末フレームを配置し、セル背景、文字、図形フラグメント、カーソル、マスクオーバーレイの順で重ねます。背景を先にすることで、反転色のセルや半透明カーソルが常に正しい下地を持ちます。
+出力寸法を片方だけ指定した場合は、もう一方を比例計算します。
+幅と高さを両方指定した場合は、自然な canvas を指定矩形へ収め、余った領域を view box 側で表現します。
+各 layer が独自に terminal grid を引き伸ばすことはありません。
 
-## 座標を一か所で決める
+## 外側の静的レイヤーを一度だけ描く
 
-`SvgDocumentBuilder.Context` は切り抜き、スクロールバック、margin、padding、chrome、見出し、`--size` を解決してから、本文の開始座標と表示範囲を保持します。セル幅はフォントサイズの0.6倍、セル高は `18 / 14` 倍、ベースラインはフォントサイズを基準にします。すべての端末要素がこの同じコンテキストを参照するため、背景矩形と文字、罫線、カーソルの座標計算が別々にずれることを避けられます。
+SVG root には output size、view box、共通 CSS、再利用する定義、canvas 背景を置きます。
 
-出力サイズを指定しても、本文の幾何を直接引き伸ばすのではありません。片方だけなら比率を維持してSVG寸法を決め、両方なら収まる倍率を選んで余りを`viewBox`側の背景領域にします。この分離により、chromeを含む自然なレイアウトを保ったまま、埋め込み先に必要な外形寸法へ合わせられます。
+その上へ window chrome を配置します。
+desktop 形式の chrome は専用の背景領域、shadow、frame、title area を持てます。
+続いて terminal client area を解決済みの背景色で塗り、chrome 内の padding が意図しない透過にならないようにします。
 
-## アニメーションでの境界
+`--with-command` の header も静的領域へ置きます。
+animation SVG では、これらを terminal state ごとに複製せず一度だけ出力します。
 
-アニメーションSVGでは外側の背景・chrome・見出しを一度だけ閉じ、本文の行定義を`<defs>`へ出します。その後で内容オフセット用のグループを開き、各行の`<use>`とSMILを置きます。レイヤーの順序を静止画と共有しているため、動画化の前後でも配色や切り抜きの意味が変わりません。
+## 端末背景と前景を別 pass にする
+
+静止画では terminal background と foreground を別 group として描けます。
+
+background pass は、同じ有効背景色が横に続く cell を一つの矩形へまとめます。
+base terminal background と同じ cell は個別の矩形を出しません。
+
+foreground pass は text run、block geometry、box-drawing geometry、cursor、mask overlay を出します。
+background だけを描く pass では、foreground text が存在しないため自動 mask と手動 mask の scan を実行しません。
+
+mask overlay は置換した文字より上へ配置します。
+別の opaque layer の下へ秘密文字列を残して隠す方式にはしません。
+
+## style と geometry を定義として共有する
+
+`SvgStyleRegistry` は、一意な実効文字 style ごとに短い CSS class を一つ割り当てます。
+foreground color と decoration を各 `<text>` へ繰り返し書きません。
+
+`SvgElementRegistry` は、再利用可能な定義内の同じ矩形と path を共有します。
+最初の geometry に ID を付け、同一要素が再登場した場合は `<use>` を出します。
+
+位置が0で SVG の既定値と同じ場合は、不要な position attribute を省略します。
+一つの削減量は小さくても、行定義が多数ある animation では同じ attribute の繰り返しを減らせます。
+
+## アニメーションで切り替える範囲を限定する
+
+animation SVG では、一意な行本文を `<defs>` に置きます。
+可視 terminal body は `<use>` で行定義を参照し、discrete な SMIL の表示区間で切り替えます。
+
+cursor run は行本文と別に出力します。
+cursor だけが変わったときに、行定義を作り直す必要はありません。
+
+canvas 背景、chrome、command header、content transform、crop は行切替の外側に置きます。
+静止 SVG と animation SVG で terminal の座標と配色解釈は共通のまま、繰り返す本文の参照方法だけを変えます。

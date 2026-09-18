@@ -1,22 +1,62 @@
 ---
-title: 转换为 PNG (resvg)
-description: 优先使用捆绑的 resvg 原生库，减少 SVG 解释环境差异和启动成本的栅格化路径。
+title: 使用 resvg 栅格化 PNG
+description: 如何调用捆绑的 native resvg，在进程内复用字体状态，并明确管理 managed 与 native memory 的所有权。
 ---
 
-PNG 输出需要能够绘制 SVG 的实现。自动启动浏览器功能强大，但会把启动时间、浏览器版本差异和发布大小带入转换工具。为了保持 SVG 生成后段轻量，console2svg 将 Rust 编写的 resvg 作为仓库自有的小型 C ABI 包装器捆绑，并优先选择它进行 PNG 化。
+PNG 输出需要 SVG renderer。
+console2svg 捆绑了一个小型 Rust C ABI wrapper，用来调用 resvg。
+普通 PNG 路径因此不需要依赖 browser process，也不需要假设系统 ffmpeg 一定包含 SVG decoder。
 
-## 优先捆绑版本的理由
+## 在当前 process 内完成栅格化
 
-将 resvg host 作为独立原生资源捆绑的主要原因，是避免 PNG 输出是否可用及其解释结果因用户的 ffmpeg 是否包含 librsvg 而改变。resvg 会在进程内预热一次字体数据库，并在后续帧中复用同一数据库。像视频那样把大量帧 PNG 化时，不必每次启动外部进程会带来很大效果。
+native wrapper 使用 usvg 解析 SVG，通过 resvg 和 tiny-skia 绘制 pixmap，再把 pixmap 编码成 PNG。
 
-默认字体也会按 resvg 中可用性较高的等宽字体顺序排列。完全相同的字形取决于 OS 安装的字体，但单元格宽度会在 SVG 侧固定，从而抑制因绘制器差异导致列坐标变化的范围。
+system font discovery 是可以跨 frame 共享的 process-wide 状态。
+Rust 侧使用 **`OnceLock<Arc<Database>>`**。
+第一次调用时创建 font database 并加载 system font，后续 render 只复用共享引用。
 
-## 托管/原生边界
+.NET 侧也可以显式 warm up 该 database。
+converter detection 阶段即可完成初始化，避免视频中的某个随机 frame 单独承担首次 font discovery 成本。
 
-`ResvgNative.RenderToPng` 只计算 SVG 字符串的 UTF-8 字节数，将其编码到从 `ArrayPool<byte>` 借来的缓冲区，再传给原生函数。原生侧返回的 PNG 缓冲区在复制后一定会用专用 free 函数释放。通过让调用方无需推测所有权，即使长时间处理视频，原生内存也不会累积。
+## 明确计算 raster 尺寸
 
-返回值会区分 SVG 解析、PNG 编码、绘制、内存分配失败。各状态会在 .NET 侧转换为有意义的异常，因此不会把空 PNG 当作成功。
+native wrapper 读取 SVG intrinsic size，并结合可选的 raster width 和 height 计算输出尺寸。
 
-DLL 探索不仅会检查可执行文件旁边，也会明确检查捆绑资源目录。这是为了在便携安装或符号链接路径下，也能找到实际放置原生库的位置。
+宽高都指定时直接使用给定值。
+只指定一边时，根据 SVG aspect ratio 推导另一边。
+两边都未指定时使用 SVG 自身尺寸。
 
-如果无法加载原生库，auto 选择会继续尝试可用的 `rsvg-convert` 或支持 SVG 的 ffmpeg。明确指定 resvg 时，不会静默切换到其他绘制器，而会通知请求的路径不可用。这是在优先输出可复现性的同时，让普通使用能选择可用转换器的边界。
+最终尺寸会 clamp 到1至16384 pixel。
+这样可以避免0尺寸 surface，也能限制误配置造成的极端 native allocation。
+
+## 复用 managed 输入 buffer
+
+`ResvgNative.RenderToPng` 先计算 SVG `string` 的 UTF-8 byte 数量。
+随后从 `ArrayPool<byte>` 租用 array，把 SVG encode 到该 span，再调用 native function。
+调用结束后 array 会归还 pool。
+
+native renderer 返回的 PNG buffer 由 native 侧拥有。
+.NET wrapper 将其复制到 managed `byte[]`，并在 `finally` 中调用对应 free function。
+
+调用方只接触 managed PNG。
+Rust 侧使用何种 allocator 不需要暴露给上层。
+
+native status code 会区分 SVG parse、PNG encode、render 和 allocation failure。
+.NET wrapper 会把这些状态转换成不同异常，而不会把空或部分 buffer 当作成功结果。
+
+## 优先搜索捆绑的 native asset
+
+native library resolver 会先检查 console2svg 的 bundled asset directory，再交给普通 loader resolution。
+
+release archive 可能把 library 放在 executable 旁边，package layout 也可能把 native asset 放到 sibling library directory。
+显式搜索可以覆盖这些布局。
+
+portable install 和 symbolic link 场景也能因此减少对 current working directory 的依赖。
+
+## 根据 converter mode 决定是否 fallback
+
+auto mode 会优先选择可用的 bundled resvg。
+其他图像转换路径还可以 fallback 到 `rsvg-convert`，或者已经通过实际转换验证 SVG decode 能力的 ffmpeg。
+
+用户明确指定 resvg 时，如果 native library 无法加载，不会静默切换到其他 renderer。
+显式 renderer 选择强调可复现性，auto mode 则优先保证可用性。

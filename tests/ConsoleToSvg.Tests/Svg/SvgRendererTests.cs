@@ -123,6 +123,28 @@ public sealed partial class SvgRendererTests
     }
 
     [Test]
+    public void RenderAutoMaskRemovesConnectionStringCredentialsFromDocsExample()
+    {
+        const string username = "myUsername";
+        const string password = "myPassword";
+        var session = new RecordingSession(width: 100, height: 1);
+        session.AddEvent(
+            0.01,
+            $"CONNECTION_STRING=Server=localhost;Database=myDataBase;User Id={username};Password={password};"
+        );
+
+        var svg = ConsoleToSvg.Svg.SvgRenderer.Render(
+            session,
+            new ConsoleToSvg.Svg.SvgRenderOptions { MaskAuto = true }
+        );
+
+        svg.ShouldNotContain(username);
+        svg.ShouldNotContain(password);
+        svg.ShouldContain("CONNECTION_STRING=Server=localhost;Database=myDataBase;User Id=");
+        svg.ShouldContain("c2-redacted-stripe");
+    }
+
+    [Test]
     public void RenderMaskAddsRedactionOverlay()
     {
         var session = new RecordingSession(width: 32, height: 1);

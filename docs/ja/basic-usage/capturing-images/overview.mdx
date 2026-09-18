@@ -1,0 +1,50 @@
+---
+title: 概要
+description: capture コマンドを使用した静止画SVGの撮影方法と主要なオプションの解説。
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+`capture` サブコマンドを使用すると、任意のCLIコマンドの実行結果をベクター形式のSVG静止画として保存できます。
+
+## 基本的な使い方
+
+<Steps>
+
+1. `console2svg capture -- (コマンド)` を実行します。
+
+   ```bash
+   console2svg capture -- console2svg
+   ```
+
+2. 実行したコマンドの終了時の画面が `output.svg` として出力されます。
+
+   ![console2svg capture -- console2svg](/docs/assets/cmd.svg)
+
+</Steps>
+
+## 主なオプション
+
+静止画撮影でよく使用するオプションは以下のとおりです。
+
+* **`-o <path>`**: 出力先ファイルパスを指定します（デフォルト: `output.svg`）。
+* **`-c` / `--with-command`**: 出力の先頭に `$ console2svg` のような実行コマンド行を追加します。
+* **`--prompt <text>`**: コマンド行のプロンプト記号を変更します（デフォルト: `$` または `#`）。
+* **`-w <chars>`**: ターミナルの横幅（文字数）を指定します。
+* **`-h <lines>`**: ターミナルの縦幅（行数）を指定します。
+* **`--timeout <sec>`**: 指定秒数経過後にコマンドを自動終了させます。終了しないコマンドの撮影に利用します。
+* **`--frame <index>`**: コマンド終了時ではなく、指定したフレーム番号の画面を出力します。
+* **`--time <sec>`**: 指定した経過秒数時点の画面を出力します。
+* **`--stdout`**: SVGデータをファイルではなく標準出力へ書き出します。
+
+詳細は[`capture`のオプション](../../../reference/cli/capture/)を参照してください。
+
+### 実行例
+
+```bash
+# 実行コマンド付き、横幅100文字、縦12行、カスタムファイル名で出力
+console2svg capture -o console2svg.svg -c -w 100 -h 12 --  dotnet --info
+```
+
+{/* c2s:: -c -w 100 -h 12 -- dotnet --info */}
+![console2svg capture -o console2svg.svg -c -w 100 -h 12 --  dotnet --info](../../../assets/cmd-capture-overview.svg)

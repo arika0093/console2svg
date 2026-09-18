@@ -1,0 +1,19 @@
+---
+title: 組み込みテーマの概要
+description: console2svg に含まれる組み込みテーマを種類別に確認できます。
+---
+
+console2svg の組み込みテーマは、次の種類に分かれています。
+
+* [パレット](./built-in-palettes.mdx): ターミナルの配色だけを変更するテーマ
+* [ウインドウ枠](./built-in-window-themes.mdx): macOS風やWindows風の枠を指定するテーマ
+* [一括指定](./built-in-full-themes.mdx): 配色とウインドウ枠をまとめて変更するテーマ
+
+テーマは `-t` または `--theme` にIDを渡して適用できます。
+ウインドウ枠だけを指定する場合は `-d` または `--window` を使用します。
+
+```bash
+console2svg capture --theme nord -- console2svg
+console2svg capture --window macos-pc -- console2svg
+console2svg capture --theme cyberpunk-pc -- console2svg
+```

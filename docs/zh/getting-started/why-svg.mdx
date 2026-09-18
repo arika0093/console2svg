@@ -1,0 +1,53 @@
+---
+title: 为什么选择 SVG 格式
+description: console2svg 选择 SVG 作为终端输出保存格式的原因。
+---
+
+import { FileTree } from '@astrojs/starlight/components';
+
+console2svg 会将终端输出保存为 SVG。
+SVG 不只是用于显示图片，它也非常适合清晰、易用地共享像终端这样的文字为主的画面。
+
+## 任意尺寸都清晰
+
+请先对比以下两张图片。
+
+```bash
+$ btop
+```
+
+### SVG
+{/* c2s:: -w 120 -h 30 --timeout 5 -- btop */}
+![svg format](../../assets/why-svg-btop.svg)
+
+### PNG
+{/* c2s:: -w 120 -h 30 --timeout 5 -- btop */}
+![png format](../../assets/why-svg-btop.png)
+
+
+可以看到，前者的文字更清晰，框线也显示得更漂亮。
+由于 SVG 是矢量格式，即使放大或缩小，文字和框线也不会模糊。无论在 README、博客文章、幻灯片、印刷品等不同位置或尺寸显示，都能保持相同质量。
+
+## 文件体积小
+
+比较上面两个文件的大小可以看到，SVG 版明显更小（约为 1/5）。
+
+<FileTree>
+
+* output.png (195918 bytes)
+* output.svg (38912 bytes)
+
+</FileTree>
+
+> [!NOTE]
+> 请注意，由于此示例使用的是 `btop`，对 SVG 来说是相对**不利**的场景。
+> 如果只是简单文本，文件还会更小。
+
+## 可以直接在浏览器中显示
+
+SVG 是主流浏览器默认支持的开放 Web 标准。
+无需准备专用查看器或转换工具，就可以在浏览器中打开生成的文件，或嵌入到 Markdown、HTML 中。
+
+```markdown
+![your terminal output](./output.svg)
+```

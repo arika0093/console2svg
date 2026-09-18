@@ -1,0 +1,102 @@
+---
+title: console2svg
+description: ターミナルの出力をSVG画像に変換します。
+template: splash
+hero:
+  tagline: ターミナルの出力を、美しく共有できるビジュアルへ。
+  image:
+    file: ../assets/cmd-hero.svg
+    alt: console2svgのターミナルプレビュー
+  actions:
+    - text: はじめる
+      link: /ja/getting-started/installation/
+      variant: primary
+    - text: ギャラリーを見る
+      link: /ja/gallery/
+      variant: secondary
+next: 
+  link: /features
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import { LinkButton } from '@astrojs/starlight/components';
+
+ターミナルの出力をREADME、ブログ記事、課題レポート、ドキュメント向けの画像に変換します。
+
+> この画像は、もちろんconsole2svg自身で生成されています。綺麗でしょう？
+
+
+## 何ができるのか
+
+たくさんの機能があります！ きっと気にいるものがあるはずです。
+
+<CardGrid stagger>
+  <Card title="綺麗なSVG画像を生成" icon="star">
+    ANSIおよびTruecolorの出力をSVGとしてレンダリングします。
+    あなたのドキュメントにぴったりの高解像度をお届けします。
+
+    [詳細を見る →](/ja/basic-usage/capturing-images/overview/) <br/>
+    [なぜSVGなのか →](/ja/getting-started/why-svg/)
+  </Card>
+  <Card title="動画も生成できます" icon="rocket">
+    `cmatrix`の出力を共有したいですか？ 一発で対応可能です。
+
+    [詳細を見る →](/ja/basic-usage/capturing-videos/overview/)
+  </Card>
+  <Card title="自動化対応" icon="setting">
+    ドキュメント用の画像って、最新の実物と追従させたいですよね？
+    CIで再生成できます。リプレイ機能つき。
+
+    [詳細を見る →](/ja/automation/document-image-sync/)
+  </Card>
+  <Card title="他フォーマットへ変換可能" icon="seti:video">
+    プラットフォームがSVGをサポートしていなくても大丈夫です。
+    PNG,GIF,WebM,MP4などに変換できます。組み込み対応。
+
+    [詳細を見る →](/ja/basic-usage/capturing-images/convert-to-png/)
+  </Card>
+  <Card title="Interactiveキャプチャ" icon="seti:powershell">
+    `F9`/`F10`キーを押して、いつでも撮影できるモードを用意しました。
+    ドキュメント作成中に、いちいちスクショツールを立ち上げる必要はありません。
+
+    [詳細を見る →](/ja/basic-usage/interactive-capture/)
+  </Card>
+  <Card title="Live-Server機能" icon="server">
+    ターミナルセッションをリアルタイムでSVGに変換して、ブラウザでライブ表示できます。
+    YouTube配信なんてことも可能です。
+
+    [詳細を見る →](/ja/utilities/live-server/)
+  </Card>
+  <Card title="豊富なカスタムテーマ対応" icon="desktop">
+    多彩なカスタムテーマに対応しています。  
+    あなたの好みに合わせてターミナルの見た目を変更できます。
+
+    [詳細を見る →](/ja/appearance/themes/built-in-themes/)
+  </Card>
+  <Card title="Windows対応" icon="seti:windows">
+    macOSでしか使えないなんてことはありません。  
+    Linuxでも、もちろんWindowsでも使えます。
+
+    [詳細を見る →](/ja/getting-started/installation/)
+  </Card>
+  <Card title="Crop機能内蔵" icon="pencil">
+    長過ぎる出力を自動でトリミングして、必要な部分だけを切り出せます。
+
+    [詳細を見る →](/ja/basic-usage/capturing-images/crop/)
+  </Card>
+  <Card title="安全に共有" icon="padlock">
+    よくあるパスワードやユーザー名を自動でマスクします。
+    これで出力にうっかり`APP_SECRET_TOKEN`が映り込んでも安心です。
+
+    [詳細を見る →](/ja/basic-usage/masking-secrets/auto-masking/)
+  </Card>
+</CardGrid>
+
+まずは実際の例を見てみてください。
+
+<LinkButton href="/ja/gallery/" variant="primary">
+  使用例を見てみる
+</LinkButton>
+<LinkButton href="/ja/getting-started/installation" variant="secondary">
+  インストール
+</LinkButton>

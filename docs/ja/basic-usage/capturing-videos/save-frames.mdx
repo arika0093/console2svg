@@ -1,0 +1,37 @@
+---
+title: 連番画像で出力する
+description: --save-frames オプションによるフレームごとの個別SVG画像の保存方法。
+---
+
+import { FileTree } from '@astrojs/starlight/components';
+
+アニメーションの各フレームを独立した画像ファイルとして取り出したい場合、`--save-frames` オプションを使用します。
+
+## 連番画像の保存
+
+`--save-frames` に保存先ディレクトリを指定して実行します。
+
+```bash
+console2svg capture -v --save-frames ./frames -- sl
+```
+
+指定したディレクトリ配下に、各フレームが `frame-0000.svg`, `frame-0001.svg` のような連番ファイル名で出力されます。
+
+<FileTree>
+
+- frames
+  - frame-0000.svg
+  - frame-0001.svg
+  - frame-0002.svg
+  - frame-0003.svg  以下略
+
+</FileTree>
+
+## サンプリングレートの指定
+
+`--fps` オプションと組み合わせることで、サンプリング間隔を調整できます。
+
+```bash
+# 1秒あたり10フレームのレートで出力
+console2svg capture -v --fps 10 --save-frames ./output-frames -- nyancat
+```

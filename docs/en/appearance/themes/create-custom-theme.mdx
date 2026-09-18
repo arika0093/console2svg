@@ -1,0 +1,172 @@
+---
+title: Create custom themes
+description: theme.json structure, references to other themes, each section, and distribution methods.
+---
+
+import { FileTree } from '@astrojs/starlight/components';
+
+A custom theme is a directory with `theme.json` at the theme root. Assets such as images and window frames can also be included in the same directory.
+
+## File structure
+
+<FileTree>
+
+- my-theme
+  - theme.json
+  - preview.png
+  - background.png
+  - chrome.svg
+
+</FileTree>
+
+`theme.json` is required. Add `preview.png`, `background.png`, and `chrome.svg` as needed.
+
+The minimal structure is as follows.
+
+```json
+{
+  "schemaVersion": 1,
+  "id": "my-theme",
+  "name": "My Theme",
+  "version": "1.0.0",
+  "terminal": {
+    "foreground": "#d4d4d4",
+    "background": "#1e1e1e",
+    "ansiPalette": [
+      "#000000", "#cd3131", "#0dbc79", "#e5e510",
+      "#2472c8", "#bc3fbc", "#11a8cd", "#e5e5e5",
+      "#666666", "#f14c4c", "#23d18b", "#f5f543",
+      "#3b8eea", "#d670d6", "#29b8db", "#ffffff"
+    ]
+  }
+}
+```
+
+`ansiPalette` must contain 16 colors: normal colors and bright colors. Make `id` a unique name that does not contain `/`, `\`, or `:`.
+
+## Referencing other themes
+
+When you specify the ID of a built-in theme or a theme included in the same distribution in `$include`, you can inherit existing colors and appearance and define only the differences.
+
+```json
+{
+  "schemaVersion": 1,
+  "id": "my-github-theme",
+  "name": "My GitHub Theme",
+  "version": "1.0.0",
+  "$include": ["github-dark"],
+  "appearance": {
+    "normal": {
+      "background": ["#101820", "#172a3a"]
+    }
+  }
+}
+```
+
+When referencing a theme in another Git repository, specify `source` in object form.
+The referenced destination also needs a `theme.json`.
+
+```json
+"$include": [
+  { "id": "base-theme", "source": "owner/theme-pack" }
+]
+```
+
+## Full example
+
+Use the built-in [`cyberpunk`](https://github.com/arika0093/console2svg/blob/main/themes/full/cyberpunk/) theme as a reference.
+
+### theme.json
+
+```jsonc
+{
+  "schemaVersion": 1,
+  "id": "cyberpunk",
+  "name": "Cyberpunk HUD",
+  "version": "1.0.0",
+  "description": "A neon HUD frame with a high-contrast cyberpunk terminal palette.",
+  "appearance": {
+    // Defines the appearance of the window frame
+    // Appearance when launched with cyberpunk
+    "normal": {
+      "id": "cyberpunk",
+      "window": "chrome.json",
+      "margin": 3,
+      "padding": 11,
+      "opacity": 0.85
+    },
+    // Appearance when launched with cyberpunk-pc
+    "pc": {
+      "id": "cyberpunk-pc",
+      "window": "chrome.json",
+      "pcPadding": 30,
+      "margin": 3,
+      "padding": 11,
+      "opacity": 0.85,
+      "background": [
+        "#09051a",
+        "#17104a"
+      ]
+    }
+  },
+  // Defines the terminal color palette
+  "terminal": {
+    // Foreground color
+    "foreground": "#d8f9ff",
+    // Background color
+    "background": "#090b1a",
+    // 16 ANSI colors
+    "ansiPalette": [
+      "#090b1a",
+      "#ff3c9e",
+      "#55f7bd",
+      "#f6e05e",
+      "#55b8ff",
+      "#d56dff",
+      "#4deeff",
+      "#d8f9ff",
+      "#35406d",
+      "#ff72b8",
+      "#8dffd1",
+      "#fff59b",
+      "#8bd2ff",
+      "#e7a1ff",
+      "#8df6ff",
+      "#ffffff"
+    ]
+  }
+}
+```
+
+### chrome.json
+
+```jsonc
+{
+  // Padding on each side of the terminal shell
+  // More space is reserved at the top for the title bar
+  "paddingTop": 38,
+  "paddingRight": 7,
+  "paddingBottom": 7,
+  "paddingLeft": 7,
+  // Window frame shadow
+  "shadowOffset": 10,
+  // Window frame corner radius
+  "clientCornerRadius": 0,
+  // Override the background color here
+  "themeBackgroundOverride": "#090b1a",
+  // Window frame SVG template
+  "svgTemplate": "window.svg"
+}
+```
+
+## Distribution
+
+Publish the theme root as a Git repository or package it into an archive. Users can install it as follows.
+
+```bash
+console2svg theme install https://github.com/owner/my-theme.git
+console2svg theme install owner/my-theme
+```
+
+The GitHub `owner/repository` shorthand, branch selection, and subdirectories inside a repository are also supported.
+When distributing a theme, always include `theme.json` and all referenced assets, and update the `id` and `version`.

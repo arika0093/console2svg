@@ -1,0 +1,32 @@
+---
+title: Manual masking
+description: Manually specify particular strings or regular expression patterns to mask with the --mask option.
+---
+
+Use the `--mask` option when you have project-specific tokens, internal domain names, personal names, or other information that you want to hide individually.
+
+## Specifying strings
+
+Pass the string you want to mask to `--mask`.
+
+```bash
+console2svg capture --mask "1234567890abcdef" -w 100 -h 12 \
+            -- echo "this value will be redacted:: 1234567890abcdef"
+```
+
+<!-- c2s:: -w 100 -h 4 --mask 1234567890abcdef -- echo "this value will be redacted:: 1234567890abcdef" -->
+![console2svg capture with manual masking](../../../assets/cmd-mask.svg)
+
+## Specifying multiple patterns
+
+You can specify the `--mask` option multiple times.
+
+```bash
+console2svg capture \
+  --mask "internal-host.local" \
+  --mask "admin_password" \
+  --mask "user[0-9]+" \
+  -- ./check.sh
+```
+
+Because regular expression patterns are also supported, you can mask systematic IDs and account names all at once.

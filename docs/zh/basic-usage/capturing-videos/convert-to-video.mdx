@@ -1,0 +1,59 @@
+---
+title: 转换为视频格式
+description: 将终端录制结果输出为 GIF 动画或 MP4/WebM 视频的方法。
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+可以将捕获的 SVG 动画直接转换并输出为 GIF、MP4 等常见视频格式。
+
+## 输出示例
+
+通过 `-o` 选项指定目标扩展名。如果系统已安装 `ffmpeg`，会自动执行编码处理。
+
+### GIF 动画
+
+```bash
+console2svg capture -v -o demo.gif -- cmatrix -ab
+```
+
+{/* c2s:: -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab */}
+![console2svg capture -v -o demo.gif -- cmatrix -ab](../../../assets/cmd-video.gif)
+
+### MP4 视频
+
+```bash
+console2svg capture -v -o demo.mp4 -- cmatrix -ab
+```
+
+<video controls width="600">
+  {/* c2s:: -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab */}
+  <source src="/docs/assets/cmd-video.mp4" type="video/mp4" />
+</video>
+
+### WebM 视频
+
+```bash
+console2svg capture -v -o demo.webm -- cmatrix -ab
+```
+
+<video controls width="600">
+  {/* c2s:: -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab */}
+  <source src="/docs/assets/cmd-video.webm" type="video/webm" />
+</video>
+
+## 工作原理
+
+动画 SVG 本身无法直接转换为各种视频格式。因此，转换处理大致会经过以下步骤。
+
+<Steps>
+
+1. 使用 [save-frames](./save-frames) 将生成的动画抽取为每帧一个 SVG。
+
+2. 如果可以直接从 `svg` 转换（启用了 `librsvg` 时），只需将所有 SVG 合并并传给 `ffmpeg`。
+
+3. 如果无法直接从 `svg` 转换，则先通过 `resvg` [转换为 PNG 图片](../capturing-images/convert-to-png.md)，再传给 `ffmpeg`。
+
+</Steps>
+
+由此即可在各种环境中转换为视频格式。

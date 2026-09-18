@@ -1,0 +1,37 @@
+---
+title: 以序列图片输出
+description: 使用 --save-frames 选项保存每帧独立 SVG 图片的方法。
+---
+
+import { FileTree } from '@astrojs/starlight/components';
+
+如果想把动画的每一帧作为独立图片文件取出，请使用 `--save-frames` 选项。
+
+## 保存序列图片
+
+为 `--save-frames` 指定保存目标目录后执行。
+
+```bash
+console2svg capture -v --save-frames ./frames -- sl
+```
+
+在指定目录下，各帧会以 `frame-0000.svg`、`frame-0001.svg` 等序列文件名输出。
+
+<FileTree>
+
+- frames
+  - frame-0000.svg
+  - frame-0001.svg
+  - frame-0002.svg
+  - frame-0003.svg  以下略
+
+</FileTree>
+
+## 指定采样率
+
+与 `--fps` 选项组合使用，可以调整采样间隔。
+
+```bash
+# 以每秒 10 帧的速率输出
+console2svg capture -v --fps 10 --save-frames ./output-frames -- nyancat
+```

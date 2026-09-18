@@ -1,0 +1,47 @@
+---
+title: 概览
+description: 使用 -v 选项记录动画 SVG 的方法和主要选项说明。
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+如果想记录 TUI 工具或进度条的动态，请指定 `-v`（或 `--video`）选项来生成动画 SVG。
+
+## 基本用法
+
+<Steps>
+
+1. 执行 `console2svg capture -v -- (command)`。
+
+   ```bash
+   console2svg capture -v -c -d -- sl
+   ```
+
+2. 执行内容会记录为动画 SVG（`output.svg`）。
+
+   ![console2svg capture -c -d -v -- sl](/docs/assets/cmd-sl.svg)
+
+</Steps>
+
+## 主要选项
+
+* **`-v` / `--video`**：启用动画输出。
+* **`--fps <number>`**：指定采样帧率（例：`--fps 30`）。
+* **`--sleep <sec>`**：指定从最终帧循环回首帧前的等待秒数（例：`--sleep 0.8`）。
+* **`--no-loop`**：禁用动画重复播放，播放一次后停止。
+* **`--fadeout <sec>`**：设置循环切换时的淡出时间（秒）。
+* **`--timing <mode>`**：指定时间控制方式。
+  * `deterministic`：规范化事件时间，重视可复现性（适合 CI）。
+  * `realtime`：按实际执行时间记录。
+* **`--timeout <sec>`**：让不会结束的命令在指定秒数后自动停止并完成录制。
+
+详情请参阅 [`capture` 选项](../../../reference/cli/capture/)。
+
+
+### 执行示例
+
+```sh
+console2svg capture -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat
+```
+
+![console2svg capture -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat](/docs/assets/cmd-nyancat.svg)

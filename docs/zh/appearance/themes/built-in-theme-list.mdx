@@ -1,0 +1,19 @@
+---
+title: 内置主题概览
+description: 按类型查看 console2svg 中包含的内置主题。
+---
+
+console2svg 的内置主题分为以下类型。
+
+* [调色板](./built-in-palettes.mdx)：只更改终端配色的主题
+* [窗口边框](./built-in-window-themes.mdx)：指定 macOS 风格或 Windows 风格边框的主题
+* [完整主题](./built-in-full-themes.mdx)：同时更改配色和窗口边框的主题
+
+可以把主题 ID 传给 `-t` 或 `--theme` 来应用主题。
+如果只指定窗口边框，请使用 `-d` 或 `--window`。
+
+```bash
+console2svg capture --theme nord -- console2svg
+console2svg capture --window macos-pc -- console2svg
+console2svg capture --theme cyberpunk-pc -- console2svg
+```

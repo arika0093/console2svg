@@ -1,0 +1,56 @@
+:root {
+  --sl-color-accent-low: #102d3b;
+  --sl-color-accent: #26a6d1;
+  --sl-color-accent-high: #a8e4f5;
+  --sl-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+}
+
+.sl-markdown-content img {
+  border-radius: 0.5rem;
+}
+
+.sl-markdown-content img[src$='.svg'] {
+  background: var(--sl-color-gray-6);
+}
+
+html[data-has-hero] {
+  background:
+    radial-gradient(circle at 80% 8%, color-mix(in srgb, var(--sl-color-accent) 16%, transparent), transparent 30rem),
+    var(--sl-color-black);
+}
+
+html[data-has-hero] main {
+  overflow: hidden;
+}
+
+html[data-has-hero] .sl-markdown-content > h2 {
+  margin-top: 4rem;
+  font-size: clamp(var(--sl-text-2xl), 4vw, var(--sl-text-4xl));
+  text-align: center;
+}
+
+html[data-has-hero] .sl-markdown-content > .sl-card-grid {
+  margin-top: 2rem;
+}
+
+/* Nested sidebar group headings are no longer bold, aligning with regular menu items. */
+ul ul details summary .large,
+ul:not(.top-level) details summary .large {
+  font-size: var(--sl-text-sm);
+  font-weight: 400;
+  color: var(--sl-color-gray-2);
+}
+
+ul ul details summary:hover .large,
+ul:not(.top-level) details summary:hover .large {
+  color: var(--sl-color-white);
+}
+
+/* h3 heading */
+.level-h3 {
+  border-width: 0 0 1px 0;
+  border-style: dashed;
+  border-color: #1162f5;
+  padding: .5ex 5px .5ex;
+}

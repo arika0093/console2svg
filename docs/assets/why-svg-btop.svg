@@ -6,84 +6,62 @@
 .c2 .w { white-space: pre; }
 .c2 .aa{fill:#D94D4D;font-weight:bold}
 .c2 .ab{fill:#FFFFFF;font-weight:bold}
-.c2 .ac{fill:#DC4C4C}
-.c2 .ad{fill:#D3865C}
-.c2 .ae{fill:#CBC06C}
-.c2 .af{fill:#F5F5F5;font-weight:bold}
-.c2 .ag{fill:#A2F0AF;font-weight:bold}
-.c2 .ah{fill:#B6EEA4;font-weight:bold}
-.c2 .ai{fill:#CBEB98;font-weight:bold}
-.c2 .aj{fill:#DFE98E;font-weight:bold}
-.c2 .ak{fill:#F4E682;font-weight:bold}
-.c2 .al{fill:#F7CB7A;font-weight:bold}
-.c2 .am{fill:#4D4D4D;font-weight:bold}
-.c2 .an{fill:#D09962}
-.c2 .ao{fill:#CCCCCC}
-.c2 .ap{fill:#A1C584}
-.c2 .aq{fill:#D19260}
-.c2 .ar{fill:#D86453}
-.c2 .as{fill:#CFA264}
-.c2 .at{fill:#D4805B}
-.c2 .au{fill:#D57B59}
-.c2 .av{fill:#606060}
-.c2 .aw{fill:#B54040}
-.c2 .ax{fill:#EEEEEE}
-.c2 .ay{fill:#80D0A3}
-.c2 .az{fill:#8CD09E}
-.c2 .ba{fill:#404040}
-.c2 .bb{fill:#DB616D}
-.c2 .bc{fill:#DA616D}
-.c2 .bd{fill:#C5C5C5}
-.c2 .be{fill:#7CC89E}
-.c2 .bf{fill:#81D0A3}
-.c2 .bg{fill:#BDBDBD}
-.c2 .bh{fill:#78C098}
-.c2 .bi{fill:#F4CD73}
-.c2 .bj{fill:#F7D075}
-.c2 .bk{fill:#B5B5B5}
-.c2 .bl{fill:#75B792}
-.c2 .bm{fill:#76BA94}
-.c2 .bn{fill:#ACACAC}
-.c2 .bo{fill:#71AE8C}
-.c2 .bp{fill:#72B18E}
-.c2 .bq{fill:#70DEF5}
-.c2 .br{fill:#72E2F8}
-.c2 .bs{fill:#A4A4A4}
-.c2 .bt{fill:#6DA686}
-.c2 .bu{fill:#6EA787}
-.c2 .bv{fill:#9B9B9B}
-.c2 .bw{fill:#699D80}
-.c2 .bx{fill:#445E2B}
-.c2 .by{fill:#939393}
-.c2 .bz{fill:#65947A}
-.c2 .ca{fill:#8B8B8B}
-.c2 .cb{fill:#618C74}
-.c2 .cc{fill:#848484}
-.c2 .cd{fill:#5E856F}
-.c2 .ce{fill:#618A73}
-.c2 .cf{fill:#B0A9DE}
-.c2 .cg{fill:#7B7B7B}
-.c2 .ch{fill:#5A7C69}
-.c2 .ci{fill:#6F65B7}
-.c2 .cj{fill:#737373}
-.c2 .ck{fill:#577363}
-.c2 .cl{fill:#423794}
-.c2 .cm{fill:#6A6A6A}
-.c2 .cn{fill:#536B5D}
-.c2 .co{fill:#6F2372}
-.c2 .cp{fill:#626262}
-.c2 .cq{fill:#4F6257}
-.c2 .cr{fill:#7D4180}
-.c2 .cs{fill:#5A5A5A}
-.c2 .ct{fill:#4B5951}
-.c2 .cu{fill:#AC78AF}
-.c2 .cv{fill:#515151}
-.c2 .cw{fill:#47514B}
-.c2 .cx{fill:#48524C}
-.c2 .cy{fill:#DCAFDE}
-.c2 .cz{fill:#494949}
-.c2 .da{fill:#434845}
-.c2 .db{fill:#454B47}
+.c2 .ac{fill:#F5F5F5;font-weight:bold}
+.c2 .ad{fill:#4D4D4D;font-weight:bold}
+.c2 .ae{fill:#77CA9B}
+.c2 .af{fill:#CCCCCC}
+.c2 .ag{fill:#CBC06C}
+.c2 .ah{fill:#404040}
+.c2 .ai{fill:#B1C37B}
+.c2 .aj{fill:#A1C584}
+.c2 .ak{fill:#B3C37A}
+.c2 .al{fill:#78CA9B}
+.c2 .am{fill:#AEC47C}
+.c2 .an{fill:#606060}
+.c2 .ao{fill:#B54040}
+.c2 .ap{fill:#EEEEEE}
+.c2 .aq{fill:#8C4142}
+.c2 .ar{fill:#BF575E}
+.c2 .as{fill:#80D0A3}
+.c2 .at{fill:#6A322F}
+.c2 .au{fill:#C5C5C5}
+.c2 .av{fill:#7CC89E}
+.c2 .aw{fill:#BDBDBD}
+.c2 .ax{fill:#78C098}
+.c2 .ay{fill:#FFBD23}
+.c2 .az{fill:#B5B5B5}
+.c2 .ba{fill:#75B792}
+.c2 .bb{fill:#ACACAC}
+.c2 .bc{fill:#71AE8C}
+.c2 .bd{fill:#5BB7CF}
+.c2 .be{fill:#A4A4A4}
+.c2 .bf{fill:#6DA686}
+.c2 .bg{fill:#9B9B9B}
+.c2 .bh{fill:#699D80}
+.c2 .bi{fill:#B9E985}
+.c2 .bj{fill:#939393}
+.c2 .bk{fill:#65947A}
+.c2 .bl{fill:#8B8B8B}
+.c2 .bm{fill:#618C74}
+.c2 .bn{fill:#848484}
+.c2 .bo{fill:#5E856F}
+.c2 .bp{fill:#7B7B7B}
+.c2 .bq{fill:#5A7C69}
+.c2 .br{fill:#737373}
+.c2 .bs{fill:#577363}
+.c2 .bt{fill:#423794}
+.c2 .bu{fill:#6A6A6A}
+.c2 .bv{fill:#536B5D}
+.c2 .bw{fill:#6F2372}
+.c2 .bx{fill:#626262}
+.c2 .by{fill:#4F6257}
+.c2 .bz{fill:#7D4180}
+.c2 .ca{fill:#5A5A5A}
+.c2 .cb{fill:#4B5951}
+.c2 .cc{fill:#515151}
+.c2 .cd{fill:#47514B}
+.c2 .ce{fill:#494949}
+.c2 .cf{fill:#434845}
 </style><defs><pattern id="c2-redacted-stripe" patternUnits="userSpaceOnUse" width="8" height="8"><path d="M0 0h8v8H0z" fill="#1e1e1e"/><path d="M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6" stroke="#d4d4d4" stroke-width="2" opacity="0.3"/></pattern></defs><defs>
 <linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1d2e"/><stop offset="100%" stop-color="#252840"/></linearGradient>
 </defs>
@@ -129,268 +107,275 @@
 <text class="ab" x="100.8" y="14" textLength="25.2">enu</text>
 <text class="aa" x="142.8" y="14" textLength="8.4">p</text>
 <text class="ab w" x="151.2" y="14" textLength="58.8">reset *</text>
-<text class="ab" x="478.8" y="14" textLength="67.2">06:38:00</text>
-<text class="aa" x="907.2" y="14" textLength="8.4">-</text>
-<text class="ab" x="924" y="14" textLength="42">100ms</text>
+<text class="ab" x="478.8" y="14" textLength="67.2">14:01:29</text>
+<text class="aa" x="898.8" y="14" textLength="8.4">-</text>
+<text class="ab" x="915.6" y="14" textLength="50.4">2000ms</text>
 <text class="aa" x="974.4" y="14" textLength="8.4">+</text>
-<text class="ac w" x="630" y="32" textLength="184.8">⣶⣶⣶      ⢀⢰⢀    ⣄    ⣦</text>
-<text class="ad" x="621.6" y="50" textLength="201.6">⡀⣿⣿⣿⣷⣶⣶⣾⣶⣶⣼⣾⣾⣦⣶⣼⣴⣿⣷⣶⣶⣼⣿⣷</text>
-<text class="ab w" x="848.4" y="50" textLength="58.8">EPYC 77</text>
-<text class="ab w" x="924" y="50" textLength="58.8">3.3 GHz</text>
-<text class="ae" x="621.6" y="68" textLength="201.6">⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</text>
-<text class="af" x="831.6" y="68" textLength="25.2">CPU</text>
-<text class="ag" x="865.2" y="68" textLength="8.4">■</text>
-<text class="ah" x="873.6" y="68" textLength="8.4">■</text>
-<text class="ai" x="882" y="68" textLength="8.4">■</text>
-<text class="aj" x="890.4" y="68" textLength="8.4">■</text>
-<text class="ak" x="898.8" y="68" textLength="8.4">■</text>
-<text class="al" x="907.2" y="68" textLength="8.4">■</text>
-<text class="am" x="915.6" y="68" textLength="33.6">■■■■</text>
-<text class="an" x="966" y="68" textLength="16.8">67</text>
-<text class="ao" x="982.8" y="68" textLength="8.4">%</text>
-<text class="ap" x="613.2" y="86" textLength="210">⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</text>
-<text class="af" x="831.6" y="86" textLength="8.4">C</text>
-<text class="ao" x="840" y="86" textLength="8.4">0</text>
-<text class="aq" x="865.2" y="86" textLength="16.8">⣶⣶</text>
-<text class="an" x="882" y="86" textLength="8.4">⣶</text>
-<text class="ar" x="890.4" y="86" textLength="8.4">⣿</text>
-<text class="aq" x="898.8" y="86" textLength="16.8">⣶⣶</text>
-<text class="as" x="915.6" y="86" textLength="8.4">⣶</text>
-<text class="an" x="924" y="86" textLength="8.4">⣶</text>
-<text class="ar" x="932.4" y="86" textLength="8.4">⣿</text>
-<text class="as w" x="940.8" y="86" textLength="42">⣶  63</text>
-<text class="ao" x="982.8" y="86" textLength="8.4">%</text>
-<text class="ap" x="613.2" y="104" textLength="210">⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</text>
-<text class="af" x="831.6" y="104" textLength="8.4">C</text>
-<text class="ao" x="840" y="104" textLength="8.4">1</text>
-<text class="aq" x="865.2" y="104" textLength="8.4">⣶</text>
-<text class="at" x="873.6" y="104" textLength="8.4">⣶</text>
-<text class="an" x="882" y="104" textLength="8.4">⣶</text>
-<text class="au" x="890.4" y="104" textLength="8.4">⣾</text>
-<text class="at" x="898.8" y="104" textLength="8.4">⣶</text>
-<text class="an" x="907.2" y="104" textLength="8.4">⣶</text>
-<text class="aq" x="915.6" y="104" textLength="8.4">⣶</text>
-<text class="au" x="924" y="104" textLength="8.4">⣾</text>
-<text class="ar" x="932.4" y="104" textLength="16.8">⣿⣷</text>
-<text class="ad" x="966" y="104" textLength="16.8">75</text>
-<text class="ao" x="982.8" y="104" textLength="8.4">%</text>
-<text class="ae" x="621.6" y="122" textLength="201.6">⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</text>
-<text class="ao w" x="831.6" y="122" textLength="159.6">LAV: 7.34 5.77 2.96</text>
-<text class="ad" x="621.6" y="140" textLength="201.6">⠁⣿⣿⣿⡿⠿⠿⢿⠿⠿⢻⢿⢿⠟⠿⢻⠻⣿⡿⠿⠿⢻⣿⡿</text>
-<text class="av" x="16.8" y="158" textLength="16.8">up</text>
-<text class="av" x="42" y="158" textLength="67.2">01:06:04</text>
-<text class="ac w" x="630" y="158" textLength="184.8">⠿⠿⠿      ⠈⠸⠈    ⠋    ⠟</text>
+<text class="ab w" x="848.4" y="32" textLength="58.8">EPYC 77</text>
+<text class="ab w" x="924" y="32" textLength="58.8">2.4 GHz</text>
+<text class="ac" x="831.6" y="50" textLength="25.2">CPU</text>
+<text class="ad" x="865.2" y="50" textLength="84">■■■■■■■■■■</text>
+<text class="ae" x="974.4" y="50" textLength="8.4">0</text>
+<text class="af" x="982.8" y="50" textLength="8.4">%</text>
+<text class="ag" x="806.4" y="68" textLength="8.4">⡄</text>
+<text class="ac" x="831.6" y="68" textLength="8.4">C</text>
+<text class="af" x="840" y="68" textLength="8.4">0</text>
+<text class="ah" x="865.2" y="68" textLength="67.2">⣀⣀⣀⣀⣀⣀⣀⣀</text>
+<text class="ai" x="932.4" y="68" textLength="8.4">⡄</text>
+<text class="ah" x="940.8" y="68" textLength="8.4">⣀</text>
+<text class="ae" x="974.4" y="68" textLength="8.4">0</text>
+<text class="af" x="982.8" y="68" textLength="8.4">%</text>
+<text class="aj" x="806.4" y="86" textLength="16.8">⣇⣀</text>
+<text class="ac" x="831.6" y="86" textLength="8.4">C</text>
+<text class="af" x="840" y="86" textLength="8.4">1</text>
+<text class="ah" x="865.2" y="86" textLength="67.2">⣀⣀⣀⣀⣀⣀⣀⣀</text>
+<text class="ak" x="932.4" y="86" textLength="8.4">⡄</text>
+<text class="ah" x="940.8" y="86" textLength="8.4">⣀</text>
+<text class="al" x="974.4" y="86" textLength="8.4">1</text>
+<text class="af" x="982.8" y="86" textLength="8.4">%</text>
+<text class="aj" x="806.4" y="104" textLength="16.8">⡏⠉</text>
+<text class="ac" x="831.6" y="104" textLength="8.4">C</text>
+<text class="af" x="840" y="104" textLength="8.4">2</text>
+<text class="ah" x="865.2" y="104" textLength="67.2">⣀⣀⣀⣀⣀⣀⣀⣀</text>
+<text class="am" x="932.4" y="104" textLength="8.4">⡄</text>
+<text class="ah" x="940.8" y="104" textLength="8.4">⣀</text>
+<text class="al" x="974.4" y="104" textLength="8.4">1</text>
+<text class="af" x="982.8" y="104" textLength="8.4">%</text>
+<text class="ag" x="806.4" y="122" textLength="8.4">⠃</text>
+<text class="ac" x="831.6" y="122" textLength="8.4">C</text>
+<text class="af" x="840" y="122" textLength="8.4">3</text>
+<text class="ah" x="865.2" y="122" textLength="67.2">⣀⣀⣀⣀⣀⣀⣀⣀</text>
+<text class="ai" x="932.4" y="122" textLength="8.4">⡄</text>
+<text class="ah" x="940.8" y="122" textLength="8.4">⣀</text>
+<text class="ae" x="974.4" y="122" textLength="8.4">0</text>
+<text class="af" x="982.8" y="122" textLength="8.4">%</text>
+<text class="af w" x="831.6" y="140" textLength="159.6">LAV: 0.69 2.18 1.31</text>
+<text class="an" x="16.8" y="158" textLength="16.8">up</text>
+<text class="an" x="42" y="158" textLength="67.2">00:08:32</text>
 <text class="aa" x="25.2" y="194" textLength="8.4">²</text>
 <text class="ab" x="33.6" y="194" textLength="25.2">mem</text>
 <text class="aa" x="243.6" y="194" textLength="8.4">d</text>
 <text class="ab" x="252" y="194" textLength="33.6">isks</text>
-<text class="aw" x="411.6" y="194" textLength="8.4">i</text>
-<text class="ax" x="420" y="194" textLength="8.4">o</text>
+<text class="ao" x="411.6" y="194" textLength="8.4">i</text>
+<text class="ap" x="420" y="194" textLength="8.4">o</text>
 <text class="aa" x="478.8" y="194" textLength="8.4">⁴</text>
 <text class="ab" x="487.2" y="194" textLength="33.6">proc</text>
-<text class="aw" x="537.6" y="194" textLength="8.4">f</text>
-<text class="ax" x="546" y="194" textLength="42">ilter</text>
-<text class="ax" x="672" y="194" textLength="33.6">per-</text>
-<text class="aw" x="705.6" y="194" textLength="8.4">c</text>
-<text class="ax" x="714" y="194" textLength="25.2">ore</text>
-<text class="aw" x="756" y="194" textLength="8.4">r</text>
-<text class="ax" x="764.4" y="194" textLength="50.4">everse</text>
-<text class="ax" x="831.6" y="194" textLength="25.2">tre</text>
-<text class="aw" x="856.8" y="194" textLength="8.4">e</text>
+<text class="ao" x="537.6" y="194" textLength="8.4">f</text>
+<text class="ap" x="546" y="194" textLength="42">ilter</text>
+<text class="ap" x="672" y="194" textLength="33.6">per-</text>
+<text class="ao" x="705.6" y="194" textLength="8.4">c</text>
+<text class="ap" x="714" y="194" textLength="25.2">ore</text>
+<text class="ao" x="756" y="194" textLength="8.4">r</text>
+<text class="ap" x="764.4" y="194" textLength="50.4">everse</text>
+<text class="ap" x="831.6" y="194" textLength="25.2">tre</text>
+<text class="ao" x="856.8" y="194" textLength="8.4">e</text>
 <text class="aa" x="882" y="194" textLength="8.4">&lt;</text>
 <text class="ab w" x="898.8" y="194" textLength="67.2">cpu lazy</text>
 <text class="aa" x="974.4" y="194" textLength="8.4">&gt;</text>
-<text class="ab w" x="16.8" y="212" textLength="193.2">Total:         7.75 GiB</text>
+<text class="ab w" x="16.8" y="212" textLength="193.2">Total:         15.6 GiB</text>
+<text class="ab" x="235.2" y="212" textLength="33.6">root</text>
+<text class="ab" x="378" y="212" textLength="25.2">144</text>
+<text class="ab" x="411.6" y="212" textLength="25.2">GiB</text>
 <text class="ab w" x="495.6" y="212" textLength="487.2">Pid: Program: Command:              User:  MemB       Cpu%</text>
-<text class="af" x="991.2" y="212" textLength="8.4">↑</text>
-<text class="ao" x="16.8" y="230" textLength="42">Used:</text>
-<text class="ao" x="142.8" y="230" textLength="33.6">4.05</text>
-<text class="ao" x="184.8" y="230" textLength="25.2">GiB</text>
-<text class="ao" x="487.2" y="230" textLength="42">20733</text>
-<text class="ay" x="537.6" y="230" textLength="67.2">VBCSComp</text>
-<text class="ao w" x="613.2" y="230" textLength="218.4">/usr/share/dotnet/sdk root</text>
-<text class="az" x="856.8" y="230" textLength="33.6">630M</text>
-<text class="ba" x="898.8" y="230" textLength="42">⣀⣀⣀⣀⣀</text>
-<text class="ay" x="957.6" y="230" textLength="25.2">0.0</text>
-<text class="bb" x="16.8" y="248" textLength="109.2">⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤</text>
-<text class="bc" x="126" y="248" textLength="50.4">⣤⣤⣤⣤⣤⣤</text>
-<text class="ao" x="184.8" y="248" textLength="25.2">52%</text>
-<text class="bd" x="487.2" y="248" textLength="42">21377</text>
-<text class="be" x="537.6" y="248" textLength="67.2">MainThre</text>
-<text class="bd w" x="613.2" y="248" textLength="226.8">node /workspaces/cons code+</text>
-<text class="bf" x="856.8" y="248" textLength="33.6">529M</text>
-<text class="ba" x="898.8" y="248" textLength="42">⣀⣀⣀⣀⣀</text>
-<text class="be" x="957.6" y="248" textLength="25.2">0.0</text>
-<text class="ao" x="16.8" y="266" textLength="84">Available:</text>
-<text class="ao" x="142.8" y="266" textLength="33.6">3.70</text>
-<text class="ao" x="184.8" y="266" textLength="25.2">GiB</text>
-<text class="bg" x="487.2" y="266" textLength="42">26924</text>
-<text class="be" x="537.6" y="266" textLength="67.2">runc:[2:</text>
-<text class="bg w" x="613.2" y="266" textLength="218.4">runc init             root</text>
-<text class="bh" x="856.8" y="266" textLength="33.6">5.1M</text>
-<text class="ba" x="898.8" y="266" textLength="33.6">⣀⣀⣀⣀</text>
-<text class="be" x="932.4" y="266" textLength="8.4">⢀</text>
-<text class="be" x="957.6" y="266" textLength="25.2">5.5</text>
-<text class="bi" x="16.8" y="284" textLength="42">⣤⣤⣤⣤⣤</text>
-<text class="bj" x="58.8" y="284" textLength="8.4">⣤</text>
-<text class="bi" x="67.2" y="284" textLength="42">⣤⣤⣤⣤⣤</text>
-<text class="bj" x="109.2" y="284" textLength="8.4">⣤</text>
-<text class="bi" x="117.6" y="284" textLength="8.4">⣤</text>
-<text class="bj" x="126" y="284" textLength="50.4">⣤⣤⣤⣤⣤⣤</text>
-<text class="ao" x="184.8" y="284" textLength="25.2">48%</text>
-<text class="bk" x="487.2" y="284" textLength="42">20104</text>
-<text class="bl" x="537.6" y="284" textLength="58.8">MSBuild</text>
-<text class="bk w" x="613.2" y="284" textLength="218.4">/usr/share/dotnet/sdk root</text>
-<text class="bm" x="856.8" y="284" textLength="33.6">190M</text>
-<text class="ba" x="898.8" y="284" textLength="42">⣀⣀⣀⣀⣀</text>
-<text class="bl" x="957.6" y="284" textLength="25.2">0.0</text>
-<text class="ao" x="16.8" y="302" textLength="58.8">Cached:</text>
-<text class="ao" x="142.8" y="302" textLength="33.6">3.79</text>
-<text class="ao" x="184.8" y="302" textLength="25.2">GiB</text>
-<text class="bn" x="487.2" y="302" textLength="42">20032</text>
-<text class="bo" x="537.6" y="302" textLength="58.8">MSBuild</text>
-<text class="bn w" x="613.2" y="302" textLength="218.4">/usr/share/dotnet/sdk root</text>
-<text class="bp" x="856.8" y="302" textLength="33.6">194M</text>
-<text class="ba" x="898.8" y="302" textLength="42">⣀⣀⣀⣀⣀</text>
-<text class="bo" x="957.6" y="302" textLength="25.2">0.0</text>
-<text class="bq" x="16.8" y="320" textLength="8.4">⣤</text>
-<text class="br" x="25.2" y="320" textLength="16.8">⣤⣤</text>
-<text class="bq" x="42" y="320" textLength="8.4">⣤</text>
-<text class="br" x="50.4" y="320" textLength="33.6">⣤⣤⣤⣤</text>
-<text class="bq" x="84" y="320" textLength="8.4">⣤</text>
-<text class="br" x="92.4" y="320" textLength="84">⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤</text>
-<text class="ao" x="184.8" y="320" textLength="25.2">49%</text>
-<text class="bs" x="487.2" y="320" textLength="42">24068</text>
-<text class="bt" x="537.6" y="320" textLength="67.2">console2</text>
-<text class="bs w" x="613.2" y="320" textLength="218.4">console2svg batch mar root</text>
-<text class="bu" x="856.8" y="320" textLength="33.6">151M</text>
-<text class="ba" x="898.8" y="320" textLength="42">⣀⣀⣀⣀⣀</text>
-<text class="bt" x="957.6" y="320" textLength="25.2">0.0</text>
-<text class="ao" x="16.8" y="338" textLength="42">Free:</text>
-<text class="ao" x="151.2" y="338" textLength="25.2">135</text>
-<text class="ao" x="184.8" y="338" textLength="25.2">MiB</text>
-<text class="bv" x="495.6" y="338" textLength="33.6">8143</text>
-<text class="bw" x="537.6" y="338" textLength="67.2">MainThre</text>
-<text class="bv w" x="613.2" y="338" textLength="226.8">/vscode/bin/linux-x64 code+</text>
-<text class="bu" x="856.8" y="338" textLength="33.6">571M</text>
-<text class="ba" x="898.8" y="338" textLength="16.8">⣀⣀</text>
-<text class="bw" x="915.6" y="338" textLength="16.8">⢀⡀</text>
-<text class="ba" x="932.4" y="338" textLength="8.4">⣀</text>
-<text class="bw" x="957.6" y="338" textLength="25.2">0.0</text>
-<text class="bx" x="16.8" y="356" textLength="159.6">⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀⡀</text>
-<text class="ao" x="193.2" y="356" textLength="16.8">2%</text>
-<text class="by" x="487.2" y="356" textLength="42">21330</text>
-<text class="bz" x="537.6" y="356" textLength="67.2">MainThre</text>
-<text class="by w" x="613.2" y="356" textLength="226.8">node scripts/dev.mjs  code+</text>
-<text class="bz" x="865.2" y="356" textLength="25.2">35M</text>
-<text class="ba" x="898.8" y="356" textLength="42">⣀⣀⣀⣀⣀</text>
-<text class="bz" x="957.6" y="356" textLength="25.2">0.0</text>
-<text class="ca" x="487.2" y="374" textLength="42">26843</text>
-<text class="bz" x="537.6" y="374" textLength="33.6">btop</text>
-<text class="ca w" x="613.2" y="374" textLength="218.4">btop                  root</text>
-<text class="cb" x="856.8" y="374" textLength="33.6">6.0M</text>
-<text class="ba" x="898.8" y="374" textLength="8.4">⣀</text>
-<text class="bz" x="907.2" y="374" textLength="8.4">⡀</text>
-<text class="ba" x="915.6" y="374" textLength="16.8">⣀⣀</text>
-<text class="bz" x="932.4" y="374" textLength="8.4">⢀</text>
-<text class="bz" x="957.6" y="374" textLength="25.2">5.5</text>
+<text class="ac" x="991.2" y="212" textLength="8.4">↑</text>
+<text class="af" x="16.8" y="230" textLength="42">Used:</text>
+<text class="af" x="142.8" y="230" textLength="33.6">1.04</text>
+<text class="af" x="184.8" y="230" textLength="25.2">GiB</text>
+<text class="af w" x="235.2" y="230" textLength="75.6">Used: 42%</text>
+<text class="aq" x="319.2" y="230" textLength="8.4">■</text>
+<text class="ar" x="327.6" y="230" textLength="8.4">■</text>
+<text class="ah" x="336" y="230" textLength="25.2">■■■</text>
+<text class="af w" x="369.6" y="230" textLength="67.2">61.0 GiB</text>
+<text class="af" x="495.6" y="230" textLength="33.6">6598</text>
+<text class="as" x="537.6" y="230" textLength="67.2">console2</text>
+<text class="af w" x="613.2" y="230" textLength="226.8">console2svg batch mar runn+</text>
+<text class="as" x="865.2" y="230" textLength="25.2">95M</text>
+<text class="ah" x="898.8" y="230" textLength="42">⣀⣀⣀⣀⣀</text>
+<text class="as" x="957.6" y="230" textLength="25.2">0.0</text>
+<text class="at" x="159.6" y="248" textLength="16.8">⣀⣀</text>
+<text class="af" x="193.2" y="248" textLength="16.8">7%</text>
+<text class="ab" x="235.2" y="248" textLength="33.6">swap</text>
+<text class="ab" x="369.6" y="248" textLength="33.6">2.99</text>
+<text class="ab" x="411.6" y="248" textLength="25.2">GiB</text>
+<text class="au" x="495.6" y="248" textLength="33.6">2112</text>
+<text class="av" x="537.6" y="248" textLength="67.2">Runner.W</text>
+<text class="au w" x="613.2" y="248" textLength="226.8">/home/******/actions- runn+</text>
+<text class="av" x="856.8" y="248" textLength="33.6">136M</text>
+<text class="ah" x="898.8" y="248" textLength="33.6">⣀⣀⣀⣀</text>
+<text class="av" x="932.4" y="248" textLength="8.4">⢀</text>
+<text class="av" x="957.6" y="248" textLength="25.2">0.1</text>
+<text class="af" x="16.8" y="266" textLength="84">Available:</text>
+<text class="af" x="142.8" y="266" textLength="33.6">14.5</text>
+<text class="af" x="184.8" y="266" textLength="25.2">GiB</text>
+<text class="af w" x="235.2" y="266" textLength="75.6">Used:  0%</text>
+<text class="ah" x="319.2" y="266" textLength="42">■■■■■</text>
+<text class="af w" x="386.4" y="266" textLength="50.4">0 Byte</text>
+<text class="aw" x="520.8" y="266" textLength="8.4">1</text>
+<text class="ax" x="537.6" y="266" textLength="58.8">systemd</text>
+<text class="aw w" x="613.2" y="266" textLength="218.4">/sbin/init            root</text>
+<text class="ax" x="865.2" y="266" textLength="25.2">14M</text>
+<text class="ah" x="898.8" y="266" textLength="42">⣀⣀⣀⣀⣀</text>
+<text class="ax" x="957.6" y="266" textLength="25.2">0.0</text>
+<text class="ay" x="159.6" y="284" textLength="16.8">⣿⣿</text>
+<text class="af" x="184.8" y="284" textLength="25.2">93%</text>
+<text class="ab" x="235.2" y="284" textLength="33.6">boot</text>
+<text class="ab" x="378" y="284" textLength="25.2">880</text>
+<text class="ab" x="411.6" y="284" textLength="25.2">MiB</text>
+<text class="az" x="495.6" y="284" textLength="33.6">2056</text>
+<text class="ba" x="537.6" y="284" textLength="67.2">provjobd</text>
+<text class="az w" x="613.2" y="284" textLength="218.4">/tmp/provjobd16146809 root</text>
+<text class="ba" x="865.2" y="284" textLength="25.2">99M</text>
+<text class="ah" x="898.8" y="284" textLength="33.6">⣀⣀⣀⣀</text>
+<text class="ba" x="932.4" y="284" textLength="8.4">⡀</text>
+<text class="ba" x="957.6" y="284" textLength="25.2">0.0</text>
+<text class="af" x="16.8" y="302" textLength="58.8">Cached:</text>
+<text class="af" x="142.8" y="302" textLength="33.6">5.82</text>
+<text class="af" x="184.8" y="302" textLength="25.2">GiB</text>
+<text class="af" x="235.2" y="302" textLength="25.2">IO%</text>
+<text class="ah" x="268.8" y="302" textLength="168">⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀</text>
+<text class="bb" x="495.6" y="302" textLength="33.6">6970</text>
+<text class="bc" x="537.6" y="302" textLength="33.6">btop</text>
+<text class="bb w" x="613.2" y="302" textLength="226.8">btop                  runn+</text>
+<text class="bc" x="856.8" y="302" textLength="33.6">6.2M</text>
+<text class="ah" x="898.8" y="302" textLength="42">⣀⣀⣀⣀⣀</text>
+<text class="bc" x="957.6" y="302" textLength="25.2">0.0</text>
+<text class="bd" x="159.6" y="320" textLength="16.8">⣤⣤</text>
+<text class="af" x="184.8" y="320" textLength="25.2">37%</text>
+<text class="af w" x="235.2" y="320" textLength="75.6">Used: 14%</text>
+<text class="ah" x="319.2" y="320" textLength="42">■■■■■</text>
+<text class="af w" x="378" y="320" textLength="58.8">125 MiB</text>
+<text class="be" x="495.6" y="320" textLength="33.6">2093</text>
+<text class="bf" x="537.6" y="320" textLength="67.2">Runner.L</text>
+<text class="be w" x="613.2" y="320" textLength="226.8">/home/******/actions- runn+</text>
+<text class="bf" x="856.8" y="320" textLength="33.6">101M</text>
+<text class="ah" x="898.8" y="320" textLength="33.6">⣀⣀⣀⣀</text>
+<text class="bf" x="932.4" y="320" textLength="8.4">⣀</text>
+<text class="bf" x="957.6" y="320" textLength="25.2">0.1</text>
+<text class="af" x="16.8" y="338" textLength="42">Free:</text>
+<text class="af" x="142.8" y="338" textLength="33.6">8.75</text>
+<text class="af" x="184.8" y="338" textLength="25.2">GiB</text>
+<text class="ab" x="235.2" y="338" textLength="25.2">efi</text>
+<text class="ab" x="378" y="338" textLength="25.2">104</text>
+<text class="ab" x="411.6" y="338" textLength="25.2">MiB</text>
+<text class="bg" x="495.6" y="338" textLength="33.6">1407</text>
+<text class="bh" x="537.6" y="338" textLength="58.8">python3</text>
+<text class="bg w" x="613.2" y="338" textLength="218.4">/usr/bin/python3 -u b root</text>
+<text class="bh" x="865.2" y="338" textLength="25.2">36M</text>
+<text class="ah" x="898.8" y="338" textLength="42">⣀⣀⣀⣀⣀</text>
+<text class="bh" x="957.6" y="338" textLength="25.2">0.0</text>
+<text class="bi" x="159.6" y="356" textLength="16.8">⣶⣶</text>
+<text class="af" x="184.8" y="356" textLength="25.2">56%</text>
+<text class="af" x="235.2" y="356" textLength="25.2">IO%</text>
+<text class="ah" x="268.8" y="356" textLength="168">⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀</text>
+<text class="bj" x="504" y="356" textLength="25.2">388</text>
+<text class="bk" x="537.6" y="356" textLength="67.2">hv_kvp_d</text>
+<text class="bj w" x="613.2" y="356" textLength="218.4">/usr/lib/linux-tools/ root</text>
+<text class="bk" x="856.8" y="356" textLength="33.6">2.8M</text>
+<text class="ah" x="898.8" y="356" textLength="42">⣀⣀⣀⣀⣀</text>
+<text class="bk" x="957.6" y="356" textLength="25.2">0.0</text>
+<text class="bl" x="512.4" y="374" textLength="16.8">84</text>
+<text class="bm" x="537.6" y="374" textLength="67.2">kworker/</text>
+<text class="bl" x="798" y="374" textLength="33.6">root</text>
+<text class="bm" x="873.6" y="374" textLength="16.8">0B</text>
+<text class="ah" x="898.8" y="374" textLength="42">⣀⣀⣀⣀⣀</text>
+<text class="bm" x="957.6" y="374" textLength="25.2">0.0</text>
 <text class="aa" x="25.2" y="392" textLength="8.4">³</text>
 <text class="ab" x="33.6" y="392" textLength="25.2">net</text>
-<text class="ab" x="75.6" y="392" textLength="92.4">10.0.10.139</text>
-<text class="ab" x="201.6" y="392" textLength="8.4">s</text>
-<text class="aa" x="210" y="392" textLength="8.4">y</text>
-<text class="ab" x="218.4" y="392" textLength="16.8">nc</text>
-<text class="aa" x="252" y="392" textLength="8.4">a</text>
-<text class="ab" x="260.4" y="392" textLength="25.2">uto</text>
-<text class="aw" x="302.4" y="392" textLength="8.4">z</text>
-<text class="ax" x="310.8" y="392" textLength="25.2">ero</text>
-<text class="aa" x="352.8" y="392" textLength="16.8">&lt;b</text>
-<text class="ab" x="378" y="392" textLength="33.6">eth0</text>
+<text class="ab" x="151.2" y="392" textLength="8.4">s</text>
+<text class="aa" x="159.6" y="392" textLength="8.4">y</text>
+<text class="ab" x="168" y="392" textLength="16.8">nc</text>
+<text class="aa" x="201.6" y="392" textLength="8.4">a</text>
+<text class="ab" x="210" y="392" textLength="25.2">uto</text>
+<text class="ao" x="252" y="392" textLength="8.4">z</text>
+<text class="ap" x="260.4" y="392" textLength="25.2">ero</text>
+<text class="aa" x="302.4" y="392" textLength="16.8">&lt;b</text>
+<text class="ab" x="327.6" y="392" textLength="84">enP36152s1</text>
 <text class="aa" x="420" y="392" textLength="16.8">n&gt;</text>
-<text class="cc" x="504" y="392" textLength="25.2">563</text>
-<text class="cd" x="537.6" y="392" textLength="67.2">MainThre</text>
-<text class="cc w" x="613.2" y="392" textLength="226.8">/vscode/bin/linux-x64 code+</text>
-<text class="ce" x="856.8" y="392" textLength="33.6">335M</text>
-<text class="ba" x="898.8" y="392" textLength="42">⣀⣀⣀⣀⣀</text>
-<text class="cd" x="957.6" y="392" textLength="25.2">0.0</text>
-<text class="av" x="8.4" y="410" textLength="25.2">10K</text>
-<text class="cf" x="42" y="410" textLength="33.6">⣿⣿⣾⡇</text>
+<text class="bn" x="504" y="392" textLength="25.2">172</text>
+<text class="bo" x="537.6" y="392" textLength="67.2">kworker/</text>
+<text class="bn" x="798" y="392" textLength="33.6">root</text>
+<text class="bo" x="873.6" y="392" textLength="16.8">0B</text>
+<text class="ah" x="898.8" y="392" textLength="42">⣀⣀⣀⣀⣀</text>
+<text class="bo" x="957.6" y="392" textLength="25.2">0.0</text>
+<text class="an" x="8.4" y="410" textLength="25.2">10K</text>
 <text class="ab" x="243.6" y="410" textLength="67.2">download</text>
-<text class="cg" x="495.6" y="410" textLength="33.6">1252</text>
-<text class="ch" x="537.6" y="410" textLength="67.2">MainThre</text>
-<text class="cg w" x="613.2" y="410" textLength="226.8">/vscode/bin/linux-x64 code+</text>
-<text class="ch" x="865.2" y="410" textLength="25.2">54M</text>
-<text class="ba" x="898.8" y="410" textLength="42">⣀⣀⣀⣀⣀</text>
-<text class="ch" x="957.6" y="410" textLength="25.2">0.0</text>
-<text class="ci w" x="16.8" y="428" textLength="184.8">⢀⡇ ⣿⣿⣿⡇ ⢠  ⡆    ⡆    ⡆</text>
-<text class="ao w" x="226.8" y="428" textLength="210">▼ 0 Byte/s      (0 bitps)</text>
-<text class="cj" x="495.6" y="428" textLength="33.6">8156</text>
-<text class="ck" x="537.6" y="428" textLength="67.2">MainThre</text>
-<text class="cj w" x="613.2" y="428" textLength="226.8">/vscode/bin/linux-x64 code+</text>
-<text class="ck" x="865.2" y="428" textLength="25.2">50M</text>
-<text class="ba" x="898.8" y="428" textLength="42">⣀⣀⣀⣀⣀</text>
-<text class="ck" x="957.6" y="428" textLength="25.2">0.0</text>
-<text class="cl" x="16.8" y="446" textLength="201.6">⣸⣇⣷⣿⣿⣿⣷⣀⣿⣀⣀⣇⣀⣀⣄⣀⣇⣠⣀⣀⣀⣧⣀⣀</text>
-<text class="ao w" x="226.8" y="446" textLength="210">▼ Total:         10.8 GiB</text>
-<text class="cm" x="504" y="446" textLength="25.2">587</text>
-<text class="cn" x="537.6" y="446" textLength="67.2">MainThre</text>
-<text class="cm w" x="613.2" y="446" textLength="226.8">/vscode/bin/linux-x64 code+</text>
-<text class="cn" x="865.2" y="446" textLength="25.2">78M</text>
-<text class="ba" x="898.8" y="446" textLength="42">⣀⣀⣀⣀⣀</text>
-<text class="cn" x="957.6" y="446" textLength="25.2">0.0</text>
-<text class="co" x="16.8" y="464" textLength="201.6">⠹⡏⣿⣿⣿⣿⡏⠉⣿⠉⠉⡏⣿⠉⠉⠉⡏⠉⠉⢹⠉⡏⡏⠉</text>
-<text class="cp" x="487.2" y="464" textLength="42">21317</text>
-<text class="cq w" x="537.6" y="464" textLength="58.8">npm run</text>
-<text class="cp w" x="613.2" y="464" textLength="226.8">npm run dev           code+</text>
-<text class="cq" x="865.2" y="464" textLength="25.2">38M</text>
-<text class="ba" x="898.8" y="464" textLength="42">⣀⣀⣀⣀⣀</text>
-<text class="cq" x="957.6" y="464" textLength="25.2">0.0</text>
-<text class="cr w" x="25.2" y="482" textLength="176.4">⡇⣿⣿⣿⠿⡇ ⠏  ⡇⠉   ⡇  ⠈ ⡇</text>
-<text class="ao w" x="226.8" y="482" textLength="210">▲ 0 Byte/s      (0 bitps)</text>
-<text class="cs" x="504" y="482" textLength="25.2">605</text>
-<text class="ct" x="537.6" y="482" textLength="67.2">MainThre</text>
-<text class="cs w" x="613.2" y="482" textLength="226.8">/vscode/bin/linux-x64 code+</text>
-<text class="ct" x="865.2" y="482" textLength="25.2">49M</text>
-<text class="ba" x="898.8" y="482" textLength="42">⣀⣀⣀⣀⣀</text>
-<text class="ct" x="957.6" y="482" textLength="25.2">0.0</text>
-<text class="cu w" x="25.2" y="500" textLength="176.4">⡇⣿⣿⣿ ⡇    ⠃    ⠃    ⠃</text>
-<text class="ao w" x="226.8" y="500" textLength="210">▲ Total:          190 MiB</text>
-<text class="cv" x="504" y="500" textLength="25.2">603</text>
-<text class="cw" x="537.6" y="500" textLength="67.2">MainThre</text>
-<text class="cv w" x="613.2" y="500" textLength="226.8">/vscode/bin/linux-x64 code+</text>
-<text class="cx" x="856.8" y="500" textLength="33.6">106M</text>
-<text class="ba" x="898.8" y="500" textLength="42">⣀⣀⣀⣀⣀</text>
-<text class="cw" x="957.6" y="500" textLength="25.2">0.0</text>
-<text class="av" x="8.4" y="518" textLength="25.2">10K</text>
-<text class="cy w" x="33.6" y="518" textLength="42">⣿⣿⣿ ⠇</text>
+<text class="bp" x="504" y="410" textLength="25.2">156</text>
+<text class="bq" x="537.6" y="410" textLength="67.2">systemd-</text>
+<text class="bp w" x="613.2" y="410" textLength="218.4">/usr/lib/systemd/syst root</text>
+<text class="bq" x="865.2" y="410" textLength="25.2">17M</text>
+<text class="ah" x="898.8" y="410" textLength="42">⣀⣀⣀⣀⣀</text>
+<text class="bq" x="957.6" y="410" textLength="25.2">0.0</text>
+<text class="af w" x="226.8" y="428" textLength="210">▼ 296 Byte/s (2.31 Kibps)</text>
+<text class="br" x="495.6" y="428" textLength="33.6">1053</text>
+<text class="bs" x="537.6" y="428" textLength="67.2">containe</text>
+<text class="br w" x="613.2" y="428" textLength="218.4">/usr/bin/containerd   root</text>
+<text class="bs" x="865.2" y="428" textLength="25.2">45M</text>
+<text class="ah" x="898.8" y="428" textLength="33.6">⣀⣀⣀⣀</text>
+<text class="bs" x="932.4" y="428" textLength="8.4">⢀</text>
+<text class="bs" x="957.6" y="428" textLength="25.2">0.1</text>
+<text class="bt" x="201.6" y="446" textLength="16.8">⣀⣀</text>
+<text class="af w" x="226.8" y="446" textLength="210">▼ Total:         1.28 GiB</text>
+<text class="bu" x="512.4" y="446" textLength="16.8">46</text>
+<text class="bv" x="537.6" y="446" textLength="67.2">kworker/</text>
+<text class="bu" x="798" y="446" textLength="33.6">root</text>
+<text class="bv" x="873.6" y="446" textLength="16.8">0B</text>
+<text class="ah" x="898.8" y="446" textLength="42">⣀⣀⣀⣀⣀</text>
+<text class="bv" x="957.6" y="446" textLength="25.2">0.0</text>
+<text class="bw" x="201.6" y="464" textLength="16.8">⠉⢹</text>
+<text class="bx" x="512.4" y="464" textLength="16.8">15</text>
+<text class="by" x="537.6" y="464" textLength="67.2">rcu_sche</text>
+<text class="bx" x="798" y="464" textLength="33.6">root</text>
+<text class="by" x="873.6" y="464" textLength="16.8">0B</text>
+<text class="ah" x="898.8" y="464" textLength="42">⣀⣀⣀⣀⣀</text>
+<text class="by" x="957.6" y="464" textLength="25.2">0.0</text>
+<text class="bz" x="210" y="482" textLength="8.4">⠸</text>
+<text class="af w" x="226.8" y="482" textLength="210">▲ 4.35 KiB/s (34.8 Kibps)</text>
+<text class="ca" x="512.4" y="482" textLength="16.8">47</text>
+<text class="cb" x="537.6" y="482" textLength="67.2">kworker/</text>
+<text class="ca" x="798" y="482" textLength="33.6">root</text>
+<text class="cb" x="873.6" y="482" textLength="16.8">0B</text>
+<text class="ah" x="898.8" y="482" textLength="42">⣀⣀⣀⣀⣀</text>
+<text class="cb" x="957.6" y="482" textLength="25.2">0.0</text>
+<text class="af w" x="226.8" y="500" textLength="210">▲ Total:         6.10 MiB</text>
+<text class="cc" x="512.4" y="500" textLength="16.8">85</text>
+<text class="cd" x="537.6" y="500" textLength="67.2">kworker/</text>
+<text class="cc" x="798" y="500" textLength="33.6">root</text>
+<text class="cd" x="873.6" y="500" textLength="16.8">0B</text>
+<text class="ah" x="898.8" y="500" textLength="42">⣀⣀⣀⣀⣀</text>
+<text class="cd" x="957.6" y="500" textLength="25.2">0.0</text>
+<text class="an" x="8.4" y="518" textLength="25.2">10K</text>
 <text class="ab" x="243.6" y="518" textLength="50.4">upload</text>
-<text class="cz" x="495.6" y="518" textLength="33.6">1384</text>
-<text class="da" x="537.6" y="518" textLength="67.2">MainThre</text>
-<text class="cz w" x="613.2" y="518" textLength="226.8">/vscode/bin/linux-x64 code+</text>
-<text class="db" x="856.8" y="518" textLength="33.6">193M</text>
-<text class="ba" x="898.8" y="518" textLength="42">⣀⣀⣀⣀⣀</text>
-<text class="da" x="957.6" y="518" textLength="25.2">0.0</text>
-<text class="af" x="991.2" y="518" textLength="8.4">↓</text>
-<text class="am" x="470.4" y="536" textLength="8.4">↑</text>
+<text class="ce" x="512.4" y="518" textLength="16.8">23</text>
+<text class="cf" x="537.6" y="518" textLength="67.2">migratio</text>
+<text class="ce" x="798" y="518" textLength="33.6">root</text>
+<text class="cf" x="873.6" y="518" textLength="16.8">0B</text>
+<text class="ah" x="898.8" y="518" textLength="42">⣀⣀⣀⣀⣀</text>
+<text class="cf" x="957.6" y="518" textLength="25.2">0.0</text>
+<text class="ac" x="991.2" y="518" textLength="8.4">↓</text>
+<text class="ad" x="470.4" y="536" textLength="8.4">↑</text>
 <text class="ab" x="487.2" y="536" textLength="50.4">select</text>
 <text class="aa" x="546" y="536" textLength="8.4">↓</text>
-<text class="am w" x="571.2" y="536" textLength="50.4">info ↵</text>
-<text class="am" x="638.4" y="536" textLength="75.6">terminate</text>
-<text class="am" x="730.8" y="536" textLength="33.6">kill</text>
-<text class="am" x="781.2" y="536" textLength="58.8">signals</text>
-<text class="ab" x="957.6" y="536" textLength="33.6">0/40</text>
+<text class="ad w" x="571.2" y="536" textLength="50.4">info ↵</text>
+<text class="ad" x="638.4" y="536" textLength="75.6">terminate</text>
+<text class="ad" x="730.8" y="536" textLength="33.6">kill</text>
+<text class="ad" x="781.2" y="536" textLength="58.8">signals</text>
+<text class="ab" x="949.2" y="536" textLength="42">0/158</text>
+<g class="c2-redacted">
+<rect class="c2-auto-mask" x="663.6" y="234" width="50.4" height="18" fill="url(#c2-redacted-stripe)"/>
+<rect class="c2-auto-mask" x="663.6" y="306" width="50.4" height="18" fill="url(#c2-redacted-stripe)"/>
+</g>
 <rect class="q" x="991.2" y="216" width="8.4" height="18" fill="#F5F5F5" stroke="#F5F5F5" stroke-width="2" vector-effect="non-scaling-stroke"/>
-<path d="M176.4 332.5H184.8V333.5H176.4ZM210 224.5H222.6V225.5H210ZM8.4 260.5H16.8V261.5H8.4ZM100.8 260.5H142.8V261.5H100.8ZM176.4 260.5H184.8V261.5H176.4ZM210 260.5H222.6V261.5H210ZM440.5 414H441.5V504H440.5ZM8.4 296.5H16.8V297.5H8.4ZM75.6 296.5H142.8V297.5H75.6ZM176.4 296.5H184.8V297.5H176.4ZM210 296.5H222.6V297.5H210ZM176.4 224.5H184.8V225.5H176.4ZM8.4 332.5H16.8V333.5H8.4ZM238.9 504H239.9V513H238.9ZM210 332.5H222.6V333.5H210ZM226.8 404.5H239.4V405.5H226.8ZM315 404.5H436.8V405.5H315ZM226.8 512.5H239.4V513.5H226.8ZM298.2 512.5H436.8V513.5H298.2ZM314.5 405H315.5V414H314.5ZM297.7 504H298.7V513H297.7ZM222.1 198H223.1V360H222.1ZM222.1 414H223.1V504H222.1ZM58.8 332.5H151.2V333.5H58.8ZM58.8 224.5H142.8V225.5H58.8ZM238.9 405H239.9V414H238.9ZM831.6 44.5H844.2V45.5H831.6ZM8.4 224.5H16.8V225.5H8.4ZM831.6 134.5H991.2V135.5H831.6ZM994.9 54H995.9V126H994.9ZM911.4 44.5H919.8V45.5H911.4ZM986.5 45H987.5V54H986.5ZM919.3 45H920.3V54H919.3ZM910.9 45H911.9V54H910.9ZM987 44.5H991.2V45.5H987ZM843.7 45H844.7V54H843.7ZM826.9 54H827.9V126H826.9ZM222.6 206.5H445.2V207.5H222.6Z" fill="#303030"/>
-<path d="M138.1 9H139.1V18H138.1ZM213.7 9H214.7V18H213.7ZM62.5 9H63.5V18H62.5ZM130.2 8.5H138.6V9.5H130.2ZM1003.3 18H1004.3V162H1003.3ZM63 8.5H88.2V9.5H63ZM20.5 9H21.5V18H20.5ZM3.7 18H4.7V162H3.7ZM214.2 8.5H474.6V9.5H214.2ZM550.2 8.5H903V9.5H550.2ZM987 8.5H999.6V9.5H987ZM129.7 9H130.7V18H129.7ZM87.7 9H88.7V18H87.7ZM8.4 8.5H21V9.5H8.4ZM474.1 9H475.1V18H474.1ZM549.7 9H550.7V18H549.7ZM902.5 9H903.5V18H902.5ZM986.5 9H987.5V18H986.5ZM8.4 170.5H999.6V171.5H8.4Z" fill="#556D59"/>
-<path d="M340.2 386.5H348.6V387.5H340.2ZM440.5 387H441.5V396H440.5ZM196.9 387H197.9V396H196.9ZM171.7 387H172.7V396H171.7ZM70.9 387H71.9V396H70.9ZM238.9 387H239.9V396H238.9ZM62.5 387H63.5V396H62.5ZM20.5 387H21.5V396H20.5ZM441 386.5H445.2V387.5H441ZM448.9 396H449.9V522H448.9ZM3.7 396H4.7V522H3.7ZM289.8 386.5H298.2V387.5H289.8ZM239.4 386.5H247.8V387.5H239.4ZM172.2 386.5H197.4V387.5H172.2ZM8.4 530.5H445.2V531.5H8.4ZM339.7 387H340.7V396H339.7ZM63 386.5H71.4V387.5H63ZM8.4 386.5H21V387.5H8.4ZM289.3 387H290.3V396H289.3ZM247.3 387H248.3V396H247.3ZM348.1 387H349.1V396H348.1ZM297.7 387H298.7V396H297.7Z" fill="#5C588D"/>
-<path d="M432.1 189H433.1V198H432.1ZM238.9 189H239.9V198H238.9ZM289.3 189H290.3V198H289.3ZM448.9 198H449.9V360H448.9ZM406.9 189H407.9V198H406.9ZM20.5 189H21.5V198H20.5ZM222.1 189H223.1V198H222.1ZM222.1 360H223.1V369H222.1ZM4.2 224.5H8.4V225.5H4.2ZM4.2 260.5H8.4V261.5H4.2ZM4.2 296.5H8.4V297.5H4.2ZM4.2 332.5H8.4V333.5H4.2ZM8.4 368.5H445.2V369.5H8.4ZM432.6 188.5H445.2V189.5H432.6ZM445.2 206.5H449.4V207.5H445.2ZM289.8 188.5H407.4V189.5H289.8ZM63 188.5H239.4V189.5H63ZM8.4 188.5H21V189.5H8.4ZM3.7 198H4.7V360H3.7ZM62.5 189H63.5V198H62.5Z" fill="#6C6C4B"/>
-<path d="M751.3 189H752.3V198H751.3ZM768.1 522H769.1V531H768.1ZM776.5 522H777.5V531H776.5ZM818.5 189H819.5V198H818.5ZM743.4 188.5H751.8V189.5H743.4ZM826.9 189H827.9V198H826.9ZM592.2 188.5H667.8V189.5H592.2ZM868.9 189H869.9V198H868.9ZM952.9 522H953.9V531H952.9ZM877.3 189H878.3V198H877.3ZM525 188.5H533.4V189.5H525ZM462 188.5H474.6V189.5H462ZM742.9 189H743.9V198H742.9ZM994.9 522H995.9V531H994.9ZM986.5 189H987.5V198H986.5ZM843.7 522H844.7V531H843.7ZM726.1 522H727.1V531H726.1ZM591.7 189H592.7V198H591.7ZM667.3 189H668.3V198H667.3ZM995.4 530.5H999.6V531.5H995.4ZM844.2 530.5H953.4V531.5H844.2ZM768.6 530.5H777V531.5H768.6ZM718.2 530.5H726.6V531.5H718.2ZM625.8 530.5H634.2V531.5H625.8ZM558.6 530.5H567V531.5H558.6ZM462 530.5H466.2V531.5H462ZM987 188.5H999.6V189.5H987ZM457.3 198H458.3V522H457.3ZM465.7 522H466.7V531H465.7ZM869.4 188.5H877.8V189.5H869.4ZM474.1 189H475.1V198H474.1ZM524.5 189H525.5V198H524.5ZM532.9 189H533.9V198H532.9ZM819 188.5H827.4V189.5H819ZM558.1 522H559.1V531H558.1ZM566.5 522H567.5V531H566.5ZM625.3 522H626.3V531H625.3ZM633.7 522H634.7V531H633.7ZM717.7 522H718.7V531H717.7ZM1003.3 198H1004.3V522H1003.3Z" fill="#805252"/>
+<path d="M210 224.5H222.6V225.5H210ZM222.6 242.5H235.2V243.5H222.6ZM268.8 242.5H369.6V243.5H268.8ZM403.2 242.5H411.6V243.5H403.2ZM436.8 242.5H445.2V243.5H436.8ZM8.4 260.5H16.8V261.5H8.4ZM100.8 260.5H142.8V261.5H100.8ZM176.4 260.5H184.8V261.5H176.4ZM210 260.5H222.6V261.5H210ZM222.1 198H223.1V360H222.1ZM222.6 278.5H235.2V279.5H222.6ZM268.8 278.5H378V279.5H268.8ZM403.2 278.5H411.6V279.5H403.2ZM297.7 504H298.7V513H297.7ZM436.8 278.5H445.2V279.5H436.8ZM8.4 296.5H16.8V297.5H8.4ZM75.6 296.5H142.8V297.5H75.6ZM176.4 296.5H184.8V297.5H176.4ZM210 296.5H222.6V297.5H210ZM238.9 504H239.9V513H238.9ZM8.4 332.5H16.8V333.5H8.4ZM58.8 332.5H142.8V333.5H58.8ZM176.4 332.5H184.8V333.5H176.4ZM210 332.5H218.4V333.5H210ZM222.6 332.5H235.2V333.5H222.6ZM260.4 332.5H378V333.5H260.4ZM403.2 332.5H411.6V333.5H403.2ZM222.1 414H223.1V504H222.1ZM436.8 332.5H445.2V333.5H436.8ZM238.9 405H239.9V414H238.9ZM58.8 224.5H142.8V225.5H58.8ZM843.7 27H844.7V36H843.7ZM910.9 27H911.9V36H910.9ZM831.6 26.5H844.2V27.5H831.6ZM911.4 26.5H919.8V27.5H911.4ZM987 26.5H991.2V27.5H987ZM831.6 152.5H991.2V153.5H831.6ZM298.2 512.5H436.8V513.5H298.2ZM226.8 512.5H239.4V513.5H226.8ZM826.9 36H827.9V144H826.9ZM176.4 224.5H184.8V225.5H176.4ZM226.8 404.5H239.4V405.5H226.8ZM994.9 36H995.9V144H994.9ZM315 404.5H436.8V405.5H315ZM403.2 206.5H411.6V207.5H403.2ZM986.5 27H987.5V36H986.5ZM314.5 405H315.5V414H314.5ZM919.3 27H920.3V36H919.3ZM222.6 206.5H235.2V207.5H222.6ZM8.4 224.5H16.8V225.5H8.4ZM268.8 206.5H378V207.5H268.8ZM440.5 414H441.5V504H440.5ZM436.8 206.5H445.2V207.5H436.8Z" fill="#303030"/>
+<path d="M62.5 9H63.5V18H62.5ZM1003.3 18H1004.3V162H1003.3ZM129.7 9H130.7V18H129.7ZM138.1 9H139.1V18H138.1ZM213.7 9H214.7V18H213.7ZM87.7 9H88.7V18H87.7ZM894.1 9H895.1V18H894.1ZM8.4 8.5H21V9.5H8.4ZM20.5 9H21.5V18H20.5ZM3.7 18H4.7V162H3.7ZM63 8.5H88.2V9.5H63ZM130.2 8.5H138.6V9.5H130.2ZM214.2 8.5H474.6V9.5H214.2ZM550.2 8.5H894.6V9.5H550.2ZM987 8.5H999.6V9.5H987ZM8.4 170.5H999.6V171.5H8.4ZM474.1 9H475.1V18H474.1ZM549.7 9H550.7V18H549.7ZM986.5 9H987.5V18H986.5Z" fill="#556D59"/>
+<path d="M440.5 387H441.5V396H440.5ZM238.9 387H239.9V396H238.9ZM297.7 387H298.7V396H297.7ZM146.5 387H147.5V396H146.5ZM188.5 387H189.5V396H188.5ZM62.5 387H63.5V396H62.5ZM196.9 387H197.9V396H196.9ZM20.5 387H21.5V396H20.5ZM289.3 387H290.3V396H289.3ZM448.9 396H449.9V522H448.9ZM247.3 387H248.3V396H247.3ZM63 386.5H147V387.5H63ZM3.7 396H4.7V522H3.7ZM8.4 386.5H21V387.5H8.4ZM189 386.5H197.4V387.5H189ZM289.8 386.5H298.2V387.5H289.8ZM441 386.5H445.2V387.5H441ZM8.4 530.5H445.2V531.5H8.4ZM239.4 386.5H247.8V387.5H239.4Z" fill="#5C588D"/>
+<path d="M448.9 198H449.9V360H448.9ZM289.8 188.5H407.4V189.5H289.8ZM4.2 260.5H8.4V261.5H4.2ZM63 188.5H239.4V189.5H63ZM432.1 189H433.1V198H432.1ZM8.4 188.5H21V189.5H8.4ZM406.9 189H407.9V198H406.9ZM445.2 206.5H449.4V207.5H445.2ZM4.2 224.5H8.4V225.5H4.2ZM289.3 189H290.3V198H289.3ZM3.7 198H4.7V360H3.7ZM432.6 188.5H445.2V189.5H432.6ZM238.9 189H239.9V198H238.9ZM445.2 242.5H449.4V243.5H445.2ZM4.2 296.5H8.4V297.5H4.2ZM4.2 332.5H8.4V333.5H4.2ZM222.1 360H223.1V369H222.1ZM222.1 189H223.1V198H222.1ZM445.2 332.5H449.4V333.5H445.2ZM8.4 368.5H445.2V369.5H8.4ZM62.5 189H63.5V198H62.5ZM445.2 278.5H449.4V279.5H445.2ZM20.5 189H21.5V198H20.5Z" fill="#6C6C4B"/>
+<path d="M726.1 522H727.1V531H726.1ZM742.9 189H743.9V198H742.9ZM751.3 189H752.3V198H751.3ZM843.7 522H844.7V531H843.7ZM768.1 522H769.1V531H768.1ZM776.5 522H777.5V531H776.5ZM877.3 189H878.3V198H877.3ZM868.9 189H869.9V198H868.9ZM826.9 189H827.9V198H826.9ZM994.9 522H995.9V531H994.9ZM986.5 189H987.5V198H986.5ZM717.7 522H718.7V531H717.7ZM944.5 522H945.5V531H944.5ZM818.5 189H819.5V198H818.5ZM667.3 189H668.3V198H667.3ZM625.8 530.5H634.2V531.5H625.8ZM625.3 522H626.3V531H625.3ZM462 188.5H474.6V189.5H462ZM525 188.5H533.4V189.5H525ZM592.2 188.5H667.8V189.5H592.2ZM743.4 188.5H751.8V189.5H743.4ZM819 188.5H827.4V189.5H819ZM869.4 188.5H877.8V189.5H869.4ZM987 188.5H999.6V189.5H987ZM462 530.5H466.2V531.5H462ZM558.6 530.5H567V531.5H558.6ZM718.2 530.5H726.6V531.5H718.2ZM768.6 530.5H777V531.5H768.6ZM844.2 530.5H945V531.5H844.2ZM995.4 530.5H999.6V531.5H995.4ZM457.3 198H458.3V522H457.3ZM465.7 522H466.7V531H465.7ZM474.1 189H475.1V198H474.1ZM524.5 189H525.5V198H524.5ZM532.9 189H533.9V198H532.9ZM558.1 522H559.1V531H558.1ZM566.5 522H567.5V531H566.5ZM591.7 189H592.7V198H591.7ZM633.7 522H634.7V531H633.7ZM1003.3 198H1004.3V522H1003.3Z" fill="#805252"/>
 <path d="M8.4 9Q4.2 9 4.2 18" fill="none" stroke="#556D59" stroke-width="1"/>
 <path d="M999.6 9Q1003.8 9 1003.8 18" fill="none" stroke="#556D59" stroke-width="1"/>
-<path d="M831.6 45Q827.4 45 827.4 54" fill="none" stroke="#303030" stroke-width="1"/>
-<path d="M991.2 45Q995.4 45 995.4 54" fill="none" stroke="#303030" stroke-width="1"/>
-<path d="M831.6 135Q827.4 135 827.4 126" fill="none" stroke="#303030" stroke-width="1"/>
-<path d="M991.2 135Q995.4 135 995.4 126" fill="none" stroke="#303030" stroke-width="1"/>
+<path d="M831.6 27Q827.4 27 827.4 36" fill="none" stroke="#303030" stroke-width="1"/>
+<path d="M991.2 27Q995.4 27 995.4 36" fill="none" stroke="#303030" stroke-width="1"/>
+<path d="M831.6 153Q827.4 153 827.4 144" fill="none" stroke="#303030" stroke-width="1"/>
+<path d="M991.2 153Q995.4 153 995.4 144" fill="none" stroke="#303030" stroke-width="1"/>
 <path d="M8.4 171Q4.2 171 4.2 162" fill="none" stroke="#556D59" stroke-width="1"/>
 <path d="M999.6 171Q1003.8 171 1003.8 162" fill="none" stroke="#556D59" stroke-width="1"/>
 <path d="M8.4 189Q4.2 189 4.2 198" fill="none" stroke="#6C6C4B" stroke-width="1"/>

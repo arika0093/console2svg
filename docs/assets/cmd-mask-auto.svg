@@ -20,11 +20,11 @@
 <rect width="840" height="216" fill="#0d1117"/>
 </g>
 <g class="c2 c" transform="translate(29 56)">
-<text class="aa" y="14" textLength="344.4">CURRENT_DIRECTORY=/workspaces/console2svg</text>
+<text class="aa" y="14" textLength="495.6">CURRENT_DIRECTORY=/home/runner/work/console2svg/console2svg</text>
 <text class="aa" y="32" textLength="294">APP_SECRET_TOKEN=1234567890thankyou</text>
-<text class="aa" y="50" textLength="252">HTTP_PROXY=******10.0.0.1:8080</text>
-<text class="aa w" y="68" textLength="680.4">CONNECTION_STRING=Server=localhost;Database=myDataBase;User Id=myUsername;******;</text>
-<text class="aa" y="86" textLength="436.8">MYSQL_CONNECTION_URL=******localhost:3306/myDatabase</text>
+<text class="aa" y="50" textLength="378">HTTP_PROXY=http://user:password@10.0.0.1:8080</text>
+<text class="aa w" y="68" textLength="789.6">CONNECTION_STRING=Server=localhost;Database=myDataBase;User Id=myUsername;Password=myPassword;</text>
+<text class="aa" y="86" textLength="638.4">MYSQL_CONNECTION_URL=mysql://myUsername:myPassword@localhost:3306/myDatabase</text>
 <text class="aa" y="104" textLength="252">GIT_USERNAME=hidden_truth_name</text>
 <text class="aa" y="122" textLength="394.8">GIT_EMAIL_ADDRESS=hidden_truth_name@example.com</text>
 <text class="aa" y="140" textLength="369.6">COMMON_HASH=0123456789abcdef0123456789abcdef</text>

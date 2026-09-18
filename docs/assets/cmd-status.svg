@@ -1,57 +1,56 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="556" viewBox="0 0 1024 556" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" width="856" height="556" viewBox="0 0 856 556" role="img" aria-label="console2svg output">
 <style>
 .c2.c { font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace; font-size: 14px; }
 .c2 text { dominant-baseline: alphabetic; }
 .c2 .q { shape-rendering: crispEdges; }
 .c2 .w { white-space: pre; }
 .c2 .aa{fill:#d4d4d4}
-.c2 .ab{fill:#666666}
-.c2 .ac{fill:#0dbc79}
+.c2 .ab{fill:#0dbc79}
 </style><defs><pattern id="c2-redacted-stripe" patternUnits="userSpaceOnUse" width="8" height="8"><path d="M0 0h8v8H0z" fill="#1e1e1e"/><path d="M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6" stroke="#d4d4d4" stroke-width="2" opacity="0.3"/></pattern></defs><defs>
 <linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1d2e"/><stop offset="100%" stop-color="#252840"/></linearGradient>
 </defs>
-<rect width="1024" height="556" fill="url(#c2bg)"/>
-<rect width="1024" height="556" fill="#1e1e1e"/>
+<rect width="856" height="556" fill="url(#c2bg)"/>
+<rect width="856" height="556" fill="#1e1e1e"/>
 <g class="c2 c" transform="translate(8 8)">
-<rect width="1008" height="540" fill="#1e1e1e"/>
+<rect width="840" height="540" fill="#1e1e1e"/>
 </g>
 <g class="c2 c" transform="translate(8 8)">
-<text class="aa w" y="14" textLength="294">Version         0.9.3.24+19de9da876</text>
-<text class="aa w" x="16.8" y="32" textLength="310.8">Commit at     2026-09-18 06:18:47 UTC</text>
-<text class="aa w" y="50" textLength="336">Platform        Ubuntu 24.04.4 LTS / X64</text>
-<text class="aa w" y="68" textLength="394.8">Executable      /tmp/tmp.KAIrZ34m8i/console2svg</text>
+<text class="aa w" y="14" textLength="294">Version         0.9.3.24+f1467b1fe2</text>
+<text class="aa w" x="16.8" y="32" textLength="310.8">Commit at     2026-09-18 13:53:42 UTC</text>
+<text class="aa w" y="50" textLength="336">Platform        Ubuntu 24.04.5 LTS / X64</text>
+<text class="aa w" y="68" textLength="604.8">Executable      /opt/hostedtoolcache/console2svg/develop/X64/console2svg</text>
 <text class="aa w" x="16.8" y="86" textLength="201.6">Channel       standalone</text>
-<text class="aa w" y="104" textLength="352.8">Framework       .NET 11.0.0-rc.1.26425.128</text>
+<text class="aa w" y="104" textLength="453.6">Framework       .NET 11.0.0-rc.1.26425.128 (NativeAOT)</text>
 <text class="aa" y="140" textLength="75.6">Rendering</text>
 <text class="aa" x="16.8" y="158" textLength="42">resvg</text>
-<text class="ab w" x="134.4" y="158" textLength="672">unavailable                         Native library failed to load or initialize.</text>
+<text class="ab w" x="134.4" y="158" textLength="352.8">available   (bundled)               0.43.0</text>
 <text class="aa" x="16.8" y="176" textLength="100.8">rsvg-convert</text>
-<text class="ac w" x="134.4" y="176" textLength="529.2">available   rsvg-convert            rsvg-convert version 2.58.0</text>
+<text class="ab w" x="134.4" y="176" textLength="529.2">available   rsvg-convert            rsvg-convert version 2.58.0</text>
 <text class="aa" x="16.8" y="194" textLength="50.4">ffmpeg</text>
-<text class="ac w" x="134.4" y="194" textLength="546">available   ffmpeg                  ffmpeg version 6.1.1-3ubuntu5</text>
+<text class="ab w" x="134.4" y="194" textLength="546">available   ffmpeg                  ffmpeg version 6.1.1-3ubuntu5</text>
 <text class="aa w" y="230" textLength="142.8">Optional features</text>
 <text class="aa" x="16.8" y="248" textLength="25.2">git</text>
-<text class="ac w" x="134.4" y="248" textLength="453.6">available   git                     git version 2.53.0</text>
+<text class="ab w" x="134.4" y="248" textLength="453.6">available   git                     git version 2.55.0</text>
 <text class="aa" x="16.8" y="266" textLength="33.6">tmux</text>
-<text class="ac w" x="134.4" y="266" textLength="369.6">available   tmux                    tmux 3.4</text>
+<text class="ab w" x="134.4" y="266" textLength="369.6">available   tmux                    tmux 3.4</text>
 <text class="aa" y="302" textLength="50.4">Themes</text>
 <text class="aa" x="16.8" y="320" textLength="50.4">themes</text>
-<text class="ac w" x="134.4" y="320" textLength="302.4">available   21 built-in, 0 installed</text>
+<text class="ab w" x="134.4" y="320" textLength="302.4">available   21 built-in, 0 installed</text>
 <text class="aa" y="356" textLength="67.2">Terminal</text>
 <text class="aa w" x="16.8" y="374" textLength="84">ANSI color</text>
-<text class="ac" x="134.4" y="374" textLength="75.6">available</text>
+<text class="ab" x="134.4" y="374" textLength="75.6">available</text>
 <text class="aa w" y="410" textLength="184.8">Support output formats</text>
 <text class="aa" x="16.8" y="428" textLength="25.2">svg</text>
-<text class="ac w" x="134.4" y="428" textLength="277.2">available(.svg)            native</text>
+<text class="ab w" x="134.4" y="428" textLength="277.2">available(.svg)            native</text>
 <text class="aa" x="16.8" y="446" textLength="25.2">png</text>
-<text class="ac w" x="134.4" y="446" textLength="277.2">available(.png)            ffmpeg</text>
+<text class="ab w" x="134.4" y="446" textLength="268.8">available(.png)            resvg</text>
 <text class="aa" x="16.8" y="464" textLength="25.2">jpg</text>
-<text class="ac w" x="134.4" y="464" textLength="344.4">available(.jpg, .jpeg)     ffmpeg (mjpeg)</text>
+<text class="ab w" x="134.4" y="464" textLength="344.4">available(.jpg, .jpeg)     ffmpeg (mjpeg)</text>
 <text class="aa" x="16.8" y="482" textLength="25.2">gif</text>
-<text class="ac w" x="134.4" y="482" textLength="327.6">available(.gif)            ffmpeg (gif)</text>
+<text class="ab w" x="134.4" y="482" textLength="327.6">available(.gif)            ffmpeg (gif)</text>
 <text class="aa" x="16.8" y="500" textLength="25.2">mp4</text>
-<text class="ac w" x="134.4" y="500" textLength="344.4">available(.mp4)            ffmpeg (h.264)</text>
+<text class="ab w" x="134.4" y="500" textLength="344.4">available(.mp4)            ffmpeg (h.264)</text>
 <text class="aa" x="16.8" y="518" textLength="33.6">webm</text>
-<text class="ac w" x="134.4" y="518" textLength="327.6">available(.webm)           ffmpeg (vp9)</text>
+<text class="ab w" x="134.4" y="518" textLength="327.6">available(.webm)           ffmpeg (vp9)</text>
 </g>
 </svg>

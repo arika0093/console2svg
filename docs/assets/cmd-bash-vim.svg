@@ -1,1048 +1,593 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="690" height="405" viewBox="0 0 690 405" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" width="690" height="423" viewBox="0 0 690 423" role="img" aria-label="console2svg output">
 <style>
-.crt {
-  font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace;
-  font-size: 14px;
-}
-.blink { animation: blink 1s step-start infinite; }
-@keyframes blink { 50% { visibility: hidden; } }
-text {
-  dominant-baseline: alphabetic;
-}
-.bg {
-  shape-rendering: crispEdges;
-}
+.c2.c { font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace; font-size: 14px; }
+.c2 text { dominant-baseline: alphabetic; }
+.c2 .q { shape-rendering: crispEdges; }
+.c2 .c2b { animation: c2b 1s step-start infinite; }
 
-.frame {
-  opacity: 0;
-}
-@keyframes k0 {
-  0%, 0% {
-    opacity: 0;
-  }
-  0%, 16.505% {
-    opacity: 1;
-  }
-  16.506%, 100% {
-    opacity: 0;
-  }
-}
-.frame-0 { animation:k0 17.167s linear infinite; }
-@keyframes k1 {
-  0%, 16.504% {
-    opacity: 0;
-  }
-  16.505%, 17.476% {
-    opacity: 1;
-  }
-  17.477%, 100% {
-    opacity: 0;
-  }
-}
-.frame-1 { animation:k1 17.167s linear infinite; }
-@keyframes k2 {
-  0%, 17.475% {
-    opacity: 0;
-  }
-  17.476%, 17.961% {
-    opacity: 1;
-  }
-  17.962%, 100% {
-    opacity: 0;
-  }
-}
-.frame-2 { animation:k2 17.167s linear infinite; }
-@keyframes k3 {
-  0%, 17.96% {
-    opacity: 0;
-  }
-  17.961%, 19.903% {
-    opacity: 1;
-  }
-  19.904%, 100% {
-    opacity: 0;
-  }
-}
-.frame-3 { animation:k3 17.167s linear infinite; }
-@keyframes k4 {
-  0%, 19.902% {
-    opacity: 0;
-  }
-  19.903%, 21.602% {
-    opacity: 1;
-  }
-  21.603%, 100% {
-    opacity: 0;
-  }
-}
-.frame-4 { animation:k4 17.167s linear infinite; }
-@keyframes k5 {
-  0%, 21.601% {
-    opacity: 0;
-  }
-  21.602%, 23.301% {
-    opacity: 1;
-  }
-  23.302%, 100% {
-    opacity: 0;
-  }
-}
-.frame-5 { animation:k5 17.167s linear infinite; }
-@keyframes k6 {
-  0%, 23.3% {
-    opacity: 0;
-  }
-  23.301%, 29.369% {
-    opacity: 1;
-  }
-  29.37%, 100% {
-    opacity: 0;
-  }
-}
-.frame-6 { animation:k6 17.167s linear infinite; }
-@keyframes k7 {
-  0%, 29.368% {
-    opacity: 0;
-  }
-  29.369%, 35.437% {
-    opacity: 1;
-  }
-  35.438%, 100% {
-    opacity: 0;
-  }
-}
-.frame-7 { animation:k7 17.167s linear infinite; }
-@keyframes k8 {
-  0%, 35.436% {
-    opacity: 0;
-  }
-  35.437%, 42.233% {
-    opacity: 1;
-  }
-  42.234%, 100% {
-    opacity: 0;
-  }
-}
-.frame-8 { animation:k8 17.167s linear infinite; }
-@keyframes k9 {
-  0%, 42.232% {
-    opacity: 0;
-  }
-  42.233%, 49.029% {
-    opacity: 1;
-  }
-  49.03%, 100% {
-    opacity: 0;
-  }
-}
-.frame-9 { animation:k9 17.167s linear infinite; }
-@keyframes k10 {
-  0%, 49.028% {
-    opacity: 0;
-  }
-  49.029%, 50% {
-    opacity: 1;
-  }
-  50.001%, 100% {
-    opacity: 0;
-  }
-}
-.frame-10 { animation:k10 17.167s linear infinite; }
-@keyframes k11 {
-  0%, 49.999% {
-    opacity: 0;
-  }
-  50%, 50.485% {
-    opacity: 1;
-  }
-  50.486%, 100% {
-    opacity: 0;
-  }
-}
-.frame-11 { animation:k11 17.167s linear infinite; }
-@keyframes k12 {
-  0%, 50.484% {
-    opacity: 0;
-  }
-  50.485%, 51.456% {
-    opacity: 1;
-  }
-  51.457%, 100% {
-    opacity: 0;
-  }
-}
-.frame-12 { animation:k12 17.167s linear infinite; }
-@keyframes k13 {
-  0%, 51.455% {
-    opacity: 0;
-  }
-  51.456%, 57.282% {
-    opacity: 1;
-  }
-  57.283%, 100% {
-    opacity: 0;
-  }
-}
-.frame-13 { animation:k13 17.167s linear infinite; }
-@keyframes k14 {
-  0%, 57.281% {
-    opacity: 0;
-  }
-  57.282%, 63.107% {
-    opacity: 1;
-  }
-  63.108%, 100% {
-    opacity: 0;
-  }
-}
-.frame-14 { animation:k14 17.167s linear infinite; }
-@keyframes k15 {
-  0%, 63.106% {
-    opacity: 0;
-  }
-  63.107%, 63.592% {
-    opacity: 1;
-  }
-  63.593%, 100% {
-    opacity: 0;
-  }
-}
-.frame-15 { animation:k15 17.167s linear infinite; }
-@keyframes k16 {
-  0%, 63.591% {
-    opacity: 0;
-  }
-  63.592%, 64.078% {
-    opacity: 1;
-  }
-  64.079%, 100% {
-    opacity: 0;
-  }
-}
-.frame-16 { animation:k16 17.167s linear infinite; }
-@keyframes k17 {
-  0%, 64.077% {
-    opacity: 0;
-  }
-  64.078%, 68.447% {
-    opacity: 1;
-  }
-  68.448%, 100% {
-    opacity: 0;
-  }
-}
-.frame-17 { animation:k17 17.167s linear infinite; }
-@keyframes k18 {
-  0%, 68.446% {
-    opacity: 0;
-  }
-  68.447%, 72.816% {
-    opacity: 1;
-  }
-  72.817%, 100% {
-    opacity: 0;
-  }
-}
-.frame-18 { animation:k18 17.167s linear infinite; }
-@keyframes k19 {
-  0%, 72.815% {
-    opacity: 0;
-  }
-  72.816%, 73.786% {
-    opacity: 1;
-  }
-  73.787%, 100% {
-    opacity: 0;
-  }
-}
-.frame-19 { animation:k19 17.167s linear infinite; }
-@keyframes k20 {
-  0%, 73.785% {
-    opacity: 0;
-  }
-  73.786%, 75.243% {
-    opacity: 1;
-  }
-  75.244%, 100% {
-    opacity: 0;
-  }
-}
-.frame-20 { animation:k20 17.167s linear infinite; }
-@keyframes k21 {
-  0%, 75.242% {
-    opacity: 0;
-  }
-  75.243%, 81.553% {
-    opacity: 1;
-  }
-  81.554%, 100% {
-    opacity: 0;
-  }
-}
-.frame-21 { animation:k21 17.167s linear infinite; }
-@keyframes k22 {
-  0%, 81.552% {
-    opacity: 0;
-  }
-  81.553%, 87.864% {
-    opacity: 1;
-  }
-  87.865%, 100% {
-    opacity: 0;
-  }
-}
-.frame-22 { animation:k22 17.167s linear infinite; }
-@keyframes k23 {
-  0%, 87.863% {
-    opacity: 0;
-  }
-  87.864%, 91.748% {
-    opacity: 1;
-  }
-  91.749%, 100% {
-    opacity: 0;
-  }
-}
-.frame-23 { animation:k23 17.167s linear infinite; }
-@keyframes k24 {
-  0%, 91.747% {
-    opacity: 0;
-  }
-  91.748%, 95.631% {
-    opacity: 1;
-  }
-  95.632%, 100% {
-    opacity: 0;
-  }
-}
-.frame-24 { animation:k24 17.167s linear infinite; }
-@keyframes k25 {
-  0%, 95.63% {
-    opacity: 0;
-  }
-  95.631%, 99.515% {
-    opacity: 1;
-  }
-  99.516%, 100% {
-    opacity: 0;
-  }
-}
-.frame-25 { animation:k25 17.167s linear infinite; }
-@keyframes k26 {
-  0%, 99.514% {
-    opacity: 0;
-  }
-  99.515% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-.frame-26 { animation:k26 17.167s linear infinite; }
-</style>
-<rect x="0.5" y="0.5" rx="10" ry="10" width="689" height="404" fill="#1f1f1f" stroke="#3a3a3a"/>
+.c2 .w { white-space: pre; }
+.c2 .aa{fill:#d4d4d4}
+.c2 .ab{fill:#10E291;font-weight:bold}
+.c2 .ac{fill:#2B89F0;font-weight:bold}
+.c2 .ad{fill:#3b8eea}
+.c2 .ae{fill:#2472c8}
+.c2 .af{fill:#FEFEFE;font-weight:bold}
+@keyframes c2b { 50% { visibility: hidden; } }
+</style><defs><pattern id="c2-redacted-stripe" patternUnits="userSpaceOnUse" width="8" height="8"><path d="M0 0h8v8H0z" fill="#1e1e1e"/><path d="M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6" stroke="#d4d4d4" stroke-width="2" opacity="0.3"/></pattern></defs><defs>
+<linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1d2e"/><stop offset="100%" stop-color="#252840"/></linearGradient>
+</defs>
+<rect width="690" height="423" fill="url(#c2bg)"/>
+<rect x="0.5" y="0.5" rx="10" ry="10" width="689" height="422" fill="#1f1f1f" stroke="#3a3a3a"/>
 <rect x="1" y="1" rx="9" ry="9" width="688" height="27" fill="#2c2c2c"/>
 <circle cx="14" cy="14" r="5" fill="#ff5f57"/>
 <circle cx="30" cy="14" r="5" fill="#febc2e"/>
 <circle cx="46" cy="14" r="5" fill="#28c840"/>
-<rect x="1" y="28" width="688" height="376" rx="9" ry="9" fill="#1e1e1e"/>
+
+<rect x="1" y="28" width="688" height="394" rx="9" ry="9" fill="#1e1e1e"/>
+<g class="c2 c"><rect x="9" y="36" width="672" height="18" fill="#1e1e1e"/>
+<text class="aa" x="9" y="50">$ bash</text></g>
 <defs>
-<g id="fd-0" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmzvulz</text>
-<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
+<g id="c2r0" class="c2 c">
+<rect width="672" height="18" id="c2e0" fill="#1e1e1e"/>
 </g>
-<g id="fd-1" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmzvulz</text>
-<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
-<text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">v</text>
+<g id="c2r1" class="c2 c">
+<use href="#c2e0"/>
+<text class="ab" y="14" textLength="168">runner@runnervmlun5p</text>
+<text class="aa" x="168" y="14" textLength="8.4">:</text>
+<text class="ac" x="176.4" y="14" textLength="319.2">~/work/console2svg/console2svg/docs/en</text>
+<text class="aa" x="495.6" y="14" textLength="8.4">$</text>
 </g>
-<g id="fd-2" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmzvulz</text>
-<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
-<text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">vi</text>
+<g id="c2r2" class="c2 c"><use href="#c2r1"/>
+<g transform="translate(512.4)">
+<rect width="8.4" height="18" id="c2e1" fill="#1e1e1e" stroke="#1e1e1e" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<text class="aa" y="14" textLength="8.4">v</text>
 </g>
-<g id="fd-3" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmzvulz</text>
-<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
-<text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
 </g>
-<g id="fd-4" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmzvulz</text>
-<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
-<text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
+<g id="c2r3" class="c2 c"><use href="#c2r2"/>
+<g transform="translate(520.8)">
+<use href="#c2e1"/>
+<text class="aa" y="14" textLength="8.4">i</text>
 </g>
-<g id="fd-5" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
 </g>
-<g id="fd-6" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="260.4" y="68" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">VIM</text>
-<text class="crt" x="294" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">-</text>
-<text class="crt" x="310.8" y="68" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">Vi</text>
-<text class="crt" x="336" y="68" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">IMproved</text>
-<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="268.8" y="104" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">version</text>
-<text class="crt" x="336" y="104" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">9.1.697</text>
-<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="235.2" y="122" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">by</text>
-<text class="crt" x="260.4" y="122" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">Bram</text>
-<text class="crt" x="302.4" y="122" fill="#d4d4d4" textLength="75.6" lengthAdjust="spacing">Moolenaar</text>
-<text class="crt" x="386.4" y="122" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">et</text>
-<text class="crt" x="411.6" y="122" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">al.</text>
-<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="168" y="140" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">Modified</text>
-<text class="crt" x="243.6" y="140" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">by</text>
-<text class="crt" x="268.8" y="140" fill="#d4d4d4" textLength="226.8" lengthAdjust="spacing">team+vim@tracker.debian.org</text>
-<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="151.2" y="158" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">Vim</text>
-<text class="crt" x="184.8" y="158" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">is</text>
-<text class="crt" x="210" y="158" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">open</text>
-<text class="crt" x="252" y="158" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">source</text>
-<text class="crt" x="310.8" y="158" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">and</text>
-<text class="crt" x="344.4" y="158" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">freely</text>
-<text class="crt" x="403.2" y="158" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacing">distributable</text>
-<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="210" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">Help</text>
-<text class="crt" x="252" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">poor</text>
-<text class="crt" x="294" y="194" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">children</text>
-<text class="crt" x="369.6" y="194" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">in</text>
-<text class="crt" x="394.8" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Uganda!</text>
-<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="142.8" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
-<text class="crt" x="193.2" y="212" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">iccf</text>
-<text class="crt" x="277.2" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
-<text class="crt" x="394.8" y="212" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
-<text class="crt" x="428.4" y="212" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">information</text>
-<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="142.8" y="248" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
-<text class="crt" x="193.2" y="248" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">:q</text>
-<text class="crt" x="210" y="248" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
-<text class="crt" x="394.8" y="248" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">to</text>
-<text class="crt" x="420" y="248" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">exit</text>
-<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="142.8" y="266" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
-<text class="crt" x="193.2" y="266" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="235.2" y="266" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
-<text class="crt" x="310.8" y="266" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">or</text>
-<text class="crt" x="344.4" y="266" fill="#2472c8" textLength="33.6" lengthAdjust="spacing">&lt;F1&gt;</text>
-<text class="crt" x="394.8" y="266" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
-<text class="crt" x="428.4" y="266" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">on-line</text>
-<text class="crt" x="495.6" y="266" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">help</text>
-<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="142.8" y="284" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
-<text class="crt" x="193.2" y="284" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="243.6" y="284" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">version9</text>
-<text class="crt" x="310.8" y="284" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
-<text class="crt" x="394.8" y="284" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
-<text class="crt" x="428.4" y="284" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">version</text>
-<text class="crt" x="495.6" y="284" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">info</text>
-<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="520.8" y="356" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">0,0-1</text>
-<text class="crt" x="638.4" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">All</text>
+<g id="c2r4" class="c2 c"><use href="#c2r3"/>
+<g transform="translate(529.2)">
+<use href="#c2e1"/>
+<text class="aa" y="14" textLength="8.4">m</text>
 </g>
-<g id="fd-7" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="260.4" y="68" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">VIM</text>
-<text class="crt" x="294" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">-</text>
-<text class="crt" x="310.8" y="68" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">Vi</text>
-<text class="crt" x="336" y="68" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">IMproved</text>
-<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="268.8" y="104" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">version</text>
-<text class="crt" x="336" y="104" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">9.1.697</text>
-<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="235.2" y="122" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">by</text>
-<text class="crt" x="260.4" y="122" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">Bram</text>
-<text class="crt" x="302.4" y="122" fill="#d4d4d4" textLength="75.6" lengthAdjust="spacing">Moolenaar</text>
-<text class="crt" x="386.4" y="122" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">et</text>
-<text class="crt" x="411.6" y="122" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">al.</text>
-<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="168" y="140" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">Modified</text>
-<text class="crt" x="243.6" y="140" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">by</text>
-<text class="crt" x="268.8" y="140" fill="#d4d4d4" textLength="226.8" lengthAdjust="spacing">team+vim@tracker.debian.org</text>
-<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="151.2" y="158" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">Vim</text>
-<text class="crt" x="184.8" y="158" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">is</text>
-<text class="crt" x="210" y="158" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">open</text>
-<text class="crt" x="252" y="158" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">source</text>
-<text class="crt" x="310.8" y="158" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">and</text>
-<text class="crt" x="344.4" y="158" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">freely</text>
-<text class="crt" x="403.2" y="158" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacing">distributable</text>
-<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="210" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">Help</text>
-<text class="crt" x="252" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">poor</text>
-<text class="crt" x="294" y="194" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">children</text>
-<text class="crt" x="369.6" y="194" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">in</text>
-<text class="crt" x="394.8" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Uganda!</text>
-<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="142.8" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
-<text class="crt" x="193.2" y="212" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">iccf</text>
-<text class="crt" x="277.2" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
-<text class="crt" x="394.8" y="212" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
-<text class="crt" x="428.4" y="212" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">information</text>
-<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="142.8" y="248" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
-<text class="crt" x="193.2" y="248" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">:q</text>
-<text class="crt" x="210" y="248" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
-<text class="crt" x="394.8" y="248" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">to</text>
-<text class="crt" x="420" y="248" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">exit</text>
-<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="142.8" y="266" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
-<text class="crt" x="193.2" y="266" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="235.2" y="266" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
-<text class="crt" x="310.8" y="266" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">or</text>
-<text class="crt" x="344.4" y="266" fill="#2472c8" textLength="33.6" lengthAdjust="spacing">&lt;F1&gt;</text>
-<text class="crt" x="394.8" y="266" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
-<text class="crt" x="428.4" y="266" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">on-line</text>
-<text class="crt" x="495.6" y="266" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">help</text>
-<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="142.8" y="284" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
-<text class="crt" x="193.2" y="284" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="243.6" y="284" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">version9</text>
-<text class="crt" x="310.8" y="284" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
-<text class="crt" x="394.8" y="284" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
-<text class="crt" x="428.4" y="284" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">version</text>
-<text class="crt" x="495.6" y="284" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">info</text>
-<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="436.8" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">i</text>
-<text class="crt" x="520.8" y="356" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">0,0-1</text>
-<text class="crt" x="638.4" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">All</text>
 </g>
-<g id="fd-8" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="260.4" y="68" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">VIM</text>
-<text class="crt" x="294" y="68" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">-</text>
-<text class="crt" x="310.8" y="68" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">Vi</text>
-<text class="crt" x="336" y="68" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">IMproved</text>
-<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="268.8" y="104" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">version</text>
-<text class="crt" x="336" y="104" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">9.1.697</text>
-<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="235.2" y="122" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">by</text>
-<text class="crt" x="260.4" y="122" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">Bram</text>
-<text class="crt" x="302.4" y="122" fill="#d4d4d4" textLength="75.6" lengthAdjust="spacing">Moolenaar</text>
-<text class="crt" x="386.4" y="122" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">et</text>
-<text class="crt" x="411.6" y="122" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">al.</text>
-<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="168" y="140" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">Modified</text>
-<text class="crt" x="243.6" y="140" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">by</text>
-<text class="crt" x="268.8" y="140" fill="#d4d4d4" textLength="226.8" lengthAdjust="spacing">team+vim@tracker.debian.org</text>
-<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="151.2" y="158" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">Vim</text>
-<text class="crt" x="184.8" y="158" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">is</text>
-<text class="crt" x="210" y="158" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">open</text>
-<text class="crt" x="252" y="158" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">source</text>
-<text class="crt" x="310.8" y="158" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">and</text>
-<text class="crt" x="344.4" y="158" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">freely</text>
-<text class="crt" x="403.2" y="158" fill="#d4d4d4" textLength="109.2" lengthAdjust="spacing">distributable</text>
-<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="210" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">Help</text>
-<text class="crt" x="252" y="194" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">poor</text>
-<text class="crt" x="294" y="194" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">children</text>
-<text class="crt" x="369.6" y="194" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">in</text>
-<text class="crt" x="394.8" y="194" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">Uganda!</text>
-<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="142.8" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
-<text class="crt" x="193.2" y="212" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="243.6" y="212" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">iccf</text>
-<text class="crt" x="277.2" y="212" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
-<text class="crt" x="394.8" y="212" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
-<text class="crt" x="428.4" y="212" fill="#d4d4d4" textLength="92.4" lengthAdjust="spacing">information</text>
-<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="142.8" y="248" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
-<text class="crt" x="193.2" y="248" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">:q</text>
-<text class="crt" x="210" y="248" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
-<text class="crt" x="394.8" y="248" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">to</text>
-<text class="crt" x="420" y="248" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">exit</text>
-<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="142.8" y="266" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
-<text class="crt" x="193.2" y="266" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="235.2" y="266" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
-<text class="crt" x="310.8" y="266" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">or</text>
-<text class="crt" x="344.4" y="266" fill="#2472c8" textLength="33.6" lengthAdjust="spacing">&lt;F1&gt;</text>
-<text class="crt" x="394.8" y="266" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
-<text class="crt" x="428.4" y="266" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">on-line</text>
-<text class="crt" x="495.6" y="266" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">help</text>
-<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="142.8" y="284" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">type</text>
-<text class="crt" x="193.2" y="284" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">:help</text>
-<text class="crt" x="243.6" y="284" fill="#d4d4d4" textLength="67.2" lengthAdjust="spacing">version9</text>
-<text class="crt" x="310.8" y="284" fill="#2472c8" textLength="58.8" lengthAdjust="spacing">&lt;Enter&gt;</text>
-<text class="crt" x="394.8" y="284" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">for</text>
-<text class="crt" x="428.4" y="284" fill="#d4d4d4" textLength="58.8" lengthAdjust="spacing">version</text>
-<text class="crt" x="495.6" y="284" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">info</text>
-<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="356" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacing" style="font-weight:bold;">--</text>
-<text class="crt" x="25.2" y="356" fill="#FEFEFE" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">INSERT</text>
-<text class="crt" x="84" y="356" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacing" style="font-weight:bold;">--</text>
-<text class="crt" x="520.8" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">0,1</text>
-<text class="crt" x="638.4" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">All</text>
+<g id="c2r5" class="c2 c">
+<use href="#c2e0"/>
+<text class="ad" y="14" textLength="8.4">~</text>
 </g>
-<g id="fd-9" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">h</text>
-<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="356" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacing" style="font-weight:bold;">--</text>
-<text class="crt" x="25.2" y="356" fill="#FEFEFE" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">INSERT</text>
-<text class="crt" x="84" y="356" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacing" style="font-weight:bold;">--</text>
-<text class="crt" x="520.8" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">1,2</text>
-<text class="crt" x="638.4" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">All</text>
+<g id="c2r6" class="c2 c">
+<use href="#c2e0"/>
+<text class="ad" y="14" textLength="8.4">~</text>
+<text class="aa w" x="260.4" y="14" textLength="142.8">VIM - Vi IMproved</text>
 </g>
-<g id="fd-10" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">he</text>
-<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="356" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacing" style="font-weight:bold;">--</text>
-<text class="crt" x="25.2" y="356" fill="#FEFEFE" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">INSERT</text>
-<text class="crt" x="84" y="356" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacing" style="font-weight:bold;">--</text>
-<text class="crt" x="520.8" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">1,3</text>
-<text class="crt" x="638.4" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">All</text>
+<g id="c2r7" class="c2 c">
+<use href="#c2e0"/>
+<text class="ad" y="14" textLength="8.4">~</text>
+<text class="aa w" x="268.8" y="14" textLength="126">version 9.1.697</text>
 </g>
-<g id="fd-11" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">hel</text>
-<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="356" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacing" style="font-weight:bold;">--</text>
-<text class="crt" x="25.2" y="356" fill="#FEFEFE" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">INSERT</text>
-<text class="crt" x="84" y="356" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacing" style="font-weight:bold;">--</text>
-<text class="crt" x="520.8" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">1,4</text>
-<text class="crt" x="638.4" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">All</text>
+<g id="c2r8" class="c2 c">
+<use href="#c2e0"/>
+<text class="ad" y="14" textLength="8.4">~</text>
+<text class="aa w" x="235.2" y="14" textLength="201.6">by Bram Moolenaar et al.</text>
 </g>
-<g id="fd-12" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">hell</text>
-<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="356" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacing" style="font-weight:bold;">--</text>
-<text class="crt" x="25.2" y="356" fill="#FEFEFE" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">INSERT</text>
-<text class="crt" x="84" y="356" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacing" style="font-weight:bold;">--</text>
-<text class="crt" x="520.8" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">1,5</text>
-<text class="crt" x="638.4" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">All</text>
+<g id="c2r9" class="c2 c">
+<use href="#c2e0"/>
+<text class="ad" y="14" textLength="8.4">~</text>
+<text class="aa w" x="168" y="14" textLength="327.6">Modified by team+vim@tracker.debian.org</text>
 </g>
-<g id="fd-13" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="42" lengthAdjust="spacing">hello</text>
-<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="356" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacing" style="font-weight:bold;">--</text>
-<text class="crt" x="25.2" y="356" fill="#FEFEFE" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">INSERT</text>
-<text class="crt" x="84" y="356" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacing" style="font-weight:bold;">--</text>
-<text class="crt" x="520.8" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">1,6</text>
-<text class="crt" x="638.4" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">All</text>
+<g id="c2r10" class="c2 c">
+<use href="#c2e0"/>
+<text class="ad" y="14" textLength="8.4">~</text>
+<text class="aa w" x="151.2" y="14" textLength="361.2">Vim is open source and freely distributable</text>
 </g>
-<g id="fd-14" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">hello!</text>
-<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="356" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacing" style="font-weight:bold;">--</text>
-<text class="crt" x="25.2" y="356" fill="#FEFEFE" textLength="50.4" lengthAdjust="spacing" style="font-weight:bold;">INSERT</text>
-<text class="crt" x="84" y="356" fill="#FEFEFE" textLength="16.8" lengthAdjust="spacing" style="font-weight:bold;">--</text>
-<text class="crt" x="520.8" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">1,7</text>
-<text class="crt" x="638.4" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">All</text>
+<g id="c2r11" class="c2 c">
+<use href="#c2e0"/>
+<text class="ad" y="14" textLength="8.4">~</text>
+<text class="aa w" x="235.2" y="14" textLength="201.6">Sponsor Vim development!</text>
 </g>
-<g id="fd-15" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">hello!</text>
-<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="436.8" y="356" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">^[</text>
+<g id="c2r12" class="c2 c">
+<use href="#c2e0"/>
+<text class="ad" y="14" textLength="8.4">~</text>
+<text class="aa w" x="142.8" y="14" textLength="159.6">type  :help sponsor</text>
+<text class="ae" x="302.4" y="14" textLength="58.8">&lt;Enter&gt;</text>
+<text class="aa w" x="394.8" y="14" textLength="126">for information</text>
 </g>
-<g id="fd-16" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">hello!</text>
-<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
+<g id="c2r13" class="c2 c">
+<use href="#c2e0"/>
+<text class="ad" y="14" textLength="8.4">~</text>
+<text class="aa w" x="142.8" y="14" textLength="67.2">type  :q</text>
+<text class="ae" x="210" y="14" textLength="58.8">&lt;Enter&gt;</text>
+<text class="aa w" x="394.8" y="14" textLength="58.8">to exit</text>
 </g>
-<g id="fd-17" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">hello!</text>
-<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="520.8" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">1,6</text>
-<text class="crt" x="638.4" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">All</text>
+<g id="c2r14" class="c2 c">
+<use href="#c2e0"/>
+<text class="ad" y="14" textLength="8.4">~</text>
+<text class="aa w" x="142.8" y="14" textLength="92.4">type  :help</text>
+<text class="ae" x="235.2" y="14" textLength="58.8">&lt;Enter&gt;</text>
+<text class="aa" x="310.8" y="14" textLength="16.8">or</text>
+<text class="ae" x="344.4" y="14" textLength="33.6">&lt;F1&gt;</text>
+<text class="aa w" x="394.8" y="14" textLength="134.4">for on-line help</text>
 </g>
-<g id="fd-18" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">hello!</text>
-<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="436.8" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="520.8" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">1,6</text>
-<text class="crt" x="638.4" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">All</text>
+<g id="c2r15" class="c2 c">
+<use href="#c2e0"/>
+<text class="ad" y="14" textLength="8.4">~</text>
+<text class="aa w" x="142.8" y="14" textLength="168">type  :help version9</text>
+<text class="ae" x="310.8" y="14" textLength="58.8">&lt;Enter&gt;</text>
+<text class="aa w" x="394.8" y="14" textLength="134.4">for version info</text>
 </g>
-<g id="fd-19" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">hello!</text>
-<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
+<g id="c2r16" class="c2 c">
+<use href="#c2e0"/>
+<text class="aa w" x="520.8" y="14" textLength="142.8">0,0-1         All</text>
 </g>
-<g id="fd-20" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">hello!</text>
-<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="16.8" lengthAdjust="spacing">:q</text>
+<g id="c2r17" class="c2 c">
+<use href="#c2e0"/>
+<text class="af w" y="14" textLength="100.8">-- INSERT --</text>
+<text class="aa w" x="520.8" y="14" textLength="142.8">0,1           All</text>
 </g>
-<g id="fd-21" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">hello!</text>
-<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">:q!</text>
+<g id="c2r18" class="c2 c"><use href="#c2r0"/>
+<g>
+<use href="#c2e1"/>
+<text class="aa" y="14" textLength="8.4">h</text>
 </g>
-<g id="fd-22" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#d4d4d4" textLength="50.4" lengthAdjust="spacing">hello!</text>
-<text class="crt" x="0" y="32" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="50" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="68" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="86" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="104" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="122" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="140" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="158" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="176" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="194" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="212" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="230" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="248" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="266" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="284" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="302" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="320" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="338" fill="#3b8eea" textLength="8.4" lengthAdjust="spacing">~</text>
-<text class="crt" x="0" y="356" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">:q!</text>
 </g>
-<g id="fd-23" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmzvulz</text>
-<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
-<text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
-<text class="crt" x="0" y="32" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmzvulz</text>
-<text class="crt" x="168" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="32" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
+<g id="c2r19" class="c2 c"><use href="#c2r17"/>
+<g transform="translate(520.8)">
+<rect width="25.2" height="18" id="c2e2" fill="#1e1e1e" stroke="#1e1e1e" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<text class="aa" y="14" textLength="25.2">1,2</text>
 </g>
-<g id="fd-24" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmzvulz</text>
-<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
-<text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
-<text class="crt" x="0" y="32" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmzvulz</text>
-<text class="crt" x="168" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="32" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
 </g>
-<g id="fd-25" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmzvulz</text>
-<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
-<text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
-<text class="crt" x="0" y="32" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmzvulz</text>
-<text class="crt" x="168" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="32" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">exit</text>
+<g id="c2r20" class="c2 c"><use href="#c2r18"/>
+<g transform="translate(8.4)">
+<use href="#c2e1"/>
+<text class="aa" y="14" textLength="8.4">e</text>
 </g>
-<g id="fd-26" transform="translate(9 36)">
-<rect width="672" height="360" fill="#1e1e1e"/>
-<text class="crt" x="0" y="14" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmzvulz</text>
-<text class="crt" x="168" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="14" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="14" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
-<text class="crt" x="445.2" y="14" fill="#d4d4d4" textLength="25.2" lengthAdjust="spacing">vim</text>
-<text class="crt" x="0" y="32" fill="#10E291" textLength="168" lengthAdjust="spacing" style="font-weight:bold;">runner@runnervmzvulz</text>
-<text class="crt" x="168" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">:</text>
-<text class="crt" x="176.4" y="32" fill="#2B89F0" textLength="252" lengthAdjust="spacing" style="font-weight:bold;">~/work/console2svg/console2svg</text>
-<text class="crt" x="428.4" y="32" fill="#d4d4d4" textLength="8.4" lengthAdjust="spacing">$</text>
-<text class="crt" x="0" y="50" fill="#d4d4d4" textLength="33.6" lengthAdjust="spacing">exit</text>
+</g>
+<g id="c2r21" class="c2 c"><use href="#c2r19"/>
+<g transform="translate(537.6)">
+<use href="#c2e1"/>
+<text class="aa" y="14" textLength="8.4">3</text>
+</g>
+</g>
+<g id="c2r22" class="c2 c"><use href="#c2r20"/>
+<g transform="translate(16.8)">
+<use href="#c2e1"/>
+<text class="aa" y="14" textLength="8.4">l</text>
+</g>
+</g>
+<g id="c2r23" class="c2 c"><use href="#c2r21"/>
+<g transform="translate(537.6)">
+<use href="#c2e1"/>
+<text class="aa" y="14" textLength="8.4">4</text>
+</g>
+</g>
+<g id="c2r24" class="c2 c"><use href="#c2r22"/>
+<g transform="translate(25.2)">
+<use href="#c2e1"/>
+<text class="aa" y="14" textLength="8.4">l</text>
+</g>
+</g>
+<g id="c2r25" class="c2 c"><use href="#c2r23"/>
+<g transform="translate(537.6)">
+<use href="#c2e1"/>
+<text class="aa" y="14" textLength="8.4">5</text>
+</g>
+</g>
+<g id="c2r26" class="c2 c">
+<use href="#c2e0"/>
+<text class="aa" y="14" textLength="42">hello</text>
+</g>
+<g id="c2r27" class="c2 c">
+<use href="#c2e0"/>
+<text class="af w" y="14" textLength="100.8">-- INSERT --</text>
+<text class="aa w" x="520.8" y="14" textLength="142.8">1,6           All</text>
+</g>
+<g id="c2r28" class="c2 c"><use href="#c2r26"/>
+<g transform="translate(42)">
+<use href="#c2e1"/>
+<text class="aa" y="14" textLength="8.4">!</text>
+</g>
+</g>
+<g id="c2r29" class="c2 c"><use href="#c2r27"/>
+<g transform="translate(537.6)">
+<use href="#c2e1"/>
+<text class="aa" y="14" textLength="8.4">7</text>
+</g>
+</g>
+<g id="c2r30" class="c2 c">
+<use href="#c2e0"/>
+<text class="aa" x="436.8" y="14" textLength="16.8">^[</text>
+</g>
+<g id="c2r31" class="c2 c">
+<use href="#c2e0"/>
+<text class="aa w" x="520.8" y="14" textLength="142.8">1,6           All</text>
+</g>
+<g id="c2r32" class="c2 c">
+<use href="#c2e0"/>
+<text class="aa" y="14" textLength="8.4">:</text>
+</g>
+<g id="c2r33" class="c2 c"><use href="#c2r32"/>
+<g transform="translate(8.4)">
+<use href="#c2e1"/>
+<text class="aa" y="14" textLength="8.4">q</text>
+</g>
+</g>
+<g id="c2r34" class="c2 c"><use href="#c2r33"/>
+<g transform="translate(16.8)">
+<use href="#c2e1"/>
+<text class="aa" y="14" textLength="8.4">!</text>
+</g>
+</g>
+<g id="c2r35" class="c2 c"><use href="#c2r0"/>
+<g>
+<rect width="33.6" height="18" id="c2e3" fill="#1e1e1e" stroke="#1e1e1e" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<text class="aa" y="14" textLength="33.6">exit</text>
+</g>
 </g>
 </defs>
-<use href="#fd-0" id="frame-0" class="frame frame-0"/>
-<use href="#fd-1" id="frame-1" class="frame frame-1"/>
-<use href="#fd-2" id="frame-2" class="frame frame-2"/>
-<use href="#fd-3" id="frame-3" class="frame frame-3"/>
-<use href="#fd-4" id="frame-4" class="frame frame-4"/>
-<use href="#fd-5" id="frame-5" class="frame frame-5"/>
-<use href="#fd-6" id="frame-6" class="frame frame-6"/>
-<use href="#fd-7" id="frame-7" class="frame frame-7"/>
-<use href="#fd-8" id="frame-8" class="frame frame-8"/>
-<use href="#fd-9" id="frame-9" class="frame frame-9"/>
-<use href="#fd-10" id="frame-10" class="frame frame-10"/>
-<use href="#fd-11" id="frame-11" class="frame frame-11"/>
-<use href="#fd-12" id="frame-12" class="frame frame-12"/>
-<use href="#fd-13" id="frame-13" class="frame frame-13"/>
-<use href="#fd-14" id="frame-14" class="frame frame-14"/>
-<use href="#fd-15" id="frame-15" class="frame frame-15"/>
-<use href="#fd-16" id="frame-16" class="frame frame-16"/>
-<use href="#fd-17" id="frame-17" class="frame frame-17"/>
-<use href="#fd-18" id="frame-18" class="frame frame-18"/>
-<use href="#fd-19" id="frame-19" class="frame frame-19"/>
-<use href="#fd-20" id="frame-20" class="frame frame-20"/>
-<use href="#fd-21" id="frame-21" class="frame frame-21"/>
-<use href="#fd-22" id="frame-22" class="frame frame-22"/>
-<use href="#fd-23" id="frame-23" class="frame frame-23"/>
-<use href="#fd-24" id="frame-24" class="frame frame-24"/>
-<use href="#fd-25" id="frame-25" class="frame frame-25"/>
-<use href="#fd-26" id="frame-26" class="frame frame-26"/>
+<g transform="translate(9 54)">
+<g>
+<use href="#c2r0" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.004854" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r1" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.004854;0.165049" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r2" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.165049;0.174757" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r3" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.174757;0.179612" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r4" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.179612;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.42233" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.42233;0.490291" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r20" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.490291;0.5" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r22" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.5;0.504854" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r24" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.504854;0.514563" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r26" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.514563;0.572816" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r28" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.572816;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r4" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="18" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.815534;0.878641" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r1" y="18" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.878641" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="36" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.815534;0.995146" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r35" y="36" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.995146" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="54" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r6" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.42233" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.42233;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="54" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="72" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="72" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="72" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="90" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r7" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.42233" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.42233;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="90" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="108" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r8" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.42233" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.42233;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="108" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="126" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r9" y="126" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.42233" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="126" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.42233;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="126" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="144" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r10" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.42233" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.42233;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="144" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="162" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="162" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="180" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r11" y="180" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.42233" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="180" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.42233;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="180" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="198" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r12" y="198" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.42233" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="198" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.42233;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="198" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="216" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="216" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="216" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="234" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r13" y="234" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.42233" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="234" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.42233;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="234" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="252" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r14" y="252" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.42233" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="252" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.42233;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="252" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="270" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r15" y="270" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.42233" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="270" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.42233;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="270" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="288" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="288" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="288" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="306" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="306" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="306" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="324" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="324" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="324" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="342" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r16" y="342" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.354369" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r17" y="342" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.354369;0.42233" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r19" y="342" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.42233;0.490291" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r21" y="342" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.490291;0.5" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r23" y="342" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.5;0.504854" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r25" y="342" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.504854;0.514563" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r27" y="342" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.514563;0.572816" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r29" y="342" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.572816;0.631068" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r30" y="342" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.631068;0.640777" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r31" y="342" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.640777;0.728155" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r32" y="342" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.728155;0.737864" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r33" y="342" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.737864;0.752427" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r34" y="342" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.752427;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="342" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<g display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.004854" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.004854;0.165049" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="512.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.165049;0.174757" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="520.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.174757;0.179612" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="529.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.179612;0.242718" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="537.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.242718;0.42233" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.42233;0.490291" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="8.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.490291;0.5" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="16.8" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.5;0.504854" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="25.2" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.504854;0.514563" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="33.6" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.514563;0.572816" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="42" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.572816;0.631068" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="50.4" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.640777;0.728155" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="42" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.728155;0.737864" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="8.4" y="342" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.737864;0.752427" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="16.8" y="342" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.752427;0.815534" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="25.2" y="342" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.815534;0.878641" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" y="18" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.878641;0.995146" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" x="512.4" y="18" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+<g display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.995146" dur="17.167s" calcMode="discrete" repeatCount="indefinite"/>
+<rect class="u" y="54" width="8.4" height="18" fill="#d4d4d4" opacity="0.65"/>
+</g>
+</g>
+</g>
 </svg>

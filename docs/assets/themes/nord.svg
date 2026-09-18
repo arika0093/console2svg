@@ -1,29 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="856" height="178" viewBox="0 0 856 178" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" width="856" height="160" viewBox="0 0 856 160" role="img" aria-label="console2svg output">
 <style>
 .c2.c { font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace; font-size: 14px; }
 .c2 text { dominant-baseline: alphabetic; }
 .c2 .q { shape-rendering: crispEdges; }
 .c2 .w { white-space: pre; }
-.c2 .aa{fill:#d8dee9}
-.c2 .ab{fill:#FFF4A7;font-weight:bold}
+.c2 .aa{fill:#FFF4A7;font-weight:bold}
+.c2 .ab{fill:#d8dee9}
 .c2 .ac{fill:#88c0d0}
 </style><defs><pattern id="c2-redacted-stripe" patternUnits="userSpaceOnUse" width="8" height="8"><path d="M0 0h8v8H0z" fill="#101420"/><path d="M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6" stroke="#d8dee9" stroke-width="2" opacity="0.3"/></pattern></defs><defs>
 <linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2e3440"/><stop offset="100%" stop-color="#3b4252"/></linearGradient>
 </defs>
-<rect width="856" height="178" fill="url(#c2bg)"/>
-<rect width="856" height="178" fill="#101420"/>
-<g class="c2 c"><rect x="8" y="8" width="840" height="18" fill="#101420"/>
-<text class="aa" x="8" y="22">$ console2svg</text></g>
-<g class="c2 c" transform="translate(8 26)">
+<rect width="856" height="160" fill="url(#c2bg)"/>
+<rect width="856" height="160" fill="#101420"/>
+<g class="c2 c" transform="translate(8 8)">
 <rect width="840" height="144" fill="#101420"/>
 </g>
-<g class="c2 c" transform="translate(8 26)">
-<text class="ab" y="14" textLength="100.8">Description:</text>
-<text class="aa w" x="16.8" y="32" textLength="260.4">Convert terminal output to SVG.</text>
-<text class="ab" y="68" textLength="50.4">Usage:</text>
-<text class="aa w" x="16.8" y="86" textLength="260.4">console2svg [command] [options]</text>
-<text class="ab" y="122" textLength="67.2">Options:</text>
+<g class="c2 c" transform="translate(8 8)">
+<text class="aa" y="14" textLength="100.8">Description:</text>
+<text class="ab w" x="16.8" y="32" textLength="260.4">Convert terminal output to SVG.</text>
+<text class="aa" y="68" textLength="50.4">Usage:</text>
+<text class="ab w" x="16.8" y="86" textLength="260.4">console2svg [command] [options]</text>
+<text class="aa" y="122" textLength="67.2">Options:</text>
 <text class="ac" x="16.8" y="140" textLength="50.4">--help</text>
-<text class="aa w" x="109.2" y="140" textLength="260.4">Show help and usage information</text>
+<text class="ab w" x="109.2" y="140" textLength="260.4">Show help and usage information</text>
 </g>
 </svg>

@@ -181,6 +181,45 @@ public sealed class QuickLeaksTests
     }
 
     [Test]
+    public void ConnectionStringCredentialsFromDocsExampleAreDetected()
+    {
+        var text = string.Join(
+            '\n',
+            "CONNECTION_STRING=Server=localhost;Database=myDataBase;User Id=myUsername;Password=myPassword;",
+            "MYSQL_CONNECTION_URL=mysql://username:superSecurePassword@localhost:3306/myDatabase"
+        );
+
+        var protectedValues = Filter
+            .Scan(text)
+            .Select(finding => text.Substring(finding.Start, finding.End - finding.Start))
+            .Distinct()
+            .ToArray();
+
+        protectedValues.ShouldContain("myUsername");
+        protectedValues.ShouldContain("myPassword");
+        protectedValues.ShouldContain("username");
+        protectedValues.ShouldContain("superSecurePassword");
+    }
+
+    [TestCase("User ID=myUsername;Pwd=myPassword;", "myUsername", "myPassword")]
+    [TestCase("UserID=myUsername;Pwd=\"my;Password\";", "myUsername", "my;Password")]
+    public void ConnectionStringAliasesAreDetected(
+        string text,
+        string expectedUsername,
+        string expectedPassword
+    )
+    {
+        var protectedValues = Filter
+            .Scan(text)
+            .Select(finding => text.Substring(finding.Start, finding.End - finding.Start))
+            .Distinct()
+            .ToArray();
+
+        protectedValues.ShouldContain(expectedUsername);
+        protectedValues.ShouldContain(expectedPassword);
+    }
+
+    [Test]
     public void EnvValuesRemainIndependentlyDetectableAcrossLines()
     {
         var findings = Filter.Scan("PASSWORD=123456\nDATABASE_URL=postgres://user:secret@host/testdb");

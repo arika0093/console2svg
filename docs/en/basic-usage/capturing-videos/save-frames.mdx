@@ -11,7 +11,7 @@ Use the `--save-frames` option when you want to extract each animation frame as 
 
 Run the command with the destination directory specified for `--save-frames`.
 
-```bash
+```bash title="Terminal" "--save-frames ./frames"
 console2svg capture -v --save-frames ./frames -- sl
 ```
 
@@ -31,7 +31,7 @@ Under the specified directory, each frame is output with numbered file names suc
 
 Combine this with the `--fps` option to adjust the sampling interval.
 
-```bash
+```bash title="Terminal" "--fps 10" "--save-frames ./output-frames"
 # Output at a rate of 10 frames per second
 console2svg capture -v --fps 10 --save-frames ./output-frames -- nyancat
 ```

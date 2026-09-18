@@ -3,7 +3,7 @@ title: tmux
 description: 记录或流式传输 tmux 窗格的命令。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg tmux capture --target <pane> [options]
 console2svg tmux live-server --target <pane> [options] [host:port]
 ```

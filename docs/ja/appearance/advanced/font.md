@@ -9,7 +9,7 @@ description: --font および --fontsize オプションを使用したフォン
 
 `--font` オプションにCSSの `font-family` 形式で指定します。
 
-```bash
+```bash title="Terminal" "--font"
 # 通常のターミナルフォントとは異なるフォントを指定
 console2svg capture --font "Courier New, monospace" -h 10 -- console2svg
 ```
@@ -45,6 +45,6 @@ font-family:
 
 `--fontsize` オプションでピクセル単位のフォントサイズを変更します（デフォルト: `14`）。
 
-```bash
+```bash title="Terminal" "--fontsize 16"
 console2svg capture --fontsize 16 -- cargo test
 ```

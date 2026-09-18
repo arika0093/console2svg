@@ -9,7 +9,7 @@ description: 在运行交互式 Shell 或 TUI 应用时，用功能键手动拍�
 
 执行 `interactive` 命令。
 
-```bash
+```bash title="Terminal"
 # 使用默认 shell 启动交互模式
 console2svg interactive
 # 直接启动指定命令
@@ -35,7 +35,7 @@ console2svg interactive
 默认会以 `output_YYYYMMDD_HHMMSSsss.svg` 格式输出。
 可以用 `-o` 选项指定任意文件名（会自动附加时间戳）。
 
-```bash
+```bash title="Terminal" "-o my_output.svg"
 console2svg interactive -o my_output.svg
 # -> my_output_20260101_123456789.svg
 ```
@@ -45,7 +45,7 @@ console2svg interactive -o my_output.svg
 
 指定扩展名后，也会自动执行转换处理。
 
-```bash
+```bash title="Terminal" "-o my_result.mp4"
 console2svg interactive -o my_result.mp4
 # -> my_result_20260101_123456789.mp4
 ```
@@ -58,6 +58,6 @@ console2svg interactive -o my_result.mp4
 
 与 [capture](../basic-usage/capturing-images/overview.mdx) 模式相同，可以指定主题、窗口样式等选项。
 
-```bash
+```bash title="Terminal" "-d macos-pc" "-t github-dark"
 console2svg interactive -d macos-pc -t github-dark
 ```

@@ -9,7 +9,7 @@ You can specify the font family and font size used to draw terminal text.
 
 Pass a CSS `font-family` value to the `--font` option.
 
-```bash
+```bash title="Terminal" "--font"
 # Specify a font different from the normal terminal font
 console2svg capture --font "Courier New, monospace" -h 10 -- console2svg
 ```
@@ -45,6 +45,6 @@ font-family:
 
 Use the `--fontsize` option to change the font size in pixels (default: `14`).
 
-```bash
+```bash title="Terminal" "--fontsize 16"
 console2svg capture --fontsize 16 -- cargo test
 ```

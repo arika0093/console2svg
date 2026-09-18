@@ -9,18 +9,18 @@ description: 用于在 CI 流水线中自动生成并提交 CLI 截图的工作�
 
 也可以使用便于 CI 使用的 GitHub Action。若要使用最新版本的 `console2svg`，只需在工作流中添加以下步骤：
 
-```yaml
+```yaml title=".github/workflows/console2svg.yml"
 - uses: arika0093/console2svg@main
 ```
 
 如需指定 console2svg 的版本，请按如下方式指定。
 
-```yaml
-- uses: arika0093/console2svg@main
-  with:
-    version: 0.8.3
-    # 从源代码构建
-    # version: develop
+```diff lang="yaml" title=".github/workflows/console2svg.yml"
+ - uses: arika0093/console2svg@main
++  with:
++    version: 0.8.3
+     # 从源代码构建
+     # version: develop
 ```
 
 > [!NOTE]
@@ -32,7 +32,7 @@ description: 用于在 CI 流水线中自动生成并提交 CLI 截图的工作�
 
 以下是在 Ubuntu runner 上安装 console2svg、生成 SVG，并提交到 Git 仓库的工作流示例。
 
-```yaml
+```yaml title=".github/workflows/console2svg.yml" {4-5,10-14}
 jobs:
   gen:
     runs-on: ubuntu-latest
@@ -59,7 +59,7 @@ jobs:
 使用 [batch markdown](./document-image-sync.md) 功能，也可以自动更新文档。
 以下是检测 Markdown 中的标记、生成图片并提交的工作流示例。
 
-```yaml
+```yaml title=".github/workflows/console2svg.yml" {4-5,10-14}
 jobs:
   sync:
     runs-on: ubuntu-latest

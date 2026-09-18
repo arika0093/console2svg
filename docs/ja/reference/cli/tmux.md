@@ -3,7 +3,7 @@ title: tmux
 description: tmuxペインを記録または配信するコマンド。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg tmux capture --target <pane> [options]
 console2svg tmux live-server --target <pane> [options] [host:port]
 ```

@@ -3,7 +3,7 @@ title: completions
 description: シェル補完スクリプトを生成するコマンド。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg completions generate <shell>
 ```
 

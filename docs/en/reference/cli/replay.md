@@ -3,7 +3,7 @@ title: replay
 description: Replay saved keyboard input.
 ---
 
-```bash
+```bash title="Terminal"
 console2svg replay <replay.json> [options] -- command [args...]
 ```
 

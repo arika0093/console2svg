@@ -9,7 +9,7 @@ Vimなどのエディタ操作やREPLでの対話作業を撮影する場合、�
 
 `interactive` コマンドを実行します。
 
-```bash
+```bash title="Terminal"
 # デフォルトシェルで対話モードを開始
 console2svg interactive
 # 特定のコマンドを直接起動
@@ -35,7 +35,7 @@ console2svg interactive
 標準では `output_YYYYMMDD_HHMMSSsss.svg` の形式で出力されます。
 `-o` オプションで任意のファイル名を指定できます(タイムスタンプは自動付与されます)。
 
-```bash
+```bash title="Terminal" "-o my_output.svg"
 console2svg interactive -o my_output.svg
 # -> my_output_20260101_123456789.svg
 ```
@@ -45,7 +45,7 @@ console2svg interactive -o my_output.svg
 
 拡張子を指定することで、自動で変換処理も行われます。
 
-```bash
+```bash title="Terminal" "-o my_result.mp4"
 console2svg interactive -o my_result.mp4
 # -> my_result_20260101_123456789.mp4
 ```
@@ -58,6 +58,6 @@ console2svg interactive -o my_result.mp4
 
 [capture](../basic-usage/capturing-images/overview.mdx)モードと同様に、テーマやウインドウスタイルなどのオプションを指定できます。
 
-```bash
+```bash title="Terminal" "-d macos-pc" "-t github-dark"
 console2svg interactive -d macos-pc -t github-dark
 ```

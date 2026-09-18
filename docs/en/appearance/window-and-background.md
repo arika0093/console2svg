@@ -9,7 +9,7 @@ You can refine screenshot appearance by configuring window decoration (such as t
 
 Specify the window frame with the `-d` or `--window <style>` option. If you specify only `-d` without a value, `macos` is applied.
 
-```bash
+```bash title="Terminal" "-d macos-pc"
 # macOS-style frame with a drop shadow
 console2svg capture -d macos-pc -- fastfetch
 ```
@@ -28,7 +28,7 @@ You can set a background color or background image with the `--background` optio
 
 Specify a color code (HEX).
 
-```bash
+```bash title="Terminal" "--background"
 console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
   --background "#003060" -- dotnet --version
 ```
@@ -41,7 +41,7 @@ console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
 
 Specify multiple color codes.
 
-```bash
+```bash title="Terminal" "--background"
 console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
   --background "#004060" "#0080c0" -- dotnet --version
 ```
@@ -54,7 +54,7 @@ console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
 
 Specify an image file path to display it like a desktop background.
 
-```sh
+```sh title="Terminal" "--background image.png"
 console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
   --background image.png -- dotnet --version
 ```

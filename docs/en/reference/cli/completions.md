@@ -3,7 +3,7 @@ title: completions
 description: Command that generates shell completion scripts.
 ---
 
-```bash
+```bash title="Terminal"
 console2svg completions generate <shell>
 ```
 

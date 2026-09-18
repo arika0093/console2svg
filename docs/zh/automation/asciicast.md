@@ -9,7 +9,7 @@ console2svg 可以与终端录制工具 asciinema 常用的 **asciicast v2** 格
 
 通过指定 `--save-cast` 选项，可以将执行输出保存为 asciicast 格式（`.cast`）。
 
-```bash
+```bash title="Terminal" "--save-cast session.cast"
 console2svg capture --save-cast session.cast -- cargo build
 ```
 
@@ -19,7 +19,7 @@ console2svg capture --save-cast session.cast -- cargo build
 
 指定 `--embed-cast` 选项后，可以把 asciicast 数据嵌入到生成的 SVG 文件内部的元数据区域。
 
-```bash
+```bash title="Terminal" "--embed-cast"
 console2svg capture --embed-cast -o output.svg -- fastfetch
 ```
 
@@ -27,7 +27,7 @@ console2svg capture --embed-cast -o output.svg -- fastfetch
 
 若要从已有 `.cast` 文件渲染 SVG 或视频，请使用 `cast` 子命令。
 
-```bash
+```bash title="Terminal" "cast session.cast"
 # 输出为静态 SVG
 console2svg cast session.cast -o session.svg
 
@@ -37,6 +37,6 @@ console2svg cast session.cast -v -o session.gif -t monokai
 
 或者指定 `capture --in`。
 
-```bash
+```bash title="Terminal" "--in session.cast"
 console2svg capture --in session.cast -d macos-pc -o output.svg
 ```

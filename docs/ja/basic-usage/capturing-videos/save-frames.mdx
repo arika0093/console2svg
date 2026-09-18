@@ -11,7 +11,7 @@ import { FileTree } from '@astrojs/starlight/components';
 
 `--save-frames` に保存先ディレクトリを指定して実行します。
 
-```bash
+```bash title="Terminal" "--save-frames ./frames"
 console2svg capture -v --save-frames ./frames -- sl
 ```
 
@@ -31,7 +31,7 @@ console2svg capture -v --save-frames ./frames -- sl
 
 `--fps` オプションと組み合わせることで、サンプリング間隔を調整できます。
 
-```bash
+```bash title="Terminal" "--fps 10" "--save-frames ./output-frames"
 # 1秒あたり10フレームのレートで出力
 console2svg capture -v --fps 10 --save-frames ./output-frames -- nyancat
 ```

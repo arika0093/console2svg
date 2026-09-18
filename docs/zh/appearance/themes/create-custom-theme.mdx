@@ -23,7 +23,7 @@ import { FileTree } from '@astrojs/starlight/components';
 
 最小结构如下。
 
-```json
+```json title="theme.json"
 {
   "schemaVersion": 1,
   "id": "my-theme",
@@ -48,7 +48,7 @@ import { FileTree } from '@astrojs/starlight/components';
 
 在 `$include` 中指定内置主题或同一发布包内主题的 ID 后，就可以继承已有配色和外观，只定义差异部分。
 
-```json
+```json title="theme.json"
 {
   "schemaVersion": 1,
   "id": "my-github-theme",
@@ -66,7 +66,7 @@ import { FileTree } from '@astrojs/starlight/components';
 如果要引用其他 Git 仓库中的主题，请以对象形式指定 `source`。
 引用目标也需要包含 `theme.json`。
 
-```json
+```json title="theme.json"
 "$include": [
   { "id": "base-theme", "source": "owner/theme-pack" }
 ]
@@ -76,9 +76,8 @@ import { FileTree } from '@astrojs/starlight/components';
 
 请参考内置主题 [`cyberpunk`](https://github.com/arika0093/console2svg/blob/main/themes/full/cyberpunk/)。
 
-### theme.json
 
-```jsonc
+```jsonc title="theme.json"
 {
   "schemaVersion": 1,
   "id": "cyberpunk",
@@ -138,9 +137,8 @@ import { FileTree } from '@astrojs/starlight/components';
 }
 ```
 
-### chrome.json
 
-```jsonc
+```jsonc title="chrome.json"
 {
   // 终端 shell 四周的内边距
   // 顶部为标题栏预留了更多空间
@@ -163,7 +161,7 @@ import { FileTree } from '@astrojs/starlight/components';
 
 可以将主题根目录作为 Git 仓库公开，或打包成归档文件。用户可以按如下方式安装。
 
-```bash
+```bash title="Terminal"
 console2svg theme install https://github.com/owner/my-theme.git
 console2svg theme install owner/my-theme
 ```

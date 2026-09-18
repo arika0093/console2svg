@@ -14,7 +14,7 @@ Once you have finished [installing](./installation.mdx) console2svg, let's try i
 
 1. Run any command with `console2svg capture -- (any-command)`.
 
-   ```bash
+   ```bash title="Terminal"
    console2svg capture -- console2svg
    ```
 
@@ -40,7 +40,7 @@ For example, let's display `oh-my-logo` under the following conditions.
    * If only `-d` is specified, it is treated as `macos` (no surrounding spacing).
 * `--background "#ff7e5f" "#feb47b"`: Use a sunset-style gradient background.
 
-```bash
+```bash title="Terminal" "-d macos-pc" "--background"
 console2svg capture -o console2svg.svg -w 100 -h 10 -c -d macos-pc \
             --background "#ff7e5f" "#feb47b" \
             -- oh-my-logo "console2svg" sunset --filled --letter-spacing 0
@@ -59,7 +59,7 @@ For details, see [Capture still images](/en/basic-usage/capturing-images/overvie
 
 1. Pass `-v` to the `capture` command and run any command.
 
-   ```bash
+   ```bash title="Terminal" "-v"
    console2svg capture -c -d -v -- sl
    ```
 
@@ -83,7 +83,7 @@ For example, let's display `nyancat` under the following conditions.
 * `--timeout 5`: Automatically stop after 5 seconds.
 * `--sleep 0.5`: Wait 0.5 seconds before looping from the final frame.
 
-```bash
+```bash title="Terminal" "-v" "--timeout 5" "--sleep 0.5"
 console2svg capture -w 160 -h 32 -c -d -v \
             --timeout 5 --sleep 0.5 -- nyancat -d 10
 ```

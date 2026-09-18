@@ -9,7 +9,7 @@ description: --mask オプションによる特定の文字列や正規表現パ
 
 マスクしたい文字列を `--mask` に渡します。
 
-```bash
+```bash title="Terminal" "--mask"
 console2svg capture --mask "1234567890abcdef" -w 100 -h 12 \
             -- echo "this value will be redacted:: 1234567890abcdef"
 ```
@@ -21,7 +21,7 @@ console2svg capture --mask "1234567890abcdef" -w 100 -h 12 \
 
 `--mask` オプションは複数回指定できます。
 
-```bash
+```bash title="Terminal" "--mask"
 console2svg capture \
   --mask "internal-host.local" \
   --mask "admin_password" \

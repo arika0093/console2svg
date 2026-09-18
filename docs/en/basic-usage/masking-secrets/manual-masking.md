@@ -9,7 +9,7 @@ Use the `--mask` option when you have project-specific tokens, internal domain n
 
 Pass the string you want to mask to `--mask`.
 
-```bash
+```bash title="Terminal" "--mask"
 console2svg capture --mask "1234567890abcdef" -w 100 -h 12 \
             -- echo "this value will be redacted:: 1234567890abcdef"
 ```
@@ -21,7 +21,7 @@ console2svg capture --mask "1234567890abcdef" -w 100 -h 12 \
 
 You can specify the `--mask` option multiple times.
 
-```bash
+```bash title="Terminal" "--mask"
 console2svg capture \
   --mask "internal-host.local" \
   --mask "admin_password" \

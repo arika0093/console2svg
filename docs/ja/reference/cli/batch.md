@@ -3,7 +3,7 @@ title: batch markdown
 description: Markdownのc2sマーカーから画像を一括生成するコマンド。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg batch markdown [--input <path>] [--output <dir>] [--filter <glob>] [--dry-run]
 ```
 

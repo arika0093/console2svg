@@ -22,7 +22,7 @@ description: 按像素、字符数或文本模式裁剪输出画面上下左右�
 
 直接以像素（`px`）或字符数、行数（`ch`）指定数值。
 
-```bash
+```bash title="Terminal" "--crop-top 20px" "--crop-bottom 3ch" "--crop-left 10px" "--crop-right 10ch"
 # 裁剪前
 console2svg capture -w 80 -h 12 -- console2svg
 
@@ -39,7 +39,7 @@ console2svg capture -w 80 -h 12 \
 
 也可以根据特定字符串出现的位置进行动态裁剪。
 
-```bash
+```bash title="Terminal" "--crop-bottom"
 # 裁剪字符串 "Options" 所在行以下的全部内容
 console2svg capture -w 80 -h 12 --crop-bottom "Options" -- console2svg
 ```
@@ -49,7 +49,7 @@ console2svg capture -w 80 -h 12 --crop-bottom "Options" -- console2svg
 
 通过指定偏移行数，也可以从匹配行的前后位置开始裁剪。
 
-```bash
+```bash title="Terminal" "--crop-bottom"
 # 保留到 "Options" 前 2 行（-2）为止
 console2svg capture -w 80 -h 12 --crop-bottom "Options::-2" -- console2svg
 ```

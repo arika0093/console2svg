@@ -13,7 +13,7 @@ Use the `capture` subcommand to save the result of any CLI command as a vector S
 
 1. Run `console2svg capture -- (command)`.
 
-   ```bash
+   ```bash title="Terminal"
    console2svg capture -- console2svg
    ```
 
@@ -41,7 +41,7 @@ See [`capture` options](../../../reference/cli/capture/) for details.
 
 ### Example
 
-```bash
+```bash title="Terminal" "-o console2svg.svg -c -w 100 -h 12"
 # Output with executed command, width 100 characters, height 12 lines, and a custom file name
 console2svg capture -o console2svg.svg -c -w 100 -h 12 --  dotnet --info
 ```

@@ -9,7 +9,7 @@ description: 指定 macOS 风格或 Windows 风格窗口装饰（Chrome）、背
 
 使用 `-d` 或 `--window <style>` 选项指定窗口边框。只指定不带值的 `-d` 时，会应用 `macos`。
 
-```bash
+```bash title="Terminal" "-d macos-pc"
 # 带投影的 macOS 风格样式
 console2svg capture -d macos-pc -- fastfetch
 ```
@@ -28,7 +28,7 @@ console2svg capture -d macos-pc -- fastfetch
 
 指定颜色代码（HEX）。
 
-```bash
+```bash title="Terminal" "--background"
 console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
   --background "#003060" -- dotnet --version
 ```
@@ -41,7 +41,7 @@ console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
 
 指定多个颜色代码。
 
-```bash
+```bash title="Terminal" "--background"
 console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
   --background "#004060" "#0080c0" -- dotnet --version
 ```
@@ -54,7 +54,7 @@ console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
 
 指定图片文件路径后，可以像桌面背景一样显示。
 
-```sh
+```sh title="Terminal" "--background image.png"
 console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
   --background image.png -- dotnet --version
 ```

@@ -9,7 +9,7 @@ SVG形式に対応していないプラットフォームやアプリケーシ�
 
 `-o` オプションで拡張子に `.png` を指定するだけで、自動的にラスタライズ処理が行われます。
 
-```bash
+```bash title="Terminal" "-o output.png"
 console2svg capture -o output.png -w 100 -h 12 -- console2svg
 ```
 
@@ -29,7 +29,7 @@ console2svg は組み込みの [resvg](https://github.com/linebender/resvg)（Ru
 | `rsvg-convert` | システムの `rsvg-convert` コマンドを使用します。 |
 | `ffmpeg` | ffmpeg の librsvg デコーダーを使用します。 |
 
-```bash
+```bash title="Terminal" "--svg-converter rsvg-convert"
 console2svg capture -o result.png --svg-converter rsvg-convert -- console2svg
 ```
 

@@ -25,7 +25,7 @@ description: 从 Markdown 或 MDX 的代码块生成执行示例图片，并反�
 
 最简单的用法是在 markdown 文件中放置如下 `<!-- c2s:: (command) -->` 标记。
 
-```markdown
+```markdown title="example.md"
 运行 `dotnet --info` 会得到如下输出。
 
 <!-- c2s:: dotnet --info | head -n10 -->
@@ -33,7 +33,7 @@ description: 从 Markdown 或 MDX 的代码块生成执行示例图片，并反�
 
 然后执行以下命令。
 
-```bash
+```bash title="Terminal" "batch markdown"
 console2svg batch markdown -i ./docs -o ./assets
 ```
 
@@ -41,11 +41,11 @@ console2svg batch markdown -i ./docs -o ./assets
 随后，捕获的图片会保存到 `./assets` 目录。
 同时 markdown 文件也会更新，在标记后立即追加图片。
 
-```markdown
+```diff lang="markdown" title="example.md"
 运行 `dotnet --info` 会得到如下输出。
 
 <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
-![dotnet --info](../assets/sample-QzOus8.svg)
++ ![dotnet --info](../assets/sample-QzOus8.svg)
 ```
 
 生成图片的路径会根据 markdown 文件路径等自动生成，并以相对路径写入。
@@ -56,7 +56,7 @@ console2svg batch markdown -i ./docs -o ./assets
 
 可以在 `c2s::` 标记后指定各种选项。
 
-```markdown
+```markdown title="example.md" "-w 100 -h 10 -d macos"
 <!-- c2s:: -w 100 -h 10 -d macos -t nord -- dotnet --version -->
 ```
 
@@ -67,7 +67,7 @@ console2svg batch markdown -i ./docs -o ./assets
 
 在标记后写入 YAML 格式的设置后，可以指定执行前的设置、执行内容替换以及执行后的后处理。
 
-```markdown
+```markdown {4-9}
 如下配置可以不捕获构建时的输出，只捕获执行结果。
 
 <!-- c2s:: -w 100 -h 10 -d macos
@@ -84,7 +84,7 @@ teardown:
 
 给带名称的代码块添加 `c2s-id` 后，标记就可以引用该代码块。
 
-````markdown
+````markdown title="example.md" "{code:program}" "{code:result}" "c2s-id=program" "c2s-id=result"
 ```csharp c2s-id=program
 Console.WriteLine("hello");
 ```
@@ -140,7 +140,7 @@ teardown: rm -f test.cs result.txt
 
 开发过程中，可以针对输入目录的相对路径指定 glob 过滤器。过滤器可以多次指定。
 
-```bash
+```bash title="Terminal" "--filter"
 console2svg batch markdown -i ./docs -o ./docs/assets --filter "reference/**"
 ```
 

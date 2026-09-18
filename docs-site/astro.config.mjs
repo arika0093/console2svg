@@ -17,6 +17,9 @@ const repoRoot = path.resolve(process.cwd(), '..');
 export default defineConfig({
   site: docsSite,
   base: docsBase,
+  redirects: {
+    '/': '/en/',
+  },
   server: {
     host: true,
     fs: {
@@ -35,6 +38,7 @@ export default defineConfig({
     starlight({
       title: 'console2svg',
       description: 'Convert terminal output into crisp, scalable SVG images.',
+      expressiveCode: true,
       social: [
         { icon: 'github', label: 'GitHub', href: 'https://github.com/arika0093/console2svg' },
       ],

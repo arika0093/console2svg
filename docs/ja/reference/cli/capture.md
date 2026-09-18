@@ -3,7 +3,7 @@ title: capture
 description: ターミナル出力をSVGとして記録するコマンド。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg capture [options] -- command [args...]
 ```
 
@@ -219,6 +219,6 @@ SVGテキストの長さ調整方法を`spacing`または`spacingAndGlyphs`か�
 
 SVGをラスタライズする方法を`auto`、`ffmpeg`、`rsvg-convert`、`resvg`から選びます。
 
-```bash
+```bash title="Terminal" "-w 100 -h 24 -c"
 console2svg capture -w 100 -h 24 -c -- fastfetch
 ```

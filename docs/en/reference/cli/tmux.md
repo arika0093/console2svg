@@ -3,7 +3,7 @@ title: tmux
 description: Command that records or streams tmux panes.
 ---
 
-```bash
+```bash title="Terminal"
 console2svg tmux capture --target <pane> [options]
 console2svg tmux live-server --target <pane> [options] [host:port]
 ```

@@ -9,7 +9,7 @@ description: 记录输入按键，并自动复现相同操作进行捕获的重�
 
 为 `--replay-save` 选项指定保存目标文件路径后执行。
 
-```bash
+```bash title="Terminal" "--replay-save demo.json"
 # 记录交互式会话
 console2svg interactive --replay-save demo.json -- bash
 ```
@@ -20,7 +20,7 @@ console2svg interactive --replay-save demo.json -- bash
 
 若要使用保存的重放文件执行捕获，请使用 `replay` 子命令。
 
-```bash
+```bash title="Terminal" "replay demo.json"
 console2svg replay demo.json -- bash
 ```
 

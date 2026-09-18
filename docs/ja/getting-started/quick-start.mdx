@@ -14,7 +14,7 @@ console2svgの[インストール](./installation.mdx)が完了したら、早�
 
 1. `console2svg capture -- (any-command)`で好きなコマンドを実行します。
 
-   ```bash
+   ```bash title="Terminal"
    console2svg capture -- console2svg
    ```
 
@@ -40,7 +40,7 @@ console2svgの[インストール](./installation.mdx)が完了したら、早�
    * `-d`のみ指定した場合、`macos`(余白なし)として取り扱われます。
 * `--background "#ff7e5f" "#feb47b"`: sunset風のグラデーション背景にします。
 
-```bash
+```bash title="Terminal" "-d macos-pc" "--background"
 console2svg capture -o console2svg.svg -w 100 -h 10 -c -d macos-pc \
             --background "#ff7e5f" "#feb47b" \
             -- oh-my-logo "console2svg" sunset --filled --letter-spacing 0
@@ -59,7 +59,7 @@ console2svg capture -o console2svg.svg -w 100 -h 10 -c -d macos-pc \
 
 1. `capture`コマンドに`-v`を渡したうえで、で好きなコマンドを実行します。
 
-   ```bash
+   ```bash title="Terminal" "-v"
    console2svg capture -c -d -v -- sl
    ```
 
@@ -83,7 +83,7 @@ console2svg capture -o console2svg.svg -w 100 -h 10 -c -d macos-pc \
 * `--timeout 5`: 5秒経過後に自動で終了させます。
 * `--sleep 0.5`: 最終フレームからリピートするまでの間に0.5秒待機を入れます。
 
-```bash
+```bash title="Terminal" "-v" "--timeout 5" "--sleep 0.5"
 console2svg capture -w 160 -h 32 -c -d -v \
             --timeout 5 --sleep 0.5 -- nyancat -d 10
 ```

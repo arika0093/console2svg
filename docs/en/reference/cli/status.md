@@ -3,7 +3,7 @@ title: status
 description: Command that checks the execution environment and dependency tool status.
 ---
 
-```bash
+```bash title="Terminal" "--format table|markdown|json" "--json"
 console2svg status [--format table|markdown|json]
 console2svg status --json
 ```

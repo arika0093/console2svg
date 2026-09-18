@@ -14,23 +14,23 @@ description: 为 bash、zsh、fish 和 PowerShell 安装 Tab 补全脚本。
 
 将以下内容添加到 `~/.bashrc`：
 
-```bash
-eval "$(console2svg completions script bash)"
+```diff lang="bash" title="~/.bashrc"
++ eval "$(console2svg completions script bash)"
 ```
 
 ### Zsh
 
 在 `~/.zshrc` 的 `compinit` 调用之前添加以下内容：
 
-```zsh
-eval "$(console2svg completions script zsh)"
+```diff lang="zsh" title="~/.zshrc"
++ eval "$(console2svg completions script zsh)"
 ```
 
 ### Fish
 
 将脚本放入补全目录：
 
-```fish
+```fish title="Terminal"
 mkdir -p ~/.config/fish/completions
 console2svg completions script fish > ~/.config/fish/completions/console2svg.fish
 ```
@@ -39,6 +39,6 @@ console2svg completions script fish > ~/.config/fish/completions/console2svg.fis
 
 将以下内容添加到 PowerShell 配置文件（`$PROFILE`）：
 
-```powershell
-Invoke-Expression (& console2svg completions script pwsh | Out-String)
+```diff lang="powershell" title="$PROFILE"
++ Invoke-Expression (& console2svg completions script pwsh | Out-String)
 ```

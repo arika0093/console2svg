@@ -22,7 +22,7 @@ Specify the crop amount for each side with the following options.
 
 Specify numeric values directly in pixels (`px`) or character/line counts (`ch`).
 
-```bash
+```bash title="Terminal" "--crop-top 20px" "--crop-bottom 3ch" "--crop-left 10px" "--crop-right 10ch"
 # Before cropping
 console2svg capture -w 80 -h 12 -- console2svg
 
@@ -39,7 +39,7 @@ console2svg capture -w 80 -h 12 \
 
 You can also crop dynamically relative to the position where a specific string appears.
 
-```bash
+```bash title="Terminal" "--crop-bottom"
 # Crop everything below the line where the string "Options" appears
 console2svg capture -w 80 -h 12 --crop-bottom "Options" -- console2svg
 ```
@@ -49,7 +49,7 @@ console2svg capture -w 80 -h 12 --crop-bottom "Options" -- console2svg
 
 By specifying an offset line count, you can crop from lines before or after the matched line.
 
-```bash
+```bash title="Terminal" "--crop-bottom"
 # Keep up to 2 lines (-2) before "Options"
 console2svg capture -w 80 -h 12 --crop-bottom "Options::-2" -- console2svg
 ```

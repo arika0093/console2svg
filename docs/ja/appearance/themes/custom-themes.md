@@ -7,7 +7,7 @@ description: 外部テーマのインストール・更新・削除方法。
 
 ## テーマをインストールする
 
-```bash
+```bash title="Terminal"
 # GitHubリポジトリのURL（Gitがない環境では自動的にアーカイブを取得）
 console2svg theme install owner/my-theme
 console2svg theme install owner/my-theme2@branch/path/to/theme
@@ -18,13 +18,13 @@ console2svg theme install https://my-git.example/themes/my-theme.git
 
 インストールしたテーマは、組み込みテーマと同じように適用できます。
 
-```bash
-console2svg capture --theme my-theme -- fastfetch
+```bash title="Terminal" "-t my-theme"
+console2svg capture -t my-theme -- fastfetch
 ```
 
 ## テーマを管理する
 
-```bash
+```bash title="Terminal"
 # 一覧（組み込みテーマも表示）
 console2svg theme list
 

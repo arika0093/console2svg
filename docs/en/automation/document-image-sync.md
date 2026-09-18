@@ -25,7 +25,7 @@ This lets you generate example images from Markdown and MDX code blocks and imme
 
 The simplest usage is to place a `<!-- c2s:: (command) -->` marker in a markdown file as follows.
 
-```markdown
+```markdown title="example.md"
 Running `dotnet --info` produces output like the following.
 
 <!-- c2s:: dotnet --info | head -n10 -->
@@ -33,7 +33,7 @@ Running `dotnet --info` produces output like the following.
 
 Then run the following command.
 
-```bash
+```bash title="Terminal" "batch markdown"
 console2svg batch markdown -i ./docs -o ./assets
 ```
 
@@ -41,11 +41,11 @@ The marker in the markdown above is detected, and the command you wrote (in this
 After that, the captured image is saved in the `./assets` directory.
 The markdown file is also updated, and an image is added immediately after the marker.
 
-```markdown
+```diff lang="markdown" title="example.md"
 Running `dotnet --info` produces output like the following.
 
 <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
-![dotnet --info](../assets/sample-QzOus8.svg)
++ ![dotnet --info](../assets/sample-QzOus8.svg)
 ```
 
 The generated image path is created automatically from information such as the markdown file path and is written as a relative path.
@@ -56,7 +56,7 @@ On the second and later runs, the image path immediately after the marker is rea
 
 You can specify various options after the `c2s::` marker.
 
-```markdown
+```markdown title="example.md" "-w 100 -h 10 -d macos"
 <!-- c2s:: -w 100 -h 10 -d macos -t nord -- dotnet --version -->
 ```
 
@@ -67,7 +67,7 @@ You can specify various options after the `c2s::` marker.
 
 If you write YAML-formatted settings after the marker, you can specify setup before execution, replacement of the command to run, and teardown after execution.
 
-```markdown
+```markdown {4-9}
 The following configuration captures only the execution result, without capturing build output.
 
 <!-- c2s:: -w 100 -h 10 -d macos
@@ -84,7 +84,7 @@ teardown:
 
 If you add `c2s-id` to a named code block, a marker can reference that code block.
 
-````markdown
+````markdown title="example.md" "{code:program}" "{code:result}" "c2s-id=program" "c2s-id=result"
 ```csharp c2s-id=program
 Console.WriteLine("hello");
 ```
@@ -140,7 +140,7 @@ This makes execution in CI/CD pipelines easier.
 
 During development, you can specify glob filters against paths relative to the input directory. Filters can be specified multiple times.
 
-```bash
+```bash title="Terminal" "--filter"
 console2svg batch markdown -i ./docs -o ./docs/assets --filter "reference/**"
 ```
 

@@ -3,7 +3,7 @@ title: replay
 description: 重放已保存键盘输入的命令。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg replay <replay.json> [options] -- command [args...]
 ```
 

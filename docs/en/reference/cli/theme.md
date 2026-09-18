@@ -3,7 +3,7 @@ title: theme
 description: Command that manages installed themes.
 ---
 
-```bash
+```bash title="Terminal"
 console2svg theme list
 console2svg theme install <source>
 console2svg theme remove <id>

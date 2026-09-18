@@ -12,8 +12,8 @@ console2svg 的内置主题分为以下类型。
 可以把主题 ID 传给 `-t` 或 `--theme` 来应用主题。
 如果只指定窗口边框，请使用 `-d` 或 `--window`。
 
-```bash
-console2svg capture --theme nord -- console2svg
+```bash title="Terminal" "-t nord" "--window macos-pc" "-t cyberpunk-pc"
+console2svg capture -t nord -- console2svg
 console2svg capture --window macos-pc -- console2svg
-console2svg capture --theme cyberpunk-pc -- console2svg
+console2svg capture -t cyberpunk-pc -- console2svg
 ```

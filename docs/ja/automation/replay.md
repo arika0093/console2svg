@@ -9,7 +9,7 @@ description: 入力キーストロークを記録し、同一の操作を自動�
 
 `--replay-save` オプションに保存先ファイルパスを指定して実行します。
 
-```bash
+```bash title="Terminal" "--replay-save demo.json"
 # 対話セッションで操作を記録
 console2svg interactive --replay-save demo.json -- bash
 ```
@@ -20,7 +20,7 @@ console2svg interactive --replay-save demo.json -- bash
 
 保存したリプレイファイルを使用してキャプチャを実行するには、`replay` サブコマンドを使用します。
 
-```bash
+```bash title="Terminal" "replay demo.json"
 console2svg replay demo.json -- bash
 ```
 

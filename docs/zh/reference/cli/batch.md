@@ -3,7 +3,7 @@ title: batch markdown
 description: 从 Markdown 的 c2s 标记批量生成图片的命令。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg batch markdown [--input <path>] [--output <dir>] [--filter <glob>] [--dry-run]
 ```
 

@@ -10,7 +10,7 @@ This page explains logging for investigation and troubleshooting, and embedding 
 * **`--verbose`**: Write detailed execution logs to standard error (stderr).
 * **`--verbose <path>`** / **`--verbose-log <path>`**: Write detailed logs to the specified file.
 
-```bash
+```bash title="Terminal" "--verbose-log debug.log"
 console2svg capture --verbose-log debug.log -o output.svg -- fastfetch
 ```
 
@@ -23,7 +23,7 @@ console2svg can embed diagnostic data in the metadata area of generated SVG docu
 * **`--embed-replay`**: Embed keyboard input events.
 * **`--embed-debug`**: Embed all of the above (logs, cast, and replay) at once.
 
-```bash
+```bash title="Terminal" "--embed-debug"
 console2svg capture --embed-debug -o debug.svg -- my-app
 ```
 

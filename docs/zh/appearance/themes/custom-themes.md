@@ -7,7 +7,7 @@ description: 外部主题的安装、更新和删除方法。
 
 ## 安装主题
 
-```bash
+```bash title="Terminal"
 # GitHub 仓库 URL（没有 Git 的环境会自动获取归档）
 console2svg theme install owner/my-theme
 console2svg theme install owner/my-theme2@branch/path/to/theme
@@ -18,13 +18,13 @@ console2svg theme install https://my-git.example/themes/my-theme.git
 
 已安装的主题可以像内置主题一样应用。
 
-```bash
+```bash title="Terminal" "-t my-theme"
 console2svg capture --theme my-theme -- fastfetch
 ```
 
 ## 管理主题
 
-```bash
+```bash title="Terminal"
 # 列表（也显示内置主题）
 console2svg theme list
 

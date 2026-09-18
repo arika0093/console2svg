@@ -3,7 +3,7 @@ title: live-server
 description: Command that serves live terminal SVG.
 ---
 
-```bash
+```bash title="Terminal"
 console2svg live-server [options] [host:port]
 ```
 

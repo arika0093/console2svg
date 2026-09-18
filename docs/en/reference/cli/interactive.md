@@ -3,7 +3,7 @@ title: interactive
 description: Record an interactive shell or program.
 ---
 
-```bash
+```bash title="Terminal"
 console2svg interactive [options]
 ```
 

@@ -9,18 +9,18 @@ GitHub Actionsと組み合わせることで、リポジトリの更新やリリ
 
 CIで使用するための便利なGitHub Actionも利用できます。最新バージョンの `console2svg` を使用するには、ワークフローに次のステップを追加するだけです：
 
-```yaml
+```yaml title=".github/workflows/console2svg.yml"
 - uses: arika0093/console2svg@main
 ```
 
 console2svgのバージョンを指定するには、以下のように指定します。
 
-```yaml
-- uses: arika0093/console2svg@main
-  with:
-    version: 0.8.3
-    # ソースからビルドしたい場合
-    # version: develop
+```diff lang="yaml" title=".github/workflows/console2svg.yml"
+ - uses: arika0093/console2svg@main
++  with:
++    version: 0.8.3
+     # ソースからビルドしたい場合
+     # version: develop
 ```
 
 > [!NOTE]
@@ -31,7 +31,7 @@ console2svgのバージョンを指定するには、以下のように指定し
 ### 単発の生成
 以下は、Ubuntuランナー上で console2svg をインストールしてSVGを生成し、Gitリポジトリへコミットするワークフローの例です。
 
-```yaml
+```yaml title=".github/workflows/console2svg.yml" {4-5,10-14}
 jobs:
   gen:
     runs-on: ubuntu-latest
@@ -57,7 +57,7 @@ jobs:
 [batch markdown](./document-image-sync.md) 機能を使用することで、ドキュメントの自動更新を行うこともできます。
 以下は、Markdown内のマーカーを検出して画像を生成し、コミットするワークフローの例です。
 
-```yaml
+```yaml title=".github/workflows/console2svg.yml" {4-5,10-14}
 jobs:
   sync:
     runs-on: ubuntu-latest

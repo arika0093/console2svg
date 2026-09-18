@@ -12,7 +12,7 @@ SVG出力の細かなレイアウトや表示内容を微調整するための�
 * **`spacing`** (デフォルト): 文字間のスペースのみを調整します。グリフの変形を防ぎます。
 * **`spacingAndGlyphs`**: 文字自体の幅も伸縮させ、ターミナルセルの位置に厳密に合わせます。
 
-```bash
+```bash title="Terminal" "--adjust spacingAndGlyphs"
 console2svg capture --adjust spacingAndGlyphs -- btop
 ```
 
@@ -23,7 +23,7 @@ console2svg capture --adjust spacingAndGlyphs -- btop
 * **`--prompt <text>`**: プロンプト記号を変更します（デフォルト: `$` または `#`）。
 * **`--header <text>`**: 実行コマンド行のテキスト全体を指定した文字列に差し替えます。
 
-```bash
+```bash title="Terminal" "--prompt" "--header"
 # プロンプトを ❯ に変更
 console2svg capture -c --prompt "❯ " -- echo "Hello"
 

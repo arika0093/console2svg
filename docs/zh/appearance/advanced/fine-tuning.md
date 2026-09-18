@@ -12,7 +12,7 @@ description: 控制文字压缩（lengthAdjust）、指定固定尺寸，以及�
 * **`spacing`**（默认）：只调整字符之间的间距，避免字形变形。
 * **`spacingAndGlyphs`**：同时拉伸或压缩字符本身的宽度，使其严格对齐终端单元格位置。
 
-```bash
+```bash title="Terminal" "--adjust spacingAndGlyphs"
 console2svg capture --adjust spacingAndGlyphs -- btop
 ```
 
@@ -23,7 +23,7 @@ console2svg capture --adjust spacingAndGlyphs -- btop
 * **`--prompt <text>`**：更改提示符号（默认：`$` 或 `#`）。
 * **`--header <text>`**：将整条执行命令行文本替换为指定字符串。
 
-```bash
+```bash title="Terminal" "--prompt" "--header"
 # 将提示符改为 ❯
 console2svg capture -c --prompt "❯ " -- echo "Hello"
 

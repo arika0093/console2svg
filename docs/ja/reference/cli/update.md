@@ -3,7 +3,7 @@ title: update
 description: console2svgの更新を確認・実行するコマンド。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg update [--check] [--force] [--yes]
 ```
 

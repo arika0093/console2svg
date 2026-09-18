@@ -9,7 +9,7 @@ console2svg can interoperate with the **asciicast v2** format commonly used by t
 
 Specify the `--save-cast` option to save execution output in asciicast format (`.cast`).
 
-```bash
+```bash title="Terminal" "--save-cast session.cast"
 console2svg capture --save-cast session.cast -- cargo build
 ```
 
@@ -19,7 +19,7 @@ The saved `.cast` file can also be played with normal tools such as `asciinema p
 
 Specify the `--embed-cast` option to embed asciicast data in the metadata area inside the generated SVG file.
 
-```bash
+```bash title="Terminal" "--embed-cast"
 console2svg capture --embed-cast -o output.svg -- fastfetch
 ```
 
@@ -27,7 +27,7 @@ console2svg capture --embed-cast -o output.svg -- fastfetch
 
 Use the `cast` subcommand to render SVGs or videos from existing `.cast` files.
 
-```bash
+```bash title="Terminal" "cast session.cast"
 # Output as a static SVG
 console2svg cast session.cast -o session.svg
 
@@ -37,6 +37,6 @@ console2svg cast session.cast -v -o session.gif -t monokai
 
 Or specify `capture --in`.
 
-```bash
+```bash title="Terminal" "--in session.cast"
 console2svg capture --in session.cast -d macos-pc -o output.svg
 ```

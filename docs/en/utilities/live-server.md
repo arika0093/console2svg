@@ -9,7 +9,7 @@ The Live-Server feature starts a local HTTP server and renders what is running i
 
 Pass the command to run to the `live-server` subcommand.
 
-```bash
+```bash title="Terminal"
 console2svg live-server -- btop
 ```
 

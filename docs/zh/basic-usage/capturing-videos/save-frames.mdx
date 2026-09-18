@@ -11,7 +11,7 @@ import { FileTree } from '@astrojs/starlight/components';
 
 为 `--save-frames` 指定保存目标目录后执行。
 
-```bash
+```bash title="Terminal" "--save-frames ./frames"
 console2svg capture -v --save-frames ./frames -- sl
 ```
 
@@ -31,7 +31,7 @@ console2svg capture -v --save-frames ./frames -- sl
 
 与 `--fps` 选项组合使用，可以调整采样间隔。
 
-```bash
+```bash title="Terminal" "--fps 10" "--save-frames ./output-frames"
 # 以每秒 10 帧的速率输出
 console2svg capture -v --fps 10 --save-frames ./output-frames -- nyancat
 ```

@@ -12,8 +12,8 @@ console2svg の組み込みテーマは、次の種類に分かれています�
 テーマは `-t` または `--theme` にIDを渡して適用できます。
 ウインドウ枠だけを指定する場合は `-d` または `--window` を使用します。
 
-```bash
-console2svg capture --theme nord -- console2svg
+```bash title="Terminal" "-t nord" "--window macos-pc" "-t cyberpunk-pc"
+console2svg capture -t nord -- console2svg
 console2svg capture --window macos-pc -- console2svg
-console2svg capture --theme cyberpunk-pc -- console2svg
+console2svg capture -t cyberpunk-pc -- console2svg
 ```

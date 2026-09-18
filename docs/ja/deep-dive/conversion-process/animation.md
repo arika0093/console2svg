@@ -71,7 +71,7 @@ run ごとに一つの `<use>` を置き、**SMIL** の `display` animation で�
 
 例は次の形です。
 
-```xml
+```xml title="output.svg"
 <animate
   attributeName="display"
   values="none;inline;none"

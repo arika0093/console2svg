@@ -23,7 +23,7 @@ console2svg 在将输出转换为 SVG 时，内置了扫描文本内容并自动
 
 ## 具体示例
 
-```bash
+```bash title="Terminal"
 cat <<EOF > .env
 CURRENT_DIRECTORY=$(pwd)
 APP_SECRET_TOKEN=1234567890thankyou
@@ -47,7 +47,7 @@ console2svg capture -w 100 -h 12 -d macos-pc -t github-dark -- cat .env
 
 如果想原样显示示例用的虚拟密钥等，请指定 `--mask-auto false`。
 
-```bash
+```bash title="Terminal" "--mask-auto false"
 console2svg capture -w 100 -h 12 -d macos-pc -t github-dark --mask-auto false -- cat .env
 ```
 

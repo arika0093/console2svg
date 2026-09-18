@@ -3,7 +3,7 @@ title: live-server
 description: ライブ端末SVGを配信するコマンド。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg live-server [options] [host:port]
 ```
 

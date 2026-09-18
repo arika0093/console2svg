@@ -7,7 +7,7 @@ In addition to built-in themes, you can use themes created locally or themes pub
 
 ## Installing a theme
 
-```bash
+```bash title="Terminal"
 # GitHub repository URL (automatically fetches an archive when Git is unavailable)
 console2svg theme install owner/my-theme
 console2svg theme install owner/my-theme2@branch/path/to/theme
@@ -18,13 +18,13 @@ console2svg theme install https://my-git.example/themes/my-theme.git
 
 Installed themes can be applied in the same way as built-in themes.
 
-```bash
-console2svg capture --theme my-theme -- fastfetch
+```bash title="Terminal" "-t my-theme"
+console2svg capture -t my-theme -- fastfetch
 ```
 
 ## Managing themes
 
-```bash
+```bash title="Terminal"
 # List themes (also shows built-in themes)
 console2svg theme list
 

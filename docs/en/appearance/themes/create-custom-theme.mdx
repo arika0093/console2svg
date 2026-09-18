@@ -23,7 +23,7 @@ A custom theme is a directory with `theme.json` at the theme root. Assets such a
 
 The minimal structure is as follows.
 
-```json
+```json title="theme.json"
 {
   "schemaVersion": 1,
   "id": "my-theme",
@@ -48,7 +48,7 @@ The minimal structure is as follows.
 
 When you specify the ID of a built-in theme or a theme included in the same distribution in `$include`, you can inherit existing colors and appearance and define only the differences.
 
-```json
+```json title="theme.json"
 {
   "schemaVersion": 1,
   "id": "my-github-theme",
@@ -66,7 +66,7 @@ When you specify the ID of a built-in theme or a theme included in the same dist
 When referencing a theme in another Git repository, specify `source` in object form.
 The referenced destination also needs a `theme.json`.
 
-```json
+```json title="theme.json"
 "$include": [
   { "id": "base-theme", "source": "owner/theme-pack" }
 ]
@@ -76,9 +76,8 @@ The referenced destination also needs a `theme.json`.
 
 Use the built-in [`cyberpunk`](https://github.com/arika0093/console2svg/blob/main/themes/full/cyberpunk/) theme as a reference.
 
-### theme.json
 
-```jsonc
+```jsonc title="theme.json"
 {
   "schemaVersion": 1,
   "id": "cyberpunk",
@@ -138,9 +137,8 @@ Use the built-in [`cyberpunk`](https://github.com/arika0093/console2svg/blob/mai
 }
 ```
 
-### chrome.json
 
-```jsonc
+```jsonc title="chrome.json"
 {
   // Padding on each side of the terminal shell
   // More space is reserved at the top for the title bar
@@ -163,7 +161,7 @@ Use the built-in [`cyberpunk`](https://github.com/arika0093/console2svg/blob/mai
 
 Publish the theme root as a Git repository or package it into an archive. Users can install it as follows.
 
-```bash
+```bash title="Terminal"
 console2svg theme install https://github.com/owner/my-theme.git
 console2svg theme install owner/my-theme
 ```

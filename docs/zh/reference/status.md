@@ -7,13 +7,13 @@ description: 使用 console2svg status 命令检查运行环境和外部工具�
 
 ## 用法
 
-```bash
+```bash title="Terminal"
 console2svg status
 ```
 
 输出示例（版本、路径和可用性会因环境而异）：
 
-<!-- c2s:: -w 120 -- console2svg status -->
+<!-- c2s:: -w 100-- console2svg status -->
 ![console2svg status](../../assets/cmd-status.svg)
 
 ## 切换输出格式
@@ -24,6 +24,6 @@ console2svg status
 * `--format markdown`：可粘贴到 GitHub Issue 等位置的 Markdown 格式
 * `--format json`（或 `--json`）：供脚本处理的 JSON 格式
 
-```bash
+```bash title="Terminal" "--format markdown"
 console2svg status --format markdown
 ```

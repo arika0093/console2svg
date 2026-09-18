@@ -3,7 +3,7 @@ title: update
 description: Command that checks for and runs console2svg updates.
 ---
 
-```bash
+```bash title="Terminal"
 console2svg update [--check] [--force] [--yes]
 ```
 

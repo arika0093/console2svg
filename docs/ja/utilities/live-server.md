@@ -9,7 +9,7 @@ Live-Server機能を使用すると、ローカルHTTPサーバーを起動し�
 
 `live-server` サブコマンドに実行したいコマンドを渡します。
 
-```bash
+```bash title="Terminal"
 console2svg live-server -- btop
 ```
 

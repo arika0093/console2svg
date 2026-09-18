@@ -9,7 +9,7 @@ Save keyboard input and timing to a JSON file, then reproduce the exact same ope
 
 Run with a destination file path specified for the `--replay-save` option.
 
-```bash
+```bash title="Terminal" "--replay-save demo.json"
 # Record an interactive session
 console2svg interactive --replay-save demo.json -- bash
 ```
@@ -20,7 +20,7 @@ All keystrokes and time intervals during execution are saved to `demo.json`.
 
 Use the `replay` subcommand to run capture with a saved replay file.
 
-```bash
+```bash title="Terminal" "replay demo.json"
 console2svg replay demo.json -- bash
 ```
 

@@ -7,13 +7,13 @@ description: console2svg status コマンドによる動作環境・外部ツー
 
 ## 実行方法
 
-```bash
+```bash title="Terminal"
 console2svg status
 ```
 
 出力例（環境によってバージョン、パス、利用可否は変わります）:
 
-<!-- c2s:: -w 120 -- console2svg status -->
+<!-- c2s:: -w 100-- console2svg status -->
 ![console2svg status](../../assets/cmd-status.svg)
 
 
@@ -25,6 +25,6 @@ console2svg status
 * `--format markdown`: GitHub Issue等に貼付可能なMarkdown形式
 * `--format json` (または `--json`): スクリプト処理向けのJSON形式
 
-```bash
+```bash title="Terminal" "--format markdown"
 console2svg status --format markdown
 ```

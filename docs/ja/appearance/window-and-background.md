@@ -9,7 +9,7 @@ description: macOS風やWindows風のウインドウ装飾（Chrome）や背景�
 
 ウインドウ枠は `-d` または `--window <style>` オプションで指定します。値なしで `-d` のみを指定した場合は `macos` が適用されます。
 
-```bash
+```bash title="Terminal" "-d macos-pc"
 # ドロップシャドウ付きmacOS風スタイル
 console2svg capture -d macos-pc -- fastfetch
 ```
@@ -29,7 +29,7 @@ console2svg capture -d macos-pc -- fastfetch
 
 カラーコード（HEX）を指定します。
 
-```bash
+```bash title="Terminal" "--background"
 console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
   --background "#003060" -- dotnet --version
 ```
@@ -42,7 +42,7 @@ console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
 
 複数のカラーコードを指定します。
 
-```bash
+```bash title="Terminal" "--background"
 console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
   --background "#004060" "#0080c0" -- dotnet --version
 ```
@@ -55,7 +55,7 @@ console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
 
 画像ファイルパスを指定して、デスクトップ背景風に表示できます。
 
-```sh
+```sh title="Terminal" "--background image.png"
 console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
   --background image.png -- dotnet --version
 ```

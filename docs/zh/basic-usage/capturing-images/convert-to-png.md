@@ -9,7 +9,7 @@ description: 将拍摄的终端输出自动转换为 PNG 栅格图片的方法�
 
 只需通过 `-o` 选项指定 `.png` 扩展名，就会自动执行栅格化处理。
 
-```bash
+```bash title="Terminal" "-o output.png"
 console2svg capture -o output.png -w 100 -h 12 -- console2svg
 ```
 
@@ -29,7 +29,7 @@ console2svg 内置了 [resvg](https://github.com/linebender/resvg)（Rust 编写
 | `rsvg-convert` | 使用系统的 `rsvg-convert` 命令。 |
 | `ffmpeg` | 使用 ffmpeg 的 librsvg 解码器。 |
 
-```bash
+```bash title="Terminal" "--svg-converter rsvg-convert"
 console2svg capture -o result.png --svg-converter rsvg-convert -- console2svg
 ```
 

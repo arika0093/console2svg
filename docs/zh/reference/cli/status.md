@@ -3,7 +3,7 @@ title: status
 description: 检查执行环境和依赖工具状态的命令。
 ---
 
-```bash
+```bash title="Terminal" "--format table|markdown|json" "--json"
 console2svg status [--format table|markdown|json]
 console2svg status --json
 ```

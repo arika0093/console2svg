@@ -9,7 +9,7 @@ You can directly output capture results as PNG images for platforms and applicat
 
 Simply specify `.png` as the extension with the `-o` option, and rasterization is performed automatically.
 
-```bash
+```bash title="Terminal" "-o output.png"
 console2svg capture -o output.png -w 100 -h 12 -- console2svg
 ```
 
@@ -29,7 +29,7 @@ If needed, you can also switch conversion engines with the `--svg-converter` opt
 | `rsvg-convert` | Use the system `rsvg-convert` command. |
 | `ffmpeg` | Use ffmpeg's librsvg decoder. |
 
-```bash
+```bash title="Terminal" "--svg-converter rsvg-convert"
 console2svg capture -o result.png --svg-converter rsvg-convert -- console2svg
 ```
 

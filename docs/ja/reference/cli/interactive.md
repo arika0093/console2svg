@@ -3,7 +3,7 @@ title: interactive
 description: 対話的なシェルやプログラムを記録するコマンド。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg interactive [options]
 ```
 

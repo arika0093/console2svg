@@ -14,7 +14,7 @@ import { Steps } from '@astrojs/starlight/components';
 
 1. 使用 `console2svg capture -- (any-command)` 执行任意命令。
 
-   ```bash
+   ```bash title="Terminal"
    console2svg capture -- console2svg
    ```
 
@@ -40,7 +40,7 @@ import { Steps } from '@astrojs/starlight/components';
    * 只指定 `-d` 时，会按 `macos`（无留白）处理。
 * `--background "#ff7e5f" "#feb47b"`：使用 sunset 风格的渐变背景。
 
-```bash
+```bash title="Terminal" "-d macos-pc" "--background"
 console2svg capture -o console2svg.svg -w 100 -h 10 -c -d macos-pc \
             --background "#ff7e5f" "#feb47b" \
             -- oh-my-logo "console2svg" sunset --filled --letter-spacing 0
@@ -59,7 +59,7 @@ console2svg capture -o console2svg.svg -w 100 -h 10 -c -d macos-pc \
 
 1. 给 `capture` 命令传入 `-v`，然后执行任意命令。
 
-   ```bash
+   ```bash title="Terminal" "-v"
    console2svg capture -c -d -v -- sl
    ```
 
@@ -83,7 +83,7 @@ console2svg capture -o console2svg.svg -w 100 -h 10 -c -d macos-pc \
 * `--timeout 5`：经过 5 秒后自动结束。
 * `--sleep 0.5`：从最终帧回到循环开头前等待 0.5 秒。
 
-```bash
+```bash title="Terminal" "-v" "--timeout 5" "--sleep 0.5"
 console2svg capture -w 160 -h 32 -c -d -v \
             --timeout 5 --sleep 0.5 -- nyancat -d 10
 ```

@@ -23,7 +23,7 @@ description: MarkdownやMDXのコードブロックから実行例の画像を�
 ## 基本的な使い方
 最も簡単な使い方は、以下のように `<!-- c2s:: (command) -->` マーカーをmarkdownファイル内に配置するだけです。
 
-```markdown
+```markdown title="example.md"
 `dotnet --info`を実行すると以下のような出力が得られます。
 
 <!-- c2s:: dotnet --info | head -n10 -->
@@ -31,7 +31,7 @@ description: MarkdownやMDXのコードブロックから実行例の画像を�
 
 その後、以下のコマンドを実行します。
 
-```bash
+```bash title="Terminal" "batch markdown"
 console2svg batch markdown -i ./docs -o ./assets
 ```
 
@@ -39,11 +39,11 @@ console2svg batch markdown -i ./docs -o ./assets
 その後、キャプチャされた画像が `./assets` ディレクトリに保存されます。
 また、markdownファイルも更新され、マーカーの直後に画像が追加されます。
 
-```markdown
+```diff lang="markdown" title="example.md"
 `dotnet --info`を実行すると以下のような出力が得られます。
 
 <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
-![dotnet --info](../assets/sample-QzOus8.svg)
++ ![dotnet --info](../assets/sample-QzOus8.svg)
 ```
 
 生成された画像のパスは、markdownファイルのパス等から自動で生成され、相対パスで記述されます。
@@ -54,7 +54,7 @@ console2svg batch markdown -i ./docs -o ./assets
 
 `c2s::` マーカーの後ろに各種オプションを指定できます。
 
-```markdown
+```markdown title="example.md" "-w 100 -h 10 -d macos"
 <!-- c2s:: -w 100 -h 10 -d macos -t nord -- dotnet --version -->
 ```
 
@@ -65,7 +65,7 @@ console2svg batch markdown -i ./docs -o ./assets
 
 マーカーの後ろにYAML形式の設定を記述すると、実行前のセットアップ、実行内容の置き換え、実行後の後処理を指定できます。
 
-```markdown
+```markdown {4-9}
 以下のように記述することで、ビルド時の出力をキャプチャせず、実行結果のみをキャプチャすることができます。
 
 <!-- c2s:: -w 100 -h 10 -d macos
@@ -82,7 +82,7 @@ teardown:
 
 名前付きのコードブロックに `c2s-id` を付けると、マーカーからそのコードブロックを参照できます。
 
-````markdown
+````markdown title="example.md" "{code:program}" "{code:result}" "c2s-id=program" "c2s-id=result"
 ```csharp c2s-id=program
 Console.WriteLine("hello");
 ```
@@ -138,7 +138,7 @@ And reference it in another file.
 
 開発中は、入力ディレクトリからの相対パスに対してグロブフィルターを指定できます。フィルターは複数回指定できます。
 
-```bash
+```bash title="Terminal" "--filter"
 console2svg batch markdown -i ./docs -o ./docs/assets --filter "reference/**"
 ```
 

@@ -3,7 +3,7 @@ title: status
 description: 実行環境と依存ツールの状態を確認するコマンド。
 ---
 
-```bash
+```bash title="Terminal" "--format table|markdown|json" "--json"
 console2svg status [--format table|markdown|json]
 console2svg status --json
 ```

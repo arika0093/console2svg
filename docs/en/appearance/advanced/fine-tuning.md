@@ -12,7 +12,7 @@ You can control the SVG `lengthAdjust` attribute to reduce character-width diffe
 * **`spacing`** (default): Adjusts only the spacing between characters. This prevents glyph distortion.
 * **`spacingAndGlyphs`**: Also stretches or shrinks the glyph widths themselves so they line up exactly with terminal cells.
 
-```bash
+```bash title="Terminal" "--adjust spacingAndGlyphs"
 console2svg capture --adjust spacingAndGlyphs -- btop
 ```
 
@@ -23,7 +23,7 @@ You can customize the command display added by `-c` (`--with-command`).
 * **`--prompt <text>`**: Changes the prompt symbol (default: `$` or `#`).
 * **`--header <text>`**: Replaces the entire command-line header with the specified string.
 
-```bash
+```bash title="Terminal" "--prompt" "--header"
 # Change the prompt to ❯
 console2svg capture -c --prompt "❯ " -- echo "Hello"
 

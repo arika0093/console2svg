@@ -10,7 +10,7 @@ description: 显示和保存详细日志，并将调试信息嵌入 SVG 文件�
 * **`--verbose`**：将详细执行日志输出到标准错误（stderr）。
 * **`--verbose <path>`** / **`--verbose-log <path>`**：将详细日志写入指定文件。
 
-```bash
+```bash title="Terminal" "--verbose-log debug.log"
 console2svg capture --verbose-log debug.log -o output.svg -- fastfetch
 ```
 
@@ -23,7 +23,7 @@ console2svg 可以将各种诊断数据嵌入生成的 SVG 文档的元数据区
 * **`--embed-replay`**：嵌入键盘输入事件。
 * **`--embed-debug`**：一次性嵌入以上全部内容（日志、cast 和 replay）。
 
-```bash
+```bash title="Terminal" "--embed-debug"
 console2svg capture --embed-debug -o debug.svg -- my-app
 ```
 

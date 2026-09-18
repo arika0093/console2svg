@@ -3,7 +3,7 @@ title: capture
 description: Capture terminal output as SVG.
 ---
 
-```bash
+```bash title="Terminal"
 console2svg capture [options] -- command [args...]
 ```
 
@@ -219,6 +219,6 @@ Choose how SVG text length is adjusted: `spacing` or `spacingAndGlyphs`.
 
 Choose how to rasterize SVG: `auto`, `ffmpeg`, `rsvg-convert`, or `resvg`.
 
-```bash
+```bash title="Terminal" "-w 100 -h 24 -c"
 console2svg capture -w 100 -h 24 -c -- fastfetch
 ```

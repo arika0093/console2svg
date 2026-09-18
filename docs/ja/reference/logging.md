@@ -10,7 +10,7 @@ description: 詳細ログの表示・保存およびSVGファイルへのデバ�
 * **`--verbose`**: 詳細な実行ログを標準エラー（stderr）に出力します。
 * **`--verbose <path>`** / **`--verbose-log <path>`**: 詳細ログを指定したファイルへ書き出します。
 
-```bash
+```bash title="Terminal" "--verbose-log debug.log"
 console2svg capture --verbose-log debug.log -o output.svg -- fastfetch
 ```
 
@@ -23,7 +23,7 @@ console2svg では、生成されるSVGドキュメント内部のメタデー�
 * **`--embed-replay`**: キーボード入力イベントを埋め込みます。
 * **`--embed-debug`**: 上記（ログ、cast、replay）のすべてを一括で埋め込みます。
 
-```bash
+```bash title="Terminal" "--embed-debug"
 console2svg capture --embed-debug -o debug.svg -- my-app
 ```
 

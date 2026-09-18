@@ -9,7 +9,7 @@ description: 使用 --mask 选项手动指定特定字符串或正则表达式�
 
 将想要遮盖的字符串传给 `--mask`。
 
-```bash
+```bash title="Terminal" "--mask"
 console2svg capture --mask "1234567890abcdef" -w 100 -h 12 \
             -- echo "this value will be redacted:: 1234567890abcdef"
 ```
@@ -21,7 +21,7 @@ console2svg capture --mask "1234567890abcdef" -w 100 -h 12 \
 
 `--mask` 选项可以多次指定。
 
-```bash
+```bash title="Terminal" "--mask"
 console2svg capture \
   --mask "internal-host.local" \
   --mask "admin_password" \

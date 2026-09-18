@@ -8,7 +8,7 @@ description: 固定终端显示区域的方法。
 
 ## 固定宽度和高度
 
-```bash
+```bash title="Terminal" "-w 50 -h 5"
 console2svg capture -w 50 -h 5 -- console2svg
 ```
 
@@ -22,7 +22,7 @@ console2svg capture -w 50 -h 5 -- console2svg
 
 宽度和高度可以单独指定。未指定的一方会根据常规终端尺寸或命令输出决定。
 
-```bash
+```bash title="Terminal" "--width 50" "-h 5"
 # 只将宽度固定为 50 个字符
 console2svg capture --width 50 -- console2svg
 

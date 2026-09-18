@@ -3,7 +3,7 @@ title: cast
 description: Render an asciicast v2 file.
 ---
 
-```bash
+```bash title="Terminal"
 console2svg cast <cast> [options]
 ```
 

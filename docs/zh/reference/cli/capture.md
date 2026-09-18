@@ -3,7 +3,7 @@ title: capture
 description: 将终端输出记录为 SVG 的命令。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg capture [options] -- command [args...]
 ```
 
@@ -219,6 +219,6 @@ console2svg capture [options] -- command [args...]
 
 选择 SVG 栅格化方式：`auto`、`ffmpeg`、`rsvg-convert` 或 `resvg`。
 
-```bash
+```bash title="Terminal" "-w 100 -h 24 -c"
 console2svg capture -w 100 -h 24 -c -- fastfetch
 ```

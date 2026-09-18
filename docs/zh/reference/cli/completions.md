@@ -3,7 +3,7 @@ title: completions
 description: 生成 Shell 补全脚本的命令。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg completions generate <shell>
 ```
 

@@ -3,7 +3,7 @@ title: theme
 description: 管理已安装主题的命令。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg theme list
 console2svg theme install <source>
 console2svg theme remove <id>

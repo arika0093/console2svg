@@ -8,27 +8,27 @@ console2svg には、すぐに使える組み込みテーマが含まれてい�
 
 ## テーマを適用する
 
-```bash
-console2svg capture -w 100 -h 24 -c --theme nord -- console2svg
+```bash title="Terminal" "-t nord"
+console2svg capture -w 100 -h 24 -c -t nord -- console2svg
 ```
 
-<!-- c2s:: -w 100 -h 24 -c --theme nord -- console2svg -->
+<!-- c2s:: -w 100 -h 24 -c -t nord -- console2svg -->
 ![console2svg capture with a built-in theme](../../../assets/cmd-theme.svg)
 
 テーマIDは [組み込みテーマの一覧](./built-in-theme-list.mdx) で確認できます。`theme list` では、
 組み込みテーマとインストール済みテーマをまとめて確認できます。
 
-```bash
+```bash title="Terminal" "--format markdown"
 console2svg theme list
 console2svg theme list --format markdown
 ```
 
-`--theme` は通常のキャプチャだけでなく、`replay` や `interactive` などテーマを受け取る
+`-t` は通常のキャプチャだけでなく、`replay` や `interactive` などテーマを受け取る
 コマンドでも使用できます。
 
-```bash
-console2svg replay ./session.json --theme nord -- bash
-console2svg interactive --theme cyberpunk-pc -o capture.svg
+```bash title="Terminal" "-t nord" "-t cyberpunk-pc"
+console2svg replay ./session.json -t nord -- bash
+console2svg interactive -t cyberpunk-pc -o capture.svg
 ```
 
 > [!NOTE]

@@ -9,7 +9,7 @@ Live-Server 功能会启动本地 HTTP 服务器，并将终端中运行的内�
 
 将要运行的命令传给 `live-server` 子命令。
 
-```bash
+```bash title="Terminal"
 console2svg live-server -- btop
 ```
 

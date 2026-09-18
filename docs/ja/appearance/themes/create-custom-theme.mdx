@@ -23,7 +23,7 @@ import { FileTree } from '@astrojs/starlight/components';
 
 最小構成は次のとおりです。
 
-```json
+```json title="theme.json"
 {
   "schemaVersion": 1,
   "id": "my-theme",
@@ -50,7 +50,7 @@ import { FileTree } from '@astrojs/starlight/components';
 `$include` に組み込みテーマまたは同じ配布物に含まれるテーマのIDを指定すると、
 既存の配色や見た目を継承して差分だけを定義できます。
 
-```json
+```json title="theme.json"
 {
   "schemaVersion": 1,
   "id": "my-github-theme",
@@ -68,7 +68,7 @@ import { FileTree } from '@astrojs/starlight/components';
 別のGitリポジトリにあるテーマを参照する場合は、オブジェクト形式で `source` を指定します。
 参照先にも `theme.json` が必要です。
 
-```json
+```json title="theme.json"
 "$include": [
   { "id": "base-theme", "source": "owner/theme-pack" }
 ]
@@ -78,9 +78,8 @@ import { FileTree } from '@astrojs/starlight/components';
 
 組み込みテーマの[`cyberpunk`](https://github.com/arika0093/console2svg/blob/main/themes/full/cyberpunk/)を参考にしてください。
 
-### theme.json
 
-```jsonc
+```jsonc title="theme.json"
 {
   "schemaVersion": 1,
   "id": "cyberpunk",
@@ -140,9 +139,8 @@ import { FileTree } from '@astrojs/starlight/components';
 }
 ```
 
-### chrome.json
 
-```jsonc
+```jsonc title="chrome.json"
 {
   // ターミナルシェルから見た、上下左右の余白
   // この場合は上方向に広く余白を持たせている(タイトルバーのため)
@@ -166,7 +164,7 @@ import { FileTree } from '@astrojs/starlight/components';
 テーマのルートをGitリポジトリで公開するか、アーカイブにまとめます。利用者は次のように
 インストールできます。
 
-```bash
+```bash title="Terminal"
 console2svg theme install https://github.com/owner/my-theme.git
 console2svg theme install owner/my-theme
 ```

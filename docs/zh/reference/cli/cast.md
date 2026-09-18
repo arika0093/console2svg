@@ -3,7 +3,7 @@ title: cast
 description: 渲染 asciicast v2 文件的命令。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg cast <cast> [options]
 ```
 

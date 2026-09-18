@@ -63,7 +63,7 @@ The renderer does not repeatedly call a general cell accessor for every cell whe
 For each physical row, consecutive frames that reference the same row definition are combined into one interval.
 The SVG contains one `<use>` for that interval with an animation such as:
 
-```xml
+```xml title="output.svg"
 <animate
   attributeName="display"
   values="none;inline;none"

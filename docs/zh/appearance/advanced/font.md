@@ -9,7 +9,7 @@ description: 使用 --font 和 --fontsize 选项指定字体族和字号的方�
 
 在 `--font` 选项中使用 CSS 的 `font-family` 格式指定。
 
-```bash
+```bash title="Terminal" "--font"
 # 指定不同于常规终端字体的字体
 console2svg capture --font "Courier New, monospace" -h 10 -- console2svg
 ```
@@ -45,6 +45,6 @@ font-family:
 
 使用 `--fontsize` 选项以像素为单位更改字号（默认：`14`）。
 
-```bash
+```bash title="Terminal" "--fontsize 16"
 console2svg capture --fontsize 16 -- cargo test
 ```

@@ -3,7 +3,7 @@ title: batch markdown
 description: Command that batch-generates images from Markdown c2s markers.
 ---
 
-```bash
+```bash title="Terminal"
 console2svg batch markdown [--input <path>] [--output <dir>] [--filter <glob>] [--dry-run]
 ```
 

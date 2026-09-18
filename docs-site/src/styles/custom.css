@@ -55,6 +55,11 @@ ul:not(.top-level) details summary:hover .large {
   padding: .5ex 5px .5ex;
 }
 
+/* pretty wrap enabled */
+p, h1, h2, h3, h4, h5, h6 {
+  text-wrap: pretty;
+}
+
 /* Footnotes: modest, compact, pinned to the bottom of the page. */
 .sl-markdown-content section[data-footnotes] {
   margin-top: 3rem;

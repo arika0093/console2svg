@@ -3,7 +3,7 @@ title: interactive
 description: 记录交互式 shell 或程序的命令。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg interactive [options]
 ```
 

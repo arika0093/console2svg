@@ -3,7 +3,7 @@ title: cast
 description: asciicast v2ファイルを描画するコマンド。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg cast <cast> [options]
 ```
 

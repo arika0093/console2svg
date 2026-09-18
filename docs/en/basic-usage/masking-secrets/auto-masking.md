@@ -23,7 +23,7 @@ Detected text areas are covered with filled rectangles (or masks) during SVG gen
 
 ## Concrete example
 
-```bash
+```bash title="Terminal"
 cat <<EOF > .env
 CURRENT_DIRECTORY=$(pwd)
 APP_SECRET_TOKEN=1234567890thankyou
@@ -47,7 +47,7 @@ Automatic masking is enabled by default (`--mask-auto true`). Normally it works 
 
 If you want to display sample dummy keys as-is, specify `--mask-auto false`.
 
-```bash
+```bash title="Terminal" "--mask-auto false"
 console2svg capture -w 100 -h 12 -d macos-pc -t github-dark --mask-auto false -- cat .env
 ```
 

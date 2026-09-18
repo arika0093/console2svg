@@ -14,23 +14,23 @@ description: bash、zsh、fish、PowerShell でのタブ補完スクリプトの
 
 `~/.bashrc` に以下を追記します。
 
-```bash
-eval "$(console2svg completions script bash)"
+```diff lang="bash" title="~/.bashrc"
++ eval "$(console2svg completions script bash)"
 ```
 
 ### Zsh
 
 `~/.zshrc` の `compinit` 呼び出しより前に以下を追記します。
 
-```zsh
-eval "$(console2svg completions script zsh)"
+```diff lang="zsh" title="~/.zshrc"
++ eval "$(console2svg completions script zsh)"
 ```
 
 ### Fish
 
 補完ディレクトリへスクリプトを配置します。
 
-```fish
+```fish title="Terminal"
 mkdir -p ~/.config/fish/completions
 console2svg completions script fish > ~/.config/fish/completions/console2svg.fish
 ```
@@ -39,6 +39,6 @@ console2svg completions script fish > ~/.config/fish/completions/console2svg.fis
 
 PowerShell プロファイル（`$PROFILE`）に以下を追記します。
 
-```powershell
-Invoke-Expression (& console2svg completions script pwsh | Out-String)
+```diff lang="powershell" title="$PROFILE"
++ Invoke-Expression (& console2svg completions script pwsh | Out-String)
 ```

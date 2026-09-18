@@ -9,18 +9,18 @@ By combining console2svg with GitHub Actions, you can automatically update READM
 
 A convenient GitHub Action is also available for CI usage. To use the latest version of `console2svg`, just add the following step to your workflow:
 
-```yaml
+```yaml title=".github/workflows/console2svg.yml"
 - uses: arika0093/console2svg@main
 ```
 
 Specify the console2svg version as follows.
 
-```yaml
-- uses: arika0093/console2svg@main
-  with:
-    version: 0.8.3
-    # Build from source instead
-    # version: develop
+```diff lang="yaml" title=".github/workflows/console2svg.yml"
+ - uses: arika0093/console2svg@main
++  with:
++    version: 0.8.3
+     # Build from source instead
+     # version: develop
 ```
 
 > [!NOTE]
@@ -32,7 +32,7 @@ Specify the console2svg version as follows.
 
 The following is an example workflow that installs console2svg on an Ubuntu runner, generates an SVG, and commits it to the Git repository.
 
-```yaml
+```yaml title=".github/workflows/console2svg.yml" {4-5,10-14}
 jobs:
   gen:
     runs-on: ubuntu-latest
@@ -59,7 +59,7 @@ jobs:
 You can also automatically update documentation by using the [batch markdown](./document-image-sync.md) feature.
 The following is an example workflow that detects markers in Markdown, generates images, and commits them.
 
-```yaml
+```yaml title=".github/workflows/console2svg.yml" {4-5,10-14}
 jobs:
   sync:
     runs-on: ubuntu-latest

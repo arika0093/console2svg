@@ -3,7 +3,7 @@ title: update
 description: 检查并执行 console2svg 更新的命令。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg update [--check] [--force] [--yes]
 ```
 

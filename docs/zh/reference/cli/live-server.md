@@ -3,7 +3,7 @@ title: live-server
 description: 配信实时终端 SVG 的命令。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg live-server [options] [host:port]
 ```
 

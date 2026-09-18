@@ -15,7 +15,7 @@ This page contains many real usage examples.
 
 Let's capture the command's own help text.
 
-```bash
+```bash title="Terminal"
 console2svg capture -- console2svg
 ```
 
@@ -28,7 +28,7 @@ console2svg capture -- console2svg
 
 This uses a macOS Terminal-style frame, specifies the width, and also includes the executed command name.
 
-```bash
+```bash title="Terminal" "-d macos-pc"
 console2svg capture -w 100 -c -d macos-pc -- fastfetch
 ```
 
@@ -41,7 +41,7 @@ console2svg capture -w 100 -c -d macos-pc -- fastfetch
 
 You can make it quite stylish.
 
-```bash
+```bash title="Terminal" "--background" "--opacity 0.95"
 console2svg capture -w 100 -h 10 -c -d macos-pc \
     --background "image1.png" --opacity 0.95 \
     -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
@@ -55,7 +55,7 @@ console2svg capture -w 100 -h 10 -c -d macos-pc \
 
 ### sl
 
-```sh
+```sh title="Terminal" "-v"
 console2svg capture -c -d -v -- sl
 ```
 
@@ -64,7 +64,7 @@ console2svg capture -c -d -v -- sl
 
 ### cmatrix
 
-```sh
+```sh title="Terminal" "-v" "--timeout 5"
 console2svg capture -w 100 -h 24 -c -d macos-pc -v --timeout 5 -- cmatrix -ab
 ```
 
@@ -73,7 +73,7 @@ console2svg capture -w 100 -h 24 -c -d macos-pc -v --timeout 5 -- cmatrix -ab
 
 ### nyancat
 
-```sh
+```sh title="Terminal" "-v" "--timeout 5" "--sleep 0.5"
 console2svg capture -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat
 ```
 
@@ -86,7 +86,7 @@ console2svg capture -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat
 
 By playing back a replay file prepared in advance, you can reproduce the same output even in CI environments.
 
-```sh
+```sh title="Terminal" "replay ./replay.json"
 console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash
 ```
 
@@ -99,7 +99,7 @@ console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash
 
 Start recording with the `F9` key, then press `F9` again to stop recording.
 
-```bash
+```bash title="Terminal" "interactive" "-d macos"
 console2svg interactive -d macos -o ./captures/output.svg
 ```
 
@@ -113,7 +113,7 @@ Specify any theme you like, whether built-in or custom.
 
 ### nord
 
-```bash
+```bash title="Terminal" "-t nord"
 console2svg capture -w 100 -h 24 -c -d macos -t nord --timeout 2 -- cmatrix -ab
 ```
 
@@ -122,7 +122,7 @@ console2svg capture -w 100 -h 24 -c -d macos -t nord --timeout 2 -- cmatrix -ab
 
 ### cyberpunk-pc
 
-```bash
+```bash title="Terminal" "-t cyberpunk-pc"
 console2svg capture -w 100 -h 24 -c -t cyberpunk-pc --timeout 2 -- cmatrix -ab
 ```
 
@@ -133,7 +133,7 @@ console2svg capture -w 100 -h 24 -c -t cyberpunk-pc --timeout 2 -- cmatrix -ab
 
 ## Sensitive information masking
 
-```bash
+```bash title="Terminal"
 cat <<EOF > .env
 CURRENT_DIRECTORY=$(pwd)
 APP_SECRET_TOKEN=1234567890thankyou

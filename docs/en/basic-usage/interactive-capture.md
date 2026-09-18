@@ -9,7 +9,7 @@ When capturing editor operations such as Vim or interactive work in a REPL, inte
 
 Run the `interactive` command.
 
-```bash
+```bash title="Terminal"
 # Start interactive mode with the default shell
 console2svg interactive
 # Launch a specific command directly
@@ -35,7 +35,7 @@ During the session, you can capture with the following keys.
 By default, output uses the format `output_YYYYMMDD_HHMMSSsss.svg`.
 You can specify any file name with the `-o` option (a timestamp is appended automatically).
 
-```bash
+```bash title="Terminal" "-o my_output.svg"
 console2svg interactive -o my_output.svg
 # -> my_output_20260101_123456789.svg
 ```
@@ -45,7 +45,7 @@ console2svg interactive -o my_output.svg
 
 Automatic conversion is also performed when you specify an extension.
 
-```bash
+```bash title="Terminal" "-o my_result.mp4"
 console2svg interactive -o my_result.mp4
 # -> my_result_20260101_123456789.mp4
 ```
@@ -58,6 +58,6 @@ console2svg interactive -o my_result.mp4
 
 As with [capture](../basic-usage/capturing-images/overview.mdx) mode, you can specify options such as themes and window styles.
 
-```bash
+```bash title="Terminal" "-d macos-pc" "-t github-dark"
 console2svg interactive -d macos-pc -t github-dark
 ```

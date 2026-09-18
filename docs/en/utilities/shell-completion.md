@@ -14,23 +14,23 @@ The `completions` subcommand outputs completion scripts for various shells.
 
 Add the following to `~/.bashrc`:
 
-```bash
-eval "$(console2svg completions script bash)"
+```diff lang="bash" title="~/.bashrc"
++ eval "$(console2svg completions script bash)"
 ```
 
 ### Zsh
 
 Add the following before the `compinit` call in `~/.zshrc`:
 
-```zsh
-eval "$(console2svg completions script zsh)"
+```diff lang="zsh" title="~/.zshrc"
++ eval "$(console2svg completions script zsh)"
 ```
 
 ### Fish
 
 Place the script in the completions directory:
 
-```fish
+```fish title="Terminal"
 mkdir -p ~/.config/fish/completions
 console2svg completions script fish > ~/.config/fish/completions/console2svg.fish
 ```
@@ -39,6 +39,6 @@ console2svg completions script fish > ~/.config/fish/completions/console2svg.fis
 
 Add the following to the PowerShell profile (`$PROFILE`):
 
-```powershell
-Invoke-Expression (& console2svg completions script pwsh | Out-String)
+```diff lang="powershell" title="$PROFILE"
++ Invoke-Expression (& console2svg completions script pwsh | Out-String)
 ```

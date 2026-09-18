@@ -70,7 +70,7 @@ renderer 使用 `FrameRenderWorkspace` 复用临时 segment List 和 `StringBuil
 
 例如：
 
-```xml
+```xml title="output.svg"
 <animate
   attributeName="display"
   values="none;inline;none"

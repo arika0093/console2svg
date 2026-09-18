@@ -3,7 +3,7 @@ title: replay
 description: 保存済みのキーボード入力を再生するコマンド。
 ---
 
-```bash
+```bash title="Terminal"
 console2svg replay <replay.json> [options] -- command [args...]
 ```
 

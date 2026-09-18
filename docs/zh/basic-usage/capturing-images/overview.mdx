@@ -13,7 +13,7 @@ import { Steps } from '@astrojs/starlight/components';
 
 1. 执行 `console2svg capture -- (command)`。
 
-   ```bash
+   ```bash title="Terminal"
    console2svg capture -- console2svg
    ```
 
@@ -41,7 +41,7 @@ import { Steps } from '@astrojs/starlight/components';
 
 ### 执行示例
 
-```bash
+```bash title="Terminal" "-o console2svg.svg -c -w 100 -h 12"
 # 输出执行命令，宽度 100 个字符、高度 12 行，并使用自定义文件名
 console2svg capture -o console2svg.svg -c -w 100 -h 12 --  dotnet --info
 ```

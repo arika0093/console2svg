@@ -13,7 +13,7 @@ If you want to record movement from TUI tools or progress bars, specify the `-v`
 
 1. Run `console2svg capture -v -- (command)`.
 
-   ```bash
+   ```bash title="Terminal" "-v"
    console2svg capture -v -c -d -- sl
    ```
 
@@ -40,7 +40,7 @@ See [`capture` options](../../../reference/cli/capture/) for details.
 
 ### Example
 
-```sh
+```sh title="Terminal" "-v" "--timeout 5" "--sleep 0.5"
 console2svg capture -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat
 ```
 

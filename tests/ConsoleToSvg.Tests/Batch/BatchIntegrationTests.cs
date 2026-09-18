@@ -145,6 +145,79 @@ public sealed class BatchIntegrationTests
     }
 
     [Test]
+    public async Task IdenticalOutputProducersAcrossMarkdownFilesShareOneGeneration()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var docs = Path.Combine(root, "docs");
+            var output = Path.Combine(root, "assets");
+            Directory.CreateDirectory(Path.Combine(docs, "en"));
+            Directory.CreateDirectory(Path.Combine(docs, "ja"));
+            const string marker = "<!-- c2s:: -o shared.svg -- echo shared -->";
+            await File.WriteAllTextAsync(Path.Combine(docs, "en", "guide.md"), marker);
+            await File.WriteAllTextAsync(Path.Combine(docs, "ja", "guide.md"), marker);
+
+            var exitCode = await Program.Main([
+                "batch",
+                "markdown",
+                "-i",
+                docs,
+                "-o",
+                output,
+            ]);
+
+            exitCode.ShouldBe(0);
+            File.Exists(Path.Combine(output, "shared.svg")).ShouldBeTrue();
+            (await File.ReadAllTextAsync(Path.Combine(docs, "en", "guide.md")))
+                .ShouldContain("../../assets/shared.svg");
+            (await File.ReadAllTextAsync(Path.Combine(docs, "ja", "guide.md")))
+                .ShouldContain("../../assets/shared.svg");
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task DifferentOutputProducersAcrossMarkdownFilesAreRejected()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var docs = Path.Combine(root, "docs");
+            var output = Path.Combine(root, "assets");
+            Directory.CreateDirectory(Path.Combine(docs, "en"));
+            Directory.CreateDirectory(Path.Combine(docs, "ja"));
+            await File.WriteAllTextAsync(
+                Path.Combine(docs, "en", "guide.md"),
+                "<!-- c2s:: -o shared.svg -- echo English -->"
+            );
+            await File.WriteAllTextAsync(
+                Path.Combine(docs, "ja", "guide.md"),
+                "<!-- c2s:: -o shared.svg -- echo Japanese -->"
+            );
+
+            var exitCode = await Program.Main([
+                "batch",
+                "markdown",
+                "-i",
+                docs,
+                "-o",
+                output,
+            ]);
+
+            exitCode.ShouldBe(1);
+            Directory.Exists(output).ShouldBeFalse();
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
     public async Task TeardownRunsWhenSetupFails()
     {
         var root = CreateTempDirectory();

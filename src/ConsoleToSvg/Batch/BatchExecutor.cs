@@ -220,7 +220,10 @@ public static class BatchExecutor
                     }
                     break;
                 case '*':
-                    pattern.Append("[^/]*");
+                    // Filters are applied to the complete input-relative filepath.
+                    // Let a single wildcard span directories so patterns such as
+                    // */masking-secrets/* and */manual-*.md work at any depth.
+                    pattern.Append(".*");
                     break;
                 case '?':
                     pattern.Append("[^/]");

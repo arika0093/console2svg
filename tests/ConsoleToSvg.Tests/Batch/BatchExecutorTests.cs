@@ -163,6 +163,10 @@ public sealed class BatchExecutorTests
         BatchExecutor.MatchesFilter("reference/deep/cli.mdx", "reference/**").ShouldBeTrue();
         BatchExecutor.MatchesFilter("tutorial/cli.md", "reference/**").ShouldBeFalse();
         BatchExecutor.MatchesFilter("tutorial/cli.md", "**/cli.?d").ShouldBeTrue();
+        BatchExecutor
+            .MatchesFilter("ja/basic-usage/masking-secrets/manual-masking.md", "*/masking-secrets/*")
+            .ShouldBeTrue();
+        BatchExecutor.MatchesFilter("ja/basic-usage/manual-masking.md", "*/manual-*.md").ShouldBeTrue();
     }
 
     private static BatchParsedJob ParseSingle(string markdown)

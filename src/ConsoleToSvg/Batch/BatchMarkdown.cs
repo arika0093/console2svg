@@ -119,6 +119,12 @@ public static class BatchMarkdown
         PatternTimeout
     );
 
+    private static readonly Regex HtmlSourcePattern = new(
+        "<source\\s+[^>]*src=[\"'](?<target>[^\"']+)[\"'][^>]*>",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled,
+        PatternTimeout
+    );
+
     private static readonly HashSet<string> ShellLanguages = new(StringComparer.OrdinalIgnoreCase)
     {
         "bash",
@@ -254,10 +260,9 @@ public static class BatchMarkdown
         else if (options.Mouse)
             unsupported = "--mouse";
 
-        error =
-            unsupported is null
-                ? null
-                : $"unsupported marker option '{unsupported}': this capture side effect is not implemented by batch markdown.";
+        error = unsupported is null
+            ? null
+            : $"unsupported marker option '{unsupported}': this capture side effect is not implemented by batch markdown.";
         return unsupported is null;
     }
 
@@ -763,8 +768,20 @@ public static class BatchMarkdown
                 return match.Groups["target"].Value.Trim('<', '>');
             }
 
+            var inlineMarkdownMatch = MarkdownImagePattern.Match(line);
+            if (inlineMarkdownMatch.Success)
+            {
+                return inlineMarkdownMatch.Groups["target"].Value.Trim('<', '>');
+            }
+
             var htmlMatch = HtmlImagePattern.Match(line);
-            return htmlMatch.Success ? htmlMatch.Groups["target"].Value : null;
+            if (htmlMatch.Success)
+            {
+                return htmlMatch.Groups["target"].Value;
+            }
+
+            var sourceMatch = HtmlSourcePattern.Match(line);
+            return sourceMatch.Success ? sourceMatch.Groups["target"].Value : null;
         }
 
         return null;
@@ -846,7 +863,15 @@ public static class BatchMarkdown
             var match = HtmlImagePattern.Match(line);
             if (!match.Success)
             {
-                return null;
+                match = HtmlSourcePattern.Match(line);
+            }
+            if (!match.Success)
+            {
+                match = MarkdownImagePattern.Match(line);
+                if (!match.Success)
+                {
+                    return null;
+                }
             }
 
             var target = match.Groups["target"];

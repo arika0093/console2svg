@@ -159,7 +159,7 @@ public sealed partial class ConsoleToSvgCommandLine
             {
                 Arity = ArgumentArity.OneOrMore,
                 AllowMultipleArgumentsPerToken = true,
-                Description = "Include input-relative Markdown paths matching a glob.",
+                Description = "Include input-relative Markdown filepaths matching a glob.",
                 HelpName = "glob",
             };
         public Option<bool> BatchDryRun { get; } =

@@ -1,0 +1,2010 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="354" height="232" viewBox="0 0 354 232" role="img" aria-label="console2svg output">
+<style>
+.c2.c { font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace; font-size: 14px; }
+.c2 text { dominant-baseline: alphabetic; }
+.c2 .q { shape-rendering: crispEdges; }
+.c2 .c2b { animation: c2b 1s step-start infinite; }
+
+@keyframes c2b { 50% { visibility: hidden; } }
+</style><defs><pattern id="c2-redacted-stripe" patternUnits="userSpaceOnUse" width="8" height="8"><path d="M0 0h8v8H0z" fill="#1e1e1e"/><path d="M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6" stroke="#d4d4d4" stroke-width="2" opacity="0.3"/></pattern></defs><defs>
+<linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1d2e"/><stop offset="100%" stop-color="#252840"/></linearGradient>
+</defs>
+<rect width="354" height="232" fill="url(#c2bg)"/>
+<rect x="0.5" y="0.5" width="353" height="231" fill="#333" stroke="#333"/>
+<rect x="1" y="1" width="352" height="34" fill="#333"/>
+<path d="M 8,35 L 8,11 Q 8,6 13,6 L 163,6 Q 168,6 168,11 L 168,35 Z" fill="#0c0c0c"/>
+<polyline points="16,15.5 20,19.5 16,23.5" fill="none" stroke="#cccccc" stroke-width="1.2" stroke-linejoin="round"/>
+<line x1="23" y1="24" x2="29" y2="24" stroke="#cccccc" stroke-width="1.2"/>
+<line x1="152.5" y1="16" x2="159.5" y2="23" stroke="#888888" stroke-width="1.1"/>
+<line x1="159.5" y1="16" x2="152.5" y2="23" stroke="#888888" stroke-width="1.1"/>
+<line x1="234" y1="19.5" x2="244" y2="19.5" stroke="#cccccc" stroke-width="1.2"/>
+<rect x="280" y="14.5" width="10" height="10" fill="none" stroke="#cccccc" stroke-width="1.2"/>
+<line x1="326" y1="14.5" x2="336" y2="24.5" stroke="#cccccc" stroke-width="1.3"/>
+<line x1="336" y1="14.5" x2="326" y2="24.5" stroke="#cccccc" stroke-width="1.3"/>
+
+<rect x="1" y="35" width="352" height="196" fill="#1e1e1e"/>
+<defs>
+<g id="c2r0" class="c2 c">
+<rect width="336" height="18" id="c2e0" fill="#1e1e1e"/>
+</g>
+<g id="c2r1" class="c2 c"><use href="#c2r0"/>
+<g transform="translate(168)">
+<rect width="8.4" height="18" id="c2e1" fill="#1e1e1e" stroke="#1e1e1e" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<path d="M3.2 0H5.2V18H3.2Z" id="c2e2" fill="#FFFF13"/>
+</g>
+</g>
+<g id="c2r2" class="c2 c"><use href="#c2r0"/>
+<g transform="translate(168)">
+<use href="#c2e1"/>
+<path d="M3.2 0H5.2V18H3.2Z" id="c2e3" fill="#F63B3B"/>
+</g>
+</g>
+<g id="c2r3" class="c2 c"><use href="#c2r0"/>
+<g transform="translate(168)">
+<use href="#c2e1"/>
+<path d="M0 8H4.2V10H0ZM3.2 9H5.2V18H3.2Z" id="c2e4" fill="#F63B3B"/>
+</g>
+</g>
+<g id="c2r4" class="c2 c"><use href="#c2r3"/>
+<g transform="translate(126)">
+<rect width="42" height="18" id="c2e5" fill="#1e1e1e" stroke="#1e1e1e" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<path d="M0 8H42V10H0Z" id="c2e6" fill="#F63B3B"/>
+</g>
+</g>
+<g id="c2r5" class="c2 c"><use href="#c2r4"/>
+<g transform="translate(100.8)">
+<rect width="25.2" height="18" id="c2e7" fill="#1e1e1e" stroke="#1e1e1e" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<path d="M0 8H25.2V10H0Z" id="c2e8" fill="#F63B3B"/>
+</g>
+</g>
+<g id="c2r6" class="c2 c"><use href="#c2r5"/>
+<g transform="translate(92.4)">
+<use href="#c2e1"/>
+<path d="M0 8H8.4V10H0Z" id="c2e9" fill="#F63B3B"/>
+</g>
+</g>
+<g id="c2r7" class="c2 c">
+<use href="#c2e0"/>
+<path d="M58.8 8H172.2V10H58.8ZM171.2 9H173.2V18H171.2Z" id="c2e10" fill="#F63B3B"/>
+</g>
+<g id="c2r8" class="c2 c"><use href="#c2r7"/>
+<g transform="translate(50.4)">
+<use href="#c2e1"/>
+<use href="#c2e9"/>
+</g>
+</g>
+<g id="c2r9" class="c2 c"><use href="#c2r8"/>
+<g transform="translate(33.6)">
+<rect width="16.8" height="18" id="c2e11" fill="#1e1e1e" stroke="#1e1e1e" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<path d="M4.2 8H16.8V10H4.2ZM3.2 9H5.2V18H3.2Z" id="c2e12" fill="#F63B3B"/>
+</g>
+</g>
+<g id="c2r10" class="c2 c"><use href="#c2r2"/>
+<g transform="translate(33.6)">
+<use href="#c2e1"/>
+<path d="M0 8H4.2V10H0ZM3.2 0H5.2V9H3.2Z" id="c2e13" fill="#F63B3B"/>
+</g>
+</g>
+<g id="c2r11" class="c2 c"><use href="#c2r0"/>
+<g transform="translate(16.8)">
+<use href="#c2e1"/>
+<use href="#c2e3"/>
+</g>
+</g>
+<g id="c2r12" class="c2 c"><use href="#c2r9"/>
+<g transform="translate(16.8)">
+<use href="#c2e1"/>
+<use href="#c2e3"/>
+</g>
+</g>
+<g id="c2r13" class="c2 c"><use href="#c2r10"/>
+<g transform="translate(16.8)">
+<use href="#c2e11"/>
+<path d="M4.2 8H16.8V10H4.2ZM3.2 0H5.2V9H3.2Z" id="c2e14" fill="#F63B3B"/>
+</g>
+</g>
+<g id="c2r14" class="c2 c"><use href="#c2r1"/>
+<g transform="translate(16.8)">
+<use href="#c2e1"/>
+<use href="#c2e3"/>
+</g>
+</g>
+<g id="c2r15" class="c2 c"><use href="#c2r12"/>
+<g transform="translate(16.8)">
+<use href="#c2e1"/>
+<path d="M3.2 0H5.2V18H3.2Z" id="c2e15" fill="#14CAF6"/>
+</g>
+</g>
+<g id="c2r16" class="c2 c"><use href="#c2r13"/>
+<g transform="translate(16.8)">
+<use href="#c2e1"/>
+<use href="#c2e15"/>
+</g>
+</g>
+<g id="c2r17" class="c2 c"><use href="#c2r11"/>
+<g transform="translate(16.8)">
+<use href="#c2e1"/>
+<use href="#c2e15"/>
+</g>
+</g>
+<g id="c2r18" class="c2 c"><use href="#c2r14"/>
+<g transform="translate(16.8)">
+<use href="#c2e1"/>
+<use href="#c2e15"/>
+</g>
+</g>
+<g id="c2r19" class="c2 c"><use href="#c2r14"/>
+<g transform="translate(16.8)">
+<use href="#c2e7"/>
+<path d="M4.2 8H25.2V10H4.2ZM3.2 9H5.2V18H3.2Z" id="c2e16" fill="#14CAF6"/>
+</g>
+</g>
+<g id="c2r20" class="c2 c"><use href="#c2r19"/>
+<g transform="translate(42)">
+<use href="#c2e7"/>
+<path d="M0 8H25.2V10H0Z" id="c2e17" fill="#14CAF6"/>
+</g>
+</g>
+<g id="c2r21" class="c2 c">
+<use href="#c2e0"/>
+<path d="M21 8H75.6V10H21ZM20 9H22V18H20Z" id="c2e18" fill="#14CAF6"/>
+<path d="M171.2 0H173.2V18H171.2Z" id="c2e19" fill="#FFFF13"/>
+</g>
+<g id="c2r22" class="c2 c"><use href="#c2r21"/>
+<g transform="translate(75.6)">
+<rect width="33.6" height="18" id="c2e20" fill="#1e1e1e" stroke="#1e1e1e" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<path d="M0 8H33.6V10H0Z" id="c2e21" fill="#14CAF6"/>
+</g>
+</g>
+<g id="c2r23" class="c2 c"><use href="#c2r14"/>
+<g transform="translate(117.6)">
+<use href="#c2e1"/>
+<use href="#c2e15"/>
+</g>
+</g>
+<g id="c2r24" class="c2 c"><use href="#c2r22"/>
+<g transform="translate(109.2)">
+<use href="#c2e11"/>
+<path d="M0 8H12.6V10H0ZM11.6 0H13.6V9H11.6Z" id="c2e22" fill="#14CAF6"/>
+</g>
+</g>
+<g id="c2r25" class="c2 c">
+<use href="#c2e0"/>
+<path d="M120.8 0H122.8V18H120.8Z" id="c2e23" fill="#10E291"/>
+<path d="M20 0H22V18H20Z" id="c2e24" fill="#14CAF6"/>
+<path d="M25.2 8H37.8V10H25.2ZM36.8 0H38.8V9H36.8ZM171.2 0H173.2V18H171.2Z" id="c2e25" fill="#F63B3B"/>
+</g>
+<g id="c2r26" class="c2 c"><use href="#c2r17"/>
+<g transform="translate(117.6)">
+<use href="#c2e11"/>
+<path d="M4.2 8H16.8V10H4.2ZM3.2 9H5.2V18H3.2Z" id="c2e26" fill="#10E291"/>
+</g>
+</g>
+<g id="c2r27" class="c2 c"><use href="#c2r17"/>
+<g transform="translate(117.6)">
+<use href="#c2e1"/>
+<path d="M3.2 0H5.2V18H3.2Z" id="c2e27" fill="#10E291"/>
+</g>
+</g>
+<g id="c2r28" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e23"/>
+<use href="#c2e24"/>
+<path d="M37.8 8H117.6V10H37.8ZM126 8H172.2V10H126ZM36.8 9H38.8V18H36.8ZM171.2 9H173.2V18H171.2Z" id="c2e28" fill="#F63B3B"/>
+</g>
+<g id="c2r29" class="c2 c"><use href="#c2r26"/>
+<g transform="translate(134.4)">
+<use href="#c2e7"/>
+<path d="M0 8H25.2V10H0Z" id="c2e29" fill="#10E291"/>
+</g>
+</g>
+<g id="c2r30" class="c2 c">
+<use href="#c2e0"/>
+<path d="M121.8 8H168V10H121.8ZM120.8 9H122.8V18H120.8Z" id="c2e30" fill="#10E291"/>
+<use href="#c2e24"/>
+</g>
+<g id="c2r31" class="c2 c"><use href="#c2r30"/>
+<g transform="translate(168)">
+<use href="#c2e1"/>
+<path d="M0 8H4.2V10H0ZM3.2 9H5.2V18H3.2Z" id="c2e31" fill="#10E291"/>
+</g>
+</g>
+<g id="c2r32" class="c2 c"><use href="#c2r27"/>
+<g transform="translate(151.2)">
+<use href="#c2e7"/>
+<path d="M0 8H21V10H0ZM20 0H22V9H20Z" id="c2e32" fill="#10E291"/>
+</g>
+</g>
+<g id="c2r33" class="c2 c">
+<use href="#c2e0"/>
+<path d="M142.8 8H172.2V10H142.8ZM120.8 0H122.8V18H120.8ZM171.2 0H173.2V9H171.2Z" id="c2e33" fill="#10E291"/>
+<use href="#c2e24"/>
+</g>
+<g id="c2r34" class="c2 c"><use href="#c2r33"/>
+<g transform="translate(134.4)">
+<use href="#c2e1"/>
+<path d="M4.2 8H8.4V10H4.2ZM3.2 9H5.2V18H3.2Z" id="c2e34" fill="#10E291"/>
+</g>
+</g>
+<g id="c2r35" class="c2 c"><use href="#c2r27"/>
+<g transform="translate(134.4)">
+<use href="#c2e1"/>
+<use href="#c2e27"/>
+</g>
+</g>
+<g id="c2r36" class="c2 c"><use href="#c2r28"/>
+<g transform="translate(134.4)">
+<use href="#c2e1"/>
+<path d="M4.2 8H8.4V10H4.2ZM3.2 0H5.2V9H3.2Z" id="c2e35" fill="#10E291"/>
+</g>
+</g>
+<g id="c2r37" class="c2 c">
+<use href="#c2e0"/>
+<path d="M147 8H155.4V10H147ZM120.8 0H122.8V18H120.8ZM137.6 0H139.6V18H137.6ZM146 9H148V18H146ZM154.4 9H156.4V18H154.4Z" id="c2e36" fill="#10E291"/>
+<use href="#c2e24"/>
+</g>
+<g id="c2r38" class="c2 c"><use href="#c2r36"/>
+<g transform="translate(142.8)">
+<use href="#c2e11"/>
+<path d="M0 8H4.2V10H0ZM3.2 0H5.2V9H3.2ZM11.6 0H13.6V18H11.6Z" id="c2e37" fill="#10E291"/>
+</g>
+</g>
+<g id="c2r39" class="c2 c"><use href="#c2r25"/>
+<g transform="translate(151.2)">
+<use href="#c2e1"/>
+<use href="#c2e27"/>
+</g>
+</g>
+<g id="c2r40" class="c2 c"><use href="#c2r23"/>
+<g transform="translate(151.2)">
+<use href="#c2e1"/>
+<path d="M3.2 0H5.2V18H3.2Z" id="c2e38" fill="#242424"/>
+</g>
+</g>
+<g id="c2r41" class="c2 c"><use href="#c2r24"/>
+<g transform="translate(151.2)">
+<use href="#c2e1"/>
+<use href="#c2e38"/>
+</g>
+</g>
+<g id="c2r42" class="c2 c"><use href="#c2r18"/>
+<g transform="translate(151.2)">
+<use href="#c2e1"/>
+<path d="M4.2 8H8.4V10H4.2ZM3.2 0H5.2V9H3.2Z" id="c2e39" fill="#242424"/>
+</g>
+</g>
+<g id="c2r43" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e24"/>
+<path d="M155.4 8H168V10H155.4ZM154.4 0H156.4V9H154.4Z" id="c2e40" fill="#242424"/>
+<use href="#c2e19"/>
+</g>
+<g id="c2r44" class="c2 c"><use href="#c2r43"/>
+<g transform="translate(168)">
+<use href="#c2e11"/>
+<path d="M0 8H12.6V10H0ZM11.6 9H13.6V18H11.6Z" id="c2e41" fill="#242424"/>
+</g>
+</g>
+<g id="c2r45" class="c2 c"><use href="#c2r18"/>
+<g transform="translate(176.4)">
+<use href="#c2e1"/>
+<use href="#c2e38"/>
+</g>
+</g>
+<g id="c2r46" class="c2 c"><use href="#c2r31"/>
+<g transform="translate(176.4)">
+<use href="#c2e1"/>
+<use href="#c2e38"/>
+</g>
+</g>
+<g id="c2r47" class="c2 c"><use href="#c2r34"/>
+<g transform="translate(176.4)">
+<use href="#c2e1"/>
+<use href="#c2e38"/>
+</g>
+</g>
+<g id="c2r48" class="c2 c"><use href="#c2r37"/>
+<g transform="translate(176.4)">
+<use href="#c2e1"/>
+<use href="#c2e38"/>
+</g>
+</g>
+<g id="c2r49" class="c2 c"><use href="#c2r38"/>
+<g transform="translate(176.4)">
+<use href="#c2e1"/>
+<use href="#c2e38"/>
+</g>
+</g>
+<g id="c2r50" class="c2 c">
+<use href="#c2e0"/>
+<path d="M120.8 0H122.8V18H120.8Z" id="c2e42" fill="#14CAF6"/>
+<path d="M155.4 8H180.6V10H155.4ZM154.4 9H156.4V18H154.4ZM179.6 0H181.6V9H179.6Z" id="c2e43" fill="#2B89F0"/>
+<path d="M20 0H22V18H20Z" id="c2e44" fill="#F63B3B"/>
+</g>
+<g id="c2r51" class="c2 c"><use href="#c2r39"/>
+<g transform="translate(176.4)">
+<use href="#c2e1"/>
+<use href="#c2e38"/>
+</g>
+</g>
+<g id="c2r52" class="c2 c"><use href="#c2r41"/>
+<g transform="translate(151.2)">
+<use href="#c2e1"/>
+<path d="M3.2 0H5.2V18H3.2Z" id="c2e45" fill="#2B89F0"/>
+</g>
+</g>
+<g id="c2r53" class="c2 c"><use href="#c2r44"/>
+<g transform="translate(151.2)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r54" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e24"/>
+<path d="M179.6 0H181.6V18H179.6Z" id="c2e46" fill="#242424"/>
+<path d="M154.4 0H156.4V18H154.4Z" id="c2e47" fill="#2B89F0"/>
+<use href="#c2e19"/>
+</g>
+<g id="c2r55" class="c2 c"><use href="#c2r46"/>
+<g transform="translate(126)">
+<use href="#c2e20"/>
+<path d="M0 8H29.4V10H0ZM28.4 0H30.4V9H28.4Z" id="c2e48" fill="#2B89F0"/>
+</g>
+</g>
+<g id="c2r56" class="c2 c"><use href="#c2r55"/>
+<g transform="translate(117.6)">
+<use href="#c2e1"/>
+<path d="M0 8H8.4V10H0Z" id="c2e49" fill="#2B89F0"/>
+</g>
+</g>
+<g id="c2r57" class="c2 c">
+<use href="#c2e0"/>
+<path d="M159.6 8H172.2V10H159.6ZM171.2 9H173.2V18H171.2Z" id="c2e50" fill="#10E291"/>
+<use href="#c2e24"/>
+<use href="#c2e46"/>
+<path d="M100.8 8H155.4V10H100.8ZM154.4 0H156.4V9H154.4Z" id="c2e51" fill="#2B89F0"/>
+</g>
+<g id="c2r58" class="c2 c"><use href="#c2r57"/>
+<g transform="translate(92.4)">
+<use href="#c2e1"/>
+<use href="#c2e49"/>
+</g>
+</g>
+<g id="c2r59" class="c2 c"><use href="#c2r58"/>
+<g transform="translate(50.4)">
+<use href="#c2e5"/>
+<path d="M0 8H42V10H0Z" id="c2e52" fill="#2B89F0"/>
+</g>
+</g>
+<g id="c2r60" class="c2 c"><use href="#c2r59"/>
+<g transform="translate(42)">
+<use href="#c2e1"/>
+<use href="#c2e49"/>
+</g>
+</g>
+<g id="c2r61" class="c2 c"><use href="#c2r60"/>
+<g transform="translate(25.2)">
+<use href="#c2e11"/>
+<path d="M0 8H16.8V10H0Z" id="c2e53" fill="#2B89F0"/>
+</g>
+</g>
+<g id="c2r62" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e50"/>
+<use href="#c2e46"/>
+<path d="M16.8 8H155.4V10H16.8ZM154.4 0H156.4V9H154.4Z" id="c2e54" fill="#2B89F0"/>
+</g>
+<g id="c2r63" class="c2 c"><use href="#c2r54"/>
+<g transform="translate(327.6)">
+<use href="#c2e1"/>
+<use href="#c2e3"/>
+</g>
+</g>
+<g id="c2r64" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e50"/>
+<use href="#c2e46"/>
+<path d="M0 8H155.4V10H0ZM154.4 0H156.4V9H154.4Z" id="c2e55" fill="#2B89F0"/>
+<path d="M331.8 8H336V10H331.8ZM330.8 0H332.8V9H330.8Z" id="c2e56" fill="#F63B3B"/>
+</g>
+<g id="c2r65" class="c2 c">
+<use href="#c2e0"/>
+<path d="M21 8H121.8V10H21ZM20 9H22V18H20ZM120.8 0H122.8V9H120.8Z" id="c2e57" fill="#14CAF6"/>
+<use href="#c2e47"/>
+<path d="M330.8 0H332.8V18H330.8Z" id="c2e58" fill="#F63B3B"/>
+<use href="#c2e19"/>
+</g>
+<g id="c2r66" class="c2 c"><use href="#c2r53"/>
+<g transform="translate(327.6)">
+<use href="#c2e1"/>
+<use href="#c2e3"/>
+</g>
+</g>
+<g id="c2r67" class="c2 c"><use href="#c2r50"/>
+<g transform="translate(327.6)">
+<use href="#c2e1"/>
+<use href="#c2e3"/>
+</g>
+</g>
+<g id="c2r68" class="c2 c"><use href="#c2r48"/>
+<g transform="translate(310.8)">
+<use href="#c2e7"/>
+<path d="M4.2 8H21V10H4.2ZM3.2 0H5.2V9H3.2ZM20 9H22V18H20Z" id="c2e59" fill="#2B89F0"/>
+</g>
+</g>
+<g id="c2r69" class="c2 c"><use href="#c2r49"/>
+<g transform="translate(327.6)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r70" class="c2 c"><use href="#c2r51"/>
+<g transform="translate(327.6)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r71" class="c2 c"><use href="#c2r47"/>
+<g transform="translate(310.8)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r72" class="c2 c"><use href="#c2r63"/>
+<g transform="translate(310.8)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r73" class="c2 c"><use href="#c2r64"/>
+<g transform="translate(310.8)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r74" class="c2 c"><use href="#c2r65"/>
+<g transform="translate(310.8)">
+<use href="#c2e7"/>
+<path d="M4.2 8H25.2V10H4.2ZM3.2 9H5.2V18H3.2Z" id="c2e60" fill="#2B89F0"/>
+</g>
+</g>
+<g id="c2r75" class="c2 c"><use href="#c2r66"/>
+<g transform="translate(310.8)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r76" class="c2 c"><use href="#c2r74"/>
+<g>
+<use href="#c2e7"/>
+<path d="M0 8H25.2V10H0Z" id="c2e61" fill="#FFFF13"/>
+</g>
+</g>
+<g id="c2r77" class="c2 c"><use href="#c2r76"/>
+<g transform="translate(25.2)">
+<use href="#c2e1"/>
+<path d="M0 8H8.4V10H0Z" id="c2e62" fill="#FFFF13"/>
+</g>
+</g>
+<g id="c2r78" class="c2 c"><use href="#c2r77"/>
+<g transform="translate(33.6)">
+<use href="#c2e5"/>
+<path d="M0 8H37.8V10H0ZM36.8 9H38.8V18H36.8Z" id="c2e63" fill="#FFFF13"/>
+</g>
+</g>
+<g id="c2r79" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e24"/>
+<path d="M159.6 8H180.6V10H159.6ZM179.6 9H181.6V18H179.6Z" id="c2e64" fill="#242424"/>
+<path d="M154.4 0H156.4V18H154.4ZM314 0H316V18H314Z" id="c2e65" fill="#2B89F0"/>
+<use href="#c2e58"/>
+<path d="M70.4 0H72.4V18H70.4Z" id="c2e66" fill="#FFFF13"/>
+</g>
+<g id="c2r80" class="c2 c"><use href="#c2r72"/>
+<g transform="translate(67.2)">
+<use href="#c2e1"/>
+<use href="#c2e2"/>
+</g>
+</g>
+<g id="c2r81" class="c2 c"><use href="#c2r73"/>
+<g transform="translate(67.2)">
+<use href="#c2e1"/>
+<path d="M4.2 8H8.4V10H4.2ZM3.2 0H5.2V9H3.2Z" id="c2e67" fill="#FFFF13"/>
+</g>
+</g>
+<g id="c2r82" class="c2 c"><use href="#c2r81"/>
+<g transform="translate(75.6)">
+<use href="#c2e20"/>
+<path d="M0 8H33.6V10H0Z" id="c2e68" fill="#FFFF13"/>
+</g>
+</g>
+<g id="c2r83" class="c2 c"><use href="#c2r82"/>
+<g transform="translate(109.2)">
+<use href="#c2e7"/>
+<use href="#c2e61"/>
+</g>
+</g>
+<g id="c2r84" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e50"/>
+<use href="#c2e46"/>
+<path d="M0 8H67.2V10H0ZM142.8 8H155.4V10H142.8ZM154.4 0H156.4V9H154.4ZM314 0H316V18H314Z" id="c2e69" fill="#2B89F0"/>
+<use href="#c2e56"/>
+<path d="M71.4 8H142.8V10H71.4ZM70.4 0H72.4V9H70.4Z" id="c2e70" fill="#FFFF13"/>
+</g>
+<g id="c2r85" class="c2 c"><use href="#c2r84"/>
+<g transform="translate(142.8)">
+<use href="#c2e5"/>
+<path d="M0 8H42V10H0Z" id="c2e71" fill="#FFFF13"/>
+</g>
+</g>
+<g id="c2r86" class="c2 c"><use href="#c2r85"/>
+<g transform="translate(184.8)">
+<use href="#c2e7"/>
+<use href="#c2e61"/>
+</g>
+</g>
+<g id="c2r87" class="c2 c"><use href="#c2r86"/>
+<g transform="translate(210)">
+<use href="#c2e1"/>
+<use href="#c2e62"/>
+</g>
+</g>
+<g id="c2r88" class="c2 c"><use href="#c2r87"/>
+<g transform="translate(218.4)">
+<use href="#c2e20"/>
+<use href="#c2e68"/>
+</g>
+</g>
+<g id="c2r89" class="c2 c">
+<use href="#c2e0"/>
+<path d="M0 8H67.2V10H0ZM314 0H316V18H314Z" id="c2e72" fill="#2B89F0"/>
+<use href="#c2e56"/>
+<path d="M71.4 8H277.2V10H71.4ZM70.4 0H72.4V9H70.4Z" id="c2e73" fill="#FFFF13"/>
+</g>
+<g id="c2r90" class="c2 c"><use href="#c2r89"/>
+<g transform="translate(277.2)">
+<use href="#c2e1"/>
+<use href="#c2e62"/>
+</g>
+</g>
+<g id="c2r91" class="c2 c"><use href="#c2r90"/>
+<g transform="translate(285.6)">
+<use href="#c2e11"/>
+<path d="M0 8H12.6V10H0ZM11.6 9H13.6V18H11.6Z" id="c2e74" fill="#FFFF13"/>
+</g>
+</g>
+<g id="c2r92" class="c2 c"><use href="#c2r71"/>
+<g transform="translate(294)">
+<use href="#c2e1"/>
+<use href="#c2e2"/>
+</g>
+</g>
+<g id="c2r93" class="c2 c"><use href="#c2r68"/>
+<g transform="translate(294)">
+<use href="#c2e1"/>
+<use href="#c2e2"/>
+</g>
+</g>
+<g id="c2r94" class="c2 c">
+<use href="#c2e0"/>
+<path d="M138.6 8H147V10H138.6ZM120.8 0H122.8V18H120.8ZM137.6 0H139.6V9H137.6ZM146 0H148V9H146ZM154.4 0H156.4V18H154.4Z" id="c2e75" fill="#10E291"/>
+<use href="#c2e24"/>
+<use href="#c2e46"/>
+<path d="M330.8 0H332.8V18H330.8Z" id="c2e76" fill="#2B89F0"/>
+<path d="M37.8 8H117.6V10H37.8ZM126 8H134.4V10H126ZM159.6 8H172.2V10H159.6ZM36.8 9H38.8V18H36.8ZM171.2 9H173.2V18H171.2Z" id="c2e77" fill="#F63B3B"/>
+<path d="M297.2 0H299.2V18H297.2Z" id="c2e78" fill="#FFFF13"/>
+</g>
+<g id="c2r95" class="c2 c"><use href="#c2r70"/>
+<g transform="translate(294)">
+<use href="#c2e7"/>
+<path d="M4.2 8H25.2V10H4.2ZM3.2 0H5.2V9H3.2Z" id="c2e79" fill="#FFFF13"/>
+</g>
+</g>
+<g id="c2r96" class="c2 c">
+<use href="#c2e0"/>
+<path d="M120.8 0H122.8V18H120.8ZM154.4 0H156.4V18H154.4Z" id="c2e80" fill="#10E291"/>
+<use href="#c2e24"/>
+<use href="#c2e46"/>
+<use href="#c2e76"/>
+<use href="#c2e25"/>
+<path d="M298.2 8H327.6V10H298.2ZM297.2 0H299.2V9H297.2Z" id="c2e81" fill="#FFFF13"/>
+</g>
+<g id="c2r97" class="c2 c"><use href="#c2r94"/>
+<g transform="translate(8.4)">
+<use href="#c2e1"/>
+<path d="M0 8H4.2V10H0ZM3.2 9H5.2V18H3.2Z" id="c2e82" fill="#2B89F0"/>
+</g>
+</g>
+<g id="c2r98" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e80"/>
+<use href="#c2e24"/>
+<use href="#c2e46"/>
+<path d="M0 8H12.6V10H0ZM11.6 0H13.6V9H11.6Z" id="c2e83" fill="#2B89F0"/>
+<use href="#c2e25"/>
+<path d="M298.2 8H336V10H298.2ZM297.2 0H299.2V9H297.2Z" id="c2e84" fill="#FFFF13"/>
+</g>
+<g id="c2r99" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e75"/>
+<use href="#c2e24"/>
+<use href="#c2e46"/>
+<path d="M0 8H12.6V10H0ZM11.6 9H13.6V18H11.6Z" id="c2e85" fill="#2B89F0"/>
+<path d="M319.2 8H336V10H319.2Z" id="c2e86" fill="#E24CE2"/>
+<use href="#c2e77"/>
+<use href="#c2e78"/>
+</g>
+<g id="c2r100" class="c2 c"><use href="#c2r99"/>
+<g transform="translate(310.8)">
+<use href="#c2e1"/>
+<path d="M0 8H8.4V10H0Z" id="c2e87" fill="#E24CE2"/>
+</g>
+</g>
+<g id="c2r101" class="c2 c"><use href="#c2r67"/>
+<g transform="translate(285.6)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r102" class="c2 c"><use href="#c2r100"/>
+<g transform="translate(285.6)">
+<use href="#c2e7"/>
+<path d="M4.2 8H25.2V10H4.2ZM3.2 9H5.2V18H3.2Z" id="c2e88" fill="#E24CE2"/>
+</g>
+</g>
+<g id="c2r103" class="c2 c"><use href="#c2r98"/>
+<g transform="translate(285.6)">
+<use href="#c2e1"/>
+<path d="M3.2 0H5.2V18H3.2Z" id="c2e89" fill="#E24CE2"/>
+</g>
+</g>
+<g id="c2r104" class="c2 c">
+<use href="#c2e0"/>
+<path d="M75.6 8H121.8V10H75.6ZM120.8 0H122.8V9H120.8Z" id="c2e90" fill="#14CAF6"/>
+<path d="M315 8H336V10H315ZM154.4 0H156.4V18H154.4ZM288.8 0H290.8V18H288.8ZM314 9H316V18H314Z" id="c2e91" fill="#2B89F0"/>
+<path d="M0 8H71.4V10H0ZM70.4 9H72.4V18H70.4ZM171.2 0H173.2V18H171.2Z" id="c2e92" fill="#FFFF13"/>
+</g>
+<g id="c2r105" class="c2 c"><use href="#c2r79"/>
+<g transform="translate(285.6)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r106" class="c2 c"><use href="#c2r80"/>
+<g transform="translate(285.6)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r107" class="c2 c"><use href="#c2r91"/>
+<g transform="translate(285.6)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r108" class="c2 c">
+<use href="#c2e0"/>
+<path d="M138.6 8H172.2V10H138.6ZM120.8 0H122.8V18H120.8ZM137.6 9H139.6V18H137.6ZM171.2 0H173.2V9H171.2Z" id="c2e93" fill="#10E291"/>
+<use href="#c2e24"/>
+<use href="#c2e46"/>
+<path d="M289.8 8H306.6V10H289.8ZM288.8 0H290.8V9H288.8ZM305.6 0H307.6V9H305.6ZM314 0H316V18H314Z" id="c2e94" fill="#2B89F0"/>
+</g>
+<g id="c2r109" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e24"/>
+<use href="#c2e46"/>
+<path d="M154.4 0H156.4V18H154.4ZM288.8 0H290.8V18H288.8ZM305.6 0H307.6V18H305.6ZM314 0H316V18H314Z" id="c2e95" fill="#2B89F0"/>
+<use href="#c2e58"/>
+<path d="M70.4 0H72.4V18H70.4ZM171.2 0H173.2V18H171.2Z" id="c2e96" fill="#FFFF13"/>
+</g>
+<g id="c2r110" class="c2 c"><use href="#c2r107"/>
+<g transform="translate(302.4)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r111" class="c2 c"><use href="#c2r105"/>
+<g transform="translate(302.4)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r112" class="c2 c"><use href="#c2r101"/>
+<g transform="translate(302.4)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r113" class="c2 c"><use href="#c2r104"/>
+<g transform="translate(302.4)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r114" class="c2 c"><use href="#c2r93"/>
+<g transform="translate(302.4)">
+<use href="#c2e1"/>
+<use href="#c2e89"/>
+</g>
+</g>
+<g id="c2r115" class="c2 c"><use href="#c2r102"/>
+<g transform="translate(302.4)">
+<use href="#c2e1"/>
+<use href="#c2e89"/>
+</g>
+</g>
+<g id="c2r116" class="c2 c"><use href="#c2r103"/>
+<g transform="translate(302.4)">
+<use href="#c2e1"/>
+<use href="#c2e89"/>
+</g>
+</g>
+<g id="c2r117" class="c2 c"><use href="#c2r108"/>
+<g transform="translate(285.6)">
+<use href="#c2e7"/>
+<path d="M0 8H21V10H0ZM20 9H22V18H20Z" id="c2e97" fill="#E24CE2"/>
+</g>
+</g>
+<g id="c2r118" class="c2 c"><use href="#c2r117"/>
+<g transform="translate(277.2)">
+<use href="#c2e1"/>
+<use href="#c2e87"/>
+</g>
+</g>
+<g id="c2r119" class="c2 c"><use href="#c2r118"/>
+<g transform="translate(243.6)">
+<use href="#c2e20"/>
+<path d="M0 8H33.6V10H0Z" id="c2e98" fill="#E24CE2"/>
+</g>
+</g>
+<g id="c2r120" class="c2 c"><use href="#c2r109"/>
+<g transform="translate(235.2)">
+<use href="#c2e1"/>
+<use href="#c2e89"/>
+</g>
+</g>
+<g id="c2r121" class="c2 c">
+<use href="#c2e0"/>
+<path d="M0 8H67.2V10H0ZM288.8 0H290.8V18H288.8ZM305.6 0H307.6V18H305.6ZM314 0H316V18H314Z" id="c2e99" fill="#2B89F0"/>
+<path d="M238.4 0H240.4V18H238.4Z" id="c2e100" fill="#E24CE2"/>
+<use href="#c2e56"/>
+<path d="M71.4 8H235.2V10H71.4ZM243.6 8H285.6V10H243.6ZM294 8H298.2V10H294ZM70.4 0H72.4V9H70.4ZM297.2 9H299.2V18H297.2Z" id="c2e101" fill="#FFFF13"/>
+</g>
+<g id="c2r122" class="c2 c"><use href="#c2r119"/>
+<g transform="translate(235.2)">
+<use href="#c2e1"/>
+<path d="M4.2 8H8.4V10H4.2ZM3.2 0H5.2V9H3.2Z" id="c2e102" fill="#E24CE2"/>
+</g>
+</g>
+<g id="c2r123" class="c2 c"><use href="#c2r111"/>
+<g transform="translate(235.2)">
+<use href="#c2e5"/>
+<path d="M4.2 8H42V10H4.2ZM3.2 9H5.2V18H3.2Z" id="c2e103" fill="#E24CE2"/>
+</g>
+</g>
+<g id="c2r124" class="c2 c"><use href="#c2r123"/>
+<g transform="translate(277.2)">
+<use href="#c2e7"/>
+<path d="M0 8H25.2V10H0Z" id="c2e104" fill="#E24CE2"/>
+</g>
+</g>
+<g id="c2r125" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e24"/>
+<use href="#c2e64"/>
+<use href="#c2e65"/>
+<path d="M239.4 8H310.8V10H239.4ZM238.4 9H240.4V18H238.4Z" id="c2e105" fill="#E24CE2"/>
+<use href="#c2e58"/>
+<use href="#c2e66"/>
+</g>
+<g id="c2r126" class="c2 c"><use href="#c2r125"/>
+<g transform="translate(310.8)">
+<use href="#c2e7"/>
+<use href="#c2e97"/>
+</g>
+</g>
+<g id="c2r127" class="c2 c"><use href="#c2r120"/>
+<g transform="translate(327.6)">
+<use href="#c2e1"/>
+<use href="#c2e102"/>
+</g>
+</g>
+<g id="c2r128" class="c2 c"><use href="#c2r127"/>
+<g>
+<use href="#c2e7"/>
+<use href="#c2e29"/>
+</g>
+</g>
+<g id="c2r129" class="c2 c"><use href="#c2r128"/>
+<g transform="translate(25.2)">
+<use href="#c2e1"/>
+<path d="M0 8H8.4V10H0Z" id="c2e106" fill="#10E291"/>
+</g>
+</g>
+<g id="c2r130" class="c2 c"><use href="#c2r113"/>
+<g transform="translate(50.4)">
+<use href="#c2e1"/>
+<use href="#c2e27"/>
+</g>
+</g>
+<g id="c2r131" class="c2 c"><use href="#c2r126"/>
+<g transform="translate(50.4)">
+<use href="#c2e1"/>
+<use href="#c2e27"/>
+</g>
+</g>
+<g id="c2r132" class="c2 c">
+<use href="#c2e0"/>
+<path d="M0 8H54.6V10H0ZM53.6 0H55.6V9H53.6Z" id="c2e107" fill="#10E291"/>
+<use href="#c2e46"/>
+<use href="#c2e95"/>
+<path d="M331.8 8H336V10H331.8ZM238.4 0H240.4V18H238.4ZM330.8 0H332.8V9H330.8Z" id="c2e108" fill="#E24CE2"/>
+<use href="#c2e96"/>
+</g>
+<g id="c2r133" class="c2 c"><use href="#c2r112"/>
+<g transform="translate(50.4)">
+<use href="#c2e1"/>
+<use href="#c2e27"/>
+</g>
+</g>
+<g id="c2r134" class="c2 c"><use href="#c2r115"/>
+<g transform="translate(50.4)">
+<use href="#c2e1"/>
+<use href="#c2e89"/>
+</g>
+</g>
+<g id="c2r135" class="c2 c"><use href="#c2r116"/>
+<g transform="translate(50.4)">
+<use href="#c2e1"/>
+<use href="#c2e89"/>
+</g>
+</g>
+<g id="c2r136" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e36"/>
+<use href="#c2e24"/>
+<use href="#c2e46"/>
+<path d="M315 8H331.8V10H315ZM314 0H316V9H314ZM330.8 9H332.8V18H330.8Z" id="c2e109" fill="#2B89F0"/>
+<path d="M53.6 0H55.6V18H53.6ZM305.6 0H307.6V18H305.6Z" id="c2e110" fill="#E24CE2"/>
+<use href="#c2e78"/>
+</g>
+<g id="c2r137" class="c2 c"><use href="#c2r132"/>
+<g transform="translate(50.4)">
+<use href="#c2e1"/>
+<use href="#c2e89"/>
+</g>
+</g>
+<g id="c2r138" class="c2 c"><use href="#c2r120"/>
+<g transform="translate(50.4)">
+<use href="#c2e1"/>
+<use href="#c2e89"/>
+</g>
+</g>
+<g id="c2r139" class="c2 c"><use href="#c2r121"/>
+<g transform="translate(50.4)">
+<use href="#c2e1"/>
+<use href="#c2e89"/>
+</g>
+</g>
+<g id="c2r140" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e93"/>
+<use href="#c2e24"/>
+<use href="#c2e46"/>
+<path d="M314 0H316V18H314Z" id="c2e111" fill="#2B89F0"/>
+<path d="M239.4 8H306.6V10H239.4ZM53.6 0H55.6V18H53.6ZM238.4 0H240.4V9H238.4ZM305.6 9H307.6V18H305.6Z" id="c2e112" fill="#E24CE2"/>
+</g>
+<g id="c2r141" class="c2 c"><use href="#c2r130"/>
+<g transform="translate(50.4)">
+<use href="#c2e11"/>
+<path d="M4.2 8H16.8V10H4.2ZM3.2 9H5.2V18H3.2Z" id="c2e113" fill="#E24CE2"/>
+</g>
+</g>
+<g id="c2r142" class="c2 c"><use href="#c2r131"/>
+<g transform="translate(50.4)">
+<use href="#c2e1"/>
+<use href="#c2e89"/>
+</g>
+</g>
+<g id="c2r143" class="c2 c"><use href="#c2r141"/>
+<g transform="translate(67.2)">
+<use href="#c2e1"/>
+<use href="#c2e87"/>
+</g>
+</g>
+<g id="c2r144" class="c2 c">
+<use href="#c2e0"/>
+<path d="M53.6 0H55.6V18H53.6Z" id="c2e114" fill="#10E291"/>
+<use href="#c2e42"/>
+<path d="M155.4 8H180.6V10H155.4ZM154.4 9H156.4V18H154.4ZM179.6 0H181.6V9H179.6ZM288.8 0H290.8V18H288.8ZM305.6 0H307.6V18H305.6Z" id="c2e115" fill="#2B89F0"/>
+<path d="M78.8 0H80.8V18H78.8Z" id="c2e116" fill="#E24CE2"/>
+<path d="M20 0H22V18H20ZM330.8 0H332.8V18H330.8Z" id="c2e117" fill="#F63B3B"/>
+</g>
+<g id="c2r145" class="c2 c">
+<use href="#c2e0"/>
+<path d="M84 8H121.8V10H84ZM120.8 0H122.8V9H120.8Z" id="c2e118" fill="#14CAF6"/>
+<path d="M315 8H336V10H315ZM154.4 0H156.4V18H154.4ZM288.8 0H290.8V18H288.8ZM305.6 0H307.6V18H305.6ZM314 9H316V18H314Z" id="c2e119" fill="#2B89F0"/>
+<path d="M54.6 8H79.8V10H54.6ZM53.6 9H55.6V18H53.6ZM78.8 0H80.8V9H78.8Z" id="c2e120" fill="#E24CE2"/>
+<path d="M0 8H50.4V10H0ZM171.2 0H173.2V18H171.2Z" id="c2e121" fill="#FFFF13"/>
+</g>
+<g id="c2r146" class="c2 c"><use href="#c2r136"/>
+<g transform="translate(75.6)">
+<use href="#c2e1"/>
+<use href="#c2e2"/>
+</g>
+</g>
+<g id="c2r147" class="c2 c">
+<use href="#c2e0"/>
+<path d="M138.6 8H147V10H138.6ZM154.4 0H156.4V18H154.4ZM146 0H148V9H146ZM137.6 0H139.6V9H137.6ZM120.8 0H122.8V18H120.8Z" id="c2e122" fill="#10E291"/>
+<use href="#c2e24"/>
+<use href="#c2e46"/>
+<path d="M11.6 9H13.6V18H11.6ZM0 8H12.6V10H0Z" id="c2e123" fill="#2B89F0"/>
+<path d="M288.8 9H290.8V18H288.8ZM53.6 0H55.6V18H53.6ZM310.8 8H336V10H310.8ZM289.8 8H302.4V10H289.8ZM305.6 0H307.6V18H305.6Z" id="c2e124" fill="#E24CE2"/>
+<path d="M84 8H117.6V10H84ZM126 8H134.4V10H126ZM159.6 8H172.2V10H159.6ZM36.8 9H38.8V18H36.8ZM37.8 8H50.4V10H37.8ZM171.2 9H173.2V18H171.2ZM58.8 8H75.6V10H58.8Z" id="c2e125" fill="#F63B3B"/>
+<path d="M78.8 0H80.8V18H78.8Z" id="c2e126" fill="#FFFF13"/>
+</g>
+<g id="c2r148" class="c2 c"><use href="#c2r135"/>
+<g transform="translate(75.6)">
+<use href="#c2e1"/>
+<use href="#c2e2"/>
+</g>
+</g>
+<g id="c2r149" class="c2 c"><use href="#c2r138"/>
+<g transform="translate(75.6)">
+<use href="#c2e1"/>
+<use href="#c2e2"/>
+</g>
+</g>
+<g id="c2r150" class="c2 c"><use href="#c2r139"/>
+<g transform="translate(75.6)">
+<use href="#c2e1"/>
+<use href="#c2e2"/>
+</g>
+</g>
+<g id="c2r151" class="c2 c"><use href="#c2r140"/>
+<g transform="translate(75.6)">
+<use href="#c2e1"/>
+<use href="#c2e2"/>
+</g>
+</g>
+<g id="c2r152" class="c2 c"><use href="#c2r137"/>
+<g transform="translate(75.6)">
+<use href="#c2e1"/>
+<use href="#c2e2"/>
+</g>
+</g>
+<g id="c2r153" class="c2 c"><use href="#c2r144"/>
+<g transform="translate(67.2)">
+<use href="#c2e1"/>
+<use href="#c2e2"/>
+</g>
+</g>
+<g id="c2r154" class="c2 c"><use href="#c2r145"/>
+<g transform="translate(67.2)">
+<use href="#c2e11"/>
+<path d="M4.2 8H12.6V10H4.2ZM3.2 0H5.2V9H3.2ZM11.6 9H13.6V18H11.6Z" id="c2e127" fill="#FFFF13"/>
+</g>
+</g>
+<g id="c2r155" class="c2 c"><use href="#c2r142"/>
+<g transform="translate(75.6)">
+<use href="#c2e1"/>
+<use href="#c2e2"/>
+</g>
+</g>
+<g id="c2r156" class="c2 c">
+<use href="#c2e0"/>
+<path d="M154.4 0H156.4V18H154.4ZM120.8 0H122.8V18H120.8Z" id="c2e128" fill="#10E291"/>
+<path d="M70.4 0H72.4V18H70.4ZM20 0H22V18H20Z" id="c2e129" fill="#14CAF6"/>
+<use href="#c2e46"/>
+<use href="#c2e83"/>
+<path d="M53.6 0H55.6V18H53.6ZM288.8 0H290.8V18H288.8ZM305.6 0H307.6V18H305.6Z" id="c2e130" fill="#E24CE2"/>
+<path d="M36.8 0H38.8V9H36.8ZM171.2 0H173.2V18H171.2ZM25.2 8H37.8V10H25.2Z" id="c2e131" fill="#F63B3B"/>
+<path d="M297.2 0H299.2V9H297.2ZM78.8 0H80.8V18H78.8ZM310.8 8H336V10H310.8ZM298.2 8H302.4V10H298.2Z" id="c2e132" fill="#FFFF13"/>
+</g>
+<g id="c2r157" class="c2 c"><use href="#c2r147"/>
+<g transform="translate(58.8)">
+<use href="#c2e11"/>
+<path d="M0 8H12.6V10H0ZM11.6 9H13.6V18H11.6Z" id="c2e133" fill="#14CAF6"/>
+</g>
+</g>
+<g id="c2r158" class="c2 c"><use href="#c2r157"/>
+<g transform="translate(50.4)">
+<use href="#c2e1"/>
+<path d="M0 8H8.4V10H0Z" id="c2e134" fill="#14CAF6"/>
+</g>
+</g>
+<g id="c2r159" class="c2 c"><use href="#c2r153"/>
+<g transform="translate(25.2)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r160" class="c2 c"><use href="#c2r158"/>
+<g transform="translate(25.2)">
+<use href="#c2e7"/>
+<use href="#c2e16"/>
+</g>
+</g>
+<g id="c2r161" class="c2 c"><use href="#c2r156"/>
+<g transform="translate(25.2)">
+<use href="#c2e1"/>
+<use href="#c2e15"/>
+</g>
+</g>
+<g id="c2r162" class="c2 c"><use href="#c2r154"/>
+<g transform="translate(25.2)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r163" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e24"/>
+<use href="#c2e64"/>
+<path d="M28.4 0H30.4V18H28.4ZM154.4 0H156.4V18H154.4Z" id="c2e135" fill="#2B89F0"/>
+<path d="M239.4 8H331.8V10H239.4ZM53.6 0H55.6V18H53.6ZM238.4 9H240.4V18H238.4ZM330.8 9H332.8V18H330.8Z" id="c2e136" fill="#E24CE2"/>
+<path d="M70.4 0H72.4V18H70.4ZM78.8 0H80.8V18H78.8Z" id="c2e137" fill="#FFFF13"/>
+</g>
+<g id="c2r164" class="c2 c"><use href="#c2r152"/>
+<g transform="translate(25.2)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r165" class="c2 c"><use href="#c2r149"/>
+<g transform="translate(25.2)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r166" class="c2 c"><use href="#c2r150"/>
+<g transform="translate(25.2)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r167" class="c2 c"><use href="#c2r151"/>
+<g transform="translate(25.2)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r168" class="c2 c"><use href="#c2r146"/>
+<g transform="translate(25.2)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r169" class="c2 c"><use href="#c2r160"/>
+<g transform="translate(25.2)">
+<use href="#c2e1"/>
+<use href="#c2e45"/>
+</g>
+</g>
+<g id="c2r170" class="c2 c"><use href="#c2r161"/>
+<g transform="translate(25.2)">
+<use href="#c2e1"/>
+<path d="M0 8H4.2V10H0ZM3.2 0H5.2V9H3.2Z" id="c2e138" fill="#2B89F0"/>
+</g>
+</g>
+<g id="c2r171" class="c2 c"><use href="#c2r170"/>
+<g transform="translate(8.4)">
+<use href="#c2e11"/>
+<use href="#c2e53"/>
+</g>
+</g>
+<g id="c2r172" class="c2 c"><use href="#c2r171"/>
+<g transform="translate(327.6)">
+<use href="#c2e1"/>
+<use href="#c2e9"/>
+</g>
+</g>
+<g id="c2r173" class="c2 c"><use href="#c2r159"/>
+<g transform="translate(302.4)">
+<use href="#c2e11"/>
+<path d="M4.2 8H12.6V10H4.2ZM3.2 9H5.2V18H3.2ZM11.6 0H13.6V9H11.6Z" id="c2e139" fill="#242424"/>
+</g>
+</g>
+<g id="c2r174" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e128"/>
+<path d="M70.4 0H72.4V18H70.4Z" id="c2e140" fill="#14CAF6"/>
+<use href="#c2e46"/>
+<use href="#c2e48"/>
+<path d="M288.8 0H290.8V18H288.8ZM53.6 0H55.6V18H53.6ZM305.6 0H307.6V18H305.6Z" id="c2e141" fill="#E24CE2"/>
+<path d="M171.2 0H173.2V18H171.2ZM314 9H316V18H314ZM315 8H336V10H315ZM33.6 8H37.8V10H33.6ZM36.8 0H38.8V9H36.8Z" id="c2e142" fill="#F63B3B"/>
+<path d="M298.2 8H302.4V10H298.2ZM297.2 0H299.2V9H297.2ZM78.8 0H80.8V18H78.8Z" id="c2e143" fill="#FFFF13"/>
+</g>
+<g id="c2r175" class="c2 c"><use href="#c2r162"/>
+<g transform="translate(302.4)">
+<use href="#c2e1"/>
+<use href="#c2e38"/>
+</g>
+</g>
+<g id="c2r176" class="c2 c"><use href="#c2r163"/>
+<g transform="translate(302.4)">
+<use href="#c2e1"/>
+<use href="#c2e38"/>
+</g>
+</g>
+<g id="c2r177" class="c2 c"><use href="#c2r164"/>
+<g transform="translate(302.4)">
+<use href="#c2e1"/>
+<use href="#c2e38"/>
+</g>
+</g>
+<g id="c2r178" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e24"/>
+<path d="M179.6 0H181.6V18H179.6ZM305.6 0H307.6V18H305.6Z" id="c2e144" fill="#242424"/>
+<path d="M28.4 0H30.4V18H28.4ZM154.4 0H156.4V18H154.4ZM288.8 0H290.8V18H288.8ZM314 0H316V18H314Z" id="c2e145" fill="#2B89F0"/>
+<path d="M53.6 0H55.6V18H53.6ZM238.4 0H240.4V18H238.4Z" id="c2e146" fill="#E24CE2"/>
+<use href="#c2e58"/>
+<path d="M70.4 0H72.4V18H70.4ZM78.8 0H80.8V18H78.8ZM171.2 0H173.2V18H171.2Z" id="c2e147" fill="#FFFF13"/>
+</g>
+<g id="c2r179" class="c2 c"><use href="#c2r166"/>
+<g transform="translate(302.4)">
+<use href="#c2e1"/>
+<use href="#c2e38"/>
+</g>
+</g>
+<g id="c2r180" class="c2 c"><use href="#c2r167"/>
+<g transform="translate(302.4)">
+<use href="#c2e1"/>
+<use href="#c2e38"/>
+</g>
+</g>
+<g id="c2r181" class="c2 c"><use href="#c2r168"/>
+<g transform="translate(302.4)">
+<use href="#c2e1"/>
+<use href="#c2e38"/>
+</g>
+</g>
+<g id="c2r182" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e122"/>
+<path d="M33.6 8H71.4V10H33.6ZM70.4 9H72.4V18H70.4ZM20 0H22V18H20Z" id="c2e148" fill="#14CAF6"/>
+<use href="#c2e144"/>
+<path d="M0 8H12.6V10H0ZM11.6 9H13.6V18H11.6ZM28.4 0H30.4V18H28.4Z" id="c2e149" fill="#2B89F0"/>
+<path d="M288.8 9H290.8V18H288.8ZM310.8 8H336V10H310.8ZM289.8 8H302.4V10H289.8Z" id="c2e150" fill="#E24CE2"/>
+<path d="M159.6 8H172.2V10H159.6ZM126 8H134.4V10H126ZM84 8H117.6V10H84ZM171.2 9H173.2V18H171.2Z" id="c2e151" fill="#F63B3B"/>
+<use href="#c2e126"/>
+</g>
+<g id="c2r183" class="c2 c"><use href="#c2r174"/>
+<g transform="translate(302.4)">
+<use href="#c2e1"/>
+<use href="#c2e38"/>
+</g>
+</g>
+<g id="c2r184" class="c2 c"><use href="#c2r173"/>
+<g transform="translate(302.4)">
+<use href="#c2e1"/>
+<path d="M0 8H4.2V10H0ZM3.2 0H5.2V9H3.2Z" id="c2e152" fill="#FFFFFF"/>
+</g>
+</g>
+<g id="c2r185" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e114"/>
+<use href="#c2e42"/>
+<path d="M310.8 8H315V10H310.8ZM314 0H316V9H314Z" id="c2e153" fill="#242424"/>
+<path d="M155.4 8H180.6V10H155.4ZM28.4 0H30.4V18H28.4ZM154.4 9H156.4V18H154.4ZM179.6 0H181.6V9H179.6ZM288.8 0H290.8V18H288.8Z" id="c2e154" fill="#2B89F0"/>
+<use href="#c2e116"/>
+<use href="#c2e117"/>
+<use href="#c2e66"/>
+<path d="M294 8H306.6V10H294ZM305.6 0H307.6V9H305.6Z" id="c2e155" fill="#FFFFFF"/>
+</g>
+<g id="c2r186" class="c2 c"><use href="#c2r185"/>
+<g transform="translate(285.6)">
+<use href="#c2e1"/>
+<path d="M0 8H8.4V10H0Z" id="c2e156" fill="#FFFFFF"/>
+</g>
+</g>
+<g id="c2r187" class="c2 c"><use href="#c2r186"/>
+<g transform="translate(243.6)">
+<use href="#c2e5"/>
+<path d="M0 8H42V10H0Z" id="c2e157" fill="#FFFFFF"/>
+</g>
+</g>
+<g id="c2r188" class="c2 c"><use href="#c2r187"/>
+<g transform="translate(235.2)">
+<use href="#c2e1"/>
+<use href="#c2e156"/>
+</g>
+</g>
+<g id="c2r189" class="c2 c"><use href="#c2r188"/>
+<g transform="translate(218.4)">
+<use href="#c2e11"/>
+<path d="M4.2 8H16.8V10H4.2ZM3.2 9H5.2V18H3.2Z" id="c2e158" fill="#FFFFFF"/>
+</g>
+</g>
+<g id="c2r190" class="c2 c"><use href="#c2r175"/>
+<g transform="translate(218.4)">
+<use href="#c2e1"/>
+<use href="#c2e152"/>
+</g>
+</g>
+<g id="c2r191" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e118"/>
+<path d="M305.6 0H307.6V18H305.6Z" id="c2e159" fill="#242424"/>
+<path d="M288.8 0H290.8V18H288.8ZM154.4 0H156.4V18H154.4ZM28.4 0H30.4V18H28.4ZM314 9H316V18H314ZM315 8H336V10H315Z" id="c2e160" fill="#2B89F0"/>
+<path d="M54.6 8H67.2V10H54.6ZM53.6 9H55.6V18H53.6Z" id="c2e161" fill="#E24CE2"/>
+<path d="M71.4 8H79.8V10H71.4ZM33.6 8H50.4V10H33.6ZM70.4 0H72.4V9H70.4ZM78.8 9H80.8V18H78.8ZM0 8H25.2V10H0ZM171.2 0H173.2V18H171.2Z" id="c2e162" fill="#FFFF13"/>
+<path d="M221.6 0H223.6V9H221.6ZM176.4 8H222.6V10H176.4Z" id="c2e163" fill="#FFFFFF"/>
+</g>
+<g id="c2r192" class="c2 c"><use href="#c2r191"/>
+<g transform="translate(168)">
+<use href="#c2e1"/>
+<use href="#c2e156"/>
+</g>
+</g>
+<g id="c2r193" class="c2 c"><use href="#c2r192"/>
+<g transform="translate(159.6)">
+<use href="#c2e1"/>
+<use href="#c2e156"/>
+</g>
+</g>
+<g id="c2r194" class="c2 c"><use href="#c2r193"/>
+<g transform="translate(151.2)">
+<use href="#c2e1"/>
+<use href="#c2e156"/>
+</g>
+</g>
+<g id="c2r195" class="c2 c"><use href="#c2r194"/>
+<g transform="translate(142.8)">
+<use href="#c2e1"/>
+<path d="M4.2 8H8.4V10H4.2ZM3.2 9H5.2V18H3.2Z" id="c2e164" fill="#FFFFFF"/>
+</g>
+</g>
+<g id="c2r196" class="c2 c"><use href="#c2r176"/>
+<g transform="translate(142.8)">
+<use href="#c2e7"/>
+<path d="M4.2 8H21V10H4.2ZM3.2 0H5.2V9H3.2ZM20 9H22V18H20Z" id="c2e165" fill="#FFFFFF"/>
+</g>
+</g>
+<g id="c2r197" class="c2 c">
+<use href="#c2e0"/>
+<path d="M0 8H25.2V10H0ZM33.6 8H50.4V10H33.6Z" id="c2e166" fill="#10E291"/>
+<use href="#c2e144"/>
+<use href="#c2e145"/>
+<path d="M331.8 8H336V10H331.8ZM53.6 0H55.6V18H53.6ZM238.4 0H240.4V18H238.4ZM330.8 0H332.8V9H330.8Z" id="c2e167" fill="#E24CE2"/>
+<use href="#c2e147"/>
+<path d="M162.8 0H164.8V18H162.8Z" id="c2e168" fill="#FFFFFF"/>
+</g>
+<g id="c2r198" class="c2 c"><use href="#c2r178"/>
+<g transform="translate(159.6)">
+<use href="#c2e1"/>
+<path d="M3.2 0H5.2V18H3.2Z" id="c2e169" fill="#FFFFFF"/>
+</g>
+</g>
+<g id="c2r199" class="c2 c">
+<use href="#c2e0"/>
+<use href="#c2e159"/>
+<path d="M0 8H25.2V10H0ZM288.8 0H290.8V18H288.8ZM314 0H316V18H314ZM28.4 0H30.4V18H28.4ZM58.8 8H67.2V10H58.8ZM33.6 8H50.4V10H33.6Z" id="c2e170" fill="#2B89F0"/>
+<use href="#c2e146"/>
+<use href="#c2e56"/>
+<path d="M84 8H159.6V10H84ZM168 8H235.2V10H168ZM243.6 8H285.6V10H243.6ZM294 8H298.2V10H294ZM70.4 0H72.4V9H70.4ZM78.8 0H80.8V18H78.8ZM297.2 9H299.2V18H297.2ZM71.4 8H75.6V10H71.4Z" id="c2e171" fill="#FFFF13"/>
+<use href="#c2e168"/>
+</g>
+<g id="c2r200" class="c2 c"><use href="#c2r180"/>
+<g transform="translate(159.6)">
+<use href="#c2e1"/>
+<use href="#c2e169"/>
+</g>
+</g>
+<g id="c2r201" class="c2 c"><use href="#c2r181"/>
+<g transform="translate(159.6)">
+<use href="#c2e1"/>
+<use href="#c2e169"/>
+</g>
+</g>
+</defs>
+<g transform="translate(9 43)">
+<g>
+<use href="#c2r0" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.016529" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r1" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.016529;0.107438" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r14" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.107438;0.165289" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r23" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.165289;0.235537" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r40" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.235537;0.280992" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r50" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.280992;0.371901" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r67" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.371901;0.578512" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r101" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.578512;0.628099" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r112" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.628099;0.735537" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r133" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.735537;0.77686" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.77686;0.801653" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r153" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.801653;0.826446" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r159" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.826446;0.876033" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r173" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.876033;0.904959" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r184" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.904959;0.909091" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r185" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.909091;0.917355" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r186" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.917355;0.92562" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r187" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.92562;0.929752" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r188" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.929752;0.933884" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r189" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.933884" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="18" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.012397" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r1" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.012397;0.107438" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r14" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.107438;0.132231" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r19" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.132231;0.140496" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r20" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.140496;0.14876" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r21" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.14876;0.157025" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r22" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.157025;0.165289" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r24" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.165289;0.239669" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r41" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.239669;0.285124" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r52" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.285124;0.363636" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r65" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.363636;0.404959" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r74" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.404959;0.413223" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r76" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.413223;0.421488" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r77" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.421488;0.429752" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r78" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.429752;0.586777" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r104" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.586777;0.628099" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r113" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.628099;0.727273" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r130" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.727273;0.760331" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r141" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.760331;0.768595" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r143" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.768595;0.77686" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r145" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.77686;0.801653" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r154" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.801653;0.830579" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r162" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.830579;0.880165" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r175" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.880165;0.942149" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r190" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.942149;0.950413" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r191" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.950413;0.954545" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r192" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.954545;0.958678" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r193" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.958678;0.966942" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r194" y="18" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.966942;0.975207" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r195" y="18" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.975207" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="36" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.008264" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r1" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.008264;0.099174" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r14" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.099174;0.132231" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r18" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.132231;0.239669" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r42" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.239669;0.247934" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r43" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.247934;0.256198" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r44" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.256198;0.289256" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r53" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.289256;0.363636" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r66" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.363636;0.404959" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r75" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.404959;0.438017" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r79" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.438017;0.586777" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r105" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.586777;0.619835" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r111" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.619835;0.677686" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r123" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.677686;0.68595" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r124" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.68595;0.694215" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r125" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.694215;0.702479" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r126" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.702479;0.727273" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r131" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.727273;0.760331" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r142" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.760331;0.801653" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r155" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.801653;0.834711" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r163" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.834711;0.884298" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r176" y="36" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.884298;0.975207" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r196" y="36" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.975207" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="54" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.008264" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r1" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.008264;0.090909" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r14" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.090909;0.132231" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r18" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.132231;0.256198" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r45" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.256198;0.289256" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r54" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.289256;0.359504" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r63" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.359504;0.396694" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r72" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.396694;0.438017" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r80" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.438017;0.586777" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r106" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.586777;0.61157" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r109" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.61157;0.669421" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r120" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.669421;0.702479" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r127" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.702479;0.710744" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r128" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.710744;0.719008" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r129" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.719008;0.727273" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r132" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.727273;0.752066" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r137" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.752066;0.793388" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r152" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.793388;0.834711" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r164" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.834711;0.884298" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r177" y="54" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.884298;0.975207" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r197" y="54" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.975207" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="72" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.004132" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r1" y="72" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.004132;0.090909" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r14" y="72" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.090909;0.123967" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r18" y="72" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.123967;0.256198" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r45" y="72" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.256198;0.297521" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r54" y="72" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.297521;0.355372" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r63" y="72" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.355372;0.38843" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r72" y="72" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.38843;0.438017" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r80" y="72" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.438017;0.595041" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r106" y="72" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.595041;0.61157" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r109" y="72" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.61157;0.661157" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r120" y="72" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.661157;0.752066" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r138" y="72" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.752066;0.785124" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r149" y="72" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.785124;0.842975" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r165" y="72" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.842975;0.892562" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r178" y="72" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.892562;0.979339" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r198" y="72" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.979339" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="90" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.086777" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r11" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.086777;0.115702" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r17" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.115702;0.181818" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r26" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.181818;0.190083" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r29" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.190083;0.198347" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r30" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.198347;0.206612" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r31" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.206612;0.260331" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r46" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.260331;0.305785" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r55" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.305785;0.309917" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r56" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.309917;0.31405" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r57" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.31405;0.322314" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r58" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.322314;0.330579" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r59" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.330579;0.334711" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r60" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.334711;0.338843" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r61" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.338843;0.347107" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r62" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.347107;0.355372" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r64" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.355372;0.38843" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r73" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.38843;0.446281" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r81" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.446281;0.454545" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r82" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.454545;0.46281" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r83" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.46281;0.471074" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r84" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.471074;0.479339" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r85" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.479339;0.487603" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r86" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.487603;0.495868" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r87" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.495868;0.504132" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r88" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.504132;0.512397" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r89" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.512397;0.520661" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r90" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.520661;0.528926" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r91" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.528926;0.603306" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r107" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.603306;0.61157" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r110" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.61157;0.661157" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r121" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.661157;0.752066" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r139" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.752066;0.785124" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r150" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.785124;0.85124" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r166" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.85124;0.900826" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r179" y="90" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.900826;0.983471" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r199" y="90" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.983471" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="108" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.082645" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r11" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.082645;0.115702" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r17" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.115702;0.181818" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r27" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.181818;0.206612" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r32" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.206612;0.210744" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r33" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.210744;0.214876" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r34" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.214876;0.264463" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r47" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.264463;0.384298" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r71" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.384298;0.528926" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r92" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.528926;0.603306" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r108" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.603306;0.636364" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r117" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.636364;0.644628" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r118" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.644628;0.652893" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r119" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.652893;0.661157" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r122" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.661157;0.752066" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r140" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.752066;0.785124" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r151" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.785124;0.85124" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r167" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.85124;0.900826" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r180" y="108" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.900826;0.983471" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r200" y="108" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.983471" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="126" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.082645" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r11" y="126" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.082645;0.115702" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r17" y="126" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.115702;0.181818" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r27" y="126" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.181818;0.214876" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r35" y="126" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.214876;0.231405" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r37" y="126" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.231405;0.264463" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r48" y="126" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.264463;0.380165" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r68" y="126" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.380165;0.528926" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r93" y="126" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.528926;0.628099" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r114" y="126" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.628099;0.743802" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r136" y="126" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.743802;0.77686" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r146" y="126" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.77686;0.85124" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r168" y="126" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.85124;0.900826" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r181" y="126" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.900826;0.987603" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r201" y="126" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.987603" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="144" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.024793" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r3" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.024793;0.033058" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r4" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.033058;0.041322" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r5" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.041322;0.049587" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r6" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.049587;0.057851" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r7" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.057851;0.061983" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r8" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.061983;0.066116" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r9" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.066116;0.082645" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r12" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.082645;0.107438" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r15" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.107438;0.181818" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r28" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.181818;0.22314" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r36" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.22314;0.231405" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r38" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.231405;0.272727" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r49" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.272727;0.380165" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r69" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.380165;0.528926" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r94" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.528926;0.553719" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r97" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.553719;0.561983" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r99" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.561983;0.570248" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r100" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.570248;0.578512" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r102" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.578512;0.628099" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r115" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.628099;0.735537" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r134" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.735537;0.77686" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r147" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.77686;0.809917" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r157" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.809917;0.818182" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r158" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.818182;0.826446" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r160" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.826446;0.85124" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r169" y="144" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.85124;0.900826" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r182" y="144" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.900826" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r0" y="162" display="none">
+<animate attributeName="display" values="inline;none" keyTimes="0;0.016529" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r2" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.016529;0.07438" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r10" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.07438;0.082645" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r13" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.082645;0.107438" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r16" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.107438;0.173554" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r25" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.173554;0.231405" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r39" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.231405;0.280992" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r51" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.280992;0.380165" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r70" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.380165;0.53719" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r95" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.53719;0.545455" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r96" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.545455;0.553719" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r98" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.553719;0.578512" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r103" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.578512;0.628099" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r116" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.628099;0.735537" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r135" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.735537;0.77686" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r148" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.77686;0.805785" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r156" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.805785;0.826446" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r161" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.826446;0.855372" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r170" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.855372;0.859504" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r171" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.859504;0.867769" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r172" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.867769;0.876033" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r174" y="162" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.876033;0.900826" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r183" y="162" display="none">
+<animate attributeName="display" values="none;inline" keyTimes="0;0.900826" dur="10.083s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+</g>
+</g>
+</svg>

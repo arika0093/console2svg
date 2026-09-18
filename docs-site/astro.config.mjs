@@ -238,6 +238,8 @@ export default defineConfig({
             'utilities/live-server',
             'utilities/tmux',
             'utilities/shell-completion',
+            'reference/status',
+            'reference/logging',
           ],
         },
         {
@@ -265,8 +267,6 @@ export default defineConfig({
                 'reference/cli/completions',
               ],
             },
-            'reference/status',
-            'reference/logging',
           ],
         },
         {

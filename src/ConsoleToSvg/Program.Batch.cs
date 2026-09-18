@@ -124,6 +124,7 @@ internal static partial class Program
         using var loggerFactory = CreateLoggerFactory(options.Verbose, options.VerboseLogPath);
         var logger = loggerFactory.CreateLogger("ConsoleToSvg.BatchMarkdown");
         var generated = 0;
+        var generatedOutputs = new HashSet<string>(GetBatchPathComparer());
 
         foreach (var plan in plans)
         {
@@ -131,6 +132,17 @@ internal static partial class Program
             foreach (var resolved in plan.Jobs)
             {
                 ct.ThrowIfCancellationRequested();
+                if (generatedOutputs.Contains(resolved.OutputPath))
+                {
+                    links.Add(
+                        new BatchLink(
+                            resolved.Job,
+                            BatchExecutor.Relativize(plan.Path, resolved.OutputPath)
+                        )
+                    );
+                    continue;
+                }
+
                 var workingDirectory =
                     Path.GetDirectoryName(plan.Path) ?? Environment.CurrentDirectory;
                 var jobOptions = BuildBatchJobOptions(options, resolved.Job, workingDirectory);
@@ -156,6 +168,7 @@ internal static partial class Program
                         BatchExecutor.Relativize(plan.Path, resolved.OutputPath)
                     )
                 );
+                generatedOutputs.Add(resolved.OutputPath);
                 generated++;
                 await Console.Error.WriteLineAsync(
                     $"Generated: {resolved.OutputPath}".AsMemory(),
@@ -262,6 +275,16 @@ internal static partial class Program
                 var owner = $"{plan.RelativePath}:{job.MarkerLine}";
                 if (owners.TryGetValue(output, out var previous))
                 {
+                    var previousJob = plans
+                        .SelectMany(item => item.Jobs)
+                        .FirstOrDefault(item => comparer.Equals(item.OutputPath, output))
+                        ?.Job;
+                    if (previousJob is not null && AreEquivalentBatchJobs(previousJob, job))
+                    {
+                        plan.Jobs.Add(new BatchResolvedJob(job, output));
+                        continue;
+                    }
+
                     failures.Add(
                         $"{owner}: output '{BatchExecutor.NormalizePath(Path.GetRelativePath(outputDir, output))}' is already produced by {previous}."
                     );
@@ -324,6 +347,77 @@ internal static partial class Program
         return null;
     }
 
+    private static bool AreEquivalentBatchJobs(BatchParsedJob first, BatchParsedJob second)
+    {
+        return first.Kind == second.Kind
+            && string.Equals(first.Setup, second.Setup, StringComparison.Ordinal)
+            && string.Equals(first.Capture, second.Capture, StringComparison.Ordinal)
+            && string.Equals(first.Teardown, second.Teardown, StringComparison.Ordinal)
+            && first.Width == second.Width
+            && first.Height == second.Height
+            && first.WithCommand == second.WithCommand
+            && string.Equals(first.Window, second.Window, StringComparison.Ordinal)
+            && first.WindowExplicit == second.WindowExplicit
+            && first.Video == second.Video
+            && EqualityComparer<double?>.Default.Equals(first.Timeout, second.Timeout)
+            && AreEquivalentCaptureOptions(first.CaptureOptions, second.CaptureOptions);
+    }
+
+    private static bool AreEquivalentCaptureOptions(AppOptions first, AppOptions second)
+    {
+        return first.Mode == second.Mode
+            && first.MaskAuto == second.MaskAuto
+            && first.MaskPatterns.SequenceEqual(second.MaskPatterns, StringComparer.Ordinal)
+            && first.Frame == second.Frame
+            && first.WidthAdjust == second.WidthAdjust
+            && first.HeightAdjust == second.HeightAdjust
+            && EqualityComparer<double?>.Default.Equals(first.Time, second.Time)
+            && EqualityComparer<double?>.Default.Equals(first.TimeStart, second.TimeStart)
+            && EqualityComparer<double?>.Default.Equals(first.TimeEnd, second.TimeEnd)
+            && string.Equals(first.CropTop, second.CropTop, StringComparison.Ordinal)
+            && string.Equals(first.CropRight, second.CropRight, StringComparison.Ordinal)
+            && string.Equals(first.CropBottom, second.CropBottom, StringComparison.Ordinal)
+            && string.Equals(first.CropLeft, second.CropLeft, StringComparison.Ordinal)
+            && first.Themes.SequenceEqual(second.Themes, StringComparer.Ordinal)
+            && string.Equals(first.ForeColor, second.ForeColor, StringComparison.Ordinal)
+            && first.IsForeColorExplicit == second.IsForeColorExplicit
+            && string.Equals(first.Font, second.Font, StringComparison.Ordinal)
+            && first.IsFontExplicit == second.IsFontExplicit
+            && EqualityComparer<double?>.Default.Equals(first.FontSize, second.FontSize)
+            && first.IsFontSizeExplicit == second.IsFontSizeExplicit
+            && string.Equals(first.Window, second.Window, StringComparison.Ordinal)
+            && first.IsWindowExplicit == second.IsWindowExplicit
+            && EqualityComparer<double?>.Default.Equals(first.Margin, second.Margin)
+            && first.IsMarginExplicit == second.IsMarginExplicit
+            && EqualityComparer<double?>.Default.Equals(first.Padding, second.Padding)
+            && first.IsPaddingExplicit == second.IsPaddingExplicit
+            && first.Loop == second.Loop
+            && EqualityComparer<double>.Default.Equals(first.VideoFps, second.VideoFps)
+            && EqualityComparer<double>.Default.Equals(first.VideoSleep, second.VideoSleep)
+            && EqualityComparer<double>.Default.Equals(first.VideoFadeOut, second.VideoFadeOut)
+            && first.VideoTiming == second.VideoTiming
+            && EqualityComparer<double?>.Default.Equals(
+                first.OutputCoalesceMs,
+                second.OutputCoalesceMs
+            )
+            && EqualityComparer<double>.Default.Equals(first.Opacity, second.Opacity)
+            && first.IsOpacityExplicit == second.IsOpacityExplicit
+            && string.Equals(first.Prompt, second.Prompt, StringComparison.Ordinal)
+            && string.Equals(first.Header, second.Header, StringComparison.Ordinal)
+            && string.Equals(first.LengthAdjust, second.LengthAdjust, StringComparison.Ordinal)
+            && first.Background.SequenceEqual(second.Background, StringComparer.Ordinal)
+            && first.IsBackgroundExplicit == second.IsBackgroundExplicit
+            && EqualityComparer<double?>.Default.Equals(first.PcPadding, second.PcPadding)
+            && first.PcMode == second.PcMode
+            && string.Equals(first.BackColor, second.BackColor, StringComparison.Ordinal)
+            && first.IsBackColorExplicit == second.IsBackColorExplicit
+            && first.NoColorEnv == second.NoColorEnv
+            && first.NoDeleteEnvs == second.NoDeleteEnvs
+            && first.SizeWidth.Equals(second.SizeWidth)
+            && first.SizeHeight.Equals(second.SizeHeight)
+            && first.SvgConverter == second.SvgConverter;
+    }
+
     private static AppOptions BuildBatchJobOptions(
         AppOptions defaults,
         BatchParsedJob job,
@@ -340,10 +434,7 @@ internal static partial class Program
             && IsBatchLocalImagePath(jobOptions.Background[0])
         )
         {
-            jobOptions.Background =
-            [
-                Path.GetFullPath(jobOptions.Background[0], workingDirectory),
-            ];
+            jobOptions.Background = [Path.GetFullPath(jobOptions.Background[0], workingDirectory)];
         }
         if (string.IsNullOrWhiteSpace(jobOptions.Prompt))
         {
@@ -781,7 +872,13 @@ internal static partial class Program
         }
 
         return Path.GetExtension(value).ToLowerInvariant()
-            is ".png" or ".jpg" or ".jpeg" or ".gif" or ".svg" or ".webp" or ".bmp";
+            is ".png"
+                or ".jpg"
+                or ".jpeg"
+                or ".gif"
+                or ".svg"
+                or ".webp"
+                or ".bmp";
     }
 
     private static async Task WriteBatchFailuresAsync(

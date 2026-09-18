@@ -255,10 +255,9 @@ internal static class MarkdownCodeContext
             var nameStart = index + 1;
             if (
                 nameStart + candidate.Length <= markdown.Length
-                && markdown.AsSpan(nameStart, candidate.Length).Equals(
-                    candidate.AsSpan(),
-                    StringComparison.OrdinalIgnoreCase
-                )
+                && markdown
+                    .AsSpan(nameStart, candidate.Length)
+                    .Equals(candidate.AsSpan(), StringComparison.OrdinalIgnoreCase)
             )
             {
                 var boundary = nameStart + candidate.Length;

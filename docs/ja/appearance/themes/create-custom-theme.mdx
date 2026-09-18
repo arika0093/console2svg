@@ -1,0 +1,173 @@
+---
+title: カスタムテーマを作る
+description: theme.json の構成、他テーマの参照、各セクション、配布方法。
+---
+
+import { FileTree } from '@astrojs/starlight/components';
+
+カスタムテーマは、テーマのルートに `theme.json` を置いたディレクトリです。画像やウィンドウ枠などのアセットも同じディレクトリに含められます。
+
+## ファイル構造
+
+<FileTree>
+
+- my-theme
+  - theme.json
+  - preview.png
+  - background.png
+  - chrome.svg
+
+</FileTree>
+
+`theme.json` は必須です。`preview.png`、`background.png`、`chrome.svg` は必要に応じて追加します。
+
+最小構成は次のとおりです。
+
+```json title="theme.json"
+{
+  "schemaVersion": 1,
+  "id": "my-theme",
+  "name": "My Theme",
+  "version": "1.0.0",
+  "terminal": {
+    "foreground": "#d4d4d4",
+    "background": "#1e1e1e",
+    "ansiPalette": [
+      "#000000", "#cd3131", "#0dbc79", "#e5e510",
+      "#2472c8", "#bc3fbc", "#11a8cd", "#e5e5e5",
+      "#666666", "#f14c4c", "#23d18b", "#f5f543",
+      "#3b8eea", "#d670d6", "#29b8db", "#ffffff"
+    ]
+  }
+}
+```
+
+`ansiPalette` は通常色・明色を合わせた16色が必須です。`id` は `/`、`\`、`:`
+を含まない一意な名前にしてください。
+
+## 他テーマを参照する
+
+`$include` に組み込みテーマまたは同じ配布物に含まれるテーマのIDを指定すると、
+既存の配色や見た目を継承して差分だけを定義できます。
+
+```json title="theme.json"
+{
+  "schemaVersion": 1,
+  "id": "my-github-theme",
+  "name": "My GitHub Theme",
+  "version": "1.0.0",
+  "$include": ["github-dark"],
+  "appearance": {
+    "normal": {
+      "background": ["#101820", "#172a3a"]
+    }
+  }
+}
+```
+
+別のGitリポジトリにあるテーマを参照する場合は、オブジェクト形式で `source` を指定します。
+参照先にも `theme.json` が必要です。
+
+```json title="theme.json"
+"$include": [
+  { "id": "base-theme", "source": "owner/theme-pack" }
+]
+```
+
+## フルセットの例
+
+組み込みテーマの[`cyberpunk`](https://github.com/arika0093/console2svg/blob/main/themes/full/cyberpunk/)を参考にしてください。
+
+
+```jsonc title="theme.json"
+{
+  "schemaVersion": 1,
+  "id": "cyberpunk",
+  "name": "Cyberpunk HUD",
+  "version": "1.0.0",
+  "description": "A neon HUD frame with a high-contrast cyberpunk terminal palette.",
+  "appearance": {
+    // ウィンドウ枠の見た目を定義するセクション
+    // normal: cyberpunkで起動したときの見た目
+    "normal": {
+      "id": "cyberpunk",
+      "window": "chrome.json",
+      "margin": 3,
+      "padding": 11,
+      "opacity": 0.85
+    },
+    // pc: cyberpunk-pcで起動したときの見た目
+    "pc": {
+      "id": "cyberpunk-pc",
+      "window": "chrome.json",
+      "pcPadding": 30,
+      "margin": 3,
+      "padding": 11,
+      "opacity": 0.85,
+      "background": [
+        "#09051a",
+        "#17104a"
+      ]
+    }
+  },
+  // ターミナルの配色を定義するセクション
+  "terminal": {
+    // 前景色
+    "foreground": "#d8f9ff",
+    // 背景色
+    "background": "#090b1a",
+    // ANSIカラーコードの16色
+    "ansiPalette": [
+      "#090b1a",
+      "#ff3c9e",
+      "#55f7bd",
+      "#f6e05e",
+      "#55b8ff",
+      "#d56dff",
+      "#4deeff",
+      "#d8f9ff",
+      "#35406d",
+      "#ff72b8",
+      "#8dffd1",
+      "#fff59b",
+      "#8bd2ff",
+      "#e7a1ff",
+      "#8df6ff",
+      "#ffffff"
+    ]
+  }
+}
+```
+
+
+```jsonc title="chrome.json"
+{
+  // ターミナルシェルから見た、上下左右の余白
+  // この場合は上方向に広く余白を持たせている(タイトルバーのため)
+  "paddingTop": 38,
+  "paddingRight": 7,
+  "paddingBottom": 7,
+  "paddingLeft": 7,
+  // ウィンドウ枠のshadow
+  "shadowOffset": 10,
+  // ウィンドウ枠の角丸
+  "clientCornerRadius": 0,
+  // 背景色を上書きする場合はここで指定
+  "themeBackgroundOverride": "#090b1a",
+  // ウィンドウ枠のSVGテンプレート
+  "svgTemplate": "window.svg"
+}
+```
+
+## 配布する
+
+テーマのルートをGitリポジトリで公開するか、アーカイブにまとめます。利用者は次のように
+インストールできます。
+
+```bash title="Terminal"
+console2svg theme install https://github.com/owner/my-theme.git
+console2svg theme install owner/my-theme
+```
+
+GitHubの `owner/repository` 短縮形、ブランチ指定、リポジトリ内のサブディレクトリにも対応しています。
+配布時は `theme.json` と参照するアセットを必ず同梱し、`id` と `version` を更新してください。

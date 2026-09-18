@@ -1,0 +1,37 @@
+---
+title: Output numbered images
+description: How to save individual SVG images for each frame with the --save-frames option.
+---
+
+import { FileTree } from '@astrojs/starlight/components';
+
+Use the `--save-frames` option when you want to extract each animation frame as an independent image file.
+
+## Saving numbered images
+
+Run the command with the destination directory specified for `--save-frames`.
+
+```bash title="Terminal" "--save-frames ./frames"
+console2svg capture -v --save-frames ./frames -- sl
+```
+
+Under the specified directory, each frame is output with numbered file names such as `frame-0000.svg` and `frame-0001.svg`.
+
+<FileTree>
+
+- frames
+  - frame-0000.svg
+  - frame-0001.svg
+  - frame-0002.svg
+  - frame-0003.svg  and so on
+
+</FileTree>
+
+## Specifying the sampling rate
+
+Combine this with the `--fps` option to adjust the sampling interval.
+
+```bash title="Terminal" "--fps 10" "--save-frames ./output-frames"
+# Output at a rate of 10 frames per second
+console2svg capture -v --fps 10 --save-frames ./output-frames -- nyancat
+```

@@ -166,14 +166,7 @@ public static partial class PtyRecorder
     )
     {
         var disableInputEcho = forwardToConsole && string.IsNullOrWhiteSpace(replayPath);
-        var options = BuildOptions(
-            logger,
-            command,
-            width,
-            height,
-            noDeleteEnvs,
-            workingDirectory
-        );
+        var options = BuildOptions(logger, command, width, height, noDeleteEnvs, workingDirectory);
         logger.ZLogDebug(
             $"Spawning PTY process. App={options.App} Args={string.Join(' ', options.CommandLine ?? [])} Cwd={options.Cwd} Cols={options.Cols} Rows={options.Rows}"
         );
@@ -574,11 +567,7 @@ public static partial class PtyRecorder
         using var utf8OutputScope = TryUseUtf8ConsoleOutputEncoding(forwardToConsole, logger);
         using var vtOutputScope = forwardToConsole ? ConsoleOutputMode.TryEnable(logger) : null;
 
-        var startInfo = BuildFallbackProcessStartInfo(
-            command,
-            noDeleteEnvs,
-            workingDirectory
-        );
+        var startInfo = BuildFallbackProcessStartInfo(command, noDeleteEnvs, workingDirectory);
         logger.ZLogDebug(
             $"Using process fallback. FileName={startInfo.FileName} Arguments={startInfo.Arguments} Cwd={startInfo.WorkingDirectory}"
         );

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace ConsoleToSvg.QuickLeaks;
 
@@ -109,38 +108,147 @@ public static partial class QuickLeaks
         string text
     )
     {
-        foreach (Match match in ConnectionStringCredentialRegex().Matches(text))
+        var searchStart = 0;
+        while (searchStart < text.Length)
         {
-            var value = match.Groups["value"];
-            if (!value.Success)
+            var equalsIndex = text.IndexOf('=', searchStart);
+            if (equalsIndex < 0)
             {
+                yield break;
+            }
+
+            var keyStart = equalsIndex - 1;
+            while (
+                keyStart >= 0
+                && text[keyStart] != ';'
+                && text[keyStart] != '='
+                && text[keyStart] != '\r'
+                && text[keyStart] != '\n'
+            )
+            {
+                keyStart--;
+            }
+            keyStart++;
+
+            var keyEnd = equalsIndex;
+            while (keyStart < keyEnd && (text[keyStart] == ' ' || text[keyStart] == '\t'))
+            {
+                keyStart++;
+            }
+            while (keyEnd > keyStart && (text[keyEnd - 1] == ' ' || text[keyEnd - 1] == '\t'))
+            {
+                keyEnd--;
+            }
+
+            if (
+                !IsConnectionStringCredentialKey(
+                    text.AsSpan(keyStart, Math.Max(0, keyEnd - keyStart))
+                )
+            )
+            {
+                searchStart = equalsIndex + 1;
                 continue;
             }
 
-            var start = value.Index;
-            var end = start + value.Length;
-            while (end > start && (text[end - 1] == ' ' || text[end - 1] == '\t'))
+            var valueStart = equalsIndex + 1;
+            while (
+                valueStart < text.Length
+                && (text[valueStart] == ' ' || text[valueStart] == '\t')
+            )
             {
-                end--;
+                valueStart++;
+            }
+            if (valueStart >= text.Length)
+            {
+                yield break;
             }
 
-            if (end > start)
+            var valueEnd = valueStart;
+            var quote = text[valueStart];
+            if (quote == '"' || quote == '\'')
+            {
+                valueStart++;
+                valueEnd = valueStart;
+                while (valueEnd < text.Length)
+                {
+                    if (text[valueEnd] == quote)
+                    {
+                        if (valueEnd + 1 < text.Length && text[valueEnd + 1] == quote)
+                        {
+                            valueEnd += 2;
+                            continue;
+                        }
+                        if (valueEnd == valueStart || text[valueEnd - 1] != '\\')
+                        {
+                            break;
+                        }
+                    }
+                    if (text[valueEnd] == '\r' || text[valueEnd] == '\n')
+                    {
+                        break;
+                    }
+                    valueEnd++;
+                }
+            }
+            else
+            {
+                while (
+                    valueEnd < text.Length
+                    && text[valueEnd] != ';'
+                    && text[valueEnd] != '\r'
+                    && text[valueEnd] != '\n'
+                )
+                {
+                    valueEnd++;
+                }
+                while (
+                    valueEnd > valueStart
+                    && (text[valueEnd - 1] == ' ' || text[valueEnd - 1] == '\t')
+                )
+                {
+                    valueEnd--;
+                }
+            }
+
+            if (valueEnd > valueStart)
             {
                 yield return new QuickLeaksFinding(
                     "console2svg-connection-string-credential",
-                    start,
-                    end
+                    valueStart,
+                    valueEnd
                 );
             }
+
+            searchStart = Math.Max(equalsIndex + 1, valueEnd + 1);
         }
     }
 
-    [GeneratedRegex(
-        @"(?im)(?:^|[;=\r\n])[ \t]*(?:user[ \t_.-]*id|pwd)[ \t]*=[ \t]*(?:""(?<value>[^""\r\n]+)""|'(?<value>[^'\r\n]+)'|(?<value>[^;\r\n]+))",
-        RegexOptions.CultureInvariant,
-        MatchTimeoutMilliseconds
-    )]
-    private static partial Regex ConnectionStringCredentialRegex();
+    private static bool IsConnectionStringCredentialKey(ReadOnlySpan<char> key)
+    {
+        if (key.Equals("pwd".AsSpan(), StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        const string userId = "userid";
+        var patternIndex = 0;
+        foreach (var character in key)
+        {
+            if (character is ' ' or '\t' or '_' or '-' or '.')
+            {
+                continue;
+            }
+            if (
+                patternIndex >= userId.Length
+                || char.ToLowerInvariant(character) != userId[patternIndex]
+            )
+            {
+                return false;
+            }
+            patternIndex++;
+        }
+        return patternIndex == userId.Length;
+    }
 
     private static IEnumerable<QuickLeaksFinding> EnumerateGitIdentityFindings(
         string text,

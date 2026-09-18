@@ -23,15 +23,14 @@ foreach (var finding in findings)
 }
 ```
 
-`QuickLeaks.Scan` materializes results and sorts them by location. Use
-`QuickLeaks.Enumerate` when the caller can process generated-rule order without
-allocating a result array:
+`QuickLeaks.Scan(string)` materializes results and sorts them by location.
+`QuickLeaks.Enumerate` is the compatibility/convenience API over that result.
+Hot paths can scan a span into a caller-owned buffer without allocating in the
+scanner:
 
 ```csharp
-foreach (var finding in QuickLeaks.Enumerate(text))
-{
-    HandleFinding(finding);
-}
+var destination = new ArrayBufferWriter<QuickLeaksFinding>();
+QuickLeaks.Scan(text.AsSpan(), destination);
 ```
 
 The optional `QuickLeaksScanMode.Early` mode uses relaxed generated quantifiers to detect partially entered token values.
@@ -46,7 +45,15 @@ rate, use it with care.
 
 ## Generated rules
 
-The generated detector uses a keyword index before evaluating source-generated regular expressions.
+The generator conservatively analyzes each regex and emits a generation report.
+At runtime, `SearchValues<string>` performs one case-insensitive multi-pattern
+anchor search. A generated discriminator maps each anchor occurrence to rule
+indices, and a compact bitset runs only the selected fallback rules.
+
+Compiler-proven anchors and Betterleaks keywords are deliberately distinct.
+During the verifier migration, upstream keywords remain as a recall-preserving
+safety net. Regex fallback uses span-based `Regex.EnumerateMatches`, and a timeout
+produces a conservative redaction instead of a silent false negative.
 Betterleaks' rule IDs, regexes, and keywords are retained.
 Betterleaks expression filters, validators, and network calls are intentionally not included.
 
@@ -64,7 +71,10 @@ ConsoleToSvg adds these local rules:
 
 `fetch_betterleaks.py` downloads the pinned Betterleaks configuration.
 `generate.py` consumes that download and the checked-in `betterleaks.toml.patch` TOML fragment.
-Both scripts update the metadata block in this README with the Betterleaks commit, downloaded configuration SHA-256, and generated rule count.
+It emits the anchor dispatcher, chunked regex source files, and
+`QuickLeaks.generation-report.json`. Both scripts update the metadata block in
+this README with the Betterleaks commit, downloaded configuration SHA-256, and
+generated rule count.
 
 ```sh
 python3 fetch_betterleaks.py /tmp/betterleaks.toml

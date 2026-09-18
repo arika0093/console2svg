@@ -18,20 +18,26 @@ A QuickLeaks finding therefore means that text matched a secret-like pattern; it
 
 Keeping the detector as generated C# also removes a runtime dependency on a separate scanner executable or rule-configuration file.
 
-## Filter candidate rules before running regexes
+## Search compiler-proven anchors once before fallback
 
 Running hundreds of regular expressions over every rendered screen would make automatic masking expensive, especially for animation.
 
-The generator builds an Aho-Corasick automaton over lowercased ASCII rule keywords.
-A screen is scanned once through that automaton, and matching keywords set bits in a compact candidate-rule bitset.
-Only candidate rules then execute their source-generated regular expression.
+The generator conservatively analyzes each regex and extracts fixed anchors that
+it can prove occur in a match. Unsupported constructs remain on the regex
+fallback; no rule is dropped.
 
-The automaton tables are packed into constant UTF-16 strings instead of large generated array initializers.
-Transition lookup uses a direct case for a single outgoing edge, a short linear scan for small fan-out, and binary search for larger fan-out.
-The generated regexes use `GeneratedRegex` with a fixed match timeout so one pathological input cannot leave a rule evaluating without a bound.
+At runtime, .NET's `SearchValues<string>` searches all anchors together. A
+generated discriminator maps an occurrence to exact anchors and rule indices,
+then a compact bitset enumerates only set candidates.
 
-Rules with no applicable keyword still need the behavior encoded by their generated candidate mapping.
-The keyword stage is an acceleration mechanism, not a replacement for the rule regex.
+Compiler-proven anchors are distinct from Betterleaks keywords. While rules are
+migrated to dedicated verifiers, keywords remain as a recall-preserving safety
+net. Fallback uses `GeneratedRegex` with span-based `Regex.EnumerateMatches` and
+a fixed timeout. A timeout produces conservative redaction instead of a silent
+false negative.
+
+Rules already lowered to a dedicated verifier, such as credential URIs, do not
+run regex. The generation report records why every remaining rule fell back.
 
 ## Detect partially entered values in Early mode
 

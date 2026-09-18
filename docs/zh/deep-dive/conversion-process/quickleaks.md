@@ -20,23 +20,25 @@ expression filter、validator、provider 或 network check，以及 repository-c
 
 规则被生成为 C# source，因此运行时不需要启动外部 scanner process，也不需要读取额外的 rule 配置文件。
 
-## 在 regex 之前用 Aho-Corasick 缩小候选规则
+## 一次搜索 compiler 证明的 anchor
 
 如果每个画面都运行数百个 regular expression，自动遮盖在动画场景中会产生明显成本。
 
-生成器会根据 rule keyword 构建 **Aho-Corasick automaton**。
-输入字符串只扫描一次，命中的 keyword 会把对应规则写入紧凑 bitset。
-随后只运行候选规则的 source-generated regex。
+生成器会保守地分析 regex，并提取能够证明必然出现在 match 中的固定 anchor。
+无法理解的结构会保留在 regex fallback 中，不会丢弃任何规则。
 
-automaton 的 state、transition、output 和 failure link 被打包为 UTF-16 常量字符串，而不是生成大量数组初始化代码。
-只有一个出口的 state 使用直接比较。
-出口数量不超过8时使用短 linear scan，更多时使用 binary search。
+运行时使用 .NET 的 `SearchValues<string>` 一次搜索全部 anchor。
+生成的 discriminator 会把命中位置映射到 exact anchor 和 rule index，紧凑 bitset 只枚举已设置的候选位。
 
-regex 通过 `GeneratedRegex` 生成，并设置固定 match timeout。
+compiler 证明的 anchor 与 Betterleaks keyword 是不同概念。
+在规则逐步迁移到专用 verifier 的过程中，keyword 仍作为保持 recall 的 safety net。
+
+fallback 使用 `GeneratedRegex`、span-based `Regex.EnumerateMatches` 和固定 match timeout。
 单个 pathological input 因此不会让某条规则无限运行。
+timeout 会产生保守遮盖，而不是静默漏报。
 
-keyword stage 只负责候选过滤。
-最终匹配范围仍由各条规则的 regex 决定。
+credential URI 等已 lowering 到专用 verifier 的规则不再运行 regex。
+generation report 会记录其余每条规则使用 fallback 的原因。
 
 ## Early 模式只放宽秘密值部分
 

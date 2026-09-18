@@ -5,11 +5,12 @@ import hashlib
 import json
 import re
 import tomllib
-from collections import deque
+from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).parent
 OUT = ROOT / "QuickLeaks.generated.cs"
+REPORT = ROOT / "QuickLeaks.generation-report.json"
 README = ROOT / "README.md"
 SHA = "2a387a5bad4290a84b9a1eb679bffe70611218cc"
 URL = f"https://github.com/betterleaks/betterleaks/blob/{SHA}/config/betterleaks.toml"
@@ -147,6 +148,76 @@ def validate_early_pattern() -> None:
 validate_early_pattern()
 
 
+@dataclass(frozen=True)
+class PatternAnalysis:
+    anchor: str | None
+    fixed_offset: int | None
+    fallback_reason: str
+
+
+def analyze_pattern(pattern: str) -> PatternAnalysis:
+    """Conservatively extract a literal fixed at the beginning of a match.
+
+    This is intentionally a small compiler front-end rather than a permissive
+    regex rewriter: anything it cannot prove remains on the regex fallback.
+    Zero-width anchors and group openers do not advance the fixed offset.
+    """
+    # Alternation and optional groups require branch-level mandatory-literal
+    # analysis. Keep them on the keyword safety net until that lowerer exists.
+    if re.search(r"(?<!\\)\|", pattern):
+        return PatternAnalysis(None, None, "alternation-not-lowered")
+
+    index = 0
+    literal: list[str] = []
+    unsupported = None
+    while index < len(pattern):
+        if pattern.startswith("(?i)", index) or pattern.startswith("(?-i)", index):
+            index += 4 if pattern.startswith("(?i)", index) else 5
+            continue
+        if pattern.startswith("(?:", index):
+            index += 3
+            continue
+        if pattern[index] == "(":
+            if pattern.startswith("(?", index):
+                unsupported = "group-construct-before-anchor"
+                break
+            index += 1
+            continue
+        if pattern[index] in "^$":
+            index += 1
+            continue
+        if pattern[index] == "\\":
+            if index + 1 >= len(pattern):
+                unsupported = "trailing-escape"
+                break
+            escaped = pattern[index + 1]
+            if escaped in "bBAZzG":
+                index += 2
+                continue
+            if escaped in r"\.^$|?*+()[]{}-":
+                literal.append(escaped)
+                index += 2
+                continue
+            unsupported = "character-class-before-anchor"
+            break
+        character = pattern[index]
+        if character in "[.{*+?|)":
+            if character in "?*" and literal:
+                literal.pop()
+            unsupported = "variable-prefix-before-anchor"
+            break
+        if character == "{" or character == "]":
+            unsupported = "quantifier-before-anchor"
+            break
+        literal.append(character)
+        index += 1
+
+    anchor = "".join(literal)
+    if len(anchor) >= 4 and anchor.isascii():
+        return PatternAnalysis(anchor, 0, "verifier-not-lowered")
+    return PatternAnalysis(None, None, unsupported or "no-fixed-literal-prefix")
+
+
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("config", type=Path, help="Downloaded Betterleaks TOML configuration")
 parser.add_argument("--output", type=Path, default=OUT, help="Generated C# path")
@@ -174,74 +245,48 @@ if patch_path.exists():
                  tuple(keyword.lower() for keyword in rule.get("keywords", [])))
             )
 
-class KeywordNode:
-    def __init__(self) -> None:
-        self.transitions = {}
-        self.rules = set()
+if len(rules) > 65535:
+    raise RuntimeError("The generated rules no longer fit in ushort indices")
 
+analyses = [analyze_pattern(pattern) for _, pattern, _, _ in rules]
+anchor_rules: dict[str, set[int]] = {}
+always_candidates: set[int] = set()
+report_rules = []
+for rule_index, ((rule_id, pattern, _, keywords), analysis) in enumerate(zip(rules, analyses)):
+    specialized = rule_id in {
+        "console2svg-credential-uri",
+        "generic-credential-uri",
+        "curl-auth-header",
+        "curl-auth-user",
+    }
+    source = "compiler"
+    anchors = [analysis.anchor] if analysis.anchor else []
+    # Until a dedicated verifier replaces the regex fallback, retain the
+    # upstream keyword safety net as well. This makes the new front-end a
+    # strict superset of the legacy candidate selection during migration.
+    safety_anchors = list(dict.fromkeys(keyword for keyword in keywords if keyword))
+    anchors.extend(anchor for anchor in safety_anchors if anchor not in anchors)
+    if not analysis.anchor:
+        source = "betterleaks-keyword"
+    anchors = [anchor for anchor in anchors if anchor and anchor.isascii()]
+    if not anchors:
+        source = "none"
+        always_candidates.add(rule_index)
+    for anchor in anchors:
+        anchor_rules.setdefault(anchor.lower(), set()).add(rule_index)
+    report_rules.append({
+        "index": rule_index,
+        "id": rule_id,
+        "engine": "specialized-verifier" if specialized else "regex-fallback",
+        "anchorSource": source,
+        "anchors": anchors,
+        "fixedOffset": analysis.fixed_offset,
+        "fallbackReason": None if specialized else analysis.fallback_reason,
+        "canCrossNewline": "\\n" in pattern or "\\r" in pattern or "\\s" in pattern,
+    })
 
-keyword_nodes = [KeywordNode()]
-for rule_index, (_, _, _, keywords) in enumerate(rules):
-    for keyword in dict.fromkeys(keyword for keyword in keywords if keyword):
-        if not keyword.isascii():
-            raise RuntimeError(f"QuickLeaks keywords must be ASCII: {keyword!r}")
-        node_index = 0
-        for character in keyword:
-            next_index = keyword_nodes[node_index].transitions.get(character)
-            if next_index is None:
-                next_index = len(keyword_nodes)
-                keyword_nodes[node_index].transitions[character] = next_index
-                keyword_nodes.append(KeywordNode())
-            node_index = next_index
-        keyword_nodes[node_index].rules.add(rule_index)
-
-keyword_fail = [0] * len(keyword_nodes)
-fail_queue = deque()
-for child in keyword_nodes[0].transitions.values():
-    fail_queue.append(child)
-while fail_queue:
-    state = fail_queue.popleft()
-    for character, target in keyword_nodes[state].transitions.items():
-        fallback = keyword_fail[state]
-        while fallback != 0 and character not in keyword_nodes[fallback].transitions:
-            fallback = keyword_fail[fallback]
-        keyword_fail[target] = keyword_nodes[fallback].transitions.get(character, 0)
-        if keyword_nodes[keyword_fail[target]].rules:
-            keyword_nodes[target].rules |= keyword_nodes[keyword_fail[target]].rules
-        fail_queue.append(target)
-
-if len(keyword_nodes) > 65535 or len(rules) > 65535:
-    raise RuntimeError("The generated keyword trie no longer fits in ushort indices")
-
-keyword_transitions = []
-keyword_outputs = []
-keyword_states = []
-for node in keyword_nodes:
-    transition_start = len(keyword_transitions)
-    keyword_transitions.extend(sorted(node.transitions.items()))
-    output_start = len(keyword_outputs)
-    keyword_outputs.extend(sorted(node.rules))
-    keyword_states.append(
-        (transition_start, len(node.transitions), output_start, len(node.rules))
-    )
-
-keyword_state_data = json.dumps(
-    "".join(
-        chr(value)
-        for state in keyword_states
-        for value in state
-    )
-)
-keyword_transition_data = json.dumps(
-    "".join(character + chr(state) for character, state in keyword_transitions)
-)
-keyword_output_data = json.dumps("".join(chr(index) for index in keyword_outputs))
-keyword_fail_data = json.dumps("".join(chr(value) for value in keyword_fail))
-root_transition_cases = "\n".join(
-    f"            (char){ord(character)} => (ushort){state},"
-    for character, state in sorted(keyword_nodes[0].transitions.items())
-)
-
+anchors = sorted(anchor_rules, key=lambda value: (value[0], -len(value), value))
+anchor_values = ",\n        ".join(json.dumps(anchor) for anchor in anchors)
 candidate_word_count = (len(rules) + 63) // 64
 candidate_fields = "\n".join(
     f"        private ulong _word{index};" for index in range(candidate_word_count)
@@ -250,55 +295,81 @@ candidate_add_cases = "\n".join(
     f"                case {index}: _word{index} |= mask; break;"
     for index in range(candidate_word_count)
 )
-candidate_contains_cases = "\n".join(
-    f"                {index} => _word{index}," for index in range(candidate_word_count)
+candidate_take_cases = "\n".join(
+    f"                    case {index}: word = _word{index}; _word{index} = 0; break;"
+    for index in range(candidate_word_count)
 )
+always_adds = "\n".join(f"        candidates.Add({index});" for index in sorted(always_candidates))
 
-rule_dispatch = "\n".join(
-    f"        if (candidates.Contains({index})) foreach (var finding in FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule{index}() : Rule{index}(), text, {json.dumps(rule_id)})) yield return finding;"
+buckets: dict[str, list[str]] = {}
+for anchor in anchors:
+    buckets.setdefault(anchor[0].lower(), []).append(anchor)
+dispatch_cases = []
+for first, bucket in sorted(buckets.items()):
+    checks = []
+    for anchor in sorted(bucket, key=lambda value: (-len(value), value)):
+        adds = " ".join(f"candidates.Add({index});" for index in sorted(anchor_rules[anchor]))
+        checks.append(
+            f"                if (tail.StartsWith({json.dumps(anchor)}, StringComparison.OrdinalIgnoreCase)) {{ {adds} }}"
+        )
+    dispatch_cases.append(
+        f"            case (char){ord(first)}:\n" + "\n".join(checks) + "\n                break;"
+    )
+anchor_dispatch = "\n".join(dispatch_cases)
+
+rule_id_cases = "\n".join(
+    f"        {index} => {json.dumps(rule_id)}," for index, (rule_id, _, _, _) in enumerate(rules)
+)
+postprocessor_cases = "\n".join(
+    f"        {index} => FindingPostProcessor.{kind},"
+    for index, (rule_id, _, _, _) in enumerate(rules)
+    if (kind := {
+        "console2svg-git-identity": "GitIdentity",
+        "console2svg-credential-uri": "CredentialUri",
+        "generic-credential-uri": "CredentialUri",
+        "console2svg-home-directory": "HomeDirectory",
+        "generic-username": "GenericUsername",
+    }.get(rule_id))
+)
+rule_dispatch_cases = "\n".join(
+    (
+        f"            case {index}: FindCredentialUriMatches(text, mode, (ushort){index}, {str(rule_id == 'generic-credential-uri').lower()}, ref sink); break;"
+        if rule_id in ("console2svg-credential-uri", "generic-credential-uri")
+        else f"            case {index}: FindCurlMatches(text, (ushort){index}, {str(rule_id == 'curl-auth-header').lower()}, ref sink); break;"
+        if rule_id in ("curl-auth-header", "curl-auth-user")
+        else f"            case {index}: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule{index}() : Rule{index}(), text, (ushort){index}, ref sink); break;"
+    )
     for index, (rule_id, _, _, _) in enumerate(rules)
 )
-regex_declarations = "\n".join(
-    f"    [GeneratedRegex({json.dumps(pattern)}, RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]\n"
-    f"    private static partial Regex Rule{index}();\n"
-    f"    [GeneratedRegex({json.dumps(early)}, RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]\n"
-    f"    private static partial Regex EarlyRule{index}();"
-    for index, (_, pattern, early, _) in enumerate(rules)
-)
 
-with args.output.open("w") as output:
-    output.write(rf"""// <auto-generated />
+engine = rf"""// <auto-generated />
 // Generated from Betterleaks config: {URL}
 // Betterleaks commit: {SHA}
-// Betterleaks is MIT licensed; see upstream LICENSE.
-// ConsoleToSvg rules are defined in betterleaks.toml.patch.
 
 using System;
-using System.Collections.Generic;
+using System.Buffers;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace ConsoleToSvg.QuickLeaks;
 
-/// <summary>Generated Betterleaks and ConsoleToSvg secret detection rules.</summary>
 public static partial class QuickLeaks
 {{
     private const int MatchTimeoutMilliseconds = 10;
-
-    // Aho-Corasick automaton over lowercased ASCII keywords. Each state stores
-    // transition start/count and output start/count as four UTF-16 code units.
-    // Transitions store a character/state pair, outputs store rule indices, and fails
-    // store the fallback state. Outputs include fallback matches. Packing the automaton
-    // avoids thousands of static array initializer instructions.
-    private const string KeywordStates = {keyword_state_data};
-    private const string KeywordTransitions = {keyword_transition_data};
-    private const string KeywordOutputs = {keyword_output_data};
-    private const string KeywordFails = {keyword_fail_data};
+    private static readonly SearchValues<string> s_anchors = SearchValues.Create(
+        new string[]
+        {{
+        {anchor_values}
+        }},
+        StringComparison.OrdinalIgnoreCase);
 
     private struct CandidateRules
     {{
 {candidate_fields}
+        private int _nextWord;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(int ruleIndex)
         {{
             var mask = 1UL << (ruleIndex & 63);
@@ -309,157 +380,168 @@ public static partial class QuickLeaks
             }}
         }}
 
-        public readonly bool Contains(int ruleIndex)
+        public bool TryTake(out int ruleIndex)
         {{
-            var word = (ruleIndex >> 6) switch
+            while (_nextWord < {candidate_word_count})
             {{
-{candidate_contains_cases}
-                _ => 0UL,
-            }};
-            return (word & (1UL << (ruleIndex & 63))) != 0;
+                ulong word;
+                var wordIndex = _nextWord++;
+                switch (wordIndex)
+                {{
+{candidate_take_cases}
+                    default: word = 0; break;
+                }}
+                if (word == 0)
+                {{
+                    continue;
+                }}
+                var bit = BitOperations.TrailingZeroCount(word);
+                ruleIndex = (wordIndex << 6) + bit;
+                word &= word - 1;
+                _nextWord--;
+                switch (wordIndex)
+                {{
+{candidate_add_cases.replace(' |= mask', ' = word').replace('ruleIndex >> 6', 'wordIndex').replace('var mask = 1UL << (ruleIndex & 63);', '')}
+                }}
+                return true;
+            }}
+            ruleIndex = -1;
+            return false;
         }}
     }}
 
-    private static CandidateRules FindCandidateRules(string text)
+    private static CandidateRules FindCandidateRules(ReadOnlySpan<char> text)
     {{
         var candidates = new CandidateRules();
-        var textSpan = text.AsSpan();
-        ushort state = 0;
-        for (var index = 0; index < textSpan.Length; index++)
+{always_adds}
+        var offset = 0;
+        while (offset < text.Length)
         {{
-            var value = NormalizeKeywordCharacter(textSpan[index]);
-            if (state == 0)
+            var relative = text[offset..].IndexOfAny(s_anchors);
+            if (relative < 0)
             {{
-                state = GetRootState(value);
-                if (state == 0)
-                {{
-                    continue;
-                }}
+                break;
             }}
-            else
-            {{
-                ushort next;
-                while ((next = GetNextState(state, value)) == 0)
-                {{
-                    state = KeywordFails[state];
-                    if (state == 0)
-                    {{
-                        next = GetRootState(value);
-                        break;
-                    }}
-                }}
-                if (next == 0)
-                {{
-                    state = 0;
-                    continue;
-                }}
-                state = next;
-            }}
-            var stateOffset = state * 4;
-            if (KeywordStates[stateOffset + 3] != 0)
-            {{
-                var outputStart = (int)KeywordStates[stateOffset + 2];
-                var outputEnd = outputStart + KeywordStates[stateOffset + 3];
-                for (var output = outputStart; output < outputEnd; output++)
-                {{
-                    candidates.Add(KeywordOutputs[output]);
-                }}
-            }}
+            var anchorStart = offset + relative;
+            DispatchAnchors(text[anchorStart..], ref candidates);
+            offset = anchorStart + 1;
         }}
         return candidates;
     }}
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static char NormalizeKeywordCharacter(char value)
+    private static void DispatchAnchors(ReadOnlySpan<char> tail, ref CandidateRules candidates)
     {{
-        if (value >= 'A' && value <= 'Z')
+        var first = tail[0];
+        if (first is >= 'A' and <= 'Z')
         {{
-            return (char)(value + ('a' - 'A'));
+            first = (char)(first + ('a' - 'A'));
         }}
-        return value <= (char)127 ? value : char.ToLowerInvariant(value);
+        switch (first)
+        {{
+{anchor_dispatch}
+        }}
     }}
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ushort GetRootState(char value) => value switch
-    {{
-{root_transition_cases}
-        _ => 0,
-    }};
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ushort GetNextState(ushort stateIndex, char value)
-    {{
-        var stateOffset = stateIndex * 4;
-        var count = (int)KeywordStates[stateOffset + 1];
-        var start = (int)KeywordStates[stateOffset];
-        if (count == 1)
-        {{
-            var transitionOffset = start * 2;
-            return KeywordTransitions[transitionOffset] == value ? (ushort)KeywordTransitions[transitionOffset + 1] : (ushort)0;
-        }}
-        if (count <= 8)
-        {{
-            var scanEnd = start + count;
-            for (var transition = start; transition < scanEnd; transition++)
-            {{
-                var transitionOffset = transition * 2;
-                if (KeywordTransitions[transitionOffset] == value)
-                {{
-                    return (ushort)KeywordTransitions[transitionOffset + 1];
-                }}
-            }}
-            return 0;
-        }}
-        var low = start;
-        var high = start + count - 1;
-        while (low <= high)
-        {{
-            var middle = low + ((high - low) >> 1);
-            var transitionOffset = middle * 2;
-            var transitionValue = KeywordTransitions[transitionOffset];
-            if (transitionValue == value)
-            {{
-                return (ushort)KeywordTransitions[transitionOffset + 1];
-            }}
-            if (transitionValue < value)
-            {{
-                low = middle + 1;
-            }}
-            else
-            {{
-                high = middle - 1;
-            }}
-        }}
-        return 0;
-    }}
-
-    private static IEnumerable<QuickLeaksFinding> EnumerateGeneratedRules(string text, QuickLeaksScanMode mode)
+    private static void ScanGeneratedRules(
+        ReadOnlySpan<char> text,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink)
     {{
         var candidates = FindCandidateRules(text);
-{rule_dispatch}
+        while (candidates.TryTake(out var ruleIndex))
+        {{
+            DispatchRule(ruleIndex, text, mode, ref sink);
+        }}
     }}
 
-    private static IReadOnlyList<QuickLeaksFinding> FindRuleMatches(Regex regex, string text, string ruleId)
+    private static void DispatchRule(
+        int ruleIndex,
+        ReadOnlySpan<char> text,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink)
     {{
-        var findings = new List<QuickLeaksFinding>();
+        switch (ruleIndex)
+        {{
+{rule_dispatch_cases}
+        }}
+    }}
+
+    private static void FindRuleMatches(
+        Regex regex,
+        ReadOnlySpan<char> text,
+        ushort ruleIndex,
+        ref FindingSink sink)
+    {{
         try
         {{
-            for (var match = regex.Match(text); match.Success; match = match.NextMatch())
+            foreach (var match in regex.EnumerateMatches(text))
             {{
-                findings.Add(new QuickLeaksFinding(ruleId, match.Index, match.Index + match.Length));
+                sink.Add(ruleIndex, match.Index, match.Index + match.Length);
             }}
         }}
         catch (RegexMatchTimeoutException)
         {{
-            return [];
+            // Redaction is fail-closed: a pathological fallback must never turn
+            // into a silent false negative.
+            if (!text.IsEmpty)
+            {{
+                sink.Add(ruleIndex, 0, text.Length);
+            }}
         }}
-
-        return findings;
     }}
 
-{regex_declarations}
-}}
-""")
+    internal static string GetRuleId(ushort ruleIndex) => ruleIndex switch
+    {{
+{rule_id_cases}
+        _ => throw new ArgumentOutOfRangeException(nameof(ruleIndex)),
+    }};
 
-print(f"generated {len(rules)} rules")
+    private static FindingPostProcessor GetPostProcessor(ushort ruleIndex) => ruleIndex switch
+    {{
+{postprocessor_cases}
+        _ => FindingPostProcessor.Default,
+    }};
+}}
+"""
+args.output.write_text(engine)
+
+for stale in ROOT.glob("QuickLeaks.Regex*.generated.cs"):
+    stale.unlink()
+chunk_size = 64
+for chunk_start in range(0, len(rules), chunk_size):
+    declarations = []
+    for index in range(chunk_start, min(chunk_start + chunk_size, len(rules))):
+        _, pattern, early, _ = rules[index]
+        declarations.append(
+            f"    [GeneratedRegex({json.dumps(pattern)}, RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]\n"
+            f"    private static partial Regex Rule{index}();\n"
+            f"    [GeneratedRegex({json.dumps(early)}, RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]\n"
+            f"    private static partial Regex EarlyRule{index}();"
+        )
+    (ROOT / f"QuickLeaks.Regex{chunk_start // chunk_size}.generated.cs").write_text(
+        "// <auto-generated />\nusing System.Text.RegularExpressions;\n\n"
+        "namespace ConsoleToSvg.QuickLeaks;\n\npublic static partial class QuickLeaks\n{\n"
+        + "\n".join(declarations) + "\n}\n"
+    )
+
+report = {
+    "schemaVersion": 1,
+    "betterleaksCommit": SHA,
+    "ruleCount": len(rules),
+    "compilerAnchorRuleCount": sum(1 for item in report_rules if item["anchorSource"] == "compiler"),
+    "keywordFallbackRuleCount": sum(1 for item in report_rules if item["anchorSource"] == "betterleaks-keyword"),
+    "unfilteredFallbackRuleCount": len(always_candidates),
+    "uniqueAnchorCount": len(anchors),
+    "specializedVerifierRuleCount": sum(
+        1 for item in report_rules if item["engine"] == "specialized-verifier"
+    ),
+    "rules": report_rules,
+}
+REPORT.write_text(json.dumps(report, indent=2) + "\n")
+
+print(
+    f"generated {len(rules)} rules, {len(anchors)} anchors, "
+    f"{report['compilerAnchorRuleCount']} compiler-anchored rules"
+)
 update_readme_metadata(args.config, len(rules))

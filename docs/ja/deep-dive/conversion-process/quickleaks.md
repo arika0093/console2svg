@@ -20,22 +20,26 @@ expression filter、validator、provider または network check、repository co
 
 rule を C# source として生成しておくため、実行時に外部 scanner process や rule 設定 file を読み込む必要もありません。
 
-## regex の前に Aho-Corasick で候補を絞る
+## compiler が証明した anchor を一度だけ検索する
 
 画面ごとに数百個の regular expression をすべて評価すると、特に animation の自動マスクで負荷が増えます。
 
-生成器は rule keyword から **Aho-Corasick automaton** を作ります。
-入力文字列を一度走査し、見つかった keyword に対応する rule だけを compact な bitset へ追加します。
-その候補 rule に限って source-generated regex を実行します。
+生成器は regex を保守的に解析し、match 内に必ず現れると証明できた固定 anchor を抽出します。
+解析できない構文は最適化せず、regex fallback に残します。rule を削除することはありません。
 
-automaton の state、transition、output、failure link は、巨大な配列 initializer ではなく UTF-16 の定数文字列へ packed します。
-一つしか遷移先がない state は直接比較し、遷移数が8以下なら短い linear scan、それより多ければ binary search を使います。
+実行時は .NET の `SearchValues<string>` で anchor を一括検索します。
+見つかった位置から生成済み discriminator が exact anchor と rule index を特定し、compact な bitset に追加します。
+候補処理は全 rule を順番に確認せず、立っている bit だけを列挙します。
 
-regex は `GeneratedRegex` で生成し、match timeout も固定します。
+Betterleaks keyword は compiler-proven anchor とは別のものです。
+専用 verifier への移行中は、従来と同等以上の recall を保つ safety net として keyword も併用します。
+
+fallback regex は `GeneratedRegex` と span-based `Regex.EnumerateMatches` を使い、match timeout も固定します。
 一つの pathological な入力によって、一つの rule が無制限に評価を続けないようにします。
+timeout 時は finding を黙って捨てず、安全側の conservative redaction を返します。
 
-keyword stage は regex の代替ではありません。
-候補の絞り込みだけを担当し、最終的な一致範囲は各 rule の regex が決めます。
+credential URI のように専用 verifier へ lowering 済みの rule は regex を実行しません。
+残りの rule は generation report に fallback 理由を記録し、段階的に verifier へ移せます。
 
 ## 入力途中だけ Early モードで量指定子を緩める
 

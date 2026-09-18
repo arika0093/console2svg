@@ -3,6 +3,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <IsAotCompatible>true</IsAotCompatible>
+    <IsTrimmable>true</IsTrimmable>
     <RootNamespace>ConsoleToSvg.QuickLeaks</RootNamespace>
   </PropertyGroup>
 </Project>

@@ -29,12 +29,8 @@ public sealed class QuickLeaksTests
     }
 
     [Test]
-    public void TimedOutRuleIsIgnoredWithoutProducingARedaction()
+    public void TimedOutRuleFailsClosedWithAConservativeRedaction()
     {
-        var findRuleMatches = typeof(Filter).GetMethod(
-            "FindRuleMatches",
-            BindingFlags.NonPublic | BindingFlags.Static
-        )!;
         var pathological = new Regex(
             "(a+)+$",
             RegexOptions.None,
@@ -42,10 +38,11 @@ public sealed class QuickLeaksTests
         );
         var input = new string('a', 100_000) + "!";
 
-        var findings = (IEnumerable<QuickLeaksFinding>)
-            findRuleMatches.Invoke(null, [pathological, input, "test-timeout"])!;
+        var findings = Filter.ScanRegexFallbackForTesting(pathological, input);
 
-        findings.ShouldBeEmpty();
+        findings.Count.ShouldBe(1);
+        findings[0].Start.ShouldBe(0);
+        findings[0].End.ShouldBe(input.Length);
     }
 
     [Test]
@@ -57,12 +54,47 @@ public sealed class QuickLeaksTests
     }
 
     [Test]
-    public void EnumerateReturnsFindingsWithoutSortingOrMaterializingAnArray()
+    public void EnumeratePreservesTheCompatibilityApi()
     {
         var findings = Filter.Enumerate("/home/alice/project").ToArray();
 
         findings.ShouldNotBeEmpty();
         findings.Any(finding => finding.RuleId == "console2svg-home-directory").ShouldBeTrue();
+    }
+
+    [Test]
+    public void SpanScanWritesToCallerOwnedBuffer()
+    {
+        var findings = new System.Buffers.ArrayBufferWriter<QuickLeaksFinding>(4);
+
+        var count = Filter.Scan("/home/alice/project".AsSpan(), findings);
+
+        count.ShouldBe(findings.WrittenCount);
+        findings.WrittenSpan
+            .ToArray()
+            .Any(finding => finding.RuleId == "console2svg-home-directory")
+            .ShouldBeTrue();
+    }
+
+    [Test]
+    public void SpanScanCleanPathDoesNotAllocate()
+    {
+        const string text = "Building project and running 128 tests: all tests passed.";
+        var findings = new System.Buffers.ArrayBufferWriter<QuickLeaksFinding>(1);
+        Filter.Scan(text.AsSpan(), findings);
+
+        var before = GC.GetAllocatedBytesForCurrentThread();
+        for (var iteration = 0; iteration < 100; iteration++)
+        {
+            findings.Clear();
+            if (Filter.Scan(text.AsSpan(), findings) != 0)
+            {
+                throw new InvalidOperationException("The clean fixture unexpectedly matched.");
+            }
+        }
+        var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+
+        allocated.ShouldBe(0);
     }
 
     [Test]
@@ -113,17 +145,20 @@ public sealed class QuickLeaksTests
         );
 
         Filter.Scan(text, QuickLeaksScanMode.Early).ShouldBeEmpty();
-        Filter
-            .Scan(
-                "curl -H \"Authorization: Bearer abcdefgh\" https://example.test",
-                QuickLeaksScanMode.Early
-            )
-            .Any(finding => finding.RuleId == "curl-auth-header")
-            .ShouldBeTrue();
-        Filter
-            .Scan("curl -u user:password https://example.test", QuickLeaksScanMode.Early)
-            .Any(finding => finding.RuleId == "curl-auth-user")
-            .ShouldBeTrue();
+        const string header =
+            "curl -H \"Authorization: Bearer abcdefgh\" https://example.test";
+        var headerFinding = Filter
+            .Scan(header, QuickLeaksScanMode.Early)
+            .Single(finding => finding.RuleId == "curl-auth-header");
+        header[headerFinding.Start..headerFinding.End].ShouldBe("abcdefgh");
+
+        const string user = "curl -u user:password https://example.test";
+        var userValues = Filter
+            .Scan(user, QuickLeaksScanMode.Early)
+            .Where(finding => finding.RuleId == "curl-auth-user")
+            .Select(finding => user[finding.Start..finding.End])
+            .ToArray();
+        userValues.ShouldBe(["user", "password"]);
     }
 
     [Test]

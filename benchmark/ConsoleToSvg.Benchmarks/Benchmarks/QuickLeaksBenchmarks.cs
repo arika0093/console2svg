@@ -1,3 +1,4 @@
+using System.Buffers;
 using BenchmarkDotNet.Attributes;
 using ConsoleToSvg.QuickLeaks;
 using Filter = ConsoleToSvg.QuickLeaks.QuickLeaks;
@@ -22,6 +23,7 @@ public class QuickLeaksBenchmarks
             16
         )
     );
+    private readonly ArrayBufferWriter<QuickLeaksFinding> _findings = new(64);
 
     [Benchmark(Baseline = true)]
     public IReadOnlyList<QuickLeaksFinding> OrdinaryOutput() => Filter.Scan(_ordinaryOutput);
@@ -29,4 +31,18 @@ public class QuickLeaksBenchmarks
     [Benchmark]
     public IReadOnlyList<QuickLeaksFinding> OutputWithSecrets() =>
         Filter.Scan(_outputWithSecrets);
+
+    [Benchmark]
+    public int OrdinaryOutputSpan()
+    {
+        _findings.Clear();
+        return Filter.Scan(_ordinaryOutput.AsSpan(), _findings);
+    }
+
+    [Benchmark]
+    public int OutputWithSecretsSpan()
+    {
+        _findings.Clear();
+        return Filter.Scan(_outputWithSecrets.AsSpan(), _findings);
+    }
 }

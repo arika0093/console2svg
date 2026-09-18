@@ -21,7 +21,7 @@
 
 <rect x="40" y="71" width="862" height="184" fill="#090b1a"/>
 <g class="c2 c"><rect x="51" y="82" width="840" height="18" fill="#090b1a"/>
-<text class="aa" x="51" y="96"># console2svg</text></g>
+<text class="aa" x="51" y="96">$ console2svg</text></g>
 <g class="c2 c" transform="translate(51 100)">
 <rect width="840" height="144" fill="#090b1a"/>
 </g>

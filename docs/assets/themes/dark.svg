@@ -13,7 +13,7 @@
 <rect width="856" height="178" fill="url(#c2bg)"/>
 <rect width="856" height="178" fill="#1e1e1e"/>
 <g class="c2 c"><rect x="8" y="8" width="840" height="18" fill="#1e1e1e"/>
-<text class="aa" x="8" y="22"># console2svg</text></g>
+<text class="aa" x="8" y="22">$ console2svg</text></g>
 <g class="c2 c" transform="translate(8 26)">
 <rect width="840" height="144" fill="#1e1e1e"/>
 </g>

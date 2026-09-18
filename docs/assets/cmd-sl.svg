@@ -20,7 +20,7 @@
 
 <rect x="1" y="28" width="1024" height="322" rx="9" ry="9" fill="#1e1e1e"/>
 <g class="c2 c"><rect x="9" y="36" width="1008" height="18" fill="#1e1e1e"/>
-<text class="aa" x="9" y="50"># sl</text></g>
+<text class="aa" x="9" y="50">$ sl</text></g>
 <defs>
 <g id="c2r0" class="c2 c">
 <rect width="1008" height="18" id="c2e0" fill="#1e1e1e"/>

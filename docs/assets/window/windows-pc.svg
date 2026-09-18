@@ -22,7 +22,7 @@
 
 <rect x="21" y="55" width="352" height="106" fill="#0c0c0c"/>
 <g class="c2 c"><rect x="29" y="63" width="336" height="18" fill="#0c0c0c"/>
-<text class="aa" x="29" y="77"># dotnet --version</text></g>
+<text class="aa" x="29" y="77">$ dotnet --version</text></g>
 <g class="c2 c" transform="translate(29 81)">
 <rect width="336" height="72" fill="#0c0c0c"/>
 </g>

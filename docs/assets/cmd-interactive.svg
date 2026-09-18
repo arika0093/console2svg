@@ -61,8 +61,8 @@
 </g>
 <g id="c2r7" class="c2 c"><use href="#c2r6"/>
 <g transform="translate(42)">
-<use href="#c2e4"/>
-<text class="aa" y="14" textLength="8.4">o</text>
+<rect width="25.2" height="18" id="c2e5" fill="#1e1e1e" stroke="#1e1e1e" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<text class="aa w" y="14" textLength="25.2">o &quot;</text>
 </g>
 </g>
 <g id="c2r8" class="c2 c"><use href="#c2r7"/>
@@ -193,8 +193,11 @@
 <use href="#c2r7" display="none">
 <animate attributeName="display" values="none;inline;none" keyTimes="0;0.546667;0.56" dur="6.25s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
-<use href="#c2r8" display="none">
+<use href="#c2r7" display="none">
 <animate attributeName="display" values="none;inline;none" keyTimes="0;0.56;0.573333" dur="6.25s" calcMode="discrete" repeatCount="indefinite"/>
+</use>
+<use href="#c2r8" display="none">
+<animate attributeName="display" values="none;inline;none" keyTimes="0;0.573333;0.58" dur="6.25s" calcMode="discrete" repeatCount="indefinite"/>
 </use>
 <use href="#c2r9" display="none">
 <animate attributeName="display" values="none;inline;none" keyTimes="0;0.573333;0.58" dur="6.25s" calcMode="discrete" repeatCount="indefinite"/>

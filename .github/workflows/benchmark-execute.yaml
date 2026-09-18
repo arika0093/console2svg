@@ -1,0 +1,87 @@
+name: Benchmark Execute (reusable)
+
+# Shared benchmark runner, called by benchmark-pr and benchmark-manual.
+# Checks out the given ref with full history (Nerdbank.GitVersioning
+# fails on shallow clones), runs the full benchmark suite, and uploads
+# the artifacts under the given name.
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: 'Git ref to benchmark (branch / tag / SHA)'
+        required: true
+        type: string
+      repository:
+        description: 'Repository to check out (owner/name). Pass the PR head repo for forks.'
+        required: true
+        type: string
+      artifact-name:
+        description: 'Artifact name for the benchmark results'
+        required: true
+        type: string
+    outputs:
+      sha:
+        description: 'Resolved HEAD SHA that was benchmarked'
+        value: ${{ jobs.execute.outputs.sha }}
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    outputs:
+      sha: ${{ steps.resolve.outputs.sha }}
+    steps:
+      - name: Checkout ref
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ inputs.repository }}
+          ref: ${{ inputs.ref }}
+          # Full clone: NBGV cannot calculate the version height from a shallow clone.
+          fetch-depth: 0
+
+      - name: Resolve SHA
+        id: resolve
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: latest
+          dotnet-quality: preview
+
+      - name: Run benchmark (full)
+        # --filter '*' selects every benchmark non-interactively.
+        # Without it BenchmarkSwitcher prompts for a selection and CI runs nothing.
+        env:
+          # GitHub-hosted runners are not root and lack PMU access, so perf-based
+          # diagnosers would invalidate every benchmark (BenchmarkDotNet escalates
+          # diagnoser validation warnings to errors). Force them off here; they stay
+          # auto-enabled locally where perf is usable (see BenchmarkConfig).
+          CONSOLE2SVG_BENCHMARK_PERF: "0"
+        run: dotnet run -c Release --project benchmark/ConsoleToSvg.Benchmarks -- --artifacts "$GITHUB_WORKSPACE/benchmark-artifacts/${{ inputs.artifact-name }}" --filter '*'
+
+      - name: Verify benchmark reports
+        # A lone BenchmarkRun-*.log satisfies `if-no-files-found`, so explicitly
+        # require the comparison inputs: fail loudly when no CSV was produced
+        # (e.g. every benchmark invalidated during validation still exits 0).
+        run: |
+          dir="$GITHUB_WORKSPACE/benchmark-artifacts/${{ inputs.artifact-name }}"
+          echo "Contents of $dir:"
+          find "$dir" -type f | sort
+          if [ -z "$(find "$dir" -name '*-report.csv' -print -quit)" ]; then
+            echo "::error::No *-report.csv found under $dir. The benchmark run produced no reports."
+            exit 1
+          fi
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: benchmark-artifacts/${{ inputs.artifact-name }}
+          retention-days: 14
+          if-no-files-found: error

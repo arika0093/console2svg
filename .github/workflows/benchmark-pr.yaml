@@ -1,4 +1,4 @@
-name: PR Benchmark (full)
+name: Benchmark PR (full)
 
 # Add the `benchmark-full` label to a PR to run it. The label is removed automatically
 on:
@@ -9,7 +9,7 @@ permissions:
   contents: read
   pull-requests: write
   issues: write
-  actions: read
+  actions: write
 
 concurrency:
   group: pr-benchmark-${{ github.event.pull_request.number }}
@@ -21,64 +21,20 @@ env:
 jobs:
   benchmark-base:
     if: github.event.label.name == 'benchmark-full'
-    runs-on: ubuntu-latest
-    timeout-minutes: 360
-    steps:
-      - name: Checkout base (target branch)
-        uses: actions/checkout@v7
-        with:
-          repository: ${{ github.repository }}
-          ref: ${{ github.event.pull_request.base.sha }}
-          fetch-depth: 1
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v6
-        with:
-          dotnet-version: latest
-          dotnet-quality: preview
-
-      - name: Run benchmark (base, full)
-        run: dotnet run -c Release --project benchmark/ConsoleToSvg.Benchmarks -- --artifacts "$GITHUB_WORKSPACE/benchmark-artifacts/base"
-
-      - name: Upload base artifacts
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: benchmark-base
-          path: benchmark-artifacts/base
-          retention-days: 14
-          if-no-files-found: warn
+    uses: ./.github/workflows/benchmark-execute.yaml
+    with:
+      ref: ${{ github.event.pull_request.base.sha }}
+      repository: ${{ github.repository }}
+      artifact-name: benchmark-base
 
   benchmark-head:
     if: github.event.label.name == 'benchmark-full'
-    runs-on: ubuntu-latest
-    timeout-minutes: 360
-    steps:
-      - name: Checkout head (PR branch)
-        uses: actions/checkout@v7
-        with:
-          # Supports forks: check out the PR head repo, not the base repo.
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 1
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v6
-        with:
-          dotnet-version: latest
-          dotnet-quality: preview
-
-      - name: Run benchmark (head, full)
-        run: dotnet run -c Release --project benchmark/ConsoleToSvg.Benchmarks -- --artifacts "$GITHUB_WORKSPACE/benchmark-artifacts/head"
-
-      - name: Upload head artifacts
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: benchmark-head
-          path: benchmark-artifacts/head
-          retention-days: 14
-          if-no-files-found: warn
+    uses: ./.github/workflows/benchmark-execute.yaml
+    with:
+      # Supports forks: check out the PR head repo, not the base repo.
+      ref: ${{ github.event.pull_request.head.sha }}
+      repository: ${{ github.event.pull_request.head.repo.full_name }}
+      artifact-name: benchmark-head
 
   compare-and-comment:
     needs: [benchmark-base, benchmark-head]
@@ -108,8 +64,8 @@ jobs:
 
       - name: Render comparison comment
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ needs.benchmark-base.outputs.sha }}
+          HEAD_SHA: ${{ needs.benchmark-head.outputs.sha }}
           BASE_REF: ${{ github.event.pull_request.base.ref }}
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
           BASE_RESULT: ${{ needs.benchmark-base.result }}

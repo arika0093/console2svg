@@ -1,0 +1,89 @@
+name: Benchmark Manual (full)
+
+# Run from the Actions tab with explicit base/head refs.
+# There is no PR to comment on, so the comparison is published to the
+# run's job summary and uploaded as the `benchmark-comparison` artifact
+# (raw results are in `benchmark-base` / `benchmark-head`).
+on:
+  workflow_dispatch:
+    inputs:
+      base_ref:
+        description: 'Base ref to benchmark (branch / tag / SHA)'
+        required: false
+        default: 'main'
+        type: string
+      head_ref:
+        description: 'Head ref to benchmark (branch / tag / SHA)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: manual-benchmark-${{ inputs.base_ref }}-${{ inputs.head_ref }}
+  cancel-in-progress: false
+
+jobs:
+  benchmark-base:
+    uses: ./.github/workflows/benchmark-execute.yaml
+    with:
+      ref: ${{ inputs.base_ref }}
+      repository: ${{ github.repository }}
+      artifact-name: benchmark-base
+
+  benchmark-head:
+    uses: ./.github/workflows/benchmark-execute.yaml
+    with:
+      ref: ${{ inputs.head_ref }}
+      repository: ${{ github.repository }}
+      artifact-name: benchmark-head
+
+  compare:
+    needs: [benchmark-base, benchmark-head]
+    # Run even when one side fails so the run still reports what happened.
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout workflow scripts
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Download base artifacts
+        uses: actions/download-artifact@v8
+        continue-on-error: true
+        with:
+          name: benchmark-base
+          path: ./benchmark-results/base
+
+      - name: Download head artifacts
+        uses: actions/download-artifact@v8
+        continue-on-error: true
+        with:
+          name: benchmark-head
+          path: ./benchmark-results/head
+
+      - name: Render comparison
+        env:
+          BASE_SHA: ${{ needs.benchmark-base.outputs.sha }}
+          HEAD_SHA: ${{ needs.benchmark-head.outputs.sha }}
+          BASE_REF: ${{ inputs.base_ref }}
+          HEAD_REF: ${{ inputs.head_ref }}
+          BASE_RESULT: ${{ needs.benchmark-base.result }}
+          HEAD_RESULT: ${{ needs.benchmark-head.result }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python3 .github/scripts/render-benchmark-comment.py --base benchmark-results/base --head benchmark-results/head --output benchmark-comment.md
+
+      - name: Publish summary
+        run: cat benchmark-comment.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload comparison
+        uses: actions/upload-artifact@v7
+        with:
+          name: benchmark-comparison
+          path: benchmark-comment.md
+          retention-days: 14
+          if-no-files-found: warn

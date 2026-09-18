@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace ConsoleToSvg.QuickLeaks;
 
@@ -97,7 +98,49 @@ public static partial class QuickLeaks
                 yield return narrowed;
             }
         }
+
+        foreach (var finding in EnumerateConnectionStringCredentialFindings(text))
+        {
+            yield return finding;
+        }
     }
+
+    private static IEnumerable<QuickLeaksFinding> EnumerateConnectionStringCredentialFindings(
+        string text
+    )
+    {
+        foreach (Match match in ConnectionStringCredentialRegex().Matches(text))
+        {
+            var value = match.Groups["value"];
+            if (!value.Success)
+            {
+                continue;
+            }
+
+            var start = value.Index;
+            var end = start + value.Length;
+            while (end > start && (text[end - 1] == ' ' || text[end - 1] == '\t'))
+            {
+                end--;
+            }
+
+            if (end > start)
+            {
+                yield return new QuickLeaksFinding(
+                    "console2svg-connection-string-credential",
+                    start,
+                    end
+                );
+            }
+        }
+    }
+
+    [GeneratedRegex(
+        @"(?im)(?:^|[;=\r\n])[ \t]*(?:user[ \t_.-]*id|pwd)[ \t]*=[ \t]*(?:""(?<value>[^""\r\n]+)""|'(?<value>[^'\r\n]+)'|(?<value>[^;\r\n]+))",
+        RegexOptions.CultureInvariant,
+        MatchTimeoutMilliseconds
+    )]
+    private static partial Regex ConnectionStringCredentialRegex();
 
     private static IEnumerable<QuickLeaksFinding> EnumerateGitIdentityFindings(
         string text,

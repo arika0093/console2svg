@@ -240,6 +240,23 @@ public sealed class ConsoleToSvgCommandLineTests
     }
 
     [Test]
+    public async Task MouseIsOnlyAvailableWithInteractiveOrLiveServer()
+    {
+        var interactive = await InvokeAsync("interactive", "--mouse", "true", "--", "vim");
+        interactive.ExitCode.ShouldBe(0);
+        interactive.Options!.Mouse.ShouldBeTrue();
+
+        var liveServer = await InvokeAsync("live-server", "--mouse", "false");
+        liveServer.ExitCode.ShouldBe(0);
+        liveServer.Options!.Mouse.ShouldBeFalse();
+
+        var capture = await InvokeAsync("capture", "--mouse", "true", "--", "echo");
+        capture.ExitCode.ShouldBe(1);
+        capture.Options.ShouldBeNull();
+        capture.Error.ShouldContain("--mouse is only available with interactive/live-server.");
+    }
+
+    [Test]
     public async Task GeneratedHelpIsDecoratedByTheCustomAnsiFormatter()
     {
         var invocation = await InvokeAsync("capture", "--help");
@@ -296,6 +313,14 @@ public sealed class ConsoleToSvgCommandLineTests
         endpointBeforeOption.ExitCode.ShouldBe(0);
         endpointBeforeOption.Options!.LiveServerPort.ShouldBe(8081);
         endpointBeforeOption.Options.Themes.ShouldBe(["cyberpunk-pc"]);
+
+        // --listen was removed in v0.10; the positional host:port is the only way
+        // to set the listen address. A stray --listen token is treated as a
+        // command (consistent with other unknown options) and must not
+        // configure the listener.
+        var removedListenOption = await InvokeAsync("live-server", "--listen", "127.0.0.1");
+        removedListenOption.Options.ShouldNotBeNull();
+        removedListenOption.Options!.ListenAddress.ShouldBeNull();
     }
 
     [Test]
@@ -310,6 +335,15 @@ public sealed class ConsoleToSvgCommandLineTests
         renderOptions.TerminalTheme!.Foreground.ShouldBe("#d8f9ff");
         renderOptions.Background.ShouldBe(["#09051a", "#17104a"]);
         renderOptions.Chrome!.IsDesktop.ShouldBeTrue();
+    }
+
+    [Test]
+    public async Task ThemeOptionAcceptsShortAlias()
+    {
+        var invocation = await InvokeAsync("capture", "-t", "cyberpunk-pc", "--", "echo");
+
+        invocation.ExitCode.ShouldBe(0);
+        invocation.Options!.Themes.ShouldBe(["cyberpunk-pc"]);
     }
 
     [Test]

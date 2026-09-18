@@ -1,0 +1,154 @@
+---
+title: 使用示例
+description: 介绍 console2svg 的使用示例。
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+与其用大段文字说明功能，不如直接看实际使用示例。
+本页展示了许多真实的使用示例。
+
+> [!TIP]
+> 请尝试在新标签页中打开图片。你应该能看到，即使放大也依然清晰漂亮。
+
+## 最简单的示例
+
+尝试捕获它自身的说明文本。
+
+```bash title="Terminal"
+console2svg capture -- console2svg
+```
+
+{/* c2s:: -w 120 -- console2svg */}
+![`console2svg capture -- console2svg` 的输出](../assets/cmd.svg)
+
+[详情](/zh/basic-usage/capturing-images/overview/)
+
+## 带边框
+
+使用类似 macOS 终端的边框，指定宽度，并附上执行命令名。
+
+```bash title="Terminal" "-d macos-pc"
+console2svg capture -w 100 -c -d macos-pc -- fastfetch
+```
+
+{/* c2s:: -w 100 -c -d macos-pc -- fastfetch */}
+![console2svg capture -w 100 -c -d macos-pc -- fastfetch](../assets/cmd-window.svg)
+
+[详情](/zh/appearance/window-and-background/)
+
+## 背景和透明度设置
+
+可以做得相当美观。
+
+```bash title="Terminal" "--background" "--opacity 0.95"
+console2svg capture -w 100 -h 10 -c -d macos-pc \
+    --background "image1.png" --opacity 0.95 \
+    -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
+```
+
+![由 console2svg 生成的 console2svg 主视觉图片](/docs/assets/cmd-hero.svg)
+
+[详情](/zh/appearance/window-and-background/)
+
+## 动画
+
+### sl
+
+```sh title="Terminal" "-v"
+console2svg capture -c -d -v -- sl
+```
+
+{/* c2s:: -w 120 -h 16 -c -d -v -- sl */}
+![console2svg capture -c -d -v -- sl](../assets/cmd-sl.svg)
+
+### cmatrix
+
+```sh title="Terminal" "-v" "--timeout 5"
+console2svg capture -w 100 -h 24 -c -d macos-pc -v --timeout 5 -- cmatrix -ab
+```
+
+{/* c2s:: -w 100 -h 24 -c -d macos-pc -v --timeout 5 -- cmatrix -ab */}
+![console2svg capture -w 100 -h 24 -c -d macos-pc -v --timeout 5 -- cmatrix -ab](../assets/cmd-video.svg)
+
+### nyancat
+
+```sh title="Terminal" "-v" "--timeout 5" "--sleep 0.5"
+console2svg capture -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat
+```
+
+{/* c2s:: -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat */}
+![console2svg capture -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat](../assets/cmd-nyancat.svg)
+
+[详情](/zh/basic-usage/capturing-videos/overview/)
+
+## 重放播放
+
+通过播放预先准备好的重放文件，即使在 CI 环境中也能复现相同输出。
+
+```sh title="Terminal" "replay ./replay.json"
+console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash
+```
+
+![console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash](../assets/cmd-bash-vim.svg)
+
+[详情](/zh/automation/replay/)
+
+## 交互式捕获
+
+按 `F9` 键开始录制，再按一次 `F9` 键结束录制。
+
+```bash title="Terminal" "interactive" "-d macos"
+console2svg interactive -d macos -o ./captures/output.svg
+```
+
+![console2svg interactive -d macos -o ./captures/output.svg](/docs/assets/cmd-interactive.svg)
+
+[详情](/zh/basic-usage/interactive-capture/)
+
+## 主题支持
+
+无论是内置主题还是自定义主题，都可以指定喜欢的主题。
+
+### nord
+
+```bash title="Terminal" "-t nord"
+console2svg capture -w 100 -h 24 -c -d macos -t nord --timeout 2 -- cmatrix -ab
+```
+
+{/* c2s:: -w 100 -h 24 -c -d macos -t nord --timeout 2 -- cmatrix -ab */}
+![console2svg 使用 Nord 主题进行捕获](../assets/cmd-gallery-theme-nord.svg)
+
+### cyberpunk-pc
+
+```bash title="Terminal" "-t cyberpunk-pc"
+console2svg capture -w 100 -h 24 -c -t cyberpunk-pc --timeout 2 -- cmatrix -ab
+```
+
+{/* c2s:: -w 100 -h 24 -c -t cyberpunk-pc --timeout 2 -- cmatrix -ab */}
+![console2svg 使用 Cyberpunk 主题进行捕获](../assets/cmd-gallery-theme-cyberpunk.svg)
+
+[详情](/zh/appearance/themes/built-in-themes/)
+
+## 机密信息遮盖
+
+```bash title="Terminal"
+cat <<EOF > .env
+CURRENT_DIRECTORY=$(pwd)
+APP_SECRET_TOKEN=1234567890thankyou
+HTTP_PROXY=http://user:password@10.0.0.1:8080
+CONNECTION_STRING=Server=localhost;Database=myDataBase;User Id=myUsername;Password=myPassword;
+MYSQL_CONNECTION_URL=mysql://myUsername:myPassword@localhost:3306/myDatabase
+GIT_USERNAME=hidden_truth_name
+GIT_EMAIL_ADDRESS=hidden_truth_name@example.com
+COMMON_HASH=0123456789abcdef0123456789abcdef
+SECRET_HASH=fedcba9876543210fedcba9876543210
+EOF
+
+console2svg capture -w 100 -h 12 -d macos-pc -t github-dark -- cat .env
+```
+
+{/* c2s:: -w 100 -h 12 -d macos-pc -t github-dark -- cat ../../.env */}
+![console2svg 自动遮盖示例](../assets/cmd-gallery-mask.svg)
+
+[详情](/zh/basic-usage/masking-secrets/auto-masking/)

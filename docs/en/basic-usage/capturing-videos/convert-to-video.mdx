@@ -1,0 +1,59 @@
+---
+title: Convert to video formats
+description: How to output terminal recording results as GIF animations or MP4/WebM videos.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+You can directly convert captured SVG animations to common video formats such as GIF and MP4 when outputting them.
+
+## Output examples
+
+Specify the desired extension with the `-o` option. If `ffmpeg` is installed on the system, encoding runs automatically.
+
+### GIF animation
+
+```bash title="Terminal" "-o demo.gif"
+console2svg capture -v -o demo.gif -- cmatrix -ab
+```
+
+{/* c2s:: -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab */}
+![console2svg capture -v -o demo.gif -- cmatrix -ab](../../../assets/cmd-video.gif)
+
+### MP4 video
+
+```bash title="Terminal" "-o demo.mp4"
+console2svg capture -v -o demo.mp4 -- cmatrix -ab
+```
+
+<video controls width="600">
+  {/* c2s:: -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab */}
+  <source src="../../../assets/convert-to-video-1.svg" type="video/mp4" />
+</video>
+
+### WebM video
+
+```bash title="Terminal" "-o demo.webm"
+console2svg capture -v -o demo.webm -- cmatrix -ab
+```
+
+<video controls width="600">
+  {/* c2s:: -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab */}
+  <source src="../../../assets/convert-to-video-2.svg" type="video/webm" />
+</video>
+
+## How it works
+
+Animated SVGs cannot be converted directly to various video formats as-is. Therefore, conversion roughly follows the steps below.
+
+<Steps>
+
+1. Extract the generated animation as one SVG per frame with [save-frames](./save-frames).
+
+2. If direct conversion from `svg` is possible (when `librsvg` is enabled), simply concatenate all SVGs and pass them to `ffmpeg`.
+
+3. If direct conversion from `svg` is not possible, first convert them to [PNG images](../capturing-images/convert-to-png.md) with `resvg`, then pass them to `ffmpeg`.
+
+</Steps>
+
+This makes conversion to video formats possible in many different environments.

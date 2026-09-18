@@ -37,15 +37,10 @@
       Include="Resources\live-settings.html"
       LogicalName="console2svg.live-settings.html"
     />
-    <RuntimeHostConfigurationOption Include="System.Runtime.EnableWriteXorExecute" Value="false" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference
       Include="..\ConsoleToSvg.Core\ConsoleToSvg.Core.csproj"
-      AdditionalProperties="PublishAot=false"
-    />
-    <ProjectReference
-      Include="..\ConsoleToSvg.Pty\ConsoleToSvg.Pty.csproj"
       AdditionalProperties="PublishAot=false"
     />
     <ProjectReference
@@ -62,6 +57,7 @@
       Version="3.0.0-rc.1.26425.128"
     />
     <PackageReference Include="ZLogger" Version="2.5.10" />
+    <PackageReference Include="VYaml" Version="1.4.0" />
   </ItemGroup>
   <Import Project="..\ConsoleToSvg.Converter\ConsoleToSvg.Converter.Native.targets" />
 </Project>

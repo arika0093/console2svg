@@ -27,7 +27,7 @@ internal static partial class Program
         var commandLine = ConsoleToSvgCommandLine.Create(
             async (options, parseResult, cancellationToken) =>
             {
-                if (parseResult.Tokens.Count == 0 && !Console.IsInputRedirected)
+                if (parseResult.Tokens.Count == 0)
                 {
                     WritePagedHelp(
                         ColorizeIfSupported(ConsoleToSvgCommandLine.FormatHelp(parseResult))
@@ -59,12 +59,18 @@ internal static partial class Program
         if (options.Workflow == Workflow.Theme)
             return RunThemeCommand(options);
 
+        if (options.Workflow == Workflow.Batch)
+            return await RunBatchAsync(options, invocationCancellationToken).ConfigureAwait(false);
+
         if (options.Workflow == Workflow.Tmux)
         {
             var tmuxError = await PrepareTmuxAsync(options).ConfigureAwait(false);
             if (tmuxError is not null)
             {
-                await Console.Error.WriteLineAsync(tmuxError);
+                await Console.Error.WriteLineAsync(
+                    tmuxError.AsMemory(),
+                    invocationCancellationToken
+                );
                 return 1;
             }
         }
@@ -73,7 +79,6 @@ internal static partial class Program
             options.Workflow == Workflow.Capture
             && string.IsNullOrWhiteSpace(options.Command)
             && string.IsNullOrWhiteSpace(options.InputCastPath)
-            && !Console.IsInputRedirected
         )
         {
             WritePagedHelp(ColorizeIfSupported(ConsoleToSvgCommandLine.FormatHelp(parseResult)));
@@ -149,7 +154,7 @@ internal static partial class Program
         if (options.StdOut)
         {
             // Redirect Console.Out → stderr before recording so that any third-party library
-            // debug messages written via Console.Write/WriteLine (e.g. Quick.PtyNet's
+            // debug messages written via Console.Write/WriteLine (e.g. Porta.Pty's
             // "Waiting on {pid}" / "Wait succeeded" from its ChildWatcherThreadProc)
             // are sent to stderr instead of polluting the SVG output pipe.
             var stderrWriter = new StreamWriter(
@@ -543,7 +548,10 @@ internal static partial class Program
             }
 
             await Console.Error.WriteLineAsync(
-                options.StdOut ? "Generated: (stdout)" : $"Generated: {options.OutputPath}"
+                (
+                    options.StdOut ? "Generated: (stdout)" : $"Generated: {options.OutputPath}"
+                ).AsMemory(),
+                invocationCancellationToken
             );
             if (tempCleanup is not null)
             {
@@ -555,13 +563,13 @@ internal static partial class Program
         {
             var cause = GetCancellationCause(options, canceledByCtrlC);
             logger.ZLogDebug($"Execution canceled. Cause={cause}");
-            await Console.Error.WriteLineAsync("Canceled.");
+            await Console.Error.WriteLineAsync("Canceled.".AsMemory(), CancellationToken.None);
             return 0;
         }
         catch (Exception ex)
         {
             logger.ZLogError(ex, $"Unhandled exception occurred: {ex.Message}");
-            await Console.Error.WriteLineAsync(ex.Message);
+            await Console.Error.WriteLineAsync(ex.Message.AsMemory(), CancellationToken.None);
             return 1;
         }
         finally

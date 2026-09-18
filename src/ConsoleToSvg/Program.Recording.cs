@@ -59,7 +59,7 @@ internal static partial class Program
                     ptyHeight,
                     cancellationToken,
                     loggerFactory.CreateLogger("ConsoleToSvg.PtyRecorder"),
-                    forwardToConsole: !options.StdOut,
+                    forwardToConsole: !options.StdOut && options.RequestedTmuxAction is null,
                     noDeleteEnvs: options.NoDeleteEnvs,
                     replaySavePath: options.ReplaySavePath,
                     replayPath: options.ReplayPath,
@@ -70,42 +70,16 @@ internal static partial class Program
                 .ConfigureAwait(false);
         }
 
-        if (!Console.IsInputRedirected)
-        {
-            throw new InvalidOperationException(
-                """
-                No input source specified.
-                Usage: 
-                  console2svg "your-command with args" [options]
-                  console2svg [options] -- your-command with args 
-                  your-command with args | console2svg [options]
-                For more details, see --help.
-                """
-            );
-        }
-
-        var pipeWidth = ResolveSize(
-            options.Width,
-            options.WidthAdjust,
-            TryGetConsoleWidth,
-            DefaultWidth
+        throw new InvalidOperationException(
+            """
+            No input source specified.
+            Usage:
+              console2svg "your-command with args" [options]
+              console2svg [options] -- your-command with args
+              console2svg cast path/to/file.cast [options]
+            For more details, see --help.
+            """
         );
-        var pipeHeight = ResolveSize(
-            options.Height,
-            options.HeightAdjust,
-            TryGetConsoleHeight,
-            DefaultHeight
-        );
-        logger.ZLogDebug($"Input source: stdin pipe. Width={pipeWidth} Height={pipeHeight}");
-        return await PipeRecorder
-            .RecordAsync(
-                Console.OpenStandardInput(),
-                pipeWidth,
-                pipeHeight,
-                cancellationToken,
-                loggerFactory.CreateLogger("ConsoleToSvg.PipeRecorder")
-            )
-            .ConfigureAwait(false);
     }
 
     private static async Task<int> RunInteractiveAsync(
@@ -172,7 +146,8 @@ internal static partial class Program
                 },
                 cancellationToken,
                 loggerFactory.CreateLogger("ConsoleToSvg.InteractiveRecorder"),
-                saveCastPath: options.SaveCastPath
+                saveCastPath: options.SaveCastPath,
+                mousePassthrough: options.Mouse
             )
             .ConfigureAwait(false);
         return 0;

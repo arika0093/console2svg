@@ -36,6 +36,12 @@ for rid in linux-x64 linux-arm64; do
     exit 1
   fi
 
+  pty_so_src="./native-artifacts/native-${rid}/libporta_pty.so"
+  if [ ! -f "$pty_so_src" ]; then
+    echo "Porta PTY shim not found: $pty_so_src" >&2
+    exit 1
+  fi
+
   package_root="./package-root/${rid}"
   rm -rf "$package_root"
   mkdir -p "$package_root/usr/bin" "$package_root/usr/lib/console2svg"
@@ -44,6 +50,8 @@ for rid in linux-x64 linux-arm64; do
   chmod 755 "$package_root/usr/lib/console2svg/console2svg"
   cp "$so_src" "$package_root/usr/lib/console2svg/libconsole2svg_resvg.so"
   chmod 755 "$package_root/usr/lib/console2svg/libconsole2svg_resvg.so"
+  cp "$pty_so_src" "$package_root/usr/lib/console2svg/libporta_pty.so"
+  chmod 755 "$package_root/usr/lib/console2svg/libporta_pty.so"
   ln -s ../lib/console2svg/console2svg "$package_root/usr/bin/console2svg"
 
   common_args=(

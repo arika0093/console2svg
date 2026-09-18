@@ -33,10 +33,15 @@ internal sealed class SvgWriter
 
     public SvgWriter Append(double value)
     {
+        return Append(value, "0.###");
+    }
+
+    public SvgWriter Append(double value, ReadOnlySpan<char> format)
+    {
         Span<char> buffer = stackalloc char[32];
-        if (!value.TryFormat(buffer, out var charsWritten, "0.###", CultureInfo.InvariantCulture))
+        if (!value.TryFormat(buffer, out var charsWritten, format, CultureInfo.InvariantCulture))
         {
-            _writer.Write(value.ToString("0.###", CultureInfo.InvariantCulture));
+            _writer.Write(value.ToString(format.ToString(), CultureInfo.InvariantCulture));
             return this;
         }
 

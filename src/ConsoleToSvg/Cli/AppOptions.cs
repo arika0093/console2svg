@@ -29,6 +29,7 @@ public enum Workflow
     Update,
     LiveServer,
     Tmux,
+    Batch,
 }
 
 public enum TmuxAction
@@ -67,6 +68,10 @@ public sealed class AppOptions
     public bool TmuxHistory { get; set; }
     public int? TmuxHistoryLines { get; set; }
 
+    /// <summary>
+    /// Live-server listen host parsed from the positional <c>host:port</c> endpoint.
+    /// Null means the default loopback address.
+    /// </summary>
     public string? ListenAddress { get; set; }
 
     public int LiveServerPort { get; set; } = 38473;
@@ -74,6 +79,14 @@ public sealed class AppOptions
     /// <summary>Resize the live terminal when the host TTY size changes.</summary>
     public bool LiveServerResize { get; set; } = true;
     public bool LiveServerForwardToConsole { get; set; } = true;
+
+    /// <summary>
+    /// Forward mouse tracking between the child PTY and the host terminal
+    /// (interactive/live-server only, default false). Lets TUI apps like
+    /// opencode scroll with the wheel; while enabled the host mouse is owned
+    /// by the child. See the commit message for background.
+    /// </summary>
+    public bool Mouse { get; set; }
 
     /// <summary>
     /// Unmodified arguments following <c>--</c>. Interactive mode uses these to
@@ -91,7 +104,7 @@ public sealed class AppOptions
     public List<string> MaskPatterns { get; } = [];
 
     /// <summary>Overlay secrets found by the generated Betterleaks quick filter.</summary>
-    public bool MaskAuto { get; set; } = false;
+    public bool MaskAuto { get; set; } = true;
 
     /// <summary>True when --mode (or -v) was explicitly supplied on the command line.</summary>
     public bool IsModeExplicit { get; set; }
@@ -224,4 +237,22 @@ public sealed class AppOptions
     /// which prefers the bundled resvg host, then ffmpeg+librsvg.
     /// </summary>
     public SvgConverterMode SvgConverter { get; set; } = SvgConverterMode.Auto;
+
+    /// <summary>Batch markdown mode: input markdown file or directory.</summary>
+    public string? BatchInputPath { get; set; }
+
+    /// <summary>Batch markdown mode: generated image output directory.</summary>
+    public string? BatchOutputDir { get; set; }
+
+    /// <summary>Batch markdown mode: input-relative glob filters.</summary>
+    public string[] BatchFilters { get; set; } = [];
+
+    /// <summary>Batch markdown mode: list planned jobs without changing the filesystem.</summary>
+    public bool BatchDryRun { get; set; }
+
+    /// <summary>
+    /// Shallow copy for per-block overrides. List properties are shared by reference;
+    /// batch execution never mutates them.
+    /// </summary>
+    public AppOptions ShallowClone() => (AppOptions)MemberwiseClone();
 }

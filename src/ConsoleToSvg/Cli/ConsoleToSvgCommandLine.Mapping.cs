@@ -90,12 +90,12 @@ public sealed partial class ConsoleToSvgCommandLine
             NoDeleteEnvs = result.GetValue(_symbols.NoDeleteEnvs),
             Loop = !result.GetValue(_symbols.NoLoop),
             LiveServerResize = !result.GetValue(_symbols.NoResize),
+            Mouse = result.GetValue(_symbols.Mouse),
             EmbedCast = result.GetValue(_symbols.EmbedCast),
             EmbedLogs = result.GetValue(_symbols.EmbedLogs),
             EmbedReplay = result.GetValue(_symbols.EmbedReplay),
             EmbedDebug = result.GetValue(_symbols.EmbedDebug),
             TmuxTarget = result.GetValue(_symbols.TmuxTarget),
-            ListenAddress = result.GetValue(_symbols.ListenAddress),
             Font = result.GetValue(_symbols.Font),
             ForeColor = result.GetValue(_symbols.ForeColor),
             BackColor = result.GetValue(_symbols.BackColor),
@@ -483,6 +483,17 @@ public sealed partial class ConsoleToSvgCommandLine
         }
 
         if (
+            options.Mouse
+            && options.Workflow != Workflow.Interactive
+            && options.Workflow != Workflow.LiveServer
+            && !options.Interactive
+        )
+        {
+            error = "--mouse is only available with interactive/live-server.";
+            return false;
+        }
+
+        if (
             options.Workflow == Workflow.Tmux
             && (
                 options.RequestedTmuxAction is null
@@ -703,6 +714,7 @@ public sealed partial class ConsoleToSvgCommandLine
                 or "update"
                 or "live-server"
                 or "tmux"
+                or "batch"
                 or "completions"
             );
     }

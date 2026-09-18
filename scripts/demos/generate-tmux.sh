@@ -56,7 +56,7 @@ tmux -L "$socket" new-window \
 wait_for_pane "$socket" "$session:capture.0" "$"
 sleep 0.5
 
-capture_command='tmux capture-pane -pe -t :0 | console2svg capture -h 12 -o capture.svg'
+capture_command='console2svg tmux capture --target :0 -h 12 -o capture.svg'
 type_slowly "$socket" "$session:capture.0" "$capture_command"
 tmux -L "$socket" send-keys -t "$session:capture.0" Enter
 wait_for_file "$work_dir/capture.svg"
@@ -72,5 +72,5 @@ tmux -L "$socket" detach-client -s "$session"
 wait "$recorder_pid"
 recorder_pid=""
 
-mv "$work_dir/capture.svg" "$DEMO_ROOT/assets/cmd-tmux-cap.svg"
-mv "$work_dir/cmd-tmux-replay.svg" "$DEMO_ROOT/assets/cmd-tmux-replay.svg"
+mv "$work_dir/capture.svg" "$ASSET_ROOT/cmd-tmux-cap.svg"
+mv "$work_dir/cmd-tmux-replay.svg" "$ASSET_ROOT/cmd-tmux-replay.svg"

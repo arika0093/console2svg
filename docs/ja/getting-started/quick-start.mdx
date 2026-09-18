@@ -1,0 +1,97 @@
+---
+title: 実際に使ってみる
+description: Create your first console2svg capture.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+console2svgの[インストール](./installation.mdx)が完了したら、早速使ってみましょう。
+
+## 静止画を撮影する
+### 簡単な例
+
+<Steps>
+
+1. `console2svg capture -- (any-command)`で好きなコマンドを実行します。
+
+   ```bash title="Terminal"
+   console2svg capture -- console2svg
+   ```
+
+2. これで完了です。標準では`output.svg`に生成されます。
+
+3. 生成された`output.svg`をブラウザで開いてみましょう。以下のような出力になっているはずです。
+
+   ![The output of `console2svg capture -- console2svg`](/docs/assets/cmd.svg)
+
+
+</Steps>
+
+
+### オプションを指定する
+
+`capture`はいくつか(いくつも)のオプション引数を受け付けます。
+例えば、`oh-my-logo`を以下のような条件で表示させてみます。
+
+* `-o console2svg.svg`: 出力先を`console2svg.svg`に変更します。
+* `-w 100`: ウインドウ幅を固定します(標準では自動)
+* `-c`: 出力の先頭部分に `$ oh-my-logo ...`のような実行コマンドの表示を追加する。
+* `-d macos-pc`: macOSのウインドウのような見た目にし、周囲に余白を設けます。
+   * `-d`のみ指定した場合、`macos`(余白なし)として取り扱われます。
+* `--background "#ff7e5f" "#feb47b"`: sunset風のグラデーション背景にします。
+
+```bash title="Terminal" "-d macos-pc" "--background"
+console2svg capture -o console2svg.svg -w 100 -h 10 -c -d macos-pc \
+            --background "#ff7e5f" "#feb47b" \
+            -- oh-my-logo "console2svg" sunset --filled --letter-spacing 0
+```
+
+{/* c2s:: -w 100 -h 10 -c -d macos-pc --background "#ff7e5f" "#feb47b" -- oh-my-logo "console2svg" sunset --filled --letter-spacing 0 */}
+![console2svg capture with options](../../assets/cmd-quickstart-options.svg)
+
+詳しくは [静止画を撮影する](/ja/basic-usage/capturing-images/overview/)のページを参照ください。
+
+
+## 動画を撮影する
+### 簡単な例
+
+<Steps>
+
+1. `capture`コマンドに`-v`を渡したうえで、で好きなコマンドを実行します。
+
+   ```bash title="Terminal" "-v"
+   console2svg capture -c -d -v -- sl
+   ```
+
+   > [!NOTE]
+   > <code>-v</code>を指定しない場合、最終フレームのみが描画された静止SVGになります。
+
+2. 以上で完了です。生成された結果は以下のようになります。
+
+   ![console2svg capture -c -d -v -- sl](/docs/assets/cmd-sl.svg)
+
+</Steps>
+
+### オプションを指定する
+
+例えば、`nyancat`を以下のような条件で表示させてみます。
+
+* `-w 160 -h 32`: 幅160, 高さ32にします。
+* `-c`: 出力の先頭部分に `$ nyancat`のような実行コマンドの表示を追加する。
+* `-d`: macOSのウインドウのような見た目にします（余白なし）。`-d macos`と同等。
+* `-v`: 動画出力を有効にします。
+* `--timeout 5`: 5秒経過後に自動で終了させます。
+* `--sleep 0.5`: 最終フレームからリピートするまでの間に0.5秒待機を入れます。
+
+```bash title="Terminal" "-v" "--timeout 5" "--sleep 0.5"
+console2svg capture -w 160 -h 32 -c -d -v \
+            --timeout 5 --sleep 0.5 -- nyancat -d 10
+```
+
+![console2svg capture -w 160 -h 32 -c -d -v --timeout 5 --sleep 0.5 -- nyancat -d 10](/docs/assets/cmd-nyancat.svg)
+
+詳しくは [動画を撮影する](/ja/basic-usage/capturing-videos/overview/)のページを参照ください。
+
+## 次に進むには
+
+[capture コマンドのリファレンス](/ja/reference/cli/capture)で詳細を確認したり、[静止画の撮影](/ja/basic-usage/capturing-images/overview/)や[動画の撮影](/ja/basic-usage/capturing-videos/overview/)を試したりできます。また、[シェル補完](/ja/utilities/shell-completion)を設定したり、[tmux 連携](/ja/utilities/tmux)で実行中のペインをキャプチャしたりすることもできます。

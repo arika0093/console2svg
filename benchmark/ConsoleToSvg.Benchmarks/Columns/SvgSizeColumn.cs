@@ -51,6 +51,10 @@ public abstract class SvgSizeColumn : IColumn
 
     public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style)
     {
+        if (!WorkloadCatalog.CanResolve(benchmarkCase))
+        {
+            return "N/A";
+        }
         var bytes = _cache.GetOrAdd(benchmarkCase, Compute);
         return bytes.ToString("N0", CultureInfo.InvariantCulture);
     }
@@ -58,7 +62,7 @@ public abstract class SvgSizeColumn : IColumn
     private long Compute(BenchmarkCase benchmarkCase)
     {
         var session = WorkloadCatalog.Resolve(benchmarkCase);
-        var options = new SvgRenderOptions { Loop = true };
+        var options = WorkloadCatalog.ResolveOptions(benchmarkCase);
         var svg = _animated
             ? WorkloadCatalog.RenderAnimated(session, options)
             : WorkloadCatalog.RenderStatic(session, options);

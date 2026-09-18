@@ -21,6 +21,8 @@ public class SvgGenerationBenchmarks
     private RecordingSession _session = null!;
     private RecordingSession _wideCharacterSession = null!;
     private RecordingSession _scrollStressSession = null!;
+    private SvgRenderOptions _options = null!;
+    private Theme _theme = null!;
 
     [GlobalSetup]
     public void GlobalSetup()
@@ -33,31 +35,32 @@ public class SvgGenerationBenchmarks
         _scrollStressSession = AnsiWorkload.BuildScrollStressSession(
             AnsiWorkload.Presets[(int)Size]
         );
+        _theme = Theme.Resolve("dark");
+        _options = new SvgRenderOptions();
+#if !CONSOLE_TO_SVG_BASELINE
+        _options.TerminalTheme = _theme;
+#endif
     }
 
     /// <summary>Render the recorded session to an SVG document string.</summary>
     [Benchmark]
-    public string RenderSvg() => SvgRenderer.Render(_session, new SvgRenderOptions());
+    public string RenderSvg() => SvgRenderer.Render(_session, _options);
 
     /// <summary>Replay the session through the terminal emulator only (no SVG emission).</summary>
     [Benchmark]
-    public ScreenBuffer ParseOnly() => Replay(_session);
+    public ScreenBuffer ParseOnly() => Replay(_session, _theme);
 
     /// <summary>Parse a screen-filling workload consisting only of wide characters.</summary>
     [Benchmark]
-    public ScreenBuffer ParseWideCharacters() => Replay(_wideCharacterSession);
+    public ScreenBuffer ParseWideCharacters() => Replay(_wideCharacterSession, _theme);
 
     /// <summary>Parse continuous output that intentionally drives full-screen scrolling.</summary>
     [Benchmark]
-    public ScreenBuffer ParseScrollStress() => Replay(_scrollStressSession);
+    public ScreenBuffer ParseScrollStress() => Replay(_scrollStressSession, _theme);
 
-    private static ScreenBuffer Replay(RecordingSession session)
+    private static ScreenBuffer Replay(RecordingSession session, Theme theme)
     {
-        var emulator = new TerminalEmulator(
-            session.Header.width,
-            session.Header.height,
-            Theme.Resolve("dark")
-        );
+        var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
         return emulator.Replay(session, session.Events.Count - 1);
     }
 }

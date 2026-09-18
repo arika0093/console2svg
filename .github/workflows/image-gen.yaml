@@ -16,7 +16,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: latest
+          dotnet-version: '11.0.x'
           dotnet-quality: preview
 
       - name: Setup console2svg

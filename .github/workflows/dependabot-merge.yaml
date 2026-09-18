@@ -5,6 +5,10 @@ permissions:
   contents: write
   pull-requests: write
 
+env:
+  DOTNET_VERSION: '11.0.x'
+  DOTNET_QUALITY: preview
+
 jobs:
   package-test:
     runs-on: ubuntu-latest
@@ -18,8 +22,8 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: latest
-          dotnet-quality: preview
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: ${{ env.DOTNET_QUALITY }}
 
       - name: Restore dependencies
         run: dotnet restore

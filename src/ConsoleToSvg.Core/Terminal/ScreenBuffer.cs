@@ -450,15 +450,14 @@ public sealed partial class ScreenBuffer
             return false;
         }
 
-        for (var col = 0; col < Width; col++)
+        // Visible snapshots share unchanged row arrays through copy-on-write.
+        // Most animated-frame row comparisons can therefore avoid scanning cells.
+        if (ReferenceEquals(_cells[row], other._cells[otherRow]))
         {
-            if (!_cells[row][col].Equals(other._cells[otherRow][col]))
-            {
-                return false;
-            }
+            return true;
         }
 
-        return true;
+        return _cells[row].AsSpan().SequenceEqual(other._cells[otherRow]);
     }
 
     private void EnsureRowVisualSignature(int row)
@@ -508,6 +507,8 @@ public sealed partial class ScreenBuffer
 
         return _cells[row][col];
     }
+
+    internal ReadOnlySpan<ScreenCell> GetVisibleRow(int row) => _cells[row];
 
     internal bool HasSameVisualState(ScreenBuffer other)
     {
@@ -656,11 +657,8 @@ public sealed partial class ScreenBuffer
         var sourceCells = source._cells;
         var targetCells = _isAltScreen ? _altCells : _mainCells;
         var targetRowsShared = _isAltScreen ? _altRowsShared : _mainRowsShared;
-        for (var row = 0; row < Height; row++)
-        {
-            targetCells[row] = sourceCells[row];
-            targetRowsShared[row] = true;
-        }
+        Array.Copy(sourceCells, targetCells, Height);
+        Array.Fill(targetRowsShared, true);
         Array.Fill(source._rowsShared, true);
         Array.Copy(source._rowSignatures, _rowSignatures, Height);
         Array.Copy(source._rowSignatureDirty, _rowSignatureDirty, Height);

@@ -27,11 +27,7 @@ public static partial class AnimatedSvgRenderer
             return;
         }
 
-        var theme = SvgRenderShared.ResolveTheme(options);
-        var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
-        var normalizeTime = CreateTimeNormalizer(options.VideoFps, options.VideoTiming);
-        var frames = emulator.ReplayFrames(session, options.VideoFps, normalizeTime);
-        frames = TrimTrailingAltScreenRestoreFrame(frames, session);
+        var frames = PrepareFrames(session, options);
 
         if (frames.Count == 0)
         {
@@ -40,6 +36,23 @@ public static partial class AnimatedSvgRenderer
         }
 
         WriteFrames(writer, frames, options);
+    }
+
+    /// <summary>
+    /// Replays and retains exactly the frames consumed by animated SVG rendering.
+    /// Kept internal so benchmarks can measure the production replay stage without
+    /// duplicating its FPS reduction and trailing-frame rules.
+    /// </summary>
+    internal static IReadOnlyList<TerminalFrame> PrepareFrames(
+        RecordingSession session,
+        SvgRenderOptions options
+    )
+    {
+        var theme = SvgRenderShared.ResolveTheme(options);
+        var emulator = new TerminalEmulator(session.Header.width, session.Header.height, theme);
+        var normalizeTime = CreateTimeNormalizer(options.VideoFps, options.VideoTiming);
+        var frames = emulator.ReplayFrames(session, options.VideoFps, normalizeTime);
+        return TrimTrailingAltScreenRestoreFrame(frames, session);
     }
 
     /// <summary>Renders terminal frames captured from an already-running interactive terminal.</summary>
@@ -64,14 +77,13 @@ public static partial class AnimatedSvgRenderer
         }
 
         var theme = SvgRenderShared.ResolveTheme(options);
-        var signatureCache = new Dictionary<ScreenBuffer, ulong>();
         var reducedFrames =
             frames[0].EventIndex >= 0
                 ? frames
                 : ReduceFrames(
                     NormalizeTiming(frames, options.VideoFps, options.VideoTiming),
                     options.VideoFps,
-                    signatureCache
+                    new Dictionary<ScreenBuffer, ulong>()
                 );
         reducedFrames = SpreadCollapsedFrameTimes(reducedFrames, options.VideoFps);
 
@@ -175,7 +187,12 @@ public static partial class AnimatedSvgRenderer
         {
             styles.GetTextClass(theme.Foreground);
         }
-        SvgDocumentBuilder.CollectTextStyles(animationFrames, context, styles);
+        var animatedRows = SvgDocumentBuilder.PrepareAnimatedRows(
+            animationFrames,
+            context,
+            styles,
+            options.MaskPatterns
+        );
         SvgDocumentBuilder.BeginSvg(
             svgWriter,
             context,
@@ -197,6 +214,7 @@ public static partial class AnimatedSvgRenderer
         var frameRowDefinitions = SvgDocumentBuilder.AppendAnimatedRowDefs(
             svgWriter,
             animationFrames,
+            animatedRows,
             context,
             theme,
             styles,

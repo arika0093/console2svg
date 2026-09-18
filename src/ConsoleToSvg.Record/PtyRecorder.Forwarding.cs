@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Porta.Pty;
 using ZLogger;
 
 namespace ConsoleToSvg.Recording;
@@ -160,13 +161,13 @@ public static partial class PtyRecorder
         return builder.ToString();
     }
 
-    private static NativePtyOptions BuildOptions(
+    private static PtyOptions BuildOptions(
         ILogger logger,
         string command,
         int width,
         int height,
-        bool disableInputEcho,
-        bool noDeleteEnvs
+        bool noDeleteEnvs,
+        string workingDirectory
     )
     {
         var env = new Dictionary<string, string>();
@@ -186,33 +187,43 @@ public static partial class PtyRecorder
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            return new NativePtyOptions
+            // The backend joins CommandLine verbatim, so arguments are
+            // pre-quoted with PtyCommandLine (cmd.exe /c payloads need plain
+            // wrapping, which generic ""-doubling would break).
+            return new PtyOptions
             {
                 Name = "console2svg",
                 Cols = width,
                 Rows = height,
-                Cwd = Environment.CurrentDirectory,
+                Cwd = workingDirectory,
                 App = "cmd.exe",
-                Args = ["/d", "/c", shellCommand],
+                // /s makes cmd strip the outermost quotes of the /c payload
+                // and keep the interior verbatim. Without it, inner quotes
+                // must be C-runtime escaped (\") which cmd.exe does not
+                // understand and leaks into the command as backslashes.
+                CommandLine = PtyCommandLine.QuoteArgs("cmd.exe", ["/d", "/s", "/c", shellCommand]),
+                VerbatimCommandLine = true,
                 Environment = env,
-                DisableInputEcho = false,
             };
         }
 
-        return new NativePtyOptions
+        return new PtyOptions
         {
             Name = "console2svg",
             Cols = width,
             Rows = height,
-            Cwd = Environment.CurrentDirectory,
+            Cwd = workingDirectory,
             App = "/bin/sh",
-            Args = ["-c", shellCommand],
+            CommandLine = ["-c", shellCommand],
             Environment = env,
-            DisableInputEcho = disableInputEcho,
         };
     }
 
-    private static ProcessStartInfo BuildFallbackProcessStartInfo(string command, bool noDeleteEnvs)
+    private static ProcessStartInfo BuildFallbackProcessStartInfo(
+        string command,
+        bool noDeleteEnvs,
+        string workingDirectory
+    )
     {
         var shellCommand = BuildShellCommand(command, noDeleteEnvs);
 
@@ -221,13 +232,15 @@ public static partial class PtyRecorder
             return new ProcessStartInfo
             {
                 FileName = GetWindowsShellPath(),
-                Arguments = "/d /c " + shellCommand + " 2>&1",
+                // Same /s quoting rationale as the PTY path above: the payload
+                // is wrapped in plain quotes so inner quotes survive verbatim.
+                Arguments = "/d /s /c \"" + shellCommand + "\" 2>&1",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardInput = true,
                 RedirectStandardError = false,
                 CreateNoWindow = true,
-                WorkingDirectory = Environment.CurrentDirectory,
+                WorkingDirectory = workingDirectory,
             };
         }
 
@@ -243,7 +256,7 @@ public static partial class PtyRecorder
             RedirectStandardInput = true,
             RedirectStandardError = false,
             CreateNoWindow = true,
-            WorkingDirectory = Environment.CurrentDirectory,
+            WorkingDirectory = workingDirectory,
         };
     }
 
@@ -430,7 +443,7 @@ public static partial class PtyRecorder
             _originalUnixTermios = originalUnixTermios;
         }
 
-        public static ConsoleInputMode? TryEnableRaw(ILogger logger)
+        public static ConsoleInputMode? TryEnableRaw(ILogger logger, bool allowMouseInput = false)
         {
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -458,9 +471,12 @@ public static partial class PtyRecorder
                 var newMode = mode;
                 newMode |= EnableVirtualTerminalInput | EnableExtendedFlags | EnableQuickEditMode;
                 newMode &= ~(EnableLineInput | EnableEchoInput | EnableProcessedInput);
-                // Keep host-side text selection available. Mouse reports, if a host
-                // still emits them as VT input, are discarded by InteractiveRecorder.
-                newMode &= ~EnableMouseInput;
+                // Disabled by default so the host keeps text selection;
+                // --mouse leaves the host flag as-is (see AppOptions.Mouse).
+                if (!allowMouseInput)
+                {
+                    newMode &= ~EnableMouseInput;
+                }
 
                 if (newMode == mode)
                 {

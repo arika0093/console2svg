@@ -38,7 +38,8 @@ public sealed partial class ConsoleToSvgCommandLine
             RequiredString("--crop-bottom", "Crop bottom by px, ch, or text.");
         public Option<string> CropLeft { get; } =
             RequiredString("--crop-left", "Crop left by px or ch.");
-        public Option<string[]> Theme { get; } = MultipleStrings("--theme", "Appearance theme ID.");
+        public Option<string[]> Theme { get; } =
+            new("--theme", "-t") { Description = "Appearance theme ID." };
         public Option<string> ForeColor { get; } =
             RequiredString("--forecolor", "Override the foreground color.");
         public Option<string> BackColor { get; } =
@@ -66,9 +67,9 @@ public sealed partial class ConsoleToSvgCommandLine
         public Option<bool> MaskAuto { get; } =
             new("--mask-auto")
             {
-                Description = "Automatically overlay Betterleaks secret findings (default: false).",
+                Description = "Automatically overlay Betterleaks secret findings (default: true).",
                 Arity = ArgumentArity.ZeroOrOne,
-                DefaultValueFactory = _ => false,
+                DefaultValueFactory = _ => true,
             };
         public Option<bool> WithCommand { get; } =
             Flag("--with-command", "Prepend the command line to output.", "-c");
@@ -83,6 +84,14 @@ public sealed partial class ConsoleToSvgCommandLine
             );
         public Option<bool> NoResize { get; } =
             Flag("--no-resize", "Keep the initial TTY size in live-server.");
+        public Option<bool> Mouse { get; } =
+            new("--mouse")
+            {
+                Description =
+                    "Forward mouse tracking in interactive/live-server (default: false). Lets TUI apps scroll with the wheel; host selection is owned by the child while enabled.",
+                Arity = ArgumentArity.ZeroOrOne,
+                DefaultValueFactory = _ => false,
+            };
         public Option<bool> NoLoop { get; } = Flag("--no-loop", "Disable animated SVG looping.");
         public Option<double?> Fps { get; } =
             PositiveDouble("--fps", "Maximum frame sampling rate.");
@@ -128,13 +137,33 @@ public sealed partial class ConsoleToSvgCommandLine
         public Option<bool> LegacyRoot { get; } = HiddenFlag("--legacy-root");
         public Option<string> TmuxTarget { get; } = RequiredString("--target", "tmux pane target.");
         public Option<int?> History { get; } = HistoryOption();
-        public Option<string> ListenAddress { get; } =
-            RequiredString("--listen", "IP address for the live server.");
         public Option<bool> StatusJson { get; } = Flag("--json", "Write status as JSON.");
         public Option<string> StatusFormat { get; } =
             StringChoice("--format", "Output format.", ["json", "markdown", "table"]);
         public Option<string> ThemeFormat { get; } =
             StringChoice("--format", "Output format.", ["json", "markdown", "table"]);
+        public Option<string> BatchInput { get; } =
+            new("--input", "-i")
+            {
+                Description = "Markdown input file or directory.",
+                HelpName = "path",
+            };
+        public Option<string> BatchOutput { get; } =
+            new("--output", "-o")
+            {
+                Description = "Generated image output directory.",
+                HelpName = "dir",
+            };
+        public Option<string[]> BatchFilter { get; } =
+            new("--filter")
+            {
+                Arity = ArgumentArity.OneOrMore,
+                AllowMultipleArgumentsPerToken = true,
+                Description = "Include input-relative Markdown filepaths matching a glob.",
+                HelpName = "glob",
+            };
+        public Option<bool> BatchDryRun { get; } =
+            Flag("--dry-run", "List planned jobs without changing the filesystem.");
 
         public IEnumerable<Option> Options =>
             [
@@ -186,6 +215,7 @@ public sealed partial class ConsoleToSvgCommandLine
                 Coalesce,
                 Interactive,
                 NoResize,
+                Mouse,
                 NoColorEnv,
                 NoDeleteEnvs,
                 Adjust,
@@ -194,11 +224,10 @@ public sealed partial class ConsoleToSvgCommandLine
                 LegacyRoot,
                 TmuxTarget,
                 History,
-                ListenAddress,
             ];
 
         public IEnumerable<Option> CaptureOptions =>
-            Options.Except([Interactive, TmuxTarget, History, ListenAddress]);
+            Options.Except([Interactive, TmuxTarget, History]);
 
         public IEnumerable<Option> InteractiveOptions =>
             CaptureOptions.Except([
@@ -262,9 +291,10 @@ public sealed partial class ConsoleToSvgCommandLine
             ]);
 
         public IEnumerable<Option> TmuxCaptureOptions =>
-            CaptureOptions
-                .Except([InputCastPath, StdOut, Interactive, NoResize, ListenAddress, LegacyRoot])
-                .Concat([TmuxTarget, History]);
+            CaptureOptions.Except([Interactive, TmuxTarget, History]).Concat([TmuxTarget, History]);
+
+        public IEnumerable<Option> BatchMarkdownOptions =>
+            [BatchInput, BatchOutput, BatchFilter, BatchDryRun, Verbose];
 
         public IEnumerable<Option> TmuxLiveServerOptions =>
             LiveServerOptions.Except([History]).Append(TmuxTarget);
@@ -484,9 +514,6 @@ public sealed partial class ConsoleToSvgCommandLine
             });
             return option;
         }
-
-        private static Option<string[]> MultipleStrings(string name, string description) =>
-            new(name) { Description = description };
 
         private static Option<string[]> MaskOption() =>
             new("--mask")

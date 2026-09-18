@@ -1,0 +1,170 @@
+---
+title: 创建自定义主题
+description: theme.json 的结构、引用其他主题、各个区段以及发布方法。
+---
+
+import { FileTree } from '@astrojs/starlight/components';
+
+自定义主题是在主题根目录中放置 `theme.json` 的目录。图片、窗口边框等资源也可以放在同一目录中。
+
+## 文件结构
+
+<FileTree>
+
+- my-theme
+  - theme.json
+  - preview.png
+  - background.png
+  - chrome.svg
+
+</FileTree>
+
+`theme.json` 是必需的。`preview.png`、`background.png`、`chrome.svg` 可按需添加。
+
+最小结构如下。
+
+```json title="theme.json"
+{
+  "schemaVersion": 1,
+  "id": "my-theme",
+  "name": "My Theme",
+  "version": "1.0.0",
+  "terminal": {
+    "foreground": "#d4d4d4",
+    "background": "#1e1e1e",
+    "ansiPalette": [
+      "#000000", "#cd3131", "#0dbc79", "#e5e510",
+      "#2472c8", "#bc3fbc", "#11a8cd", "#e5e5e5",
+      "#666666", "#f14c4c", "#23d18b", "#f5f543",
+      "#3b8eea", "#d670d6", "#29b8db", "#ffffff"
+    ]
+  }
+}
+```
+
+`ansiPalette` 必须包含普通色和亮色共 16 种颜色。`id` 请使用不包含 `/`、`\`、`:` 的唯一名称。
+
+## 引用其他主题
+
+在 `$include` 中指定内置主题或同一发布包内主题的 ID 后，就可以继承已有配色和外观，只定义差异部分。
+
+```json title="theme.json"
+{
+  "schemaVersion": 1,
+  "id": "my-github-theme",
+  "name": "My GitHub Theme",
+  "version": "1.0.0",
+  "$include": ["github-dark"],
+  "appearance": {
+    "normal": {
+      "background": ["#101820", "#172a3a"]
+    }
+  }
+}
+```
+
+如果要引用其他 Git 仓库中的主题，请以对象形式指定 `source`。
+引用目标也需要包含 `theme.json`。
+
+```json title="theme.json"
+"$include": [
+  { "id": "base-theme", "source": "owner/theme-pack" }
+]
+```
+
+## 完整示例
+
+请参考内置主题 [`cyberpunk`](https://github.com/arika0093/console2svg/blob/main/themes/full/cyberpunk/)。
+
+
+```jsonc title="theme.json"
+{
+  "schemaVersion": 1,
+  "id": "cyberpunk",
+  "name": "Cyberpunk HUD",
+  "version": "1.0.0",
+  "description": "A neon HUD frame with a high-contrast cyberpunk terminal palette.",
+  "appearance": {
+    // 定义窗口边框外观
+    // 使用 cyberpunk 启动时的外观
+    "normal": {
+      "id": "cyberpunk",
+      "window": "chrome.json",
+      "margin": 3,
+      "padding": 11,
+      "opacity": 0.85
+    },
+    // 使用 cyberpunk-pc 启动时的外观
+    "pc": {
+      "id": "cyberpunk-pc",
+      "window": "chrome.json",
+      "pcPadding": 30,
+      "margin": 3,
+      "padding": 11,
+      "opacity": 0.85,
+      "background": [
+        "#09051a",
+        "#17104a"
+      ]
+    }
+  },
+  // 定义终端配色
+  "terminal": {
+    // 前景色
+    "foreground": "#d8f9ff",
+    // 背景色
+    "background": "#090b1a",
+    // 16 种 ANSI 颜色
+    "ansiPalette": [
+      "#090b1a",
+      "#ff3c9e",
+      "#55f7bd",
+      "#f6e05e",
+      "#55b8ff",
+      "#d56dff",
+      "#4deeff",
+      "#d8f9ff",
+      "#35406d",
+      "#ff72b8",
+      "#8dffd1",
+      "#fff59b",
+      "#8bd2ff",
+      "#e7a1ff",
+      "#8df6ff",
+      "#ffffff"
+    ]
+  }
+}
+```
+
+
+```jsonc title="chrome.json"
+{
+  // 终端 shell 四周的内边距
+  // 顶部为标题栏预留了更多空间
+  "paddingTop": 38,
+  "paddingRight": 7,
+  "paddingBottom": 7,
+  "paddingLeft": 7,
+  // 窗口边框阴影
+  "shadowOffset": 10,
+  // 窗口边框圆角半径
+  "clientCornerRadius": 0,
+  // 在此覆盖背景色
+  "themeBackgroundOverride": "#090b1a",
+  // 窗口边框 SVG 模板
+  "svgTemplate": "window.svg"
+}
+```
+
+## 发布
+
+可以将主题根目录作为 Git 仓库公开，或打包成归档文件。用户可以按如下方式安装。
+
+```bash title="Terminal"
+console2svg theme install https://github.com/owner/my-theme.git
+console2svg theme install owner/my-theme
+```
+
+同时支持 GitHub 的 `owner/repository` 简写、指定分支，以及仓库内子目录。
+发布时请务必包含 `theme.json` 和引用的资源，并更新 `id` 与 `version`。

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using ConsoleToSvg.Svg;
 using ConsoleToSvg.Terminal;
 using Microsoft.Extensions.Logging;
+using Porta.Pty;
 using ZLogger;
 
 namespace ConsoleToSvg.Recording;
@@ -34,7 +35,9 @@ public static partial class InteractiveRecorder
         bool forwardToConsole = true,
         bool captureControlsEnabled = true,
         Func<(int Width, int Height)>? terminalSizeProvider = null,
-        string? saveCastPath = null
+        string? saveCastPath = null,
+        // Opt-in mouse passthrough (--mouse, default false; see AppOptions.Mouse).
+        bool mousePassthrough = false
     )
     {
         if (screenshotKey.IsEmpty || recordingKey.IsEmpty || pauseKey.IsEmpty)
@@ -72,7 +75,9 @@ public static partial class InteractiveRecorder
             ? Console.OpenStandardInput()
             : null;
 
-        var rawInput = forwardToConsole ? PtyRecorder.ConsoleInputMode.TryEnableRaw(logger) : null;
+        var rawInput = forwardToConsole
+            ? PtyRecorder.ConsoleInputMode.TryEnableRaw(logger, mousePassthrough)
+            : null;
         using var utf8OutputScope = PtyRecorder.TryUseUtf8ConsoleOutputEncoding(
             forwardToConsole,
             logger
@@ -88,12 +93,12 @@ public static partial class InteractiveRecorder
             PtyRecorder.TryDisableTerminalMouseTracking(forwardToConsole: true, logger);
         }
 
-        var connection = await NativePty
+        var connection = await PtyProvider
             .SpawnAsync(options, cancellationToken)
             .ConfigureAwait(false);
         // Root PTY process id for Ctrl+D handling: EOT belongs to the active
         // (nested) shell when one exists, otherwise it exits the session.
-        var ptyRootProcessId = connection.ProcessId;
+        var ptyRootProcessId = connection.Pid;
         onScreenUpdated?.Invoke(emulator.Buffer.Clone());
         var resizeTask = terminalSizeProvider is null
             ? null
@@ -668,7 +673,7 @@ public static partial class InteractiveRecorder
                 var bytes = new byte[4096];
                 var chars = new char[8192];
                 var decoder = Encoding.UTF8.GetDecoder();
-                var hostSequenceFilter = new HostTerminalSequenceFilter();
+                var hostSequenceFilter = new HostTerminalSequenceFilter(mousePassthrough);
                 try
                 {
                     while (!lifetime.IsCancellationRequested)
@@ -816,7 +821,8 @@ public static partial class InteractiveRecorder
                     var router = new InteractiveInputRouter(
                         screenshotKey.Span,
                         recordingKey.Span,
-                        pauseKey.Span
+                        pauseKey.Span,
+                        mousePassthrough
                     );
                     var maxForwardedLength = Math.Max(
                         1,

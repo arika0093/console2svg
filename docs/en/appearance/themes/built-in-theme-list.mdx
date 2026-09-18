@@ -1,0 +1,19 @@
+---
+title: Built-in theme overview
+description: Browse the built-in themes included with console2svg by type.
+---
+
+The built-in themes in console2svg are divided into the following types.
+
+* [Palettes](./built-in-palettes.mdx): Themes that change only the terminal color scheme
+* [Window frames](./built-in-window-themes.mdx): Themes that specify macOS-style or Windows-style frames
+* [Full themes](./built-in-full-themes.mdx): Themes that change the color scheme and window frame together
+
+Apply a theme by passing its ID to `-t` or `--theme`.
+Use `-d` or `--window` when specifying only a window frame.
+
+```bash title="Terminal" "-t nord" "--window macos-pc" "-t cyberpunk-pc"
+console2svg capture -t nord -- console2svg
+console2svg capture --window macos-pc -- console2svg
+console2svg capture -t cyberpunk-pc -- console2svg
+```

@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <TargetFrameworks Condition="'$(TFMS)' != ''">$(TFMS)</TargetFrameworks>
-    <TargetFrameworks Condition="'$(TFMS)' == ''">net10.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(TFMS)' == ''">net11.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>

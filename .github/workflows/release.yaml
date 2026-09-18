@@ -12,6 +12,10 @@ permissions:
   id-token: write
   contents: write
 
+env:
+  DOTNET_VERSION: '11.0.x'
+  DOTNET_QUALITY: preview
+
 jobs:
   build-metadata:
     runs-on: ubuntu-latest
@@ -27,8 +31,8 @@ jobs:
 
       - uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: latest
-          dotnet-quality: preview
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: ${{ env.DOTNET_QUALITY }}
 
       - uses: dotnet/nbgv@v0.5
         id: nbgv
@@ -70,8 +74,8 @@ jobs:
 
       - uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: latest
-          dotnet-quality: preview
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: ${{ env.DOTNET_QUALITY }}
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -183,8 +187,8 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: latest
-          dotnet-quality: preview
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: ${{ env.DOTNET_QUALITY }}
 
       - name: Setup console2svg
         uses: ./

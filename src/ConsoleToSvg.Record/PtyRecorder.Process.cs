@@ -19,7 +19,14 @@ public static partial class PtyRecorder
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            return false;
+            // The PTY backend's reader stream does not own the pipe handle, so
+            // disposing the connection closes the handle underneath a pending
+            // read. That surfaces as ERROR_INVALID_HANDLE rather than
+            // ObjectDisposedException. Either way the PTY is gone, so treat it
+            // as EOF. HResult is used instead of the message because the message
+            // is locale-dependent.
+            const int ErrorInvalidHandle = unchecked((int)0x80070006);
+            return exception.HResult == ErrorInvalidHandle;
         }
 
         return exception.Message.Contains("Input/output error", StringComparison.OrdinalIgnoreCase);
@@ -176,6 +183,14 @@ public static partial class PtyRecorder
                 catch (ObjectDisposedException)
                 {
                     logger.ZLogDebug($"Read stream disposed; treating as EOF.");
+                    break;
+                }
+                catch (IOException ex) when (IsExpectedPtyEof(ex))
+                {
+                    // The PTY handle was closed underneath a pending read during
+                    // teardown (Unix EIO after child exit, Windows handle close).
+                    // Treat as EOF so buffered events still flush below.
+                    logger.ZLogDebug($"PTY handle closed; treating as EOF.");
                     break;
                 }
                 if (count <= 0)

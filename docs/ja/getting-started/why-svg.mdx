@@ -1,0 +1,53 @@
+---
+title: なぜSVG形式なのか
+description: console2svgがターミナル出力の保存形式としてSVGを選んでいる理由。
+---
+
+import { FileTree } from '@astrojs/starlight/components';
+
+console2svgは、ターミナルの出力をSVGとして保存します。
+SVGは単に画像を表示するだけでなく、ターミナルのような文字中心の画面を、きれいに・扱いやすく共有するのに適した形式です。
+
+## どのサイズでも鮮明
+
+まずは以下2つの画像を見比べてください。
+
+```bash title="Terminal"
+$ btop
+```
+
+### SVG
+{/* c2s:: -w 120 -h 24 -- fastfetch */}
+<img width="800" src="../../assets/why-svg-fastfetch.svg" />
+
+### PNG
+{/* c2s:: -w 120 -h 24 -- fastfetch */}
+<img width="800" src="../../assets/why-svg-fastfetch.png" />
+
+
+前者の方が文字がくっきりしていて、罫線もきれいに表示されていることがわかります。
+SVGはベクター形式なので、拡大・縮小しても文字や罫線がぼやけません。README、ブログ記事、スライド、印刷物など、表示する場所やサイズが変わっても同じ品質を保てます。
+
+## 容量が小さい
+
+上記2つのファイルの容量を比較すると、SVG版のほうが圧倒的に小さい(1/5程度)ことがわかります。
+
+<FileTree>
+
+* output.png (195918 bytes)
+* output.svg (38912 bytes)
+
+</FileTree>
+
+> [!NOTE]
+> この例は`btop`なので、比較的SVGに**不向きな**ケースであることに注意してください。
+> 単純な文字だけのケースであれば、さらに小さくなります。
+
+## ブラウザでそのまま表示できる
+
+SVGは主要なブラウザが標準で対応しているオープンなWeb標準です。
+特別なビューアや変換ツールを用意しなくても、生成したファイルをブラウザで開いたり、MarkdownやHTMLに埋め込んだりできます。
+
+```markdown title="README.md"
+![your terminal output](./output.svg)
+```

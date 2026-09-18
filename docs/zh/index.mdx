@@ -1,0 +1,104 @@
+---
+title: console2svg
+description: 将终端输出转换为 SVG 图像。
+template: splash
+hero:
+  tagline: 优雅地分享终端。
+  image:
+    file: ../assets/cmd-hero.svg
+    alt: console2svg 终端预览
+  actions:
+    - text: 开始使用
+      link: /zh/getting-started/installation/
+      variant: primary
+    - text: 浏览示例
+      link: /zh/gallery/
+      variant: secondary
+next: 
+  link: /features
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import { LinkButton } from '@astrojs/starlight/components';
+
+## 概览
+
+将终端输出转换为适用于 README、博客文章、作业报告和文档的图片。
+
+> 这张图片当然也是由 console2svg 自己生成的。很漂亮吧？
+
+
+## 它能做什么
+
+功能很多！你一定能找到喜欢的功能。
+
+<CardGrid stagger>
+  <Card title="生成漂亮的 SVG 图片" icon="star">
+    将 ANSI 和 Truecolor 输出渲染为 SVG。
+    为你的文档提供恰到好处的高分辨率效果。
+
+    [查看详情 →](/zh/basic-usage/capturing-images/overview/) <br/>
+    [为什么选择 SVG？ →](/zh/getting-started/why-svg/)
+  </Card>
+  <Card title="也可以生成视频" icon="rocket">
+    想分享 `cmatrix` 的输出吗？一次即可完成。
+
+    [查看详情 →](/zh/basic-usage/capturing-videos/overview/)
+  </Card>
+  <Card title="支持自动化" icon="setting">
+    文档中的图片应该跟随最新的实际输出，对吧？
+    可以在 CI 中重新生成，并带有重放功能。
+
+    [查看详情 →](/zh/automation/document-image-sync/)
+  </Card>
+  <Card title="可转换为其他格式" icon="seti:video">
+    即使平台不支持 SVG 也没关系。
+    可以转换为 PNG、GIF、WebM、MP4 等格式，并且内置支持。
+
+    [查看详情 →](/zh/basic-usage/capturing-images/convert-to-png/)
+  </Card>
+  <Card title="交互式捕获" icon="seti:powershell">
+    提供了按 `F9`/`F10` 键即可随时拍摄的模式。
+    编写文档时无需每次都启动截图工具。
+
+    [查看详情 →](/zh/basic-usage/interactive-capture/)
+  </Card>
+  <Card title="Live-Server 功能" icon="server">
+    可以将终端会话实时转换为 SVG，并在浏览器中实时显示。
+    甚至可以用于 YouTube 直播。
+
+    [查看详情 →](/zh/utilities/live-server/)
+  </Card>
+  <Card title="丰富的自定义主题支持" icon="desktop">
+    支持多种自定义主题。  
+    可以按照你的喜好更改终端外观。
+
+    [查看详情 →](/zh/appearance/themes/built-in-themes/)
+  </Card>
+  <Card title="支持 Windows" icon="seti:windows">
+    它并不是只能在 macOS 上使用。  
+    Linux 可以，当然 Windows 也可以。
+
+    [查看详情 →](/zh/getting-started/installation/)
+  </Card>
+  <Card title="内置裁剪功能" icon="pencil">
+    可以自动裁剪过长输出，只截取需要的部分。
+
+    [查看详情 →](/zh/basic-usage/capturing-images/crop/)
+  </Card>
+  <Card title="安全共享" icon="padlock">
+    常见密码和用户名会被自动遮盖。
+    即使输出中不小心出现了 `APP_SECRET_TOKEN`，也可以放心。
+
+    [查看详情 →](/zh/basic-usage/masking-secrets/auto-masking/)
+  </Card>
+</CardGrid>
+
+请先看看实际示例。
+
+<LinkButton href="/zh/gallery/" variant="primary">
+  查看使用示例
+</LinkButton>
+<LinkButton href="/zh/getting-started/installation" variant="secondary">
+  安装
+</LinkButton>

@@ -56,7 +56,7 @@ tmux -L "$socket" new-window \
 wait_for_pane "$socket" "$session:capture.0" "$"
 sleep 0.5
 
-capture_command='tmux capture-pane -pe -t :0 | console2svg capture -h 12 -o capture.svg'
+capture_command='console2svg tmux capture --target :0 -h 12 -o capture.svg'
 type_slowly "$socket" "$session:capture.0" "$capture_command"
 tmux -L "$socket" send-keys -t "$session:capture.0" Enter
 wait_for_file "$work_dir/capture.svg"

@@ -142,6 +142,28 @@ public sealed partial class ConsoleToSvgCommandLine
             StringChoice("--format", "Output format.", ["json", "markdown", "table"]);
         public Option<string> ThemeFormat { get; } =
             StringChoice("--format", "Output format.", ["json", "markdown", "table"]);
+        public Option<string> BatchInput { get; } =
+            new("--input", "-i")
+            {
+                Description = "Markdown input file or directory.",
+                HelpName = "path",
+            };
+        public Option<string> BatchOutput { get; } =
+            new("--output", "-o")
+            {
+                Description = "Generated image output directory.",
+                HelpName = "dir",
+            };
+        public Option<string[]> BatchFilter { get; } =
+            new("--filter")
+            {
+                Arity = ArgumentArity.OneOrMore,
+                AllowMultipleArgumentsPerToken = true,
+                Description = "Include input-relative Markdown paths matching a glob.",
+                HelpName = "glob",
+            };
+        public Option<bool> BatchDryRun { get; } =
+            Flag("--dry-run", "List planned jobs without changing the filesystem.");
 
         public IEnumerable<Option> Options =>
             [
@@ -269,9 +291,10 @@ public sealed partial class ConsoleToSvgCommandLine
             ]);
 
         public IEnumerable<Option> TmuxCaptureOptions =>
-            CaptureOptions
-                .Except([InputCastPath, StdOut, Interactive, NoResize, LegacyRoot])
-                .Concat([TmuxTarget, History]);
+            CaptureOptions.Except([Interactive, TmuxTarget, History]).Concat([TmuxTarget, History]);
+
+        public IEnumerable<Option> BatchMarkdownOptions =>
+            [BatchInput, BatchOutput, BatchFilter, BatchDryRun, Verbose];
 
         public IEnumerable<Option> TmuxLiveServerOptions =>
             LiveServerOptions.Except([History]).Append(TmuxTarget);

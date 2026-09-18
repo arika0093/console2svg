@@ -29,6 +29,7 @@ public enum Workflow
     Update,
     LiveServer,
     Tmux,
+    Batch,
 }
 
 public enum TmuxAction
@@ -236,4 +237,22 @@ public sealed class AppOptions
     /// which prefers the bundled resvg host, then ffmpeg+librsvg.
     /// </summary>
     public SvgConverterMode SvgConverter { get; set; } = SvgConverterMode.Auto;
+
+    /// <summary>Batch markdown mode: input markdown file or directory.</summary>
+    public string? BatchInputPath { get; set; }
+
+    /// <summary>Batch markdown mode: generated image output directory.</summary>
+    public string? BatchOutputDir { get; set; }
+
+    /// <summary>Batch markdown mode: input-relative glob filters.</summary>
+    public string[] BatchFilters { get; set; } = [];
+
+    /// <summary>Batch markdown mode: list planned jobs without changing the filesystem.</summary>
+    public bool BatchDryRun { get; set; }
+
+    /// <summary>
+    /// Shallow copy for per-block overrides. List properties are shared by reference;
+    /// batch execution never mutates them.
+    /// </summary>
+    public AppOptions ShallowClone() => (AppOptions)MemberwiseClone();
 }

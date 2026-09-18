@@ -42,11 +42,19 @@ public static partial class PtyRecorder
         string? replaySavePath = null,
         string? replayPath = null,
         double? outputCoalesceMs = null,
-        double videoFps = 12d
+        double videoFps = 12d,
+        string? workingDirectory = null
     )
     {
         logger ??= NullLogger.Instance;
-        logger.ZLogDebug($"Start PTY recording. Command={command} Width={width} Height={height}");
+        var resolvedWorkingDirectory = Path.GetFullPath(
+            workingDirectory ?? Environment.CurrentDirectory
+        );
+        replaySavePath = ResolveRuntimePath(replaySavePath, resolvedWorkingDirectory);
+        replayPath = ResolveRuntimePath(replayPath, resolvedWorkingDirectory);
+        logger.ZLogDebug(
+            $"Start PTY recording. Command={command} Width={width} Height={height} Cwd={resolvedWorkingDirectory}"
+        );
 
         const int MaxPtyStartupRetries = 3;
         const int PtyStartupTimeoutMs = 1000;
@@ -67,6 +75,7 @@ public static partial class PtyRecorder
                         replayPath,
                         outputCoalesceMs,
                         videoFps,
+                        resolvedWorkingDirectory,
                         startupTimeoutMs: PtyStartupTimeoutMs
                     )
                     .ConfigureAwait(false);
@@ -97,7 +106,8 @@ public static partial class PtyRecorder
                         replaySavePath,
                         replayPath,
                         outputCoalesceMs,
-                        videoFps
+                        videoFps,
+                        resolvedWorkingDirectory
                     )
                     .ConfigureAwait(false);
             }
@@ -128,7 +138,8 @@ public static partial class PtyRecorder
                         replaySavePath,
                         replayPath,
                         outputCoalesceMs,
-                        videoFps
+                        videoFps,
+                        resolvedWorkingDirectory
                     )
                     .ConfigureAwait(false);
             }
@@ -150,11 +161,19 @@ public static partial class PtyRecorder
         string? replayPath,
         double? outputCoalesceMs,
         double videoFps,
+        string workingDirectory,
         int? startupTimeoutMs = null
     )
     {
         var disableInputEcho = forwardToConsole && string.IsNullOrWhiteSpace(replayPath);
-        var options = BuildOptions(logger, command, width, height, noDeleteEnvs);
+        var options = BuildOptions(
+            logger,
+            command,
+            width,
+            height,
+            noDeleteEnvs,
+            workingDirectory
+        );
         logger.ZLogDebug(
             $"Spawning PTY process. App={options.App} Args={string.Join(' ', options.CommandLine ?? [])} Cwd={options.Cwd} Cols={options.Cols} Rows={options.Rows}"
         );
@@ -434,6 +453,16 @@ public static partial class PtyRecorder
         }
     }
 
+    private static string? ResolveRuntimePath(string? path, string workingDirectory)
+    {
+        if (string.IsNullOrWhiteSpace(path) || Path.IsPathRooted(path))
+        {
+            return path;
+        }
+
+        return Path.GetFullPath(path, workingDirectory);
+    }
+
     private static async Task DisposeConnectionWithTimeoutAsync(
         IDisposable connection,
         ILogger logger
@@ -528,7 +557,8 @@ public static partial class PtyRecorder
         string? replaySavePath,
         string? replayPath,
         double? outputCoalesceMs,
-        double videoFps
+        double videoFps,
+        string workingDirectory
     )
     {
         var session = new RecordingSession(width, height);
@@ -544,7 +574,11 @@ public static partial class PtyRecorder
         using var utf8OutputScope = TryUseUtf8ConsoleOutputEncoding(forwardToConsole, logger);
         using var vtOutputScope = forwardToConsole ? ConsoleOutputMode.TryEnable(logger) : null;
 
-        var startInfo = BuildFallbackProcessStartInfo(command, noDeleteEnvs);
+        var startInfo = BuildFallbackProcessStartInfo(
+            command,
+            noDeleteEnvs,
+            workingDirectory
+        );
         logger.ZLogDebug(
             $"Using process fallback. FileName={startInfo.FileName} Arguments={startInfo.Arguments} Cwd={startInfo.WorkingDirectory}"
         );

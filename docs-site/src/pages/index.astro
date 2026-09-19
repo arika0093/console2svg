@@ -1,0 +1,95 @@
+---
+// Root index: instant, language-aware redirect to /en/ /ja/ /zh/.
+// Replaces Astro `redirects: { '/': '/en/' }` which emits a visible
+// "Redirecting..." interstitial. This page runs a synchronous script
+// in <head> (before first paint) and uses location.replace() so the
+// user never sees intermediate content and no history entry is left.
+const rawBase = import.meta.env.BASE_URL ?? "/";
+const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+const fallbackUrl = `${base}en/`;
+const jaUrl = `${base}ja/`;
+const zhUrl = `${base}zh/`;
+const enUrl = `${base}en/`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>console2svg</title>
+    <meta name="robots" content="noindex" />
+    <link rel="alternate" hreflang="en" href={enUrl} />
+    <link rel="alternate" hreflang="ja" href={jaUrl} />
+    <link rel="alternate" hreflang="zh-CN" href={zhUrl} />
+    <link rel="alternate" hreflang="x-default" href={enUrl} />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: Canvas;
+        color-scheme: light dark;
+      }
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+    </style>
+    <script is:inline define:vars={{ base, fallbackUrl }}>
+      (function () {
+        try {
+          var supported = { ja: 1, zh: 1, en: 1 };
+          var langs =
+            (navigator.languages && navigator.languages.length
+              ? navigator.languages
+              : [navigator.language || navigator.userLanguage || "en"]
+            ).slice(0, 8);
+          var locale = "en";
+          for (var i = 0; i < langs.length; i++) {
+            var lang = String(langs[i] || "")
+              .toLowerCase()
+              .replace(/_/g, "-");
+            if (!lang) continue;
+            var primary = lang.split("-")[0];
+            if (primary === "ja") {
+              locale = "ja";
+              break;
+            }
+            if (primary === "zh") {
+              locale = "zh";
+              break;
+            }
+            if (primary === "en") {
+              locale = "en";
+              break;
+            }
+            // Other languages: keep looking at the next preference,
+            // fall back to English only after all preferences are checked.
+            if (supported[primary]) {
+              locale = primary;
+              break;
+            }
+          }
+          var normalizedBase = base.charAt(base.length - 1) === "/" ? base : base + "/";
+          var target = normalizedBase + locale + "/" + window.location.search + window.location.hash;
+          window.location.replace(target);
+        } catch (e) {
+          window.location.replace(fallbackUrl);
+        }
+      })();
+    </script>
+    <noscript><meta http-equiv="refresh" content="0;url=en/" /></noscript>
+  </head>
+  <body>
+    <noscript>
+      <p><a href="en/">English</a> / <a href="ja/">日本語</a> / <a href="zh/">简体中文</a></p>
+    </noscript>
+    <p class="visually-hidden" aria-hidden="true">
+      <a href="en/">English</a> / <a href="ja/">日本語</a> / <a href="zh/">简体中文</a>
+    </p>
+  </body>
+</html>

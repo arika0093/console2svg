@@ -17,9 +17,6 @@ const repoRoot = path.resolve(process.cwd(), '..');
 export default defineConfig({
   site: docsSite,
   base: docsBase,
-  redirects: {
-    '/': '/en/',
-  },
   server: {
     host: true,
     fs: {

@@ -39,11 +39,15 @@ public static partial class QuickLeaks
         return sink.Count;
     }
 
-    internal static QuickLeaksFinding[] ScanRegexFallbackForTesting(Regex regex, string text)
+    internal static QuickLeaksFinding[] ScanRegexFallbackForTesting(
+        Regex regex,
+        string text,
+        ushort ruleIndex = 0
+    )
     {
         var buffer = new ArrayBufferWriter<QuickLeaksFinding>();
         var sink = new FindingSink(text, buffer);
-        FindRuleMatches(regex, text, 0, ref sink);
+        FindRuleMatches(regex, text, ruleIndex, ref sink);
         return buffer.WrittenSpan.ToArray();
     }
 
@@ -561,40 +565,55 @@ public static partial class QuickLeaks
 
             var commandEnd = FindLineWindowEnd(text, searchOffset, 5);
             var command = text[curlStart..commandEnd];
-            var optionOffset = FindCurlOption(command, header);
-            if (optionOffset < 0)
+            var optionSearchOffset = 0;
+            while (optionSearchOffset < command.Length)
             {
-                continue;
-            }
+                var optionOffset = FindCurlOption(command, optionSearchOffset, header);
+                if (optionOffset < 0)
+                {
+                    break;
+                }
+                optionSearchOffset = optionOffset;
 
-            var valueOffset = optionOffset;
-            while (
-                valueOffset < command.Length
-                && (command[valueOffset] == '=' || char.IsWhiteSpace(command[valueOffset]))
-            )
-            {
-                valueOffset++;
-            }
-            if (valueOffset >= command.Length)
-            {
-                continue;
-            }
+                var valueOffset = optionOffset;
+                while (
+                    valueOffset < command.Length
+                    && (command[valueOffset] == '=' || char.IsWhiteSpace(command[valueOffset]))
+                )
+                {
+                    valueOffset++;
+                }
+                if (valueOffset >= command.Length)
+                {
+                    break;
+                }
 
-            if (header)
-            {
-                FindCurlHeader(command, curlStart, valueOffset, ruleIndex, ref sink);
-            }
-            else
-            {
-                FindCurlUser(command, curlStart, valueOffset, ruleIndex, ref sink);
+                if (header)
+                {
+                    FindCurlHeader(command, curlStart, valueOffset, ruleIndex, ref sink);
+                }
+                else
+                {
+                    FindCurlUser(command, curlStart, valueOffset, ruleIndex, ref sink);
+                }
             }
         }
     }
 
-    private static int FindCurlOption(ReadOnlySpan<char> command, bool header)
+    private static int FindCurlOption(ReadOnlySpan<char> command, int searchOffset, bool header)
     {
-        var longOption = FindCurlOptionEnd(command, header ? "--header" : "--user");
-        var shortOption = FindCurlOptionEnd(command, header ? "-H" : "-u");
+        var longOption = FindCurlOptionEnd(
+            command,
+            searchOffset,
+            header ? "--header" : "--user",
+            allowAttachedArgument: false
+        );
+        var shortOption = FindCurlOptionEnd(
+            command,
+            searchOffset,
+            header ? "-H" : "-u",
+            allowAttachedArgument: true
+        );
         if (longOption < 0)
         {
             return shortOption;
@@ -607,9 +626,14 @@ public static partial class QuickLeaks
         return longOption - longOptionLength < shortOption - 2 ? longOption : shortOption;
     }
 
-    private static int FindCurlOptionEnd(ReadOnlySpan<char> command, string option)
+    private static int FindCurlOptionEnd(
+        ReadOnlySpan<char> command,
+        int searchOffset,
+        string option,
+        bool allowAttachedArgument
+    )
     {
-        var offset = 0;
+        var offset = searchOffset;
         while (offset < command.Length)
         {
             var relative = command[offset..].IndexOf(option, StringComparison.Ordinal);
@@ -622,7 +646,12 @@ public static partial class QuickLeaks
             if (
                 start > 0
                 && char.IsWhiteSpace(command[start - 1])
-                && (end == command.Length || command[end] == '=' || char.IsWhiteSpace(command[end]))
+                && (
+                    allowAttachedArgument
+                    || end == command.Length
+                    || command[end] == '='
+                    || char.IsWhiteSpace(command[end])
+                )
             )
             {
                 return end;
@@ -710,28 +739,63 @@ public static partial class QuickLeaks
         ref FindingSink sink
     )
     {
-        var quote = command[valueOffset] is '\'' or '"' ? command[valueOffset++] : '\0';
+        var quote = '\0';
+        var separator = -1;
         var valueEnd = valueOffset;
-        while (
-            valueEnd < command.Length
-            && (quote == '\0' ? !char.IsWhiteSpace(command[valueEnd]) : command[valueEnd] != quote)
-        )
+        while (valueEnd < command.Length)
         {
+            var value = command[valueEnd];
+            if (value == ':' && separator < 0)
+            {
+                separator = valueEnd;
+            }
+            if (quote == '\0')
+            {
+                if (value is '\'' or '"')
+                {
+                    quote = value;
+                }
+                else if (char.IsWhiteSpace(value))
+                {
+                    break;
+                }
+            }
+            else if (value == quote)
+            {
+                quote = '\0';
+            }
             valueEnd++;
         }
-        var separator = command[valueOffset..valueEnd].IndexOf(':');
         if (separator < 0)
         {
             return;
         }
-        separator += valueOffset;
-        if (separator - valueOffset >= 3)
+
+        var usernameStart = valueOffset;
+        var usernameEnd = separator;
+        TrimCurlQuotes(command, ref usernameStart, ref usernameEnd);
+        var passwordStart = separator + 1;
+        var passwordEnd = valueEnd;
+        TrimCurlQuotes(command, ref passwordStart, ref passwordEnd);
+        if (usernameEnd - usernameStart >= 3)
         {
-            sink.AddFinal(ruleIndex, commandStart + valueOffset, commandStart + separator);
+            sink.AddFinal(ruleIndex, commandStart + usernameStart, commandStart + usernameEnd);
         }
-        if (valueEnd - separator - 1 >= 3)
+        if (passwordEnd - passwordStart >= 3)
         {
-            sink.AddFinal(ruleIndex, commandStart + separator + 1, commandStart + valueEnd);
+            sink.AddFinal(ruleIndex, commandStart + passwordStart, commandStart + passwordEnd);
+        }
+    }
+
+    private static void TrimCurlQuotes(ReadOnlySpan<char> command, ref int start, ref int end)
+    {
+        if (start < end && command[start] is '\'' or '"')
+        {
+            start++;
+        }
+        if (start < end && command[end - 1] is '\'' or '"')
+        {
+            end--;
         }
     }
 

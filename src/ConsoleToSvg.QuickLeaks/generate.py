@@ -45,7 +45,11 @@ def convert(pattern: str) -> str:
     }
     return re.sub(
         r"\[\[:([a-z]+):\]\]",
-        lambda match: classes.get(match.group(1), match.group(0)),
+        lambda match: (
+            f"[{classes[match.group(1)]}]"
+            if match.group(1) in classes
+            else match.group(0)
+        ),
         pattern,
     )
 
@@ -517,14 +521,20 @@ def analyze_pattern(pattern: str) -> PatternAnalysis:
                 literal.pop()
             unsupported = "variable-prefix-before-anchor"
             break
-        if character == "{" or character == "]":
+        if character == "{":
+            quantifier = re.match(r"\{(\d+)(?:,\d*)?\}", pattern[index:])
+            if quantifier is not None and int(quantifier.group(1)) == 0 and literal:
+                literal.pop()
+            unsupported = "quantifier-before-anchor"
+            break
+        if character == "]":
             unsupported = "quantifier-before-anchor"
             break
         literal.append(character)
         index += 1
 
     anchor = "".join(literal)
-    if len(anchor) >= 4 and anchor.isascii():
+    if len(anchor) >= 3 and anchor.isascii():
         return PatternAnalysis(anchor, 0, "verifier-not-lowered")
     return PatternAnalysis(None, None, unsupported or "no-fixed-literal-prefix")
 
@@ -559,7 +569,9 @@ if patch_path.exists():
 if len(rules) > 65535:
     raise RuntimeError("The generated rules no longer fit in ushort indices")
 
-analyses = [analyze_pattern(pattern) for _, pattern, _, _ in rules]
+# The same anchor set is used by both modes, so every compiler anchor must be
+# mandatory in the relaxed Early expression as well as in the normal one.
+analyses = [analyze_pattern(early) for _, _, early, _ in rules]
 prefix_tokens = [lower_prefix_token(pattern, early) for _, pattern, early, _ in rules]
 assignments = [
     None if prefix_tokens[index] else lower_assignment(pattern, early)
@@ -996,7 +1008,7 @@ public static partial class QuickLeaks
             // into a silent false negative.
             if (!text.IsEmpty)
             {{
-                sink.Add(ruleIndex, 0, text.Length);
+                sink.AddFinal(ruleIndex, 0, text.Length);
             }}
         }}
     }}

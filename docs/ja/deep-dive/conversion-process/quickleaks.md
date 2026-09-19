@@ -104,7 +104,7 @@ overlay だけで隠すと、見た目では読めなくても元の文字列を
 自動マスクと手動マスクの scan は、foreground を描く pass だけで実行します。
 background だけの pass では露出する文字列がないため、検出用の一時データを作りません。
 
-`FrameRenderWorkspace` が正規化文字列用の `StringBuilder` を保持し、行定義を繰り返し描くときに backing buffer を再利用します。
+`FrameRenderWorkspace` が正規化文字列用の文字バッファを保持し、行定義を繰り返し描くときに backing buffer を再利用します。
 
 手動 mask pattern がある場合は行差分を無効にします。
 literal pattern が変更していない基底部分と差分部分をまたぐ可能性があり、行を分割すると完全な文字列を matcher へ渡せないためです。

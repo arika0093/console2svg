@@ -14,6 +14,7 @@ It is maintained inside console2svg.
 Scan UTF-16 text into a caller-owned buffer and receive rule identifiers plus offsets:
 
 ```csharp
+using System.Buffers;
 using ConsoleToSvg.QuickLeaks;
 
 var findings = new ArrayBufferWriter<QuickLeaksFinding>();
@@ -48,8 +49,9 @@ a compact bitset runs only the selected fallback rules.
 
 For the pinned rule set, 39 prefix-token rules, 74 assignment rules, and one
 fixed-layout home-directory rule are lowered to allocation-free verifiers.
-Another 36 fallback rules use the non-backtracking regex engine; unsupported or
-large automata retain bounded backtracking with fail-closed timeout handling.
+Another 347 fallback rules use the regex engine; 36 use the non-backtracking
+engine, and the remaining 311 use bounded backtracking with fail-closed timeout
+handling.
 
 Construction-time custom literals are available through `QuickLeaksScanner`.
 They use their own reusable `SearchValues<string>` indexes and the same span/writer API.

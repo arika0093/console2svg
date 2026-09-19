@@ -29,9 +29,9 @@ public static partial class QuickLeaks
     private static partial Regex Rule11();
     [GeneratedRegex("(?i)(?:airtable)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Z0-9]+\\.v1\\.[A-Z0-9_-]+\\.[a-f0-9]+)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule11();
-    [GeneratedRegex("\\b(patA-Za-z0-9{14}\\.[a-f0-9]{64})\\b", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    [GeneratedRegex("\\b(pat[A-Za-z0-9]{14}\\.[a-f0-9]{64})\\b", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
     private static partial Regex Rule12();
-    [GeneratedRegex("\\b(patA-Za-z0-9{0,14}\\.[a-f0-9]{0,64})\\b", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    [GeneratedRegex("\\b(pat[A-Za-z0-9]{0,14}\\.[a-f0-9]{0,64})\\b", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule12();
     [GeneratedRegex("(?i:aiven)[\\s\\S]{0,32}?\\b([A-Za-z0-9/+=]{372})(?:[^A-Za-z0-9/+=]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule13();

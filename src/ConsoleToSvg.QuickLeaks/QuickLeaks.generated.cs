@@ -368,7 +368,6 @@ public static partial class QuickLeaks
         "postgresql://",
         "provider_x509",
         "pscale_oauth_",
-        "pata-za-z0-9",
         "planetscale",
         "postgres://",
         "pscale_tkn_",
@@ -403,6 +402,7 @@ public static partial class QuickLeaks
         "poly",
         "prf_",
         "pul-",
+        "pat",
         "psw",
         "rainforest",
         "ramp_sec_",
@@ -557,6 +557,7 @@ public static partial class QuickLeaks
         "xoxo",
         "xoxr",
         "xoxs",
+        "xox",
         "yandex",
         "zendesk",
         "zpka_",
@@ -1096,7 +1097,6 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase)) { candidates.Add(169); }
                 if (tail.StartsWith("provider_x509", StringComparison.OrdinalIgnoreCase)) { candidates.Add(167); }
                 if (tail.StartsWith("pscale_oauth_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(318); }
-                if (tail.StartsWith("pata-za-z0-9", StringComparison.OrdinalIgnoreCase)) { candidates.Add(12); }
                 if (tail.StartsWith("planetscale", StringComparison.OrdinalIgnoreCase)) { candidates.Add(317); }
                 if (tail.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase)) { candidates.Add(169); }
                 if (tail.StartsWith("pscale_tkn_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(316); }
@@ -1131,6 +1131,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("poly", StringComparison.OrdinalIgnoreCase)) { candidates.Add(325); candidates.Add(326); candidates.Add(327); candidates.Add(328); candidates.Add(329); }
                 if (tail.StartsWith("prf_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(337); }
                 if (tail.StartsWith("pul-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(338); }
+                if (tail.StartsWith("pat", StringComparison.OrdinalIgnoreCase)) { candidates.Add(12); }
                 if (tail.StartsWith("psw", StringComparison.OrdinalIgnoreCase)) { candidates.Add(170); }
                 break;
             case (char)114:
@@ -1299,6 +1300,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("xoxo", StringComparison.OrdinalIgnoreCase)) { candidates.Add(384); }
                 if (tail.StartsWith("xoxr", StringComparison.OrdinalIgnoreCase)) { candidates.Add(385); }
                 if (tail.StartsWith("xoxs", StringComparison.OrdinalIgnoreCase)) { candidates.Add(384); }
+                if (tail.StartsWith("xox", StringComparison.OrdinalIgnoreCase)) { candidates.Add(384); candidates.Add(385); candidates.Add(388); }
                 break;
             case (char)121:
                 if (tail.StartsWith("yandex", StringComparison.OrdinalIgnoreCase)) { candidates.Add(452); candidates.Add(453); candidates.Add(454); }
@@ -3860,7 +3862,7 @@ public static partial class QuickLeaks
             // into a silent false negative.
             if (!text.IsEmpty)
             {
-                sink.Add(ruleIndex, 0, text.Length);
+                sink.AddFinal(ruleIndex, 0, text.Length);
             }
         }
     }

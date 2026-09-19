@@ -50,6 +50,29 @@ public sealed class QuickLeaksTests
     }
 
     [Test]
+    public void TimedOutRuleBypassesFindingPostProcessing()
+    {
+        using var report = JsonDocument.Parse(
+            File.ReadAllText(
+                Path.Combine(AppContext.BaseDirectory, "QuickLeaks.generation-report.json")
+            )
+        );
+        var ruleIndex = (ushort)
+            report
+                .RootElement.GetProperty("rules")
+                .EnumerateArray()
+                .Single(rule => rule.GetProperty("id").GetString() == "generic-username")
+                .GetProperty("index")
+                .GetInt32();
+        var pathological = new Regex("(a+)+$", RegexOptions.None, TimeSpan.FromMilliseconds(1));
+        var input = new string('a', 100_000) + "!";
+
+        var findings = Filter.ScanRegexFallbackForTesting(pathological, input, ruleIndex);
+
+        findings.ShouldBe([new QuickLeaksFinding("generic-username", 0, input.Length)]);
+    }
+
+    [Test]
     public void ScanFindsSecretsAndHomeDirectoryPaths()
     {
         var findings = Scan("/home/alice/project");
@@ -125,6 +148,17 @@ public sealed class QuickLeaksTests
         Scan(partialToken).ShouldBeEmpty();
         Scan(partialToken, QuickLeaksScanMode.Early)
             .Any(finding => finding.RuleId == "github-pat")
+            .ShouldBeTrue();
+    }
+
+    [Test]
+    public void EarlyModeFindsPartiallyEnteredAirtableTokenWithoutKeyword()
+    {
+        const string partialToken = "patabc.a";
+
+        Scan(partialToken).ShouldBeEmpty();
+        Scan(partialToken, QuickLeaksScanMode.Early)
+            .Any(finding => finding.RuleId == "airtable-personnal-access-token")
             .ShouldBeTrue();
     }
 
@@ -358,6 +392,30 @@ public sealed class QuickLeaksTests
             .ToArray();
         userValues.ShouldBe(["user", "password"]);
     }
+
+    [Test]
+    public void CurlVerifierHandlesRepeatedAttachedAndIndependentlyQuotedOptions()
+    {
+        const string repeatedHeaders =
+            "curl -H \"Content-Type: application/json\" -H \"Authorization: Bearer abcdefgh\" https://example.test";
+        GetCurlValues(repeatedHeaders, "curl-auth-header").ShouldBe(["abcdefgh"]);
+
+        const string attachedHeader =
+            "curl -H\"Authorization: Bearer abcdefgh\" https://example.test";
+        GetCurlValues(attachedHeader, "curl-auth-header").ShouldBe(["abcdefgh"]);
+
+        const string attachedUser = "curl -uuser:password https://example.test";
+        GetCurlValues(attachedUser, "curl-auth-user").ShouldBe(["user", "password"]);
+
+        const string independentlyQuotedUser = "curl -u \"user\":\"password\" https://example.test";
+        GetCurlValues(independentlyQuotedUser, "curl-auth-user").ShouldBe(["user", "password"]);
+    }
+
+    private static string[] GetCurlValues(string command, string ruleId) =>
+        Scan(command, QuickLeaksScanMode.Early)
+            .Where(finding => finding.RuleId == ruleId)
+            .Select(finding => command[finding.Start..finding.End])
+            .ToArray();
 
     [Test]
     public void GenericPasswordMasksOnlyTheValue()

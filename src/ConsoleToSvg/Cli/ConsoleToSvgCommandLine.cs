@@ -387,11 +387,37 @@ public sealed partial class ConsoleToSvgCommandLine
                 options.BatchOutputDir = parseResult.GetValue(_symbols.BatchOutput) ?? "assets";
                 options.BatchFilters = parseResult.GetValue(_symbols.BatchFilter) ?? [];
                 options.BatchDryRun = parseResult.GetValue(_symbols.BatchDryRun);
+                options.BatchPlaceholder = parseResult.GetValue(_symbols.BatchPlaceholder);
+                options.BatchManifestPath = parseResult.GetValue(_symbols.BatchManifest);
                 return await _handler(options, parseResult, cancellationToken)
                     .ConfigureAwait(false);
             }
         );
         batch.Subcommands.Add(markdown);
+
+        var restore = new Command(
+            "restore",
+            "Restore generated assets from a local or remote manifest."
+        );
+        AddOptions(restore, _symbols.BatchRestoreOptions);
+        restore.SetAction(
+            (parseResult, cancellationToken) =>
+            {
+                var options = new AppOptions
+                {
+                    Workflow = Workflow.Batch,
+                    RequestedBatchAction = BatchAction.Restore,
+                    BatchInputPath = parseResult.GetValue(_symbols.BatchRestoreInput),
+                    BatchOutputDir = parseResult.GetValue(_symbols.BatchRestoreOutput),
+                    BatchFilters = parseResult.GetValue(_symbols.BatchRestoreFilter) ?? [],
+                    BatchDryRun = parseResult.GetValue(_symbols.BatchRestoreDryRun),
+                    BatchForce = parseResult.GetValue(_symbols.BatchForce),
+                    BatchPrune = parseResult.GetValue(_symbols.BatchPrune),
+                };
+                return _handler(options, parseResult, cancellationToken);
+            }
+        );
+        batch.Subcommands.Add(restore);
 
         root.Subcommands.Add(batch);
     }

@@ -32,6 +32,12 @@ public enum Workflow
     Batch,
 }
 
+public enum BatchAction
+{
+    Markdown,
+    Restore,
+}
+
 public enum TmuxAction
 {
     Capture,
@@ -49,6 +55,7 @@ public enum ThemeAction
 public sealed class AppOptions
 {
     public Workflow Workflow { get; set; }
+    public BatchAction RequestedBatchAction { get; set; }
     public ThemeAction? RequestedThemeAction { get; set; }
     public string? ThemeArgument { get; set; }
     public bool StatusJson { get; set; }
@@ -249,6 +256,18 @@ public sealed class AppOptions
 
     /// <summary>Batch markdown mode: list planned jobs without changing the filesystem.</summary>
     public bool BatchDryRun { get; set; }
+
+    /// <summary>Batch markdown mode: create assets without executing capture commands.</summary>
+    public bool BatchPlaceholder { get; set; }
+
+    /// <summary>Batch markdown mode: optional output manifest path.</summary>
+    public string? BatchManifestPath { get; set; }
+
+    /// <summary>Batch restore mode: download even when local content matches.</summary>
+    public bool BatchForce { get; set; }
+
+    /// <summary>Batch restore mode: remove output files not declared by the manifest.</summary>
+    public bool BatchPrune { get; set; }
 
     /// <summary>
     /// Shallow copy for per-block overrides. List properties are shared by reference;

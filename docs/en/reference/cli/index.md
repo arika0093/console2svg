@@ -18,7 +18,7 @@ description: Command reference for console2svg.
 | [`update`](./update.md) | Check for and run console2svg updates |
 | [`live-server`](./live-server.md) | Start a live SVG server |
 | [`tmux`](./tmux.md) | Record or stream tmux panes |
-| [`batch markdown`](./batch.md) | Batch-generate images from Markdown `c2s::` markers |
+| [`batch`](./batch.md) | Generate, publish, and restore Markdown capture assets |
 | [`completions`](./completions.md) | Generate shell completion scripts |
 
 See each page for the options and arguments available for each command.

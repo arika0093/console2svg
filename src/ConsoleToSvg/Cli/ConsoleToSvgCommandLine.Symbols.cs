@@ -164,6 +164,38 @@ public sealed partial class ConsoleToSvgCommandLine
             };
         public Option<bool> BatchDryRun { get; } =
             Flag("--dry-run", "List planned jobs without changing the filesystem.");
+        public Option<bool> BatchPlaceholder { get; } =
+            Flag("--placeholder", "Create missing asset placeholders without executing commands.");
+        public Option<string> BatchManifest { get; } =
+            RequiredString("--manifest", "Write an asset manifest after generation.", "path");
+        public Option<string> BatchRestoreInput { get; } =
+            new("--input", "-i")
+            {
+                Description = "Local path or HTTP(S) URL of the asset manifest.",
+                HelpName = "path-or-url",
+                Required = true,
+            };
+        public Option<string> BatchRestoreOutput { get; } =
+            new("--output", "-o")
+            {
+                Description = "Directory into which assets are restored.",
+                HelpName = "dir",
+                Required = true,
+            };
+        public Option<string[]> BatchRestoreFilter { get; } =
+            new("--filter")
+            {
+                Arity = ArgumentArity.OneOrMore,
+                AllowMultipleArgumentsPerToken = true,
+                Description = "Restore manifest paths matching a glob.",
+                HelpName = "glob",
+            };
+        public Option<bool> BatchRestoreDryRun { get; } =
+            Flag("--dry-run", "Show planned downloads and removals without changing files.");
+        public Option<bool> BatchForce { get; } =
+            Flag("--force", "Restore assets even when local content matches.");
+        public Option<bool> BatchPrune { get; } =
+            Flag("--prune", "Remove output files not declared by the manifest.");
 
         public IEnumerable<Option> Options =>
             [
@@ -294,7 +326,25 @@ public sealed partial class ConsoleToSvgCommandLine
             CaptureOptions.Except([Interactive, TmuxTarget, History]).Concat([TmuxTarget, History]);
 
         public IEnumerable<Option> BatchMarkdownOptions =>
-            [BatchInput, BatchOutput, BatchFilter, BatchDryRun, Verbose];
+            [
+                BatchInput,
+                BatchOutput,
+                BatchFilter,
+                BatchDryRun,
+                BatchPlaceholder,
+                BatchManifest,
+                Verbose,
+            ];
+
+        public IEnumerable<Option> BatchRestoreOptions =>
+            [
+                BatchRestoreInput,
+                BatchRestoreOutput,
+                BatchRestoreFilter,
+                BatchRestoreDryRun,
+                BatchForce,
+                BatchPrune,
+            ];
 
         public IEnumerable<Option> TmuxLiveServerOptions =>
             LiveServerOptions.Except([History]).Append(TmuxTarget);

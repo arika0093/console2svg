@@ -18,7 +18,7 @@ description: console2svgのコマンドリファレンス。
 | [`update`](./update.md) | console2svgの更新を確認・実行 |
 | [`live-server`](./live-server.md) | ライブSVGサーバーを起動 |
 | [`tmux`](./tmux.md) | tmuxペインを記録または配信 |
-| [`batch markdown`](./batch.md) | Markdownの`c2s::`マーカーから画像を一括生成 |
+| [`batch`](./batch.md) | Markdownキャプチャアセットの生成、公開、復元 |
 | [`completions`](./completions.md) | シェル補完スクリプトを生成 |
 
 各コマンドで利用できるオプションと引数は、それぞれのページを参照してください。

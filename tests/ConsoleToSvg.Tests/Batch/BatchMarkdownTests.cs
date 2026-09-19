@@ -448,6 +448,52 @@ public sealed class BatchMarkdownTests
     }
 
     [Test]
+    public async Task BatchMarkdownCliMapsPlaceholderAndManifest()
+    {
+        var invocation = await InvokeAsync(
+            "batch",
+            "markdown",
+            "--placeholder",
+            "--manifest",
+            "assets/manifest.json"
+        );
+
+        invocation.ExitCode.ShouldBe(0);
+        invocation.Options.ShouldNotBeNull();
+        invocation.Options!.RequestedBatchAction.ShouldBe(BatchAction.Markdown);
+        invocation.Options.BatchPlaceholder.ShouldBeTrue();
+        invocation.Options.BatchManifestPath.ShouldBe("assets/manifest.json");
+    }
+
+    [Test]
+    public async Task BatchRestoreCliMapsRestoreControls()
+    {
+        var invocation = await InvokeAsync(
+            "batch",
+            "restore",
+            "-i",
+            "https://example.com/manifest.json",
+            "-o",
+            "assets",
+            "--filter",
+            "**/*.svg",
+            "--force",
+            "--prune",
+            "--dry-run"
+        );
+
+        invocation.ExitCode.ShouldBe(0);
+        invocation.Options.ShouldNotBeNull();
+        invocation.Options!.RequestedBatchAction.ShouldBe(BatchAction.Restore);
+        invocation.Options.BatchInputPath.ShouldBe("https://example.com/manifest.json");
+        invocation.Options.BatchOutputDir.ShouldBe("assets");
+        invocation.Options.BatchFilters.ShouldBe(["**/*.svg"]);
+        invocation.Options.BatchForce.ShouldBeTrue();
+        invocation.Options.BatchPrune.ShouldBeTrue();
+        invocation.Options.BatchDryRun.ShouldBeTrue();
+    }
+
+    [Test]
     public async Task LegacyBatchRunCommandIsNotAccepted()
     {
         var invocation = await InvokeAsync("batch", "run");

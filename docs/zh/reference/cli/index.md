@@ -18,7 +18,7 @@ description: console2svg 的命令参考。
 | [`update`](./update.md) | 检查并执行 console2svg 更新 |
 | [`live-server`](./live-server.md) | 启动实时 SVG 服务器 |
 | [`tmux`](./tmux.md) | 记录或流式传输 tmux 窗格 |
-| [`batch markdown`](./batch.md) | 从 Markdown 的 `c2s::` 标记批量生成图片 |
+| [`batch`](./batch.md) | 生成、发布和恢复 Markdown 捕获资源 |
 | [`completions`](./completions.md) | 生成 Shell 补全脚本 |
 
 各命令可用的选项和参数请参阅对应页面。

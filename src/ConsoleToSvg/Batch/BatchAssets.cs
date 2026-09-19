@@ -280,9 +280,16 @@ public static class BatchAssets
             return new BatchRestoreResult(0, 0, 0, 0, 0, actions, failures);
         }
 
+        var normalizedFilters = filters.Select(BatchExecutor.NormalizeFilter).ToArray();
+        bool IsSelectedAsset(string logicalPath) =>
+            normalizedFilters.Length == 0
+            || normalizedFilters.Any(filter =>
+                BatchExecutor.MatchesFilter(BatchExecutor.NormalizePath(logicalPath), filter)
+            );
+
         BatchAssetManifest? previousManifest = null;
         var localManifestPath = Path.Combine(outputDir, "assets.json");
-        if (prune && File.Exists(localManifestPath))
+        if ((prune || normalizedFilters.Length > 0) && File.Exists(localManifestPath))
         {
             try
             {
@@ -307,15 +314,7 @@ public static class BatchAssets
             }
         }
 
-        var normalizedFilters = filters.Select(BatchExecutor.NormalizeFilter).ToArray();
-        var selectedAssets = manifest
-            .Assets.Where(pair =>
-                normalizedFilters.Length == 0
-                || normalizedFilters.Any(filter =>
-                    BatchExecutor.MatchesFilter(BatchExecutor.NormalizePath(pair.Key), filter)
-                )
-            )
-            .ToArray();
+        var selectedAssets = manifest.Assets.Where(pair => IsSelectedAsset(pair.Key)).ToArray();
         var filtered = manifest.Assets.Count - selectedAssets.Length;
         var requiredObjects = selectedAssets
             .Select(pair => pair.Value.Object)
@@ -382,13 +381,28 @@ public static class BatchAssets
             }
         }
 
+        BatchAssetManifest manifestToWrite;
+        if (normalizedFilters.Length == 0)
+        {
+            manifestToWrite = manifest;
+        }
+        else if (previousManifest is not null)
+        {
+            manifestToWrite = MergeManifests(previousManifest, manifest, IsSelectedAsset);
+        }
+        else
+        {
+            manifestToWrite = SelectManifest(manifest, IsSelectedAsset);
+        }
+
         var pruned = 0;
         if (failures.Count == 0 && prune && previousManifest is not null)
         {
-            var currentPaths = GetManagedPaths(manifest);
+            var currentPaths = GetManagedPaths(manifestToWrite);
+            var scopePaths = GetManagedPaths(SelectManifest(previousManifest, IsSelectedAsset));
             foreach (
-                var stale in GetManagedPaths(previousManifest)
-                    .Except(currentPaths, StringComparer.Ordinal)
+                var stale in scopePaths
+                    .Except(currentPaths, GetPathComparer())
                     .OrderByDescending(path => path, StringComparer.Ordinal)
             )
             {
@@ -413,7 +427,7 @@ public static class BatchAssets
 
         if (failures.Count == 0 && !dryRun)
         {
-            await WriteManifestAsync(manifest, localManifestPath, cancellationToken)
+            await WriteManifestAsync(manifestToWrite, localManifestPath, cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -528,7 +542,53 @@ public static class BatchAssets
         var paths = manifest
             .Objects.Values.Select(value => BatchExecutor.NormalizePath(value.Path))
             .Concat(manifest.Assets.Keys.Select(BatchExecutor.NormalizePath));
-        return paths.ToHashSet(StringComparer.Ordinal);
+        return paths.ToHashSet(GetPathComparer());
+    }
+
+    private static BatchAssetManifest SelectManifest(
+        BatchAssetManifest manifest,
+        Func<string, bool> isSelected
+    )
+    {
+        var selected = manifest.Assets.Where(pair => isSelected(pair.Key)).ToArray();
+        var objects = selected.Select(pair => pair.Value.Object).ToHashSet(StringComparer.Ordinal);
+        return new BatchAssetManifest
+        {
+            Version = manifest.Version,
+            Generator = manifest.Generator,
+            Objects = manifest
+                .Objects.Where(pair => objects.Contains(pair.Key))
+                .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal),
+            Assets = selected.ToDictionary(
+                pair => pair.Key,
+                pair => pair.Value,
+                StringComparer.Ordinal
+            ),
+        };
+    }
+
+    private static BatchAssetManifest MergeManifests(
+        BatchAssetManifest previous,
+        BatchAssetManifest incoming,
+        Func<string, bool> isSelected
+    )
+    {
+        var merged = new BatchAssetManifest
+        {
+            Version = incoming.Version,
+            Generator = incoming.Generator,
+        };
+        foreach (var pair in previous.Assets.Where(pair => !isSelected(pair.Key)))
+        {
+            merged.Assets[pair.Key] = pair.Value;
+            merged.Objects[pair.Value.Object] = previous.Objects[pair.Value.Object];
+        }
+        foreach (var pair in incoming.Assets.Where(pair => isSelected(pair.Key)))
+        {
+            merged.Assets[pair.Key] = pair.Value;
+            merged.Objects[pair.Value.Object] = incoming.Objects[pair.Value.Object];
+        }
+        return merged;
     }
 
     private static async Task RestoreOneAsync(
@@ -553,7 +613,25 @@ public static class BatchAssets
             )
             await using (var output = File.Create(temporary))
             {
-                await input.CopyToAsync(output, cancellationToken).ConfigureAwait(false);
+                var buffer = new byte[81920];
+                long total = 0;
+                int read;
+                while (
+                    (read = await input.ReadAsync(buffer, cancellationToken).ConfigureAwait(false))
+                    > 0
+                )
+                {
+                    if (read > entry.Size - total)
+                    {
+                        throw new InvalidDataException(
+                            $"size mismatch (expected {entry.Size}, received more)."
+                        );
+                    }
+                    await output
+                        .WriteAsync(buffer.AsMemory(0, read), cancellationToken)
+                        .ConfigureAwait(false);
+                    total += read;
+                }
             }
 
             var info = new FileInfo(temporary);

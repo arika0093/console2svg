@@ -956,6 +956,191 @@ public sealed class BatchIntegrationTests
         }
     }
 
+    [Test]
+    public async Task FilteredRestoreMergesManifestAndPrunesSelectedScopeOnly()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var published = Path.Combine(root, "published");
+            var output = Path.Combine(root, "output");
+            Directory.CreateDirectory(published);
+            Directory.CreateDirectory(output);
+            var firstBytes = Encoding.UTF8.GetBytes("first");
+            var secondBytes = Encoding.UTF8.GetBytes("second");
+            await File.WriteAllBytesAsync(Path.Combine(published, "first.svg"), firstBytes);
+            await File.WriteAllBytesAsync(Path.Combine(published, "second.svg"), secondBytes);
+            var first = CreateManifest("first", "first.svg", "en/first.svg", firstBytes);
+            var second = CreateManifest("second", "second.svg", "ja/second.svg", secondBytes);
+            first.Objects.Add("second", second.Objects["second"]);
+            first.Assets.Add("ja/second.svg", second.Assets["ja/second.svg"]);
+            await BatchAssets.WriteManifestAsync(first, Path.Combine(published, "assets.json"), default);
+            (await Program.Main(["batch", "restore", published, "-o", output])).ShouldBe(0);
+
+            var thirdBytes = Encoding.UTF8.GetBytes("third");
+            await File.WriteAllBytesAsync(Path.Combine(published, "third.svg"), thirdBytes);
+            await BatchAssets.WriteManifestAsync(
+                CreateManifest("third", "third.svg", "en/third.svg", thirdBytes),
+                Path.Combine(published, "assets.json"),
+                default
+            );
+            (await Program.Main([
+                "batch",
+                "restore",
+                published,
+                "-o",
+                output,
+                "--filter",
+                "en/**",
+                "--prune",
+            ])).ShouldBe(0);
+
+            File.Exists(Path.Combine(output, "first.svg")).ShouldBeFalse();
+            File.Exists(Path.Combine(output, "en", "first.svg")).ShouldBeFalse();
+            (await File.ReadAllTextAsync(Path.Combine(output, "en", "third.svg"))).ShouldBe("third");
+            (await File.ReadAllTextAsync(Path.Combine(output, "ja", "second.svg"))).ShouldBe("second");
+            var merged = await BatchAssets.ReadManifestAsync(Path.Combine(output, "assets.json"), default);
+            merged.Assets.Keys.OrderBy(key => key, StringComparer.Ordinal).ShouldBe(["en/third.svg", "ja/second.svg"]);
+            merged.Objects.ContainsKey("first").ShouldBeFalse();
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task RestorePruneHandlesCasingOnlyRenameOnCaseInsensitiveFileSystems()
+    {
+        if (!OperatingSystem.IsWindows() && !OperatingSystem.IsMacOS())
+        {
+            return;
+        }
+        var root = CreateTempDirectory();
+        try
+        {
+            var published = Path.Combine(root, "published");
+            var output = Path.Combine(root, "output");
+            Directory.CreateDirectory(published);
+            Directory.CreateDirectory(Path.Combine(output, "Images"));
+            var content = Encoding.UTF8.GetBytes("cased");
+            await File.WriteAllBytesAsync(Path.Combine(published, "a.svg"), content);
+            await BatchAssets.WriteManifestAsync(
+                CreateManifest("asset", "images/a.svg", "images/a.svg", content),
+                Path.Combine(published, "assets.json"),
+                default
+            );
+            await File.WriteAllBytesAsync(Path.Combine(output, "Images", "A.svg"), content);
+            await BatchAssets.WriteManifestAsync(
+                CreateManifest("asset", "Images/A.svg", "Images/A.svg", content),
+                Path.Combine(output, "assets.json"),
+                default
+            );
+            (await Program.Main(["batch", "restore", published, "-o", output, "--prune"])).ShouldBe(0);
+            (await File.ReadAllTextAsync(Path.Combine(output, "images", "a.svg"))).ShouldBe("cased");
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task RestoreRejectsSymlinkedRepositorySubdirectory()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            return;
+        }
+        var root = CreateTempDirectory();
+        try
+        {
+            var repository = Path.Combine(root, "repository");
+            var real = Path.Combine(repository, "real");
+            Directory.CreateDirectory(real);
+            var content = Encoding.UTF8.GetBytes("linked");
+            await File.WriteAllBytesAsync(Path.Combine(real, "object.svg"), content);
+            await BatchAssets.WriteManifestAsync(
+                CreateManifest("object", "object.svg", "guide.svg", content),
+                Path.Combine(real, "assets.json"),
+                default
+            );
+            File.CreateSymbolicLink(Path.Combine(repository, "linked"), "real");
+            RunGit(repository, "init", "--quiet");
+            RunGit(repository, "add", ".");
+            RunGit(
+                repository,
+                "-c",
+                "user.name=console2svg-tests",
+                "-c",
+                "user.email=tests@example.invalid",
+                "commit",
+                "--quiet",
+                "-m",
+                "assets"
+            );
+            var source = new Uri(repository + Path.DirectorySeparatorChar).AbsoluteUri.TrimEnd('/')
+                + "#HEAD:linked";
+            var output = Path.Combine(root, "output");
+
+            (await Program.Main(["batch", "restore", source, "-o", output])).ShouldBe(1);
+
+            File.Exists(Path.Combine(output, "guide.svg")).ShouldBeFalse();
+        }
+        finally
+        {
+            RepositorySourceAcquirer.DeleteCheckout(root);
+        }
+    }
+
+    [Test]
+    public async Task RestoreRejectsOversizedContentDuringCopy()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var published = Path.Combine(root, "published");
+            var output = Path.Combine(root, "output");
+            Directory.CreateDirectory(published);
+            var content = Encoding.UTF8.GetBytes("0123456789");
+            await File.WriteAllBytesAsync(Path.Combine(published, "large.svg"), content);
+            var manifest = CreateManifest("large", "large.svg", "large.svg", content);
+            manifest.Objects["large"].Size = content.Length - 1;
+            var manifestPath = Path.Combine(published, "assets.json");
+            await BatchAssets.WriteManifestAsync(manifest, manifestPath, default);
+
+            var result = await BatchAssets.RestoreAsync(
+                manifestPath,
+                output,
+                [],
+                force: false,
+                prune: false,
+                dryRun: false,
+                cancellationToken: default
+            );
+
+            result.Failures.Count.ShouldBe(1);
+            result.Failures.Single().ShouldContain("size mismatch");
+            File.Exists(Path.Combine(output, "large.svg")).ShouldBeFalse();
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public void RepositorySourceUrlClassification()
+    {
+        Program.IsRepositorySourceUrl("https://github.com/owner/repo").ShouldBeTrue();
+        Program.IsRepositorySourceUrl("https://github.com/owner/repo.git").ShouldBeTrue();
+        Program.IsRepositorySourceUrl("https://github.com/owner/repo#main:docs/assets").ShouldBeTrue();
+        Program.IsRepositorySourceUrl("https://example.com/project/assets/assets.json").ShouldBeFalse();
+        Program.IsRepositorySourceUrl("https://raw.githubusercontent.com/owner/repo/main/assets.json").ShouldBeFalse();
+        Program.IsRepositorySourceUrl("https://github.com/owner/repo/blob/main/assets.json").ShouldBeFalse();
+        Program.IsRepositorySourceUrl("owner/repo@main/docs/assets").ShouldBeFalse();
+    }
+
     private static string CreateTempDirectory()
     {
         var path = Path.Combine(

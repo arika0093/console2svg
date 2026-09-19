@@ -121,7 +121,36 @@ public static class RepositorySourceAcquirer
             : Path.GetFullPath(source.Subdirectory, destination);
         if (!IsPathInside(destination, root) || !Directory.Exists(root))
             throw new InvalidDataException("Repository subdirectory is missing or unsafe.");
+        RejectLinkedPathComponents(destination, root);
         return new RepositoryCheckout(destination, root, ReadCommit(destination));
+    }
+
+    private static void RejectLinkedPathComponents(string destination, string root)
+    {
+        var relative = Path.GetRelativePath(Path.GetFullPath(destination), Path.GetFullPath(root));
+        var current = Path.GetFullPath(destination);
+        foreach (
+            var segment in relative.Split(
+                Path.DirectorySeparatorChar,
+                StringSplitOptions.RemoveEmptyEntries
+            )
+        )
+        {
+            if (segment is "." || segment is "..")
+            {
+                continue;
+            }
+            current = Path.Combine(current, segment);
+            if (
+                Directory.Exists(current)
+                && (File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0
+            )
+            {
+                throw new InvalidDataException(
+                    "Repository subdirectory traverses a linked directory."
+                );
+            }
+        }
     }
 
     public static void DeleteCheckout(string directory)

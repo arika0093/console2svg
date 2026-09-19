@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
@@ -276,7 +277,12 @@ internal static partial class Program
                     .ConfigureAwait(false);
             }
             catch (Exception ex)
-                when (ex is IOException or UnauthorizedAccessException or JsonException)
+                when (ex
+                        is IOException
+                            or UnauthorizedAccessException
+                            or JsonException
+                            or InvalidDataException
+                )
             {
                 failures.Add($"assets.json: {ex.Message}");
             }
@@ -317,7 +323,7 @@ internal static partial class Program
             {
                 source = Path.GetFullPath(source);
             }
-            else if (!IsHttpManifestSource(source))
+            else if (IsRepositorySourceUrl(source) || !IsHttpManifestSource(source))
             {
                 temporary = Path.Combine(
                     Path.GetTempPath(),
@@ -343,7 +349,13 @@ internal static partial class Program
                 .ConfigureAwait(false);
         }
         catch (Exception ex)
-            when (ex is IOException or UnauthorizedAccessException or InvalidOperationException)
+            when (ex
+                    is IOException
+                        or UnauthorizedAccessException
+                        or InvalidOperationException
+                        or InvalidDataException
+                        or HttpRequestException
+            )
         {
             result = new BatchRestoreResult(0, 0, 0, 0, 0, [], [$"source: {ex.Message}"]);
         }
@@ -381,6 +393,32 @@ internal static partial class Program
             ct
         );
         return result.Failures.Count == 0 ? 0 : 1;
+    }
+
+    internal static bool IsRepositorySourceUrl(string source)
+    {
+        if (
+            !Uri.TryCreate(source, UriKind.Absolute, out var uri)
+            || (
+                !uri.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase)
+                && !uri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)
+            )
+            || !uri.Host.Equals("github.com", StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            return false;
+        }
+        var segments = uri.AbsolutePath.Trim('/').Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (segments.Length != 2 || segments[0].IndexOf('.') >= 0)
+        {
+            return false;
+        }
+        var repository = segments[1];
+        if (repository.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
+        {
+            repository = repository[..^4];
+        }
+        return repository.Length > 0;
     }
 
     private static bool IsHttpManifestSource(string source) =>

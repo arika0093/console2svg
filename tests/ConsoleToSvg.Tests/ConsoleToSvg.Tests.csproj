@@ -9,5 +9,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\ConsoleToSvg\ConsoleToSvg.csproj" />
     <ProjectReference Include="..\..\src\ConsoleToSvg.Record\ConsoleToSvg.Record.csproj" />
+    <None
+      Include="..\..\src\ConsoleToSvg.QuickLeaks\QuickLeaks.generation-report.json"
+      Link="QuickLeaks.generation-report.json"
+      CopyToOutputDirectory="PreserveNewest"
+    />
   </ItemGroup>
 </Project>

@@ -31,6 +31,11 @@ rule を C# source として生成しておくため、実行時に外部 scanne
 見つかった位置から生成済み discriminator が exact anchor と rule index を特定し、compact な bitset に追加します。
 候補処理は全 rule を順番に確認せず、立っている bit だけを列挙します。
 
+`ghp_[0-9A-Za-z]{36}` のような単純な prefix-token 形状は専用 verifier
+へコンパイルします。anchor が見つかった位置の後ろだけを読み、case、長さ、
+ASCII character class、word boundary を検証します。現在の pinned rule では
+39ルールが regex を実行せず、この経路を使います。
+
 Betterleaks keyword は compiler-proven anchor とは別のものです。
 専用 verifier への移行中は、従来と同等以上の recall を保つ safety net として keyword も併用します。
 
@@ -38,8 +43,9 @@ fallback regex は `GeneratedRegex` と span-based `Regex.EnumerateMatches` を�
 一つの pathological な入力によって、一つの rule が無制限に評価を続けないようにします。
 timeout 時は finding を黙って捨てず、安全側の conservative redaction を返します。
 
-credential URI のように専用 verifier へ lowering 済みの rule は regex を実行しません。
-残りの rule は generation report に fallback 理由を記録し、段階的に verifier へ移せます。
+prefix-token や credential URI のように専用 verifier へ lowering 済みの rule は
+regex を実行しません。generation report には選択した engine と、残りの rule の
+fallback 理由を記録し、段階的に verifier へ移せます。
 
 ## 入力途中だけ Early モードで量指定子を緩める
 

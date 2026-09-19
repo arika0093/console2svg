@@ -30,6 +30,11 @@ expression filter、validator、provider 或 network check，以及 repository-c
 运行时使用 .NET 的 `SearchValues<string>` 一次搜索全部 anchor。
 生成的 discriminator 会把命中位置映射到 exact anchor 和 rule index，紧凑 bitset 只枚举已设置的候选位。
 
+对于 `ghp_[0-9A-Za-z]{36}` 这样的简单 prefix-token 结构，生成器会编译出
+专用 verifier。它只检查 anchor 后面的字符，同时保持大小写、长度、ASCII
+字符类和 word boundary 语义。当前固定规则集中有 39 条规则走这条路径，
+无需执行 regex。
+
 compiler 证明的 anchor 与 Betterleaks keyword 是不同概念。
 在规则逐步迁移到专用 verifier 的过程中，keyword 仍作为保持 recall 的 safety net。
 
@@ -37,8 +42,8 @@ fallback 使用 `GeneratedRegex`、span-based `Regex.EnumerateMatches` 和固定
 单个 pathological input 因此不会让某条规则无限运行。
 timeout 会产生保守遮盖，而不是静默漏报。
 
-credential URI 等已 lowering 到专用 verifier 的规则不再运行 regex。
-generation report 会记录其余每条规则使用 fallback 的原因。
+已经 lowering 到 prefix-token 或 credential URI 专用 verifier 的规则不再运行
+regex。generation report 会记录所选 engine，以及其余每条规则 fallback 的原因。
 
 ## Early 模式只放宽秘密值部分
 

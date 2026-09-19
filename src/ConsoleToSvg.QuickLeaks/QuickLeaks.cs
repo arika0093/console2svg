@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace ConsoleToSvg.QuickLeaks;
@@ -80,6 +81,94 @@ public static partial class QuickLeaks
         var sink = new FindingSink(text, buffer);
         FindRuleMatches(regex, text, 0, ref sink);
         return buffer.WrittenSpan.ToArray();
+    }
+
+    internal static QuickLeaksFinding NarrowFindingForTesting(
+        string text,
+        ushort ruleIndex,
+        int start,
+        int end
+    ) => NarrowFinding(text, ruleIndex, start, end, GetPostProcessor(ruleIndex));
+
+    private static void VerifyPrefixToken(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        ushort ruleIndex,
+        ReadOnlySpan<char> prefix,
+        StringComparison prefixComparison,
+        ulong classLowMask,
+        ulong classHighMask,
+        int normalMinimum,
+        int earlyMinimum,
+        int maximum,
+        bool leadingBoundary,
+        bool trailingBoundary,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink
+    )
+    {
+        if (
+            (uint)anchorStart > (uint)text.Length
+            || prefix.Length > text.Length - anchorStart
+            || (leadingBoundary && !IsRegexWordBoundary(text, anchorStart))
+            || !text[anchorStart..].StartsWith(prefix, prefixComparison)
+        )
+        {
+            return;
+        }
+
+        var valueStart = anchorStart + prefix.Length;
+        var available = text.Length - valueStart;
+        var maximumLength = maximum < 0 ? available : Math.Min(available, maximum);
+        var valueLength = 0;
+        while (
+            valueLength < maximumLength
+            && IsInAsciiCharacterClass(text[valueStart + valueLength], classLowMask, classHighMask)
+        )
+        {
+            valueLength++;
+        }
+
+        var minimum = mode == QuickLeaksScanMode.Early ? earlyMinimum : normalMinimum;
+        var matchEnd = valueStart + valueLength;
+        if (valueLength < minimum || (trailingBoundary && !IsRegexWordBoundary(text, matchEnd)))
+        {
+            return;
+        }
+
+        sink.Add(ruleIndex, anchorStart, matchEnd);
+    }
+
+    private static bool IsInAsciiCharacterClass(char value, ulong lowMask, ulong highMask)
+    {
+        if (value >= 128)
+        {
+            return false;
+        }
+        var mask = value < 64 ? lowMask : highMask;
+        return ((mask >> (value & 63)) & 1) != 0;
+    }
+
+    private static bool IsRegexWordBoundary(ReadOnlySpan<char> text, int index)
+    {
+        var leftIsWord = index > 0 && IsRegexWordCharacter(text[index - 1]);
+        var rightIsWord = index < text.Length && IsRegexWordCharacter(text[index]);
+        return leftIsWord != rightIsWord;
+    }
+
+    private static bool IsRegexWordCharacter(char value)
+    {
+        const int wordCategories =
+            (1 << (int)UnicodeCategory.UppercaseLetter)
+            | (1 << (int)UnicodeCategory.LowercaseLetter)
+            | (1 << (int)UnicodeCategory.TitlecaseLetter)
+            | (1 << (int)UnicodeCategory.ModifierLetter)
+            | (1 << (int)UnicodeCategory.OtherLetter)
+            | (1 << (int)UnicodeCategory.NonSpacingMark)
+            | (1 << (int)UnicodeCategory.DecimalDigitNumber)
+            | (1 << (int)UnicodeCategory.ConnectorPunctuation);
+        return value is '\u200C' or '\u200D'
+            || ((1 << (int)CharUnicodeInfo.GetUnicodeCategory(value)) & wordCategories) != 0;
     }
 
     private static void FindCredentialUriMatches(

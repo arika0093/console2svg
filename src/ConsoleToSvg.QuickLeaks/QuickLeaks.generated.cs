@@ -13,6 +13,7 @@ namespace ConsoleToSvg.QuickLeaks;
 public static partial class QuickLeaks
 {
     private const int MatchTimeoutMilliseconds = 10;
+    internal const int RegexFallbackRuleCount = 422;
     private static readonly SearchValues<string> s_anchors = SearchValues.Create(
         new string[]
         {
@@ -641,7 +642,10 @@ public static partial class QuickLeaks
         }
     }
 
-    private static CandidateRules FindCandidateRules(ReadOnlySpan<char> text)
+    private static CandidateRules FindCandidateRules(
+        ReadOnlySpan<char> text,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink)
     {
         var candidates = new CandidateRules();
 
@@ -654,15 +658,21 @@ public static partial class QuickLeaks
                 break;
             }
             var anchorStart = offset + relative;
-            DispatchAnchors(text[anchorStart..], ref candidates);
+            DispatchAnchors(text, anchorStart, mode, ref candidates, ref sink);
             offset = anchorStart + 1;
         }
         return candidates;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void DispatchAnchors(ReadOnlySpan<char> tail, ref CandidateRules candidates)
+    private static void DispatchAnchors(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref CandidateRules candidates,
+        ref FindingSink sink)
     {
+        var tail = text[anchorStart..];
         var first = tail[0];
         if (first is >= 'A' and <= 'Z')
         {
@@ -697,7 +707,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("3q~", StringComparison.OrdinalIgnoreCase)) { candidates.Add(42); }
                 break;
             case (char)52:
-                if (tail.StartsWith("4b1d", StringComparison.OrdinalIgnoreCase)) { candidates.Add(74); }
+                if (tail.StartsWith("4b1d", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken74(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("4q~", StringComparison.OrdinalIgnoreCase)) { candidates.Add(42); }
                 break;
             case (char)53:
@@ -725,13 +735,13 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("@", StringComparison.OrdinalIgnoreCase)) { candidates.Add(464); }
                 break;
             case (char)95:
-                if (tail.StartsWith("_gitlab_session=", StringComparison.OrdinalIgnoreCase)) { candidates.Add(194); }
+                if (tail.StartsWith("_gitlab_session=", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken194(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("_mmk", StringComparison.OrdinalIgnoreCase)) { candidates.Add(257); }
                 if (tail.StartsWith("_pw", StringComparison.OrdinalIgnoreCase)) { candidates.Add(170); }
                 break;
             case (char)97:
                 if (tail.StartsWith("administrator_login_password", StringComparison.OrdinalIgnoreCase)) { candidates.Add(205); }
-                if (tail.StartsWith("age-secret-key-1", StringComparison.OrdinalIgnoreCase)) { candidates.Add(6); }
+                if (tail.StartsWith("age-secret-key-1", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken6(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("authenticate (", StringComparison.OrdinalIgnoreCase)) { candidates.Add(170); }
                 if (tail.StartsWith("authenticate(", StringComparison.OrdinalIgnoreCase)) { candidates.Add(170); }
                 if (tail.StartsWith("api_live_ca.", StringComparison.OrdinalIgnoreCase)) { candidates.Add(293); }
@@ -743,7 +753,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("access-key", StringComparison.OrdinalIgnoreCase)) { candidates.Add(46); }
                 if (tail.StartsWith("access_key", StringComparison.OrdinalIgnoreCase)) { candidates.Add(46); }
                 if (tail.StartsWith("accountkey", StringComparison.OrdinalIgnoreCase)) { candidates.Add(46); }
-                if (tail.StartsWith("apify_api_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(24); }
+                if (tail.StartsWith("apify_api_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken24(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("assemblyai", StringComparison.OrdinalIgnoreCase)) { candidates.Add(32); }
                 if (tail.StartsWith("abuseipdb", StringComparison.OrdinalIgnoreCase)) { candidates.Add(2); }
                 if (tail.StartsWith("accesskey", StringComparison.OrdinalIgnoreCase)) { candidates.Add(46); }
@@ -756,9 +766,9 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("airtable", StringComparison.OrdinalIgnoreCase)) { candidates.Add(10); candidates.Add(11); candidates.Add(12); }
                 if (tail.StartsWith("amqps://", StringComparison.OrdinalIgnoreCase)) { candidates.Add(169); }
                 if (tail.StartsWith("api_org_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(212); }
-                if (tail.StartsWith("astracs:", StringComparison.OrdinalIgnoreCase)) { candidates.Add(105); }
+                if (tail.StartsWith("astracs:", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken105(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("account", StringComparison.OrdinalIgnoreCase)) { candidates.Add(171); }
-                if (tail.StartsWith("aik_ci_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(7); }
+                if (tail.StartsWith("aik_ci_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken7(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("algolia", StringComparison.OrdinalIgnoreCase)) { candidates.Add(14); candidates.Add(15); }
                 if (tail.StartsWith("alibaba", StringComparison.OrdinalIgnoreCase)) { candidates.Add(17); candidates.Add(19); candidates.Add(20); }
                 if (tail.StartsWith("amqp://", StringComparison.OrdinalIgnoreCase)) { candidates.Add(169); }
@@ -774,7 +784,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("absk", StringComparison.OrdinalIgnoreCase)) { candidates.Add(39); }
                 if (tail.StartsWith("acca", StringComparison.OrdinalIgnoreCase)) { candidates.Add(38); }
                 if (tail.StartsWith("aiza", StringComparison.OrdinalIgnoreCase)) { candidates.Add(164); }
-                if (tail.StartsWith("akcp", StringComparison.OrdinalIgnoreCase)) { candidates.Add(26); }
+                if (tail.StartsWith("akcp", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken26(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("akia", StringComparison.OrdinalIgnoreCase)) { candidates.Add(38); }
                 if (tail.StartsWith("api-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(289); }
                 if (tail.StartsWith("apk_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(114); }
@@ -827,7 +837,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("coveralls", StringComparison.OrdinalIgnoreCase)) { candidates.Add(95); }
                 if (tail.StartsWith("checkout", StringComparison.OrdinalIgnoreCase)) { candidates.Add(68); }
                 if (tail.StartsWith("circleci", StringComparison.OrdinalIgnoreCase)) { candidates.Add(70); }
-                if (tail.StartsWith("clojars_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(77); }
+                if (tail.StartsWith("clojars_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken77(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("coinbase", StringComparison.OrdinalIgnoreCase)) { candidates.Add(88); }
                 if (tail.StartsWith("capella", StringComparison.OrdinalIgnoreCase)) { candidates.Add(94); }
                 if (tail.StartsWith("ccipat_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(69); }
@@ -840,12 +850,12 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("cursor", StringComparison.OrdinalIgnoreCase)) { candidates.Add(99); }
                 if (tail.StartsWith("canva", StringComparison.OrdinalIgnoreCase)) { candidates.Add(64); }
                 if (tail.StartsWith("clerk", StringComparison.OrdinalIgnoreCase)) { candidates.Add(73); }
-                if (tail.StartsWith("cmvmd", StringComparison.OrdinalIgnoreCase)) { candidates.Add(28); }
-                if (tail.StartsWith("cnvca", StringComparison.OrdinalIgnoreCase)) { candidates.Add(65); }
+                if (tail.StartsWith("cmvmd", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken28(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("cnvca", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken65(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("creds", StringComparison.OrdinalIgnoreCase)) { candidates.Add(168); }
                 if (tail.StartsWith("cais", StringComparison.OrdinalIgnoreCase)) { candidates.Add(20); }
                 if (tail.StartsWith("civo", StringComparison.OrdinalIgnoreCase)) { candidates.Add(72); }
-                if (tail.StartsWith("cli_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(236); }
+                if (tail.StartsWith("cli_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken236(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("cog_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(115); }
                 if (tail.StartsWith("csa_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(84); }
                 if (tail.StartsWith("csk-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(67); }
@@ -853,9 +863,9 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("cs_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(447); }
                 break;
             case (char)100:
-                if (tail.StartsWith("dvc_client_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(110); }
-                if (tail.StartsWith("dvc_mobile_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(111); }
-                if (tail.StartsWith("dvc_server_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(112); }
+                if (tail.StartsWith("dvc_client_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken110(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("dvc_mobile_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken111(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("dvc_server_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken112(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("databento", StringComparison.OrdinalIgnoreCase)) { candidates.Add(100); }
                 if (tail.StartsWith("dckr_oat_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(125); }
                 if (tail.StartsWith("dckr_pat_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(126); }
@@ -872,7 +882,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("dt0c01.", StringComparison.OrdinalIgnoreCase)) { candidates.Add(133); }
                 if (tail.StartsWith("duffel_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(132); }
                 if (tail.StartsWith("disqus", StringComparison.OrdinalIgnoreCase)) { candidates.Add(122); }
-                if (tail.StartsWith("dp.pt.", StringComparison.OrdinalIgnoreCase)) { candidates.Add(127); }
+                if (tail.StartsWith("dp.pt.", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken127(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("dnkey", StringComparison.OrdinalIgnoreCase)) { candidates.Add(108); }
                 if (tail.StartsWith("dapi", StringComparison.OrdinalIgnoreCase)) { candidates.Add(101); }
                 if (tail.StartsWith("ddp_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(109); }
@@ -892,16 +902,16 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("eaam", StringComparison.OrdinalIgnoreCase)) { candidates.Add(146); }
                 if (tail.StartsWith("ebay", StringComparison.OrdinalIgnoreCase)) { candidates.Add(137); }
                 if (tail.StartsWith("etsy", StringComparison.OrdinalIgnoreCase)) { candidates.Add(142); }
-                if (tail.StartsWith("ezak", StringComparison.OrdinalIgnoreCase)) { candidates.Add(134); }
-                if (tail.StartsWith("eztk", StringComparison.OrdinalIgnoreCase)) { candidates.Add(135); }
+                if (tail.StartsWith("ezak", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken134(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("eztk", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken135(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("exo", StringComparison.OrdinalIgnoreCase)) { candidates.Add(143); }
                 if (tail.StartsWith("eyj", StringComparison.OrdinalIgnoreCase)) { candidates.Add(223); }
                 break;
             case (char)102:
                 if (tail.StartsWith("flwpubk_test-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(157); }
-                if (tail.StartsWith("flwseck_test-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(156); candidates.Add(158); }
+                if (tail.StartsWith("flwseck_test-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(158); VerifyPrefixToken156(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("flwpubk_test", StringComparison.OrdinalIgnoreCase)) { candidates.Add(157); }
-                if (tail.StartsWith("flwseck_test", StringComparison.OrdinalIgnoreCase)) { candidates.Add(156); candidates.Add(158); }
+                if (tail.StartsWith("flwseck_test", StringComparison.OrdinalIgnoreCase)) { candidates.Add(158); }
                 if (tail.StartsWith("freshbooks", StringComparison.OrdinalIgnoreCase)) { candidates.Add(162); }
                 if (tail.StartsWith("fullstory", StringComparison.OrdinalIgnoreCase)) { candidates.Add(163); }
                 if (tail.StartsWith("facebook", StringComparison.OrdinalIgnoreCase)) { candidates.Add(145); candidates.Add(147); }
@@ -916,7 +926,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("fal.ai", StringComparison.OrdinalIgnoreCase)) { candidates.Add(148); }
                 if (tail.StartsWith("fal_ai", StringComparison.OrdinalIgnoreCase)) { candidates.Add(148); }
                 if (tail.StartsWith("fastly", StringComparison.OrdinalIgnoreCase)) { candidates.Add(149); }
-                if (tail.StartsWith("fio-u-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(160); }
+                if (tail.StartsWith("fio-u-", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken160(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("flickr", StringComparison.OrdinalIgnoreCase)) { candidates.Add(155); }
                 if (tail.StartsWith("fs_api", StringComparison.OrdinalIgnoreCase)) { candidates.Add(163); }
                 if (tail.StartsWith("ftp://", StringComparison.OrdinalIgnoreCase)) { candidates.Add(169); }
@@ -929,27 +939,27 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("github_pat_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(174); }
                 if (tail.StartsWith("gocardless", StringComparison.OrdinalIgnoreCase)) { candidates.Add(196); }
                 if (tail.StartsWith("gr1348941", StringComparison.OrdinalIgnoreCase)) { candidates.Add(190); }
-                if (tail.StartsWith("glagent-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(184); }
+                if (tail.StartsWith("glagent-", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken184(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("greptile", StringComparison.OrdinalIgnoreCase)) { candidates.Add(200); }
                 if (tail.StartsWith("gcntfy-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(63); }
-                if (tail.StartsWith("glffct-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(180); }
-                if (tail.StartsWith("glsoat-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(193); }
+                if (tail.StartsWith("glffct-", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken180(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("glsoat-", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken193(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("gumroad", StringComparison.OrdinalIgnoreCase)) { candidates.Add(202); }
                 if (tail.StartsWith("gitter", StringComparison.OrdinalIgnoreCase)) { candidates.Add(195); }
                 if (tail.StartsWith("glcbt-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(178); }
-                if (tail.StartsWith("glimt-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(183); }
-                if (tail.StartsWith("gloas-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(185); }
+                if (tail.StartsWith("glimt-", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken183(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("gloas-", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken185(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("glpat-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(186); candidates.Add(187); candidates.Add(188); }
-                if (tail.StartsWith("glptt-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(189); }
+                if (tail.StartsWith("glptt-", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken189(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("glrt-t", StringComparison.OrdinalIgnoreCase)) { candidates.Add(192); }
                 if (tail.StartsWith("gitea", StringComparison.OrdinalIgnoreCase)) { candidates.Add(172); }
-                if (tail.StartsWith("gldt-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(179); }
-                if (tail.StartsWith("glft-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(181); }
-                if (tail.StartsWith("glrt-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(191); candidates.Add(192); }
+                if (tail.StartsWith("gldt-", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken179(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("glft-", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken181(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("glrt-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(192); VerifyPrefixToken191(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("glsa_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(199); }
-                if (tail.StartsWith("gho_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(175); }
-                if (tail.StartsWith("ghp_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(176); }
-                if (tail.StartsWith("ghr_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(177); }
+                if (tail.StartsWith("gho_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken175(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("ghp_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken176(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("ghr_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken177(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("ghs_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(173); }
                 if (tail.StartsWith("ghu_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(173); }
                 if (tail.StartsWith("glc_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(198); }
@@ -1002,7 +1012,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("linked_in", StringComparison.OrdinalIgnoreCase)) { candidates.Add(243); candidates.Add(244); }
                 if (tail.StartsWith("live_pub_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(247); }
                 if (tail.StartsWith("ldaps://", StringComparison.OrdinalIgnoreCase)) { candidates.Add(169); }
-                if (tail.StartsWith("lin_api_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(241); }
+                if (tail.StartsWith("lin_api_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken241(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("linkedin", StringComparison.OrdinalIgnoreCase)) { candidates.Add(243); candidates.Add(244); }
                 if (tail.StartsWith("log_in (", StringComparison.OrdinalIgnoreCase)) { candidates.Add(170); }
                 if (tail.StartsWith("lsv2_pt_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(232); }
@@ -1019,7 +1029,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("lark", StringComparison.OrdinalIgnoreCase)) { candidates.Add(237); }
                 if (tail.StartsWith("lip_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(239); }
                 if (tail.StartsWith("llx-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(245); }
-                if (tail.StartsWith("ltai", StringComparison.OrdinalIgnoreCase)) { candidates.Add(16); }
+                if (tail.StartsWith("ltai", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken16(text, anchorStart, mode, ref sink); }
                 break;
             case (char)109:
                 if (tail.StartsWith("mergify_application_key_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(260); }
@@ -1161,7 +1171,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("sk-or-v1-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(297); }
                 if (tail.StartsWith("snowflake", StringComparison.OrdinalIgnoreCase)) { candidates.Add(391); }
                 if (tail.StartsWith("stability", StringComparison.OrdinalIgnoreCase)) { candidates.Add(398); }
-                if (tail.StartsWith("swmkey-1-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(124); }
+                if (tail.StartsWith("swmkey-1-", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken124(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("swmtkn-1-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(123); }
                 if (tail.StartsWith("scaleway", StringComparison.OrdinalIgnoreCase)) { candidates.Add(358); }
                 if (tail.StartsWith("sendbird", StringComparison.OrdinalIgnoreCase)) { candidates.Add(362); candidates.Add(363); }
@@ -1182,10 +1192,10 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("storage", StringComparison.OrdinalIgnoreCase)) { candidates.Add(46); candidates.Add(47); }
                 if (tail.StartsWith("secret", StringComparison.OrdinalIgnoreCase)) { candidates.Add(41); candidates.Add(168); candidates.Add(229); }
                 if (tail.StartsWith("sentry", StringComparison.OrdinalIgnoreCase)) { candidates.Add(366); }
-                if (tail.StartsWith("shpat_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(373); }
-                if (tail.StartsWith("shpca_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(374); }
-                if (tail.StartsWith("shppa_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(375); }
-                if (tail.StartsWith("shpss_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(376); }
+                if (tail.StartsWith("shpat_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken373(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("shpca_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken374(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("shppa_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken375(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("shpss_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken376(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("sk-lf-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(235); }
                 if (tail.StartsWith("sm_aat", StringComparison.OrdinalIgnoreCase)) { candidates.Add(369); }
                 if (tail.StartsWith("sm_pat", StringComparison.OrdinalIgnoreCase)) { candidates.Add(370); }
@@ -1197,7 +1207,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("sbp_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(402); }
                 if (tail.StartsWith("sgp_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(361); candidates.Add(394); }
                 if (tail.StartsWith("snyk", StringComparison.OrdinalIgnoreCase)) { candidates.Add(392); }
-                if (tail.StartsWith("sts.", StringComparison.OrdinalIgnoreCase)) { candidates.Add(18); }
+                if (tail.StartsWith("sts.", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken18(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("sumo", StringComparison.OrdinalIgnoreCase)) { candidates.Add(400); candidates.Add(401); }
                 if (tail.StartsWith("scw", StringComparison.OrdinalIgnoreCase)) { candidates.Add(358); }
                 if (tail.StartsWith("sg.", StringComparison.OrdinalIgnoreCase)) { candidates.Add(364); }
@@ -1310,12 +1320,831 @@ public static partial class QuickLeaks
         QuickLeaksScanMode mode,
         ref FindingSink sink)
     {
-        var candidates = FindCandidateRules(text);
+        var candidates = FindCandidateRules(text, mode, ref sink);
         while (candidates.TryTake(out var ruleIndex))
         {
             DispatchRule(ruleIndex, text, mode, ref sink);
         }
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken6(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)6,
+            "AGE-SECRET-KEY-1",
+            StringComparison.Ordinal,
+            0x03FD000000000000UL,
+            0x0000000007FF7DFAUL,
+            58,
+            0,
+            58,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken7(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)7,
+            "AIK_CI_",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            20,
+            0,
+            44,
+            true,
+            true,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken16(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)16,
+            "LTAI",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            17,
+            0,
+            21,
+            true,
+            true,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken18(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)18,
+            "STS.",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            16,
+            0,
+            64,
+            true,
+            true,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken24(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)24,
+            "apify_api_",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            34,
+            0,
+            38,
+            true,
+            true,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken26(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)26,
+            "AKCp",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            68,
+            0,
+            70,
+            true,
+            true,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken28(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)28,
+            "cmVmd",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            59,
+            0,
+            59,
+            true,
+            true,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken65(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)65,
+            "cnvca",
+            StringComparison.Ordinal,
+            0x03FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            51,
+            0,
+            51,
+            true,
+            true,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken74(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)74,
+            "4b1d",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            38,
+            0,
+            38,
+            true,
+            true,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken77(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)77,
+            "CLOJARS_",
+            StringComparison.OrdinalIgnoreCase,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            60,
+            0,
+            60,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken105(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)105,
+            "AstraCS:",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            20,
+            20,
+            -1,
+            true,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken110(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)110,
+            "dvc_client_",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            8,
+            0,
+            32,
+            true,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken111(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)111,
+            "dvc_mobile_",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            8,
+            0,
+            32,
+            true,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken112(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)112,
+            "dvc_server_",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            8,
+            0,
+            32,
+            true,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken124(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)124,
+            "SWMKEY-1-",
+            StringComparison.Ordinal,
+            0x03FF880000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            40,
+            0,
+            50,
+            true,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken127(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)127,
+            "dp.pt.",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            43,
+            0,
+            43,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken134(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)134,
+            "EZAK",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            54,
+            0,
+            54,
+            true,
+            true,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken135(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)135,
+            "EZTK",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            54,
+            0,
+            54,
+            true,
+            true,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken156(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)156,
+            "FLWSECK_TEST-",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x000001FE000001FEUL,
+            12,
+            0,
+            12,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken160(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)160,
+            "fio-u-",
+            StringComparison.Ordinal,
+            0x23FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            64,
+            0,
+            64,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken175(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)175,
+            "gho_",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            36,
+            0,
+            36,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken176(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)176,
+            "ghp_",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            36,
+            0,
+            36,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken177(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)177,
+            "ghr_",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            36,
+            0,
+            36,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken179(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)179,
+            "gldt-",
+            StringComparison.Ordinal,
+            0x03FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            20,
+            0,
+            20,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken180(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)180,
+            "glffct-",
+            StringComparison.Ordinal,
+            0x03FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            20,
+            0,
+            20,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken181(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)181,
+            "glft-",
+            StringComparison.Ordinal,
+            0x03FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            20,
+            0,
+            20,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken183(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)183,
+            "glimt-",
+            StringComparison.Ordinal,
+            0x03FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            25,
+            0,
+            25,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken184(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)184,
+            "glagent-",
+            StringComparison.Ordinal,
+            0x03FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            50,
+            0,
+            50,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken185(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)185,
+            "gloas-",
+            StringComparison.Ordinal,
+            0x03FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            64,
+            0,
+            64,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken189(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)189,
+            "glptt-",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x0000007E00000000UL,
+            40,
+            0,
+            40,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken191(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)191,
+            "glrt-",
+            StringComparison.Ordinal,
+            0x03FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            20,
+            0,
+            20,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken193(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)193,
+            "glsoat-",
+            StringComparison.Ordinal,
+            0x03FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            20,
+            0,
+            20,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken194(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)194,
+            "_gitlab_session=",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE00000000UL,
+            32,
+            0,
+            32,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken236(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)236,
+            "cli_",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            16,
+            0,
+            16,
+            true,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken241(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)241,
+            "lin_api_",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            40,
+            0,
+            40,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken373(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)373,
+            "shpat_",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            32,
+            0,
+            32,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken374(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)374,
+            "shpca_",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            32,
+            0,
+            32,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken375(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)375,
+            "shppa_",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            32,
+            0,
+            32,
+            false,
+            false,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken376(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort)376,
+            "shpss_",
+            StringComparison.Ordinal,
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            32,
+            0,
+            32,
+            false,
+            false,
+            mode,
+            ref sink);
 
     private static void DispatchRule(
         int ruleIndex,
@@ -1331,8 +2160,6 @@ public static partial class QuickLeaks
             case 3: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule3() : Rule3(), text, (ushort)3, ref sink); break;
             case 4: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule4() : Rule4(), text, (ushort)4, ref sink); break;
             case 5: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule5() : Rule5(), text, (ushort)5, ref sink); break;
-            case 6: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule6() : Rule6(), text, (ushort)6, ref sink); break;
-            case 7: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule7() : Rule7(), text, (ushort)7, ref sink); break;
             case 8: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule8() : Rule8(), text, (ushort)8, ref sink); break;
             case 9: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule9() : Rule9(), text, (ushort)9, ref sink); break;
             case 10: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule10() : Rule10(), text, (ushort)10, ref sink); break;
@@ -1341,19 +2168,14 @@ public static partial class QuickLeaks
             case 13: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule13() : Rule13(), text, (ushort)13, ref sink); break;
             case 14: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule14() : Rule14(), text, (ushort)14, ref sink); break;
             case 15: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule15() : Rule15(), text, (ushort)15, ref sink); break;
-            case 16: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule16() : Rule16(), text, (ushort)16, ref sink); break;
             case 17: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule17() : Rule17(), text, (ushort)17, ref sink); break;
-            case 18: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule18() : Rule18(), text, (ushort)18, ref sink); break;
             case 19: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule19() : Rule19(), text, (ushort)19, ref sink); break;
             case 20: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule20() : Rule20(), text, (ushort)20, ref sink); break;
             case 21: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule21() : Rule21(), text, (ushort)21, ref sink); break;
             case 22: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule22() : Rule22(), text, (ushort)22, ref sink); break;
             case 23: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule23() : Rule23(), text, (ushort)23, ref sink); break;
-            case 24: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule24() : Rule24(), text, (ushort)24, ref sink); break;
             case 25: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule25() : Rule25(), text, (ushort)25, ref sink); break;
-            case 26: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule26() : Rule26(), text, (ushort)26, ref sink); break;
             case 27: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule27() : Rule27(), text, (ushort)27, ref sink); break;
-            case 28: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule28() : Rule28(), text, (ushort)28, ref sink); break;
             case 29: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule29() : Rule29(), text, (ushort)29, ref sink); break;
             case 30: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule30() : Rule30(), text, (ushort)30, ref sink); break;
             case 31: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule31() : Rule31(), text, (ushort)31, ref sink); break;
@@ -1390,7 +2212,6 @@ public static partial class QuickLeaks
             case 62: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule62() : Rule62(), text, (ushort)62, ref sink); break;
             case 63: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule63() : Rule63(), text, (ushort)63, ref sink); break;
             case 64: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule64() : Rule64(), text, (ushort)64, ref sink); break;
-            case 65: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule65() : Rule65(), text, (ushort)65, ref sink); break;
             case 66: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule66() : Rule66(), text, (ushort)66, ref sink); break;
             case 67: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule67() : Rule67(), text, (ushort)67, ref sink); break;
             case 68: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule68() : Rule68(), text, (ushort)68, ref sink); break;
@@ -1399,10 +2220,8 @@ public static partial class QuickLeaks
             case 71: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule71() : Rule71(), text, (ushort)71, ref sink); break;
             case 72: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule72() : Rule72(), text, (ushort)72, ref sink); break;
             case 73: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule73() : Rule73(), text, (ushort)73, ref sink); break;
-            case 74: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule74() : Rule74(), text, (ushort)74, ref sink); break;
             case 75: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule75() : Rule75(), text, (ushort)75, ref sink); break;
             case 76: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule76() : Rule76(), text, (ushort)76, ref sink); break;
-            case 77: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule77() : Rule77(), text, (ushort)77, ref sink); break;
             case 78: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule78() : Rule78(), text, (ushort)78, ref sink); break;
             case 79: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule79() : Rule79(), text, (ushort)79, ref sink); break;
             case 80: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule80() : Rule80(), text, (ushort)80, ref sink); break;
@@ -1430,14 +2249,10 @@ public static partial class QuickLeaks
             case 102: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule102() : Rule102(), text, (ushort)102, ref sink); break;
             case 103: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule103() : Rule103(), text, (ushort)103, ref sink); break;
             case 104: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule104() : Rule104(), text, (ushort)104, ref sink); break;
-            case 105: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule105() : Rule105(), text, (ushort)105, ref sink); break;
             case 106: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule106() : Rule106(), text, (ushort)106, ref sink); break;
             case 107: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule107() : Rule107(), text, (ushort)107, ref sink); break;
             case 108: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule108() : Rule108(), text, (ushort)108, ref sink); break;
             case 109: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule109() : Rule109(), text, (ushort)109, ref sink); break;
-            case 110: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule110() : Rule110(), text, (ushort)110, ref sink); break;
-            case 111: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule111() : Rule111(), text, (ushort)111, ref sink); break;
-            case 112: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule112() : Rule112(), text, (ushort)112, ref sink); break;
             case 113: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule113() : Rule113(), text, (ushort)113, ref sink); break;
             case 114: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule114() : Rule114(), text, (ushort)114, ref sink); break;
             case 115: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule115() : Rule115(), text, (ushort)115, ref sink); break;
@@ -1449,18 +2264,14 @@ public static partial class QuickLeaks
             case 121: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule121() : Rule121(), text, (ushort)121, ref sink); break;
             case 122: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule122() : Rule122(), text, (ushort)122, ref sink); break;
             case 123: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule123() : Rule123(), text, (ushort)123, ref sink); break;
-            case 124: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule124() : Rule124(), text, (ushort)124, ref sink); break;
             case 125: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule125() : Rule125(), text, (ushort)125, ref sink); break;
             case 126: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule126() : Rule126(), text, (ushort)126, ref sink); break;
-            case 127: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule127() : Rule127(), text, (ushort)127, ref sink); break;
             case 128: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule128() : Rule128(), text, (ushort)128, ref sink); break;
             case 129: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule129() : Rule129(), text, (ushort)129, ref sink); break;
             case 130: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule130() : Rule130(), text, (ushort)130, ref sink); break;
             case 131: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule131() : Rule131(), text, (ushort)131, ref sink); break;
             case 132: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule132() : Rule132(), text, (ushort)132, ref sink); break;
             case 133: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule133() : Rule133(), text, (ushort)133, ref sink); break;
-            case 134: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule134() : Rule134(), text, (ushort)134, ref sink); break;
-            case 135: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule135() : Rule135(), text, (ushort)135, ref sink); break;
             case 136: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule136() : Rule136(), text, (ushort)136, ref sink); break;
             case 137: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule137() : Rule137(), text, (ushort)137, ref sink); break;
             case 138: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule138() : Rule138(), text, (ushort)138, ref sink); break;
@@ -1481,11 +2292,9 @@ public static partial class QuickLeaks
             case 153: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule153() : Rule153(), text, (ushort)153, ref sink); break;
             case 154: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule154() : Rule154(), text, (ushort)154, ref sink); break;
             case 155: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule155() : Rule155(), text, (ushort)155, ref sink); break;
-            case 156: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule156() : Rule156(), text, (ushort)156, ref sink); break;
             case 157: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule157() : Rule157(), text, (ushort)157, ref sink); break;
             case 158: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule158() : Rule158(), text, (ushort)158, ref sink); break;
             case 159: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule159() : Rule159(), text, (ushort)159, ref sink); break;
-            case 160: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule160() : Rule160(), text, (ushort)160, ref sink); break;
             case 161: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule161() : Rule161(), text, (ushort)161, ref sink); break;
             case 162: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule162() : Rule162(), text, (ushort)162, ref sink); break;
             case 163: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule163() : Rule163(), text, (ushort)163, ref sink); break;
@@ -1500,26 +2309,13 @@ public static partial class QuickLeaks
             case 172: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule172() : Rule172(), text, (ushort)172, ref sink); break;
             case 173: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule173() : Rule173(), text, (ushort)173, ref sink); break;
             case 174: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule174() : Rule174(), text, (ushort)174, ref sink); break;
-            case 175: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule175() : Rule175(), text, (ushort)175, ref sink); break;
-            case 176: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule176() : Rule176(), text, (ushort)176, ref sink); break;
-            case 177: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule177() : Rule177(), text, (ushort)177, ref sink); break;
             case 178: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule178() : Rule178(), text, (ushort)178, ref sink); break;
-            case 179: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule179() : Rule179(), text, (ushort)179, ref sink); break;
-            case 180: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule180() : Rule180(), text, (ushort)180, ref sink); break;
-            case 181: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule181() : Rule181(), text, (ushort)181, ref sink); break;
             case 182: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule182() : Rule182(), text, (ushort)182, ref sink); break;
-            case 183: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule183() : Rule183(), text, (ushort)183, ref sink); break;
-            case 184: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule184() : Rule184(), text, (ushort)184, ref sink); break;
-            case 185: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule185() : Rule185(), text, (ushort)185, ref sink); break;
             case 186: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule186() : Rule186(), text, (ushort)186, ref sink); break;
             case 187: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule187() : Rule187(), text, (ushort)187, ref sink); break;
             case 188: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule188() : Rule188(), text, (ushort)188, ref sink); break;
-            case 189: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule189() : Rule189(), text, (ushort)189, ref sink); break;
             case 190: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule190() : Rule190(), text, (ushort)190, ref sink); break;
-            case 191: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule191() : Rule191(), text, (ushort)191, ref sink); break;
             case 192: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule192() : Rule192(), text, (ushort)192, ref sink); break;
-            case 193: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule193() : Rule193(), text, (ushort)193, ref sink); break;
-            case 194: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule194() : Rule194(), text, (ushort)194, ref sink); break;
             case 195: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule195() : Rule195(), text, (ushort)195, ref sink); break;
             case 196: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule196() : Rule196(), text, (ushort)196, ref sink); break;
             case 197: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule197() : Rule197(), text, (ushort)197, ref sink); break;
@@ -1561,12 +2357,10 @@ public static partial class QuickLeaks
             case 233: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule233() : Rule233(), text, (ushort)233, ref sink); break;
             case 234: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule234() : Rule234(), text, (ushort)234, ref sink); break;
             case 235: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule235() : Rule235(), text, (ushort)235, ref sink); break;
-            case 236: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule236() : Rule236(), text, (ushort)236, ref sink); break;
             case 237: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule237() : Rule237(), text, (ushort)237, ref sink); break;
             case 238: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule238() : Rule238(), text, (ushort)238, ref sink); break;
             case 239: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule239() : Rule239(), text, (ushort)239, ref sink); break;
             case 240: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule240() : Rule240(), text, (ushort)240, ref sink); break;
-            case 241: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule241() : Rule241(), text, (ushort)241, ref sink); break;
             case 242: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule242() : Rule242(), text, (ushort)242, ref sink); break;
             case 243: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule243() : Rule243(), text, (ushort)243, ref sink); break;
             case 244: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule244() : Rule244(), text, (ushort)244, ref sink); break;
@@ -1698,10 +2492,6 @@ public static partial class QuickLeaks
             case 370: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule370() : Rule370(), text, (ushort)370, ref sink); break;
             case 371: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule371() : Rule371(), text, (ushort)371, ref sink); break;
             case 372: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule372() : Rule372(), text, (ushort)372, ref sink); break;
-            case 373: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule373() : Rule373(), text, (ushort)373, ref sink); break;
-            case 374: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule374() : Rule374(), text, (ushort)374, ref sink); break;
-            case 375: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule375() : Rule375(), text, (ushort)375, ref sink); break;
-            case 376: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule376() : Rule376(), text, (ushort)376, ref sink); break;
             case 377: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule377() : Rule377(), text, (ushort)377, ref sink); break;
             case 378: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule378() : Rule378(), text, (ushort)378, ref sink); break;
             case 379: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule379() : Rule379(), text, (ushort)379, ref sink); break;

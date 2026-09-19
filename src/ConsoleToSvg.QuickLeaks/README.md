@@ -48,7 +48,12 @@ rate, use it with care.
 The generator conservatively analyzes each regex and emits a generation report.
 At runtime, `SearchValues<string>` performs one case-insensitive multi-pattern
 anchor search. A generated discriminator maps each anchor occurrence to rule
-indices, and a compact bitset runs only the selected fallback rules.
+indices. Prefix-token rules are verified immediately at that anchor position;
+a compact bitset runs only the selected fallback rules.
+
+For the pinned rule set, 39 prefix-plus-character-class patterns are lowered to
+allocation-free verifiers. The verifier preserves normal and Early minimum
+lengths, case sensitivity, ASCII character classes, and regex word boundaries.
 
 Compiler-proven anchors and Betterleaks keywords are deliberately distinct.
 During the verifier migration, upstream keywords remain as a recall-preserving
@@ -71,7 +76,8 @@ ConsoleToSvg adds these local rules:
 
 `fetch_betterleaks.py` downloads the pinned Betterleaks configuration.
 `generate.py` consumes that download and the checked-in `betterleaks.toml.patch` TOML fragment.
-It emits the anchor dispatcher, chunked regex source files, and
+It emits the anchor dispatcher, prefix-token verifiers, chunked fallback regex
+source files, and
 `QuickLeaks.generation-report.json`. Both scripts update the metadata block in
 this README with the Betterleaks commit, downloaded configuration SHA-256, and
 generated rule count.

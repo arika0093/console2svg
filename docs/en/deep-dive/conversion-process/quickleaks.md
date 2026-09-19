@@ -30,14 +30,20 @@ At runtime, .NET's `SearchValues<string>` searches all anchors together. A
 generated discriminator maps an occurrence to exact anchors and rule indices,
 then a compact bitset enumerates only set candidates.
 
+Simple prefix-token shapes, such as `ghp_[0-9A-Za-z]{36}`, are compiled into
+dedicated verifiers. They validate only the characters after the discovered
+anchor, including case, length, and word-boundary semantics. In the pinned rule
+set, 39 rules use this path without running regex.
+
 Compiler-proven anchors are distinct from Betterleaks keywords. While rules are
 migrated to dedicated verifiers, keywords remain as a recall-preserving safety
 net. Fallback uses `GeneratedRegex` with span-based `Regex.EnumerateMatches` and
 a fixed timeout. A timeout produces conservative redaction instead of a silent
 false negative.
 
-Rules already lowered to a dedicated verifier, such as credential URIs, do not
-run regex. The generation report records why every remaining rule fell back.
+Rules lowered to a prefix-token or specialized verifier, such as credential
+URIs, do not run regex. The generation report records the selected engine and
+why every remaining rule fell back.
 
 ## Detect partially entered values in Early mode
 

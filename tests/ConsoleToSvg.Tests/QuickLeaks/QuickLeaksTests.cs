@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using ConsoleToSvg.QuickLeaks;
 using Filter = ConsoleToSvg.QuickLeaks.QuickLeaks;
@@ -22,7 +25,7 @@ public sealed class QuickLeaksTests
             .Select(method => (Regex)method.Invoke(null, null)!)
             .ToArray();
 
-        generatedRules.Length.ShouldBe(930);
+        generatedRules.Length.ShouldBe(Filter.RegexFallbackRuleCount * 2);
         generatedRules
             .All(regex => regex.MatchTimeout == TimeSpan.FromMilliseconds(10))
             .ShouldBeTrue();
@@ -31,11 +34,7 @@ public sealed class QuickLeaksTests
     [Test]
     public void TimedOutRuleFailsClosedWithAConservativeRedaction()
     {
-        var pathological = new Regex(
-            "(a+)+$",
-            RegexOptions.None,
-            TimeSpan.FromMilliseconds(1)
-        );
+        var pathological = new Regex("(a+)+$", RegexOptions.None, TimeSpan.FromMilliseconds(1));
         var input = new string('a', 100_000) + "!";
 
         var findings = Filter.ScanRegexFallbackForTesting(pathological, input);
@@ -70,8 +69,8 @@ public sealed class QuickLeaksTests
         var count = Filter.Scan("/home/alice/project".AsSpan(), findings);
 
         count.ShouldBe(findings.WrittenCount);
-        findings.WrittenSpan
-            .ToArray()
+        findings
+            .WrittenSpan.ToArray()
             .Any(finding => finding.RuleId == "console2svg-home-directory")
             .ShouldBeTrue();
     }
@@ -110,6 +109,126 @@ public sealed class QuickLeaksTests
     }
 
     [Test]
+    public void PrefixTokenVerifierPreservesCaseAndMatchRange()
+    {
+        var token = "ghp_" + new string('a', 36);
+        var input = "--" + token + "--";
+
+        var finding = Filter.Scan(input).Single(item => item.RuleId == "github-pat");
+
+        finding.Start.ShouldBe(2);
+        finding.End.ShouldBe(2 + token.Length);
+        Filter
+            .Scan(input.Replace("ghp_", "GHP_", StringComparison.Ordinal))
+            .Any(item => item.RuleId == "github-pat")
+            .ShouldBeFalse();
+    }
+
+    [Test]
+    public void PrefixTokenVerifierHonorsIgnoreCaseAndWordBoundaries()
+    {
+        var clojars = "clojars_" + new string('A', 60);
+        Filter.Scan(clojars).Any(item => item.RuleId == "clojars-api-token").ShouldBeTrue();
+
+        var aikido = "AIK_CI_" + new string('a', 20);
+        Filter.Scan("x" + aikido).Any(item => item.RuleId == "aikido-ci-token").ShouldBeFalse();
+        Filter
+            .Scan(" " + aikido + " ")
+            .Any(item => item.RuleId == "aikido-ci-token")
+            .ShouldBeTrue();
+    }
+
+    [Test]
+    [NotInParallel]
+    public void PrefixTokenVerifiersMatchRegexOracle()
+    {
+        using var report = JsonDocument.Parse(
+            File.ReadAllText(
+                Path.Combine(AppContext.BaseDirectory, "QuickLeaks.generation-report.json")
+            )
+        );
+        var optimizedRules = report
+            .RootElement.GetProperty("rules")
+            .EnumerateArray()
+            .Where(rule => rule.GetProperty("engine").GetString() == "prefix-token-verifier")
+            .ToArray();
+
+        optimizedRules.Length.ShouldBe(39);
+        foreach (var rule in optimizedRules)
+        {
+            var descriptor = rule.GetProperty("prefixToken");
+            var prefix = descriptor.GetProperty("prefix").GetString()!;
+            var sampleCharacter = SelectPrefixTokenSampleCharacter(descriptor);
+            var ruleId = rule.GetProperty("id").GetString()!;
+            var ruleIndex = (ushort)rule.GetProperty("index").GetInt32();
+
+            foreach (var mode in new[] { QuickLeaksScanMode.Normal, QuickLeaksScanMode.Early })
+            {
+                var minimumProperty =
+                    mode == QuickLeaksScanMode.Normal ? "normalMinimum" : "earlyMinimum";
+                var minimum = descriptor.GetProperty(minimumProperty).GetInt32();
+                var patternProperty =
+                    mode == QuickLeaksScanMode.Normal ? "pattern" : "earlyPattern";
+                var regex = new Regex(
+                    rule.GetProperty(patternProperty).GetString()!,
+                    RegexOptions.CultureInvariant,
+                    TimeSpan.FromSeconds(1)
+                );
+                var sampleLength = minimum;
+                var input = " " + prefix + new string(sampleCharacter, sampleLength) + " ";
+                var match = regex.Match(input);
+                while (!match.Success && sampleLength < minimum + 2)
+                {
+                    sampleLength++;
+                    input = " " + prefix + new string(sampleCharacter, sampleLength) + " ";
+                    match = regex.Match(input);
+                }
+                match.Success.ShouldBeTrue(
+                    $"The generated fixture must match {ruleId} in {mode} mode."
+                );
+                var expected = Filter.NarrowFindingForTesting(
+                    input,
+                    ruleIndex,
+                    match.Index,
+                    match.Index + match.Length
+                );
+
+                var actual = Filter.Scan(input, mode).Single(finding => finding.RuleId == ruleId);
+
+                actual.ShouldBe(
+                    expected,
+                    $"The prefix verifier diverged for {ruleId} in {mode} mode."
+                );
+            }
+        }
+    }
+
+    private static char SelectPrefixTokenSampleCharacter(JsonElement descriptor)
+    {
+        var low = ulong.Parse(
+            descriptor.GetProperty("classLowMask").GetString()!,
+            NumberStyles.HexNumber,
+            CultureInfo.InvariantCulture
+        );
+        var high = ulong.Parse(
+            descriptor.GetProperty("classHighMask").GetString()!,
+            NumberStyles.HexNumber,
+            CultureInfo.InvariantCulture
+        );
+        foreach (var character in "aA0_bB1-+/=")
+        {
+            var mask = character < 64 ? low : high;
+            if (((mask >> (character & 63)) & 1) != 0)
+            {
+                return character;
+            }
+        }
+        throw new InvalidOperationException(
+            "The optimized character class has no testable ASCII member."
+        );
+    }
+
+    [Test]
     public void EarlyModeFindsPartiallyEnteredCredentialUri()
     {
         var partialUri = "https" + "://user:" + "pass";
@@ -145,8 +264,7 @@ public sealed class QuickLeaksTests
         );
 
         Filter.Scan(text, QuickLeaksScanMode.Early).ShouldBeEmpty();
-        const string header =
-            "curl -H \"Authorization: Bearer abcdefgh\" https://example.test";
+        const string header = "curl -H \"Authorization: Bearer abcdefgh\" https://example.test";
         var headerFinding = Filter
             .Scan(header, QuickLeaksScanMode.Early)
             .Single(finding => finding.RuleId == "curl-auth-header");
@@ -189,8 +307,8 @@ public sealed class QuickLeaksTests
         )
         {
             var findings = Filter.Scan(path);
-            var finding = findings.Single(
-                finding => finding.RuleId == "console2svg-home-directory"
+            var finding = findings.Single(finding =>
+                finding.RuleId == "console2svg-home-directory"
             );
             path.Substring(finding.Start, finding.End - finding.Start).ShouldBe("alice");
         }
@@ -218,7 +336,9 @@ public sealed class QuickLeaksTests
     [Test]
     public void EnvValuesRemainIndependentlyDetectableAcrossLines()
     {
-        var findings = Filter.Scan("PASSWORD=123456\nDATABASE_URL=postgres://user:secret@host/testdb");
+        var findings = Filter.Scan(
+            "PASSWORD=123456\nDATABASE_URL=postgres://user:secret@host/testdb"
+        );
 
         findings.Any(finding => finding.RuleId == "generic-password").ShouldBeTrue();
         findings.Any(finding => finding.RuleId == "generic-credential-uri").ShouldBeTrue();

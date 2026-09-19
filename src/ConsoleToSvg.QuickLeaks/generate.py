@@ -155,6 +155,199 @@ class PatternAnalysis:
     fallback_reason: str
 
 
+@dataclass(frozen=True)
+class PrefixTokenAnalysis:
+    prefix: str
+    prefix_ignore_case: bool
+    class_low_mask: int
+    class_high_mask: int
+    normal_minimum: int
+    early_minimum: int
+    maximum: int | None
+    leading_boundary: bool
+    trailing_boundary: bool
+
+
+def parse_ascii_character_class(content: str, ignore_case: bool) -> tuple[int, int] | None:
+    """Compile a positive ASCII character class into two 64-bit masks."""
+    characters: set[int] = set()
+    atoms: list[tuple[int, bool]] = []
+    index = 0
+    while index < len(content):
+        if content[index] == "\\":
+            if index + 1 >= len(content) or content[index + 1] not in r"\.^$|?*+()[]{}-_+/=:@":
+                return None
+            value = ord(content[index + 1])
+            was_escaped = True
+            index += 2
+        else:
+            value = ord(content[index])
+            was_escaped = False
+            index += 1
+        if value >= 128:
+            return None
+        atoms.append((value, was_escaped))
+
+    index = 0
+    while index < len(atoms):
+        if (
+            index + 2 < len(atoms)
+            and atoms[index + 1][0] == ord("-")
+            and not atoms[index + 1][1]
+        ):
+            start, end = atoms[index][0], atoms[index + 2][0]
+            if start > end:
+                return None
+            characters.update(range(start, end + 1))
+            index += 3
+        else:
+            characters.add(atoms[index][0])
+            index += 1
+
+    if ignore_case:
+        for value in tuple(characters):
+            if ord("a") <= value <= ord("z"):
+                characters.add(value - (ord("a") - ord("A")))
+            elif ord("A") <= value <= ord("Z"):
+                characters.add(value + (ord("a") - ord("A")))
+
+    low = sum(1 << value for value in characters if value < 64)
+    high = sum(1 << (value - 64) for value in characters if value >= 64)
+    return low, high
+
+
+def parse_prefix_token_shape(pattern: str) -> tuple[
+    str, bool, int, int, int, int | None, bool, bool
+] | None:
+    """Parse the conservative prefix + ASCII class repetition subset."""
+    index = 0
+    ignore_case = False
+    if pattern.startswith("(?i)"):
+        ignore_case = True
+        index += 4
+
+    leading_boundary = pattern.startswith(r"\b", index)
+    if leading_boundary:
+        index += 2
+
+    closing_group = False
+    if index < len(pattern) and pattern[index] == "(":
+        if pattern.startswith("(?:", index):
+            index += 3
+        elif pattern.startswith("(?<", index):
+            name_end = pattern.find(">", index + 3)
+            if name_end < 0:
+                return None
+            index = name_end + 1
+        elif not pattern.startswith("(?", index):
+            index += 1
+        else:
+            return None
+        closing_group = True
+
+    prefix_start = index
+    prefix: list[str] = []
+    metacharacters = set(r".^$|?*+()[]{}")
+    while index < len(pattern):
+        if pattern.startswith("(?i)", index) or pattern[index] == "[":
+            break
+        character = pattern[index]
+        if character == "\\":
+            if index + 1 >= len(pattern) or pattern[index + 1] not in r"\.^$|?*+()[]{}-_+/=:@":
+                return None
+            prefix.append(pattern[index + 1])
+            index += 2
+            continue
+        if character in metacharacters or not character.isascii():
+            return None
+        prefix.append(character)
+        index += 1
+
+    literal = "".join(prefix)
+    if index == prefix_start or len(literal) < 4:
+        return None
+
+    class_ignore_case = ignore_case
+    if pattern.startswith("(?i)", index):
+        class_ignore_case = True
+        index += 4
+    if index >= len(pattern) or pattern[index] != "[":
+        return None
+    class_end = index + 1
+    escaped = False
+    while class_end < len(pattern):
+        character = pattern[class_end]
+        if character == "]" and not escaped:
+            break
+        escaped = character == "\\" and not escaped
+        if character != "\\":
+            escaped = False
+        class_end += 1
+    if class_end >= len(pattern):
+        return None
+    masks = parse_ascii_character_class(pattern[index + 1:class_end], class_ignore_case)
+    if masks is None:
+        return None
+    index = class_end + 1
+
+    quantifier = re.match(r"\{(\d+)(?:,(\d*))?\}", pattern[index:])
+    if quantifier is None:
+        return None
+    minimum = int(quantifier.group(1))
+    maximum_text = quantifier.group(2)
+    maximum = minimum if maximum_text is None else (int(maximum_text) if maximum_text else None)
+    if maximum is not None and maximum < minimum:
+        return None
+    index += quantifier.end()
+
+    if closing_group:
+        if index >= len(pattern) or pattern[index] != ")":
+            return None
+        index += 1
+
+    trailing_boundary = pattern.startswith(r"\b", index)
+    if trailing_boundary:
+        index += 2
+    if index != len(pattern):
+        return None
+
+    low, high = masks
+    return (
+        literal,
+        ignore_case,
+        low,
+        high,
+        minimum,
+        maximum,
+        leading_boundary,
+        trailing_boundary,
+    )
+
+
+def lower_prefix_token(pattern: str, early: str) -> PrefixTokenAnalysis | None:
+    normal_shape = parse_prefix_token_shape(pattern)
+    early_shape = parse_prefix_token_shape(early)
+    if normal_shape is None or early_shape is None:
+        return None
+    if normal_shape[:4] != early_shape[:4] or normal_shape[5:] != early_shape[5:]:
+        return None
+    prefix, prefix_ignore_case, low, high, normal_minimum, maximum, leading, trailing = normal_shape
+    early_minimum = early_shape[4]
+    if early_minimum > normal_minimum:
+        return None
+    return PrefixTokenAnalysis(
+        prefix,
+        prefix_ignore_case,
+        low,
+        high,
+        normal_minimum,
+        early_minimum,
+        maximum,
+        leading,
+        trailing,
+    )
+
+
 def analyze_pattern(pattern: str) -> PatternAnalysis:
     """Conservatively extract a literal fixed at the beginning of a match.
 
@@ -249,43 +442,79 @@ if len(rules) > 65535:
     raise RuntimeError("The generated rules no longer fit in ushort indices")
 
 analyses = [analyze_pattern(pattern) for _, pattern, _, _ in rules]
-anchor_rules: dict[str, set[int]] = {}
+prefix_tokens = [lower_prefix_token(pattern, early) for _, pattern, early, _ in rules]
+anchor_candidate_rules: dict[str, set[int]] = {}
+anchor_prefix_rules: dict[str, list[int]] = {}
 always_candidates: set[int] = set()
 report_rules = []
-for rule_index, ((rule_id, pattern, _, keywords), analysis) in enumerate(zip(rules, analyses)):
+for rule_index, ((rule_id, pattern, early, keywords), analysis, prefix_token) in enumerate(
+    zip(rules, analyses, prefix_tokens)
+):
     specialized = rule_id in {
         "console2svg-credential-uri",
         "generic-credential-uri",
         "curl-auth-header",
         "curl-auth-user",
     }
-    source = "compiler"
-    anchors = [analysis.anchor] if analysis.anchor else []
-    # Until a dedicated verifier replaces the regex fallback, retain the
-    # upstream keyword safety net as well. This makes the new front-end a
-    # strict superset of the legacy candidate selection during migration.
-    safety_anchors = list(dict.fromkeys(keyword for keyword in keywords if keyword))
-    anchors.extend(anchor for anchor in safety_anchors if anchor not in anchors)
-    if not analysis.anchor:
-        source = "betterleaks-keyword"
+    if prefix_token:
+        source = "compiler"
+        anchors = [prefix_token.prefix]
+        anchor_prefix_rules.setdefault(prefix_token.prefix.lower(), []).append(rule_index)
+    else:
+        source = "compiler"
+        anchors = [analysis.anchor] if analysis.anchor else []
+        # Until a dedicated verifier replaces the regex fallback, retain the
+        # upstream keyword safety net as well. This makes the new front-end a
+        # strict superset of the legacy candidate selection during migration.
+        safety_anchors = list(dict.fromkeys(keyword for keyword in keywords if keyword))
+        anchors.extend(anchor for anchor in safety_anchors if anchor not in anchors)
+        if not analysis.anchor:
+            source = "betterleaks-keyword"
     anchors = [anchor for anchor in anchors if anchor and anchor.isascii()]
     if not anchors:
         source = "none"
         always_candidates.add(rule_index)
-    for anchor in anchors:
-        anchor_rules.setdefault(anchor.lower(), set()).add(rule_index)
+    if not prefix_token:
+        for anchor in anchors:
+            anchor_candidate_rules.setdefault(anchor.lower(), set()).add(rule_index)
     report_rules.append({
         "index": rule_index,
         "id": rule_id,
-        "engine": "specialized-verifier" if specialized else "regex-fallback",
+        "engine": (
+            "prefix-token-verifier"
+            if prefix_token
+            else "specialized-verifier"
+            if specialized
+            else "regex-fallback"
+        ),
         "anchorSource": source,
         "anchors": anchors,
-        "fixedOffset": analysis.fixed_offset,
-        "fallbackReason": None if specialized else analysis.fallback_reason,
+        "fixedOffset": 0 if prefix_token else analysis.fixed_offset,
+        "fallbackReason": None if specialized or prefix_token else analysis.fallback_reason,
         "canCrossNewline": "\\n" in pattern or "\\r" in pattern or "\\s" in pattern,
+        "pattern": pattern,
+        "earlyPattern": early,
+        "prefixToken": (
+            {
+                "prefix": prefix_token.prefix,
+                "prefixIgnoreCase": prefix_token.prefix_ignore_case,
+                "classLowMask": f"{prefix_token.class_low_mask:016X}",
+                "classHighMask": f"{prefix_token.class_high_mask:016X}",
+                "normalMinimum": prefix_token.normal_minimum,
+                "earlyMinimum": prefix_token.early_minimum,
+                "maximum": prefix_token.maximum,
+                "leadingBoundary": prefix_token.leading_boundary,
+                "trailingBoundary": prefix_token.trailing_boundary,
+            }
+            if prefix_token
+            else None
+        ),
     })
 
-anchors = sorted(anchor_rules, key=lambda value: (value[0], -len(value), value))
+anchors = sorted(
+    set(anchor_candidate_rules) | set(anchor_prefix_rules),
+    key=lambda value: (value[0], -len(value), value),
+)
 anchor_values = ",\n        ".join(json.dumps(anchor) for anchor in anchors)
 candidate_word_count = (len(rules) + 63) // 64
 candidate_fields = "\n".join(
@@ -308,9 +537,17 @@ dispatch_cases = []
 for first, bucket in sorted(buckets.items()):
     checks = []
     for anchor in sorted(bucket, key=lambda value: (-len(value), value)):
-        adds = " ".join(f"candidates.Add({index});" for index in sorted(anchor_rules[anchor]))
+        actions = [
+            f"candidates.Add({index});"
+            for index in sorted(anchor_candidate_rules.get(anchor, ()))
+        ]
+        actions.extend(
+            f"VerifyPrefixToken{index}(text, anchorStart, mode, ref sink);"
+            for index in anchor_prefix_rules.get(anchor, ())
+        )
+        action_text = " ".join(actions)
         checks.append(
-            f"                if (tail.StartsWith({json.dumps(anchor)}, StringComparison.OrdinalIgnoreCase)) {{ {adds} }}"
+            f"                if (tail.StartsWith({json.dumps(anchor)}, StringComparison.OrdinalIgnoreCase)) {{ {action_text} }}"
         )
     dispatch_cases.append(
         f"            case (char){ord(first)}:\n" + "\n".join(checks) + "\n                break;"
@@ -340,7 +577,58 @@ rule_dispatch_cases = "\n".join(
         else f"            case {index}: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule{index}() : Rule{index}(), text, (ushort){index}, ref sink); break;"
     )
     for index, (rule_id, _, _, _) in enumerate(rules)
+    if prefix_tokens[index] is None
 )
+
+prefix_verifiers = []
+for index, prefix_token in enumerate(prefix_tokens):
+    if prefix_token is None:
+        continue
+    maximum = prefix_token.maximum if prefix_token.maximum is not None else -1
+    comparison = (
+        "StringComparison.OrdinalIgnoreCase"
+        if prefix_token.prefix_ignore_case
+        else "StringComparison.Ordinal"
+    )
+    prefix_verifiers.append(
+        f"""    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyPrefixToken{index}(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyPrefixToken(
+            text,
+            anchorStart,
+            (ushort){index},
+            {json.dumps(prefix_token.prefix)},
+            {comparison},
+            0x{prefix_token.class_low_mask:016X}UL,
+            0x{prefix_token.class_high_mask:016X}UL,
+            {prefix_token.normal_minimum},
+            {prefix_token.early_minimum},
+            {maximum},
+            {str(prefix_token.leading_boundary).lower()},
+            {str(prefix_token.trailing_boundary).lower()},
+            mode,
+            ref sink);"""
+    )
+prefix_verifier_methods = "\n\n".join(prefix_verifiers)
+
+specialized_indices = {
+    index
+    for index, (rule_id, _, _, _) in enumerate(rules)
+    if rule_id in {
+        "console2svg-credential-uri",
+        "generic-credential-uri",
+        "curl-auth-header",
+        "curl-auth-user",
+    }
+}
+regex_fallback_indices = [
+    index
+    for index in range(len(rules))
+    if prefix_tokens[index] is None and index not in specialized_indices
+]
 
 engine = rf"""// <auto-generated />
 // Generated from Betterleaks config: {URL}
@@ -357,6 +645,7 @@ namespace ConsoleToSvg.QuickLeaks;
 public static partial class QuickLeaks
 {{
     private const int MatchTimeoutMilliseconds = 10;
+    internal const int RegexFallbackRuleCount = {len(regex_fallback_indices)};
     private static readonly SearchValues<string> s_anchors = SearchValues.Create(
         new string[]
         {{
@@ -410,7 +699,10 @@ public static partial class QuickLeaks
         }}
     }}
 
-    private static CandidateRules FindCandidateRules(ReadOnlySpan<char> text)
+    private static CandidateRules FindCandidateRules(
+        ReadOnlySpan<char> text,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink)
     {{
         var candidates = new CandidateRules();
 {always_adds}
@@ -423,15 +715,21 @@ public static partial class QuickLeaks
                 break;
             }}
             var anchorStart = offset + relative;
-            DispatchAnchors(text[anchorStart..], ref candidates);
+            DispatchAnchors(text, anchorStart, mode, ref candidates, ref sink);
             offset = anchorStart + 1;
         }}
         return candidates;
     }}
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void DispatchAnchors(ReadOnlySpan<char> tail, ref CandidateRules candidates)
+    private static void DispatchAnchors(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref CandidateRules candidates,
+        ref FindingSink sink)
     {{
+        var tail = text[anchorStart..];
         var first = tail[0];
         if (first is >= 'A' and <= 'Z')
         {{
@@ -448,12 +746,14 @@ public static partial class QuickLeaks
         QuickLeaksScanMode mode,
         ref FindingSink sink)
     {{
-        var candidates = FindCandidateRules(text);
+        var candidates = FindCandidateRules(text, mode, ref sink);
         while (candidates.TryTake(out var ruleIndex))
         {{
             DispatchRule(ruleIndex, text, mode, ref sink);
         }}
     }}
+
+{prefix_verifier_methods}
 
     private static void DispatchRule(
         int ruleIndex,
@@ -509,9 +809,9 @@ args.output.write_text(engine)
 for stale in ROOT.glob("QuickLeaks.Regex*.generated.cs"):
     stale.unlink()
 chunk_size = 64
-for chunk_start in range(0, len(rules), chunk_size):
+for chunk_start in range(0, len(regex_fallback_indices), chunk_size):
     declarations = []
-    for index in range(chunk_start, min(chunk_start + chunk_size, len(rules))):
+    for index in regex_fallback_indices[chunk_start:chunk_start + chunk_size]:
         _, pattern, early, _ = rules[index]
         declarations.append(
             f"    [GeneratedRegex({json.dumps(pattern)}, RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]\n"
@@ -536,6 +836,10 @@ report = {
     "specializedVerifierRuleCount": sum(
         1 for item in report_rules if item["engine"] == "specialized-verifier"
     ),
+    "prefixTokenVerifierRuleCount": sum(
+        1 for item in report_rules if item["engine"] == "prefix-token-verifier"
+    ),
+    "regexFallbackRuleCount": len(regex_fallback_indices),
     "rules": report_rules,
 }
 REPORT.write_text(json.dumps(report, indent=2) + "\n")

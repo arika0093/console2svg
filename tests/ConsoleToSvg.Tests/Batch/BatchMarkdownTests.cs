@@ -448,6 +448,44 @@ public sealed class BatchMarkdownTests
     }
 
     [Test]
+    public async Task BatchMarkdownCliMapsPlaceholder()
+    {
+        var invocation = await InvokeAsync("batch", "markdown", "--placeholder");
+
+        invocation.ExitCode.ShouldBe(0);
+        invocation.Options.ShouldNotBeNull();
+        invocation.Options!.RequestedBatchAction.ShouldBe(BatchAction.Markdown);
+        invocation.Options.BatchPlaceholder.ShouldBeTrue();
+    }
+
+    [Test]
+    public async Task BatchRestoreCliMapsRestoreControls()
+    {
+        var invocation = await InvokeAsync(
+            "batch",
+            "restore",
+            "https://example.com/manifest.json",
+            "-o",
+            "assets",
+            "--filter",
+            "**/*.svg",
+            "--force",
+            "--prune",
+            "--dry-run"
+        );
+
+        invocation.ExitCode.ShouldBe(0);
+        invocation.Options.ShouldNotBeNull();
+        invocation.Options!.RequestedBatchAction.ShouldBe(BatchAction.Restore);
+        invocation.Options.BatchInputPath.ShouldBe("https://example.com/manifest.json");
+        invocation.Options.BatchOutputDir.ShouldBe("assets");
+        invocation.Options.BatchFilters.ShouldBe(["**/*.svg"]);
+        invocation.Options.BatchForce.ShouldBeTrue();
+        invocation.Options.BatchPrune.ShouldBeTrue();
+        invocation.Options.BatchDryRun.ShouldBeTrue();
+    }
+
+    [Test]
     public async Task LegacyBatchRunCommandIsNotAccepted()
     {
         var invocation = await InvokeAsync("batch", "run");

@@ -145,8 +145,17 @@ public static class BatchExecutor
     /// <summary>Resolves a marker -o value under the output directory.</summary>
     public static string? ResolveOutput(string outputDir, string outputRelative)
     {
+        var normalized = NormalizePath(outputRelative);
+        if (
+            normalized.StartsWith('/', StringComparison.Ordinal)
+            || (normalized.Length >= 2 && char.IsAsciiLetter(normalized[0]) && normalized[1] == ':')
+            || normalized.Split('/').Any(segment => segment == "..")
+        )
+        {
+            return null;
+        }
         var combined = Path.GetFullPath(
-            Path.Combine(outputDir, outputRelative.Replace('/', Path.DirectorySeparatorChar))
+            Path.Combine(outputDir, normalized.Replace('/', Path.DirectorySeparatorChar))
         );
         return IsPathInside(outputDir, combined) ? combined : null;
     }
@@ -188,7 +197,7 @@ public static class BatchExecutor
     }
 
     public static string NormalizePath(string path) =>
-        path.Replace(Path.DirectorySeparatorChar, '/').Replace(Path.AltDirectorySeparatorChar, '/');
+        path.Replace('\\', '/').Replace(Path.DirectorySeparatorChar, '/');
 
     public static string NormalizeFilter(string filter)
     {

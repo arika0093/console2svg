@@ -56,7 +56,7 @@ jobs:
 
 ### 自动同步
 
-使用 [batch markdown](./document-image-sync.md) 功能，也可以自动更新文档。
+使用 [batch markdown](./document-image-sync.mdx) 功能，也可以自动更新文档。
 以下是检测 Markdown 中的标记、生成图片并提交的工作流示例。
 
 ```yaml title=".github/workflows/console2svg.yml" {4-5,10-14}

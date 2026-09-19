@@ -140,6 +140,9 @@ public sealed class BatchExecutorTests
         var output = Path.GetFullPath(Path.Combine(Path.GetTempPath(), "c2s-assets"));
 
         BatchExecutor.ResolveOutput(output, "../evil.svg").ShouldBeNull();
+        BatchExecutor.ResolveOutput(output, "..\\evil.svg").ShouldBeNull();
+        BatchExecutor.ResolveOutput(output, "/evil.svg").ShouldBeNull();
+        BatchExecutor.ResolveOutput(output, "C:/evil.svg").ShouldBeNull();
         BatchExecutor.ResolveOutput(output, "sub/x.svg").ShouldNotBeNull();
     }
 

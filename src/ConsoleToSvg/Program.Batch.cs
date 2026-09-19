@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ConsoleToSvg.Batch;
 using ConsoleToSvg.Cli;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;
+using ConsoleToSvg.Terminal;
 using Microsoft.Extensions.Logging;
 using ZLogger;
 
@@ -18,7 +21,12 @@ namespace ConsoleToSvg;
 
 internal static partial class Program
 {
-    private sealed record BatchResolvedJob(BatchParsedJob Job, string OutputPath);
+    private sealed record BatchResolvedJob(
+        BatchParsedJob Job,
+        string OutputPath,
+        string CanonicalPath,
+        string RecipeHash
+    );
 
     private sealed record BatchFilePlan(
         string Path,
@@ -30,6 +38,11 @@ internal static partial class Program
 
     private static async Task<int> RunBatchAsync(AppOptions options, CancellationToken ct)
     {
+        if (options.RequestedBatchAction == BatchAction.Restore)
+        {
+            return await RunBatchRestoreAsync(options, ct).ConfigureAwait(false);
+        }
+
         var inputPath = Path.GetFullPath(options.BatchInputPath ?? "docs");
         var outputDir = Path.GetFullPath(options.BatchOutputDir ?? "assets");
         if (!TryFindBatchFiles(inputPath, out var inputRoot, out var files, out var inputError))
@@ -132,8 +145,24 @@ internal static partial class Program
             foreach (var resolved in plan.Jobs)
             {
                 ct.ThrowIfCancellationRequested();
-                if (generatedOutputs.Contains(resolved.OutputPath))
+                if (generatedOutputs.Contains(resolved.CanonicalPath))
                 {
+                    try
+                    {
+                        BatchAssets.MaterializeAlias(
+                            outputDir,
+                            resolved.CanonicalPath,
+                            resolved.OutputPath,
+                            options.BatchPlaceholder
+                        );
+                    }
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                    {
+                        failures.Add(
+                            $"{plan.RelativePath}:{resolved.Job.MarkerLine}: could not materialize output: {ex.Message}"
+                        );
+                        continue;
+                    }
                     links.Add(
                         new BatchLink(
                             resolved.Job,
@@ -145,33 +174,73 @@ internal static partial class Program
 
                 var workingDirectory =
                     Path.GetDirectoryName(plan.Path) ?? Environment.CurrentDirectory;
-                var jobOptions = BuildBatchJobOptions(options, resolved.Job, workingDirectory);
-                var error = await ExecuteBatchJobAsync(
-                        resolved.Job,
-                        jobOptions,
-                        resolved.OutputPath,
-                        workingDirectory,
-                        loggerFactory,
-                        logger,
-                        ct
-                    )
-                    .ConfigureAwait(false);
+                string? error = null;
+                if (options.BatchPlaceholder)
+                {
+                    try
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(resolved.CanonicalPath)!);
+                        if (!File.Exists(resolved.CanonicalPath))
+                        {
+                            await using var placeholder = new FileStream(
+                                resolved.CanonicalPath,
+                                FileMode.CreateNew,
+                                FileAccess.Write,
+                                FileShare.Read
+                            );
+                        }
+                    }
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                    {
+                        error = $"could not create placeholder: {ex.Message}";
+                    }
+                }
+                else
+                {
+                    var jobOptions = BuildBatchJobOptions(options, resolved.Job, workingDirectory);
+                    error = await ExecuteBatchJobAsync(
+                            resolved.Job,
+                            jobOptions,
+                            resolved.CanonicalPath,
+                            workingDirectory,
+                            loggerFactory,
+                            logger,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+                }
                 if (error is not null)
                 {
                     failures.Add($"{plan.RelativePath}:{resolved.Job.MarkerLine}: {error}");
                     continue;
                 }
 
+                try
+                {
+                    BatchAssets.MaterializeAlias(
+                        outputDir,
+                        resolved.CanonicalPath,
+                        resolved.OutputPath,
+                        options.BatchPlaceholder
+                    );
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                {
+                    failures.Add(
+                        $"{plan.RelativePath}:{resolved.Job.MarkerLine}: could not materialize output: {ex.Message}"
+                    );
+                    continue;
+                }
                 links.Add(
                     new BatchLink(
                         resolved.Job,
                         BatchExecutor.Relativize(plan.Path, resolved.OutputPath)
                     )
                 );
-                generatedOutputs.Add(resolved.OutputPath);
+                generatedOutputs.Add(resolved.CanonicalPath);
                 generated++;
                 await Console.Error.WriteLineAsync(
-                    $"Generated: {resolved.OutputPath}".AsMemory(),
+                    $"{(options.BatchPlaceholder ? "Placeholder" : "Generated")}: {resolved.OutputPath}".AsMemory(),
                     ct
                 );
             }
@@ -194,12 +263,288 @@ internal static partial class Program
             }
         }
 
+        if (failures.Count == 0 && !options.BatchPlaceholder)
+        {
+            try
+            {
+                await WriteBatchManifestAsync(
+                        plans,
+                        selected.Select(file => file.Relative),
+                        outputDir,
+                        filters.Length > 0,
+                        ct
+                    )
+                    .ConfigureAwait(false);
+            }
+            catch (Exception ex)
+                when (ex
+                        is IOException
+                            or UnauthorizedAccessException
+                            or JsonException
+                            or InvalidDataException
+                )
+            {
+                failures.Add($"assets.json: {ex.Message}");
+            }
+        }
+
         await WriteBatchFailuresAsync(failures, ct).ConfigureAwait(false);
         await Console.Error.WriteLineAsync(
-            $"Batch markdown done: {generated} generated, {failures.Count} failed.".AsMemory(),
+            $"Batch markdown done: {generated} {(options.BatchPlaceholder ? "materialized" : "generated")}, {failures.Count} failed.".AsMemory(),
             ct
         );
         return failures.Count == 0 ? 0 : 1;
+    }
+
+    private static async Task<int> RunBatchRestoreAsync(AppOptions options, CancellationToken ct)
+    {
+        if (
+            string.IsNullOrWhiteSpace(options.BatchInputPath)
+            || string.IsNullOrWhiteSpace(options.BatchOutputDir)
+        )
+        {
+            await Console.Error.WriteLineAsync(
+                "batch restore requires <source> and --output.".AsMemory(),
+                ct
+            );
+            return 1;
+        }
+
+        string? temporary = null;
+        BatchRestoreResult result;
+        try
+        {
+            var source = options.BatchInputPath;
+            if (Directory.Exists(source))
+            {
+                source = Path.Combine(Path.GetFullPath(source), "assets.json");
+            }
+            else if (File.Exists(source))
+            {
+                source = Path.GetFullPath(source);
+            }
+            else if (IsRepositorySourceUrl(source) || !IsHttpManifestSource(source))
+            {
+                temporary = Path.Combine(
+                    Path.GetTempPath(),
+                    "console2svg-batch-" + Guid.NewGuid().ToString("N")
+                );
+                var checkout = RepositorySourceAcquirer.Acquire(
+                    RepositorySource.Parse(source),
+                    temporary
+                );
+                source = Path.Combine(checkout.Root, "assets.json");
+            }
+
+            result = await BatchAssets
+                .RestoreAsync(
+                    source,
+                    Path.GetFullPath(options.BatchOutputDir),
+                    options.BatchFilters,
+                    options.BatchForce,
+                    options.BatchPrune,
+                    options.BatchDryRun,
+                    ct
+                )
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+            when (ex
+                    is IOException
+                        or UnauthorizedAccessException
+                        or InvalidOperationException
+                        or InvalidDataException
+                        or HttpRequestException
+            )
+        {
+            result = new BatchRestoreResult(0, 0, 0, 0, 0, [], [$"source: {ex.Message}"]);
+        }
+        finally
+        {
+            if (temporary is not null && Directory.Exists(temporary))
+            {
+                try
+                {
+                    RepositorySourceAcquirer.DeleteCheckout(temporary);
+                }
+                catch (IOException)
+                {
+                    // A checkout cleanup failure must not invalidate a completed restore.
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // A checkout cleanup failure must not invalidate a completed restore.
+                }
+            }
+        }
+        foreach (var failure in result.Failures)
+        {
+            await Console.Error.WriteLineAsync($"error: {failure}".AsMemory(), ct);
+        }
+        foreach (var action in result.Actions)
+        {
+            await Console.Error.WriteLineAsync(
+                $"{(options.BatchDryRun ? "[dry-run] " : string.Empty)}{action}".AsMemory(),
+                ct
+            );
+        }
+        await Console.Error.WriteLineAsync(
+            $"Batch restore{(options.BatchDryRun ? " dry run" : string.Empty)}: {result.Restored} restored, {result.Reused} reused, {result.Filtered} filtered, {result.Materialized} materialized, {result.Pruned} pruned, {result.Failures.Count} failed.".AsMemory(),
+            ct
+        );
+        return result.Failures.Count == 0 ? 0 : 1;
+    }
+
+    internal static bool IsRepositorySourceUrl(string source)
+    {
+        if (
+            !Uri.TryCreate(source, UriKind.Absolute, out var uri)
+            || (
+                !uri.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase)
+                && !uri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)
+            )
+            || !uri.Host.Equals("github.com", StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            return false;
+        }
+        var segments = uri.AbsolutePath.Trim('/').Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (segments.Length != 2 || segments[0].IndexOf('.') >= 0)
+        {
+            return false;
+        }
+        var repository = segments[1];
+        if (repository.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
+        {
+            repository = repository[..^4];
+        }
+        return repository.Length > 0;
+    }
+
+    private static bool IsHttpManifestSource(string source) =>
+        Uri.TryCreate(source, UriKind.Absolute, out var uri)
+        && (
+            uri.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase)
+            || uri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)
+        )
+        && !uri.AbsolutePath.EndsWith(".git", StringComparison.OrdinalIgnoreCase);
+
+    private static async Task WriteBatchManifestAsync(
+        IReadOnlyList<BatchFilePlan> plans,
+        IEnumerable<string> selectedInputs,
+        string outputDir,
+        bool filtered,
+        CancellationToken ct
+    )
+    {
+        var manifestPath = Path.Combine(outputDir, "assets.json");
+        var manifest = new BatchAssetManifest
+        {
+            Generator = new BatchAssetGenerator
+            {
+                Name = "console2svg",
+                Version = ThisAssembly.AssemblyInformationalVersion.Split('+')[0],
+            },
+        };
+        var selected = selectedInputs.ToHashSet(StringComparer.Ordinal);
+
+        if (filtered && File.Exists(manifestPath))
+        {
+            var previous = await BatchAssets
+                .ReadManifestAsync(manifestPath, ct)
+                .ConfigureAwait(false);
+            if (previous.Version != 1 || previous.Objects is null || previous.Assets is null)
+            {
+                throw new InvalidDataException("Existing manifest has an unsupported schema.");
+            }
+            foreach (var pair in previous.Assets)
+            {
+                var remainingOwners = (pair.Value.Owners ?? [])
+                    .Where(owner => !selected.Contains(owner))
+                    .ToArray();
+                if (remainingOwners.Length == 0)
+                {
+                    continue;
+                }
+                if (!previous.Objects.TryGetValue(pair.Value.Object, out var assetObject))
+                {
+                    throw new InvalidDataException(
+                        $"Existing asset '{pair.Key}' references an unknown object."
+                    );
+                }
+                manifest.Assets[pair.Key] = new BatchLogicalAsset
+                {
+                    Object = pair.Value.Object,
+                    Owners = remainingOwners,
+                };
+                manifest.Objects[pair.Value.Object] = assetObject;
+            }
+        }
+
+        foreach (
+            var group in plans
+                .SelectMany(plan => plan.Jobs.Select(job => (Owner: plan.RelativePath, Job: job)))
+                .GroupBy(item => item.Job.OutputPath, GetBatchPathComparer())
+                .OrderBy(group => group.Key, StringComparer.Ordinal)
+        )
+        {
+            var first = group.First().Job;
+            var objectId = Path.GetFileName(first.CanonicalPath);
+            var objectPath = BatchExecutor.NormalizePath(
+                Path.GetRelativePath(outputDir, first.CanonicalPath)
+            );
+            var logicalPath = BatchExecutor.NormalizePath(
+                Path.GetRelativePath(outputDir, first.OutputPath)
+            );
+            var owners = group
+                .Select(item => item.Owner)
+                .Concat(
+                    manifest.Assets.TryGetValue(logicalPath, out var preserved)
+                        ? preserved.Owners
+                        : []
+                )
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(path => path, StringComparer.Ordinal)
+                .ToArray();
+            if (
+                preserved is not null
+                && !string.Equals(preserved.Object, objectId, StringComparison.Ordinal)
+            )
+            {
+                throw new InvalidDataException(
+                    $"Selected and unselected inputs disagree about shared asset '{logicalPath}'."
+                );
+            }
+
+            var info = new FileInfo(first.CanonicalPath);
+            manifest.Objects[objectId] = new BatchAssetObject
+            {
+                Path = objectPath,
+                Sha256 = await BatchAssets
+                    .ComputeSha256Async(first.CanonicalPath, ct)
+                    .ConfigureAwait(false),
+                Size = info.Length,
+                MediaType = BatchAssets.GetMediaType(first.CanonicalPath),
+            };
+            manifest.Assets[logicalPath] = new BatchLogicalAsset
+            {
+                Object = objectId,
+                Owners = owners,
+            };
+        }
+
+        var referenced = manifest
+            .Assets.Values.Select(asset => asset.Object)
+            .ToHashSet(StringComparer.Ordinal);
+        foreach (
+            var objectId in manifest.Objects.Keys.Where(id => !referenced.Contains(id)).ToArray()
+        )
+        {
+            manifest.Objects.Remove(objectId);
+        }
+
+        await BatchAssets.WriteManifestAsync(manifest, manifestPath, ct).ConfigureAwait(false);
+        await Console.Error.WriteLineAsync($"Manifest: {manifestPath}".AsMemory(), ct);
     }
 
     private static bool TryFindBatchFiles(
@@ -271,17 +616,53 @@ internal static partial class Program
                     );
                     continue;
                 }
+                if (!BatchAssets.IsSafeDestinationPath(outputDir, output))
+                {
+                    failures.Add(
+                        $"{plan.RelativePath}:{job.MarkerLine}: output traverses a linked directory."
+                    );
+                    continue;
+                }
+                var relativeOutput = BatchExecutor.NormalizePath(
+                    Path.GetRelativePath(outputDir, output)
+                );
+                if (
+                    relativeOutput.Equals("assets.json", StringComparison.OrdinalIgnoreCase)
+                    || relativeOutput.StartsWith(".generated/", StringComparison.OrdinalIgnoreCase)
+                )
+                {
+                    failures.Add(
+                        $"{plan.RelativePath}:{job.MarkerLine}: output '{relativeOutput}' uses a reserved batch asset path."
+                    );
+                    continue;
+                }
 
                 var owner = $"{plan.RelativePath}:{job.MarkerLine}";
+                var extension = Path.GetExtension(output);
+                var recipeHash = BatchAssets.ComputeRecipeHash(job, extension);
+                var canonical = BatchAssets.GetCanonicalPath(outputDir, recipeHash, extension);
+                if (!BatchAssets.IsSafeDestinationPath(outputDir, canonical))
+                {
+                    failures.Add(
+                        $"{plan.RelativePath}:{job.MarkerLine}: canonical output traverses a linked directory."
+                    );
+                    continue;
+                }
                 if (owners.TryGetValue(output, out var previous))
                 {
                     var previousJob = plans
                         .SelectMany(item => item.Jobs)
-                        .FirstOrDefault(item => comparer.Equals(item.OutputPath, output))
-                        ?.Job;
-                    if (previousJob is not null && AreEquivalentBatchJobs(previousJob, job))
+                        .FirstOrDefault(item => comparer.Equals(item.OutputPath, output));
+                    if (
+                        previousJob is not null
+                        && string.Equals(
+                            previousJob.RecipeHash,
+                            recipeHash,
+                            StringComparison.Ordinal
+                        )
+                    )
                     {
-                        plan.Jobs.Add(new BatchResolvedJob(job, output));
+                        plan.Jobs.Add(new BatchResolvedJob(job, output, canonical, recipeHash));
                         continue;
                     }
 
@@ -292,7 +673,7 @@ internal static partial class Program
                 }
 
                 owners.Add(output, owner);
-                plan.Jobs.Add(new BatchResolvedJob(job, output));
+                plan.Jobs.Add(new BatchResolvedJob(job, output, canonical, recipeHash));
             }
         }
     }
@@ -345,77 +726,6 @@ internal static partial class Program
         }
 
         return null;
-    }
-
-    private static bool AreEquivalentBatchJobs(BatchParsedJob first, BatchParsedJob second)
-    {
-        return first.Kind == second.Kind
-            && string.Equals(first.Setup, second.Setup, StringComparison.Ordinal)
-            && string.Equals(first.Capture, second.Capture, StringComparison.Ordinal)
-            && string.Equals(first.Teardown, second.Teardown, StringComparison.Ordinal)
-            && first.Width == second.Width
-            && first.Height == second.Height
-            && first.WithCommand == second.WithCommand
-            && string.Equals(first.Window, second.Window, StringComparison.Ordinal)
-            && first.WindowExplicit == second.WindowExplicit
-            && first.Video == second.Video
-            && EqualityComparer<double?>.Default.Equals(first.Timeout, second.Timeout)
-            && AreEquivalentCaptureOptions(first.CaptureOptions, second.CaptureOptions);
-    }
-
-    private static bool AreEquivalentCaptureOptions(AppOptions first, AppOptions second)
-    {
-        return first.Mode == second.Mode
-            && first.MaskAuto == second.MaskAuto
-            && first.MaskPatterns.SequenceEqual(second.MaskPatterns, StringComparer.Ordinal)
-            && first.Frame == second.Frame
-            && first.WidthAdjust == second.WidthAdjust
-            && first.HeightAdjust == second.HeightAdjust
-            && EqualityComparer<double?>.Default.Equals(first.Time, second.Time)
-            && EqualityComparer<double?>.Default.Equals(first.TimeStart, second.TimeStart)
-            && EqualityComparer<double?>.Default.Equals(first.TimeEnd, second.TimeEnd)
-            && string.Equals(first.CropTop, second.CropTop, StringComparison.Ordinal)
-            && string.Equals(first.CropRight, second.CropRight, StringComparison.Ordinal)
-            && string.Equals(first.CropBottom, second.CropBottom, StringComparison.Ordinal)
-            && string.Equals(first.CropLeft, second.CropLeft, StringComparison.Ordinal)
-            && first.Themes.SequenceEqual(second.Themes, StringComparer.Ordinal)
-            && string.Equals(first.ForeColor, second.ForeColor, StringComparison.Ordinal)
-            && first.IsForeColorExplicit == second.IsForeColorExplicit
-            && string.Equals(first.Font, second.Font, StringComparison.Ordinal)
-            && first.IsFontExplicit == second.IsFontExplicit
-            && EqualityComparer<double?>.Default.Equals(first.FontSize, second.FontSize)
-            && first.IsFontSizeExplicit == second.IsFontSizeExplicit
-            && string.Equals(first.Window, second.Window, StringComparison.Ordinal)
-            && first.IsWindowExplicit == second.IsWindowExplicit
-            && EqualityComparer<double?>.Default.Equals(first.Margin, second.Margin)
-            && first.IsMarginExplicit == second.IsMarginExplicit
-            && EqualityComparer<double?>.Default.Equals(first.Padding, second.Padding)
-            && first.IsPaddingExplicit == second.IsPaddingExplicit
-            && first.Loop == second.Loop
-            && EqualityComparer<double>.Default.Equals(first.VideoFps, second.VideoFps)
-            && EqualityComparer<double>.Default.Equals(first.VideoSleep, second.VideoSleep)
-            && EqualityComparer<double>.Default.Equals(first.VideoFadeOut, second.VideoFadeOut)
-            && first.VideoTiming == second.VideoTiming
-            && EqualityComparer<double?>.Default.Equals(
-                first.OutputCoalesceMs,
-                second.OutputCoalesceMs
-            )
-            && EqualityComparer<double>.Default.Equals(first.Opacity, second.Opacity)
-            && first.IsOpacityExplicit == second.IsOpacityExplicit
-            && string.Equals(first.Prompt, second.Prompt, StringComparison.Ordinal)
-            && string.Equals(first.Header, second.Header, StringComparison.Ordinal)
-            && string.Equals(first.LengthAdjust, second.LengthAdjust, StringComparison.Ordinal)
-            && first.Background.SequenceEqual(second.Background, StringComparer.Ordinal)
-            && first.IsBackgroundExplicit == second.IsBackgroundExplicit
-            && EqualityComparer<double?>.Default.Equals(first.PcPadding, second.PcPadding)
-            && first.PcMode == second.PcMode
-            && string.Equals(first.BackColor, second.BackColor, StringComparison.Ordinal)
-            && first.IsBackColorExplicit == second.IsBackColorExplicit
-            && first.NoColorEnv == second.NoColorEnv
-            && first.NoDeleteEnvs == second.NoDeleteEnvs
-            && first.SizeWidth.Equals(second.SizeWidth)
-            && first.SizeHeight.Equals(second.SizeHeight)
-            && first.SvgConverter == second.SvgConverter;
     }
 
     private static AppOptions BuildBatchJobOptions(

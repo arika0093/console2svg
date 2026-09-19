@@ -56,7 +56,7 @@ jobs:
 
 ### Automatic sync
 
-You can also automatically update documentation by using the [batch markdown](./document-image-sync.md) feature.
+You can also automatically update documentation by using the [batch markdown](./document-image-sync.mdx) feature.
 The following is an example workflow that detects markers in Markdown, generates images, and commits them.
 
 ```yaml title=".github/workflows/console2svg.yml" {4-5,10-14}

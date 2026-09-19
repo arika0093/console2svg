@@ -20,6 +20,11 @@ function prefixUrl(value) {
   return `${base}${value}`;
 }
 
+function normalizeAssetUrl(value) {
+  if (!/^(?:\.\.\/)+assets\//.test(value)) return value;
+  return `/${value.replace(/^(?:\.\.\/)+/, '')}`;
+}
+
 async function* files(dir) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name);
@@ -31,8 +36,6 @@ async function* files(dir) {
   }
 }
 
-if (!base) process.exit(0);
-
 for await (const file of files(root)) {
   const extension = path.extname(file).toLowerCase();
   if (extension !== '.html' && extension !== '.css') continue;
@@ -42,8 +45,9 @@ for await (const file of files(root)) {
 
   if (extension === '.html') {
     output = output.replace(
-      /\b(href|src|poster|action)=(["'])(\/[^"'<>]*)\2/g,
-      (match, name, quote, value) => `${name}=${quote}${prefixUrl(value)}${quote}`,
+      /\b(href|src|poster|action)=(["'])([^"'<>]*)\2/g,
+      (match, name, quote, value) =>
+        `${name}=${quote}${prefixUrl(normalizeAssetUrl(value))}${quote}`,
     );
   } else {
     output = output.replace(

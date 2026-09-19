@@ -3,16 +3,15 @@ title: batch
 description: Markdownのc2sマーカーから画像を一括生成するコマンド。
 ---
 
+## `batch markdown`
+
 ```bash title="Terminal"
 console2svg batch markdown [--input <path>] [--output <dir>] [--filter <glob>] [--dry-run] [--placeholder]
-console2svg batch restore <source> --output <dir> [--filter <glob>] [--force] [--prune] [--dry-run]
 ```
 
 MarkdownやMDXの`c2s::`マーカーを実行し、直後の画像リンクを生成・更新します。
 
-実際の生成が成功すると、`<output>/assets.json`を自動的かつアトミックに更新します。フィルター実行では、選択されていないMarkdownが所有する既存エントリを保持します。dry runとplaceholder実行はマニフェストを変更しません。
-
-## オプション
+実際の生成が成功すると、マニフェストファイル`<output>/assets.json`を自動的に更新します。
 
 ### `-i, --input <path>`
 
@@ -24,7 +23,8 @@ Markdownファイルまたはディレクトリを指定します（既定値: `
 
 ### `--filter <glob>`
 
-入力ディレクトリからの相対filepathをglobで絞り込みます。`*`はディレクトリ区切りをまたいで一致します。複数指定できます。
+入力ディレクトリからの相対filepathをglobで絞り込みます。
+`*`はディレクトリ区切りをまたいで一致します。複数指定できます。
 
 ### `--dry-run`
 
@@ -40,6 +40,29 @@ Markdownファイルまたはディレクトリを指定します（既定値: `
 
 ## `batch restore`
 
-ローカルの`assets.json`またはその格納ディレクトリ、HTTP(S)マニフェストURL、`owner/repository@main/path`形式のGitソースからアセットを復元します。`<source>`と`-o, --output`は必須です。`--filter`、`--force`、`--prune`、`--dry-run`を利用できます。ダウンロードはサイズとSHA-256で検証され、論理パスも再作成されます。`--prune`は以前のマニフェストが管理していた古いパスだけを削除します。
+```bash title="Terminal"
+console2svg batch restore <source> --output <dir> [--filter <glob>] [--force] [--prune] [--dry-run]
+```
 
-マーカーの詳しい書式は[ドキュメントと画像を同期する](../../automation/document-image-sync.md)を参照してください。
+生成済のマニフェストファイルを指定すると、そこから関連するリソースをローカルにダウンロードし配置します。
+ドキュメントサイトの公開時に`batch markdown`を実行した際、そのパスを指定することで、ローカル環境に生成結果をコピーすることが可能です。
+
+### `<source>`
+
+`assets.json`の取得先パス。http, git urlなどを指定することができます。
+
+### `-o --output <dir>`
+
+生成画像の複製先を指定します（既定値: `assets`）。
+
+### `--force`
+
+標準ではSHAがローカル/リモートで一致したものは無視しますが、これを指定することで強制的に取得します。
+
+### `--prune`
+
+リモート先に存在せず、ローカルにのみ存在する画像をまとめて削除します。
+
+### `--dry-run`
+
+ファイルを変更せず、実行予定の内容のみ表示します。

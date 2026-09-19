@@ -1,0 +1,275 @@
+---
+title: Sync documentation and images
+description: Generate example images from Markdown and MDX code blocks and reflect them into documentation
+---
+
+import { FileTree, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+## Motivation
+While building this very documentation site, the following points felt troublesome.
+
+* Keeping command examples and output images in sync is troublesome.
+  * A straightforward implementation requires a script just for image generation.
+  * Updating separate files at the same time is difficult, and missed synchronization happens easily.
+* Until the image is actually generated, you cannot write the image link in the document.
+  * For example, when using [Astro](https://docs.astro.build), the build fails if the image does not exist.
+  * This is especially problematic for commands that cannot be run locally (for example, commands that only work on another OS).
+
+So the `batch` subcommand was added.
+This lets you generate example images from Markdown and MDX code blocks and immediately reflect them into documentation.
+
+> [!TIP]
+> Run it with [GitHub Actions](./github-actions.md) to integrate it into a CI/CD pipeline.
+
+
+## Basic usage
+
+<Steps>
+
+1. Just place a `<!-- c2s:: (command) -->` marker in a markdown file as follows.
+
+   ```markdown title="example.md"
+   Running `dotnet --info` produces output like the following.
+ 
+   <!-- c2s:: dotnet --info | head -n10 -->
+   ```
+2. Then run the following command.
+   
+   ```bash title="Terminal" "batch markdown"
+   console2svg batch markdown -i ./docs -o ./assets
+   ```
+
+3. The marker in the markdown above is detected, and
+   * the written command (in this case, `dotnet --info | head -n10`) is executed.
+   * the captured image is then saved in the `./assets` directory.
+   * the markdown file is also updated, with an image added immediately after the marker.
+   
+   ```diff lang="markdown" title="example.md"
+   Running `dotnet --info` produces output like the following.
+   
+   <!-- c2s:: dotnet --info | head -n10 -->
+   + ![dotnet --info / head -n10](../assets/example-1.svg)
+   ```
+   > [!NOTE]
+   > If an image reference already exists immediately after the marker, only that image is updated.
+   
+</Steps>
+
+## markdown
+### Simple specification
+
+You can specify various options after the `c2s::` marker.
+
+```markdown title="example.md" "-w 100 -h 10 -d macos"
+<!-- c2s:: -w 100 -h 10 -d macos -t nord -- dotnet --version -->
+```
+
+> [!NOTE]
+> Currently, options with side effects other than capture, such as `--save-cast`, `--save-frames`, `--embed-*`, and `--stdout`, cannot be used.
+
+### Setup and teardown
+
+If you write YAML-formatted settings after the marker, you can specify setup before execution, a replacement for the command to run, and teardown after execution.
+
+```markdown {4-9}
+The following configuration captures only the execution result, without capturing build output.
+
+<!-- c2s:: -w 100 -h 10 -d macos
+setup:
+  dotnet build
+capture: 
+  dotnet run --no-build
+teardown:
+  rm -f temporary-file
+-->
+```
+
+### Referencing code block contents
+
+If you add `c2s-id` to a named code block, a marker can reference that code block.
+
+````markdown title="example.md" "{code:program}" "{code:result}" "c2s-id=program" "c2s-id=result"
+```csharp c2s-id=program
+Console.WriteLine("hello");
+```
+
+```bash c2s-id=result
+cat result.txt
+```
+
+<!-- c2s:: -o examples/hello.svg
+setup: |
+  cat > test.cs <<'EOF'
+  {code:program}
+  EOF
+  dotnet run test.cs > result.txt
+capture: "{code:result}"
+teardown: rm -f test.cs result.txt
+-->
+````
+
+`{code:<id>}` is replaced with the contents of the specified code block.
+
+## CLI
+### Generating placeholder files
+
+You can automatically generate dummy (zero-byte) files.
+This is a simple workaround for builds that fail without images, for example when using [Astro](https://docs.astro.build).
+
+```bash title="Terminal" "--placeholder"
+console2svg batch markdown -i ./docs -o ./docs/assets --placeholder
+```
+
+> [!TIP]
+> Files that already exist are simply ignored.
+
+### Filters
+
+During development, you can specify glob filters against paths relative to the input directory. Filters can be specified multiple times.
+
+```bash title="Terminal" "--filter"
+console2svg batch markdown -i ./docs -o ./docs/assets --filter "reference/**"
+```
+
+## Should generated images be managed by git?
+
+If they are not referenced from READMEs and are only used on dedicated documentation pages, it is unnecessary.
+However, leaving things as-is causes the following problems.
+
+* Bundling all generated `svg`/`png` files into the git repository
+  * puts pressure on file size and makes operations like `git pull` very slow.
+* Adding generated `svg`/`png` files to `.gitignore`
+  * means a fresh clone cannot build locally with Astro or similar.
+    * The [placeholder generation](#generating-placeholder-files) feature can work around this temporarily, but the result differs from the real output.
+  * Images go stale, causing viewing differences between local and remote.
+
+To mitigate this, the `batch restore` command is provided.
+
+### `assets.json`
+
+Running the `batch markdown` command __automatically generates an `assets.json` file__.
+
+<FileTree>
+
+- assets/
+  - .generated/
+  - ...
+  - **assets.json**
+
+</FileTree>
+
+### Fetching remote images in bulk
+
+You can use it as follows.
+
+<Steps>
+
+1. First, add the image destination to `.gitignore`.
+
+   ```diff title=".gitignore"
+   + ./assets
+   ```
+
+2. Publish the pages, for example with GitHub Pages.
+
+   ```bash title="sample-deploy.sh"
+   # generate images
+   console2svg batch markdown -i ./docs -o ./assets
+   # deploy gh-pages with the generated files
+   git add -A
+   git commit -m "[skip-ci] update images"
+   git push origin gh-pages
+   ```
+
+   Deploy `assets.json` together with the site at this time.
+
+3. Bring the images generated in CI back locally with the `batch restore` command.
+
+   ```bash
+   console2svg batch restore -o ./assets MANIFEST_URL
+   ```
+   Replace `MANIFEST_URL` with the public URL of the deployed manifest, for example `https://raw.githubusercontent.com/user/repo/gh-pages/assets/assets.json`.
+
+   > [!TIP]
+   > By default, files that do not exist remotely are not deleted. Use `--prune` for automatic deletion when needed.
+
+</Steps>
+
+
+## Generated files
+
+The output of each command is generated per command under `.generated/`.
+The key point here is that **the same command to run produces the same output**.
+
+For example, consider generating for the following markdown files.
+
+<Tabs>
+  <TabItem label="example1.md">
+    ```markdown
+    When listing the same result three times
+
+    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
+    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
+    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
+    ```
+  </TabItem>
+  <TabItem label="example2.md">
+    ```markdown
+    When referencing the same output from another file
+    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
+    ```
+  </TabItem>
+  <TabItem label="example3.md">
+    ```markdown
+    When referencing a slightly different output from another file
+    <!-- c2s:: -w 80 -h 6 --- dotnet --info | head -n10 -->
+    ```
+  </TabItem>
+</Tabs>
+
+
+
+In this case, the following files are generated.
+
+<FileTree>
+
+- assets/
+  - .generated/
+    - **(recipe-hash).svg**
+    - **(recipe-hash-for-w80-h6).svg**
+  - example1-1.svg -> (recipe-hash).svg
+  - example1-2.svg -> (recipe-hash).svg
+  - example1-3.svg -> (recipe-hash).svg
+  - example2-1.svg -> (recipe-hash).svg
+  - example3-1.svg -> (recipe-hash-for-w80-h6).svg
+  - assets.json
+
+</FileTree>
+
+In short, results expected to be identical are cached.
+This is mainly useful for multilingual support.
+
+<Tabs>
+  <TabItem label="English">
+    ```markdown
+    Hello!
+    <!-- c2s:: -w 100 -h 12 --- my_command -->
+    ```
+  </TabItem>
+  <TabItem label="Japanese">
+    ```markdown
+    こんにちは！
+    <!-- c2s:: -w 100 -h 12 --- my_command -->
+    ```
+  </TabItem>
+</Tabs>
+
+Even when creating separate documents per language as above,
+there is no need to remove the `c2s` markers in other language versions, and generated files are shared as one.
+
+## Notes
+
+> [!WARNING]
+> The `setup`, `capture`, `teardown`, and commands written in markers are executed in a shell.
+> Do not run this on untrusted Markdown or files checked out from untrusted pull requests.
+

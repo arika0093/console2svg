@@ -1,0 +1,276 @@
+---
+title: 同步文档和图片
+description: 从 Markdown 或 MDX 的代码块生成执行示例图片，并反映到文档中
+---
+
+import { FileTree, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+## 动机
+
+正是在构建这个文档站点时，我觉得以下几点很麻烦。
+
+* 保持命令示例和输出图片同步很麻烦。
+  * 直接实现时，需要准备生成图片用的脚本。
+  * 同时更新不同文件很困难，也容易漏掉同步。
+* 在实际生成图片之前，无法把图片链接写进资料中。
+  * 例如使用 [Astro](https://docs.astro.build) 时，如果图片不存在，构建会失败。
+  * 对于无法在本地执行的命令（例如只能在其他 OS 上运行的命令），这尤其成问题。
+
+因此，我决定提供 `batch` 子命令。
+这样就可以从 Markdown 或 MDX 的代码块生成执行示例图片，并立即反映到文档中。
+
+> [!TIP]
+> 通过在 [GitHub Actions](./github-actions.md) 中执行，也可以集成到 CI/CD 流水线中。
+
+
+## 基本用法
+
+<Steps>
+
+1. 最简单的用法是在 markdown 文件中放置如下 `<!-- c2s:: (command) -->` 标记。
+
+   ```markdown title="example.md"
+   运行 `dotnet --info` 会得到如下输出。
+ 
+   <!-- c2s:: dotnet --info | head -n10 -->
+   ```
+2. 然后执行以下命令。
+   
+   ```bash title="Terminal" "batch markdown"
+   console2svg batch markdown -i ./docs -o ./assets
+   ```
+
+3. 这样会检测到上述 markdown 中的标记，
+   * 执行其中写入的命令（本例中为 `dotnet --info | head -n10`）。
+   * 然后，捕获的图片会保存到 `./assets` 目录中。
+   * 并且 markdown 文件也会更新，在标记正后方追加图片。
+   
+   ```diff lang="markdown" title="example.md"
+   运行 `dotnet --info` 会得到如下输出。
+   
+   <!-- c2s:: dotnet --info | head -n10 -->
+   + ![dotnet --info / head -n10](../assets/example-1.svg)
+   ```
+   > [!NOTE]
+   > 如果标记正后方已存在图片引用，则只更新该图片。
+   
+</Steps>
+
+## markdown
+### 简易指定
+
+`c2s::` 标记后面可以指定各种选项。
+
+```markdown title="example.md" "-w 100 -h 10 -d macos"
+<!-- c2s:: -w 100 -h 10 -d macos -t nord -- dotnet --version -->
+```
+
+> [!NOTE]
+> 目前无法使用 `--save-cast`、`--save-frames`、`--embed-*`、`--stdout` 等带有捕获之外副作用的选项。
+
+### 前置与后处理
+
+在标记后面用 YAML 格式书写设置，可以指定执行前的前置处理、要执行内容的替换，以及执行后的后处理。
+
+```markdown {4-9}
+如下所示，可以不捕获构建时的输出，只捕获执行结果。
+
+<!-- c2s:: -w 100 -h 10 -d macos
+setup:
+  dotnet build
+capture: 
+  dotnet run --no-build
+teardown:
+  rm -f temporary-file
+-->
+```
+
+### 引用代码块内容
+
+给命名代码块加上 `c2s-id`，就可以从标记中引用该代码块。
+
+````markdown title="example.md" "{code:program}" "{code:result}" "c2s-id=program" "c2s-id=result"
+```csharp c2s-id=program
+Console.WriteLine("hello");
+```
+
+```bash c2s-id=result
+cat result.txt
+```
+
+<!-- c2s:: -o examples/hello.svg
+setup: |
+  cat > test.cs <<'EOF'
+  {code:program}
+  EOF
+  dotnet run test.cs > result.txt
+capture: "{code:result}"
+teardown: rm -f test.cs result.txt
+-->
+````
+
+`{code:<id>}` 会被替换为指定代码块的内容。
+
+## CLI
+### 生成占位文件
+
+可以自动生成占位（文件大小为 0）的文件。
+这是为了简易回避 [Astro](https://docs.astro.build) 等在没有图片时构建失败的问题。
+
+```bash title="Terminal" "--placeholder"
+console2svg batch markdown -i ./docs -o ./docs/assets --placeholder
+```
+
+> [!TIP]
+> 已存在的文件会被直接忽略。
+
+### 过滤器
+
+开发过程中，可以对相对于输入目录的路径指定 glob 过滤器。过滤器可以多次指定。
+
+```bash title="Terminal" "--filter"
+console2svg batch markdown -i ./docs -o ./docs/assets --filter "reference/**"
+```
+
+## 生成的图片应该纳入 git 管理吗？
+
+如果没有被 README 等引用，只在专用文档页面中使用，那就不需要。
+但如果就这样放着，会产生以下问题。
+
+* 把生成的 `svg`/`png` 等全部同捆进 git 仓库
+  * 会压迫文件大小，使 `git pull` 等操作变得非常慢。
+* 把生成的 `svg`/`png` 等加入 `.gitignore`
+  * clone 后 Astro 等构建在本地就无法启动。
+    * 可以用[占位文件生成](#生成占位文件)功能暂时应对，但会与实际输出不同。
+  * 图片本身会变旧，本地与远程出现浏览差异。
+
+为此，准备了缓解用的命令 `batch restore`。
+
+### `assets.json`
+
+执行 `batch markdown` 命令后，会__自动生成 `assets.json` 文件__。
+
+<FileTree>
+
+- assets/
+  - .generated/
+  - ...
+  - **assets.json**
+
+</FileTree>
+
+### 批量获取远程图片
+
+可以如下使用。
+
+<Steps>
+
+1. 首先，把图片生成目标追加到 `.gitignore`。
+
+   ```diff title=".gitignore"
+   + ./assets
+   ```
+
+2. 发布页面，例如 GitHub Pages。
+
+   ```bash title="sample-deploy.sh"
+   # generate images
+   console2svg batch markdown -i ./docs -o ./assets
+   # and push gh-pages
+   git add -A
+   git commit -m "[skip-ci] update images"
+   git push origin gh-pages
+   ```
+
+   此时请连同 `assets.json` 一起部署。
+
+3. 用 `batch restore` 命令，把 CI 上生成的图片取回本地。
+
+   ```bash
+   console2svg batch restore -o ./assets MANIFEST_URL
+   ```
+   请把 `MANIFEST_URL` 替换为已部署清单的公开 URL，例如 `https://raw.githubusercontent.com/user/repo/gh-pages/assets/assets.json`。
+
+   > [!TIP]
+   > 默认不会删除远程不存在的文件。需要时可以用 `--prune` 自动删除。
+
+</Steps>
+
+
+## 生成的文件
+
+各命令的输出结果，会按命令单位生成在 `.generated/` 之下。
+这里重要的是，**只要执行的命令相同，就会得到相同输出**。
+
+例如，考虑以以下 markdown 文件为对象生成的情况。
+
+<Tabs>
+  <TabItem label="example1.md">
+    ```markdown
+    例如并列 3 次相同结果时
+
+    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
+    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
+    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
+    ```
+  </TabItem>
+  <TabItem label="example2.md">
+    ```markdown
+    在其他文件中引用相同输出时
+    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
+    ```
+  </TabItem>
+  <TabItem label="example3.md">
+    ```markdown
+    在其他文件中引用略有不同的输出时
+    <!-- c2s:: -w 80 -h 6 --- dotnet --info | head -n10 -->
+    ```
+  </TabItem>
+</Tabs>
+
+
+
+这种情况下，会生成如下文件。
+
+<FileTree>
+
+- assets/
+  - .generated/
+    - **(recipe-hash).svg**
+    - **(recipe-hash-for-w80-h6).svg**
+  - example1-1.svg -> (recipe-hash).svg
+  - example1-2.svg -> (recipe-hash).svg
+  - example1-3.svg -> (recipe-hash).svg
+  - example2-1.svg -> (recipe-hash).svg
+  - example3-1.svg -> (recipe-hash-for-w80-h6).svg
+  - assets.json
+
+</FileTree>
+
+总之，预期结果相同的情况会被缓存。
+这在多语言支持时尤其方便。
+
+<Tabs>
+  <TabItem label="英文版">
+    ```markdown
+    Hello!
+    <!-- c2s:: -w 100 -h 12 --- my_command -->
+    ```
+  </TabItem>
+  <TabItem label="中文版">
+    ```markdown
+    你好！
+    <!-- c2s:: -w 100 -h 12 --- my_command -->
+    ```
+  </TabItem>
+</Tabs>
+
+如上所示，即使按语言分别创建文档，
+也不需要在其他语言版中删除 `c2s` 标记，生成文件也只需单个。
+
+## 注意事项
+
+> [!WARNING]
+> 标记中书写的 `setup`、`capture`、`teardown` 和命令会在 shell 中执行。
+> 请勿对不可信的 Markdown，或从不可信 PR checkout 的文件执行。
+

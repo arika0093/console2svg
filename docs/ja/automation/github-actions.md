@@ -54,7 +54,7 @@ jobs:
 ```
 
 ### 自動同期
-[batch markdown](./document-image-sync.md) 機能を使用することで、ドキュメントの自動更新を行うこともできます。
+[batch markdown](./document-image-sync.mdx) 機能を使用することで、ドキュメントの自動更新を行うこともできます。
 以下は、Markdown内のマーカーを検出して画像を生成し、コミットするワークフローの例です。
 
 ```yaml title=".github/workflows/console2svg.yml" {4-5,10-14}

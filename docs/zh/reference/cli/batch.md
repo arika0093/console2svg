@@ -4,11 +4,13 @@ description: 从 Markdown 的 c2s 标记批量生成图片的命令。
 ---
 
 ```bash title="Terminal"
-console2svg batch markdown [--input <path>] [--output <dir>] [--filter <glob>] [--dry-run] [--placeholder] [--manifest <path>]
-console2svg batch restore --input <path-or-url> --output <dir> [--filter <glob>] [--force] [--prune] [--dry-run]
+console2svg batch markdown [--input <path>] [--output <dir>] [--filter <glob>] [--dry-run] [--placeholder]
+console2svg batch restore <source> --output <dir> [--filter <glob>] [--force] [--prune] [--dry-run]
 ```
 
 执行 Markdown 或 MDX 中的 `c2s::` 标记，并生成或更新其后的图片链接。
+
+实际生成成功后，会自动以原子方式更新 `<output>/assets.json`。筛选生成会保留未选中 Markdown 所拥有的清单条目。dry run 和 placeholder 模式不会修改清单。
 
 ## 选项
 
@@ -32,16 +34,12 @@ console2svg batch restore --input <path-or-url> --output <dir> [--filter <glob>]
 
 不执行命令，只创建缺失的空资源并更新 Markdown 链接。不会替换现有资源。
 
-### `--manifest <path>`
-
-生成成功后写入包含 SHA-256、大小、媒体类型和逻辑别名的 JSON 清单。
-
 ### `--verbose [path]`
 
 启用详细日志，并在需要时保存到文件。
 
 ## `batch restore`
 
-从本地文件或 HTTP(S) URL 清单恢复资源。必须指定 `-i, --input` 和 `-o, --output`。支持 `--filter`、`--force`、`--prune` 和 `--dry-run`。下载内容会通过大小和 SHA-256 验证，并重新创建逻辑别名。
+可从本地 `assets.json` 或其所在目录、HTTP(S) 清单 URL，或 `owner/repository@main/path` 形式的 Git 源恢复资源。必须指定 `<source>` 和 `-o, --output`。支持 `--filter`、`--force`、`--prune` 和 `--dry-run`。下载内容会通过大小和 SHA-256 验证，并重新创建逻辑路径。`--prune` 只删除先前清单管理的过期路径。
 
 标记的详细格式请参阅[同步文档和图片](../../automation/document-image-sync.md)。

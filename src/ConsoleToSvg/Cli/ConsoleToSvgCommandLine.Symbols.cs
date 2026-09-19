@@ -166,15 +166,6 @@ public sealed partial class ConsoleToSvgCommandLine
             Flag("--dry-run", "List planned jobs without changing the filesystem.");
         public Option<bool> BatchPlaceholder { get; } =
             Flag("--placeholder", "Create missing asset placeholders without executing commands.");
-        public Option<string> BatchManifest { get; } =
-            RequiredString("--manifest", "Write an asset manifest after generation.", "path");
-        public Option<string> BatchRestoreInput { get; } =
-            new("--input", "-i")
-            {
-                Description = "Local path or HTTP(S) URL of the asset manifest.",
-                HelpName = "path-or-url",
-                Required = true,
-            };
         public Option<string> BatchRestoreOutput { get; } =
             new("--output", "-o")
             {
@@ -326,25 +317,10 @@ public sealed partial class ConsoleToSvgCommandLine
             CaptureOptions.Except([Interactive, TmuxTarget, History]).Concat([TmuxTarget, History]);
 
         public IEnumerable<Option> BatchMarkdownOptions =>
-            [
-                BatchInput,
-                BatchOutput,
-                BatchFilter,
-                BatchDryRun,
-                BatchPlaceholder,
-                BatchManifest,
-                Verbose,
-            ];
+            [BatchInput, BatchOutput, BatchFilter, BatchDryRun, BatchPlaceholder, Verbose];
 
         public IEnumerable<Option> BatchRestoreOptions =>
-            [
-                BatchRestoreInput,
-                BatchRestoreOutput,
-                BatchRestoreFilter,
-                BatchRestoreDryRun,
-                BatchForce,
-                BatchPrune,
-            ];
+            [BatchRestoreOutput, BatchRestoreFilter, BatchRestoreDryRun, BatchForce, BatchPrune];
 
         public IEnumerable<Option> TmuxLiveServerOptions =>
             LiveServerOptions.Except([History]).Append(TmuxTarget);

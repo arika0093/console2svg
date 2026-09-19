@@ -448,21 +448,14 @@ public sealed class BatchMarkdownTests
     }
 
     [Test]
-    public async Task BatchMarkdownCliMapsPlaceholderAndManifest()
+    public async Task BatchMarkdownCliMapsPlaceholder()
     {
-        var invocation = await InvokeAsync(
-            "batch",
-            "markdown",
-            "--placeholder",
-            "--manifest",
-            "assets/manifest.json"
-        );
+        var invocation = await InvokeAsync("batch", "markdown", "--placeholder");
 
         invocation.ExitCode.ShouldBe(0);
         invocation.Options.ShouldNotBeNull();
         invocation.Options!.RequestedBatchAction.ShouldBe(BatchAction.Markdown);
         invocation.Options.BatchPlaceholder.ShouldBeTrue();
-        invocation.Options.BatchManifestPath.ShouldBe("assets/manifest.json");
     }
 
     [Test]
@@ -471,7 +464,6 @@ public sealed class BatchMarkdownTests
         var invocation = await InvokeAsync(
             "batch",
             "restore",
-            "-i",
             "https://example.com/manifest.json",
             "-o",
             "assets",

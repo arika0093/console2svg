@@ -5,12 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ConsoleToSvg.Batch;
 using ConsoleToSvg.Cli;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;
+using ConsoleToSvg.Terminal;
 using Microsoft.Extensions.Logging;
 using ZLogger;
 
@@ -260,19 +262,24 @@ internal static partial class Program
             }
         }
 
-        if (
-            failures.Count == 0
-            && !options.BatchPlaceholder
-            && !string.IsNullOrWhiteSpace(options.BatchManifestPath)
-        )
+        if (failures.Count == 0 && !options.BatchPlaceholder)
         {
-            await WriteBatchManifestAsync(
-                    plans,
-                    outputDir,
-                    Path.GetFullPath(options.BatchManifestPath),
-                    ct
-                )
-                .ConfigureAwait(false);
+            try
+            {
+                await WriteBatchManifestAsync(
+                        plans,
+                        selected.Select(file => file.Relative),
+                        outputDir,
+                        filters.Length > 0,
+                        ct
+                    )
+                    .ConfigureAwait(false);
+            }
+            catch (Exception ex)
+                when (ex is IOException or UnauthorizedAccessException or JsonException)
+            {
+                failures.Add($"assets.json: {ex.Message}");
+            }
         }
 
         await WriteBatchFailuresAsync(failures, ct).ConfigureAwait(false);
@@ -291,82 +298,211 @@ internal static partial class Program
         )
         {
             await Console.Error.WriteLineAsync(
-                "batch restore requires --input and --output.".AsMemory(),
+                "batch restore requires <source> and --output.".AsMemory(),
                 ct
             );
             return 1;
         }
 
-        var result = await BatchAssets
-            .RestoreAsync(
-                options.BatchInputPath,
-                Path.GetFullPath(options.BatchOutputDir),
-                options.BatchFilters,
-                options.BatchForce,
-                options.BatchPrune,
-                options.BatchDryRun,
-                ct
-            )
-            .ConfigureAwait(false);
+        string? temporary = null;
+        BatchRestoreResult result;
+        try
+        {
+            var source = options.BatchInputPath;
+            if (Directory.Exists(source))
+            {
+                source = Path.Combine(Path.GetFullPath(source), "assets.json");
+            }
+            else if (File.Exists(source))
+            {
+                source = Path.GetFullPath(source);
+            }
+            else if (!IsHttpManifestSource(source))
+            {
+                temporary = Path.Combine(
+                    Path.GetTempPath(),
+                    "console2svg-batch-" + Guid.NewGuid().ToString("N")
+                );
+                var checkout = RepositorySourceAcquirer.Acquire(
+                    RepositorySource.Parse(source),
+                    temporary
+                );
+                source = Path.Combine(checkout.Root, "assets.json");
+            }
+
+            result = await BatchAssets
+                .RestoreAsync(
+                    source,
+                    Path.GetFullPath(options.BatchOutputDir),
+                    options.BatchFilters,
+                    options.BatchForce,
+                    options.BatchPrune,
+                    options.BatchDryRun,
+                    ct
+                )
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+            when (ex is IOException or UnauthorizedAccessException or InvalidOperationException)
+        {
+            result = new BatchRestoreResult(0, 0, 0, 0, 0, [], [$"source: {ex.Message}"]);
+        }
+        finally
+        {
+            if (temporary is not null && Directory.Exists(temporary))
+            {
+                try
+                {
+                    RepositorySourceAcquirer.DeleteCheckout(temporary);
+                }
+                catch (IOException)
+                {
+                    // A checkout cleanup failure must not invalidate a completed restore.
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // A checkout cleanup failure must not invalidate a completed restore.
+                }
+            }
+        }
         foreach (var failure in result.Failures)
         {
             await Console.Error.WriteLineAsync($"error: {failure}".AsMemory(), ct);
         }
+        foreach (var action in result.Actions)
+        {
+            await Console.Error.WriteLineAsync(
+                $"{(options.BatchDryRun ? "[dry-run] " : string.Empty)}{action}".AsMemory(),
+                ct
+            );
+        }
         await Console.Error.WriteLineAsync(
-            $"Batch restore{(options.BatchDryRun ? " dry run" : string.Empty)}: {result.Restored} restored, {result.Reused} reused, {result.Filtered} filtered, {result.Removed} removed, {result.Failures.Count} failed.".AsMemory(),
+            $"Batch restore{(options.BatchDryRun ? " dry run" : string.Empty)}: {result.Restored} restored, {result.Reused} reused, {result.Filtered} filtered, {result.Materialized} materialized, {result.Pruned} pruned, {result.Failures.Count} failed.".AsMemory(),
             ct
         );
         return result.Failures.Count == 0 ? 0 : 1;
     }
 
+    private static bool IsHttpManifestSource(string source) =>
+        Uri.TryCreate(source, UriKind.Absolute, out var uri)
+        && (
+            uri.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase)
+            || uri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)
+        )
+        && !uri.AbsolutePath.EndsWith(".git", StringComparison.OrdinalIgnoreCase);
+
     private static async Task WriteBatchManifestAsync(
         IReadOnlyList<BatchFilePlan> plans,
+        IEnumerable<string> selectedInputs,
         string outputDir,
-        string manifestPath,
+        bool filtered,
         CancellationToken ct
     )
     {
+        var manifestPath = Path.Combine(outputDir, "assets.json");
         var manifest = new BatchAssetManifest
         {
-            Generator = $"console2svg {ThisAssembly.AssemblyInformationalVersion.Split('+')[0]}",
+            Generator = new BatchAssetGenerator
+            {
+                Name = "console2svg",
+                Version = ThisAssembly.AssemblyInformationalVersion.Split('+')[0],
+            },
         };
-        var manifestDirectory = Path.GetDirectoryName(manifestPath)!;
+        var selected = selectedInputs.ToHashSet(StringComparer.Ordinal);
+
+        if (filtered && File.Exists(manifestPath))
+        {
+            var previous = await BatchAssets
+                .ReadManifestAsync(manifestPath, ct)
+                .ConfigureAwait(false);
+            if (previous.Version != 1 || previous.Objects is null || previous.Assets is null)
+            {
+                throw new InvalidDataException("Existing manifest has an unsupported schema.");
+            }
+            foreach (var pair in previous.Assets)
+            {
+                var remainingOwners = (pair.Value.Owners ?? [])
+                    .Where(owner => !selected.Contains(owner))
+                    .ToArray();
+                if (remainingOwners.Length == 0)
+                {
+                    continue;
+                }
+                if (!previous.Objects.TryGetValue(pair.Value.Object, out var assetObject))
+                {
+                    throw new InvalidDataException(
+                        $"Existing asset '{pair.Key}' references an unknown object."
+                    );
+                }
+                manifest.Assets[pair.Key] = new BatchLogicalAsset
+                {
+                    Object = pair.Value.Object,
+                    Owners = remainingOwners,
+                };
+                manifest.Objects[pair.Value.Object] = assetObject;
+            }
+        }
 
         foreach (
             var group in plans
-                .SelectMany(plan => plan.Jobs)
-                .GroupBy(job => job.CanonicalPath, GetBatchPathComparer())
+                .SelectMany(plan => plan.Jobs.Select(job => (Owner: plan.RelativePath, Job: job)))
+                .GroupBy(item => item.Job.OutputPath, GetBatchPathComparer())
                 .OrderBy(group => group.Key, StringComparer.Ordinal)
         )
         {
-            var canonical = group.Key;
-            var relativeCanonical = BatchExecutor.NormalizePath(
-                Path.GetRelativePath(outputDir, canonical)
+            var first = group.First().Job;
+            var objectId = Path.GetFileName(first.CanonicalPath);
+            var objectPath = BatchExecutor.NormalizePath(
+                Path.GetRelativePath(outputDir, first.CanonicalPath)
             );
-            var aliases = group
-                .Select(job =>
-                    BatchExecutor.NormalizePath(Path.GetRelativePath(outputDir, job.OutputPath))
+            var logicalPath = BatchExecutor.NormalizePath(
+                Path.GetRelativePath(outputDir, first.OutputPath)
+            );
+            var owners = group
+                .Select(item => item.Owner)
+                .Concat(
+                    manifest.Assets.TryGetValue(logicalPath, out var preserved)
+                        ? preserved.Owners
+                        : []
                 )
                 .Distinct(StringComparer.Ordinal)
                 .OrderBy(path => path, StringComparer.Ordinal)
                 .ToArray();
-            var info = new FileInfo(canonical);
-            manifest.Assets.Add(
-                relativeCanonical,
-                new BatchAssetManifestEntry
-                {
-                    Sha256 = await BatchAssets
-                        .ComputeSha256Async(canonical, ct)
-                        .ConfigureAwait(false),
-                    Size = info.Length,
-                    MediaType = BatchAssets.GetMediaType(canonical),
-                    Url = BatchExecutor.NormalizePath(
-                        Path.GetRelativePath(manifestDirectory, canonical)
-                    ),
-                    Aliases = aliases,
-                    Recipe = group.First().RecipeHash,
-                }
-            );
+            if (
+                preserved is not null
+                && !string.Equals(preserved.Object, objectId, StringComparison.Ordinal)
+            )
+            {
+                throw new InvalidDataException(
+                    $"Selected and unselected inputs disagree about shared asset '{logicalPath}'."
+                );
+            }
+
+            var info = new FileInfo(first.CanonicalPath);
+            manifest.Objects[objectId] = new BatchAssetObject
+            {
+                Path = objectPath,
+                Sha256 = await BatchAssets
+                    .ComputeSha256Async(first.CanonicalPath, ct)
+                    .ConfigureAwait(false),
+                Size = info.Length,
+                MediaType = BatchAssets.GetMediaType(first.CanonicalPath),
+            };
+            manifest.Assets[logicalPath] = new BatchLogicalAsset
+            {
+                Object = objectId,
+                Owners = owners,
+            };
+        }
+
+        var referenced = manifest
+            .Assets.Values.Select(asset => asset.Object)
+            .ToHashSet(StringComparer.Ordinal);
+        foreach (
+            var objectId in manifest.Objects.Keys.Where(id => !referenced.Contains(id)).ToArray()
+        )
+        {
+            manifest.Objects.Remove(objectId);
         }
 
         await BatchAssets.WriteManifestAsync(manifest, manifestPath, ct).ConfigureAwait(false);
@@ -446,6 +582,19 @@ internal static partial class Program
                 {
                     failures.Add(
                         $"{plan.RelativePath}:{job.MarkerLine}: output traverses a linked directory."
+                    );
+                    continue;
+                }
+                var relativeOutput = BatchExecutor.NormalizePath(
+                    Path.GetRelativePath(outputDir, output)
+                );
+                if (
+                    relativeOutput.Equals("assets.json", StringComparison.OrdinalIgnoreCase)
+                    || relativeOutput.StartsWith(".generated/", StringComparison.OrdinalIgnoreCase)
+                )
+                {
+                    failures.Add(
+                        $"{plan.RelativePath}:{job.MarkerLine}: output '{relativeOutput}' uses a reserved batch asset path."
                     );
                     continue;
                 }

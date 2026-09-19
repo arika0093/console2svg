@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -6,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using ConsoleToSvg.Batch;
+using ConsoleToSvg.Terminal;
 
 namespace ConsoleToSvg.Tests.Batch;
 
@@ -19,7 +21,7 @@ public sealed class BatchIntegrationTests
         {
             var docs = Path.Combine(root, "docs");
             var output = Path.Combine(root, "assets");
-            var manifest = Path.Combine(output, "manifest.json");
+            var manifest = Path.Combine(output, "assets.json");
             Directory.CreateDirectory(Path.Combine(docs, "en"));
             Directory.CreateDirectory(Path.Combine(docs, "ja"));
             const string marker = "<!-- c2s:: -- echo localized -->";
@@ -33,8 +35,6 @@ public sealed class BatchIntegrationTests
                 docs,
                 "-o",
                 output,
-                "--manifest",
-                manifest,
             ]);
 
             exitCode.ShouldBe(0);
@@ -47,9 +47,8 @@ public sealed class BatchIntegrationTests
             (await File.ReadAllTextAsync(english)).ShouldBe(await File.ReadAllTextAsync(japanese));
             using var document = JsonDocument.Parse(await File.ReadAllTextAsync(manifest));
             var assets = document.RootElement.GetProperty("assets");
-            assets.EnumerateObject().Count().ShouldBe(1);
-            assets.EnumerateObject().Single().Value.GetProperty("aliases").GetArrayLength()
-                .ShouldBe(2);
+            assets.EnumerateObject().Count().ShouldBe(2);
+            document.RootElement.GetProperty("objects").EnumerateObject().Count().ShouldBe(1);
         }
         finally
         {
@@ -66,7 +65,7 @@ public sealed class BatchIntegrationTests
             var markdown = Path.Combine(root, "docs", "guide.md");
             var output = Path.Combine(root, "assets");
             var sideEffect = Path.Combine(root, "executed.txt");
-            var manifest = Path.Combine(output, "manifest.json");
+            var manifest = Path.Combine(output, "assets.json");
             Directory.CreateDirectory(Path.GetDirectoryName(markdown)!);
             await File.WriteAllTextAsync(
                 markdown,
@@ -81,8 +80,6 @@ public sealed class BatchIntegrationTests
                 "-o",
                 output,
                 "--placeholder",
-                "--manifest",
-                manifest,
             ]);
 
             exitCode.ShouldBe(0);
@@ -125,26 +122,29 @@ public sealed class BatchIntegrationTests
             await File.WriteAllBytesAsync(asset, bytes);
             var manifest = new BatchAssetManifest
             {
-                Generator = "test",
-                Assets =
+                Generator = new BatchAssetGenerator { Name = "test", Version = "1" },
+                Objects =
                 {
-                    [".generated/recipe.svg"] = new BatchAssetManifestEntry
+                    ["recipe.svg"] = new BatchAssetObject
                     {
+                        Path = ".generated/recipe.svg",
                         Sha256 = Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant(),
                         Size = bytes.Length,
                         MediaType = "image/svg+xml",
-                        Url = ".generated/recipe.svg",
-                        Aliases = ["en/guide.svg", "ja/guide.svg"],
                     },
                 },
+                Assets =
+                {
+                    ["en/guide.svg"] = new BatchLogicalAsset { Object = "recipe.svg" },
+                    ["ja/guide.svg"] = new BatchLogicalAsset { Object = "recipe.svg" },
+                },
             };
-            var manifestPath = Path.Combine(published, "manifest.json");
+            var manifestPath = Path.Combine(published, "assets.json");
             await BatchAssets.WriteManifestAsync(manifest, manifestPath, default);
 
             var exitCode = await Program.Main([
                 "batch",
                 "restore",
-                "-i",
                 manifestPath,
                 "-o",
                 output,
@@ -160,7 +160,6 @@ public sealed class BatchIntegrationTests
             exitCode = await Program.Main([
                 "batch",
                 "restore",
-                "-i",
                 manifestPath,
                 "-o",
                 output,
@@ -183,16 +182,17 @@ public sealed class BatchIntegrationTests
         {
             var manifest = new BatchAssetManifest
             {
-                Generator = "test",
-                Assets =
+                Generator = new BatchAssetGenerator { Name = "test", Version = "1" },
+                Objects =
                 {
-                    ["../escaped.svg"] = new BatchAssetManifestEntry
+                    ["escaped"] = new BatchAssetObject
                     {
+                        Path = "../escaped.svg",
                         Sha256 = new string('0', 64),
                         Size = 0,
-                        Url = "asset.svg",
                     },
                 },
+                Assets = { ["escaped.svg"] = new BatchLogicalAsset { Object = "escaped" } },
             };
             var manifestPath = Path.Combine(root, "manifest.json");
             await BatchAssets.WriteManifestAsync(manifest, manifestPath, default);
@@ -200,7 +200,6 @@ public sealed class BatchIntegrationTests
             var exitCode = await Program.Main([
                 "batch",
                 "restore",
-                "-i",
                 manifestPath,
                 "-o",
                 Path.Combine(root, "output"),
@@ -223,21 +222,25 @@ public sealed class BatchIntegrationTests
         {
             var publishedAsset = Path.Combine(root, "published.svg");
             var output = Path.Combine(root, "output");
-            var destination = Path.Combine(output, "asset.svg");
+            var destination = Path.Combine(output, "published.svg");
             Directory.CreateDirectory(output);
             await File.WriteAllTextAsync(publishedAsset, "untrusted");
             await File.WriteAllTextAsync(destination, "existing");
             var manifest = new BatchAssetManifest
             {
-                Generator = "test",
-                Assets =
+                Generator = new BatchAssetGenerator { Name = "test", Version = "1" },
+                Objects =
                 {
-                    ["asset.svg"] = new BatchAssetManifestEntry
+                    ["asset"] = new BatchAssetObject
                     {
+                        Path = "published.svg",
                         Sha256 = new string('0', 64),
                         Size = new FileInfo(publishedAsset).Length,
-                        Url = "published.svg",
                     },
+                },
+                Assets =
+                {
+                    ["published.svg"] = new BatchLogicalAsset { Object = "asset" },
                 },
             };
             var manifestPath = Path.Combine(root, "manifest.json");
@@ -246,7 +249,6 @@ public sealed class BatchIntegrationTests
             var exitCode = await Program.Main([
                 "batch",
                 "restore",
-                "-i",
                 manifestPath,
                 "-o",
                 output,
@@ -258,6 +260,245 @@ public sealed class BatchIntegrationTests
         finally
         {
             Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task FilteredGenerationMergesAssetsAndRemovesSelectedStaleEntries()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var docs = Path.Combine(root, "docs");
+            var output = Path.Combine(root, "assets");
+            var first = Path.Combine(docs, "first.md");
+            var second = Path.Combine(docs, "second.md");
+            Directory.CreateDirectory(docs);
+            await File.WriteAllTextAsync(first, "<!-- c2s:: -- echo first -->");
+            await File.WriteAllTextAsync(second, "<!-- c2s:: -- echo second -->");
+            (await Program.Main(["batch", "markdown", "-i", docs, "-o", output]))
+                .ShouldBe(0);
+            var manifestPath = Path.Combine(output, "assets.json");
+            var original = await BatchAssets.ReadManifestAsync(manifestPath, default);
+            original.Assets.Count.ShouldBe(2);
+            var secondObject = original.Assets["second-1.svg"].Object;
+
+            await File.WriteAllTextAsync(first, "This document no longer owns an asset.");
+            (await Program.Main([
+                "batch",
+                "markdown",
+                "-i",
+                docs,
+                "-o",
+                output,
+                "--filter",
+                "first.md",
+            ])).ShouldBe(0);
+
+            var updated = await BatchAssets.ReadManifestAsync(manifestPath, default);
+            updated.Assets.Keys.ShouldBe(["second-1.svg"]);
+            updated.Assets["second-1.svg"].Object.ShouldBe(secondObject);
+            updated.Objects.Keys.ShouldBe([secondObject]);
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task FailedGenerationLeavesPreviousManifestUntouched()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var markdown = Path.Combine(root, "docs", "guide.md");
+            var output = Path.Combine(root, "assets");
+            Directory.CreateDirectory(Path.GetDirectoryName(markdown)!);
+            await File.WriteAllTextAsync(markdown, "<!-- c2s:: -- echo valid -->");
+            (await Program.Main(["batch", "markdown", "-i", markdown, "-o", output]))
+                .ShouldBe(0);
+            var manifestPath = Path.Combine(output, "assets.json");
+            var previous = await File.ReadAllBytesAsync(manifestPath);
+
+            await File.WriteAllTextAsync(
+                markdown,
+                """
+                <!-- c2s::
+                setup: console2svg-command-that-does-not-exist
+                capture: echo unreachable
+                -->
+                """
+            );
+            (await Program.Main(["batch", "markdown", "-i", markdown, "-o", output]))
+                .ShouldBe(1);
+
+            (await File.ReadAllBytesAsync(manifestPath)).ShouldBe(previous);
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task MarkdownRejectsReservedAssetPathsBeforeExecution()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var markdown = Path.Combine(root, "docs", "guide.md");
+            var output = Path.Combine(root, "assets");
+            Directory.CreateDirectory(Path.GetDirectoryName(markdown)!);
+            await File.WriteAllTextAsync(
+                markdown,
+                "<!-- c2s:: -o assets.json -- echo must-not-run -->"
+            );
+
+            (await Program.Main(["batch", "markdown", "-i", markdown, "-o", output]))
+                .ShouldBe(1);
+
+            Directory.Exists(output).ShouldBeFalse();
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task RestoreAcceptsDirectorySourceAndPrunesOnlyPreviouslyManagedFiles()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var published = Path.Combine(root, "published");
+            var output = Path.Combine(root, "output");
+            Directory.CreateDirectory(published);
+            Directory.CreateDirectory(output);
+            var oldBytes = Encoding.UTF8.GetBytes("old");
+            await File.WriteAllBytesAsync(Path.Combine(published, "old.svg"), oldBytes);
+            var firstManifest = CreateManifest("old", "old.svg", "logical-old.svg", oldBytes);
+            await BatchAssets.WriteManifestAsync(
+                firstManifest,
+                Path.Combine(published, "assets.json"),
+                default
+            );
+            (await Program.Main(["batch", "restore", published, "-o", output])).ShouldBe(0);
+            await File.WriteAllTextAsync(Path.Combine(output, "unrelated.txt"), "keep");
+
+            var newBytes = Encoding.UTF8.GetBytes("new");
+            await File.WriteAllBytesAsync(Path.Combine(published, "new.svg"), newBytes);
+            var secondManifest = CreateManifest("new", "new.svg", "logical-new.svg", newBytes);
+            await BatchAssets.WriteManifestAsync(
+                secondManifest,
+                Path.Combine(published, "assets.json"),
+                default
+            );
+            (await Program.Main([
+                "batch",
+                "restore",
+                published,
+                "-o",
+                output,
+                "--prune",
+            ])).ShouldBe(0);
+
+            File.Exists(Path.Combine(output, "old.svg")).ShouldBeFalse();
+            File.Exists(Path.Combine(output, "logical-old.svg")).ShouldBeFalse();
+            File.Exists(Path.Combine(output, "new.svg")).ShouldBeTrue();
+            File.Exists(Path.Combine(output, "logical-new.svg")).ShouldBeTrue();
+            File.Exists(Path.Combine(output, "unrelated.txt")).ShouldBeTrue();
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task RestoreDryRunFiltersLogicalAssetsWithoutWritingFiles()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var published = Path.Combine(root, "published");
+            var output = Path.Combine(root, "output");
+            Directory.CreateDirectory(published);
+            var first = Encoding.UTF8.GetBytes("first");
+            var second = Encoding.UTF8.GetBytes("second");
+            await File.WriteAllBytesAsync(Path.Combine(published, "first.svg"), first);
+            await File.WriteAllBytesAsync(Path.Combine(published, "second.svg"), second);
+            var manifest = CreateManifest("first", "first.svg", "en/first.svg", first);
+            var secondManifest = CreateManifest("second", "second.svg", "ja/second.svg", second);
+            manifest.Objects.Add("second", secondManifest.Objects["second"]);
+            manifest.Assets.Add("ja/second.svg", secondManifest.Assets["ja/second.svg"]);
+            var manifestPath = Path.Combine(published, "assets.json");
+            await BatchAssets.WriteManifestAsync(manifest, manifestPath, default);
+
+            var result = await BatchAssets.RestoreAsync(
+                manifestPath,
+                output,
+                ["en/**"],
+                force: false,
+                prune: false,
+                dryRun: true,
+                cancellationToken: default
+            );
+
+            result.Restored.ShouldBe(1);
+            result.Filtered.ShouldBe(1);
+            result.Materialized.ShouldBe(1);
+            result.Actions.ShouldContain("restore first.svg");
+            result.Actions.ShouldContain("materialize en/first.svg -> first.svg");
+            Directory.Exists(output).ShouldBeFalse();
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task RestoreAcceptsGitSourceWithRefAndSubdirectory()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var repository = Path.Combine(root, "repository");
+            var published = Path.Combine(repository, "published");
+            var output = Path.Combine(root, "output");
+            Directory.CreateDirectory(published);
+            var content = Encoding.UTF8.GetBytes("from git");
+            await File.WriteAllBytesAsync(Path.Combine(published, "object.svg"), content);
+            await BatchAssets.WriteManifestAsync(
+                CreateManifest("object", "object.svg", "guide.svg", content),
+                Path.Combine(published, "assets.json"),
+                default
+            );
+            RunGit(repository, "init", "--quiet");
+            RunGit(repository, "add", ".");
+            RunGit(
+                repository,
+                "-c",
+                "user.name=console2svg-tests",
+                "-c",
+                "user.email=tests@example.invalid",
+                "commit",
+                "--quiet",
+                "-m",
+                "assets"
+            );
+            var source = new Uri(repository + Path.DirectorySeparatorChar).AbsoluteUri.TrimEnd('/')
+                + "#HEAD:published";
+
+            (await Program.Main(["batch", "restore", source, "-o", output])).ShouldBe(0);
+
+            (await File.ReadAllTextAsync(Path.Combine(output, "guide.svg"))).ShouldBe("from git");
+        }
+        finally
+        {
+            RepositorySourceAcquirer.DeleteCheckout(root);
         }
     }
 
@@ -724,5 +965,46 @@ public sealed class BatchIntegrationTests
         );
         Directory.CreateDirectory(path);
         return path;
+    }
+
+    private static BatchAssetManifest CreateManifest(
+        string objectId,
+        string objectPath,
+        string logicalPath,
+        byte[] content
+    ) =>
+        new()
+        {
+            Generator = new BatchAssetGenerator { Name = "test", Version = "1" },
+            Objects =
+            {
+                [objectId] = new BatchAssetObject
+                {
+                    Path = objectPath,
+                    Sha256 = Convert.ToHexString(SHA256.HashData(content)).ToLowerInvariant(),
+                    Size = content.Length,
+                    MediaType = "image/svg+xml",
+                },
+            },
+            Assets = { [logicalPath] = new BatchLogicalAsset { Object = objectId } },
+        };
+
+    private static void RunGit(string workingDirectory, params string[] arguments)
+    {
+#pragma warning disable S4036
+        var startInfo = new ProcessStartInfo("git")
+#pragma warning restore S4036
+        {
+            WorkingDirectory = workingDirectory,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+        };
+        foreach (var argument in arguments)
+        {
+            startInfo.ArgumentList.Add(argument);
+        }
+        using var process = Process.Start(startInfo)!;
+        process.WaitForExit();
+        process.ExitCode.ShouldBe(0, process.StandardError.ReadToEnd());
     }
 }

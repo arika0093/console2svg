@@ -388,7 +388,6 @@ public sealed partial class ConsoleToSvgCommandLine
                 options.BatchFilters = parseResult.GetValue(_symbols.BatchFilter) ?? [];
                 options.BatchDryRun = parseResult.GetValue(_symbols.BatchDryRun);
                 options.BatchPlaceholder = parseResult.GetValue(_symbols.BatchPlaceholder);
-                options.BatchManifestPath = parseResult.GetValue(_symbols.BatchManifest);
                 return await _handler(options, parseResult, cancellationToken)
                     .ConfigureAwait(false);
             }
@@ -400,6 +399,11 @@ public sealed partial class ConsoleToSvgCommandLine
             "Restore generated assets from a local or remote manifest."
         );
         AddOptions(restore, _symbols.BatchRestoreOptions);
+        var source = new Argument<string>("source")
+        {
+            Description = "Manifest URL, local manifest/directory, or Git repository source.",
+        };
+        restore.Arguments.Add(source);
         restore.SetAction(
             (parseResult, cancellationToken) =>
             {
@@ -407,7 +411,7 @@ public sealed partial class ConsoleToSvgCommandLine
                 {
                     Workflow = Workflow.Batch,
                     RequestedBatchAction = BatchAction.Restore,
-                    BatchInputPath = parseResult.GetValue(_symbols.BatchRestoreInput),
+                    BatchInputPath = parseResult.GetRequiredValue(source),
                     BatchOutputDir = parseResult.GetValue(_symbols.BatchRestoreOutput),
                     BatchFilters = parseResult.GetValue(_symbols.BatchRestoreFilter) ?? [],
                     BatchDryRun = parseResult.GetValue(_symbols.BatchRestoreDryRun),

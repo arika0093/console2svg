@@ -4,13 +4,15 @@ description: Generate, publish, and restore Markdown capture assets.
 ---
 
 ```bash title="Terminal"
-console2svg batch markdown [--input <path>] [--output <dir>] [--filter <glob>] [--dry-run] [--placeholder] [--manifest <path>]
-console2svg batch restore --input <path-or-url> --output <dir> [--filter <glob>] [--force] [--prune] [--dry-run]
+console2svg batch markdown [--input <path>] [--output <dir>] [--filter <glob>] [--dry-run] [--placeholder]
+console2svg batch restore <source> --output <dir> [--filter <glob>] [--force] [--prune] [--dry-run]
 ```
 
 Executes `c2s::` markers in Markdown or MDX and generates or updates the image link immediately after each marker.
 
 Generated content is stored once under `.generated` using a stable recipe hash. Human-readable paths referenced by Markdown are materialized as relative symbolic links, or copies where symbolic links are unavailable.
+
+After every successful real generation, `batch markdown` atomically writes `<output>/assets.json`. The manifest records integrity metadata for physical objects separately from the logical paths used by documentation. Filtered generation updates entries owned by selected Markdown files while preserving entries owned by unselected files. Dry runs and placeholder runs do not modify the manifest.
 
 ## `batch markdown` options
 
@@ -34,21 +36,17 @@ Show only the jobs that would run without changing files.
 
 Create missing empty assets and update Markdown links without executing setup, capture, or teardown commands. Existing assets are never replaced. This option does not write a manifest.
 
-### `--manifest <path>`
-
-After successful generation, write a versioned JSON manifest containing content SHA-256 hashes, sizes, media types, canonical object URLs, and logical aliases.
-
 ### `--verbose [path]`
 
 Enable detailed logs and optionally save them to a file.
 
 ## `batch restore` options
 
-`batch restore` reads a manifest from a local file or HTTP(S) URL. Relative asset URLs are resolved against the manifest location. Downloads are verified by size and SHA-256 before atomically replacing local canonical objects, after which logical aliases are recreated.
+`batch restore` reads an asset set from a local `assets.json`, a local directory containing it, an HTTP(S) manifest URL, or a Git repository source such as `owner/repository@main/path/to/assets`. Relative object paths are resolved against the selected source. Content is verified by size and SHA-256 before atomically replacing local objects, after which logical paths are recreated. The verified manifest is written to the output directory.
 
-### `-i, --input <path-or-url>`
+### `<source>`
 
-Specify the local or remote manifest. Required.
+Specify a local manifest/directory, HTTP(S) manifest URL, or Git repository source. Required.
 
 ### `-o, --output <dir>`
 
@@ -56,7 +54,7 @@ Specify the output directory. Required.
 
 ### `--filter <glob>`
 
-Restore only entries whose canonical path or alias matches a glob. Can be specified multiple times.
+Restore only matching logical asset paths and the objects they require. Can be specified multiple times.
 
 ### `--force`
 
@@ -64,7 +62,7 @@ Download selected entries even when their local size and SHA-256 already match.
 
 ### `--prune`
 
-Remove files under the output directory that are not declared by the manifest. Files declared by filtered-out entries are preserved.
+Remove stale paths that were managed by the previous local `assets.json`. Unrelated files and entries excluded by `--filter` remain untouched.
 
 ### `--dry-run`
 

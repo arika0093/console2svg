@@ -260,9 +260,6 @@ public sealed class AppOptions
     /// <summary>Batch markdown mode: create assets without executing capture commands.</summary>
     public bool BatchPlaceholder { get; set; }
 
-    /// <summary>Batch markdown mode: optional output manifest path.</summary>
-    public string? BatchManifestPath { get; set; }
-
     /// <summary>Batch restore mode: download even when local content matches.</summary>
     public bool BatchForce { get; set; }
 

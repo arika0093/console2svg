@@ -17,26 +17,38 @@ namespace ConsoleToSvg.Batch;
 public sealed class BatchAssetManifest
 {
     public int Version { get; set; } = 1;
-    public string Generator { get; set; } = string.Empty;
-    public Dictionary<string, BatchAssetManifestEntry> Assets { get; set; } =
-        new(StringComparer.Ordinal);
+    public BatchAssetGenerator Generator { get; set; } = new();
+    public Dictionary<string, BatchAssetObject> Objects { get; set; } = new(StringComparer.Ordinal);
+    public Dictionary<string, BatchLogicalAsset> Assets { get; set; } = new(StringComparer.Ordinal);
 }
 
-public sealed class BatchAssetManifestEntry
+public sealed class BatchAssetGenerator
 {
+    public string Name { get; set; } = "console2svg";
+    public string Version { get; set; } = string.Empty;
+}
+
+public sealed class BatchAssetObject
+{
+    public string Path { get; set; } = string.Empty;
     public string Sha256 { get; set; } = string.Empty;
     public long Size { get; set; }
     public string MediaType { get; set; } = "application/octet-stream";
-    public string Url { get; set; } = string.Empty;
-    public string[] Aliases { get; set; } = [];
-    public string? Recipe { get; set; }
+}
+
+public sealed class BatchLogicalAsset
+{
+    public string Object { get; set; } = string.Empty;
+    public string[] Owners { get; set; } = [];
 }
 
 public sealed record BatchRestoreResult(
     int Restored,
     int Reused,
     int Filtered,
-    int Removed,
+    int Materialized,
+    int Pruned,
+    IReadOnlyList<string> Actions,
     IReadOnlyList<string> Failures
 );
 
@@ -250,6 +262,7 @@ public static class BatchAssets
     )
     {
         var failures = new List<string>();
+        var actions = new List<string>();
         BatchAssetManifest manifest;
         try
         {
@@ -258,172 +271,139 @@ public static class BatchAssets
         }
         catch (Exception ex)
         {
-            return new BatchRestoreResult(0, 0, 0, 0, [$"manifest: {ex.Message}"]);
-        }
-
-        if (manifest.Version != 1)
-        {
-            return new BatchRestoreResult(
-                0,
-                0,
-                0,
-                0,
-                [$"manifest: unsupported version {manifest.Version}."]
-            );
-        }
-        if (manifest.Assets is null)
-        {
-            return new BatchRestoreResult(0, 0, 0, 0, ["manifest: assets is required."]);
+            return new BatchRestoreResult(0, 0, 0, 0, 0, [], [$"manifest: {ex.Message}"]);
         }
 
         outputDir = Path.GetFullPath(outputDir);
-        var declared = new HashSet<string>(GetPathComparer());
-        var owners = new Dictionary<string, string>(GetPathComparer());
-        var resolvedPaths = new Dictionary<string, (string Destination, string[] Aliases)>(
-            StringComparer.Ordinal
-        );
+        if (!TryValidateManifest(manifest, outputDir, failures))
+        {
+            return new BatchRestoreResult(0, 0, 0, 0, 0, actions, failures);
+        }
+
+        BatchAssetManifest? previousManifest = null;
+        var localManifestPath = Path.Combine(outputDir, "assets.json");
+        if (prune && File.Exists(localManifestPath))
+        {
+            try
+            {
+                previousManifest = await ReadManifestAsync(localManifestPath, cancellationToken)
+                    .ConfigureAwait(false);
+                if (!TryValidateManifest(previousManifest, outputDir, failures))
+                {
+                    return new BatchRestoreResult(0, 0, 0, 0, 0, actions, failures);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new BatchRestoreResult(
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    actions,
+                    [$"existing assets.json: {ex.Message}"]
+                );
+            }
+        }
+
         var normalizedFilters = filters.Select(BatchExecutor.NormalizeFilter).ToArray();
-        var restored = 0;
-        var reused = 0;
-        var filtered = 0;
-
-        foreach (var pair in manifest.Assets)
-        {
-            if (pair.Value is null)
-            {
-                failures.Add($"{pair.Key}: manifest entry is required.");
-                continue;
-            }
-            if (
-                pair.Value.Size < 0
-                || !IsSha256(pair.Value.Sha256)
-                || string.IsNullOrWhiteSpace(pair.Value.Url)
-            )
-            {
-                failures.Add($"{pair.Key}: invalid integrity metadata.");
-                continue;
-            }
-
-            var destination = ResolveManifestPath(outputDir, pair.Key);
-            if (destination is null)
-            {
-                failures.Add($"{pair.Key}: unsafe destination path.");
-                continue;
-            }
-
-            var aliases = new List<string>();
-            foreach (var alias in pair.Value.Aliases ?? [])
-            {
-                var aliasPath = ResolveManifestPath(outputDir, alias);
-                if (aliasPath is null)
-                {
-                    failures.Add($"{pair.Key}: unsafe alias path '{alias}'.");
-                    continue;
-                }
-                aliases.Add(aliasPath);
-            }
-            if (failures.Count > 0)
-            {
-                continue;
-            }
-
-            foreach (var path in new[] { destination }.Concat(aliases))
-            {
-                if (owners.TryGetValue(path, out var owner) && owner != pair.Key)
-                {
-                    failures.Add($"{pair.Key}: output path is also declared by '{owner}'.");
-                }
-                else
-                {
-                    owners[path] = pair.Key;
-                    declared.Add(path);
-                }
-            }
-            resolvedPaths[pair.Key] = (destination, aliases.ToArray());
-        }
-
-        if (failures.Count > 0)
-        {
-            return new BatchRestoreResult(0, 0, 0, 0, failures);
-        }
-
-        foreach (var pair in manifest.Assets.OrderBy(item => item.Key, StringComparer.Ordinal))
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var paths = new[] { pair.Key }.Concat(pair.Value.Aliases ?? []).ToArray();
-            if (
-                normalizedFilters.Length > 0
-                && !paths.Any(path =>
-                    normalizedFilters.Any(filter =>
-                        BatchExecutor.MatchesFilter(BatchExecutor.NormalizePath(path), filter)
-                    )
+        var selectedAssets = manifest
+            .Assets.Where(pair =>
+                normalizedFilters.Length == 0
+                || normalizedFilters.Any(filter =>
+                    BatchExecutor.MatchesFilter(BatchExecutor.NormalizePath(pair.Key), filter)
                 )
             )
-            {
-                filtered++;
-                continue;
-            }
+            .ToArray();
+        var filtered = manifest.Assets.Count - selectedAssets.Length;
+        var requiredObjects = selectedAssets
+            .Select(pair => pair.Value.Object)
+            .ToHashSet(StringComparer.Ordinal);
+        var restored = 0;
+        var reused = 0;
 
-            var (destination, aliases) = resolvedPaths[pair.Key];
-
+        foreach (var objectId in requiredObjects.OrderBy(value => value, StringComparer.Ordinal))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var assetObject = manifest.Objects[objectId];
+            var destination = ResolveManifestPath(outputDir, assetObject.Path)!;
             var matches =
                 !force
-                && await MatchesAsync(destination, pair.Value, cancellationToken)
+                && await MatchesAsync(destination, assetObject, cancellationToken)
                     .ConfigureAwait(false);
             if (matches)
             {
                 reused++;
+                actions.Add($"reuse {assetObject.Path}");
+                continue;
             }
-            else if (dryRun)
+            actions.Add($"restore {assetObject.Path}");
+            if (dryRun)
             {
                 restored++;
-            }
-            else
-            {
-                try
-                {
-                    await RestoreOneAsync(
-                            manifestSource,
-                            pair.Value,
-                            destination,
-                            cancellationToken
-                        )
-                        .ConfigureAwait(false);
-                    restored++;
-                }
-                catch (Exception ex)
-                {
-                    failures.Add($"{pair.Key}: {ex.Message}");
-                    continue;
-                }
+                continue;
             }
 
-            if (!dryRun)
+            try
             {
+                await RestoreOneAsync(manifestSource, assetObject, destination, cancellationToken)
+                    .ConfigureAwait(false);
+                restored++;
+            }
+            catch (Exception ex)
+            {
+                failures.Add($"{objectId}: {ex.Message}");
+            }
+        }
+
+        var materialized = 0;
+        if (failures.Count == 0)
+        {
+            foreach (var pair in selectedAssets.OrderBy(item => item.Key, StringComparer.Ordinal))
+            {
+                var assetObject = manifest.Objects[pair.Value.Object];
+                var canonical = ResolveManifestPath(outputDir, assetObject.Path)!;
+                var logical = ResolveManifestPath(outputDir, pair.Key)!;
+                materialized++;
+                actions.Add($"materialize {pair.Key} -> {assetObject.Path}");
+                if (dryRun)
+                {
+                    continue;
+                }
                 try
                 {
-                    foreach (var alias in aliases)
-                    {
-                        MaterializeAlias(outputDir, destination, alias);
-                    }
+                    MaterializeAlias(outputDir, canonical, logical);
                 }
                 catch (Exception ex)
                 {
-                    failures.Add($"{pair.Key}: could not materialize aliases: {ex.Message}");
+                    failures.Add($"{pair.Key}: could not materialize asset: {ex.Message}");
                 }
             }
         }
 
-        var removed = 0;
-        if (prune && Directory.Exists(outputDir))
+        var pruned = 0;
+        if (failures.Count == 0 && prune && previousManifest is not null)
         {
-            foreach (var path in EnumerateFilesWithoutFollowingLinks(outputDir))
+            var currentPaths = GetManagedPaths(manifest);
+            foreach (
+                var stale in GetManagedPaths(previousManifest)
+                    .Except(currentPaths, StringComparer.Ordinal)
+                    .OrderByDescending(path => path, StringComparer.Ordinal)
+            )
             {
-                if (declared.Contains(Path.GetFullPath(path)))
+                var path = ResolveManifestPath(outputDir, stale);
+                if (path is null)
+                {
+                    failures.Add($"existing assets.json contains unsafe managed path '{stale}'.");
+                    continue;
+                }
+                if (!PathExists(path))
                 {
                     continue;
                 }
-                removed++;
+                pruned++;
+                actions.Add($"prune {stale}");
                 if (!dryRun)
                 {
                     File.Delete(path);
@@ -431,10 +411,24 @@ public static class BatchAssets
             }
         }
 
-        return new BatchRestoreResult(restored, reused, filtered, removed, failures);
+        if (failures.Count == 0 && !dryRun)
+        {
+            await WriteManifestAsync(manifest, localManifestPath, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        return new BatchRestoreResult(
+            restored,
+            reused,
+            filtered,
+            materialized,
+            pruned,
+            actions,
+            failures
+        );
     }
 
-    private static async Task<BatchAssetManifest> ReadManifestAsync(
+    public static async Task<BatchAssetManifest> ReadManifestAsync(
         string source,
         CancellationToken cancellationToken
     )
@@ -451,14 +445,100 @@ public static class BatchAssets
             ?? throw new InvalidDataException("Manifest is empty.");
     }
 
+    private static bool TryValidateManifest(
+        BatchAssetManifest manifest,
+        string outputDir,
+        List<string> failures
+    )
+    {
+        if (manifest.Version != 1)
+        {
+            failures.Add($"manifest: unsupported version {manifest.Version}.");
+            return false;
+        }
+        if (manifest.Objects is null || manifest.Assets is null)
+        {
+            failures.Add("manifest: objects and assets are required.");
+            return false;
+        }
+
+        var physicalPaths = new Dictionary<string, string>(GetPathComparer());
+        foreach (var pair in manifest.Objects)
+        {
+            var value = pair.Value;
+            if (
+                value is null
+                || string.IsNullOrWhiteSpace(pair.Key)
+                || value.Size < 0
+                || !IsSha256(value.Sha256)
+            )
+            {
+                failures.Add($"{pair.Key}: invalid object metadata.");
+                continue;
+            }
+            var path = ResolveManifestPath(outputDir, value.Path);
+            if (path is null)
+            {
+                failures.Add($"{pair.Key}: unsafe object path '{value.Path}'.");
+                continue;
+            }
+            if (!physicalPaths.TryAdd(path, pair.Key))
+            {
+                failures.Add($"{pair.Key}: object path is also used by '{physicalPaths[path]}'.");
+            }
+        }
+
+        var logicalPaths = new HashSet<string>(GetPathComparer());
+        foreach (var pair in manifest.Assets)
+        {
+            var value = pair.Value;
+            if (
+                value is null
+                || string.IsNullOrWhiteSpace(value.Object)
+                || !manifest.Objects.TryGetValue(value.Object, out var assetObject)
+            )
+            {
+                failures.Add($"{pair.Key}: references an unknown object.");
+                continue;
+            }
+            var path = ResolveManifestPath(outputDir, pair.Key);
+            if (path is null)
+            {
+                failures.Add($"{pair.Key}: unsafe logical asset path.");
+                continue;
+            }
+            if (!logicalPaths.Add(path))
+            {
+                failures.Add($"{pair.Key}: duplicate logical asset path.");
+            }
+            if (
+                physicalPaths.TryGetValue(path, out var physicalOwner)
+                && !string.Equals(physicalOwner, value.Object, StringComparison.Ordinal)
+            )
+            {
+                failures.Add($"{pair.Key}: collides with object '{physicalOwner}'.");
+            }
+            _ = assetObject;
+        }
+        return failures.Count == 0;
+    }
+
+    private static HashSet<string> GetManagedPaths(BatchAssetManifest manifest)
+    {
+        var paths = manifest
+            .Objects.Values.Select(value => BatchExecutor.NormalizePath(value.Path))
+            .Concat(manifest.Assets.Keys.Select(BatchExecutor.NormalizePath));
+        return paths.ToHashSet(StringComparer.Ordinal);
+    }
+
     private static async Task RestoreOneAsync(
         string manifestSource,
-        BatchAssetManifestEntry entry,
+        BatchAssetObject entry,
         string destination,
         CancellationToken cancellationToken
     )
     {
-        if (entry.Size < 0 || !IsSha256(entry.Sha256) || string.IsNullOrWhiteSpace(entry.Url))
+        if (entry.Size < 0 || !IsSha256(entry.Sha256) || string.IsNullOrWhiteSpace(entry.Path))
         {
             throw new InvalidDataException("Manifest entry has invalid integrity metadata.");
         }
@@ -468,7 +548,7 @@ public static class BatchAssets
         try
         {
             await using (
-                var input = await OpenAssetAsync(manifestSource, entry.Url, cancellationToken)
+                var input = await OpenAssetAsync(manifestSource, entry.Path, cancellationToken)
                     .ConfigureAwait(false)
             )
             await using (var output = File.Create(temporary))
@@ -502,7 +582,7 @@ public static class BatchAssets
 
     private static async Task<bool> MatchesAsync(
         string path,
-        BatchAssetManifestEntry entry,
+        BatchAssetObject entry,
         CancellationToken cancellationToken
     )
     {
@@ -576,8 +656,10 @@ public static class BatchAssets
 
     private static string? ResolveManifestPath(string outputDir, string relativePath)
     {
+        var normalized = BatchExecutor.NormalizePath(relativePath);
         if (
             string.IsNullOrWhiteSpace(relativePath)
+            || normalized.Equals("assets.json", StringComparison.OrdinalIgnoreCase)
             || Path.IsPathRooted(relativePath)
             || Uri.TryCreate(relativePath, UriKind.Absolute, out _)
         )
@@ -585,7 +667,12 @@ public static class BatchAssets
             return null;
         }
         var resolved = BatchExecutor.ResolveOutput(outputDir, relativePath);
-        return resolved is not null && IsSafeDestinationPath(outputDir, resolved) ? resolved : null;
+        return
+            resolved is not null
+            && !PathsEqual(resolved, Path.Combine(outputDir, "assets.json"))
+            && IsSafeDestinationPath(outputDir, resolved)
+            ? resolved
+            : null;
     }
 
     private static bool IsSha256(string? value) =>
@@ -619,27 +706,6 @@ public static class BatchAssets
 
     private static bool PathsEqual(string first, string second) =>
         GetPathComparer().Equals(Path.GetFullPath(first), Path.GetFullPath(second));
-
-    private static IEnumerable<string> EnumerateFilesWithoutFollowingLinks(string root)
-    {
-        var pending = new Stack<string>();
-        pending.Push(root);
-        while (pending.Count > 0)
-        {
-            var directory = pending.Pop();
-            foreach (var file in Directory.EnumerateFiles(directory))
-            {
-                yield return file;
-            }
-            foreach (var child in Directory.EnumerateDirectories(directory))
-            {
-                if ((File.GetAttributes(child) & FileAttributes.ReparsePoint) == 0)
-                {
-                    pending.Push(child);
-                }
-            }
-        }
-    }
 
     private static void Add(StringBuilder builder, object? value)
     {

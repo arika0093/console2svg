@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -237,7 +238,8 @@ internal static partial class SvgDocumentBuilder
                     context,
                     includeScrollback,
                     autoMaskMode,
-                    workspace?.NormalizedText
+                    workspace?.NormalizedText,
+                    workspace?.QuickLeaksFindings
                 )
                 : null;
         var maskedCells =
@@ -629,30 +631,23 @@ internal static partial class SvgDocumentBuilder
         in Context context,
         bool includeScrollback,
         QuickLeaksScanMode mode,
-        StringBuilder? normalizedBuffer = null
+        ReusableCharBuffer? normalizedBuffer = null,
+        ArrayBufferWriter<QuickLeaksFinding>? findingBuffer = null
     )
     {
         var capacity =
             (context.EndRowExclusive - context.StartRow)
             * (context.EndColExclusive - context.StartCol);
-        var normalized = normalizedBuffer ?? new StringBuilder(capacity);
+        var normalized = normalizedBuffer ?? new ReusableCharBuffer(capacity);
         normalized.Clear();
         normalized.EnsureCapacity(capacity);
         AppendNormalizedText(buffer, context, includeScrollback, normalized, coordinates: null);
 
-        List<QuickLeaksFinding>? findings = null;
-        foreach (var finding in Filter.Enumerate(normalized.ToString(), mode))
-        {
-            var start = Math.Max(0, finding.Start);
-            var end = Math.Min(normalized.Length, finding.End);
-            if (end > start)
-            {
-                findings ??= [];
-                findings.Add(new QuickLeaksFinding(finding.RuleId, start, end));
-            }
-        }
+        var findings = findingBuffer ?? new ArrayBufferWriter<QuickLeaksFinding>();
+        findings.Clear();
+        Filter.Scan(normalized.WrittenSpan, findings, mode);
 
-        if (findings is null)
+        if (findings.WrittenCount == 0)
         {
             return null;
         }
@@ -665,8 +660,12 @@ internal static partial class SvgDocumentBuilder
         AppendNormalizedText(buffer, context, includeScrollback, normalized, coordinates);
 
         var maskedCells = new HashSet<(int Row, int Column)>();
-        foreach (var finding in findings)
+        foreach (var finding in findings.WrittenSpan)
         {
+            if (finding.End <= finding.Start)
+            {
+                continue;
+            }
             for (var index = finding.Start; index < finding.End; index++)
             {
                 if (coordinates[index] is { } coordinate)
@@ -682,7 +681,7 @@ internal static partial class SvgDocumentBuilder
         ScreenBuffer buffer,
         in Context context,
         bool includeScrollback,
-        StringBuilder normalized,
+        ReusableCharBuffer normalized,
         List<(int Row, int Column)?>? coordinates
     )
     {
@@ -738,7 +737,7 @@ internal static partial class SvgDocumentBuilder
         string[] maskPatterns
     )
     {
-        var normalized = new StringBuilder(
+        var normalized = new ReusableCharBuffer(
             (context.EndRowExclusive - context.StartRow)
                 * (context.EndColExclusive - context.StartCol)
         );
@@ -764,13 +763,18 @@ internal static partial class SvgDocumentBuilder
         }
 
         var maskedCells = new HashSet<(int Row, int Column)>();
-        var normalizedText = normalized.ToString();
+        var normalizedText = normalized.WrittenSpan;
         foreach (var pattern in maskPatterns.Where(pattern => !string.IsNullOrEmpty(pattern)))
         {
             for (
-                var start = normalizedText.IndexOf(pattern, StringComparison.Ordinal);
+                var start = normalizedText.IndexOf(pattern.AsSpan(), StringComparison.Ordinal);
                 start >= 0;
-                start = normalizedText.IndexOf(pattern, start + 1, StringComparison.Ordinal)
+                start = normalizedText[(start + 1)..]
+                        .IndexOf(pattern.AsSpan(), StringComparison.Ordinal)
+                        is var relative
+                            and >= 0
+                        ? start + 1 + relative
+                        : -1
             )
             {
                 var end = Math.Min(coordinates.Count, start + pattern.Length);
@@ -1325,6 +1329,38 @@ internal static partial class SvgDocumentBuilder
         );
     }
 
+    internal sealed class ReusableCharBuffer
+    {
+        private char[] _buffer;
+
+        public ReusableCharBuffer(int capacity = 0)
+        {
+            _buffer = capacity == 0 ? [] : new char[capacity];
+        }
+
+        public int Capacity => _buffer.Length;
+        public int Length { get; set; }
+        public ReadOnlySpan<char> WrittenSpan => _buffer.AsSpan(0, Length);
+        public char this[int index] => _buffer[index];
+
+        public void Clear() => Length = 0;
+
+        public void EnsureCapacity(int capacity)
+        {
+            if (capacity <= _buffer.Length)
+            {
+                return;
+            }
+            Array.Resize(ref _buffer, Math.Max(capacity, Math.Max(16, _buffer.Length * 2)));
+        }
+
+        public void Append(char value)
+        {
+            EnsureCapacity(Length + 1);
+            _buffer[Length++] = value;
+        }
+    }
+
     internal sealed class FrameRenderWorkspace
     {
         public List<AxisSegment> HorizontalSegments { get; } = [];
@@ -1333,7 +1369,8 @@ internal static partial class SvgDocumentBuilder
         public List<BlockRect> BlockRects { get; } = [];
         public List<BoxRect> MergedBoxRects { get; } = [];
         public StringBuilder ForegroundText { get; } = new();
-        public StringBuilder NormalizedText { get; } = new();
+        public ReusableCharBuffer NormalizedText { get; } = new();
+        public ArrayBufferWriter<QuickLeaksFinding> QuickLeaksFindings { get; } = new();
         public StringBuilder PathData { get; } = new();
 
         public void Reset(int textCapacity)

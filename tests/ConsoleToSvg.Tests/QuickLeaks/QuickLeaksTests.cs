@@ -27,7 +27,12 @@ public sealed class QuickLeaksTests
 
         generatedRules.Length.ShouldBe(Filter.RegexFallbackRuleCount * 2);
         generatedRules
-            .All(regex => regex.MatchTimeout == TimeSpan.FromMilliseconds(10))
+            .All(regex =>
+                regex.MatchTimeout
+                == TimeSpan.FromMilliseconds(
+                    regex.Options.HasFlag(RegexOptions.NonBacktracking) ? 100 : 10
+                )
+            )
             .ShouldBeTrue();
     }
 
@@ -39,7 +44,7 @@ public sealed class QuickLeaksTests
 
         var findings = Filter.ScanRegexFallbackForTesting(pathological, input);
 
-        findings.Count.ShouldBe(1);
+        findings.Length.ShouldBe(1);
         findings[0].Start.ShouldBe(0);
         findings[0].End.ShouldBe(input.Length);
     }
@@ -47,17 +52,8 @@ public sealed class QuickLeaksTests
     [Test]
     public void ScanFindsSecretsAndHomeDirectoryPaths()
     {
-        var findings = Filter.Scan("/home/alice/project");
+        var findings = Scan("/home/alice/project");
 
-        findings.Any(finding => finding.RuleId == "console2svg-home-directory").ShouldBeTrue();
-    }
-
-    [Test]
-    public void EnumeratePreservesTheCompatibilityApi()
-    {
-        var findings = Filter.Enumerate("/home/alice/project").ToArray();
-
-        findings.ShouldNotBeEmpty();
         findings.Any(finding => finding.RuleId == "console2svg-home-directory").ShouldBeTrue();
     }
 
@@ -97,13 +93,37 @@ public sealed class QuickLeaksTests
     }
 
     [Test]
+    public void CustomLiteralScannerUsesTheSpanWriterPath()
+    {
+        var scanner = new QuickLeaksScanner(
+            new QuickLeaksScannerOptions
+            {
+                SensitiveLiterals =
+                [
+                    new QuickLeaksCustomLiteral("custom-user", "alice"),
+                    new QuickLeaksCustomLiteral(
+                        "custom-host",
+                        "EXAMPLE.TEST",
+                        StringComparison.OrdinalIgnoreCase
+                    ),
+                ],
+            }
+        );
+        var findings = new System.Buffers.ArrayBufferWriter<QuickLeaksFinding>();
+
+        scanner.Scan("alice@example.test".AsSpan(), findings);
+
+        findings.WrittenSpan.ToArray().ShouldContain(new QuickLeaksFinding("custom-user", 0, 5));
+        findings.WrittenSpan.ToArray().ShouldContain(new QuickLeaksFinding("custom-host", 6, 18));
+    }
+
+    [Test]
     public void EarlyModeFindsPartiallyEnteredGithubToken()
     {
         var partialToken = "ghp_" + "abc";
 
-        Filter.Scan(partialToken).ShouldBeEmpty();
-        Filter
-            .Scan(partialToken, QuickLeaksScanMode.Early)
+        Scan(partialToken).ShouldBeEmpty();
+        Scan(partialToken, QuickLeaksScanMode.Early)
             .Any(finding => finding.RuleId == "github-pat")
             .ShouldBeTrue();
     }
@@ -114,12 +134,11 @@ public sealed class QuickLeaksTests
         var token = "ghp_" + new string('a', 36);
         var input = "--" + token + "--";
 
-        var finding = Filter.Scan(input).Single(item => item.RuleId == "github-pat");
+        var finding = Scan(input).Single(item => item.RuleId == "github-pat");
 
         finding.Start.ShouldBe(2);
         finding.End.ShouldBe(2 + token.Length);
-        Filter
-            .Scan(input.Replace("ghp_", "GHP_", StringComparison.Ordinal))
+        Scan(input.Replace("ghp_", "GHP_", StringComparison.Ordinal))
             .Any(item => item.RuleId == "github-pat")
             .ShouldBeFalse();
     }
@@ -128,14 +147,11 @@ public sealed class QuickLeaksTests
     public void PrefixTokenVerifierHonorsIgnoreCaseAndWordBoundaries()
     {
         var clojars = "clojars_" + new string('A', 60);
-        Filter.Scan(clojars).Any(item => item.RuleId == "clojars-api-token").ShouldBeTrue();
+        Scan(clojars).Any(item => item.RuleId == "clojars-api-token").ShouldBeTrue();
 
         var aikido = "AIK_CI_" + new string('a', 20);
-        Filter.Scan("x" + aikido).Any(item => item.RuleId == "aikido-ci-token").ShouldBeFalse();
-        Filter
-            .Scan(" " + aikido + " ")
-            .Any(item => item.RuleId == "aikido-ci-token")
-            .ShouldBeTrue();
+        Scan("x" + aikido).Any(item => item.RuleId == "aikido-ci-token").ShouldBeFalse();
+        Scan(" " + aikido + " ").Any(item => item.RuleId == "aikido-ci-token").ShouldBeTrue();
     }
 
     [Test]
@@ -193,7 +209,7 @@ public sealed class QuickLeaksTests
                     match.Index + match.Length
                 );
 
-                var actual = Filter.Scan(input, mode).Single(finding => finding.RuleId == ruleId);
+                var actual = Scan(input, mode).Single(finding => finding.RuleId == ruleId);
 
                 actual.ShouldBe(
                     expected,
@@ -229,20 +245,86 @@ public sealed class QuickLeaksTests
     }
 
     [Test]
+    [NotInParallel]
+    public void AssignmentVerifiersMatchRegexOracle()
+    {
+        using var report = JsonDocument.Parse(
+            File.ReadAllText(
+                Path.Combine(AppContext.BaseDirectory, "QuickLeaks.generation-report.json")
+            )
+        );
+        var optimizedRules = report
+            .RootElement.GetProperty("rules")
+            .EnumerateArray()
+            .Where(rule => rule.GetProperty("engine").GetString() == "assignment-verifier")
+            .ToArray();
+
+        optimizedRules.Length.ShouldBe(74);
+        foreach (var rule in optimizedRules)
+        {
+            var descriptor = rule.GetProperty("assignment");
+            var provider = descriptor.GetProperty("provider").GetString()!;
+            var sampleCharacter = SelectPrefixTokenSampleCharacter(descriptor);
+            var ruleId = rule.GetProperty("id").GetString()!;
+            var ruleIndex = (ushort)rule.GetProperty("index").GetInt32();
+
+            foreach (var mode in new[] { QuickLeaksScanMode.Normal, QuickLeaksScanMode.Early })
+            {
+                var minimumProperty =
+                    mode == QuickLeaksScanMode.Normal ? "normalMinimum" : "earlyMinimum";
+                var minimum = descriptor.GetProperty(minimumProperty).GetInt32();
+                var input =
+                    " "
+                    + provider
+                    + "_key = '"
+                    + new string(sampleCharacter, Math.Max(1, minimum))
+                    + "' ";
+                var patternProperty =
+                    mode == QuickLeaksScanMode.Normal ? "pattern" : "earlyPattern";
+                var regex = new Regex(
+                    rule.GetProperty(patternProperty).GetString()!,
+                    RegexOptions.CultureInvariant,
+                    TimeSpan.FromSeconds(1)
+                );
+                var match = regex.Match(input);
+                match.Success.ShouldBeTrue(
+                    $"The generated fixture must match {ruleId} in {mode} mode."
+                );
+                var expected = Filter.NarrowFindingForTesting(
+                    input,
+                    ruleIndex,
+                    match.Index,
+                    match.Index + match.Length
+                );
+
+                var actualMatches = Scan(input, mode)
+                    .Where(finding => finding.RuleId == ruleId)
+                    .ToArray();
+                actualMatches.ShouldNotBeEmpty(
+                    $"The assignment verifier missed {ruleId} in {mode} mode."
+                );
+                var actual = actualMatches.Single();
+
+                actual.ShouldBe(
+                    expected,
+                    $"The assignment verifier diverged for {ruleId} in {mode} mode."
+                );
+            }
+        }
+    }
+
+    [Test]
     public void EarlyModeFindsPartiallyEnteredCredentialUri()
     {
         var partialUri = "https" + "://user:" + "pass";
 
-        Filter
-            .Scan(partialUri)
+        Scan(partialUri)
             .Any(finding => finding.RuleId == "console2svg-credential-uri")
             .ShouldBeFalse();
-        Filter
-            .Scan(partialUri, QuickLeaksScanMode.Early)
+        Scan(partialUri, QuickLeaksScanMode.Early)
             .Any(finding => finding.RuleId == "console2svg-credential-uri")
             .ShouldBeTrue();
-        Filter
-            .Scan(partialUri + "@example.test")
+        Scan(partialUri + "@example.test")
             .Any(finding => finding.RuleId == "console2svg-credential-uri")
             .ShouldBeTrue();
     }
@@ -263,16 +345,14 @@ public sealed class QuickLeaksTests
             "You can also install via a package manager."
         );
 
-        Filter.Scan(text, QuickLeaksScanMode.Early).ShouldBeEmpty();
+        Scan(text, QuickLeaksScanMode.Early).ShouldBeEmpty();
         const string header = "curl -H \"Authorization: Bearer abcdefgh\" https://example.test";
-        var headerFinding = Filter
-            .Scan(header, QuickLeaksScanMode.Early)
+        var headerFinding = Scan(header, QuickLeaksScanMode.Early)
             .Single(finding => finding.RuleId == "curl-auth-header");
         header[headerFinding.Start..headerFinding.End].ShouldBe("abcdefgh");
 
         const string user = "curl -u user:password https://example.test";
-        var userValues = Filter
-            .Scan(user, QuickLeaksScanMode.Early)
+        var userValues = Scan(user, QuickLeaksScanMode.Early)
             .Where(finding => finding.RuleId == "curl-auth-user")
             .Select(finding => user[finding.Start..finding.End])
             .ToArray();
@@ -285,12 +365,12 @@ public sealed class QuickLeaksTests
         var text = "\"password\": \"123456\"";
         text = "https://user:secret@example.test/path";
         text = "\"password\": \"123456\"";
-        var findings = Filter.Scan(text);
+        var findings = Scan(text);
 
         findings.Any(finding => finding.RuleId == "generic-password").ShouldBeTrue();
         var finding = findings.Single(finding => finding.RuleId == "generic-password");
         text.Substring(finding.Start, finding.End - finding.Start).ShouldBe("123456");
-        Filter.Scan("PASSWORD=").ShouldBeEmpty();
+        Scan("PASSWORD=").ShouldBeEmpty();
     }
 
     [Test]
@@ -306,7 +386,7 @@ public sealed class QuickLeaksTests
             }
         )
         {
-            var findings = Filter.Scan(path);
+            var findings = Scan(path);
             var finding = findings.Single(finding =>
                 finding.RuleId == "console2svg-home-directory"
             );
@@ -318,10 +398,10 @@ public sealed class QuickLeaksTests
     public void CredentialUriMasksUsernameAndPasswordIndependently()
     {
         var text = "https://user:secret@example.test/path";
-        var findings = Filter.Scan(text);
+        var findings = Scan(text);
 
         text = "https://user:secret@example.test/path";
-        findings = Filter.Scan(text);
+        findings = Scan(text);
         var credentialFindings = findings
             .Where(finding =>
                 finding.RuleId is "generic-credential-uri" or "console2svg-credential-uri"
@@ -336,11 +416,19 @@ public sealed class QuickLeaksTests
     [Test]
     public void EnvValuesRemainIndependentlyDetectableAcrossLines()
     {
-        var findings = Filter.Scan(
-            "PASSWORD=123456\nDATABASE_URL=postgres://user:secret@host/testdb"
-        );
+        var findings = Scan("PASSWORD=123456\nDATABASE_URL=postgres://user:secret@host/testdb");
 
         findings.Any(finding => finding.RuleId == "generic-password").ShouldBeTrue();
         findings.Any(finding => finding.RuleId == "generic-credential-uri").ShouldBeTrue();
+    }
+
+    private static QuickLeaksFinding[] Scan(
+        string text,
+        QuickLeaksScanMode mode = QuickLeaksScanMode.Normal
+    )
+    {
+        var findings = new System.Buffers.ArrayBufferWriter<QuickLeaksFinding>();
+        Filter.Scan(text.AsSpan(), findings, mode);
+        return findings.WrittenSpan.ToArray();
     }
 }

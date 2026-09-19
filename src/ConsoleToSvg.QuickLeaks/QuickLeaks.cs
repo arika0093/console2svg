@@ -1,6 +1,5 @@
 using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -25,29 +24,6 @@ public enum QuickLeaksScanMode
 public static partial class QuickLeaks
 {
     /// <summary>
-    /// Finds all matches, sorts them by start and end offset, and materializes the results.
-    /// </summary>
-    /// <param name="text">The text to scan.</param>
-    /// <param name="mode">The normal or partial-input pattern set to use.</param>
-    /// <returns>The sorted findings.</returns>
-    public static IReadOnlyList<QuickLeaksFinding> Scan(
-        string text,
-        QuickLeaksScanMode mode = QuickLeaksScanMode.Normal
-    )
-    {
-        ArgumentNullException.ThrowIfNull(text);
-        var buffer = new ArrayBufferWriter<QuickLeaksFinding>();
-        Scan(text.AsSpan(), buffer, mode);
-        var findings = buffer.WrittenSpan.ToArray();
-        Array.Sort(
-            findings,
-            static (a, b) =>
-                a.Start != b.Start ? a.Start.CompareTo(b.Start) : a.End.CompareTo(b.End)
-        );
-        return findings;
-    }
-
-    /// <summary>
     /// Scans UTF-16 text without converting it to a string and writes findings to a
     /// caller-owned buffer. The scanner itself does not allocate on the managed heap.
     /// </summary>
@@ -63,19 +39,7 @@ public static partial class QuickLeaks
         return sink.Count;
     }
 
-    public static IEnumerable<QuickLeaksFinding> Enumerate(
-        string text,
-        QuickLeaksScanMode mode = QuickLeaksScanMode.Normal
-    )
-    {
-        ArgumentNullException.ThrowIfNull(text);
-        return Scan(text, mode);
-    }
-
-    internal static IReadOnlyList<QuickLeaksFinding> ScanRegexFallbackForTesting(
-        Regex regex,
-        string text
-    )
+    internal static QuickLeaksFinding[] ScanRegexFallbackForTesting(Regex regex, string text)
     {
         var buffer = new ArrayBufferWriter<QuickLeaksFinding>();
         var sink = new FindingSink(text, buffer);
@@ -170,6 +134,236 @@ public static partial class QuickLeaks
         return value is '\u200C' or '\u200D'
             || ((1 << (int)CharUnicodeInfo.GetUnicodeCategory(value)) & wordCategories) != 0;
     }
+
+    private static void VerifyAssignment(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        ushort ruleIndex,
+        ReadOnlySpan<char> provider,
+        ulong classLowMask,
+        ulong classHighMask,
+        int normalMinimum,
+        int earlyMinimum,
+        int maximum,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink
+    )
+    {
+        if (
+            provider.Length > text.Length - anchorStart
+            || !text[anchorStart..].StartsWith(provider, StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            return;
+        }
+
+        var position = anchorStart + provider.Length;
+        var contextLength = 0;
+        while (
+            position < text.Length
+            && contextLength < 20
+            && IsAssignmentContextCharacter(text[position])
+        )
+        {
+            position++;
+            contextLength++;
+        }
+        var quoteLength = 0;
+        while (
+            position < text.Length
+            && quoteLength < 3
+            && (char.IsWhiteSpace(text[position]) || text[position] is '\'' or '"')
+        )
+        {
+            position++;
+            quoteLength++;
+        }
+
+        Span<int> separatorLengths = stackalloc int[8];
+        var separatorCount = GetAssignmentSeparatorLengths(text[position..], separatorLengths);
+        var minimum = mode == QuickLeaksScanMode.Early ? earlyMinimum : normalMinimum;
+        for (var separatorIndex = 0; separatorIndex < separatorCount; separatorIndex++)
+        {
+            var valuePrefix = position + separatorLengths[separatorIndex];
+            var paddingLength = 0;
+            while (
+                valuePrefix + paddingLength < text.Length
+                && paddingLength < 5
+                && IsAssignmentPaddingCharacter(text[valuePrefix + paddingLength])
+            )
+            {
+                paddingLength++;
+            }
+
+            for (var currentPadding = paddingLength; currentPadding >= 0; currentPadding--)
+            {
+                var valueStart = valuePrefix + currentPadding;
+                var available = text.Length - valueStart;
+                var maximumLength = maximum < 0 ? available : Math.Min(available, maximum);
+                var valueLength = 0;
+                while (
+                    valueLength < maximumLength
+                    && IsInAsciiCharacterClass(
+                        text[valueStart + valueLength],
+                        classLowMask,
+                        classHighMask
+                    )
+                )
+                {
+                    valueLength++;
+                }
+                if (valueLength < minimum)
+                {
+                    continue;
+                }
+                var valueEnd = valueStart + valueLength;
+                if (TryConsumeAssignmentTerminator(text, valueEnd, out var matchEnd))
+                {
+                    sink.Add(ruleIndex, anchorStart, matchEnd);
+                    return;
+                }
+            }
+        }
+    }
+
+    private static bool IsAssignmentContextCharacter(char value) =>
+        value is ' ' or '\t' or '.' or '-' || IsRegexWordCharacter(value);
+
+    private static bool IsAssignmentPaddingCharacter(char value) =>
+        value is '`' or '\'' or '"' or '=' || char.IsWhiteSpace(value);
+
+    private static int GetAssignmentSeparatorLengths(ReadOnlySpan<char> text, Span<int> lengths)
+    {
+        var count = 0;
+        if (text.StartsWith("="))
+        {
+            lengths[count++] = 1;
+        }
+        if (text.StartsWith(">"))
+        {
+            lengths[count++] = 1;
+        }
+        if (!text.IsEmpty && text[0] == ':')
+        {
+            var colons = 0;
+            while (colons < Math.Min(3, text.Length) && text[colons] == ':')
+            {
+                colons++;
+            }
+            for (var length = colons; length >= 1; length--)
+            {
+                if (length < text.Length && text[length] == '=')
+                {
+                    lengths[count++] = length + 1;
+                }
+            }
+        }
+        if (text.StartsWith("||"))
+        {
+            lengths[count++] = 2;
+        }
+        if (text.StartsWith(":"))
+        {
+            lengths[count++] = 1;
+        }
+        if (text.StartsWith("=>"))
+        {
+            lengths[count++] = 2;
+        }
+        if (text.StartsWith("?="))
+        {
+            lengths[count++] = 2;
+        }
+        if (text.StartsWith(","))
+        {
+            lengths[count++] = 1;
+        }
+        return count;
+    }
+
+    private static bool TryConsumeAssignmentTerminator(
+        ReadOnlySpan<char> text,
+        int position,
+        out int matchEnd
+    )
+    {
+        if (position == text.Length)
+        {
+            matchEnd = position;
+            return true;
+        }
+        if (text[position] is '\'' or '"' or '`' or ';' || char.IsWhiteSpace(text[position]))
+        {
+            matchEnd = position + 1;
+            return true;
+        }
+        if (
+            text[position] == '\\'
+            && position + 1 < text.Length
+            && text[position + 1] is '\'' or '"' or '`' or 'n' or 'r'
+        )
+        {
+            matchEnd = position + 2;
+            return true;
+        }
+        matchEnd = position;
+        return false;
+    }
+
+    private static void VerifyHomeDirectoryAt(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        ushort ruleIndex,
+        ref FindingSink sink
+    )
+    {
+        if (anchorStart == 0)
+        {
+            return;
+        }
+        var isHome = text[anchorStart..].StartsWith("home", StringComparison.OrdinalIgnoreCase);
+        var directoryLength = isHome ? 4 : 5;
+        if (
+            directoryLength > text.Length - anchorStart
+            || anchorStart + directoryLength >= text.Length
+        )
+        {
+            return;
+        }
+        var separator = text[anchorStart - 1];
+        var nextSeparator = text[anchorStart + directoryLength];
+        if (
+            (isHome && (separator != '/' || nextSeparator != '/'))
+            || (!isHome && (separator is not ('/' or '\\') || nextSeparator is not ('/' or '\\')))
+        )
+        {
+            return;
+        }
+
+        var matchStart = anchorStart - 1;
+        if (
+            !isHome
+            && anchorStart >= 3
+            && text[anchorStart - 2] == ':'
+            && IsAsciiLetter(text[anchorStart - 3])
+        )
+        {
+            matchStart = anchorStart - 3;
+        }
+        var usernameEnd = anchorStart + directoryLength + 1;
+        var usernameStart = usernameEnd;
+        while (usernameEnd < text.Length && IsHomeDirectoryUsernameCharacter(text[usernameEnd]))
+        {
+            usernameEnd++;
+        }
+        if (usernameEnd > usernameStart)
+        {
+            sink.Add(ruleIndex, matchStart, usernameEnd);
+        }
+    }
+
+    private static bool IsHomeDirectoryUsernameCharacter(char value) =>
+        IsAsciiLetter(value) || char.IsAsciiDigit(value) || value is '.' or '_' or '-';
 
     private static void FindCredentialUriMatches(
         ReadOnlySpan<char> text,

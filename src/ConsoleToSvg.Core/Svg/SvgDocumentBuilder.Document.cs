@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -154,10 +155,13 @@ internal static partial class SvgDocumentBuilder
         AppendPositionAttributes(sb, x, bgY + context.BaselineOffset);
         sb.Append(">");
         var renderedHeader = commandHeader;
+        ArrayBufferWriter<QuickLeaksFinding>? autoMaskFindings = null;
         if (autoMask)
         {
+            autoMaskFindings = new ArrayBufferWriter<QuickLeaksFinding>();
+            Filter.Scan(commandHeader.AsSpan(), autoMaskFindings, autoMaskMode);
             var redactedHeader = commandHeader.ToCharArray();
-            foreach (var finding in Filter.Enumerate(commandHeader, autoMaskMode))
+            foreach (var finding in autoMaskFindings.WrittenSpan)
             {
                 var start = Math.Max(0, finding.Start);
                 var end = Math.Min(redactedHeader.Length, finding.End);
@@ -170,9 +174,9 @@ internal static partial class SvgDocumentBuilder
         }
         sb.Append(ApplyMask(EscapeText(renderedHeader), maskPatterns));
         sb.Append("</text>");
-        if (autoMask)
+        if (autoMaskFindings is not null)
         {
-            foreach (var finding in Filter.Enumerate(commandHeader, autoMaskMode))
+            foreach (var finding in autoMaskFindings.WrittenSpan)
             {
                 var start = Math.Max(0, finding.Start);
                 var end = Math.Min(commandHeader.Length, finding.End);

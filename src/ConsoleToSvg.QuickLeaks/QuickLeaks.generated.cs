@@ -13,7 +13,8 @@ namespace ConsoleToSvg.QuickLeaks;
 public static partial class QuickLeaks
 {
     private const int MatchTimeoutMilliseconds = 10;
-    internal const int RegexFallbackRuleCount = 422;
+    private const int NonBacktrackingMatchTimeoutMilliseconds = 100;
+    internal const int RegexFallbackRuleCount = 347;
     private static readonly SearchValues<string> s_anchors = SearchValues.Create(
         new string[]
         {
@@ -754,31 +755,31 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("access_key", StringComparison.OrdinalIgnoreCase)) { candidates.Add(46); }
                 if (tail.StartsWith("accountkey", StringComparison.OrdinalIgnoreCase)) { candidates.Add(46); }
                 if (tail.StartsWith("apify_api_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken24(text, anchorStart, mode, ref sink); }
-                if (tail.StartsWith("assemblyai", StringComparison.OrdinalIgnoreCase)) { candidates.Add(32); }
-                if (tail.StartsWith("abuseipdb", StringComparison.OrdinalIgnoreCase)) { candidates.Add(2); }
+                if (tail.StartsWith("assemblyai", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment32(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("abuseipdb", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment2(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("accesskey", StringComparison.OrdinalIgnoreCase)) { candidates.Add(46); }
                 if (tail.StartsWith("amplitude", StringComparison.OrdinalIgnoreCase)) { candidates.Add(21); }
                 if (tail.StartsWith("api_live.", StringComparison.OrdinalIgnoreCase)) { candidates.Add(294); }
                 if (tail.StartsWith("apk_user_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(113); }
                 if (tail.StartsWith("aq.ab8rn6", StringComparison.OrdinalIgnoreCase)) { candidates.Add(166); }
                 if (tail.StartsWith("auth0.com", StringComparison.OrdinalIgnoreCase)) { candidates.Add(36); }
-                if (tail.StartsWith("adafruit", StringComparison.OrdinalIgnoreCase)) { candidates.Add(3); }
-                if (tail.StartsWith("airtable", StringComparison.OrdinalIgnoreCase)) { candidates.Add(10); candidates.Add(11); candidates.Add(12); }
+                if (tail.StartsWith("adafruit", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment3(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("airtable", StringComparison.OrdinalIgnoreCase)) { candidates.Add(11); candidates.Add(12); VerifyAssignment10(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("amqps://", StringComparison.OrdinalIgnoreCase)) { candidates.Add(169); }
                 if (tail.StartsWith("api_org_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(212); }
                 if (tail.StartsWith("astracs:", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken105(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("account", StringComparison.OrdinalIgnoreCase)) { candidates.Add(171); }
                 if (tail.StartsWith("aik_ci_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken7(text, anchorStart, mode, ref sink); }
-                if (tail.StartsWith("algolia", StringComparison.OrdinalIgnoreCase)) { candidates.Add(14); candidates.Add(15); }
+                if (tail.StartsWith("algolia", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment14(text, anchorStart, mode, ref sink); VerifyAssignment15(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("alibaba", StringComparison.OrdinalIgnoreCase)) { candidates.Add(17); candidates.Add(19); candidates.Add(20); }
                 if (tail.StartsWith("amqp://", StringComparison.OrdinalIgnoreCase)) { candidates.Add(169); }
                 if (tail.StartsWith("atlasv1", StringComparison.OrdinalIgnoreCase)) { candidates.Add(204); }
                 if (tail.StartsWith("access", StringComparison.OrdinalIgnoreCase)) { candidates.Add(41); candidates.Add(168); }
                 if (tail.StartsWith("aliyun", StringComparison.OrdinalIgnoreCase)) { candidates.Add(17); candidates.Add(19); candidates.Add(20); }
-                if (tail.StartsWith("apollo", StringComparison.OrdinalIgnoreCase)) { candidates.Add(25); }
-                if (tail.StartsWith("adobe", StringComparison.OrdinalIgnoreCase)) { candidates.Add(4); }
+                if (tail.StartsWith("apollo", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment25(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("adobe", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment4(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("aiven", StringComparison.OrdinalIgnoreCase)) { candidates.Add(13); }
-                if (tail.StartsWith("asana", StringComparison.OrdinalIgnoreCase)) { candidates.Add(30); candidates.Add(31); }
+                if (tail.StartsWith("asana", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment30(text, anchorStart, mode, ref sink); VerifyAssignment31(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("auth0", StringComparison.OrdinalIgnoreCase)) { candidates.Add(34); candidates.Add(35); }
                 if (tail.StartsWith("abia", StringComparison.OrdinalIgnoreCase)) { candidates.Add(38); }
                 if (tail.StartsWith("absk", StringComparison.OrdinalIgnoreCase)) { candidates.Add(39); }
@@ -802,9 +803,9 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("blob.core.windows.net", StringComparison.OrdinalIgnoreCase)) { candidates.Add(47); }
                 if (tail.StartsWith("bedrock-api-key-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(40); }
                 if (tail.StartsWith("browserstack", StringComparison.OrdinalIgnoreCase)) { candidates.Add(59); candidates.Add(60); }
-                if (tail.StartsWith("bitbucket", StringComparison.OrdinalIgnoreCase)) { candidates.Add(50); candidates.Add(51); }
+                if (tail.StartsWith("bitbucket", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment50(text, anchorStart, mode, ref sink); VerifyAssignment51(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("bitrise", StringComparison.OrdinalIgnoreCase)) { candidates.Add(54); }
-                if (tail.StartsWith("bittrex", StringComparison.OrdinalIgnoreCase)) { candidates.Add(55); candidates.Add(56); }
+                if (tail.StartsWith("bittrex", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment55(text, anchorStart, mode, ref sink); VerifyAssignment56(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("beamer", StringComparison.OrdinalIgnoreCase)) { candidates.Add(49); }
                 if (tail.StartsWith("bkpat_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(61); }
                 if (tail.StartsWith("bitly", StringComparison.OrdinalIgnoreCase)) { candidates.Add(53); }
@@ -826,23 +827,23 @@ public static partial class QuickLeaks
             case (char)99:
                 if (tail.StartsWith("configcat-sdk-1", StringComparison.OrdinalIgnoreCase)) { candidates.Add(90); }
                 if (tail.StartsWith("clickhouse", StringComparison.OrdinalIgnoreCase)) { candidates.Add(75); }
-                if (tail.StartsWith("cloudflare", StringComparison.OrdinalIgnoreCase)) { candidates.Add(78); candidates.Add(79); candidates.Add(80); }
+                if (tail.StartsWith("cloudflare", StringComparison.OrdinalIgnoreCase)) { candidates.Add(80); VerifyAssignment78(text, anchorStart, mode, ref sink); VerifyAssignment79(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("cloudinary", StringComparison.OrdinalIgnoreCase)) { candidates.Add(81); candidates.Add(82); candidates.Add(83); }
                 if (tail.StartsWith("co_api_key", StringComparison.OrdinalIgnoreCase)) { candidates.Add(87); }
-                if (tail.StartsWith("contentful", StringComparison.OrdinalIgnoreCase)) { candidates.Add(93); }
+                if (tail.StartsWith("contentful", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment93(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("credential", StringComparison.OrdinalIgnoreCase)) { candidates.Add(168); }
                 if (tail.StartsWith("configcat", StringComparison.OrdinalIgnoreCase)) { candidates.Add(89); }
-                if (tail.StartsWith("confluent", StringComparison.OrdinalIgnoreCase)) { candidates.Add(91); candidates.Add(92); }
+                if (tail.StartsWith("confluent", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment91(text, anchorStart, mode, ref sink); VerifyAssignment92(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("couchbase", StringComparison.OrdinalIgnoreCase)) { candidates.Add(94); }
-                if (tail.StartsWith("coveralls", StringComparison.OrdinalIgnoreCase)) { candidates.Add(95); }
+                if (tail.StartsWith("coveralls", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment95(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("checkout", StringComparison.OrdinalIgnoreCase)) { candidates.Add(68); }
-                if (tail.StartsWith("circleci", StringComparison.OrdinalIgnoreCase)) { candidates.Add(70); }
+                if (tail.StartsWith("circleci", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment70(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("clojars_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken77(text, anchorStart, mode, ref sink); }
-                if (tail.StartsWith("coinbase", StringComparison.OrdinalIgnoreCase)) { candidates.Add(88); }
+                if (tail.StartsWith("coinbase", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment88(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("capella", StringComparison.OrdinalIgnoreCase)) { candidates.Add(94); }
                 if (tail.StartsWith("ccipat_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(69); }
                 if (tail.StartsWith("clickup", StringComparison.OrdinalIgnoreCase)) { candidates.Add(76); }
-                if (tail.StartsWith("codecov", StringComparison.OrdinalIgnoreCase)) { candidates.Add(86); }
+                if (tail.StartsWith("codecov", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment86(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("ccdb1_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(85); }
                 if (tail.StartsWith("client", StringComparison.OrdinalIgnoreCase)) { candidates.Add(44); candidates.Add(171); }
                 if (tail.StartsWith("cohere", StringComparison.OrdinalIgnoreCase)) { candidates.Add(87); }
@@ -854,7 +855,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("cnvca", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken65(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("creds", StringComparison.OrdinalIgnoreCase)) { candidates.Add(168); }
                 if (tail.StartsWith("cais", StringComparison.OrdinalIgnoreCase)) { candidates.Add(20); }
-                if (tail.StartsWith("civo", StringComparison.OrdinalIgnoreCase)) { candidates.Add(72); }
+                if (tail.StartsWith("civo", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment72(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("cli_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken236(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("cog_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(115); }
                 if (tail.StartsWith("csa_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(84); }
@@ -869,19 +870,19 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("databento", StringComparison.OrdinalIgnoreCase)) { candidates.Add(100); }
                 if (tail.StartsWith("dckr_oat_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(125); }
                 if (tail.StartsWith("dckr_pat_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(126); }
-                if (tail.StartsWith("data.gov", StringComparison.OrdinalIgnoreCase)) { candidates.Add(104); }
-                if (tail.StartsWith("deepgram", StringComparison.OrdinalIgnoreCase)) { candidates.Add(106); }
+                if (tail.StartsWith("data.gov", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment104(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("deepgram", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment106(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("deepseek", StringComparison.OrdinalIgnoreCase)) { candidates.Add(107); }
-                if (tail.StartsWith("datadog", StringComparison.OrdinalIgnoreCase)) { candidates.Add(102); candidates.Add(103); }
-                if (tail.StartsWith("discord", StringComparison.OrdinalIgnoreCase)) { candidates.Add(119); candidates.Add(120); candidates.Add(121); }
+                if (tail.StartsWith("datadog", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment102(text, anchorStart, mode, ref sink); VerifyAssignment103(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("discord", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment119(text, anchorStart, mode, ref sink); VerifyAssignment120(text, anchorStart, mode, ref sink); VerifyAssignment121(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("doo_v1_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(116); }
                 if (tail.StartsWith("dop_v1_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(117); }
                 if (tail.StartsWith("dor_v1_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(118); }
-                if (tail.StartsWith("droneci", StringComparison.OrdinalIgnoreCase)) { candidates.Add(128); }
-                if (tail.StartsWith("dropbox", StringComparison.OrdinalIgnoreCase)) { candidates.Add(129); candidates.Add(130); candidates.Add(131); }
+                if (tail.StartsWith("droneci", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment128(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("dropbox", StringComparison.OrdinalIgnoreCase)) { candidates.Add(130); candidates.Add(131); VerifyAssignment129(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("dt0c01.", StringComparison.OrdinalIgnoreCase)) { candidates.Add(133); }
                 if (tail.StartsWith("duffel_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(132); }
-                if (tail.StartsWith("disqus", StringComparison.OrdinalIgnoreCase)) { candidates.Add(122); }
+                if (tail.StartsWith("disqus", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment122(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("dp.pt.", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken127(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("dnkey", StringComparison.OrdinalIgnoreCase)) { candidates.Add(108); }
                 if (tail.StartsWith("dapi", StringComparison.OrdinalIgnoreCase)) { candidates.Add(101); }
@@ -892,7 +893,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("endpoint=sb://", StringComparison.OrdinalIgnoreCase)) { candidates.Add(45); }
                 if (tail.StartsWith("elevenlabs", StringComparison.OrdinalIgnoreCase)) { candidates.Add(139); }
                 if (tail.StartsWith("endpoint=", StringComparison.OrdinalIgnoreCase)) { candidates.Add(43); }
-                if (tail.StartsWith("exoscale", StringComparison.OrdinalIgnoreCase)) { candidates.Add(144); }
+                if (tail.StartsWith("exoscale", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment144(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("eyjrijoi", StringComparison.OrdinalIgnoreCase)) { candidates.Add(197); }
                 if (tail.StartsWith("email", StringComparison.OrdinalIgnoreCase)) { candidates.Add(171); }
                 if (tail.StartsWith("endr+", StringComparison.OrdinalIgnoreCase)) { candidates.Add(140); candidates.Add(141); }
@@ -912,22 +913,22 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("flwseck_test-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(158); VerifyPrefixToken156(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("flwpubk_test", StringComparison.OrdinalIgnoreCase)) { candidates.Add(157); }
                 if (tail.StartsWith("flwseck_test", StringComparison.OrdinalIgnoreCase)) { candidates.Add(158); }
-                if (tail.StartsWith("freshbooks", StringComparison.OrdinalIgnoreCase)) { candidates.Add(162); }
+                if (tail.StartsWith("freshbooks", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment162(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("fullstory", StringComparison.OrdinalIgnoreCase)) { candidates.Add(163); }
-                if (tail.StartsWith("facebook", StringComparison.OrdinalIgnoreCase)) { candidates.Add(145); candidates.Add(147); }
-                if (tail.StartsWith("finicity", StringComparison.OrdinalIgnoreCase)) { candidates.Add(152); candidates.Add(153); }
+                if (tail.StartsWith("facebook", StringComparison.OrdinalIgnoreCase)) { candidates.Add(145); VerifyAssignment147(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("finicity", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment152(text, anchorStart, mode, ref sink); VerifyAssignment153(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("fal-api", StringComparison.OrdinalIgnoreCase)) { candidates.Add(148); }
                 if (tail.StartsWith("fal-key", StringComparison.OrdinalIgnoreCase)) { candidates.Add(148); }
                 if (tail.StartsWith("fal_api", StringComparison.OrdinalIgnoreCase)) { candidates.Add(148); }
                 if (tail.StartsWith("fal_key", StringComparison.OrdinalIgnoreCase)) { candidates.Add(148); }
-                if (tail.StartsWith("finnhub", StringComparison.OrdinalIgnoreCase)) { candidates.Add(154); }
+                if (tail.StartsWith("finnhub", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment154(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("ftps://", StringComparison.OrdinalIgnoreCase)) { candidates.Add(169); }
                 if (tail.StartsWith("fal-ai", StringComparison.OrdinalIgnoreCase)) { candidates.Add(148); }
                 if (tail.StartsWith("fal.ai", StringComparison.OrdinalIgnoreCase)) { candidates.Add(148); }
                 if (tail.StartsWith("fal_ai", StringComparison.OrdinalIgnoreCase)) { candidates.Add(148); }
-                if (tail.StartsWith("fastly", StringComparison.OrdinalIgnoreCase)) { candidates.Add(149); }
+                if (tail.StartsWith("fastly", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment149(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("fio-u-", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken160(text, anchorStart, mode, ref sink); }
-                if (tail.StartsWith("flickr", StringComparison.OrdinalIgnoreCase)) { candidates.Add(155); }
+                if (tail.StartsWith("flickr", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment155(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("fs_api", StringComparison.OrdinalIgnoreCase)) { candidates.Add(163); }
                 if (tail.StartsWith("ftp://", StringComparison.OrdinalIgnoreCase)) { candidates.Add(169); }
                 if (tail.StartsWith("falai", StringComparison.OrdinalIgnoreCase)) { candidates.Add(148); }
@@ -940,12 +941,12 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("gocardless", StringComparison.OrdinalIgnoreCase)) { candidates.Add(196); }
                 if (tail.StartsWith("gr1348941", StringComparison.OrdinalIgnoreCase)) { candidates.Add(190); }
                 if (tail.StartsWith("glagent-", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken184(text, anchorStart, mode, ref sink); }
-                if (tail.StartsWith("greptile", StringComparison.OrdinalIgnoreCase)) { candidates.Add(200); }
+                if (tail.StartsWith("greptile", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment200(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("gcntfy-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(63); }
                 if (tail.StartsWith("glffct-", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken180(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("glsoat-", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken193(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("gumroad", StringComparison.OrdinalIgnoreCase)) { candidates.Add(202); }
-                if (tail.StartsWith("gitter", StringComparison.OrdinalIgnoreCase)) { candidates.Add(195); }
+                if (tail.StartsWith("gitter", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment195(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("glcbt-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(178); }
                 if (tail.StartsWith("glimt-", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken183(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("gloas-", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken185(text, anchorStart, mode, ref sink); }
@@ -975,8 +976,8 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("http://", StringComparison.OrdinalIgnoreCase)) { candidates.Add(169); }
                 if (tail.StartsWith("hubspot", StringComparison.OrdinalIgnoreCase)) { candidates.Add(210); }
                 if (tail.StartsWith("heroku", StringComparison.OrdinalIgnoreCase)) { candidates.Add(206); }
-                if (tail.StartsWith("hunter", StringComparison.OrdinalIgnoreCase)) { candidates.Add(213); }
-                if (tail.StartsWith("home", StringComparison.OrdinalIgnoreCase)) { candidates.Add(462); }
+                if (tail.StartsWith("hunter", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment213(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("home", StringComparison.OrdinalIgnoreCase)) { VerifyHomeDirectoryAt(text, anchorStart, (ushort)462, ref sink); }
                 if (tail.StartsWith("hvb.", StringComparison.OrdinalIgnoreCase)) { candidates.Add(429); }
                 if (tail.StartsWith("hvs.", StringComparison.OrdinalIgnoreCase)) { candidates.Add(430); }
                 if (tail.StartsWith("hf_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(211); }
@@ -984,10 +985,10 @@ public static partial class QuickLeaks
             case (char)105:
                 if (tail.StartsWith("inrlbxbvcmfslmlv", StringComparison.OrdinalIgnoreCase)) { candidates.Add(411); }
                 if (tail.StartsWith("incomingwebhook", StringComparison.OrdinalIgnoreCase)) { candidates.Add(263); }
-                if (tail.StartsWith("infomaniak", StringComparison.OrdinalIgnoreCase)) { candidates.Add(216); }
+                if (tail.StartsWith("infomaniak", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment216(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("incoming+", StringComparison.OrdinalIgnoreCase)) { candidates.Add(182); }
                 if (tail.StartsWith("instantly", StringComparison.OrdinalIgnoreCase)) { candidates.Add(218); }
-                if (tail.StartsWith("intercom", StringComparison.OrdinalIgnoreCase)) { candidates.Add(219); }
+                if (tail.StartsWith("intercom", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment219(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("influx", StringComparison.OrdinalIgnoreCase)) { candidates.Add(215); }
                 if (tail.StartsWith("intra", StringComparison.OrdinalIgnoreCase)) { candidates.Add(220); }
                 if (tail.StartsWith("ionic", StringComparison.OrdinalIgnoreCase)) { candidates.Add(221); }
@@ -995,19 +996,19 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("ibm", StringComparison.OrdinalIgnoreCase)) { candidates.Add(214); }
                 break;
             case (char)106:
-                if (tail.StartsWith("jumpcloud", StringComparison.OrdinalIgnoreCase)) { candidates.Add(222); }
+                if (tail.StartsWith("jumpcloud", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment222(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("jfrog.io", StringComparison.OrdinalIgnoreCase)) { candidates.Add(27); }
                 break;
             case (char)107:
                 if (tail.StartsWith("klaviyo", StringComparison.OrdinalIgnoreCase)) { candidates.Add(227); }
-                if (tail.StartsWith("kraken", StringComparison.OrdinalIgnoreCase)) { candidates.Add(228); }
-                if (tail.StartsWith("kucoin", StringComparison.OrdinalIgnoreCase)) { candidates.Add(230); candidates.Add(231); }
+                if (tail.StartsWith("kraken", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment228(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("kucoin", StringComparison.OrdinalIgnoreCase)) { candidates.Add(231); VerifyAssignment230(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("kagi", StringComparison.OrdinalIgnoreCase)) { candidates.Add(225); }
                 if (tail.StartsWith("kimi", StringComparison.OrdinalIgnoreCase)) { candidates.Add(226); }
                 if (tail.StartsWith("key", StringComparison.OrdinalIgnoreCase)) { candidates.Add(41); candidates.Add(168); }
                 break;
             case (char)108:
-                if (tail.StartsWith("launchdarkly", StringComparison.OrdinalIgnoreCase)) { candidates.Add(238); }
+                if (tail.StartsWith("launchdarkly", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment238(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("linked-in", StringComparison.OrdinalIgnoreCase)) { candidates.Add(243); candidates.Add(244); }
                 if (tail.StartsWith("linked_in", StringComparison.OrdinalIgnoreCase)) { candidates.Add(243); candidates.Add(244); }
                 if (tail.StartsWith("live_pub_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(247); }
@@ -1021,9 +1022,9 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("lighton", StringComparison.OrdinalIgnoreCase)) { candidates.Add(240); }
                 if (tail.StartsWith("log_in(", StringComparison.OrdinalIgnoreCase)) { candidates.Add(170); }
                 if (tail.StartsWith("login (", StringComparison.OrdinalIgnoreCase)) { candidates.Add(170); }
-                if (tail.StartsWith("linear", StringComparison.OrdinalIgnoreCase)) { candidates.Add(242); }
+                if (tail.StartsWith("linear", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment242(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("login(", StringComparison.OrdinalIgnoreCase)) { candidates.Add(170); }
-                if (tail.StartsWith("looker", StringComparison.OrdinalIgnoreCase)) { candidates.Add(248); candidates.Add(249); }
+                if (tail.StartsWith("looker", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment248(text, anchorStart, mode, ref sink); VerifyAssignment249(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("live_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(196); candidates.Add(246); }
                 if (tail.StartsWith("login", StringComparison.OrdinalIgnoreCase)) { candidates.Add(171); }
                 if (tail.StartsWith("lark", StringComparison.OrdinalIgnoreCase)) { candidates.Add(237); }
@@ -1041,7 +1042,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("mid-client-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(264); }
                 if (tail.StartsWith("mid-server-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(264); }
                 if (tail.StartsWith("mariadb://", StringComparison.OrdinalIgnoreCase)) { candidates.Add(169); }
-                if (tail.StartsWith("mattermost", StringComparison.OrdinalIgnoreCase)) { candidates.Add(256); }
+                if (tail.StartsWith("mattermost", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment256(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("mdb_sa_id_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(271); }
                 if (tail.StartsWith("mdb_sa_sk_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(272); }
                 if (tail.StartsWith("mongodb://", StringComparison.OrdinalIgnoreCase)) { candidates.Add(169); candidates.Add(273); }
@@ -1050,13 +1051,13 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("mysql://", StringComparison.OrdinalIgnoreCase)) { candidates.Add(169); }
                 if (tail.StartsWith("mailgun", StringComparison.OrdinalIgnoreCase)) { candidates.Add(252); candidates.Add(253); candidates.Add(254); }
                 if (tail.StartsWith("minimax", StringComparison.OrdinalIgnoreCase)) { candidates.Add(265); }
-                if (tail.StartsWith("mistral", StringComparison.OrdinalIgnoreCase)) { candidates.Add(269); }
+                if (tail.StartsWith("mistral", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment269(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("mapbox", StringComparison.OrdinalIgnoreCase)) { candidates.Add(255); }
                 if (tail.StartsWith("meraki", StringComparison.OrdinalIgnoreCase)) { candidates.Add(71); }
                 if (tail.StartsWith("monday", StringComparison.OrdinalIgnoreCase)) { candidates.Add(270); }
                 if (tail.StartsWith("mlsn.", StringComparison.OrdinalIgnoreCase)) { candidates.Add(251); }
                 if (tail.StartsWith("mem0", StringComparison.OrdinalIgnoreCase)) { candidates.Add(258); }
-                if (tail.StartsWith("miro", StringComparison.OrdinalIgnoreCase)) { candidates.Add(266); candidates.Add(267); candidates.Add(268); }
+                if (tail.StartsWith("miro", StringComparison.OrdinalIgnoreCase)) { candidates.Add(266); candidates.Add(267); VerifyAssignment268(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("mux", StringComparison.OrdinalIgnoreCase)) { candidates.Add(274); candidates.Add(275); }
                 break;
             case (char)110:
@@ -1065,7 +1066,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("new-relic", StringComparison.OrdinalIgnoreCase)) { candidates.Add(280); }
                 if (tail.StartsWith("new_relic", StringComparison.OrdinalIgnoreCase)) { candidates.Add(280); }
                 if (tail.StartsWith("newrelic", StringComparison.OrdinalIgnoreCase)) { candidates.Add(280); }
-                if (tail.StartsWith("netlify", StringComparison.OrdinalIgnoreCase)) { candidates.Add(277); }
+                if (tail.StartsWith("netlify", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment277(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("nytimes", StringComparison.OrdinalIgnoreCase)) { candidates.Add(288); }
                 if (tail.StartsWith("nvapi-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(286); }
                 if (tail.StartsWith("napi_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(276); }
@@ -1117,7 +1118,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("passw", StringComparison.OrdinalIgnoreCase)) { candidates.Add(170); }
                 if (tail.StartsWith("pcsk_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(311); }
                 if (tail.StartsWith("pina_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(312); }
-                if (tail.StartsWith("plaid", StringComparison.OrdinalIgnoreCase)) { candidates.Add(313); candidates.Add(314); candidates.Add(315); }
+                if (tail.StartsWith("plaid", StringComparison.OrdinalIgnoreCase)) { candidates.Add(313); VerifyAssignment314(text, anchorStart, mode, ref sink); VerifyAssignment315(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("plivo", StringComparison.OrdinalIgnoreCase)) { candidates.Add(320); candidates.Add(321); }
                 if (tail.StartsWith("pmak-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(332); }
                 if (tail.StartsWith("pplx-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(308); }
@@ -1140,7 +1141,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("rzp_live_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(344); }
                 if (tail.StartsWith("rzp_test_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(344); }
                 if (tail.StartsWith("ramp_id_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(341); }
-                if (tail.StartsWith("rapidapi", StringComparison.OrdinalIgnoreCase)) { candidates.Add(343); }
+                if (tail.StartsWith("rapidapi", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment343(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("razorpay", StringComparison.OrdinalIgnoreCase)) { candidates.Add(345); }
                 if (tail.StartsWith("redis://", StringComparison.OrdinalIgnoreCase)) { candidates.Add(169); }
                 if (tail.StartsWith("rk_live", StringComparison.OrdinalIgnoreCase)) { candidates.Add(399); }
@@ -1174,7 +1175,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("swmkey-1-", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken124(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("swmtkn-1-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(123); }
                 if (tail.StartsWith("scaleway", StringComparison.OrdinalIgnoreCase)) { candidates.Add(358); }
-                if (tail.StartsWith("sendbird", StringComparison.OrdinalIgnoreCase)) { candidates.Add(362); candidates.Add(363); }
+                if (tail.StartsWith("sendbird", StringComparison.OrdinalIgnoreCase)) { candidates.Add(362); VerifyAssignment363(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("sf_token", StringComparison.OrdinalIgnoreCase)) { candidates.Add(391); }
                 if (tail.StartsWith("smtps://", StringComparison.OrdinalIgnoreCase)) { candidates.Add(169); }
                 if (tail.StartsWith("secret=", StringComparison.OrdinalIgnoreCase)) { candidates.Add(43); }
@@ -1191,7 +1192,7 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("sslmate", StringComparison.OrdinalIgnoreCase)) { candidates.Add(397); }
                 if (tail.StartsWith("storage", StringComparison.OrdinalIgnoreCase)) { candidates.Add(46); candidates.Add(47); }
                 if (tail.StartsWith("secret", StringComparison.OrdinalIgnoreCase)) { candidates.Add(41); candidates.Add(168); candidates.Add(229); }
-                if (tail.StartsWith("sentry", StringComparison.OrdinalIgnoreCase)) { candidates.Add(366); }
+                if (tail.StartsWith("sentry", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment366(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("shpat_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken373(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("shpca_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken374(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("shppa_", StringComparison.OrdinalIgnoreCase)) { VerifyPrefixToken375(text, anchorStart, mode, ref sink); }
@@ -1218,14 +1219,14 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("t3blbkfj", StringComparison.OrdinalIgnoreCase)) { candidates.Add(296); }
                 if (tail.StartsWith("tableau", StringComparison.OrdinalIgnoreCase)) { candidates.Add(405); candidates.Add(406); }
                 if (tail.StartsWith("tgp_v1_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(413); }
-                if (tail.StartsWith("twitter", StringComparison.OrdinalIgnoreCase)) { candidates.Add(417); candidates.Add(418); candidates.Add(419); candidates.Add(420); candidates.Add(421); }
+                if (tail.StartsWith("twitter", StringComparison.OrdinalIgnoreCase)) { candidates.Add(418); candidates.Add(421); VerifyAssignment417(text, anchorStart, mode, ref sink); VerifyAssignment419(text, anchorStart, mode, ref sink); VerifyAssignment420(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("telegr", StringComparison.OrdinalIgnoreCase)) { candidates.Add(409); }
                 if (tail.StartsWith("telnyx", StringComparison.OrdinalIgnoreCase)) { candidates.Add(410); }
                 if (tail.StartsWith("tenant", StringComparison.OrdinalIgnoreCase)) { candidates.Add(48); }
                 if (tail.StartsWith("tk-us-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(359); }
-                if (tail.StartsWith("travis", StringComparison.OrdinalIgnoreCase)) { candidates.Add(414); }
+                if (tail.StartsWith("travis", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment414(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("twilio", StringComparison.OrdinalIgnoreCase)) { candidates.Add(415); }
-                if (tail.StartsWith("twitch", StringComparison.OrdinalIgnoreCase)) { candidates.Add(416); }
+                if (tail.StartsWith("twitch", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment416(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("test_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(246); }
                 if (tail.StartsWith("token", StringComparison.OrdinalIgnoreCase)) { candidates.Add(41); candidates.Add(168); }
                 if (tail.StartsWith("tfp_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(422); }
@@ -1233,22 +1234,22 @@ public static partial class QuickLeaks
                 break;
             case (char)117:
                 if (tail.StartsWith("upstash.io", StringComparison.OrdinalIgnoreCase)) { candidates.Add(427); }
-                if (tail.StartsWith("upstage", StringComparison.OrdinalIgnoreCase)) { candidates.Add(425); }
+                if (tail.StartsWith("upstage", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment425(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("upstash", StringComparison.OrdinalIgnoreCase)) { candidates.Add(426); }
                 if (tail.StartsWith("unkey_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(423); }
                 if (tail.StartsWith("ucat_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(424); }
-                if (tail.StartsWith("users", StringComparison.OrdinalIgnoreCase)) { candidates.Add(462); }
+                if (tail.StartsWith("users", StringComparison.OrdinalIgnoreCase)) { VerifyHomeDirectoryAt(text, anchorStart, (ushort)462, ref sink); }
                 if (tail.StartsWith("user", StringComparison.OrdinalIgnoreCase)) { candidates.Add(171); }
                 if (tail.StartsWith("uid", StringComparison.OrdinalIgnoreCase)) { candidates.Add(171); }
                 break;
             case (char)118:
-                if (tail.StartsWith("virustotal", StringComparison.OrdinalIgnoreCase)) { candidates.Add(437); }
-                if (tail.StartsWith("vercel", StringComparison.OrdinalIgnoreCase)) { candidates.Add(432); }
+                if (tail.StartsWith("virustotal", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment437(text, anchorStart, mode, ref sink); }
+                if (tail.StartsWith("vercel", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment432(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("voyage", StringComparison.OrdinalIgnoreCase)) { candidates.Add(438); }
                 if (tail.StartsWith("v1.0-", StringComparison.OrdinalIgnoreCase)) { candidates.Add(80); }
                 if (tail.StartsWith("vault", StringComparison.OrdinalIgnoreCase)) { candidates.Add(430); }
                 if (tail.StartsWith("vtwn_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(428); }
-                if (tail.StartsWith("vultr", StringComparison.OrdinalIgnoreCase)) { candidates.Add(439); }
+                if (tail.StartsWith("vultr", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment439(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("vca_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(433); }
                 if (tail.StartsWith("vci_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(435); }
                 if (tail.StartsWith("vck_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(431); }
@@ -1303,11 +1304,11 @@ public static partial class QuickLeaks
                 if (tail.StartsWith("yandex", StringComparison.OrdinalIgnoreCase)) { candidates.Add(452); candidates.Add(453); candidates.Add(454); }
                 break;
             case (char)122:
-                if (tail.StartsWith("zendesk", StringComparison.OrdinalIgnoreCase)) { candidates.Add(456); }
+                if (tail.StartsWith("zendesk", StringComparison.OrdinalIgnoreCase)) { VerifyAssignment456(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("zpka_", StringComparison.OrdinalIgnoreCase)) { candidates.Add(461); }
                 if (tail.StartsWith("z.ai", StringComparison.OrdinalIgnoreCase)) { candidates.Add(455); }
                 if (tail.StartsWith("z_ai", StringComparison.OrdinalIgnoreCase)) { candidates.Add(455); }
-                if (tail.StartsWith("zoho", StringComparison.OrdinalIgnoreCase)) { candidates.Add(457); candidates.Add(458); candidates.Add(459); candidates.Add(460); }
+                if (tail.StartsWith("zoho", StringComparison.OrdinalIgnoreCase)) { candidates.Add(457); candidates.Add(459); candidates.Add(460); VerifyAssignment458(text, anchorStart, mode, ref sink); }
                 if (tail.StartsWith("zxlk", StringComparison.OrdinalIgnoreCase)) { candidates.Add(224); }
                 if (tail.StartsWith("zai", StringComparison.OrdinalIgnoreCase)) { candidates.Add(455); }
                 if (tail.StartsWith("zlm", StringComparison.OrdinalIgnoreCase)) { candidates.Add(455); }
@@ -2146,6 +2147,1338 @@ public static partial class QuickLeaks
             mode,
             ref sink);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment2(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)2,
+            "abuseipdb",
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            80,
+            0,
+            80,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment3(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)3,
+            "adafruit",
+            0x03FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            32,
+            0,
+            32,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment4(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)4,
+            "adobe",
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            32,
+            0,
+            32,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment10(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)10,
+            "airtable",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            17,
+            0,
+            17,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment14(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)14,
+            "algolia",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            32,
+            0,
+            32,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment15(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)15,
+            "algolia",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            10,
+            0,
+            10,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment25(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)25,
+            "apollo",
+            0x03FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            22,
+            0,
+            22,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment30(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)30,
+            "asana",
+            0x03FF000000000000UL,
+            0x0000000000000000UL,
+            16,
+            0,
+            16,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment31(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)31,
+            "asana",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            32,
+            0,
+            32,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment32(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)32,
+            "assemblyai",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            32,
+            0,
+            32,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment50(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)50,
+            "bitbucket",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            32,
+            0,
+            32,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment51(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)51,
+            "bitbucket",
+            0x23FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            64,
+            0,
+            64,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment55(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)55,
+            "bittrex",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            32,
+            0,
+            32,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment56(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)56,
+            "bittrex",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            32,
+            0,
+            32,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment70(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)70,
+            "circleci",
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            40,
+            0,
+            40,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment72(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)72,
+            "civo",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            50,
+            0,
+            50,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment78(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)78,
+            "cloudflare",
+            0x03FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            40,
+            0,
+            40,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment79(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)79,
+            "cloudflare",
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            37,
+            0,
+            37,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment86(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)86,
+            "codecov",
+            0x03FF200000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            36,
+            0,
+            36,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment88(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)88,
+            "coinbase",
+            0x03FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            64,
+            0,
+            64,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment91(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)91,
+            "confluent",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            16,
+            0,
+            16,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment92(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)92,
+            "confluent",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            64,
+            0,
+            64,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment93(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)93,
+            "contentful",
+            0x23FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            43,
+            0,
+            43,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment95(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)95,
+            "coveralls",
+            0x03FF200000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            37,
+            0,
+            37,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment102(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)102,
+            "datadog",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            32,
+            0,
+            32,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment103(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)103,
+            "datadog",
+            0x03FF200000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            40,
+            0,
+            40,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment104(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)104,
+            "data.gov",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            40,
+            0,
+            40,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment106(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)106,
+            "deepgram",
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            40,
+            0,
+            40,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment119(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)119,
+            "discord",
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            64,
+            0,
+            64,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment120(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)120,
+            "discord",
+            0x03FF000000000000UL,
+            0x0000000000000000UL,
+            18,
+            0,
+            18,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment121(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)121,
+            "discord",
+            0x23FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            32,
+            0,
+            32,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment122(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)122,
+            "disqus",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            64,
+            0,
+            64,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment128(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)128,
+            "droneci",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            32,
+            0,
+            32,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment129(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)129,
+            "dropbox",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            15,
+            0,
+            15,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment144(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)144,
+            "exoscale",
+            0x03FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            40,
+            0,
+            60,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment147(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)147,
+            "facebook",
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            32,
+            0,
+            32,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment149(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)149,
+            "fastly",
+            0x03FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            32,
+            0,
+            32,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment152(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)152,
+            "finicity",
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            32,
+            0,
+            32,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment153(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)153,
+            "finicity",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            20,
+            0,
+            20,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment154(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)154,
+            "finnhub",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            20,
+            0,
+            20,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment155(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)155,
+            "flickr",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            32,
+            0,
+            32,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment162(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)162,
+            "freshbooks",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            64,
+            0,
+            64,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment195(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)195,
+            "gitter",
+            0x03FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            40,
+            0,
+            40,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment200(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)200,
+            "greptile",
+            0x03FF880000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            48,
+            0,
+            48,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment213(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)213,
+            "hunter",
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            40,
+            0,
+            40,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment216(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)216,
+            "infomaniak",
+            0x03FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            60,
+            0,
+            100,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment219(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)219,
+            "intercom",
+            0x23FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            60,
+            0,
+            60,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment222(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)222,
+            "jumpcloud",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            40,
+            0,
+            40,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment228(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)228,
+            "kraken",
+            0x23FFA80000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            80,
+            0,
+            90,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment230(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)230,
+            "kucoin",
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            24,
+            0,
+            24,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment238(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)238,
+            "launchdarkly",
+            0x23FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            40,
+            0,
+            40,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment242(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)242,
+            "linear",
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            32,
+            0,
+            32,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment248(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)248,
+            "looker",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            20,
+            0,
+            20,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment249(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)249,
+            "looker",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            24,
+            0,
+            24,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment256(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)256,
+            "mattermost",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            26,
+            0,
+            26,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment268(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)268,
+            "miro",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            32,
+            0,
+            32,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment269(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)269,
+            "mistral",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            32,
+            0,
+            32,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment277(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)277,
+            "netlify",
+            0x23FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            40,
+            0,
+            46,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment314(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)314,
+            "plaid",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            24,
+            0,
+            24,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment315(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)315,
+            "plaid",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            30,
+            0,
+            30,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment343(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)343,
+            "rapidapi",
+            0x03FF200000000000UL,
+            0x07FFFFFE87FFFFFEUL,
+            50,
+            0,
+            50,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment363(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)363,
+            "sendbird",
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            40,
+            0,
+            40,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment366(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)366,
+            "sentry",
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            64,
+            0,
+            64,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment414(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)414,
+            "travis",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            22,
+            0,
+            22,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment416(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)416,
+            "twitch",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            30,
+            0,
+            30,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment417(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)417,
+            "twitter",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            45,
+            0,
+            45,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment419(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)419,
+            "twitter",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            25,
+            0,
+            25,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment420(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)420,
+            "twitter",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            50,
+            0,
+            50,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment425(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)425,
+            "upstage",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            40,
+            0,
+            50,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment432(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)432,
+            "vercel",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            24,
+            0,
+            24,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment437(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)437,
+            "virustotal",
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            64,
+            0,
+            64,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment439(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)439,
+            "vultr",
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            36,
+            0,
+            36,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment456(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)456,
+            "zendesk",
+            0x03FF000000000000UL,
+            0x07FFFFFE07FFFFFEUL,
+            40,
+            0,
+            40,
+            mode,
+            ref sink);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void VerifyAssignment458(
+        ReadOnlySpan<char> text,
+        int anchorStart,
+        QuickLeaksScanMode mode,
+        ref FindingSink sink) => VerifyAssignment(
+            text,
+            anchorStart,
+            (ushort)458,
+            "zoho",
+            0x03FF000000000000UL,
+            0x0000007E0000007EUL,
+            42,
+            0,
+            42,
+            mode,
+            ref sink);
+
     private static void DispatchRule(
         int ruleIndex,
         ReadOnlySpan<char> text,
@@ -2156,30 +3489,20 @@ public static partial class QuickLeaks
         {
             case 0: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule0() : Rule0(), text, (ushort)0, ref sink); break;
             case 1: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule1() : Rule1(), text, (ushort)1, ref sink); break;
-            case 2: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule2() : Rule2(), text, (ushort)2, ref sink); break;
-            case 3: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule3() : Rule3(), text, (ushort)3, ref sink); break;
-            case 4: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule4() : Rule4(), text, (ushort)4, ref sink); break;
             case 5: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule5() : Rule5(), text, (ushort)5, ref sink); break;
             case 8: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule8() : Rule8(), text, (ushort)8, ref sink); break;
             case 9: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule9() : Rule9(), text, (ushort)9, ref sink); break;
-            case 10: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule10() : Rule10(), text, (ushort)10, ref sink); break;
             case 11: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule11() : Rule11(), text, (ushort)11, ref sink); break;
             case 12: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule12() : Rule12(), text, (ushort)12, ref sink); break;
             case 13: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule13() : Rule13(), text, (ushort)13, ref sink); break;
-            case 14: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule14() : Rule14(), text, (ushort)14, ref sink); break;
-            case 15: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule15() : Rule15(), text, (ushort)15, ref sink); break;
             case 17: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule17() : Rule17(), text, (ushort)17, ref sink); break;
             case 19: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule19() : Rule19(), text, (ushort)19, ref sink); break;
             case 20: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule20() : Rule20(), text, (ushort)20, ref sink); break;
             case 21: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule21() : Rule21(), text, (ushort)21, ref sink); break;
             case 22: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule22() : Rule22(), text, (ushort)22, ref sink); break;
             case 23: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule23() : Rule23(), text, (ushort)23, ref sink); break;
-            case 25: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule25() : Rule25(), text, (ushort)25, ref sink); break;
             case 27: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule27() : Rule27(), text, (ushort)27, ref sink); break;
             case 29: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule29() : Rule29(), text, (ushort)29, ref sink); break;
-            case 30: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule30() : Rule30(), text, (ushort)30, ref sink); break;
-            case 31: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule31() : Rule31(), text, (ushort)31, ref sink); break;
-            case 32: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule32() : Rule32(), text, (ushort)32, ref sink); break;
             case 33: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule33() : Rule33(), text, (ushort)33, ref sink); break;
             case 34: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule34() : Rule34(), text, (ushort)34, ref sink); break;
             case 35: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule35() : Rule35(), text, (ushort)35, ref sink); break;
@@ -2197,13 +3520,9 @@ public static partial class QuickLeaks
             case 47: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule47() : Rule47(), text, (ushort)47, ref sink); break;
             case 48: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule48() : Rule48(), text, (ushort)48, ref sink); break;
             case 49: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule49() : Rule49(), text, (ushort)49, ref sink); break;
-            case 50: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule50() : Rule50(), text, (ushort)50, ref sink); break;
-            case 51: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule51() : Rule51(), text, (ushort)51, ref sink); break;
             case 52: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule52() : Rule52(), text, (ushort)52, ref sink); break;
             case 53: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule53() : Rule53(), text, (ushort)53, ref sink); break;
             case 54: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule54() : Rule54(), text, (ushort)54, ref sink); break;
-            case 55: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule55() : Rule55(), text, (ushort)55, ref sink); break;
-            case 56: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule56() : Rule56(), text, (ushort)56, ref sink); break;
             case 57: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule57() : Rule57(), text, (ushort)57, ref sink); break;
             case 58: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule58() : Rule58(), text, (ushort)58, ref sink); break;
             case 59: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule59() : Rule59(), text, (ushort)59, ref sink); break;
@@ -2216,40 +3535,26 @@ public static partial class QuickLeaks
             case 67: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule67() : Rule67(), text, (ushort)67, ref sink); break;
             case 68: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule68() : Rule68(), text, (ushort)68, ref sink); break;
             case 69: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule69() : Rule69(), text, (ushort)69, ref sink); break;
-            case 70: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule70() : Rule70(), text, (ushort)70, ref sink); break;
             case 71: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule71() : Rule71(), text, (ushort)71, ref sink); break;
-            case 72: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule72() : Rule72(), text, (ushort)72, ref sink); break;
             case 73: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule73() : Rule73(), text, (ushort)73, ref sink); break;
             case 75: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule75() : Rule75(), text, (ushort)75, ref sink); break;
             case 76: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule76() : Rule76(), text, (ushort)76, ref sink); break;
-            case 78: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule78() : Rule78(), text, (ushort)78, ref sink); break;
-            case 79: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule79() : Rule79(), text, (ushort)79, ref sink); break;
             case 80: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule80() : Rule80(), text, (ushort)80, ref sink); break;
             case 81: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule81() : Rule81(), text, (ushort)81, ref sink); break;
             case 82: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule82() : Rule82(), text, (ushort)82, ref sink); break;
             case 83: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule83() : Rule83(), text, (ushort)83, ref sink); break;
             case 84: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule84() : Rule84(), text, (ushort)84, ref sink); break;
             case 85: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule85() : Rule85(), text, (ushort)85, ref sink); break;
-            case 86: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule86() : Rule86(), text, (ushort)86, ref sink); break;
             case 87: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule87() : Rule87(), text, (ushort)87, ref sink); break;
-            case 88: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule88() : Rule88(), text, (ushort)88, ref sink); break;
             case 89: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule89() : Rule89(), text, (ushort)89, ref sink); break;
             case 90: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule90() : Rule90(), text, (ushort)90, ref sink); break;
-            case 91: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule91() : Rule91(), text, (ushort)91, ref sink); break;
-            case 92: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule92() : Rule92(), text, (ushort)92, ref sink); break;
-            case 93: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule93() : Rule93(), text, (ushort)93, ref sink); break;
             case 94: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule94() : Rule94(), text, (ushort)94, ref sink); break;
-            case 95: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule95() : Rule95(), text, (ushort)95, ref sink); break;
             case 96: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule96() : Rule96(), text, (ushort)96, ref sink); break;
             case 97: FindCurlMatches(text, (ushort)97, true, ref sink); break;
             case 98: FindCurlMatches(text, (ushort)98, false, ref sink); break;
             case 99: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule99() : Rule99(), text, (ushort)99, ref sink); break;
             case 100: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule100() : Rule100(), text, (ushort)100, ref sink); break;
             case 101: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule101() : Rule101(), text, (ushort)101, ref sink); break;
-            case 102: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule102() : Rule102(), text, (ushort)102, ref sink); break;
-            case 103: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule103() : Rule103(), text, (ushort)103, ref sink); break;
-            case 104: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule104() : Rule104(), text, (ushort)104, ref sink); break;
-            case 106: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule106() : Rule106(), text, (ushort)106, ref sink); break;
             case 107: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule107() : Rule107(), text, (ushort)107, ref sink); break;
             case 108: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule108() : Rule108(), text, (ushort)108, ref sink); break;
             case 109: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule109() : Rule109(), text, (ushort)109, ref sink); break;
@@ -2259,15 +3564,9 @@ public static partial class QuickLeaks
             case 116: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule116() : Rule116(), text, (ushort)116, ref sink); break;
             case 117: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule117() : Rule117(), text, (ushort)117, ref sink); break;
             case 118: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule118() : Rule118(), text, (ushort)118, ref sink); break;
-            case 119: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule119() : Rule119(), text, (ushort)119, ref sink); break;
-            case 120: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule120() : Rule120(), text, (ushort)120, ref sink); break;
-            case 121: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule121() : Rule121(), text, (ushort)121, ref sink); break;
-            case 122: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule122() : Rule122(), text, (ushort)122, ref sink); break;
             case 123: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule123() : Rule123(), text, (ushort)123, ref sink); break;
             case 125: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule125() : Rule125(), text, (ushort)125, ref sink); break;
             case 126: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule126() : Rule126(), text, (ushort)126, ref sink); break;
-            case 128: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule128() : Rule128(), text, (ushort)128, ref sink); break;
-            case 129: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule129() : Rule129(), text, (ushort)129, ref sink); break;
             case 130: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule130() : Rule130(), text, (ushort)130, ref sink); break;
             case 131: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule131() : Rule131(), text, (ushort)131, ref sink); break;
             case 132: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule132() : Rule132(), text, (ushort)132, ref sink); break;
@@ -2280,23 +3579,15 @@ public static partial class QuickLeaks
             case 141: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule141() : Rule141(), text, (ushort)141, ref sink); break;
             case 142: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule142() : Rule142(), text, (ushort)142, ref sink); break;
             case 143: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule143() : Rule143(), text, (ushort)143, ref sink); break;
-            case 144: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule144() : Rule144(), text, (ushort)144, ref sink); break;
             case 145: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule145() : Rule145(), text, (ushort)145, ref sink); break;
             case 146: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule146() : Rule146(), text, (ushort)146, ref sink); break;
-            case 147: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule147() : Rule147(), text, (ushort)147, ref sink); break;
             case 148: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule148() : Rule148(), text, (ushort)148, ref sink); break;
-            case 149: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule149() : Rule149(), text, (ushort)149, ref sink); break;
             case 150: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule150() : Rule150(), text, (ushort)150, ref sink); break;
             case 151: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule151() : Rule151(), text, (ushort)151, ref sink); break;
-            case 152: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule152() : Rule152(), text, (ushort)152, ref sink); break;
-            case 153: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule153() : Rule153(), text, (ushort)153, ref sink); break;
-            case 154: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule154() : Rule154(), text, (ushort)154, ref sink); break;
-            case 155: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule155() : Rule155(), text, (ushort)155, ref sink); break;
             case 157: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule157() : Rule157(), text, (ushort)157, ref sink); break;
             case 158: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule158() : Rule158(), text, (ushort)158, ref sink); break;
             case 159: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule159() : Rule159(), text, (ushort)159, ref sink); break;
             case 161: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule161() : Rule161(), text, (ushort)161, ref sink); break;
-            case 162: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule162() : Rule162(), text, (ushort)162, ref sink); break;
             case 163: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule163() : Rule163(), text, (ushort)163, ref sink); break;
             case 164: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule164() : Rule164(), text, (ushort)164, ref sink); break;
             case 165: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule165() : Rule165(), text, (ushort)165, ref sink); break;
@@ -2316,12 +3607,10 @@ public static partial class QuickLeaks
             case 188: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule188() : Rule188(), text, (ushort)188, ref sink); break;
             case 190: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule190() : Rule190(), text, (ushort)190, ref sink); break;
             case 192: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule192() : Rule192(), text, (ushort)192, ref sink); break;
-            case 195: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule195() : Rule195(), text, (ushort)195, ref sink); break;
             case 196: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule196() : Rule196(), text, (ushort)196, ref sink); break;
             case 197: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule197() : Rule197(), text, (ushort)197, ref sink); break;
             case 198: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule198() : Rule198(), text, (ushort)198, ref sink); break;
             case 199: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule199() : Rule199(), text, (ushort)199, ref sink); break;
-            case 200: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule200() : Rule200(), text, (ushort)200, ref sink); break;
             case 201: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule201() : Rule201(), text, (ushort)201, ref sink); break;
             case 202: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule202() : Rule202(), text, (ushort)202, ref sink); break;
             case 203: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule203() : Rule203(), text, (ushort)203, ref sink); break;
@@ -2334,48 +3623,37 @@ public static partial class QuickLeaks
             case 210: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule210() : Rule210(), text, (ushort)210, ref sink); break;
             case 211: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule211() : Rule211(), text, (ushort)211, ref sink); break;
             case 212: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule212() : Rule212(), text, (ushort)212, ref sink); break;
-            case 213: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule213() : Rule213(), text, (ushort)213, ref sink); break;
             case 214: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule214() : Rule214(), text, (ushort)214, ref sink); break;
             case 215: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule215() : Rule215(), text, (ushort)215, ref sink); break;
-            case 216: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule216() : Rule216(), text, (ushort)216, ref sink); break;
             case 217: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule217() : Rule217(), text, (ushort)217, ref sink); break;
             case 218: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule218() : Rule218(), text, (ushort)218, ref sink); break;
-            case 219: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule219() : Rule219(), text, (ushort)219, ref sink); break;
             case 220: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule220() : Rule220(), text, (ushort)220, ref sink); break;
             case 221: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule221() : Rule221(), text, (ushort)221, ref sink); break;
-            case 222: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule222() : Rule222(), text, (ushort)222, ref sink); break;
             case 223: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule223() : Rule223(), text, (ushort)223, ref sink); break;
             case 224: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule224() : Rule224(), text, (ushort)224, ref sink); break;
             case 225: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule225() : Rule225(), text, (ushort)225, ref sink); break;
             case 226: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule226() : Rule226(), text, (ushort)226, ref sink); break;
             case 227: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule227() : Rule227(), text, (ushort)227, ref sink); break;
-            case 228: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule228() : Rule228(), text, (ushort)228, ref sink); break;
             case 229: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule229() : Rule229(), text, (ushort)229, ref sink); break;
-            case 230: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule230() : Rule230(), text, (ushort)230, ref sink); break;
             case 231: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule231() : Rule231(), text, (ushort)231, ref sink); break;
             case 232: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule232() : Rule232(), text, (ushort)232, ref sink); break;
             case 233: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule233() : Rule233(), text, (ushort)233, ref sink); break;
             case 234: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule234() : Rule234(), text, (ushort)234, ref sink); break;
             case 235: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule235() : Rule235(), text, (ushort)235, ref sink); break;
             case 237: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule237() : Rule237(), text, (ushort)237, ref sink); break;
-            case 238: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule238() : Rule238(), text, (ushort)238, ref sink); break;
             case 239: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule239() : Rule239(), text, (ushort)239, ref sink); break;
             case 240: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule240() : Rule240(), text, (ushort)240, ref sink); break;
-            case 242: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule242() : Rule242(), text, (ushort)242, ref sink); break;
             case 243: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule243() : Rule243(), text, (ushort)243, ref sink); break;
             case 244: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule244() : Rule244(), text, (ushort)244, ref sink); break;
             case 245: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule245() : Rule245(), text, (ushort)245, ref sink); break;
             case 246: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule246() : Rule246(), text, (ushort)246, ref sink); break;
             case 247: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule247() : Rule247(), text, (ushort)247, ref sink); break;
-            case 248: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule248() : Rule248(), text, (ushort)248, ref sink); break;
-            case 249: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule249() : Rule249(), text, (ushort)249, ref sink); break;
             case 250: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule250() : Rule250(), text, (ushort)250, ref sink); break;
             case 251: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule251() : Rule251(), text, (ushort)251, ref sink); break;
             case 252: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule252() : Rule252(), text, (ushort)252, ref sink); break;
             case 253: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule253() : Rule253(), text, (ushort)253, ref sink); break;
             case 254: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule254() : Rule254(), text, (ushort)254, ref sink); break;
             case 255: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule255() : Rule255(), text, (ushort)255, ref sink); break;
-            case 256: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule256() : Rule256(), text, (ushort)256, ref sink); break;
             case 257: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule257() : Rule257(), text, (ushort)257, ref sink); break;
             case 258: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule258() : Rule258(), text, (ushort)258, ref sink); break;
             case 259: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule259() : Rule259(), text, (ushort)259, ref sink); break;
@@ -2387,8 +3665,6 @@ public static partial class QuickLeaks
             case 265: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule265() : Rule265(), text, (ushort)265, ref sink); break;
             case 266: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule266() : Rule266(), text, (ushort)266, ref sink); break;
             case 267: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule267() : Rule267(), text, (ushort)267, ref sink); break;
-            case 268: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule268() : Rule268(), text, (ushort)268, ref sink); break;
-            case 269: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule269() : Rule269(), text, (ushort)269, ref sink); break;
             case 270: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule270() : Rule270(), text, (ushort)270, ref sink); break;
             case 271: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule271() : Rule271(), text, (ushort)271, ref sink); break;
             case 272: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule272() : Rule272(), text, (ushort)272, ref sink); break;
@@ -2396,7 +3672,6 @@ public static partial class QuickLeaks
             case 274: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule274() : Rule274(), text, (ushort)274, ref sink); break;
             case 275: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule275() : Rule275(), text, (ushort)275, ref sink); break;
             case 276: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule276() : Rule276(), text, (ushort)276, ref sink); break;
-            case 277: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule277() : Rule277(), text, (ushort)277, ref sink); break;
             case 278: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule278() : Rule278(), text, (ushort)278, ref sink); break;
             case 279: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule279() : Rule279(), text, (ushort)279, ref sink); break;
             case 280: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule280() : Rule280(), text, (ushort)280, ref sink); break;
@@ -2433,8 +3708,6 @@ public static partial class QuickLeaks
             case 311: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule311() : Rule311(), text, (ushort)311, ref sink); break;
             case 312: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule312() : Rule312(), text, (ushort)312, ref sink); break;
             case 313: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule313() : Rule313(), text, (ushort)313, ref sink); break;
-            case 314: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule314() : Rule314(), text, (ushort)314, ref sink); break;
-            case 315: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule315() : Rule315(), text, (ushort)315, ref sink); break;
             case 316: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule316() : Rule316(), text, (ushort)316, ref sink); break;
             case 317: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule317() : Rule317(), text, (ushort)317, ref sink); break;
             case 318: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule318() : Rule318(), text, (ushort)318, ref sink); break;
@@ -2462,7 +3735,6 @@ public static partial class QuickLeaks
             case 340: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule340() : Rule340(), text, (ushort)340, ref sink); break;
             case 341: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule341() : Rule341(), text, (ushort)341, ref sink); break;
             case 342: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule342() : Rule342(), text, (ushort)342, ref sink); break;
-            case 343: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule343() : Rule343(), text, (ushort)343, ref sink); break;
             case 344: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule344() : Rule344(), text, (ushort)344, ref sink); break;
             case 345: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule345() : Rule345(), text, (ushort)345, ref sink); break;
             case 346: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule346() : Rule346(), text, (ushort)346, ref sink); break;
@@ -2482,10 +3754,8 @@ public static partial class QuickLeaks
             case 360: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule360() : Rule360(), text, (ushort)360, ref sink); break;
             case 361: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule361() : Rule361(), text, (ushort)361, ref sink); break;
             case 362: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule362() : Rule362(), text, (ushort)362, ref sink); break;
-            case 363: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule363() : Rule363(), text, (ushort)363, ref sink); break;
             case 364: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule364() : Rule364(), text, (ushort)364, ref sink); break;
             case 365: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule365() : Rule365(), text, (ushort)365, ref sink); break;
-            case 366: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule366() : Rule366(), text, (ushort)366, ref sink); break;
             case 367: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule367() : Rule367(), text, (ushort)367, ref sink); break;
             case 368: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule368() : Rule368(), text, (ushort)368, ref sink); break;
             case 369: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule369() : Rule369(), text, (ushort)369, ref sink); break;
@@ -2529,32 +3799,23 @@ public static partial class QuickLeaks
             case 411: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule411() : Rule411(), text, (ushort)411, ref sink); break;
             case 412: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule412() : Rule412(), text, (ushort)412, ref sink); break;
             case 413: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule413() : Rule413(), text, (ushort)413, ref sink); break;
-            case 414: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule414() : Rule414(), text, (ushort)414, ref sink); break;
             case 415: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule415() : Rule415(), text, (ushort)415, ref sink); break;
-            case 416: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule416() : Rule416(), text, (ushort)416, ref sink); break;
-            case 417: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule417() : Rule417(), text, (ushort)417, ref sink); break;
             case 418: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule418() : Rule418(), text, (ushort)418, ref sink); break;
-            case 419: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule419() : Rule419(), text, (ushort)419, ref sink); break;
-            case 420: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule420() : Rule420(), text, (ushort)420, ref sink); break;
             case 421: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule421() : Rule421(), text, (ushort)421, ref sink); break;
             case 422: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule422() : Rule422(), text, (ushort)422, ref sink); break;
             case 423: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule423() : Rule423(), text, (ushort)423, ref sink); break;
             case 424: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule424() : Rule424(), text, (ushort)424, ref sink); break;
-            case 425: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule425() : Rule425(), text, (ushort)425, ref sink); break;
             case 426: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule426() : Rule426(), text, (ushort)426, ref sink); break;
             case 427: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule427() : Rule427(), text, (ushort)427, ref sink); break;
             case 428: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule428() : Rule428(), text, (ushort)428, ref sink); break;
             case 429: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule429() : Rule429(), text, (ushort)429, ref sink); break;
             case 430: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule430() : Rule430(), text, (ushort)430, ref sink); break;
             case 431: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule431() : Rule431(), text, (ushort)431, ref sink); break;
-            case 432: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule432() : Rule432(), text, (ushort)432, ref sink); break;
             case 433: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule433() : Rule433(), text, (ushort)433, ref sink); break;
             case 434: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule434() : Rule434(), text, (ushort)434, ref sink); break;
             case 435: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule435() : Rule435(), text, (ushort)435, ref sink); break;
             case 436: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule436() : Rule436(), text, (ushort)436, ref sink); break;
-            case 437: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule437() : Rule437(), text, (ushort)437, ref sink); break;
             case 438: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule438() : Rule438(), text, (ushort)438, ref sink); break;
-            case 439: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule439() : Rule439(), text, (ushort)439, ref sink); break;
             case 440: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule440() : Rule440(), text, (ushort)440, ref sink); break;
             case 441: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule441() : Rule441(), text, (ushort)441, ref sink); break;
             case 442: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule442() : Rule442(), text, (ushort)442, ref sink); break;
@@ -2571,13 +3832,10 @@ public static partial class QuickLeaks
             case 453: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule453() : Rule453(), text, (ushort)453, ref sink); break;
             case 454: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule454() : Rule454(), text, (ushort)454, ref sink); break;
             case 455: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule455() : Rule455(), text, (ushort)455, ref sink); break;
-            case 456: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule456() : Rule456(), text, (ushort)456, ref sink); break;
             case 457: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule457() : Rule457(), text, (ushort)457, ref sink); break;
-            case 458: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule458() : Rule458(), text, (ushort)458, ref sink); break;
             case 459: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule459() : Rule459(), text, (ushort)459, ref sink); break;
             case 460: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule460() : Rule460(), text, (ushort)460, ref sink); break;
             case 461: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule461() : Rule461(), text, (ushort)461, ref sink); break;
-            case 462: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule462() : Rule462(), text, (ushort)462, ref sink); break;
             case 463: FindCredentialUriMatches(text, mode, (ushort)463, false, ref sink); break;
             case 464: FindRuleMatches(mode == QuickLeaksScanMode.Early ? EarlyRule464() : Rule464(), text, (ushort)464, ref sink); break;
         }

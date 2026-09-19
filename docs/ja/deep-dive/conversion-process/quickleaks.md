@@ -34,7 +34,8 @@ rule を C# source として生成しておくため、実行時に外部 scanne
 `ghp_[0-9A-Za-z]{36}` のような単純な prefix-token 形状は専用 verifier
 へコンパイルします。anchor が見つかった位置の後ろだけを読み、case、長さ、
 ASCII character class、word boundary を検証します。現在の pinned rule では
-39ルールが regex を実行せず、この経路を使います。
+39ルールが regex を実行せず、この経路を使います。さらに、provider assignment
+の共通形状74ルールと、home directory の固定レイアウトを専用 verifier へ移しています。
 
 Betterleaks keyword は compiler-proven anchor とは別のものです。
 専用 verifier への移行中は、従来と同等以上の recall を保つ safety net として keyword も併用します。
@@ -46,6 +47,10 @@ timeout 時は finding を黙って捨てず、安全側の conservative redacti
 prefix-token や credential URI のように専用 verifier へ lowering 済みの rule は
 regex を実行しません。generation report には選択した engine と、残りの rule の
 fallback 理由を記録し、段階的に verifier へ移せます。
+
+安全に上限を付けられる fallback は `RegexOptions.NonBacktracking` を使います。
+大きな automata や未対応構文だけが finite-timeout backtracking に残ります。
+terminal 正規化は再利用可能な文字バッファへ書き込み、`ToString()` を介さず span を渡します。
 
 ## 入力途中だけ Early モードで量指定子を緩める
 

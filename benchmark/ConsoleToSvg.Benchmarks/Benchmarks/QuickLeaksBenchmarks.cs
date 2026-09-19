@@ -26,13 +26,6 @@ public class QuickLeaksBenchmarks
     private readonly ArrayBufferWriter<QuickLeaksFinding> _findings = new(64);
 
     [Benchmark(Baseline = true)]
-    public IReadOnlyList<QuickLeaksFinding> OrdinaryOutput() => Filter.Scan(_ordinaryOutput);
-
-    [Benchmark]
-    public IReadOnlyList<QuickLeaksFinding> OutputWithSecrets() =>
-        Filter.Scan(_outputWithSecrets);
-
-    [Benchmark]
     public int OrdinaryOutputSpan()
     {
         _findings.Clear();

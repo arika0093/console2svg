@@ -33,7 +33,9 @@ then a compact bitset enumerates only set candidates.
 Simple prefix-token shapes, such as `ghp_[0-9A-Za-z]{36}`, are compiled into
 dedicated verifiers. They validate only the characters after the discovered
 anchor, including case, length, and word-boundary semantics. In the pinned rule
-set, 39 rules use this path without running regex.
+set, 39 rules use this path without running regex. Another 74 common
+provider-assignment rules use a bounded context verifier, and the local home
+directory rule uses a fixed-layout verifier.
 
 Compiler-proven anchors are distinct from Betterleaks keywords. While rules are
 migrated to dedicated verifiers, keywords remain as a recall-preserving safety
@@ -44,6 +46,11 @@ false negative.
 Rules lowered to a prefix-token or specialized verifier, such as credential
 URIs, do not run regex. The generation report records the selected engine and
 why every remaining rule fell back.
+
+Fallback rules that fit a conservatively bounded regular subset use
+`RegexOptions.NonBacktracking`; large automata and unsupported constructs retain
+the finite-timeout backtracking engine. Terminal normalization writes into a
+reusable character buffer, so the renderer passes a span without `ToString()`.
 
 ## Detect partially entered values in Early mode
 

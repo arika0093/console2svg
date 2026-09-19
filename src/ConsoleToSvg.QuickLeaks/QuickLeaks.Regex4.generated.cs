@@ -5,250 +5,6 @@ namespace ConsoleToSvg.QuickLeaks;
 
 public static partial class QuickLeaks
 {
-    [GeneratedRegex("\\b(api_live\\.[A-Za-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule294();
-    [GeneratedRegex("\\b(api_live\\.[A-Za-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule294();
-    [GeneratedRegex("\\b(api_live_us\\.[A-Za-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule295();
-    [GeneratedRegex("\\b(api_live_us\\.[A-Za-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule295();
-    [GeneratedRegex("\\b(sk-(?:proj|svcacct|admin)-(?:[A-Za-z0-9_-]{74}|[A-Za-z0-9_-]{58}|[A-Za-z0-9_-]{20})T3BlbkFJ(?:[A-Za-z0-9_-]{74}|[A-Za-z0-9_-]{58}|[A-Za-z0-9_-]{20})\\b|sk-[a-zA-Z0-9]{20}T3BlbkFJ[a-zA-Z0-9]{20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule296();
-    [GeneratedRegex("\\b(sk-(?:proj|svcacct|admin)-(?:[A-Za-z0-9_-]{0,74}|[A-Za-z0-9_-]{0,58}|[A-Za-z0-9_-]{0,20})T3BlbkFJ(?:[A-Za-z0-9_-]{0,74}|[A-Za-z0-9_-]{0,58}|[A-Za-z0-9_-]{0,20})\\b|sk-[a-zA-Z0-9]{0,20}T3BlbkFJ[a-zA-Z0-9]{0,20})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule296();
-    [GeneratedRegex("(?i)\\b(sk-or-v1-[0-9a-f]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule297();
-    [GeneratedRegex("(?i)\\b(sk-or-v1-[0-9a-f]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule297();
-    [GeneratedRegex("\\b(sha256~[\\w-]{43})(?:[^\\w-]|\\z)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule298();
-    [GeneratedRegex("\\b(sha256~[\\w-]{0,43})(?:[^\\w-]|\\z)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule298();
-    [GeneratedRegex("(?i:(?:openweather|pyowm)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule299();
-    [GeneratedRegex("(?i:(?:openweather|pyowm)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule299();
-    [GeneratedRegex("(?i)(?:opsgenie)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule300();
-    [GeneratedRegex("(?i)(?:opsgenie)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule300();
-    [GeneratedRegex("(?i)(?:app(?:lication)?[_.-]{0,1}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule301();
-    [GeneratedRegex("(?i)(?:app(?:lication)?[_.-]{0,1}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule301();
-    [GeneratedRegex("(?i)(?:app(?:lication)?[_.-]{0,1}secret)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule302();
-    [GeneratedRegex("(?i)(?:app(?:lication)?[_.-]{0,1}secret)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule302();
-    [GeneratedRegex("(?i)(?:consumer[_.-]{0,1}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule303();
-    [GeneratedRegex("(?i)(?:consumer[_.-]{0,1}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9-]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule303();
-    [GeneratedRegex("\\b(pdl_live_apikey_[a-z0-9]{26}_[A-Za-z0-9]{22}_[A-Za-z0-9]{3})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule304();
-    [GeneratedRegex("\\b(pdl_live_apikey_[a-z0-9]{0,26}_[A-Za-z0-9]{0,22}_[A-Za-z0-9]{0,3})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule304();
-    [GeneratedRegex("(?i:(?:pagerduty)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(u\\+[A-Za-z0-9_+-]{18})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule305();
-    [GeneratedRegex("(?i:(?:pagerduty)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(u\\+[A-Za-z0-9_+-]{0,18})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule305();
-    [GeneratedRegex("(?i:(?:paypal[_.-]?(?:client[_.-]?)?(?:id|user))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(A[A-Za-z0-9_-]{78,99})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule306();
-    [GeneratedRegex("(?i:(?:paypal[_.-]?(?:client[_.-]?)?(?:id|user))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(A[A-Za-z0-9_-]{0,99})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule306();
-    [GeneratedRegex("(?i:(?:paypal[_.-]?(?:client[_.-]?)?(?:secret|private|access|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_.-]{78,120})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule307();
-    [GeneratedRegex("(?i:(?:paypal[_.-]?(?:client[_.-]?)?(?:secret|private|access|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_.-]{0,120})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule307();
-    [GeneratedRegex("\\b(pplx-[a-zA-Z0-9]{48})(?:[\\x60'\"\\s;]|\\\\[nr]|$|\\b)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule308();
-    [GeneratedRegex("\\b(pplx-[a-zA-Z0-9]{0,48})(?:[\\x60'\"\\s;]|\\\\[nr]|$|\\b)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule308();
-    [GeneratedRegex("\\b(persona_production_[a-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule309();
-    [GeneratedRegex("\\b(persona_production_[a-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule309();
-    [GeneratedRegex("(?i:(?:pinecone(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule310();
-    [GeneratedRegex("(?i:(?:pinecone(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-fA-F]{0,8}-[0-9a-fA-F]{0,4}-[0-9a-fA-F]{0,4}-[0-9a-fA-F]{0,4}-[0-9a-fA-F]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule310();
-    [GeneratedRegex("\\b(pcsk_[A-Za-z0-9]{5,6}_[A-Za-z0-9]{63})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule311();
-    [GeneratedRegex("\\b(pcsk_[A-Za-z0-9]{0,6}_[A-Za-z0-9]{0,63})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule311();
-    [GeneratedRegex("\\b(pina_[A-Za-z0-9_-]{20,200})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule312();
-    [GeneratedRegex("\\b(pina_[A-Za-z0-9_-]{0,200})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule312();
-    [GeneratedRegex("(?i)(?:plaid)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(access-(?:sandbox|development|production)-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule313();
-    [GeneratedRegex("(?i)(?:plaid)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(access-(?:sandbox|development|production)-[0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule313();
-    [GeneratedRegex("(?i)(?:plaid)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule314();
-    [GeneratedRegex("(?i)(?:plaid)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule314();
-    [GeneratedRegex("(?i)(?:plaid)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule315();
-    [GeneratedRegex("(?i)(?:plaid)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule315();
-    [GeneratedRegex("\\b(pscale_tkn_(?i)[\\w=\\.-]{32,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule316();
-    [GeneratedRegex("\\b(pscale_tkn_(?i)[\\w=\\.-]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule316();
-    [GeneratedRegex("(?i)(?:pscale|planetscale)(?:.|[\\n\\r]){0,16}?(?:USER|ID|NAME)(?:.|[\\n\\r]){0,16}?([a-z0-9]{12})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule317();
-    [GeneratedRegex("(?i)(?:pscale|planetscale)(?:.|[\\n\\r]){0,16}?(?:USER|ID|NAME)(?:.|[\\n\\r]){0,16}?([a-z0-9]{0,12})", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule317();
-    [GeneratedRegex("\\b(pscale_oauth_[\\w=\\.-]{32,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule318();
-    [GeneratedRegex("\\b(pscale_oauth_[\\w=\\.-]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule318();
-    [GeneratedRegex("(?i)\\b(pscale_pw_(?i)[\\w=\\.-]{32,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule319();
-    [GeneratedRegex("(?i)\\b(pscale_pw_(?i)[\\w=\\.-]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule319();
-    [GeneratedRegex("(?i)(?:plivo(?:[_. -]*(?:auth|account))?[_. -]*(?:id|sid))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(MA[A-Z0-9]{18})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule320();
-    [GeneratedRegex("(?i)(?:plivo(?:[_. -]*(?:auth|account))?[_. -]*(?:id|sid))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(MA[A-Z0-9]{0,18})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule320();
-    [GeneratedRegex("(?i:(?:plivo(?:[_. -]*(?:auth))?[_. -]*(?:secret|token|key))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule321();
-    [GeneratedRegex("(?i:(?:plivo(?:[_. -]*(?:auth))?[_. -]*(?:secret|token|key))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule321();
-    [GeneratedRegex("\\b(polar_at_[A-Za-z0-9_-]{20,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule322();
-    [GeneratedRegex("\\b(polar_at_[A-Za-z0-9_-]{0,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule322();
-    [GeneratedRegex("\\b(polar_oat_[A-Za-z0-9_-]{20,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule323();
-    [GeneratedRegex("\\b(polar_oat_[A-Za-z0-9_-]{0,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule323();
-    [GeneratedRegex("\\b(polar_pat_[A-Za-z0-9_-]{20,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule324();
-    [GeneratedRegex("\\b(polar_pat_[A-Za-z0-9_-]{0,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule324();
-    [GeneratedRegex("(?i:(?:poly.{0,20}address)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(0x[a-fA-F0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule325();
-    [GeneratedRegex("(?i:(?:poly.{0,20}address)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(0x[a-fA-F0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule325();
-    [GeneratedRegex("(?i:(?:poly.{0,20}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule326();
-    [GeneratedRegex("(?i:(?:poly.{0,20}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule326();
-    [GeneratedRegex("(?i:(?:poly.{0,20}secret)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9+/]{40,}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule327();
-    [GeneratedRegex("(?i:(?:poly.{0,20}secret)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9+/]{40,}={0,2})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule327();
-    [GeneratedRegex("(?i:(?:poly.{0,20}passphrase)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9_]{8,128})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule328();
-    [GeneratedRegex("(?i:(?:poly.{0,20}passphrase)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-zA-Z0-9_]{0,128})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule328();
-    [GeneratedRegex("(?i:(?:poly.{0,20}private.{0,20}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(0x[a-fA-F0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule329();
-    [GeneratedRegex("(?i:(?:poly.{0,20}private.{0,20}key)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(0x[a-fA-F0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule329();
-    [GeneratedRegex("(?i)\\b(phx_[a-zA-Z0-9_\\-]{41,49})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule330();
-    [GeneratedRegex("(?i)\\b(phx_[a-zA-Z0-9_\\-]{0,49})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule330();
-    [GeneratedRegex("(?i)\\b(phc_[a-zA-Z0-9_\\-]{41,44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule331();
-    [GeneratedRegex("(?i)\\b(phc_[a-zA-Z0-9_\\-]{0,44})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule331();
-    [GeneratedRegex("\\b(PMAK-(?i)[a-f0-9]{24}\\-[a-f0-9]{34})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule332();
-    [GeneratedRegex("\\b(PMAK-(?i)[a-f0-9]{0,24}\\-[a-f0-9]{0,34})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule332();
-    [GeneratedRegex("(?i)(?:postmark)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule333();
-    [GeneratedRegex("(?i)(?:postmark)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule333();
-    [GeneratedRegex("\\b(pnu_[a-zA-Z0-9]{36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule334();
-    [GeneratedRegex("\\b(pnu_[a-zA-Z0-9]{0,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule334();
-    [GeneratedRegex("(?i)-----BEGIN[ A-Z0-9_-]{0,100}PRIVATE KEY(?: BLOCK)?-----[\\s\\S-]{64,}?KEY(?: BLOCK)?-----", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule335();
-    [GeneratedRegex("(?i)-----BEGIN[ A-Z0-9_-]{0,100}PRIVATE KEY(?: BLOCK)?-----[\\s\\S-]{64,}?KEY(?: BLOCK)?-----", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule335();
-    [GeneratedRegex("(?i:(?:private[_-]?ai)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule336();
-    [GeneratedRegex("(?i:(?:private[_-]?ai)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule336();
-    [GeneratedRegex("\\b(prf_(?:cli_)?[A-Za-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule337();
-    [GeneratedRegex("\\b(prf_(?:cli_)?[A-Za-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule337();
-    [GeneratedRegex("\\b(pul-[a-f0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule338();
-    [GeneratedRegex("\\b(pul-[a-f0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule338();
-    [GeneratedRegex("pypi-AgEIcHlwaS5vcmc[\\w-]{50,1000}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule339();
-    [GeneratedRegex("pypi-AgEIcHlwaS5vcmc[\\w-]{0,1000}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule339();
-    [GeneratedRegex("(?i:(?:rainforest(?:[_. -]*pay)?(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(apikey_[a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule340();
-    [GeneratedRegex("(?i:(?:rainforest(?:[_. -]*pay)?(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(apikey_[a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule340();
-    [GeneratedRegex("\\b(ramp_id_[A-Za-z0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule341();
-    [GeneratedRegex("\\b(ramp_id_[A-Za-z0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule341();
-    [GeneratedRegex("\\b(ramp_sec_[A-Za-z0-9]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule342();
-    [GeneratedRegex("\\b(ramp_sec_[A-Za-z0-9]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule342();
-    [GeneratedRegex("(?i)(?:rapidapi)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule343();
-    [GeneratedRegex("(?i)(?:rapidapi)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9_-]{0,50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule343();
-    [GeneratedRegex("\\b(rzp_(?:live|test)_[A-Za-z0-9]{14})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule344();
-    [GeneratedRegex("\\b(rzp_(?:live|test)_[A-Za-z0-9]{0,14})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule344();
-    [GeneratedRegex("(?i:(?:razorpay[_.-]?(?:(?:api|key)[_.-]?)?(?:secret|private|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule345();
-    [GeneratedRegex("(?i:(?:razorpay[_.-]?(?:(?:api|key)[_.-]?)?(?:secret|private|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule345();
-    [GeneratedRegex("\\b(rdme_[a-z0-9]{70})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule346();
-    [GeneratedRegex("\\b(rdme_[a-z0-9]{0,70})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule346();
-    [GeneratedRegex("\\b(rpa_[A-Za-z0-9]{30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule347();
-    [GeneratedRegex("\\b(rpa_[A-Za-z0-9]{0,30})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule347();
-    [GeneratedRegex("\\b(rnd_[A-Za-z0-9]{28})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule348();
-    [GeneratedRegex("\\b(rnd_[A-Za-z0-9]{0,28})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule348();
-    [GeneratedRegex("(?i)\\b(r8_[A-Za-z0-9]{37})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule349();
-    [GeneratedRegex("(?i)\\b(r8_[A-Za-z0-9]{0,37})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule349();
-    [GeneratedRegex("\\b(re_[1-9A-HJ-NP-Za-km-z]{8}_[1-9A-HJ-NP-Za-km-z]{24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule350();
-    [GeneratedRegex("\\b(re_[1-9A-HJ-NP-Za-km-z]{0,8}_[1-9A-HJ-NP-Za-km-z]{0,24})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule350();
-    [GeneratedRegex("(?i:(?:retell)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(key_[a-f0-9]{28})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule351();
-    [GeneratedRegex("(?i:(?:retell)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(key_[a-f0-9]{0,28})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule351();
-    [GeneratedRegex("\\b(rootly_[a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule352();
-    [GeneratedRegex("\\b(rootly_[a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule352();
-    [GeneratedRegex("\\b(rubygems_[a-f0-9]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule353();
-    [GeneratedRegex("\\b(rubygems_[a-f0-9]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule353();
-    [GeneratedRegex("\\b(rpa_[A-Z0-9]{40}[A-Za-z0-9]{6})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex Rule354();
-    [GeneratedRegex("\\b(rpa_[A-Z0-9]{0,40}[A-Za-z0-9]{0,6})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
-    private static partial Regex EarlyRule354();
     [GeneratedRegex("\\b(00[A-Za-z0-9]{13}![A-Za-z0-9._-]{80,260})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex Rule355();
     [GeneratedRegex("\\b(00[A-Za-z0-9]{0,13}![A-Za-z0-9._-]{0,260})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
@@ -261,4 +17,248 @@ public static partial class QuickLeaks
     private static partial Regex Rule357();
     [GeneratedRegex("\\b(samsara_api_[A-Za-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
     private static partial Regex EarlyRule357();
+    [GeneratedRegex("(?i)(?:(?:scaleway|scw).{0,20}?(?:secret|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule358();
+    [GeneratedRegex("(?i)(?:(?:scaleway|scw).{0,20}?(?:secret|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule358();
+    [GeneratedRegex("\\b(tk-us-[\\w-]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule359();
+    [GeneratedRegex("\\b(tk-us-[\\w-]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule359();
+    [GeneratedRegex("(?i:(?:scalr(?:[_. -]*(?:api|access))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\\.eyJpc3MiOiJ1c2VyIiwianRpIjoiYXQt[A-Za-z0-9_-]{20,40}\\.[A-Za-z0-9_-]{43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule360();
+    [GeneratedRegex("(?i:(?:scalr(?:[_. -]*(?:api|access))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\\.eyJpc3MiOiJ1c2VyIiwianRpIjoiYXQt[A-Za-z0-9_-]{0,40}\\.[A-Za-z0-9_-]{0,43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule360();
+    [GeneratedRegex("\\b(sgp_[A-Za-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule361();
+    [GeneratedRegex("\\b(sgp_[A-Za-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule361();
+    [GeneratedRegex("(?i)(?:sendbird)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule362();
+    [GeneratedRegex("(?i)(?:sendbird)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule362();
+    [GeneratedRegex("\\b(SG\\.(?i)[a-z0-9=_\\-\\.]{66})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule364();
+    [GeneratedRegex("\\b(SG\\.(?i)[a-z0-9=_\\-\\.]{0,66})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule364();
+    [GeneratedRegex("\\b(xkeysib-[a-fA-F0-9]{64}-[a-zA-Z0-9]{16})\\b", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex Rule365();
+    [GeneratedRegex("\\b(xkeysib-[a-fA-F0-9]{0,64}-[a-zA-Z0-9]{0,16})\\b", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule365();
+    [GeneratedRegex("\\bsntrys_eyJpYXQiO[a-zA-Z0-9+/]{10,200}(?:LCJyZWdpb25fdXJs|InJlZ2lvbl91cmwi|cmVnaW9uX3VybCI6)[a-zA-Z0-9+/]{10,200}={0,2}_[a-zA-Z0-9+/]{43}(?:[^a-zA-Z0-9+/]|\\z)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule367();
+    [GeneratedRegex("\\bsntrys_eyJpYXQiO[a-zA-Z0-9+/]{0,200}(?:LCJyZWdpb25fdXJs|InJlZ2lvbl91cmwi|cmVnaW9uX3VybCI6)[a-zA-Z0-9+/]{0,200}={0,2}_[a-zA-Z0-9+/]{0,43}(?:[^a-zA-Z0-9+/]|\\z)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule367();
+    [GeneratedRegex("\\b(sntryu_[a-f0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule368();
+    [GeneratedRegex("\\b(sntryu_[a-f0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule368();
+    [GeneratedRegex("\\b(sm_aat_[a-zA-Z0-9]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule369();
+    [GeneratedRegex("\\b(sm_aat_[a-zA-Z0-9]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule369();
+    [GeneratedRegex("\\b(sm_pat_[a-zA-Z0-9]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule370();
+    [GeneratedRegex("\\b(sm_pat_[a-zA-Z0-9]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule370();
+    [GeneratedRegex("\\b(sm_sat_[a-zA-Z0-9]{16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule371();
+    [GeneratedRegex("\\b(sm_sat_[a-zA-Z0-9]{0,16})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule371();
+    [GeneratedRegex("\\b(shippo_(?:live|test)_[a-fA-F0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule372();
+    [GeneratedRegex("\\b(shippo_(?:live|test)_[a-fA-F0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule372();
+    [GeneratedRegex("(?i)(?:BUNDLE_ENTERPRISE__CONTRIBSYS__COM|BUNDLE_GEMS__CONTRIBSYS__COM)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{8}:[a-f0-9]{8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule377();
+    [GeneratedRegex("(?i)(?:BUNDLE_ENTERPRISE__CONTRIBSYS__COM|BUNDLE_GEMS__CONTRIBSYS__COM)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-f0-9]{0,8}:[a-f0-9]{0,8})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule377();
+    [GeneratedRegex("(?i)\\bhttps?://([a-f0-9]{8}:[a-f0-9]{8})@(?:gems.contribsys.com|enterprise.contribsys.com)(?:[\\/|\\#|\\?|:]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule378();
+    [GeneratedRegex("(?i)\\bhttps?://([a-f0-9]{0,8}:[a-f0-9]{0,8})@(?:gems.contribsys.com|enterprise.contribsys.com)(?:[\\/|\\#|\\?|:]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule378();
+    [GeneratedRegex("(?i)xapp-\\d-[A-Z0-9]+-\\d+-[a-z0-9]+", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex Rule379();
+    [GeneratedRegex("(?i)xapp-\\d-[A-Z0-9]+-\\d+-[a-z0-9]+", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule379();
+    [GeneratedRegex("xoxb-[0-9]{10,13}-[0-9]{10,13}[a-zA-Z0-9-]*", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex Rule380();
+    [GeneratedRegex("xoxb-[0-9]{0,13}-[0-9]{0,13}[a-zA-Z0-9-]*", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule380();
+    [GeneratedRegex("(?i)xoxe.xox[bp]-\\d-[A-Z0-9]{163,166}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule381();
+    [GeneratedRegex("(?i)xoxe.xox[bp]-\\d-[A-Z0-9]{0,166}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule381();
+    [GeneratedRegex("(?i)xoxe-\\d-[A-Z0-9]{146}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule382();
+    [GeneratedRegex("(?i)xoxe-\\d-[A-Z0-9]{0,146}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule382();
+    [GeneratedRegex("xoxb-[0-9]{8,14}-[a-zA-Z0-9]{18,26}", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex Rule383();
+    [GeneratedRegex("xoxb-[0-9]{0,14}-[a-zA-Z0-9]{0,26}", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule383();
+    [GeneratedRegex("xox[os]-\\d+-\\d+-\\d+-[a-fA-F\\d]+", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex Rule384();
+    [GeneratedRegex("xox[os]-\\d+-\\d+-\\d+-[a-fA-F\\d]+", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule384();
+    [GeneratedRegex("xox[ar]-(?:\\d-)?[0-9a-zA-Z]{8,48}", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex Rule385();
+    [GeneratedRegex("xox[ar]-(?:\\d-)?[0-9a-zA-Z]{0,48}", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule385();
+    [GeneratedRegex("(xoxd-[\\w\\/\\\\+-]{100,}={0,2})(?:[^\\w\\/+=-]|\\z)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule386();
+    [GeneratedRegex("(xoxd-[\\w\\/\\\\+-]{100,}={0,2})(?:[^\\w\\/+=-]|\\z)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule386();
+    [GeneratedRegex("xoxc-\\d{9,15}-\\d{9,15}-\\d{9,15}-[a-f0-9]{64}\\b", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex Rule387();
+    [GeneratedRegex("xoxc-\\d{0,15}-\\d{0,15}-\\d{0,15}-[a-f0-9]{0,64}\\b", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule387();
+    [GeneratedRegex("xox[pe](?:-[0-9]{10,13}){3}-[a-zA-Z0-9-]{28,34}", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex Rule388();
+    [GeneratedRegex("xox[pe](?:-[0-9]{0,13}){0,3}-[a-zA-Z0-9-]{0,34}", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule388();
+    [GeneratedRegex("(?:https?://)?hooks.slack.com/(?:services|workflows|triggers)/[A-Za-z0-9+/]{43,56}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule389();
+    [GeneratedRegex("(?:https?://)?hooks.slack.com/(?:services|workflows|triggers)/[A-Za-z0-9+/]{0,56}", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule389();
+    [GeneratedRegex("(?i)\\b([a-z0-9_-]+(?:\\.[a-z0-9_-]+)*\\.snowflakecomputing\\.com)\\b", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex Rule390();
+    [GeneratedRegex("(?i)\\b([a-z0-9_-]+(?:\\.[a-z0-9_-]+)*\\.snowflakecomputing\\.com)\\b", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule390();
+    [GeneratedRegex("(?i:(?:(?:snowflake[_. -]*(?:programmatic[_. -]*)?(?:access[_. -]*)?token|sf[_. -]*token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{100,500})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule391();
+    [GeneratedRegex("(?i:(?:(?:snowflake[_. -]*(?:programmatic[_. -]*)?(?:access[_. -]*)?token|sf[_. -]*token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9_-]{0,500})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule391();
+    [GeneratedRegex("(?i)(?:snyk[_.-]?(?:(?:api|oauth)[_.-]?)?(?:key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule392();
+    [GeneratedRegex("(?i)(?:snyk[_.-]?(?:(?:api|oauth)[_.-]?)?(?:key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule392();
+    [GeneratedRegex("(?i)(?:sonar[_.-]?(login|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:squ_|sqp_|sqa_)?[a-z0-9=_\\-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule393();
+    [GeneratedRegex("(?i)(?:sonar[_.-]?(login|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:squ_|sqp_|sqa_)?[a-z0-9=_\\-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule393();
+    [GeneratedRegex("(?i)\\b(sgp_(?:[a-fA-F0-9]{16}|local)_[a-fA-F0-9]{40}|sgp_[a-fA-F0-9]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule394();
+    [GeneratedRegex("(?i)\\b(sgp_(?:[a-fA-F0-9]{0,16}|local)_[a-fA-F0-9]{0,40}|sgp_[a-fA-F0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule394();
+    [GeneratedRegex("\\b((?:EAAA|sq0atp-)[\\w-]{22,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule395();
+    [GeneratedRegex("\\b((?:EAAA|sq0atp-)[\\w-]{0,60})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule395();
+    [GeneratedRegex("(?i)(?:squarespace)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule396();
+    [GeneratedRegex("(?i)(?:squarespace)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9a-f]{0,8}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,4}-[0-9a-f]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule396();
+    [GeneratedRegex("(?i:(?:sslmate(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule397();
+    [GeneratedRegex("(?i:(?:sslmate(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z0-9]{0,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule397();
+    [GeneratedRegex("(?i)(?:stability)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk-[A-Za-z0-9]{48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule398();
+    [GeneratedRegex("(?i)(?:stability)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(sk-[A-Za-z0-9]{0,48})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule398();
+    [GeneratedRegex("\\b((?:sk|rk)_(?:test|live|prod)_[a-zA-Z0-9]{10,99})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule399();
+    [GeneratedRegex("\\b((?:sk|rk)_(?:test|live|prod)_[a-zA-Z0-9]{0,99})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule399();
+    [GeneratedRegex("(?i)(?:(?-i:[Ss]umo|SUMO))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?-i:su)[a-zA-Z0-9]{12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule400();
+    [GeneratedRegex("(?i)(?:(?-i:[Ss]umo|SUMO))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?-i:su)[a-zA-Z0-9]{0,12})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule400();
+    [GeneratedRegex("(?i)(?:(?-i:[Ss]umo|SUMO))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule401();
+    [GeneratedRegex("(?i)(?:(?-i:[Ss]umo|SUMO))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([a-z0-9]{0,64})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule401();
+    [GeneratedRegex("\\b(sbp_[a-z0-9_-]{40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule402();
+    [GeneratedRegex("\\b(sbp_[a-z0-9_-]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule402();
+    [GeneratedRegex("\\b(sb_secret_[A-Za-z0-9_-]{31})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule403();
+    [GeneratedRegex("\\b(sb_secret_[A-Za-z0-9_-]{0,31})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule403();
+    [GeneratedRegex("\\b(https://[a-z0-9]{16,32}\\.supabase\\.co)\\b", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex Rule404();
+    [GeneratedRegex("\\b(https://[a-z0-9]{0,32}\\.supabase\\.co)\\b", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule404();
+    [GeneratedRegex("(?i:(?:tableau(?:[_. -]*(?:personal[_. -]*access|pat))?[_. -]*(?:token[_. -]*)?name)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z][A-Za-z0-9_-]{2,50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule405();
+    [GeneratedRegex("(?i:(?:tableau(?:[_. -]*(?:personal[_. -]*access|pat))?[_. -]*(?:token[_. -]*)?name)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([A-Za-z][A-Za-z0-9_-]{0,50})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule405();
+    [GeneratedRegex("\\b([A-Za-z0-9+/]{22}==:[A-Za-z0-9]{32})\\b", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex Rule406();
+    [GeneratedRegex("\\b([A-Za-z0-9+/]{0,22}==:[A-Za-z0-9]{0,32})\\b", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule406();
+    [GeneratedRegex("(?i)\\b([a-z0-9-]+\\.online\\.tableau\\.com)\\b", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex Rule407();
+    [GeneratedRegex("(?i)\\b([a-z0-9-]+\\.online\\.tableau\\.com)\\b", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule407();
+    [GeneratedRegex("\\b(tskey-api-[A-Za-z0-9_-]{20,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule408();
+    [GeneratedRegex("\\b(tskey-api-[A-Za-z0-9_-]{0,36})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule408();
+    [GeneratedRegex("(?i)(?:telegr)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{5,16}:(?-i:A)[a-z0-9_\\-]{34})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule409();
+    [GeneratedRegex("(?i)(?:telegr)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{0,16}:(?-i:A)[a-z0-9_\\-]{0,34})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule409();
+    [GeneratedRegex("(?i:(?:telnyx(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(KEY[0-9A-Za-z_-]{55})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule410();
+    [GeneratedRegex("(?i:(?:telnyx(?:[_. -]*(?:api))?[_. -]*(?:secret|key|token))(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(KEY[0-9A-Za-z_-]{0,55})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule410();
+    [GeneratedRegex("\\b(eyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]*Y2NvdW50X2lk[A-Za-z0-9_-]*InRlbXBvcmFsLmlv[A-Za-z0-9_-]*(?:ICJrZXlfaWQiOi|a2V5X2lk|rZXlfaWQi)[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{20,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule411();
+    [GeneratedRegex("\\b(eyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]*Y2NvdW50X2lk[A-Za-z0-9_-]*InRlbXBvcmFsLmlv[A-Za-z0-9_-]*(?:ICJrZXlfaWQiOi|a2V5X2lk|rZXlfaWQi)[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{20,})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule411();
+    [GeneratedRegex("\\b(tss_[A-Za-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule412();
+    [GeneratedRegex("\\b(tss_[A-Za-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule412();
+    [GeneratedRegex("(?i)\\b(tgp_v1_[A-Za-z0-9_-]{43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule413();
+    [GeneratedRegex("(?i)\\b(tgp_v1_[A-Za-z0-9_-]{0,43})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule413();
+    [GeneratedRegex("SK[0-9a-fA-F]{32}", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex Rule415();
+    [GeneratedRegex("SK[0-9a-fA-F]{0,32}", RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, NonBacktrackingMatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule415();
+    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{15,25}-[a-zA-Z0-9]{20,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule418();
+    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}([0-9]{0,25}-[a-zA-Z0-9]{0,40})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule418();
+    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(A{22}[a-zA-Z0-9%]{80,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule421();
+    [GeneratedRegex("(?i)(?:twitter)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(A{0,22}[a-zA-Z0-9%]{0,100})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule421();
+    [GeneratedRegex("(?i)(?:typeform)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(tfp_[a-z0-9\\-_\\.=]{59})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule422();
+    [GeneratedRegex("(?i)(?:typeform)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3}(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}(tfp_[a-z0-9\\-_\\.=]{0,59})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule422();
+    [GeneratedRegex("\\b(unkey_[A-Za-z0-9]{20,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule423();
+    [GeneratedRegex("\\b(unkey_[A-Za-z0-9]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule423();
+    [GeneratedRegex("\\b(ucat_[0-9A-Za-z]{24,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule424();
+    [GeneratedRegex("\\b(ucat_[0-9A-Za-z]{0,32})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule424();
+    [GeneratedRegex("(?i:(?:upstash)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:[A-Za-z0-9]{32,48}|AYNgAS[A-Za-z0-9+/_-]{26,90}={0,2}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule426();
+    [GeneratedRegex("(?i:(?:upstash)(?:[ \\t\\w.-]{0,20})[\\s'\"]{0,3})(?:=|>|:{1,3}=|\\|\\||:|=>|\\?=|,)[\\x60'\"\\s=]{0,5}((?:[A-Za-z0-9]{0,48}|AYNgAS[A-Za-z0-9+/_-]{0,90}={0,2}))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule426();
+    [GeneratedRegex("(?i)\\b(https://[a-z0-9][a-z0-9-]{2,63}\\.upstash\\.io)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule427();
+    [GeneratedRegex("(?i)\\b(https://[a-z0-9][a-z0-9-]{0,63}\\.upstash\\.io)(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule427();
+    [GeneratedRegex("\\b(vtwn_[A-Za-z0-9_-]{20,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule428();
+    [GeneratedRegex("\\b(vtwn_[A-Za-z0-9_-]{0,80})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule428();
+    [GeneratedRegex("\\b(hvb\\.[\\w-]{138,300})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule429();
+    [GeneratedRegex("\\b(hvb\\.[\\w-]{0,300})(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule429();
+    [GeneratedRegex("\\b((?:hvs\\.[\\w-]{90,120}|s\\.(?i:[a-z0-9]{24})))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex Rule430();
+    [GeneratedRegex("\\b((?:hvs\\.[\\w-]{0,120}|s\\.(?i:[a-z0-9]{0,24})))(?:\\\\?['\"\\x60]|[\\s;]|\\\\[nr]|$)", RegexOptions.CultureInvariant, MatchTimeoutMilliseconds)]
+    private static partial Regex EarlyRule430();
 }

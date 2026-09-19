@@ -86,7 +86,7 @@ public sealed class BatchIntegrationTests
             File.Exists(sideEffect).ShouldBeFalse();
             File.Exists(manifest).ShouldBeFalse();
             var logical = Path.Combine(output, "guide-1.svg");
-            new FileInfo(logical).Length.ShouldBe(0);
+            (await File.ReadAllTextAsync(logical)).ShouldBe(string.Empty);
             Directory.GetFiles(Path.Combine(output, ".generated")).Single().ShouldNotBeNull();
 
             await File.WriteAllTextAsync(logical, "existing");

@@ -324,7 +324,9 @@ public sealed partial class SvgRendererTests
 
         svg.ShouldContain(">VIM - Vi Improved<");
         svg.ShouldContain(">by Bram Moolenaar et al.<");
-        svg.ShouldContain(".c2.c { white-space: pre;");
+        svg.ShouldContain(".c2.c { font-family:");
+        svg.ShouldContain(".c2 text { white-space: pre;");
+        svg.ShouldNotContain(".c2.c { white-space: pre;");
         svg.ShouldContain("<g class=\"c2 c\" xml:space=\"preserve\">");
         svg.ShouldNotContain(" w\"");
     }

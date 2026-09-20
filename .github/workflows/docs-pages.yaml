@@ -7,6 +7,7 @@ on:
     paths:
       - 'docs/**'
       - 'docs-site/**'
+      - 'src/ConsoleToSvg.Core/Svg/**'
       - '.github/workflows/docs-pages.yaml'
   workflow_dispatch:
 

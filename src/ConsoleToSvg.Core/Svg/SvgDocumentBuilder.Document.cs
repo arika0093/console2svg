@@ -56,8 +56,8 @@ internal static partial class SvgDocumentBuilder
         sb.Append(
             $$"""
             <style>
-            .c2.c { white-space: pre; font-family: {{effectiveFont}}; font-size: {{formattedFontSize}}px; }
-            .c2 text { dominant-baseline: alphabetic; }
+            .c2.c { font-family: {{effectiveFont}}; font-size: {{formattedFontSize}}px; }
+            .c2 text { white-space: pre; dominant-baseline: alphabetic; }
             .c2 .q { shape-rendering: crispEdges; }
             """
         );

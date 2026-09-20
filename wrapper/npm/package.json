@@ -22,8 +22,8 @@
     "postinstall": "node cli/install.js"
   },
   "dependencies": {
-    "https-proxy-agent": "^7.0.4",
-    "proxy-from-env": "^1.1.0"
+    "https-proxy-agent": "^9.1.0",
+    "proxy-from-env": "^2.1.0"
   },
   "os": [
     "darwin",

@@ -5,7 +5,16 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const { spawnSync } = require('child_process');
-const { HttpsProxyAgent } = require('https-proxy-agent');
+let HttpsProxyAgentCtor;
+async function createProxyAgent(proxyUrl) {
+  if (!proxyUrl) {
+    return undefined;
+  }
+  if (!HttpsProxyAgentCtor) {
+    ({ HttpsProxyAgent: HttpsProxyAgentCtor } = await import('https-proxy-agent'));
+  }
+  return new HttpsProxyAgentCtor(proxyUrl);
+}
 const { getProxyForUrl } = require('proxy-from-env');
 
 const pkg = require(path.join(__dirname, '..', 'package.json'));
@@ -57,13 +66,18 @@ function fail(message, err) {
   process.exit(1);
 }
 
-function download(downloadUrl, redirects, onFinish) {
+async function download(downloadUrl, redirects, onFinish) {
   if (redirects > 5) {
     fail('console2svg: too many redirects while downloading.');
   }
 
   const proxy = getProxyForUrl(downloadUrl);
-  const agent = proxy ? new HttpsProxyAgent(proxy) : undefined;
+  let agent;
+  try {
+    agent = await createProxyAgent(proxy);
+  } catch (err) {
+    fail('console2svg: failed to initialize proxy agent.', err);
+  }
   const urlObj = new URL(downloadUrl);
 
   const archiveName = isWin ? `console2svg-${rid}.zip` : `console2svg-${rid}.tar.gz`;
@@ -84,8 +98,7 @@ function download(downloadUrl, redirects, onFinish) {
     (res) => {
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
         res.resume();
-        download(res.headers.location, redirects + 1, onFinish);
-        return;
+        return download(res.headers.location, redirects + 1, onFinish);
       }
 
       if (res.statusCode !== 200) {
@@ -171,4 +184,6 @@ download(archiveUrl, 0, (tempArchivePath) => {
   }
 
   process.exit(0);
+}).catch((err) => {
+  fail('console2svg: request failed.', err);
 });

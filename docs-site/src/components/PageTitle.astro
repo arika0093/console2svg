@@ -1,0 +1,28 @@
+---
+import SinceVersion from './SinceVersion.astro';
+
+const { data } = Astro.locals.starlightRoute.entry;
+---
+
+<div class="page-title-row">
+  <h1 id="_top">{data.title}</h1>
+  <SinceVersion />
+</div>
+
+<style>
+  @layer starlight.core {
+    h1 {
+      margin-top: 1rem;
+      font-size: var(--sl-text-h1);
+      line-height: var(--sl-line-height-headings);
+      font-weight: 600;
+      color: var(--sl-color-white);
+    }
+  }
+  .page-title-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+  }
+</style>

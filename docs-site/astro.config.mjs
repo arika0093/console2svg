@@ -56,6 +56,7 @@ export default defineConfig({
       },
       components: {
         Hero: './src/components/HomeHero.astro',
+        PageTitle: './src/components/PageTitle.astro',
         ThemeProvider: 'starlight-theme-nova/components/ThemeProvider.astro',
         ThemeSelect: 'starlight-theme-nova/components/ThemeSelect.astro',
       },

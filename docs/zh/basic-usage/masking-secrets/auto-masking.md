@@ -1,6 +1,7 @@
 ---
 title: 自动遮盖功能
 description: QuickLeaks 引擎自动检测并保护 API 密钥、令牌和密码的功能。
+since: v0.10
 ---
 
 console2svg 在将输出转换为 SVG 时，内置了扫描文本内容并自动检测、遮盖机密信息的功能。
@@ -36,7 +37,7 @@ COMMON_HASH=0123456789abcdef0123456789abcdef
 SECRET_HASH=fedcba9876543210fedcba9876543210
 EOF
 
-console2svg capture -w 100 -h 12 -d macos-pc -t github-dark -- cat .env
+console2svg capture -80 -h 14 -d macos-pc -t github-dark -- cat .env
 ```
 
 ![console2svg 自动遮盖机密信息的捕获结果](/docs/assets/cmd-gallery-mask.svg)
@@ -48,8 +49,8 @@ console2svg capture -w 100 -h 12 -d macos-pc -t github-dark -- cat .env
 如果想原样显示示例用的虚拟密钥等，请指定 `--mask-auto false`。
 
 ```bash title="Terminal" "--mask-auto false"
-console2svg capture -w 100 -h 12 -d macos-pc -t github-dark --mask-auto false -- cat .env
+console2svg capture -80 -h 14 -d macos-pc -t github-dark --mask-auto false -- cat .env
 ```
 
-<!-- c2s:: -w 100 -h 12 -d macos-pc -t github-dark --mask-auto false -- cat ../../../../.env -->
+<!-- c2s:: -80 -h 14 -d macos-pc -t github-dark --mask-auto false -- cat ../../../../.env -->
 ![禁用自动遮盖的 console2svg 捕获](../../../assets/cmd-mask-auto.svg)

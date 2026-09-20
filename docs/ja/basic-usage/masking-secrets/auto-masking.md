@@ -1,6 +1,7 @@
 ---
 title: 自動マスキング機能
 description: QuickLeaks エンジンによるAPIキーやトークン、パスワードの自動検出と保護機能。
+since: v0.10
 ---
 
 console2svg は出力をSVG化する際、テキスト内容を走査して機密情報を自動検出・マスキングする機能を標準で備えています。
@@ -36,7 +37,7 @@ COMMON_HASH=$(openssl rand -hex 16)
 SECRET_HASH=$(openssl rand -hex 16)
 EOF
 
-console2svg capture -w 100 -h 12 -d macos-pc -t github-dark -- cat .env
+console2svg capture -80 -h 14 -d macos-pc -t github-dark -- cat .env
 ```
 
 ![console2svg capture with automatic secret masking](/docs/assets/cmd-gallery-mask.svg)
@@ -48,8 +49,8 @@ console2svg capture -w 100 -h 12 -d macos-pc -t github-dark -- cat .env
 サンプルのダミーキーなどをそのまま表示させたい場合は、`--mask-auto false` を指定します。
 
 ```bash title="Terminal" "--mask-auto false"
-console2svg capture -w 100 -h 12 -d macos-pc -t github-dark --mask-auto false -- cat .env
+console2svg capture -80 -h 14 -d macos-pc -t github-dark --mask-auto false -- cat .env
 ```
 
-<!-- c2s:: -w 100 -h 12 -d macos-pc -t github-dark --mask-auto false -- cat ../../../../.env -->
+<!-- c2s:: -80 -h 14 -d macos-pc -t github-dark --mask-auto false -- cat ../../../../.env -->
 ![console2svg capture with automatic masking disabled](../../../assets/cmd-mask-auto.svg)

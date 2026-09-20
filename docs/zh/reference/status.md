@@ -1,6 +1,7 @@
 ---
 title: 查看状态
 description: 使用 console2svg status 命令检查运行环境和外部工具检测状态。
+since: v0.9
 ---
 
 运行 `status` 子命令可以查看当前版本、操作系统和运行时、SVG 渲染器、可选功能、主题、ANSI 颜色以及输出格式的可用性。外部命令会实际启动以获取版本，因此仅存在于 `PATH` 中并不会使其显示为 `available`。

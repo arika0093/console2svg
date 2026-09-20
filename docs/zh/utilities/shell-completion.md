@@ -1,6 +1,7 @@
 ---
 title: Shell 补全
 description: 为 bash、zsh、fish 和 PowerShell 安装 Tab 补全脚本。
+since: v0.10
 ---
 
 `completions` 子命令可以输出适用于各种 shell 的补全脚本。

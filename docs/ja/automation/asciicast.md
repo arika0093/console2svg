@@ -1,6 +1,7 @@
 ---
 title: asciicastファイルの記録/再生
 description: asciinema の asciicast v2 形式の保存・再生とSVGファイルへのメタデータ埋め込み。
+since: v0.9
 ---
 
 端末録画ツール asciinema で標準的に使用される **asciicast v2** 形式との相互運用が可能です。

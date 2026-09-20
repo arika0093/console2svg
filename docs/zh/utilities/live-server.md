@@ -1,6 +1,7 @@
 ---
 title: Live-Server
 description: 将运行中的终端画面实时以 SVG 流的形式传送到浏览器。
+since: v0.10
 ---
 
 Live-Server 功能会启动本地 HTTP 服务器，并将终端中运行的内容实时渲染为 SVG，显示在浏览器中。

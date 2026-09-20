@@ -1,6 +1,7 @@
 ---
 title: GitHub Actionsで使う
 description: CIパイプライン上でCLIスクリーンショットを自動生成・コミットするためのワークフロー例。
+since: v0.9
 ---
 
 GitHub Actionsと組み合わせることで、リポジトリの更新やリリースに合わせてREADMEの画像を自動更新できます。

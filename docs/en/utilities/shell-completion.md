@@ -1,6 +1,7 @@
 ---
 title: Shell completion
 description: Install tab-completion scripts for bash, zsh, fish, and PowerShell.
+since: v0.10
 ---
 
 The `completions` subcommand outputs completion scripts for various shells.

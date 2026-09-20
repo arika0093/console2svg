@@ -1,6 +1,7 @@
 ---
 title: Record/play replays
 description: Replay functionality that records input keystrokes and automatically reproduces the same operations for capture.
+since: v0.9
 ---
 
 Save keyboard input and timing to a JSON file, then reproduce the exact same operations later for recapture. This is suitable for regular documentation image updates and CI automation.

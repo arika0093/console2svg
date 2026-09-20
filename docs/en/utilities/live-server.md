@@ -1,6 +1,7 @@
 ---
 title: Live-Server
 description: Stream the running terminal screen to a browser as SVG in real time.
+since: v0.10
 ---
 
 The Live-Server feature starts a local HTTP server and renders what is running in the terminal as SVG in a browser in real time.

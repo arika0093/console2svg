@@ -1,6 +1,7 @@
 ---
 title: 組み込みテーマを使う
 description: console2svg に標準搭載されているテーマの適用方法。
+since: v0.10
 ---
 
 console2svg には、すぐに使える組み込みテーマが含まれています。テーマIDを

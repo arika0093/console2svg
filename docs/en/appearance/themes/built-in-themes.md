@@ -1,6 +1,7 @@
 ---
 title: Use built-in themes
 description: How to apply the themes included with console2svg by default.
+since: v0.10
 ---
 
 console2svg includes built-in themes that are ready to use. Just pass a theme ID to

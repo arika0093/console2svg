@@ -1,6 +1,7 @@
 ---
 title: Check status
 description: Check the runtime environment and external tool detection with the console2svg status command.
+since: v0.9
 ---
 
 Running the `status` subcommand shows the current version, OS and runtime, SVG renderers, optional features, themes, ANSI colors, and available output formats. External commands are actually started to obtain their versions, so merely being on `PATH` does not make them `available`.

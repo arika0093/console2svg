@@ -1,6 +1,7 @@
 ---
 title: asciicast 文件的记录/播放
 description: asciinema 的 asciicast v2 格式保存、播放，以及向 SVG 文件嵌入元数据。
+since: v0.9
 ---
 
 console2svg 可以与终端录制工具 asciinema 常用的 **asciicast v2** 格式互操作。

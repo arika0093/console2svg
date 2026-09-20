@@ -1,6 +1,7 @@
 ---
 title: Use custom themes
 description: How to install, update, and remove external themes.
+since: v0.10
 ---
 
 In addition to built-in themes, you can use themes created locally or themes published in Git repositories.

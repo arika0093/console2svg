@@ -1,6 +1,7 @@
 ---
 title: tmux 集成
 description: 直接捕获 tmux 中正在使用的窗格或滚动历史记录。
+since: v0.10
 ---
 
 使用 `tmux` 子命令，可以直接从运行中的 tmux 会话提取画面或历史记录并转换为 SVG。

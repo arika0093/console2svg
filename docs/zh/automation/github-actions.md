@@ -1,6 +1,7 @@
 ---
 title: 在 GitHub Actions 中使用
 description: 用于在 CI 流水线中自动生成并提交 CLI 截图的工作流示例。
+since: v0.9
 ---
 
 通过与 GitHub Actions 组合使用，可以在仓库更新或发布时自动更新 README 图片。

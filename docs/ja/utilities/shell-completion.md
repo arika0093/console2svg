@@ -1,6 +1,7 @@
 ---
 title: シェル補完
 description: bash、zsh、fish、PowerShell でのタブ補完スクリプトの導入手順。
+since: v0.10
 ---
 
 `completions` サブコマンドにより、各種シェル向けの補完スクリプトを出力できます。

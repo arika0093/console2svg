@@ -1,6 +1,7 @@
 ---
 title: tmux integration
 description: Capture the active tmux pane or scrollback history directly.
+since: v0.10
 ---
 
 Use the `tmux` subcommand to extract the screen or history directly from a running tmux session and convert it to SVG.

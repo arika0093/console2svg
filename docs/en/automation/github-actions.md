@@ -1,6 +1,7 @@
 ---
 title: Use with GitHub Actions
 description: Example workflows for automatically generating and committing CLI screenshots in CI pipelines.
+since: v0.9
 ---
 
 By combining console2svg with GitHub Actions, you can automatically update README images when repositories are updated or released.

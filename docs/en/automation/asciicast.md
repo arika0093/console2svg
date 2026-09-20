@@ -1,6 +1,7 @@
 ---
 title: Record/play asciicast files
 description: Saving and playing asciinema asciicast v2 format and embedding metadata in SVG files.
+since: v0.9
 ---
 
 console2svg can interoperate with the **asciicast v2** format commonly used by the terminal recording tool asciinema.

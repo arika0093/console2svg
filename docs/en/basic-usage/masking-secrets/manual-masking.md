@@ -1,6 +1,7 @@
 ---
 title: Manual masking
 description: Manually specify particular strings or regular expression patterns to mask with the --mask option.
+since: v0.9
 ---
 
 Use the `--mask` option when you have project-specific tokens, internal domain names, personal names, or other information that you want to hide individually.

@@ -1,6 +1,7 @@
 ---
 title: 使用内置主题
 description: 应用 console2svg 标准内置主题的方法。
+since: v0.10
 ---
 
 console2svg 包含开箱即用的内置主题。只需将主题 ID 传给

@@ -52,5 +52,5 @@ console2svg capture -80 -h 14 -d macos-pc -t github-dark -- cat .env
 console2svg capture -80 -h 14 -d macos-pc -t github-dark --mask-auto false -- cat .env
 ```
 
-<!-- c2s:: -80 -h 14 -d macos-pc -t github-dark --mask-auto false -- cat ../../../../.env -->
+<!-- c2s:: -w 80 -h 14 -d macos-pc -t github-dark --mask-auto false -- cat ../../../../.env -->
 ![禁用自动遮盖的 console2svg 捕获](../../../assets/cmd-mask-auto.svg)

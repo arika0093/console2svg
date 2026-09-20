@@ -64,22 +64,12 @@ const imageSrc = image && 'file' in image ? image.file.src : undefined;
   .home-hero__tagline {
     margin: 0;
     color: var(--sl-color-white);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    font-family: var(--sl-font-mono);
     font-size: clamp(1rem, 4vw, 3rem);
     font-weight: 700;
     letter-spacing: -0.04em;
     line-height: 1.1;
     white-space: nowrap;
-  }
-
-  :global(html:lang(ja)) .home-hero__tagline {
-    font-family: 'Hiragino Sans', 'Yu Gothic UI', 'Yu Gothic', Meiryo, sans-serif;
-    letter-spacing: 0;
-  }
-
-  :global(html:lang(zh-CN)) .home-hero__tagline {
-    font-family: 'PingFang SC', 'Microsoft YaHei UI', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
-    letter-spacing: 0;
   }
 
   .home-hero__actions {

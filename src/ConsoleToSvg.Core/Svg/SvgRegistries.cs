@@ -9,12 +9,6 @@ internal sealed class SvgStyleRegistry
 {
     private readonly Dictionary<TextStyleKey, string> _classes = new();
     private readonly List<TextStyleKey> _styles = [];
-    private bool _preservesWhitespace;
-
-    public void CollectPreservedWhitespace()
-    {
-        _preservesWhitespace = true;
-    }
 
     public void CollectCellStyle(in ScreenCell cell, string effectiveForeground)
     {
@@ -67,11 +61,6 @@ internal sealed class SvgStyleRegistry
     public void AppendCss(SvgWriter sb)
     {
         sb.Append('\n');
-        if (_preservesWhitespace)
-        {
-            sb.Append(".c2 .w { white-space: pre; }\n");
-        }
-
         for (var i = 0; i < _styles.Count; i++)
         {
             var style = _styles[i];

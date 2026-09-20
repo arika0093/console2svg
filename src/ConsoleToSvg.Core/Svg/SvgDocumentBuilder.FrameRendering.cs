@@ -83,7 +83,6 @@ internal static partial class SvgDocumentBuilder
         bool includeScrollback
     )
     {
-        var pendingWhitespace = false;
         var visibleCells = includeScrollback ? default : buffer.GetVisibleRow(row);
         for (var col = context.StartCol; col < context.EndColExclusive; col++)
         {
@@ -96,19 +95,11 @@ internal static partial class SvgDocumentBuilder
                 || IsRoundedBoxDrawing(cell.Text)
             )
             {
-                pendingWhitespace = false;
                 continue;
             }
             if (cell.Text == " ")
             {
-                pendingWhitespace = true;
                 continue;
-            }
-
-            if (pendingWhitespace)
-            {
-                styles.CollectPreservedWhitespace();
-                pendingWhitespace = false;
             }
             var effectiveFg = cell.Reversed ? cell.Background : cell.Foreground;
             effectiveFg = ApplyIntensity(effectiveFg, cell.Bold, cell.Faint);
@@ -171,6 +162,10 @@ internal static partial class SvgDocumentBuilder
                 sb.Append(EscapeAttribute(@class));
             }
             sb.Append("\"");
+        }
+        if (renderForeground)
+        {
+            sb.Append(" xml:space=\"preserve\"");
         }
 
         if (applyContentTransform)
@@ -357,7 +352,6 @@ internal static partial class SvgDocumentBuilder
                 fgBlink = false;
             string? fgUnderlineColor = null;
             int fgRunCellCount = 0;
-            bool fgRunHasSpace = false;
             int pendingSpaces = 0;
 
             void FlushFgRun()
@@ -382,11 +376,6 @@ internal static partial class SvgDocumentBuilder
                 {
                     textClass += " c2b";
                 }
-                if (fgRunHasSpace)
-                {
-                    textClass += " w";
-                }
-
                 var adjustedLength = string.Equals(
                     effectiveLengthAdjust,
                     "spacing",
@@ -427,7 +416,6 @@ internal static partial class SvgDocumentBuilder
                 fgRunText.Clear();
                 fgRunCellCount = 0;
                 fgRunColor = null;
-                fgRunHasSpace = false;
             }
 
             bool MatchesRunStyle(string effectiveFg, in ScreenCell cell) =>
@@ -580,7 +568,6 @@ internal static partial class SvgDocumentBuilder
                 {
                     fgRunText.Append(' ', pendingSpaces);
                     fgRunCellCount += pendingSpaces;
-                    fgRunHasSpace = true;
                     pendingSpaces = 0;
                 }
 

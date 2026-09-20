@@ -52,10 +52,11 @@ internal static partial class SvgDocumentBuilder
         var effectiveFont = string.IsNullOrWhiteSpace(font)
             ? DefaultFontFamily
             : EscapeAttribute(font);
+        var formattedFontSize = Format(context.FontSize);
         sb.Append(
             $$"""
             <style>
-            .c2.c { font-family: {{effectiveFont}}; font-size: {{Format(context.FontSize)}}px; }
+            .c2.c { white-space: pre; font-family: {{effectiveFont}}; font-size: {{formattedFontSize}}px; }
             .c2 text { dominant-baseline: alphabetic; }
             .c2 .q { shape-rendering: crispEdges; }
             """
@@ -140,7 +141,7 @@ internal static partial class SvgDocumentBuilder
         var x = context.HeaderOffsetX;
         var bgY = context.HeaderOffsetY;
         var bgH = context.HeaderRows * context.CellHeight;
-        sb.Append("<g class=\"c2 c\"><rect");
+        sb.Append("<g class=\"c2 c\" xml:space=\"preserve\"><rect");
         AppendPositionAttributes(sb, x, bgY);
         sb.Append(" width=\"");
         sb.Append(context.ViewWidth);

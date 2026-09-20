@@ -324,9 +324,9 @@ public sealed partial class SvgRendererTests
 
         svg.ShouldContain(">VIM - Vi Improved<");
         svg.ShouldContain(">by Bram Moolenaar et al.<");
-        svg.ShouldContain(".c2 .w { white-space: pre; }");
-        svg.ShouldContain(" w\"");
-        svg.ShouldNotContain("xml:space=");
+        svg.ShouldContain(".c2.c { white-space: pre;");
+        svg.ShouldContain("<g class=\"c2 c\" xml:space=\"preserve\">");
+        svg.ShouldNotContain(" w\"");
     }
 
     [Test]
@@ -351,8 +351,8 @@ public sealed partial class SvgRendererTests
             + new string(' ', 10)
             + "Message";
         svg.ShouldContain($">{expected}<");
-        svg.ShouldContain(" w\"");
-        svg.ShouldNotContain("xml:space=");
+        svg.ShouldContain("<g class=\"c2 c\" xml:space=\"preserve\">");
+        svg.ShouldNotContain(" w\"");
     }
 
     [Test]

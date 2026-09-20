@@ -557,7 +557,7 @@ public sealed class AnimatedSvgRendererTests
         svg.ShouldContain("lengthAdjust=\"spacingAndGlyphs\"");
         svg.ShouldContain(" c2b\"");
         svg.ShouldContain("@keyframes c2b");
-        svg.ShouldContain("<g class=\"c2 c\"><rect");
+        svg.ShouldContain("<g class=\"c2 c\" xml:space=\"preserve\"><rect");
         svg.ShouldNotContain("<text class=\"c");
         System.Xml.Linq.XDocument.Parse(svg).Root.ShouldNotBeNull();
     }

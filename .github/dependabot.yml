@@ -10,6 +10,11 @@ updates:
       # Therefore, we want to keep it at the lowest possible version.
       - dependency-name: "Microsoft.CodeAnalysis.*"
     
+  - package-ecosystem: "cargo"
+    directory: "/src/ConsoleToSvg.Converter/native/resvg-wrapper"
+    schedule:
+      interval: "weekly"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

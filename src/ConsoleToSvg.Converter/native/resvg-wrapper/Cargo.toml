@@ -9,7 +9,7 @@ name = "console2svg_resvg"
 crate-type = ["cdylib"]
 
 [dependencies]
-resvg = "=0.43.0"
+resvg = "0.48"
 
 [profile.release]
 lto = true

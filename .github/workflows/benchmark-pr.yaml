@@ -74,7 +74,7 @@ jobs:
         run: python3 .github/scripts/render-benchmark-comment.py --base benchmark-results/base --head benchmark-results/head --output benchmark-comment.md
 
       - name: Post / update PR comment
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v3
         with:
           header: benchmark-full
           path: benchmark-comment.md

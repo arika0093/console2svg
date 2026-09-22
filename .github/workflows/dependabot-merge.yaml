@@ -13,9 +13,64 @@ env:
   ASTRO_TELEMETRY_DISABLED: '1'
 
 jobs:
-  package-test:
+  metadata:
     runs-on: ubuntu-latest
     if: github.event.pull_request.user.login == 'dependabot[bot]'
+    outputs:
+      run-dotnet: ${{ steps.checks.outputs.run-dotnet }}
+      run-cargo: ${{ steps.checks.outputs.run-cargo }}
+      run-docs: ${{ steps.checks.outputs.run-docs }}
+      run-npm-wrapper: ${{ steps.checks.outputs.run-npm-wrapper }}
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Select checks
+        id: checks
+        shell: bash
+        env:
+          PACKAGE_ECOSYSTEM: ${{ steps.metadata.outputs.package-ecosystem }}
+          DIRECTORY: ${{ steps.metadata.outputs.directory }}
+        run: |
+          set -euo pipefail
+
+          echo "run-dotnet=false" >> "$GITHUB_OUTPUT"
+          echo "run-cargo=false" >> "$GITHUB_OUTPUT"
+          echo "run-docs=false" >> "$GITHUB_OUTPUT"
+          echo "run-npm-wrapper=false" >> "$GITHUB_OUTPUT"
+
+          case "$PACKAGE_ECOSYSTEM:$DIRECTORY" in
+            nuget:/)
+              echo "run-dotnet=true" >> "$GITHUB_OUTPUT"
+              ;;
+            cargo:/src/ConsoleToSvg.Converter/native/resvg-wrapper)
+              echo "run-cargo=true" >> "$GITHUB_OUTPUT"
+              echo "run-dotnet=true" >> "$GITHUB_OUTPUT"
+              ;;
+            npm:/docs-site)
+              echo "run-docs=true" >> "$GITHUB_OUTPUT"
+              ;;
+            npm:/wrapper/npm)
+              echo "run-npm-wrapper=true" >> "$GITHUB_OUTPUT"
+              ;;
+            github-actions:/)
+              # Action updates can affect either the product CI or documentation CI.
+              echo "run-dotnet=true" >> "$GITHUB_OUTPUT"
+              echo "run-docs=true" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "::error::Unsupported Dependabot target: $PACKAGE_ECOSYSTEM:$DIRECTORY"
+              exit 1
+              ;;
+          esac
+
+  dotnet-test:
+    runs-on: ubuntu-latest
+    needs: metadata
+    if: needs.metadata.outputs.run-dotnet == 'true'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -40,6 +95,28 @@ jobs:
       - name: Run tests
         run: dotnet test --no-build --verbosity normal
 
+  cargo-test:
+    runs-on: ubuntu-latest
+    needs: metadata
+    if: needs.metadata.outputs.run-cargo == 'true'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Test resvg wrapper
+        run: cargo test --manifest-path src/ConsoleToSvg.Converter/native/resvg-wrapper/Cargo.toml
+
+  docs-test:
+    runs-on: ubuntu-latest
+    needs: metadata
+    if: needs.metadata.outputs.run-docs == 'true'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
@@ -59,16 +136,49 @@ jobs:
         working-directory: docs-site
         run: npm run build
 
+  npm-wrapper-test:
+    runs-on: ubuntu-latest
+    needs: metadata
+    if: needs.metadata.outputs.run-npm-wrapper == 'true'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: wrapper/npm/package-lock.json
+
+      - name: Install npm wrapper dependencies
+        working-directory: wrapper/npm
+        run: npm ci --ignore-scripts
+
+      - name: Check npm wrapper
+        working-directory: wrapper/npm
+        run: |
+          node --check cli/install.js
+          node --check cli/console2svg.js
+          node -e "require('proxy-from-env'); import('https-proxy-agent')"
+          npm pack --dry-run
+
   dependabot:
     runs-on: ubuntu-latest
-    needs: package-test
+    needs:
+      - metadata
+      - dotnet-test
+      - cargo-test
+      - docs-test
+      - npm-wrapper-test
+    if: >-
+      always() &&
+      needs.metadata.result == 'success' &&
+      (needs.dotnet-test.result == 'success' || needs.dotnet-test.result == 'skipped') &&
+      (needs.cargo-test.result == 'success' || needs.cargo-test.result == 'skipped') &&
+      (needs.docs-test.result == 'success' || needs.docs-test.result == 'skipped') &&
+      (needs.npm-wrapper-test.result == 'success' || needs.npm-wrapper-test.result == 'skipped')
     steps:
-      - name: Dependabot metadata
-        id: metadata
-        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98
-        with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
-
       - name: Merge Dependabot PR
         shell: bash
         run: |
@@ -82,7 +192,7 @@ jobs:
           echo "$output"
 
           if grep -Fq "Protected branch rules not configured for this branch" <<<"$output"; then
-            echo "GitHub auto-merge requires branch protection; merging now because package-test succeeded."
+            echo "GitHub auto-merge requires branch protection; merging now because the selected dependency checks succeeded."
             gh pr merge --squash "$PR_URL"
           else
             exit 1

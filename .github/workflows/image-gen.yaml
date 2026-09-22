@@ -1,6 +1,9 @@
-name: Generate SVG Assets (Manual)
+name: Generate Documentation Assets
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -8,6 +11,7 @@ permissions:
 
 jobs:
   image-gen:
+    if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip-ci]')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -30,5 +34,5 @@ jobs:
       - name: Commit & Push
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_message: "[skip-ci] chore: regenerate assets"
+          commit_message: "[skip-ci] chore: regenerate documentation assets"
           branch: ${{ github.ref_name }}

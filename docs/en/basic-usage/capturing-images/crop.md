@@ -32,7 +32,7 @@ console2svg capture -w 80 -h 12 \
   --crop-left 10px --crop-right 10ch -- console2svg
 ```
 
-<!-- c2s:: -o cmd-crop-after.svg -w 80 -h 12 --crop-top 20px --crop-bottom 3ch --crop-left 10px --crop-right 10ch -- console2svg -->
+<!-- c2s::  -w 80 -h 12 --crop-top 20px --crop-bottom 3ch --crop-left 10px --crop-right 10ch -- console2svg -->
 
 ### Cropping by text pattern
 
@@ -43,7 +43,7 @@ You can also crop dynamically relative to the position where a specific string a
 console2svg capture -w 80 -h 12 --crop-bottom "Options" -- console2svg
 ```
 
-<!-- c2s:: -o cmd-crop-text.svg -w 80 -h 12 --crop-bottom "Options" -- console2svg -->
+<!-- c2s::  -w 80 -h 12 --crop-bottom "Options" -- console2svg -->
 
 By specifying an offset line count, you can crop from lines before or after the matched line.
 
@@ -52,4 +52,4 @@ By specifying an offset line count, you can crop from lines before or after the 
 console2svg capture -w 80 -h 12 --crop-bottom "Options::-2" -- console2svg
 ```
 
-<!-- c2s:: -o cmd-crop-text-offset.svg -w 80 -h 12 --crop-bottom "Options::-2" -- console2svg -->
+<!-- c2s::  -w 80 -h 12 --crop-bottom "Options::-2" -- console2svg -->

@@ -5,7 +5,7 @@ set -euo pipefail
 DEMO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CONSOLE2SVG_BIN="${CONSOLE2SVG_BIN:-console2svg}"
 
-ASSET_ROOT="${CONSOLE2SVG_ASSETS_DIR:-$DEMO_ROOT/docs/assets}"
+ASSET_ROOT="${CONSOLE2SVG_ASSETS_DIR:-$DEMO_ROOT/docs-site/public/assets}"
 mkdir -p "$ASSET_ROOT" "$DEMO_ROOT/logs"
 
 wait_for_pane() {

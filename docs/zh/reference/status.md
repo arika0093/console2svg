@@ -14,7 +14,7 @@ console2svg status
 
 输出示例（版本、路径和可用性会因环境而异）：
 
-<!-- c2s:: -o cmd-status.svg -w 100 -- console2svg status -->
+<!-- c2s::  -w 100 -- console2svg status -->
 
 ## 切换输出格式
 

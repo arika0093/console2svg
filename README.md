@@ -1,120 +1,145 @@
 <div align="center">
 
-![console2svg hero image with oh-my-logo](./docs/assets/cmd-hero.svg)
+<!-- c2s:: -w 100 -h 10 -c -d macos-pc --background "docs-site/public/assets/image1.png" --opacity 0.95 -- oh-my-logo "console2svg" mint --filled --letter-spacing 0 -->
 
-[![npm version](https://img.shields.io/npm/v/console2svg?style=flat-square&logo=npm&color=0080CC)](https://www.npmjs.com/package/console2svg) [![GitHub Release](https://img.shields.io/github/v/release/arika0093/console2svg?style=flat-square&logo=github&label=GitHub%20Release&color=%230080CC)](https://github.com/arika0093/console2svg/releases/latest) ![WinGet Package Version](https://img.shields.io/winget/v/arika0093.console2svg?style=flat-square&logo=gitlfs&label=WinGet&color=%230080CC)
-
-
-Easily convert terminal output into SVG images.  
-Truecolor, animation, cropping and many appearance options are supported.
-
-> Of course, this hero image is [generated](https://github.com/arika0093/console2svg/blob/main/scripts/image-gen.sh#L2-L3) using console2svg itself.
+*Share your terminal beautifully.*
 
 </div>
 
 # console2svg
 
-* [Why console2svg?](#why-console2svg)
-* [Overview](#overview)
-* [Install](#install)
-* [Usage](#usage)
-* [Appearance options](#appearance-options)
-
 ## Why console2svg?
-Console screenshots in raster formats (PNG, etc.) often make text look blurry. console2svg converts console output into vector SVG images so you can save your terminal as a crisp, scalable image.
 
-For example, let's open [this image](https://raw.githubusercontent.com/arika0093/console2svg/refs/heads/main/docs/assets/cmd-btop.svg) in your browser and zoom in — the text remains sharp at any scale 👀
+Convert terminal output into images for READMEs, blog posts, assignments, and documentation.
 
-There are similar tools, but console2svg stands out for:
+There are lots of features. You are sure to find something you like:
 
-* [**No dependencies**](#install): no additional software or libraries required. Everything you need is included.
-* [**Video mode**](#animated-svg): save command execution animations as SVG. great for documentation and blog posts.
-* [**Interactive capture**](#interactive-capture): capture the current terminal screen on demand, or record a session and save it as an animated SVG.
-* [**Crop**](#static-svg-with-crop): trim specific parts of the output. Crop based on text patterns is also supported, making it easy to trim specific lines or sections.
-* [**Background and window**](#window-chrome): add background and window frames to produce presentation-ready SVGs for documentation, blogs, social media, etc.
-* [**CI friendly**](#github-actions): with features like replay and timeout, it can generate both static and animated SVGs in CI environments, minimizing discrepancies between code and images.
-* [**Windows support**](#supported-platforms): works on Windows, macOS and Linux.
-* [**Support many format**](#convert-to-other-formats): By incorporating `ffmpeg` and `resvg`, it can output not only SVG but also various formats such as PNG, MP4, GIF, etc.
+- **Generate beautiful SVG images** — Render ANSI and Truecolor output as SVG. It delivers high resolution that is perfect for your documentation.
+- **Generate videos too** — Share `cmatrix` output in one shot.
+- **Automation support** — Regenerate documentation images in CI, with replay support included.
+- **Convert to other formats** — Convert to PNG, GIF, WebM, MP4, and more with built-in support.
+- **Interactive capture** — Press `F9`/`F10` to capture at any time without launching a screenshot tool.
+- **Live Server** — Convert terminal sessions to SVG in real time and show them live in a browser. Even YouTube streaming is possible.
+- **Rich custom-theme support** — Choose from a wide variety of themes and customize the terminal appearance to match your preferences.
+- **Windows support** — It works on Linux, macOS, and Windows.
+- **Built-in crop feature** — Automatically trim overly long output and extract only the parts you need.
+- **Share safely** — Common passwords and usernames are masked automatically, even when `APP_SECRET_TOKEN` accidentally appears in the output.
+
+For more information, see the [documentation site](https://console2svg.eclairs.cc/en/).
 
 ## Overview
 
-The simplest way to use it is to put the command you want to run after `console2svg capture --`. For example, the following command converts the description text of `console2svg` into SVG (oh, how meta).
+Rather than explaining the features at length in text, here are some real usage examples.
+
+### The simplest example
+
+Capture the command's own help text:
 
 ```bash
 console2svg capture -- console2svg
 ```
 
-![console2svg capture -- console2svg](./docs/assets/cmd.svg)
+<!-- c2s:: -w 120 -- console2svg -->
 
-You can also generate SVG with a window frame. and some options to customize the appearance.  
-For example, `-w` specifies the width, `-c` is an option to display the command at the beginning of the output, and `-d` is an option to specify the style of the window frame, where we specify a macOS-like frame. If the command is long, you can also write it together after `--`.
+### With a frame
+
+Use a macOS Terminal-style frame, specify the width, and include the executed command name:
 
 ```bash
 console2svg capture -w 100 -c -d macos-pc -- fastfetch
 ```
 
-![console2svg capture -w 100 -c -d macos-pc -- fastfetch](./docs/assets/cmd-window.svg)
+<!-- c2s:: -w 100 -c -d macos-pc -- fastfetch -->
 
----
+### Background and transparency settings
 
-In video mode(`-v`), you can capture the animation of the command execution and save it as an SVG.
-By using the [replay feature](#replay-input), you can save the command execution record and later regenerate the SVG based on that record.
-
-```bash
-console2svg -w 40 -h 10 -v -d windows --timeout 7 -- /usr/games/pipes -t 1 -f 35
-```
-
-![console2svg -w 40 -h 10 -v -d windows --timeout 7 -- pipes.sh](./docs/assets/cmd-loop.svg)
-
----
-
-With `console2svg interactive`, you can run your normal interactive shell in a PTY and capture its current screen on demand. Press `F10` to write a static SVG, or `F9` to start recording from the exact current terminal state.
+You can make the output quite stylish with a background image and opacity:
 
 ```bash
-console2svg interactive -d macos -o ./captures/output.svg
-# -> saves ./captures/output_yyyyMMdd_HHmmss.svg
+console2svg capture -w 100 -h 10 -c -d macos-pc \
+    --background "docs-site/public/assets/image1.png" --opacity 0.95 \
+    -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
 ```
 
-![console2svg interactive -d macos -o ./captures/output.svg](./docs/assets/cmd-interactive.svg)
 
----
+### Animation
 
-By starting a Live Server, you can also display the terminal in a browser. This is mainly useful for streaming.
+#### `sl`
+
+```sh
+console2svg capture -c -d -v -- sl
+```
+
+<!-- c2s:: -w 120 -h 16 -c -d -v -- sl -->
+
+#### `cmatrix`
+
+```sh
+console2svg capture -w 100 -h 24 -c -d macos-pc -v --timeout 5 -- cmatrix -ab
+```
+
+<!-- c2s:: -w 100 -h 24 -c -d macos-pc -v --timeout 5 -- cmatrix -ab -->
+
+#### `nyancat`
+
+```sh
+console2svg capture -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat
+```
+
+<!-- c2s:: -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat -->
+
+### Replay playback
+
+Replay a file prepared in advance to reproduce the same output in CI environments:
+
+```sh
+console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash
+```
+
+<!-- c2s:: -w 80 -h 20 -v -d macos --replay docs-site/public/assets/cmd-bash-vim-replay.json -- bash -->
+
+### Interactive capture
+
+Start recording with the `F9` key, then press `F9` again to stop recording.
 
 ```bash
-console2svg live-server -d --background your-bg.png
-# -> Live terminal: http://127.0.0.1:38473/
+console2svg interactive -d macos
 ```
 
-![console2svg live-server -d macos-pc --background docs/assets/image3.png --opacity 0.9](./docs/assets/cmd-liveserver.png)
+![An interactive console2svg capture](./docs-site/public/assets/cmd-interactive.svg)
+
+### Theme support
+
+Specify any theme you like, whether built-in or custom.
+
+```bash
+console2svg capture -w 100 -h 24 -c -d macos -t nord --timeout 2 -- cmatrix -ab
+```
+
+<!-- c2s:: -w 100 -h 24 -c -d macos -t nord --timeout 2 -- cmatrix -ab -->
+
+```bash
+console2svg capture -w 100 -h 24 -c -t cyberpunk-pc --timeout 2 -- cmatrix -ab
+```
+
+<!-- c2s:: -w 100 -h 24 -c -t cyberpunk-pc --timeout 2 -- cmatrix -ab -->
+
+### Sensitive information masking
+
+Common secrets are masked automatically when capturing terminal output.
+
+<!-- c2s:: -w 80 -h 14 -d macos-pc -t github-dark -- cat .env -->
+
+See the [gallery](https://console2svg.eclairs.cc/en/gallery/) for more examples and the [quick start guide](https://console2svg.eclairs.cc/en/getting-started/quick-start/) to try console2svg.
 
 ## Install
+
 ### Linux/macOS
 
 The easiest way is the install script.
 
 ```sh
 curl -sSL https://raw.githubusercontent.com/arika0093/console2svg/main/install.sh | bash
-```
-
-You can also install via package managers.
-
-```sh
-# npm global package (Windows / Linux / macOS)
-npm install -g console2svg
-```
-
-You can also install from the [release archives](https://github.com/arika0093/console2svg/releases/latest) manually, or use the `.deb` / `.rpm` packages on Linux.
-
-```sh
-# ubuntu
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg.amd64.deb -o console2svg.deb
-dpkg -i console2svg.deb
-
-# Linux
-curl -sSL https://github.com/arika0093/console2svg/releases/latest/download/console2svg.linux-x64.tar.gz -o console2svg.tar.gz
-tar -xzf console2svg.tar.gz
-chmod +x console2svg
 ```
 
 ### Windows
@@ -124,390 +149,22 @@ The easiest way is to use `winget` or `npm`.
 ```powershell
 # Windows Package Manager (WinGet)
 winget install arika0093.console2svg
-
-# npm global package (Windows / Linux / macOS)
-npm install -g console2svg
 ```
 
-### Updating standalone installations
+For other installation methods, see [Installation](https://console2svg.eclairs.cc/en/getting-started/installation/).
 
-Installations made from a release archive or `install.sh` can check for and install the latest
-release:
+## License
 
-```sh
-console2svg update --check
-console2svg update
+This project is licensed under the `Apache 2.0` license.
+
+```
+Copyright 2026 arika0093
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
 ```
 
-The update command asks for confirmation before replacing files. Use `--yes` in automation.
-Installations managed by npm, winget, apt, or dnf/rpm are left to their package manager and
-display the corresponding update command instead.
-
-### GitHub Actions
-
-A convenient GitHub Action is also available for use in CI. To use the latest version of `console2svg`, simply add the following step to your workflow:
-
-```yaml
-- uses: arika0093/console2svg@main
-```
-
-<details>
-<summary>Example usage in GitHub Actions</summary>
-
-Full workflow example that generates an SVG and commits it back:
-
-```yaml
-jobs:
-  gen:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup console2svg
-        uses: arika0093/console2svg@main
-
-      - name: Generate SVG
-        run: console2svg capture -w 120 -c -d macos-pc -o output.svg -- dotnet --version
-
-      - name: Commit Changes
-        uses: stefanzweifel/git-auto-commit-action@v7
-        with:
-          commit_message: "[skip-ci] chore: regenerate SVG"
-```
-
-</details>
-
-<details>
-<summary>CI environment variables override</summary>
-
-Some libraries (for example [chalk](https://www.npmjs.com/package/chalk)) detect CI environments and automatically disable color output. However, when generating SVGs you always want color enabled. Therefore, console2svg automatically sets and removes the following environment variables by default:
-* `TERM=xterm-256color`: set to enable color support.
-* `COLORTERM=truecolor`: enable TrueColor output.
-* `FORCE_COLOR=3`: same; `3` indicates TrueColor.
-* `CI` (deleted): removed because some libraries disable color when they detect a CI environment.
-* `TF_BUILD` (deleted): removed for the same reason (used by Azure Pipelines).
-
-To disable this behavior, use the `--no-colorenv` and `--no-delete-envs` options.
-
-</details>
-
-> [!TIP]
-> This repository uses this action itself to automatically regenerate all the SVG images in the [`docs/assets/`](docs/assets/) directory whenever a new release is published.
-
-## Usage
-### PTY command mode
-
-```sh
-console2svg capture "git log --oneline"
-# or 
-console2svg capture -- git log --oneline
-```
-
-If you want to set a fixed width and height, you can use the `-w` and `-h` options.
-
-```sh
-console2svg capture -w 120 -h 20 -- git log --oneline
-```
-
-### Interactive capture
-
-Run your normal interactive shell in a PTY and capture its current screen on demand.
-On Unix, `console2svg` uses `$SHELL`; on Windows, it uses the system command shell.
-The shell's output is forwarded live to your terminal. Press `F10` to write a
-static SVG; the capture notification is printed by the host and is not sent to the shell.
-
-```sh
-console2svg interactive -o ./captures/output.svg
-# -> writes ./captures/output_yyyyMMdd_HHmmss.svg (image)
-```
-
-Press `F9` to start recording from the exact current terminal state, `F12` to pause or resume it, then `F9` again to save the recording. Output and elapsed time while paused are excluded from the recording.
-The output format controls whether the capture is written as animated SVG or converted to the requested video format.
-
-```sh
-console2svg interactive -o ./captures/session.svg
-# -> writes ./captures/session_yyyyMMdd_HHmmss.svg (animation)
-```
-
-### Static SVG with crop
-
-You can crop the output by specifying the number of pixels or characters to crop from each side.
-
-```sh
-# ch: character width, px: pixel
-console2svg capture --crop-top 1ch --crop-left 5px --crop-right 30px -- your-command
-```
-
-You can also crop at the position where a specific character appears.
-When specifying a character, you can specify it like `:(number)`, which crops at a relative position from the detected line.
-
-For example, the following example crops from the line where the character `Host` is located to 2 lines above the line where the character `.NET runtimes installed:` is located.
-
-```sh
-console2svg capture --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -- dotnet --info
-```
-
-The result will look like this.
-
-![console2svg capture --crop-top "Host" --crop-bottom ".NET runtimes installed:-2" -- dotnet --info](./docs/assets/cmd-crop-word.svg)
-
-### Animated SVG
-
-use `-m video` or `-v` to capture the animation of the command execution and save it as an SVG.
-
-```sh
-# apt install sl
-console2svg capture -c -d -v -- sl
-```
-
-![console2svg capture -c -d -v -- sl](./docs/assets/cmd-sl.svg)
-
-You can specify the `--timeout` option to output SVG after a certain time has elapsed.
-This is useful for converting commands that do not terminate, such as `nyancat`, into SVG.
-
-There is also a `--sleep` option to specify the stop time after playback. This allows you to display the last frame for a specified time after the command execution is finished.
-
-```sh
-# apt install nyancat
-console2svg capture -w 160 -h 32 -c -d -v --timeout 5 --sleep 0.5 -- nyancat -d 10
-```
-
-![console2svg capture -w 160 -h 32 -c -d -v --timeout 5 --sleep 0.5 -- nyancat -d 10](./docs/assets/cmd-nyancat.svg)
-
-You can also write sequential SVG files starting with `frame-0000.svg` to a specific folder.
-This is useful for cherry-picking your favorite frames or converting them into a video using software like ffmpeg. 
-
-```sh
-# apt install cmatrix
-console2svg capture -c -d -v --timeout 5 --fps 30 --save-frames ./frames-dir -- cmatrix -ab
-```
-
-### Replay input
-You can also save the command execution record and later regenerate the SVG based on that record. 
-To save the record, use the `--replay-save` option to save the command execution.
-
-```sh
-console2svg capture --replay-save ./replay.json -- bash
-# save key inputs to replay.json
-```
-
-Then, generate the SVG based on the saved key input.
-By using this feature, you can generate an SVG that records terminal operations as shown below.
-
-```sh
-console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash
-```
-
-![console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash](./docs/assets/cmd-bash-vim.svg)
-
-The replay file is in a simple JSON format. If you make a mistake in the input, you can directly edit this file (or of course, you can ask AI to fix it for you).
-
-<details>
-<summary>Replay file format</summary>
-
-```json5
-// replay.json
-{
-  "version": "1",
-  "appVersion": "0.4.0.2+17cc95284e",
-  "createdAt": "2026-03-01T06:52:43.3615812+00:00",
-  // If more than 1 second has passed from the total time,
-  // it will exit with an error as a timeout.
-  "totalDuration": 10.9530099,
-  "replay": [
-    {
-      // first event: absolute time from recording start (seconds)
-      "time": 1.5,
-      "key": "e",
-      "modifiers": [],
-      "type": "keydown"
-    },
-    {
-      // subsequent events: delta from the previous event (seconds)
-      "tick": 0.08,
-      "key": "c",
-      "modifiers": ["shift"],
-      "type": "keydown"
-    },
-    // and so on...
-  ]
-}
-```
-
-</details>
-
-### Convert to other formats
-
-In v0.8 and later, you can specify the output format based on the file extension specified with `-o output.mp4`.
-
-First, install `ffmpeg`. Release archives on Windows already include it. On Linux,
-install it with your distribution's package manager; on macOS, use Homebrew:
-
-```bash
-# ubuntu
-sudo apt install ffmpeg
-# macos
-brew install ffmpeg
-# windows
-# > ffmpeg is included in console2svg-win-x64.zip
-```
-
-Then, you can specify the output file with the desired extension. For example, to convert an animated command to any format, you can use the following command:
-
-```bash
-# apt install cmatrix
-console2svg capture -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab
-```
-
-![console2svg capture -o ./output.gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab](./docs/assets/cmd-matrix-video.gif)
-
-You can also output as MP4, WebM, or a static PNG/JPG by changing the extension.
-
-## Appearance options
-### Background and opacity
-
-You can set the background color or image of the output SVG, and adjust the opacity of the background fill.
-
-```sh
-console2svg capture -h 10 -c -d macos-pc --background "#003060" --opacity 0.85 -- dotnet --version
-```
-
-![console2svg capture -h 10 -c -d macos-pc --background "#003060" --opacity 0.85 -- dotnet --version](./docs/assets/cmd-bg1.svg)
-
-You can also set a gradient background.
-
-```sh
-console2svg capture -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.85 -- dotnet --version
-```
-
-![console2svg capture -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.85 -- dotnet --version](./docs/assets/cmd-bg2.svg)
-
-Image background is also supported.
-
-```sh
-console2svg capture -h 10 -c -d macos-pc --background image.png --opacity 0.85  -- dotnet --version
-```
-
-![console2svg capture -h 10 -c -d macos-pc --background image.png --opacity 0.85  -- dotnet --version](./docs/assets/cmd-bg3.svg)
-
-### Terminal Appearance
-
-You can customize the appearance with various options. 
-For example, in the following example, the prompt (the string displayed at the beginning) is changed to `[HELLO!] $`,
-the command header is changed to `my-custom-header`, and the text color is changed to `#00f040`.
-
-```sh
-console2svg capture -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" --backcolor "#042515" -- echo "hi"
-```
-
-![console2svg capture -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" --backcolor "#042515" -- echo "hi"](./docs/assets/cmd-term-custom.svg)
-
-
-### Window chrome
-
-`-d` option allows you to specify the style of the window frame. 
-
-| Image                                                                      | Style(`-d`)   | Description |
-|----------------------------------------------------------------------------|---------------|----|
-| <img src="./docs/assets/window/none.svg" width="400" alt="none">                | `none`        | no window frame |
-| <img src="./docs/assets/window/transparent.svg" width="400" alt="transparent">  | `transparent` | transparent background (text-only output) |
-| <img src="./docs/assets/window/macos.svg" width="400" alt="macos">              | `macos`       | macOS style window frame |
-| <img src="./docs/assets/window/windows.svg" width="400" alt="windows">          | `windows`     | Windows Terminal style window frame |
-
-
-`*-pc` styles are designed for use with a background, and include padding and shadows to create a "window" effect. You can customize the spacing between the window chrome and shell with `--margin`, the terminal's inner spacing with `--padding`, and the desktop padding with `--pc-padding`.
-
-| Image                                                                      | Style(`-d`)   |
-|----------------------------------------------------------------------------|---------------|
-| <img src="./docs/assets/window/macos-pc.svg" width="400" alt="macos-pc">        | `macos-pc`    |
-| <img src="./docs/assets/window/windows-pc.svg" width="400" alt="windows-pc">    | `windows-pc`  |
-
-## Tips
-### Using with `tmux`
-By combining with `tmux`, you can save the step-by-step execution process of commands as SVG images.
-The `tmux` workflow is available on Linux and macOS; on Windows, run console2svg inside WSL.
-
-First, open tmux. If it's not installed, install it using `apt install tmux` or `brew install tmux`, etc.
-
-```sh
-tmux
-```
-
-Execute commands in the default window (`:0`).
-
-```bash
-$ echo "say hello"
-$ echo "say goodbye"
-```
-
-After completing the command execution you want to record, open a new window with `ctrl+b c`. Then, run `console2svg tmux capture` and choose the pane you want to save.
-
-```sh
-#   -h 12: set the height of the output SVG to 12 lines (adjust as needed)
-console2svg tmux capture -h 12 -o capture-$(date +%s).svg
-```
-
-<details>
-<summary>Recording and replaying tmux usage</summary>
-
-With the power of `console2svg`, you can even record and explain how to use `console2svg` itself :)
-
-![](./docs/assets/cmd-tmux-replay.svg)
-
-</details>
-
-<details>
-<summary>tmux capture-pane result example</summary>
-
-![console2svg tmux capture -h 12](./docs/assets/cmd-tmux-cap.svg)
-
-</details>
-
-Then repeat the workflow: press `ctrl+b p` to return to the original window, work on your commands, press `ctrl+b n` to switch to the SVG capture pane, and run the `console2svg` command. This allows you to progressively save the command execution process as SVG images.
-
-Of course, you can also save all lines (useful for evidence) with `--history`. Use `--history=<lines>` to include a specific number of recent history lines.
-
-```sh
-console2svg tmux capture --target :0 --history -o full-capture-$(date +%s).svg
-```
-
-### Animated tmux capture and live server
-
-Use `-v` to repeatedly capture a tmux pane as an animated SVG. The pane is selected interactively unless you specify `--target`. The command runs at the interval specified by `--fps` until you stop it with `Ctrl+C`.
-
-```sh
-console2svg tmux capture -v --fps 2 -o tmux.svg
-```
-
-To serve a tmux pane in a browser, run a live server in another terminal window. It polls the pane at `--fps` and does not forward tmux output to the server terminal.
-
-```sh
-console2svg tmux live-server --target :0 --fps 2
-# -> Live terminal: http://127.0.0.1:38473/
-```
-
-## Supported platforms
-
-* Windows 10 and later (required `ConPTY`)
-* Linux (tested on Ubuntu 24.04, but should work on other distributions as well)
-* macOS (ver 0.6.2 and later support macOS(arm64) natively)
-
-## Options
-### Major options
-
-* `-o`: Output SVG file path (default: `output.svg`)
-* `-c`: Prepend the command line to the output as if typed in a terminal.
-* `-w`: width of the output SVG (default: terminal width)
-* `-h`: height of the output SVG (default: terminal height)
-* `-v`: output to video mode SVG (animated, looped by default)
-* `-i`: interactive mode (run a shell in a PTY and capture the current screen on demand)
-* `-d`: window chrome style (none, macos, windows, macos-pc, windows-pc, transparent, ...)
-* `--background`: background color or image for the output SVG
-* `--forecolor`: override default console foreground color
-* `--header`: override command header text (shown even without `-c`)
-* `--prompt`: override prompt prefix for `-c` (default: `$` or `#` when root)
-* `--verbose`: enable verbose logging
-* `--crop-*`: crop the output by specified pixels, characters, or text patterns
+See the [licenses of related projects](https://console2svg.eclairs.cc/en/deep-dive/overview/#minimize-package-dependencies).

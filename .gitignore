@@ -18,8 +18,6 @@ docs/dist/
 docs-site/.astro/
 docs-site/dist/
 docs-site/src/content/docs/
-docs-site/public/assets/
-docs-site/public/docs/assets/
 
 # ------------------------------------
 ## Ignore Visual Studio temporary files, build results, and

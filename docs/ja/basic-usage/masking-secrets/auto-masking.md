@@ -52,4 +52,4 @@ console2svg capture -80 -h 14 -d macos-pc -t github-dark -- cat .env
 console2svg capture -80 -h 14 -d macos-pc -t github-dark --mask-auto false -- cat .env
 ```
 
-<!-- c2s:: -o cmd-mask-auto.svg -w 80 -h 14 -d macos-pc -t github-dark --mask-auto false -- cat ../../../../.env -->
+<!-- c2s::  -w 80 -h 14 -d macos-pc -t github-dark --mask-auto false -- cat ../../../../.env -->

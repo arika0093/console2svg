@@ -33,6 +33,8 @@ internal static class MarkdownCodeContext
     {
         var offset = 0;
         FenceState? openFence = null;
+        var inFrontmatter = false;
+        var firstLine = true;
 
         while (offset < markdown.Length)
         {
@@ -46,6 +48,27 @@ internal static class MarkdownCodeContext
 
             var line = markdown[offset..rawEnd];
             var (containerStart, quoteDepth) = GetContainerStart(line);
+
+            if (firstLine && line.Trim() == "---")
+            {
+                inFrontmatter = true;
+                firstLine = false;
+                offset = next;
+                continue;
+            }
+
+            if (inFrontmatter)
+            {
+                if (line.Trim() == "---")
+                {
+                    inFrontmatter = false;
+                }
+
+                offset = next;
+                continue;
+            }
+
+            firstLine = false;
 
             if (openFence is not null)
             {

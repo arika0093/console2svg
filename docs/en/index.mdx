@@ -5,7 +5,9 @@ template: splash
 hero:
   tagline: "$ Share your terminal beautifully."
   image:
-    html: '<img class="home-hero__image" src="/assets/cmd-hero.svg" alt="A console2svg terminal preview" width="898" height="283" loading="eager">'
+    html: |
+      <!-- c2s:: -w 100 -h 10 -c -d macos-pc --background "../../docs-site/public/assets/image1.png" --opacity 0.95 -- oh-my-logo "console2svg" mint --filled --letter-spacing 0 -->
+      <img class="home-hero__image" src="/assets/cmd-hero.svg" alt="A console2svg terminal preview" width="898" height="283" loading="eager">
   actions:
     - text: Get started
       link: /en/getting-started/installation/

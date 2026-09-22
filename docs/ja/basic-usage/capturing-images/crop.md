@@ -32,7 +32,7 @@ console2svg capture -w 80 -h 12 \
   --crop-left 10px --crop-right 10ch -- console2svg
 ```
 
-<!-- c2s:: -o cmd-crop-after.svg -w 80 -h 12 --crop-top 20px --crop-bottom 3ch --crop-left 10px --crop-right 10ch -- console2svg -->
+<!-- c2s::  -w 80 -h 12 --crop-top 20px --crop-bottom 3ch --crop-left 10px --crop-right 10ch -- console2svg -->
 
 ### テキストパターンによる切り抜き
 
@@ -43,7 +43,7 @@ console2svg capture -w 80 -h 12 \
 console2svg capture -w 80 -h 12 --crop-bottom "Options" -- console2svg
 ```
 
-<!-- c2s:: -o cmd-crop-text.svg -w 80 -h 12 --crop-bottom "Options" -- console2svg -->
+<!-- c2s::  -w 80 -h 12 --crop-bottom "Options" -- console2svg -->
 
 オフセット行数を指定することで、一致した行の前後の行から切り抜くことも可能です。
 
@@ -52,4 +52,4 @@ console2svg capture -w 80 -h 12 --crop-bottom "Options" -- console2svg
 console2svg capture -w 80 -h 12 --crop-bottom "Options::-2" -- console2svg
 ```
 
-<!-- c2s:: -o cmd-crop-text-offset.svg -w 80 -h 12 --crop-bottom "Options::-2" -- console2svg -->
+<!-- c2s::  -w 80 -h 12 --crop-bottom "Options::-2" -- console2svg -->

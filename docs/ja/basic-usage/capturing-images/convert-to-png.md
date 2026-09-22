@@ -13,7 +13,7 @@ SVG形式に対応していないプラットフォームやアプリケーシ�
 console2svg capture -o output.png -w 100 -h 12 -- console2svg
 ```
 
-<!-- c2s:: -o cmd-convert.png -w 100 -h 12 -- console2svg -->
+<!-- c2s::  -w 100 -h 12 -- console2svg -->
 
 ## レンダリングエンジン
 
@@ -32,4 +32,4 @@ console2svg は組み込みの [resvg](https://github.com/linebender/resvg)（Ru
 console2svg capture -o result.png --svg-converter rsvg-convert -- console2svg
 ```
 
-<!-- c2s:: -o cmd-rsvg-convert.png -w 100 -h 12 --svg-converter rsvg-convert -- console2svg -->
+<!-- c2s::  -w 100 -h 12 --svg-converter rsvg-convert -- console2svg -->

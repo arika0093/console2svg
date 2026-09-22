@@ -13,7 +13,7 @@ description: 将拍摄的终端输出自动转换为 PNG 栅格图片的方法�
 console2svg capture -o output.png -w 100 -h 12 -- console2svg
 ```
 
-<!-- c2s:: -o cmd-convert.png -w 100 -h 12 -- console2svg -->
+<!-- c2s::  -w 100 -h 12 -- console2svg -->
 
 ## 渲染引擎
 
@@ -32,4 +32,4 @@ console2svg 内置了 [resvg](https://github.com/linebender/resvg)（Rust 编写
 console2svg capture -o result.png --svg-converter rsvg-convert -- console2svg
 ```
 
-<!-- c2s:: -o cmd-rsvg-convert.png -w 100 -h 12 --svg-converter rsvg-convert -- console2svg -->
+<!-- c2s::  -w 100 -h 12 --svg-converter rsvg-convert -- console2svg -->

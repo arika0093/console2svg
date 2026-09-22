@@ -4,8 +4,8 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_root"
-assets_dir="${CONSOLE2SVG_ASSETS_DIR:-$repo_root/docs/assets}"
-mkdir -p "$assets_dir/window" "$assets_dir/themes"
+assets_dir="${CONSOLE2SVG_ASSETS_DIR:-$repo_root/docs-site/public/assets}"
+mkdir -p "$assets_dir"
 
 local_console2svg_dir=
 if ! command -v console2svg >/dev/null 2>&1; then
@@ -39,12 +39,15 @@ SECRET_HASH=fedcba9876543210fedcba9876543210
 EOF
 
 # Documentation images are declared next to their Markdown examples.
-batch_args=(batch markdown -i "$repo_root/docs" -o "$assets_dir")
+batch_args=(batch markdown -i "$repo_root" -o "$assets_dir" --filter "docs/**")
 if [[ -n "${CONSOLE2SVG_BATCH_LINK_BASE:-}" ]]; then
   batch_args+=(--link-base "$CONSOLE2SVG_BATCH_LINK_BASE")
 fi
 console2svg "${batch_args[@]}"
 
-# Interactive and tmux demos are not supported by batch markdown.
+# README links must remain relative so that they work on GitHub as well as
+# from a local checkout. Keep README ownership in the shared manifest.
+console2svg batch markdown -i "$repo_root" -o "$assets_dir" --filter "README.md"
+
+# The interactive demo is not supported by batch markdown.
 bash ./scripts/demos/generate-interactive.sh
-bash ./scripts/demos/generate-tmux.sh

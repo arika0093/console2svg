@@ -52,4 +52,4 @@ If you want to display sample dummy keys as-is, specify `--mask-auto false`.
 console2svg capture -80 -h 14 -d macos-pc -t github-dark --mask-auto false -- cat .env
 ```
 
-<!-- c2s:: -o cmd-mask-auto.svg -w 80 -h 14 -d macos-pc -t github-dark --mask-auto false -- cat ../../../../.env -->
+<!-- c2s::  -w 80 -h 14 -d macos-pc -t github-dark --mask-auto false -- cat ../../../../.env -->

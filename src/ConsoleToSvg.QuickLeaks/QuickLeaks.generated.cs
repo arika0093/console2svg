@@ -12,7 +12,7 @@ namespace ConsoleToSvg.QuickLeaks;
 
 public static partial class QuickLeaks
 {
-    private const int MatchTimeoutMilliseconds = 10;
+    private const int MatchTimeoutMilliseconds = 100;
     private const int NonBacktrackingMatchTimeoutMilliseconds = 100;
     internal const int RegexFallbackRuleCount = 347;
     private static readonly SearchValues<string> s_anchors = SearchValues.Create(

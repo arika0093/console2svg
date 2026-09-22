@@ -30,7 +30,7 @@ public sealed class QuickLeaksTests
             .All(regex =>
                 regex.MatchTimeout
                 == TimeSpan.FromMilliseconds(
-                    regex.Options.HasFlag(RegexOptions.NonBacktracking) ? 100 : 10
+                    regex.Options.HasFlag(RegexOptions.NonBacktracking) ? 100 : 100
                 )
             )
             .ShouldBeTrue();

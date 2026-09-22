@@ -25,7 +25,7 @@ console2svg interactive --replay-save demo.json -- bash
 console2svg replay demo.json -- bash
 ```
 
-![console2svg replay demo.json -- bash](/docs/assets/cmd-bash-vim.svg)
+![console2svg replay demo.json -- bash](/assets/cmd-bash-vim.svg)
 
 > [!TIP]
 > 再生時にもテーマや動画出力オプションなどを自由に指定できます。

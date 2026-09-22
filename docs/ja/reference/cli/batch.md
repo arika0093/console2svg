@@ -6,7 +6,7 @@ description: Markdownのc2sマーカーから画像を一括生成するコマ�
 ## `batch markdown`
 
 ```bash title="Terminal"
-console2svg batch markdown [--input <path>] [--output <dir>] [--filter <glob>] [--dry-run] [--placeholder]
+console2svg batch markdown [--input <path>] [--output <dir>] [--link-base <path>] [--filter <glob>] [--dry-run] [--placeholder]
 ```
 
 MarkdownやMDXの`c2s::`マーカーを実行し、直後の画像リンクを生成・更新します。
@@ -20,6 +20,10 @@ Markdownファイルまたはディレクトリを指定します（既定値: `
 ### `-o, --output <dir>`
 
 生成画像の出力先を指定します（既定値: `assets`）。
+
+### `--link-base <path>`
+
+Markdownファイルからの相対パスではなく、指定したルート相対の公開URL配下へ画像リンクを挿入します。例えば`--link-base /assets`では、リンクが`/assets/`から始まります。
 
 ### `--filter <glob>`
 

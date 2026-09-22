@@ -13,19 +13,19 @@ SVG is not only for displaying images; it is also a format well suited for shari
 First, compare the following two images.
 
 ```bash title="Terminal"
-$ btop
+$ fastfetch
 ```
 
 ### SVG
-{/* c2s:: -w 120 -h 24 -- fastfetch */}
-<img width="800" src="../../assets/why-svg-fastfetch.svg" />
+{/* c2s:: -o why-svg-fastfetch.svg -w 120 -h 24 -- fastfetch */}
+<img width="800" src="/assets/why-svg-fastfetch.svg" />
 
 ### PNG
-{/* c2s:: -w 120 -h 24 -- fastfetch */}
-<img width="800" src="../../assets/why-svg-fastfetch.png" />
+{/* c2s:: -o why-svg-fastfetch.png -w 120 -h 24 -- fastfetch */}
+<img width="800" src="/assets/why-svg-fastfetch.png" />
 
 
-You can see that the former has crisper text and cleaner box-drawing lines.
+You can see that the former has crisper text.
 Because SVG is a vector format, text and lines do not blur when enlarged or reduced. It maintains the same quality even when the display location or size changes, such as in READMEs, blog posts, slides, or printed materials.
 
 ## Small file size
@@ -34,14 +34,10 @@ If you compare the sizes of the two files above, you can see that the SVG versio
 
 <FileTree>
 
-* output.png (195918 bytes)
-* output.svg (38912 bytes)
+* output.png (60,717 bytes)
+* output.svg (8,455 bytes)
 
 </FileTree>
-
-> [!NOTE]
-> Note that this example uses `btop`, which is a relatively **unfavorable** case for SVG.
-> Simple text-only cases become even smaller.
 
 ## Display directly in the browser
 

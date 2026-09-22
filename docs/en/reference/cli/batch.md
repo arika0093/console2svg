@@ -6,7 +6,7 @@ description: Generate images in bulk from c2s markers in Markdown.
 ## `batch markdown`
 
 ```bash title="Terminal"
-console2svg batch markdown [--input <path>] [--output <dir>] [--filter <glob>] [--dry-run] [--placeholder]
+console2svg batch markdown [--input <path>] [--output <dir>] [--link-base <path>] [--filter <glob>] [--dry-run] [--placeholder]
 ```
 
 Executes `c2s::` markers in Markdown or MDX, and generates or updates the image link immediately after each marker.
@@ -20,6 +20,10 @@ Specify a Markdown file or directory (default: `docs`).
 ### `-o, --output <dir>`
 
 Specify the destination for generated images (default: `assets`).
+
+### `--link-base <path>`
+
+Insert asset links below this root-relative public URL path instead of paths relative to each Markdown file. For example, `--link-base /assets` produces links beginning with `/assets/`.
 
 ### `--filter <glob>`
 

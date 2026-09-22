@@ -6,7 +6,7 @@ description: 从 Markdown 的 c2s 标记批量生成图片的命令。
 ## `batch markdown`
 
 ```bash title="Terminal"
-console2svg batch markdown [--input <path>] [--output <dir>] [--filter <glob>] [--dry-run] [--placeholder]
+console2svg batch markdown [--input <path>] [--output <dir>] [--link-base <path>] [--filter <glob>] [--dry-run] [--placeholder]
 ```
 
 执行 Markdown 或 MDX 中的 `c2s::` 标记，并生成或更新其后的图片链接。
@@ -20,6 +20,10 @@ console2svg batch markdown [--input <path>] [--output <dir>] [--filter <glob>] [
 ### `-o, --output <dir>`
 
 指定生成图片的输出目标（默认值：`assets`）。
+
+### `--link-base <path>`
+
+不使用相对于各 Markdown 文件的路径，而是在指定的根相对公开 URL 下插入图片链接。例如，`--link-base /assets` 会生成以 `/assets/` 开头的链接。
 
 ### `--filter <glob>`
 

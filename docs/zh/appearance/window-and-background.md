@@ -14,7 +14,7 @@ description: 指定 macOS 风格或 Windows 风格窗口装饰（Chrome）、背
 console2svg capture -d macos-pc -- fastfetch
 ```
 
-![console2svg capture -d macos-pc -- fastfetch](/docs/assets/cmd-window.svg)
+![console2svg capture -d macos-pc -- fastfetch](/assets/cmd-window.svg)
 
 ### 列表
 
@@ -33,8 +33,7 @@ console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
   --background "#003060" -- dotnet --version
 ```
 
-<!-- c2s:: -w 64 -h 6 -c -d macos-pc --background "#003060" --opacity 0.85 -- dotnet --version -->
-![console2svg capture -h 10 -c -d macos-pc --background "#003060" --opacity 0.85 -- dotnet --version](../../assets/cmd-bg1.svg)
+<!-- c2s:: -o cmd-bg1.svg -w 64 -h 6 -c -d macos-pc --background "#003060" --opacity 0.85 -- dotnet --version -->
 
 
 ### 渐变
@@ -46,8 +45,7 @@ console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
   --background "#004060" "#0080c0" -- dotnet --version
 ```
 
-<!-- c2s:: -w 64 -h 6 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.85 -- dotnet --version -->
-![console2svg capture -h 10 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.85 -- dotnet --version](../../assets/cmd-bg2.svg)
+<!-- c2s:: -o cmd-bg2.svg -w 64 -h 6 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.85 -- dotnet --version -->
 
 
 ### 图片背景
@@ -59,8 +57,7 @@ console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
   --background image.png -- dotnet --version
 ```
 
-<!-- c2s:: -w 64 -h 6 -c -d macos-pc --background ../../assets/image2.png --opacity 0.85 -- dotnet --version -->
-![console2svg capture -h 10 -c -d macos-pc --background image.png --opacity 0.85  -- dotnet --version](../../assets/cmd-bg3.svg)
+<!-- c2s:: -o cmd-bg3.svg -w 64 -h 6 -c -d macos-pc --background ../../assets/image2.png --opacity 0.85 -- dotnet --version -->
 
 
 ## 留白和不透明度

@@ -18,3 +18,9 @@ console2svg capture -t nord -- console2svg
 console2svg capture --window macos-pc -- console2svg
 console2svg capture -t cyberpunk-pc -- console2svg
 ```
+
+> [!NOTE]
+> 主题和窗口边框可以指定多个。指定多个时，各自的内容会合并输出。
+> ```bash title="Terminal"
+> console2svg capture -t nord -d macos-pc -- console2svg
+> ```

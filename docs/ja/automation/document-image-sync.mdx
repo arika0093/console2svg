@@ -118,7 +118,7 @@ teardown: rm -f test.cs result.txt
 これは [Astro](https://docs.astro.build)などにおいて、画像がないとビルドに失敗する現象を簡易的に回避するための機能です。
 
 ```bash title="Terminal" "--placeholder"
-console2svg batch markdown -i ./docs -o ./docs/assets --placeholder
+console2svg batch markdown -i ./docs -o ./assets --placeholder
 ```
 
 > [!TIP]
@@ -129,7 +129,7 @@ console2svg batch markdown -i ./docs -o ./docs/assets --placeholder
 開発中は、入力ディレクトリからの相対パスに対してグロブフィルターを指定できます。フィルターは複数回指定できます。
 
 ```bash title="Terminal" "--filter"
-console2svg batch markdown -i ./docs -o ./docs/assets --filter "reference/**"
+console2svg batch markdown -i ./docs -o ./assets --filter "reference/**"
 ```
 
 ## 生成された画像はgit管理すべきか？
@@ -153,7 +153,7 @@ README等で参照しておらず、専用ドキュメントページでしか�
 <FileTree>
 
 - assets/
-  - .generated/
+  - generated/
   - ...
   - **assets.json**
 
@@ -198,7 +198,7 @@ README等で参照しておらず、専用ドキュメントページでしか�
 
 ## 生成されたファイル
 
-各コマンドの出力結果は、`.generated/`配下に、コマンド単位で生成されます。
+各コマンドの出力結果は、`generated/`配下に、コマンド単位で生成されます。
 ここで重要なのは **実行するコマンドが同一なら同一出力となる** ことです。
 
 例えば、以下のmarkdownファイルを対象に生成するケースを考えてみます。
@@ -234,14 +234,9 @@ README等で参照しておらず、専用ドキュメントページでしか�
 <FileTree>
 
 - assets/
-  - .generated/
+  - generated/
     - **(w100_h12_dotnet_info_head_n10).svg**
     - **(w80_h6_dotnet_info_head_n10).svg**
-  - example1_(hash1).svg -> (w100_h12_dotnet_info_head_n10).svg
-  - example1_(hash2).svg -> (w100_h12_dotnet_info_head_n10).svg
-  - example1_(hash3).svg -> (w100_h12_dotnet_info_head_n10).svg
-  - example2_(hash1).svg -> (w100_h12_dotnet_info_head_n10).svg
-  - example3_(hash1).svg -> (w80_h6_dotnet_info_head_n10).svg
   - assets.json
 
 </FileTree>

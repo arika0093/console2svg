@@ -53,7 +53,12 @@ jobs:
 
       - name: Setup GitHub Pages
         if: github.ref == 'refs/heads/main'
+        id: pages
         uses: actions/configure-pages@v6
+
+      - name: Set GitHub Pages base path
+        if: github.ref == 'refs/heads/main'
+        run: echo "CONSOLE2SVG_DOCS_BASE=${{ steps.pages.outputs.base_path }}" >> "$GITHUB_ENV"
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
@@ -66,12 +71,19 @@ jobs:
         working-directory: docs-site
         run: npm ci
 
+      - name: Prepare documentation assets
+        working-directory: docs-site
+        run: npm run prepare:assets
+
       - name: Setup console2svg and capture documentation images
         uses: ./
         with:
           version: develop
 
       - name: Generate documentation images
+        env:
+          CONSOLE2SVG_ASSETS_DIR: ${{ github.workspace }}/docs-site/public/assets
+          CONSOLE2SVG_BATCH_LINK_BASE: /assets
         run: bash scripts/image-gen.sh
 
       - name: Build documentation

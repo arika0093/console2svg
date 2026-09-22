@@ -25,7 +25,8 @@ function copyRecursiveSync(src, dest) {
 }
 
 export function syncDocs() {
-  // docs/assets -> public/assets & public/docs/assets
+  // Seed the single public asset tree for local development. CI generates into
+  // this directory directly before Astro builds the site.
   const assetsSrc = path.join(docsSrcDir, 'assets');
   if (fs.existsSync(assetsSrc)) {
     const publicAssets = path.join(publicDir, 'assets');
@@ -33,8 +34,7 @@ export function syncDocs() {
     fs.rmSync(publicAssets, { recursive: true, force: true });
     fs.rmSync(publicDocsAssets, { recursive: true, force: true });
     copyRecursiveSync(assetsSrc, publicAssets);
-    copyRecursiveSync(assetsSrc, publicDocsAssets);
-    console.log(`[sync-docs] Synchronized docs/assets -> public/assets & public/docs/assets`);
+    console.log(`[sync-docs] Synchronized docs/assets -> public/assets`);
   }
 }
 

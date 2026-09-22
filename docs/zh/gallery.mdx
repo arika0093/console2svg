@@ -19,8 +19,7 @@ import { Steps } from '@astrojs/starlight/components';
 console2svg capture -- console2svg
 ```
 
-{/* c2s:: -w 120 -- console2svg */}
-![`console2svg capture -- console2svg` 的输出](../assets/cmd.svg)
+{/* c2s:: -o cmd.svg -w 120 -- console2svg */}
 
 [详情](/zh/basic-usage/capturing-images/overview/)
 
@@ -32,8 +31,7 @@ console2svg capture -- console2svg
 console2svg capture -w 100 -c -d macos-pc -- fastfetch
 ```
 
-{/* c2s:: -w 100 -c -d macos-pc -- fastfetch */}
-![console2svg capture -w 100 -c -d macos-pc -- fastfetch](../assets/cmd-window.svg)
+{/* c2s:: -o cmd-window.svg -w 100 -c -d macos-pc -- fastfetch */}
 
 [详情](/zh/appearance/window-and-background/)
 
@@ -47,7 +45,7 @@ console2svg capture -w 100 -h 10 -c -d macos-pc \
     -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
 ```
 
-![由 console2svg 生成的 console2svg 主视觉图片](/docs/assets/cmd-hero.svg)
+![由 console2svg 生成的 console2svg 主视觉图片](/assets/cmd-hero.svg)
 
 [详情](/zh/appearance/window-and-background/)
 
@@ -59,8 +57,7 @@ console2svg capture -w 100 -h 10 -c -d macos-pc \
 console2svg capture -c -d -v -- sl
 ```
 
-{/* c2s:: -w 120 -h 16 -c -d -v -- sl */}
-![console2svg capture -c -d -v -- sl](../assets/cmd-sl.svg)
+{/* c2s:: -o cmd-sl.svg -w 120 -h 16 -c -d -v -- sl */}
 
 ### cmatrix
 
@@ -68,8 +65,7 @@ console2svg capture -c -d -v -- sl
 console2svg capture -w 100 -h 24 -c -d macos-pc -v --timeout 5 -- cmatrix -ab
 ```
 
-{/* c2s:: -w 100 -h 24 -c -d macos-pc -v --timeout 5 -- cmatrix -ab */}
-![console2svg capture -w 100 -h 24 -c -d macos-pc -v --timeout 5 -- cmatrix -ab](../assets/cmd-video.svg)
+{/* c2s:: -o cmd-video.svg -w 100 -h 24 -c -d macos-pc -v --timeout 5 -- cmatrix -ab */}
 
 ### nyancat
 
@@ -77,8 +73,7 @@ console2svg capture -w 100 -h 24 -c -d macos-pc -v --timeout 5 -- cmatrix -ab
 console2svg capture -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat
 ```
 
-{/* c2s:: -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat */}
-![console2svg capture -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat](../assets/cmd-nyancat.svg)
+{/* c2s:: -o cmd-nyancat.svg -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat */}
 
 [详情](/zh/basic-usage/capturing-videos/overview/)
 
@@ -90,7 +85,7 @@ console2svg capture -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat
 console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash
 ```
 
-![console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash](../assets/cmd-bash-vim.svg)
+![console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash](/assets/cmd-bash-vim.svg)
 
 [详情](/zh/automation/replay/)
 
@@ -102,7 +97,7 @@ console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash
 console2svg interactive -d macos -o ./captures/output.svg
 ```
 
-![console2svg interactive -d macos -o ./captures/output.svg](/docs/assets/cmd-interactive.svg)
+![console2svg interactive -d macos -o ./captures/output.svg](/assets/cmd-interactive.svg)
 
 [详情](/zh/basic-usage/interactive-capture/)
 
@@ -116,8 +111,7 @@ console2svg interactive -d macos -o ./captures/output.svg
 console2svg capture -w 100 -h 24 -c -d macos -t nord --timeout 2 -- cmatrix -ab
 ```
 
-{/* c2s:: -w 100 -h 24 -c -d macos -t nord --timeout 2 -- cmatrix -ab */}
-![console2svg 使用 Nord 主题进行捕获](../assets/cmd-gallery-theme-nord.svg)
+{/* c2s:: -o cmd-gallery-theme-nord.svg -w 100 -h 24 -c -d macos -t nord --timeout 2 -- cmatrix -ab */}
 
 ### cyberpunk-pc
 
@@ -125,8 +119,7 @@ console2svg capture -w 100 -h 24 -c -d macos -t nord --timeout 2 -- cmatrix -ab
 console2svg capture -w 100 -h 24 -c -t cyberpunk-pc --timeout 2 -- cmatrix -ab
 ```
 
-{/* c2s:: -w 100 -h 24 -c -t cyberpunk-pc --timeout 2 -- cmatrix -ab */}
-![console2svg 使用 Cyberpunk 主题进行捕获](../assets/cmd-gallery-theme-cyberpunk.svg)
+{/* c2s:: -o cmd-gallery-theme-cyberpunk.svg -w 100 -h 24 -c -t cyberpunk-pc --timeout 2 -- cmatrix -ab */}
 
 [详情](/zh/appearance/themes/built-in-themes/)
 
@@ -148,7 +141,6 @@ EOF
 console2svg capture -80 -h 14 -d macos-pc -t github-dark -- cat .env
 ```
 
-{/* c2s:: -w 80 -h 14 -d macos-pc -t github-dark -- cat ../../.env */}
-![console2svg 自动遮盖示例](../assets/cmd-gallery-mask.svg)
+{/* c2s:: -o cmd-gallery-mask.svg -w 80 -h 14 -d macos-pc -t github-dark -- cat ../../.env */}
 
 [详情](/zh/basic-usage/masking-secrets/auto-masking/)

@@ -119,7 +119,7 @@ teardown: rm -f test.cs result.txt
 这是为了简易回避 [Astro](https://docs.astro.build) 等在没有图片时构建失败的问题。
 
 ```bash title="Terminal" "--placeholder"
-console2svg batch markdown -i ./docs -o ./docs/assets --placeholder
+console2svg batch markdown -i ./docs -o ./assets --placeholder
 ```
 
 > [!TIP]
@@ -130,7 +130,7 @@ console2svg batch markdown -i ./docs -o ./docs/assets --placeholder
 开发过程中，可以对相对于输入目录的路径指定 glob 过滤器。过滤器可以多次指定。
 
 ```bash title="Terminal" "--filter"
-console2svg batch markdown -i ./docs -o ./docs/assets --filter "reference/**"
+console2svg batch markdown -i ./docs -o ./assets --filter "reference/**"
 ```
 
 ## 生成的图片应该纳入 git 管理吗？
@@ -154,7 +154,7 @@ console2svg batch markdown -i ./docs -o ./docs/assets --filter "reference/**"
 <FileTree>
 
 - assets/
-  - .generated/
+  - generated/
   - ...
   - **assets.json**
 
@@ -200,7 +200,7 @@ console2svg batch markdown -i ./docs -o ./docs/assets --filter "reference/**"
 
 ## 生成的文件
 
-各命令的输出结果，会按命令单位生成在 `.generated/` 之下。
+各命令的输出结果，会按命令单位生成在 `generated/` 之下。
 这里重要的是，**只要执行的命令相同，就会得到相同输出**。
 
 例如，考虑以以下 markdown 文件为对象生成的情况。
@@ -236,14 +236,9 @@ console2svg batch markdown -i ./docs -o ./docs/assets --filter "reference/**"
 <FileTree>
 
 - assets/
-  - .generated/
+  - generated/
     - **(recipe-hash).svg**
     - **(recipe-hash-for-w80-h6).svg**
-  - example1-1.svg -> (recipe-hash).svg
-  - example1-2.svg -> (recipe-hash).svg
-  - example1-3.svg -> (recipe-hash).svg
-  - example2-1.svg -> (recipe-hash).svg
-  - example3-1.svg -> (recipe-hash-for-w80-h6).svg
   - assets.json
 
 </FileTree>
@@ -274,4 +269,3 @@ console2svg batch markdown -i ./docs -o ./docs/assets --filter "reference/**"
 > [!WARNING]
 > 标记中书写的 `setup`、`capture`、`teardown` 和命令会在 shell 中执行。
 > 请勿对不可信的 Markdown，或从不可信 PR checkout 的文件执行。
-

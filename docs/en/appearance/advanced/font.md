@@ -14,8 +14,7 @@ Pass a CSS `font-family` value to the `--font` option.
 console2svg capture --font "Courier New, monospace" -h 10 -- console2svg
 ```
 
-<!-- c2s:: -w 100 -h 10 --font "Courier New, monospace" -- console2svg -->
-![console2svg capture with a custom font](../../../assets/cmd-font.svg)
+<!-- c2s:: -o cmd-font.svg -w 100 -h 10 --font "Courier New, monospace" -- console2svg -->
 
 > [!WARNING]
 > The viewer's fonts are used, not the fonts on the environment that generated the SVG. Specifying fallback fonts (such as `monospace`) is recommended.

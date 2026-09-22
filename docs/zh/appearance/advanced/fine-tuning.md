@@ -31,5 +31,4 @@ console2svg capture -c --prompt "❯ " -- echo "Hello"
 console2svg capture --header "user@server:~$ ./build.sh" -- ./build.sh
 ```
 
-<!-- c2s:: -w 100 -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" --backcolor "#042515" -- echo "hi" -->
-![console2svg 使用自定义提示符和标头进行捕获](../../../assets/cmd-term-custom.svg)
+<!-- c2s:: -o cmd-term-custom.svg -w 100 -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" --backcolor "#042515" -- echo "hi" -->

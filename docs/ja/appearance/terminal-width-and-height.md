@@ -12,8 +12,7 @@ description: ターミナルの表示領域を固定する方法。
 console2svg capture -w 50 -h 5 -- console2svg
 ```
 
-<!-- c2s:: -w 50 -h 5 -- console2svg -->
-![console2svg capture -w 50 -h 5 -- console2svg](../../assets/cmd-width.svg)
+<!-- c2s:: -o cmd-width.svg -w 50 -h 5 -- console2svg -->
 
 この例では、横50文字・縦5行のターミナル領域を作成します。
 出力するコマンドが領域を超える場合は、端末と同じように折り返しやスクロールが発生します。

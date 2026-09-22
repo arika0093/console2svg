@@ -6,7 +6,6 @@ const rawBase = process.argv[3] ?? process.env.CONSOLE2SVG_DOCS_BASE ?? '';
 const base = rawBase && rawBase !== '/'
   ? `/${rawBase.replace(/^\/+|\/+$/g, '')}`
   : '';
-
 function prefixUrl(value) {
   if (
     !base ||
@@ -23,6 +22,10 @@ function prefixUrl(value) {
 function normalizeAssetUrl(value) {
   if (!/^(?:\.\.\/)+assets\//.test(value)) return value;
   return `/${value.replace(/^(?:\.\.\/)+/, '')}`;
+}
+
+function rewriteUrl(value) {
+  return prefixUrl(normalizeAssetUrl(value));
 }
 
 async function* files(dir) {
@@ -47,12 +50,12 @@ for await (const file of files(root)) {
     output = output.replace(
       /\b(href|src|poster|action)=(["'])([^"'<>]*)\2/g,
       (match, name, quote, value) =>
-        `${name}=${quote}${prefixUrl(normalizeAssetUrl(value))}${quote}`,
+        `${name}=${quote}${rewriteUrl(value)}${quote}`,
     );
   } else {
     output = output.replace(
       /url\((['"]?)(\/(?!\/)[^)'"\s]+)\1\)/g,
-      (match, quote, value) => `url(${quote}${prefixUrl(value)}${quote})`,
+      (match, quote, value) => `url(${quote}${rewriteUrl(value)}${quote})`,
     );
   }
 

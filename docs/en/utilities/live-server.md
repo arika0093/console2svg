@@ -22,7 +22,7 @@ Live server listening on http://127.0.0.1:38473/
 
 Open this URL in a browser to see the terminal state with low latency and vector quality.
 
-![console2svg live-server](/docs/assets/cmd-liveserver.png)
+![console2svg live-server](/assets/cmd-liveserver.png)
 
 ## Options
 

@@ -18,3 +18,9 @@ console2svg capture -t nord -- console2svg
 console2svg capture --window macos-pc -- console2svg
 console2svg capture -t cyberpunk-pc -- console2svg
 ```
+
+> [!NOTE]
+> テーマ・ウインドウ枠は複数指定することができます。複数指定した場合、それぞれの内容がマージされて出力されます。
+> ```bash title="Terminal"
+> console2svg capture -t nord -d macos-pc -- console2svg
+> ```

@@ -5,7 +5,8 @@
   "scripts": {
     "sync": "node scripts/sync-docs.mjs",
     "dev": "node scripts/dev.mjs",
-    "build": "node scripts/sync-docs.mjs && astro build",
+    "build": "astro build",
+    "prepare:assets": "node scripts/sync-docs.mjs",
     "preview": "astro preview"
   },
   "dependencies": {

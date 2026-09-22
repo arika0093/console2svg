@@ -25,7 +25,7 @@ Use the `replay` subcommand to run capture with a saved replay file.
 console2svg replay demo.json -- bash
 ```
 
-![console2svg replay demo.json -- bash](/docs/assets/cmd-bash-vim.svg)
+![console2svg replay demo.json -- bash](/assets/cmd-bash-vim.svg)
 
 > [!TIP]
 > You can freely specify themes, video output options, and other options during playback as well.

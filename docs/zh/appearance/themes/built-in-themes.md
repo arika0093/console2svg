@@ -13,8 +13,7 @@ console2svg 包含开箱即用的内置主题。只需将主题 ID 传给
 console2svg capture -w 100 -h 24 -c -t nord -- console2svg
 ```
 
-<!-- c2s:: -w 100 -h 24 -c -t nord -- console2svg -->
-![console2svg 使用内置主题进行捕获](../../../assets/cmd-theme.svg)
+<!-- c2s:: -o cmd-theme.svg -w 100 -h 24 -c -t nord -- console2svg -->
 
 可以在[内置主题概览](./built-in-theme-list.mdx)中查看主题 ID。`theme list` 会同时显示内置主题和已安装主题。
 

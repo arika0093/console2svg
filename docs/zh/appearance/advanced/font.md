@@ -14,8 +14,7 @@ description: 使用 --font 和 --fontsize 选项指定字体族和字号的方�
 console2svg capture --font "Courier New, monospace" -h 10 -- console2svg
 ```
 
-<!-- c2s:: -w 100 -h 10 --font "Courier New, monospace" -- console2svg -->
-![console2svg 使用自定义字体进行捕获](../../../assets/cmd-font.svg)
+<!-- c2s:: -o cmd-font.svg -w 100 -h 10 --font "Courier New, monospace" -- console2svg -->
 
 > [!WARNING]
 > 使用的是查看 SVG 一侧的字体，而不是生成 SVG 环境中的字体。建议指定回退字体（例如 `monospace`）。

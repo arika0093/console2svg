@@ -18,7 +18,7 @@ console2svg interactive
 
 セッションが開始されると、通常のターミナルと同様に入力・操作を行えます。
 
-![console2svg interactive session](/docs/assets/cmd-interactive.svg)
+![console2svg interactive session](/assets/cmd-interactive.svg)
 
 ## ショートカットキー
 

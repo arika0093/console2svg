@@ -18,7 +18,7 @@ console2svg interactive
 
 Once the session starts, you can type and operate it just like a normal terminal.
 
-![console2svg interactive session](/docs/assets/cmd-interactive.svg)
+![console2svg interactive session](/assets/cmd-interactive.svg)
 
 ## Shortcut keys
 

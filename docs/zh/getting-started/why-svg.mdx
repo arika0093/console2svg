@@ -13,19 +13,19 @@ SVG 不只是用于显示图片，它也非常适合清晰、易用地共享像�
 请先对比以下两张图片。
 
 ```bash title="Terminal"
-$ btop
+$ fastfetch
 ```
 
 ### SVG
-{/* c2s:: -w 120 -h 24 -- fastfetch */}
-<img width="800" src="../../assets/why-svg-fastfetch.svg" />
+{/* c2s:: -o why-svg-fastfetch.svg -w 120 -h 24 -- fastfetch */}
+<img width="800" src="/assets/why-svg-fastfetch.svg" />
 
 ### PNG
-{/* c2s:: -w 120 -h 24 -- fastfetch */}
-<img width="800" src="../../assets/why-svg-fastfetch.png" />
+{/* c2s:: -o why-svg-fastfetch.png -w 120 -h 24 -- fastfetch */}
+<img width="800" src="/assets/why-svg-fastfetch.png" />
 
 
-可以看到，前者的文字更清晰，框线也显示得更漂亮。
+可以看到，前者的文字更清晰。
 由于 SVG 是矢量格式，即使放大或缩小，文字和框线也不会模糊。无论在 README、博客文章、幻灯片、印刷品等不同位置或尺寸显示，都能保持相同质量。
 
 ## 文件体积小
@@ -34,14 +34,10 @@ $ btop
 
 <FileTree>
 
-* output.png (195918 bytes)
-* output.svg (38912 bytes)
+* output.png (60,717 bytes)
+* output.svg (8,455 bytes)
 
 </FileTree>
-
-> [!NOTE]
-> 请注意，由于此示例使用的是 `btop`，对 SVG 来说是相对**不利**的场景。
-> 如果只是简单文本，文件还会更小。
 
 ## 可以直接在浏览器中显示
 

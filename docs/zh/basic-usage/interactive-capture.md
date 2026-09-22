@@ -18,7 +18,7 @@ console2svg interactive
 
 会话开始后，可以像普通终端一样输入和操作。
 
-![console2svg 交互式会话](/docs/assets/cmd-interactive.svg)
+![console2svg 交互式会话](/assets/cmd-interactive.svg)
 
 ## 快捷键
 

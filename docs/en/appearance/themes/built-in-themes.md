@@ -13,8 +13,7 @@ console2svg includes built-in themes that are ready to use. Just pass a theme ID
 console2svg capture -w 100 -h 24 -c -t nord -- console2svg
 ```
 
-<!-- c2s:: -w 100 -h 24 -c -t nord -- console2svg -->
-![console2svg capture with a built-in theme](../../../assets/cmd-theme.svg)
+<!-- c2s:: -o cmd-theme.svg -w 100 -h 24 -c -t nord -- console2svg -->
 
 Theme IDs are listed in [Built-in theme overview](./built-in-theme-list.mdx). `theme list` shows both built-in and installed themes together.
 

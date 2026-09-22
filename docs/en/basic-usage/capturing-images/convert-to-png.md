@@ -13,8 +13,7 @@ Simply specify `.png` as the extension with the `-o` option, and rasterization i
 console2svg capture -o output.png -w 100 -h 12 -- console2svg
 ```
 
-<!-- c2s:: -w 100 -h 12 -- console2svg -->
-![console2svg capture -o output.png -w 100 -h 12 -- console2svg](../../../assets/cmd-convert.png)
+<!-- c2s:: -o cmd-convert.png -w 100 -h 12 -- console2svg -->
 
 ## Rendering engines
 
@@ -33,5 +32,4 @@ If needed, you can also switch conversion engines with the `--svg-converter` opt
 console2svg capture -o result.png --svg-converter rsvg-convert -- console2svg
 ```
 
-<!-- c2s:: -w 100 -h 12 --svg-converter rsvg-convert -- console2svg -->
-![console2svg capture -o result.png --svg-converter rsvg-convert -- console2svg](../../../assets/cmd-rsvg-convert.png)
+<!-- c2s:: -o cmd-rsvg-convert.png -w 100 -h 12 --svg-converter rsvg-convert -- console2svg -->

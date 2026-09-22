@@ -40,7 +40,7 @@ EOF
 console2svg capture -80 -h 14 -d macos-pc -t github-dark -- cat .env
 ```
 
-![console2svg capture with automatic secret masking](/docs/assets/cmd-gallery-mask.svg)
+![console2svg capture with automatic secret masking](/assets/cmd-gallery-mask.svg)
 
 ## 有効化と無効化
 
@@ -52,5 +52,4 @@ console2svg capture -80 -h 14 -d macos-pc -t github-dark -- cat .env
 console2svg capture -80 -h 14 -d macos-pc -t github-dark --mask-auto false -- cat .env
 ```
 
-<!-- c2s:: -w 80 -h 14 -d macos-pc -t github-dark --mask-auto false -- cat ../../../../.env -->
-![console2svg capture with automatic masking disabled](../../../assets/cmd-mask-auto.svg)
+<!-- c2s:: -o cmd-mask-auto.svg -w 80 -h 14 -d macos-pc -t github-dark --mask-auto false -- cat ../../../../.env -->

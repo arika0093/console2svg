@@ -12,8 +12,7 @@ description: 固定终端显示区域的方法。
 console2svg capture -w 50 -h 5 -- console2svg
 ```
 
-<!-- c2s:: -w 50 -h 5 -- console2svg -->
-![console2svg capture -w 50 -h 5 -- console2svg](../../assets/cmd-width.svg)
+<!-- c2s:: -o cmd-width.svg -w 50 -h 5 -- console2svg -->
 
 此示例会创建横向 50 个字符、纵向 5 行的终端区域。
 如果输出命令超出该区域，会像普通终端一样发生换行或滚动。

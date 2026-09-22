@@ -4,12 +4,15 @@ import { LinkButton } from '@astrojs/starlight/components';
 const { data } = Astro.locals.starlightRoute.entry;
 const { title = data.title, tagline, image, actions = [] } = data.hero ?? {};
 const imageSrc = image && 'file' in image ? image.file.src : undefined;
+const imageHtml = image && 'html' in image ? image.html : undefined;
 ---
 
 <section class="home-hero" aria-labelledby="home-hero-title">
-  {imageSrc && (
+  {(imageSrc || imageHtml) && (
     <div class="home-hero__visual">
-      <img class="home-hero__image" src={imageSrc} alt={image.alt} width="898" height="283" loading="eager" />
+      {imageHtml
+        ? <Fragment set:html={imageHtml} />
+        : <img class="home-hero__image" src={imageSrc} alt={image.alt} width="898" height="283" loading="eager" />}
     </div>
   )}
   <div class="home-hero__copy">
@@ -45,7 +48,8 @@ const imageSrc = image && 'file' in image ? image.file.src : undefined;
     width: min(100%, 64rem);
   }
 
-  .home-hero__image {
+  .home-hero__image,
+  .home-hero__visual :global(.home-hero__image) {
     display: block;
     width: 100%;
     height: auto;

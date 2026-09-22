@@ -118,7 +118,7 @@ You can automatically generate dummy (zero-byte) files.
 This is a simple workaround for builds that fail without images, for example when using [Astro](https://docs.astro.build).
 
 ```bash title="Terminal" "--placeholder"
-console2svg batch markdown -i ./docs -o ./docs/assets --placeholder
+console2svg batch markdown -i ./docs -o ./assets --placeholder
 ```
 
 > [!TIP]
@@ -129,7 +129,7 @@ console2svg batch markdown -i ./docs -o ./docs/assets --placeholder
 During development, you can specify glob filters against paths relative to the input directory. Filters can be specified multiple times.
 
 ```bash title="Terminal" "--filter"
-console2svg batch markdown -i ./docs -o ./docs/assets --filter "reference/**"
+console2svg batch markdown -i ./docs -o ./assets --filter "reference/**"
 ```
 
 ## Should generated images be managed by git?
@@ -153,7 +153,7 @@ Running the `batch markdown` command __automatically generates an `assets.json` 
 <FileTree>
 
 - assets/
-  - .generated/
+  - generated/
   - ...
   - **assets.json**
 
@@ -199,7 +199,7 @@ You can use it as follows.
 
 ## Generated files
 
-The output of each command is generated per command under `.generated/`.
+The output of each command is generated per command under `generated/`.
 The key point here is that **the same command to run produces the same output**.
 
 For example, consider generating for the following markdown files.
@@ -235,14 +235,9 @@ In this case, the following files are generated.
 <FileTree>
 
 - assets/
-  - .generated/
+  - generated/
     - **(recipe-hash).svg**
     - **(recipe-hash-for-w80-h6).svg**
-  - example1-1.svg -> (recipe-hash).svg
-  - example1-2.svg -> (recipe-hash).svg
-  - example1-3.svg -> (recipe-hash).svg
-  - example2-1.svg -> (recipe-hash).svg
-  - example3-1.svg -> (recipe-hash-for-w80-h6).svg
   - assets.json
 
 </FileTree>
@@ -273,4 +268,3 @@ there is no need to remove the `c2s` markers in other language versions, and gen
 > [!WARNING]
 > The `setup`, `capture`, `teardown`, and commands written in markers are executed in a shell.
 > Do not run this on untrusted Markdown or files checked out from untrusted pull requests.
-

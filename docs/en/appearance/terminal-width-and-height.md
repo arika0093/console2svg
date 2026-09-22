@@ -12,8 +12,7 @@ Use `-w` / `--width` to specify width and `-h` / `--height` to specify height in
 console2svg capture -w 50 -h 5 -- console2svg
 ```
 
-<!-- c2s:: -w 50 -h 5 -- console2svg -->
-![console2svg capture -w 50 -h 5 -- console2svg](../../assets/cmd-width.svg)
+<!-- c2s:: -o cmd-width.svg -w 50 -h 5 -- console2svg -->
 
 This example creates a terminal area that is 50 characters wide and 5 lines tall.
 If the command output exceeds the area, wrapping and scrolling occur just as they would in a terminal.

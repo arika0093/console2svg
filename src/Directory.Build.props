@@ -8,8 +8,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <!-- Ship English-only messages; drop System.CommandLine satellite assemblies (ja/cs/de/...) from publish output. -->
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-    <PackageDescription>A .NET CLI tool to convert console output to SVG.</PackageDescription>
-    <PackageProjectUrl>https://github.com/arika0093/ConsoleToSvg</PackageProjectUrl>
+    <PackageDescription>Easily convert terminal output into SVG images.</PackageDescription>
+    <PackageProjectUrl>https://console2svg.eclairs.cc</PackageProjectUrl>
     <RepositoryUrl>https://github.com/arika0093/ConsoleToSvg</RepositoryUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Authors>arika0093</Authors>

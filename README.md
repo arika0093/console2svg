@@ -25,7 +25,7 @@ There are lots of features. You are sure to find something you like:
 - **Built-in crop feature** — Automatically trim overly long output and extract only the parts you need.
 - **Share safely** — Common passwords and usernames are masked automatically, even when `APP_SECRET_TOKEN` accidentally appears in the output.
 
-For more information, see the [documentation site](https://console2svg.eclairs.cc/en/).
+For more information, see the [documentation site](https://console2svg.eclairs.cc).
 
 ## Overview
 

@@ -96,7 +96,7 @@ Replay a file prepared in advance to reproduce the same output in CI environment
 console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash
 ```
 
-<!-- c2s:: -w 80 -h 20 -v -d macos --replay docs-site/public/assets/cmd-bash-vim-replay.json -- bash -->
+![console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash](./docs-site/public/assets/cmd-bash-vim.svg)
 
 ### Interactive capture
 

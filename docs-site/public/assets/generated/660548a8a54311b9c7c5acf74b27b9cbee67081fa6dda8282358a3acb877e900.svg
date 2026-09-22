@@ -1,0 +1,588 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="898" height="283" viewBox="0 0 898 283" role="img" aria-label="console2svg output">
+<style>
+.c2.c { font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace; font-size: 14px; }
+.c2 text { white-space: pre; dominant-baseline: alphabetic; }
+.c2 .q { shape-rendering: crispEdges; }
+.c2 .aa{fill:#d4d4d4}
+.c2 .ab{fill:#FF9065}
+.c2 .ac{fill:#FF8665}
+.c2 .ad{fill:#FF7F64}
+.c2 .ae{fill:#FF7864}
+.c2 .af{fill:#FF6D63}
+.c2 .ag{fill:#FF6362}
+.c2 .ah{fill:#FF5E62}
+.c2 .ai{fill:#FF715C}
+.c2 .aj{fill:#FF7B59}
+.c2 .ak{fill:#FF8956}
+.c2 .al{fill:#FF8D54}
+.c2 .am{fill:#FF9652}
+.c2 .an{fill:#FFA24E}
+.c2 .ao{fill:#FF9666}
+.c2 .ap{fill:#FF9566}
+.c2 .aq{fill:#FF9466}
+.c2 .ar{fill:#FF9366}
+.c2 .as{fill:#FF9165}
+.c2 .at{fill:#FF8C65}
+.c2 .au{fill:#FF8B65}
+.c2 .av{fill:#FF8A65}
+.c2 .aw{fill:#FF8865}
+.c2 .ax{fill:#FF8465}
+.c2 .ay{fill:#FF7E64}
+.c2 .az{fill:#FF7463}
+.c2 .ba{fill:#FF7363}
+.c2 .bb{fill:#FF7163}
+.c2 .bc{fill:#FF7063}
+.c2 .bd{fill:#FF6F63}
+.c2 .be{fill:#FF6A63}
+.c2 .bf{fill:#FF6863}
+.c2 .bg{fill:#FF6763}
+.c2 .bh{fill:#FF6663}
+.c2 .bi{fill:#FF6262}
+.c2 .bj{fill:#FF6A5F}
+.c2 .bk{fill:#FF6B5E}
+.c2 .bl{fill:#FF6D5E}
+.c2 .bm{fill:#FF6E5D}
+.c2 .bn{fill:#FF705D}
+.c2 .bo{fill:#FF735C}
+.c2 .bp{fill:#FF745C}
+.c2 .bq{fill:#FF755B}
+.c2 .br{fill:#FF775B}
+.c2 .bs{fill:#FF785A}
+.c2 .bt{fill:#FF7D59}
+.c2 .bu{fill:#FF8158}
+.c2 .bv{fill:#FF8357}
+.c2 .bw{fill:#FF8457}
+.c2 .bx{fill:#FF8657}
+.c2 .by{fill:#FF8756}
+.c2 .bz{fill:#FF9A51}
+.c2 .ca{fill:#FF9C50}
+.c2 .cb{fill:#FF9D50}
+.c2 .cc{fill:#FF9F4F}
+.c2 .cd{fill:#FFA04F}
+.c2 .ce{fill:#FF8164}
+.c2 .cf{fill:#FF7D64}
+.c2 .cg{fill:#FFA34E}
+.c2 .ch{fill:#FF7C64}
+.c2 .ci{fill:#FF7664}
+.c2 .cj{fill:#FF7564}
+.c2 .ck{fill:#FF7A5A}
+.c2 .cl{fill:#FF7E59}
+.c2 .cm{fill:#FF8058}
+.c2 .cn{fill:#FF8A55}
+.c2 .co{fill:#FF8E54}
+.c2 .cp{fill:#FF9452}
+.c2 .cq{fill:#FF9966}
+.c2 .cr{fill:#FF8F65}
+.c2 .cs{fill:#FF6C63}
+.c2 .ct{fill:#FF6560}
+.c2 .cu{fill:#FF8C55}
+.c2 .cv{fill:#FF9353}
+.c2 .cw{fill:#FF9751}
+.c2 .cx{fill:#FF9866}
+.c2 .cy{fill:#FF8D65}
+.c2 .cz{fill:#FF8765}
+.c2 .da{fill:#FF8365}
+.c2 .db{fill:#FF8264}
+.c2 .dc{fill:#FF7A64}
+.c2 .dd{fill:#FF7964}
+.c2 .de{fill:#FF6B63}
+.c2 .df{fill:#FF6462}
+.c2 .dg{fill:#FF6162}
+.c2 .dh{fill:#FF5F62}
+.c2 .di{fill:#FF6161}
+.c2 .dj{fill:#FF6261}
+.c2 .dk{fill:#FF6460}
+.c2 .dl{fill:#FF675F}
+.c2 .dm{fill:#FF685F}
+.c2 .dn{fill:#FF9054}
+.c2 .do{fill:#FF9153}
+.c2 .dp{fill:#FF9951}
+</style><defs><pattern id="c2-redacted-stripe" patternUnits="userSpaceOnUse" width="8" height="8"><path d="M0 0h8v8H0z" fill="#1e1e1e"/><path d="M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6" stroke="#d4d4d4" stroke-width="2" opacity="0.3"/></pattern></defs><defs>
+<linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff7e5f"/><stop offset="100%" stop-color="#feb47b"/></linearGradient>
+</defs>
+<rect width="898" height="283" fill="url(#c2bg)"/>
+<rect x="20.5" y="20.5" rx="10" ry="10" width="857" height="242" fill="#1f1f1f" stroke="#3a3a3a"/>
+<rect x="21" y="21" rx="9" ry="9" width="856" height="27" fill="#2c2c2c"/>
+<circle cx="34" cy="34" r="5" fill="#ff5f57"/>
+<circle cx="50" cy="34" r="5" fill="#febc2e"/>
+<circle cx="66" cy="34" r="5" fill="#28c840"/>
+
+<rect x="21" y="48" width="856" height="214" rx="9" ry="9" fill="#1e1e1e"/>
+<g class="c2 c" xml:space="preserve"><rect x="29" y="56" width="840" height="18" fill="#1e1e1e"/>
+<text class="aa" x="29" y="70">$ oh-my-logo &quot;console2svg&quot; sunset --filled --letter-spacing 0</text></g>
+<g class="c2 c" transform="translate(29 74)">
+<rect width="840" height="180" fill="#1e1e1e"/>
+</g>
+<g class="c2 c" xml:space="preserve" transform="translate(29 74)">
+<text class="ab" x="58.8" y="50" textLength="8.4">╗</text>
+<text class="ac" x="126" y="50" textLength="8.4">╗</text>
+<text class="ad" x="168" y="50" textLength="8.4">╗</text>
+<text class="ae" x="218.4" y="50" textLength="8.4">╗</text>
+<text class="af" x="285.6" y="50" textLength="8.4">╗</text>
+<text class="ag" x="352.8" y="50" textLength="8.4">╗</text>
+<text class="ah" x="386.4" y="50" textLength="8.4">╗</text>
+<text class="ai" x="495.6" y="50" textLength="8.4">╗</text>
+<text class="aj" x="554.4" y="50" textLength="8.4">╗</text>
+<text class="ak" x="630" y="50" textLength="8.4">╗</text>
+<text class="al" x="655.2" y="50" textLength="8.4">╗</text>
+<text class="am" x="705.6" y="50" textLength="8.4">╗</text>
+<text class="an" x="772.8" y="50" textLength="8.4">╗</text>
+<text class="ao" x="16.8" y="68" textLength="8.4">╔</text>
+<text class="ap" x="25.2" y="68" textLength="8.4">═</text>
+<text class="aq" x="33.6" y="68" textLength="8.4">═</text>
+<text class="ar" x="42" y="68" textLength="8.4">═</text>
+<text class="as" x="50.4" y="68" textLength="8.4">═</text>
+<text class="ab" x="58.8" y="68" textLength="8.4">╝</text>
+<text class="at" x="84" y="68" textLength="8.4">╔</text>
+<text class="au" x="92.4" y="68" textLength="8.4">═</text>
+<text class="av" x="100.8" y="68" textLength="8.4">═</text>
+<text class="aw" x="109.2" y="68" textLength="8.4">═</text>
+<text class="ax" x="134.4" y="68" textLength="8.4">╗</text>
+<text class="ay" x="176.4" y="68" textLength="8.4">╗</text>
+<text class="ae" x="218.4" y="68" textLength="8.4">║</text>
+<text class="az" x="243.6" y="68" textLength="8.4">╔</text>
+<text class="ba" x="252" y="68" textLength="8.4">═</text>
+<text class="bb" x="260.4" y="68" textLength="8.4">═</text>
+<text class="bc" x="268.8" y="68" textLength="8.4">═</text>
+<text class="bd" x="277.2" y="68" textLength="8.4">═</text>
+<text class="af" x="285.6" y="68" textLength="8.4">╝</text>
+<text class="be" x="310.8" y="68" textLength="8.4">╔</text>
+<text class="bf" x="319.2" y="68" textLength="8.4">═</text>
+<text class="bg" x="327.6" y="68" textLength="8.4">═</text>
+<text class="bh" x="336" y="68" textLength="8.4">═</text>
+<text class="bi" x="361.2" y="68" textLength="8.4">╗</text>
+<text class="ah" x="386.4" y="68" textLength="8.4">║</text>
+<text class="bj" x="453.6" y="68" textLength="8.4">╔</text>
+<text class="bk" x="462" y="68" textLength="8.4">═</text>
+<text class="bl" x="470.4" y="68" textLength="8.4">═</text>
+<text class="bm" x="478.8" y="68" textLength="8.4">═</text>
+<text class="bn" x="487.2" y="68" textLength="8.4">═</text>
+<text class="ai" x="495.6" y="68" textLength="8.4">╝</text>
+<text class="bo" x="504" y="68" textLength="8.4">╚</text>
+<text class="bp" x="512.4" y="68" textLength="8.4">═</text>
+<text class="bq" x="520.8" y="68" textLength="8.4">═</text>
+<text class="br" x="529.2" y="68" textLength="8.4">═</text>
+<text class="bs" x="537.6" y="68" textLength="8.4">═</text>
+<text class="bt" x="562.8" y="68" textLength="8.4">╗</text>
+<text class="bu" x="588" y="68" textLength="8.4">╔</text>
+<text class="bv" x="596.4" y="68" textLength="8.4">═</text>
+<text class="bw" x="604.8" y="68" textLength="8.4">═</text>
+<text class="bx" x="613.2" y="68" textLength="8.4">═</text>
+<text class="by" x="621.6" y="68" textLength="8.4">═</text>
+<text class="ak" x="630" y="68" textLength="8.4">╝</text>
+<text class="al" x="655.2" y="68" textLength="8.4">║</text>
+<text class="am" x="705.6" y="68" textLength="8.4">║</text>
+<text class="bz" x="730.8" y="68" textLength="8.4">╔</text>
+<text class="ca" x="739.2" y="68" textLength="8.4">═</text>
+<text class="cb" x="747.6" y="68" textLength="8.4">═</text>
+<text class="cc" x="756" y="68" textLength="8.4">═</text>
+<text class="cd" x="764.4" y="68" textLength="8.4">═</text>
+<text class="an" x="772.8" y="68" textLength="8.4">╝</text>
+<text class="ao" x="16.8" y="86" textLength="8.4">║</text>
+<text class="at" x="84" y="86" textLength="8.4">║</text>
+<text class="ax" x="134.4" y="86" textLength="8.4">║</text>
+<text class="ce" x="159.6" y="86" textLength="8.4">╔</text>
+<text class="cf" x="184.8" y="86" textLength="8.4">╗</text>
+<text class="ae" x="218.4" y="86" textLength="8.4">║</text>
+<text class="af" x="285.6" y="86" textLength="8.4">╗</text>
+<text class="be" x="310.8" y="86" textLength="8.4">║</text>
+<text class="bi" x="361.2" y="86" textLength="8.4">║</text>
+<text class="ah" x="386.4" y="86" textLength="8.4">║</text>
+<text class="bm" x="478.8" y="86" textLength="8.4">╗</text>
+<text class="aj" x="554.4" y="86" textLength="8.4">╔</text>
+<text class="bt" x="562.8" y="86" textLength="8.4">╝</text>
+<text class="ak" x="630" y="86" textLength="8.4">╗</text>
+<text class="al" x="655.2" y="86" textLength="8.4">║</text>
+<text class="am" x="705.6" y="86" textLength="8.4">║</text>
+<text class="bz" x="730.8" y="86" textLength="8.4">║</text>
+<text class="cg" x="781.2" y="86" textLength="8.4">╗</text>
+<text class="ao" x="16.8" y="104" textLength="8.4">║</text>
+<text class="at" x="84" y="104" textLength="8.4">║</text>
+<text class="ax" x="134.4" y="104" textLength="8.4">║</text>
+<text class="ce" x="159.6" y="104" textLength="8.4">║</text>
+<text class="ad" x="168" y="104" textLength="8.4">╚</text>
+<text class="ch" x="193.2" y="104" textLength="8.4">╗</text>
+<text class="ae" x="218.4" y="104" textLength="8.4">║</text>
+<text class="ci" x="226.8" y="104" textLength="8.4">╚</text>
+<text class="cj" x="235.2" y="104" textLength="8.4">═</text>
+<text class="az" x="243.6" y="104" textLength="8.4">═</text>
+<text class="ba" x="252" y="104" textLength="8.4">═</text>
+<text class="bb" x="260.4" y="104" textLength="8.4">═</text>
+<text class="af" x="285.6" y="104" textLength="8.4">║</text>
+<text class="be" x="310.8" y="104" textLength="8.4">║</text>
+<text class="bi" x="361.2" y="104" textLength="8.4">║</text>
+<text class="ah" x="386.4" y="104" textLength="8.4">║</text>
+<text class="bj" x="453.6" y="104" textLength="8.4">╔</text>
+<text class="bk" x="462" y="104" textLength="8.4">═</text>
+<text class="bl" x="470.4" y="104" textLength="8.4">═</text>
+<text class="bm" x="478.8" y="104" textLength="8.4">╝</text>
+<text class="bq" x="520.8" y="104" textLength="8.4">╔</text>
+<text class="br" x="529.2" y="104" textLength="8.4">═</text>
+<text class="bs" x="537.6" y="104" textLength="8.4">═</text>
+<text class="ck" x="546" y="104" textLength="8.4">═</text>
+<text class="aj" x="554.4" y="104" textLength="8.4">╝</text>
+<text class="cl" x="571.2" y="104" textLength="8.4">╚</text>
+<text class="cm" x="579.6" y="104" textLength="8.4">═</text>
+<text class="bu" x="588" y="104" textLength="8.4">═</text>
+<text class="bv" x="596.4" y="104" textLength="8.4">═</text>
+<text class="bw" x="604.8" y="104" textLength="8.4">═</text>
+<text class="ak" x="630" y="104" textLength="8.4">║</text>
+<text class="cn" x="638.4" y="104" textLength="8.4">╚</text>
+<text class="co" x="663.6" y="104" textLength="8.4">╗</text>
+<text class="cp" x="697.2" y="104" textLength="8.4">╔</text>
+<text class="am" x="705.6" y="104" textLength="8.4">╝</text>
+<text class="bz" x="730.8" y="104" textLength="8.4">║</text>
+<text class="cg" x="781.2" y="104" textLength="8.4">║</text>
+<text class="cq" y="122" textLength="8.4">╚</text>
+<text class="ab" x="58.8" y="122" textLength="8.4">╗</text>
+<text class="cr" x="67.2" y="122" textLength="8.4">╚</text>
+<text class="ac" x="126" y="122" textLength="8.4">╔</text>
+<text class="ax" x="134.4" y="122" textLength="8.4">╝</text>
+<text class="ce" x="159.6" y="122" textLength="8.4">║</text>
+<text class="ay" x="176.4" y="122" textLength="8.4">╚</text>
+<text class="ae" x="218.4" y="122" textLength="8.4">║</text>
+<text class="af" x="285.6" y="122" textLength="8.4">║</text>
+<text class="cs" x="294" y="122" textLength="8.4">╚</text>
+<text class="ag" x="352.8" y="122" textLength="8.4">╔</text>
+<text class="bi" x="361.2" y="122" textLength="8.4">╝</text>
+<text class="ct" x="428.4" y="122" textLength="8.4">╗</text>
+<text class="ai" x="495.6" y="122" textLength="8.4">╗</text>
+<text class="bt" x="562.8" y="122" textLength="8.4">╗</text>
+<text class="ak" x="630" y="122" textLength="8.4">║</text>
+<text class="cu" x="646.8" y="122" textLength="8.4">╚</text>
+<text class="cv" x="688.8" y="122" textLength="8.4">╔</text>
+<text class="cp" x="697.2" y="122" textLength="8.4">╝</text>
+<text class="cw" x="714" y="122" textLength="8.4">╚</text>
+<text class="an" x="772.8" y="122" textLength="8.4">╔</text>
+<text class="cg" x="781.2" y="122" textLength="8.4">╝</text>
+<text class="cx" x="8.4" y="140" textLength="8.4">╚</text>
+<text class="ao" x="16.8" y="140" textLength="8.4">═</text>
+<text class="ap" x="25.2" y="140" textLength="8.4">═</text>
+<text class="aq" x="33.6" y="140" textLength="8.4">═</text>
+<text class="ar" x="42" y="140" textLength="8.4">═</text>
+<text class="as" x="50.4" y="140" textLength="8.4">═</text>
+<text class="ab" x="58.8" y="140" textLength="8.4">╝</text>
+<text class="cy" x="75.6" y="140" textLength="8.4">╚</text>
+<text class="at" x="84" y="140" textLength="8.4">═</text>
+<text class="au" x="92.4" y="140" textLength="8.4">═</text>
+<text class="av" x="100.8" y="140" textLength="8.4">═</text>
+<text class="aw" x="109.2" y="140" textLength="8.4">═</text>
+<text class="cz" x="117.6" y="140" textLength="8.4">═</text>
+<text class="ac" x="126" y="140" textLength="8.4">╝</text>
+<text class="da" x="142.8" y="140" textLength="8.4">╚</text>
+<text class="db" x="151.2" y="140" textLength="8.4">═</text>
+<text class="ce" x="159.6" y="140" textLength="8.4">╝</text>
+<text class="cf" x="184.8" y="140" textLength="8.4">╚</text>
+<text class="ch" x="193.2" y="140" textLength="8.4">═</text>
+<text class="dc" x="201.6" y="140" textLength="8.4">═</text>
+<text class="dd" x="210" y="140" textLength="8.4">═</text>
+<text class="ae" x="218.4" y="140" textLength="8.4">╝</text>
+<text class="ci" x="226.8" y="140" textLength="8.4">╚</text>
+<text class="cj" x="235.2" y="140" textLength="8.4">═</text>
+<text class="az" x="243.6" y="140" textLength="8.4">═</text>
+<text class="ba" x="252" y="140" textLength="8.4">═</text>
+<text class="bb" x="260.4" y="140" textLength="8.4">═</text>
+<text class="bc" x="268.8" y="140" textLength="8.4">═</text>
+<text class="bd" x="277.2" y="140" textLength="8.4">═</text>
+<text class="af" x="285.6" y="140" textLength="8.4">╝</text>
+<text class="de" x="302.4" y="140" textLength="8.4">╚</text>
+<text class="be" x="310.8" y="140" textLength="8.4">═</text>
+<text class="bf" x="319.2" y="140" textLength="8.4">═</text>
+<text class="bg" x="327.6" y="140" textLength="8.4">═</text>
+<text class="bh" x="336" y="140" textLength="8.4">═</text>
+<text class="df" x="344.4" y="140" textLength="8.4">═</text>
+<text class="ag" x="352.8" y="140" textLength="8.4">╝</text>
+<text class="dg" x="369.6" y="140" textLength="8.4">╚</text>
+<text class="dh" x="378" y="140" textLength="8.4">═</text>
+<text class="ah" x="386.4" y="140" textLength="8.4">═</text>
+<text class="dh" x="394.8" y="140" textLength="8.4">═</text>
+<text class="di" x="403.2" y="140" textLength="8.4">═</text>
+<text class="dj" x="411.6" y="140" textLength="8.4">═</text>
+<text class="dk" x="420" y="140" textLength="8.4">═</text>
+<text class="ct" x="428.4" y="140" textLength="8.4">╝</text>
+<text class="dl" x="436.8" y="140" textLength="8.4">╚</text>
+<text class="dm" x="445.2" y="140" textLength="8.4">═</text>
+<text class="bj" x="453.6" y="140" textLength="8.4">═</text>
+<text class="bk" x="462" y="140" textLength="8.4">═</text>
+<text class="bl" x="470.4" y="140" textLength="8.4">═</text>
+<text class="bm" x="478.8" y="140" textLength="8.4">═</text>
+<text class="bn" x="487.2" y="140" textLength="8.4">═</text>
+<text class="ai" x="495.6" y="140" textLength="8.4">╝</text>
+<text class="bo" x="504" y="140" textLength="8.4">╚</text>
+<text class="bp" x="512.4" y="140" textLength="8.4">═</text>
+<text class="bq" x="520.8" y="140" textLength="8.4">═</text>
+<text class="br" x="529.2" y="140" textLength="8.4">═</text>
+<text class="bs" x="537.6" y="140" textLength="8.4">═</text>
+<text class="ck" x="546" y="140" textLength="8.4">═</text>
+<text class="aj" x="554.4" y="140" textLength="8.4">═</text>
+<text class="bt" x="562.8" y="140" textLength="8.4">╝</text>
+<text class="cl" x="571.2" y="140" textLength="8.4">╚</text>
+<text class="cm" x="579.6" y="140" textLength="8.4">═</text>
+<text class="bu" x="588" y="140" textLength="8.4">═</text>
+<text class="bv" x="596.4" y="140" textLength="8.4">═</text>
+<text class="bw" x="604.8" y="140" textLength="8.4">═</text>
+<text class="bx" x="613.2" y="140" textLength="8.4">═</text>
+<text class="by" x="621.6" y="140" textLength="8.4">═</text>
+<text class="ak" x="630" y="140" textLength="8.4">╝</text>
+<text class="al" x="655.2" y="140" textLength="8.4">╚</text>
+<text class="co" x="663.6" y="140" textLength="8.4">═</text>
+<text class="dn" x="672" y="140" textLength="8.4">═</text>
+<text class="do" x="680.4" y="140" textLength="8.4">═</text>
+<text class="cv" x="688.8" y="140" textLength="8.4">╝</text>
+<text class="dp" x="722.4" y="140" textLength="8.4">╚</text>
+<text class="bz" x="730.8" y="140" textLength="8.4">═</text>
+<text class="ca" x="739.2" y="140" textLength="8.4">═</text>
+<text class="cb" x="747.6" y="140" textLength="8.4">═</text>
+<text class="cc" x="756" y="140" textLength="8.4">═</text>
+<text class="cd" x="764.4" y="140" textLength="8.4">═</text>
+<text class="an" x="772.8" y="140" textLength="8.4">╝</text>
+<rect class="q" x="378" y="36" width="8.4" height="18" fill="#FF5F62" stroke="#FF5F62" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="369.6" y="36" width="8.4" height="18" fill="#FF6162" stroke="#FF6162" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="344.4" y="36" width="8.4" height="18" fill="#FF6462" stroke="#FF6462" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="336" y="36" width="8.4" height="18" fill="#FF6663" stroke="#FF6663" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="436.8" y="36" width="8.4" height="18" fill="#FF675F" stroke="#FF675F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="327.6" y="36" width="8.4" height="18" fill="#FF6763" stroke="#FF6763" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="445.2" y="36" width="8.4" height="18" fill="#FF685F" stroke="#FF685F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="319.2" y="36" width="8.4" height="18" fill="#FF6863" stroke="#FF6863" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="453.6" y="36" width="8.4" height="18" fill="#FF6A5F" stroke="#FF6A5F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="310.8" y="36" width="8.4" height="18" fill="#FF6A63" stroke="#FF6A63" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="462" y="36" width="8.4" height="18" fill="#FF6B5E" stroke="#FF6B5E" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="302.4" y="36" width="8.4" height="18" fill="#FF6B63" stroke="#FF6B63" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="470.4" y="36" width="8.4" height="18" fill="#FF6D5E" stroke="#FF6D5E" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="478.8" y="36" width="8.4" height="18" fill="#FF6E5D" stroke="#FF6E5D" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="277.2" y="36" width="8.4" height="18" fill="#FF6F63" stroke="#FF6F63" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="487.2" y="36" width="8.4" height="18" fill="#FF705D" stroke="#FF705D" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="268.8" y="36" width="8.4" height="18" fill="#FF7063" stroke="#FF7063" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="260.4" y="36" width="8.4" height="18" fill="#FF7163" stroke="#FF7163" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="504" y="36" width="8.4" height="18" fill="#FF735C" stroke="#FF735C" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="252" y="36" width="8.4" height="18" fill="#FF7363" stroke="#FF7363" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="512.4" y="36" width="8.4" height="18" fill="#FF745C" stroke="#FF745C" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="243.6" y="36" width="8.4" height="18" fill="#FF7463" stroke="#FF7463" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="520.8" y="36" width="8.4" height="18" fill="#FF755B" stroke="#FF755B" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="235.2" y="36" width="8.4" height="18" fill="#FF7564" stroke="#FF7564" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="226.8" y="36" width="8.4" height="18" fill="#FF7664" stroke="#FF7664" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="529.2" y="36" width="8.4" height="18" fill="#FF775B" stroke="#FF775B" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="537.6" y="36" width="8.4" height="18" fill="#FF785A" stroke="#FF785A" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="210" y="36" width="8.4" height="18" fill="#FF7964" stroke="#FF7964" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="546" y="36" width="8.4" height="18" fill="#FF7A5A" stroke="#FF7A5A" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="201.6" y="36" width="8.4" height="18" fill="#FF7A64" stroke="#FF7A64" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="571.2" y="36" width="8.4" height="18" fill="#FF7E59" stroke="#FF7E59" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="579.6" y="36" width="8.4" height="18" fill="#FF8058" stroke="#FF8058" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="588" y="36" width="8.4" height="18" fill="#FF8158" stroke="#FF8158" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="159.6" y="36" width="8.4" height="18" fill="#FF8164" stroke="#FF8164" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="151.2" y="36" width="8.4" height="18" fill="#FF8264" stroke="#FF8264" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="596.4" y="36" width="8.4" height="18" fill="#FF8357" stroke="#FF8357" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="142.8" y="36" width="8.4" height="18" fill="#FF8365" stroke="#FF8365" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="604.8" y="36" width="8.4" height="18" fill="#FF8457" stroke="#FF8457" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="613.2" y="36" width="8.4" height="18" fill="#FF8657" stroke="#FF8657" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="621.6" y="36" width="8.4" height="18" fill="#FF8756" stroke="#FF8756" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="117.6" y="36" width="8.4" height="18" fill="#FF8765" stroke="#FF8765" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="109.2" y="36" width="8.4" height="18" fill="#FF8865" stroke="#FF8865" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="638.4" y="36" width="8.4" height="18" fill="#FF8A55" stroke="#FF8A55" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="100.8" y="36" width="8.4" height="18" fill="#FF8A65" stroke="#FF8A65" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="92.4" y="36" width="8.4" height="18" fill="#FF8B65" stroke="#FF8B65" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="646.8" y="36" width="8.4" height="18" fill="#FF8C55" stroke="#FF8C55" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="84" y="36" width="8.4" height="18" fill="#FF8C65" stroke="#FF8C65" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="75.6" y="36" width="8.4" height="18" fill="#FF8D65" stroke="#FF8D65" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="50.4" y="36" width="8.4" height="18" fill="#FF9165" stroke="#FF9165" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="688.8" y="36" width="8.4" height="18" fill="#FF9353" stroke="#FF9353" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="42" y="36" width="8.4" height="18" fill="#FF9366" stroke="#FF9366" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="697.2" y="36" width="8.4" height="18" fill="#FF9452" stroke="#FF9452" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="33.6" y="36" width="8.4" height="18" fill="#FF9466" stroke="#FF9466" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="25.2" y="36" width="8.4" height="18" fill="#FF9566" stroke="#FF9566" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="16.8" y="36" width="8.4" height="18" fill="#FF9666" stroke="#FF9666" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="8.4" y="36" width="8.4" height="18" fill="#FF9866" stroke="#FF9866" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="722.4" y="36" width="8.4" height="18" fill="#FF9951" stroke="#FF9951" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="730.8" y="36" width="8.4" height="18" fill="#FF9A51" stroke="#FF9A51" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="739.2" y="36" width="8.4" height="18" fill="#FF9C50" stroke="#FF9C50" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="747.6" y="36" width="8.4" height="18" fill="#FF9D50" stroke="#FF9D50" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="756" y="36" width="8.4" height="18" fill="#FF9F4F" stroke="#FF9F4F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="764.4" y="36" width="8.4" height="18" fill="#FFA04F" stroke="#FFA04F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="378" y="54" width="8.4" height="18" fill="#FF5F62" stroke="#FF5F62" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="369.6" y="54" width="8.4" height="18" fill="#FF6162" stroke="#FF6162" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="352.8" y="54" width="8.4" height="18" fill="#FF6362" stroke="#FF6362" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="344.4" y="54" width="8.4" height="18" fill="#FF6462" stroke="#FF6462" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="436.8" y="54" width="8.4" height="18" fill="#FF675F" stroke="#FF675F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="445.2" y="54" width="8.4" height="18" fill="#FF685F" stroke="#FF685F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="302.4" y="54" width="8.4" height="18" fill="#FF6B63" stroke="#FF6B63" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="294" y="54" width="8.4" height="18" fill="#FF6C63" stroke="#FF6C63" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="235.2" y="54" width="8.4" height="18" fill="#FF7564" stroke="#FF7564" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="226.8" y="54" width="8.4" height="18" fill="#FF7664" stroke="#FF7664" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="210" y="54" width="8.4" height="18" fill="#FF7964" stroke="#FF7964" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="546" y="54" width="8.4" height="18" fill="#FF7A5A" stroke="#FF7A5A" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="201.6" y="54" width="8.4" height="18" fill="#FF7A64" stroke="#FF7A64" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="554.4" y="54" width="8.4" height="18" fill="#FF7B59" stroke="#FF7B59" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="571.2" y="54" width="8.4" height="18" fill="#FF7E59" stroke="#FF7E59" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="168" y="54" width="8.4" height="18" fill="#FF7F64" stroke="#FF7F64" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="579.6" y="54" width="8.4" height="18" fill="#FF8058" stroke="#FF8058" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="159.6" y="54" width="8.4" height="18" fill="#FF8164" stroke="#FF8164" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="151.2" y="54" width="8.4" height="18" fill="#FF8264" stroke="#FF8264" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="142.8" y="54" width="8.4" height="18" fill="#FF8365" stroke="#FF8365" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="126" y="54" width="8.4" height="18" fill="#FF8665" stroke="#FF8665" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="117.6" y="54" width="8.4" height="18" fill="#FF8765" stroke="#FF8765" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="638.4" y="54" width="8.4" height="18" fill="#FF8A55" stroke="#FF8A55" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="646.8" y="54" width="8.4" height="18" fill="#FF8C55" stroke="#FF8C55" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="75.6" y="54" width="8.4" height="18" fill="#FF8D65" stroke="#FF8D65" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="67.2" y="54" width="8.4" height="18" fill="#FF8F65" stroke="#FF8F65" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="688.8" y="54" width="8.4" height="18" fill="#FF9353" stroke="#FF9353" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="697.2" y="54" width="8.4" height="18" fill="#FF9452" stroke="#FF9452" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="714" y="54" width="8.4" height="18" fill="#FF9751" stroke="#FF9751" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="8.4" y="54" width="8.4" height="18" fill="#FF9866" stroke="#FF9866" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="722.4" y="54" width="8.4" height="18" fill="#FF9951" stroke="#FF9951" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" y="54" width="8.4" height="18" fill="#FF9966" stroke="#FF9966" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="378" y="72" width="8.4" height="18" fill="#FF5F62" stroke="#FF5F62" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="369.6" y="72" width="8.4" height="18" fill="#FF6162" stroke="#FF6162" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="352.8" y="72" width="8.4" height="18" fill="#FF6362" stroke="#FF6362" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="344.4" y="72" width="8.4" height="18" fill="#FF6462" stroke="#FF6462" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="436.8" y="72" width="8.4" height="18" fill="#FF675F" stroke="#FF675F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="445.2" y="72" width="8.4" height="18" fill="#FF685F" stroke="#FF685F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="453.6" y="72" width="8.4" height="18" fill="#FF6A5F" stroke="#FF6A5F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="462" y="72" width="8.4" height="18" fill="#FF6B5E" stroke="#FF6B5E" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="302.4" y="72" width="8.4" height="18" fill="#FF6B63" stroke="#FF6B63" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="294" y="72" width="8.4" height="18" fill="#FF6C63" stroke="#FF6C63" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="470.4" y="72" width="8.4" height="18" fill="#FF6D5E" stroke="#FF6D5E" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="277.2" y="72" width="8.4" height="18" fill="#FF6F63" stroke="#FF6F63" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="268.8" y="72" width="8.4" height="18" fill="#FF7063" stroke="#FF7063" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="260.4" y="72" width="8.4" height="18" fill="#FF7163" stroke="#FF7163" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="252" y="72" width="8.4" height="18" fill="#FF7363" stroke="#FF7363" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="512.4" y="72" width="8.4" height="18" fill="#FF745C" stroke="#FF745C" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="243.6" y="72" width="8.4" height="18" fill="#FF7463" stroke="#FF7463" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="520.8" y="72" width="8.4" height="18" fill="#FF755B" stroke="#FF755B" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="235.2" y="72" width="8.4" height="18" fill="#FF7564" stroke="#FF7564" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="226.8" y="72" width="8.4" height="18" fill="#FF7664" stroke="#FF7664" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="529.2" y="72" width="8.4" height="18" fill="#FF775B" stroke="#FF775B" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="537.6" y="72" width="8.4" height="18" fill="#FF785A" stroke="#FF785A" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="210" y="72" width="8.4" height="18" fill="#FF7964" stroke="#FF7964" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="546" y="72" width="8.4" height="18" fill="#FF7A5A" stroke="#FF7A5A" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="201.6" y="72" width="8.4" height="18" fill="#FF7A64" stroke="#FF7A64" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="571.2" y="72" width="8.4" height="18" fill="#FF7E59" stroke="#FF7E59" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="176.4" y="72" width="8.4" height="18" fill="#FF7E64" stroke="#FF7E64" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="168" y="72" width="8.4" height="18" fill="#FF7F64" stroke="#FF7F64" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="579.6" y="72" width="8.4" height="18" fill="#FF8058" stroke="#FF8058" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="588" y="72" width="8.4" height="18" fill="#FF8158" stroke="#FF8158" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="151.2" y="72" width="8.4" height="18" fill="#FF8264" stroke="#FF8264" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="596.4" y="72" width="8.4" height="18" fill="#FF8357" stroke="#FF8357" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="142.8" y="72" width="8.4" height="18" fill="#FF8365" stroke="#FF8365" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="604.8" y="72" width="8.4" height="18" fill="#FF8457" stroke="#FF8457" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="613.2" y="72" width="8.4" height="18" fill="#FF8657" stroke="#FF8657" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="126" y="72" width="8.4" height="18" fill="#FF8665" stroke="#FF8665" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="621.6" y="72" width="8.4" height="18" fill="#FF8756" stroke="#FF8756" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="117.6" y="72" width="8.4" height="18" fill="#FF8765" stroke="#FF8765" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="638.4" y="72" width="8.4" height="18" fill="#FF8A55" stroke="#FF8A55" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="646.8" y="72" width="8.4" height="18" fill="#FF8C55" stroke="#FF8C55" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="75.6" y="72" width="8.4" height="18" fill="#FF8D65" stroke="#FF8D65" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="67.2" y="72" width="8.4" height="18" fill="#FF8F65" stroke="#FF8F65" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="688.8" y="72" width="8.4" height="18" fill="#FF9353" stroke="#FF9353" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="697.2" y="72" width="8.4" height="18" fill="#FF9452" stroke="#FF9452" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="714" y="72" width="8.4" height="18" fill="#FF9751" stroke="#FF9751" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="8.4" y="72" width="8.4" height="18" fill="#FF9866" stroke="#FF9866" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="722.4" y="72" width="8.4" height="18" fill="#FF9951" stroke="#FF9951" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" y="72" width="8.4" height="18" fill="#FF9966" stroke="#FF9966" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="756" y="72" width="8.4" height="18" fill="#FF9F4F" stroke="#FF9F4F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="764.4" y="72" width="8.4" height="18" fill="#FFA04F" stroke="#FFA04F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="772.8" y="72" width="8.4" height="18" fill="#FFA24E" stroke="#FFA24E" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="378" y="90" width="8.4" height="18" fill="#FF5F62" stroke="#FF5F62" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="369.6" y="90" width="8.4" height="18" fill="#FF6162" stroke="#FF6162" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="352.8" y="90" width="8.4" height="18" fill="#FF6362" stroke="#FF6362" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="344.4" y="90" width="8.4" height="18" fill="#FF6462" stroke="#FF6462" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="436.8" y="90" width="8.4" height="18" fill="#FF675F" stroke="#FF675F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="445.2" y="90" width="8.4" height="18" fill="#FF685F" stroke="#FF685F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="302.4" y="90" width="8.4" height="18" fill="#FF6B63" stroke="#FF6B63" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="294" y="90" width="8.4" height="18" fill="#FF6C63" stroke="#FF6C63" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="277.2" y="90" width="8.4" height="18" fill="#FF6F63" stroke="#FF6F63" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="268.8" y="90" width="8.4" height="18" fill="#FF7063" stroke="#FF7063" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="504" y="90" width="8.4" height="18" fill="#FF735C" stroke="#FF735C" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="512.4" y="90" width="8.4" height="18" fill="#FF745C" stroke="#FF745C" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="210" y="90" width="8.4" height="18" fill="#FF7964" stroke="#FF7964" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="201.6" y="90" width="8.4" height="18" fill="#FF7A64" stroke="#FF7A64" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="184.8" y="90" width="8.4" height="18" fill="#FF7D64" stroke="#FF7D64" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="176.4" y="90" width="8.4" height="18" fill="#FF7E64" stroke="#FF7E64" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="151.2" y="90" width="8.4" height="18" fill="#FF8264" stroke="#FF8264" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="142.8" y="90" width="8.4" height="18" fill="#FF8365" stroke="#FF8365" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="613.2" y="90" width="8.4" height="18" fill="#FF8657" stroke="#FF8657" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="126" y="90" width="8.4" height="18" fill="#FF8665" stroke="#FF8665" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="621.6" y="90" width="8.4" height="18" fill="#FF8756" stroke="#FF8756" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="117.6" y="90" width="8.4" height="18" fill="#FF8765" stroke="#FF8765" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="646.8" y="90" width="8.4" height="18" fill="#FF8C55" stroke="#FF8C55" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="655.2" y="90" width="8.4" height="18" fill="#FF8D54" stroke="#FF8D54" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="75.6" y="90" width="8.4" height="18" fill="#FF8D65" stroke="#FF8D65" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="67.2" y="90" width="8.4" height="18" fill="#FF8F65" stroke="#FF8F65" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="680.4" y="90" width="8.4" height="18" fill="#FF9153" stroke="#FF9153" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="688.8" y="90" width="8.4" height="18" fill="#FF9353" stroke="#FF9353" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="714" y="90" width="8.4" height="18" fill="#FF9751" stroke="#FF9751" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="8.4" y="90" width="8.4" height="18" fill="#FF9866" stroke="#FF9866" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="722.4" y="90" width="8.4" height="18" fill="#FF9951" stroke="#FF9951" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" y="90" width="8.4" height="18" fill="#FF9966" stroke="#FF9966" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="764.4" y="90" width="8.4" height="18" fill="#FFA04F" stroke="#FFA04F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="772.8" y="90" width="8.4" height="18" fill="#FFA24E" stroke="#FFA24E" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="386.4" y="108" width="8.4" height="18" fill="#FF5E62" stroke="#FF5E62" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="378" y="108" width="8.4" height="18" fill="#FF5F62" stroke="#FF5F62" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="394.8" y="108" width="8.4" height="18" fill="#FF5F62" stroke="#FF5F62" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="403.2" y="108" width="8.4" height="18" fill="#FF6161" stroke="#FF6161" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="369.6" y="108" width="8.4" height="18" fill="#FF6162" stroke="#FF6162" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="411.6" y="108" width="8.4" height="18" fill="#FF6261" stroke="#FF6261" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="420" y="108" width="8.4" height="18" fill="#FF6460" stroke="#FF6460" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="344.4" y="108" width="8.4" height="18" fill="#FF6462" stroke="#FF6462" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="336" y="108" width="8.4" height="18" fill="#FF6663" stroke="#FF6663" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="436.8" y="108" width="8.4" height="18" fill="#FF675F" stroke="#FF675F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="327.6" y="108" width="8.4" height="18" fill="#FF6763" stroke="#FF6763" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="445.2" y="108" width="8.4" height="18" fill="#FF685F" stroke="#FF685F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="319.2" y="108" width="8.4" height="18" fill="#FF6863" stroke="#FF6863" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="453.6" y="108" width="8.4" height="18" fill="#FF6A5F" stroke="#FF6A5F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="310.8" y="108" width="8.4" height="18" fill="#FF6A63" stroke="#FF6A63" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="462" y="108" width="8.4" height="18" fill="#FF6B5E" stroke="#FF6B5E" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="302.4" y="108" width="8.4" height="18" fill="#FF6B63" stroke="#FF6B63" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="470.4" y="108" width="8.4" height="18" fill="#FF6D5E" stroke="#FF6D5E" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="478.8" y="108" width="8.4" height="18" fill="#FF6E5D" stroke="#FF6E5D" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="277.2" y="108" width="8.4" height="18" fill="#FF6F63" stroke="#FF6F63" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="487.2" y="108" width="8.4" height="18" fill="#FF705D" stroke="#FF705D" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="268.8" y="108" width="8.4" height="18" fill="#FF7063" stroke="#FF7063" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="260.4" y="108" width="8.4" height="18" fill="#FF7163" stroke="#FF7163" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="504" y="108" width="8.4" height="18" fill="#FF735C" stroke="#FF735C" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="252" y="108" width="8.4" height="18" fill="#FF7363" stroke="#FF7363" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="512.4" y="108" width="8.4" height="18" fill="#FF745C" stroke="#FF745C" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="243.6" y="108" width="8.4" height="18" fill="#FF7463" stroke="#FF7463" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="520.8" y="108" width="8.4" height="18" fill="#FF755B" stroke="#FF755B" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="235.2" y="108" width="8.4" height="18" fill="#FF7564" stroke="#FF7564" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="226.8" y="108" width="8.4" height="18" fill="#FF7664" stroke="#FF7664" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="529.2" y="108" width="8.4" height="18" fill="#FF775B" stroke="#FF775B" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="537.6" y="108" width="8.4" height="18" fill="#FF785A" stroke="#FF785A" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="210" y="108" width="8.4" height="18" fill="#FF7964" stroke="#FF7964" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="546" y="108" width="8.4" height="18" fill="#FF7A5A" stroke="#FF7A5A" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="201.6" y="108" width="8.4" height="18" fill="#FF7A64" stroke="#FF7A64" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="554.4" y="108" width="8.4" height="18" fill="#FF7B59" stroke="#FF7B59" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="193.2" y="108" width="8.4" height="18" fill="#FF7C64" stroke="#FF7C64" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="184.8" y="108" width="8.4" height="18" fill="#FF7D64" stroke="#FF7D64" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="571.2" y="108" width="8.4" height="18" fill="#FF7E59" stroke="#FF7E59" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="579.6" y="108" width="8.4" height="18" fill="#FF8058" stroke="#FF8058" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="588" y="108" width="8.4" height="18" fill="#FF8158" stroke="#FF8158" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="151.2" y="108" width="8.4" height="18" fill="#FF8264" stroke="#FF8264" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="596.4" y="108" width="8.4" height="18" fill="#FF8357" stroke="#FF8357" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="142.8" y="108" width="8.4" height="18" fill="#FF8365" stroke="#FF8365" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="604.8" y="108" width="8.4" height="18" fill="#FF8457" stroke="#FF8457" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="613.2" y="108" width="8.4" height="18" fill="#FF8657" stroke="#FF8657" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="621.6" y="108" width="8.4" height="18" fill="#FF8756" stroke="#FF8756" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="117.6" y="108" width="8.4" height="18" fill="#FF8765" stroke="#FF8765" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="109.2" y="108" width="8.4" height="18" fill="#FF8865" stroke="#FF8865" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="100.8" y="108" width="8.4" height="18" fill="#FF8A65" stroke="#FF8A65" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="92.4" y="108" width="8.4" height="18" fill="#FF8B65" stroke="#FF8B65" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="84" y="108" width="8.4" height="18" fill="#FF8C65" stroke="#FF8C65" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="655.2" y="108" width="8.4" height="18" fill="#FF8D54" stroke="#FF8D54" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="75.6" y="108" width="8.4" height="18" fill="#FF8D65" stroke="#FF8D65" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="663.6" y="108" width="8.4" height="18" fill="#FF8E54" stroke="#FF8E54" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="672" y="108" width="8.4" height="18" fill="#FF9054" stroke="#FF9054" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="680.4" y="108" width="8.4" height="18" fill="#FF9153" stroke="#FF9153" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="50.4" y="108" width="8.4" height="18" fill="#FF9165" stroke="#FF9165" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="42" y="108" width="8.4" height="18" fill="#FF9366" stroke="#FF9366" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="33.6" y="108" width="8.4" height="18" fill="#FF9466" stroke="#FF9466" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="25.2" y="108" width="8.4" height="18" fill="#FF9566" stroke="#FF9566" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="16.8" y="108" width="8.4" height="18" fill="#FF9666" stroke="#FF9666" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="8.4" y="108" width="8.4" height="18" fill="#FF9866" stroke="#FF9866" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="722.4" y="108" width="8.4" height="18" fill="#FF9951" stroke="#FF9951" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="730.8" y="108" width="8.4" height="18" fill="#FF9A51" stroke="#FF9A51" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="739.2" y="108" width="8.4" height="18" fill="#FF9C50" stroke="#FF9C50" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="747.6" y="108" width="8.4" height="18" fill="#FF9D50" stroke="#FF9D50" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="756" y="108" width="8.4" height="18" fill="#FF9F4F" stroke="#FF9F4F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="764.4" y="108" width="8.4" height="18" fill="#FFA04F" stroke="#FFA04F" stroke-width="2" vector-effect="non-scaling-stroke"/>
+</g>
+</svg>

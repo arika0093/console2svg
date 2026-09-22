@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="448" viewBox="0 0 1024 448" role="img" aria-label="console2svg output">
+<style>
+.c2.c { font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace; font-size: 14px; }
+.c2 text { white-space: pre; dominant-baseline: alphabetic; }
+.c2 .q { shape-rendering: crispEdges; }
+.c2 .aa{fill:#F63B3B;font-weight:bold}
+.c2 .ab{fill:#d4d4d4}
+.c2 .ac{fill:#0dbc79}
+</style><defs><pattern id="c2-redacted-stripe" patternUnits="userSpaceOnUse" width="8" height="8"><path d="M0 0h8v8H0z" fill="#1e1e1e"/><path d="M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6" stroke="#d4d4d4" stroke-width="2" opacity="0.3"/></pattern></defs><defs>
+<linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1d2e"/><stop offset="100%" stop-color="#252840"/></linearGradient>
+</defs>
+<rect width="1024" height="448" fill="url(#c2bg)"/>
+<rect width="1024" height="448" fill="#1e1e1e"/>
+<g class="c2 c" transform="translate(8 8)">
+<rect width="1008" height="432" fill="#1e1e1e"/>
+<rect class="q" x="420" y="360" width="25.2" height="18" fill="#cd3131" stroke="#cd3131" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="445.2" y="360" width="25.2" height="18" fill="#0dbc79" stroke="#0dbc79" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="470.4" y="360" width="25.2" height="18" fill="#e5e510" stroke="#e5e510" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="495.6" y="360" width="25.2" height="18" fill="#2472c8" stroke="#2472c8" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="520.8" y="360" width="25.2" height="18" fill="#bc3fbc" stroke="#bc3fbc" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="546" y="360" width="25.2" height="18" fill="#11a8cd" stroke="#11a8cd" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="571.2" y="360" width="25.2" height="18" fill="#e5e5e5" stroke="#e5e5e5" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="394.8" y="378" width="25.2" height="18" fill="#666666" stroke="#666666" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="420" y="378" width="25.2" height="18" fill="#f14c4c" stroke="#f14c4c" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="445.2" y="378" width="25.2" height="18" fill="#23d18b" stroke="#23d18b" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="470.4" y="378" width="25.2" height="18" fill="#f5f543" stroke="#f5f543" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="495.6" y="378" width="25.2" height="18" fill="#3b8eea" stroke="#3b8eea" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="520.8" y="378" width="25.2" height="18" fill="#d670d6" stroke="#d670d6" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="546" y="378" width="25.2" height="18" fill="#29b8db" stroke="#29b8db" stroke-width="2" vector-effect="non-scaling-stroke"/>
+<rect class="q" x="571.2" y="378" width="25.2" height="18" fill="#ffffff" stroke="#ffffff" stroke-width="2" vector-effect="non-scaling-stroke"/>
+</g>
+<g class="c2 c" xml:space="preserve" transform="translate(8 8)">
+<text class="aa" x="243.6" y="14" textLength="33.6">....</text>
+<text class="aa" x="394.8" y="14" textLength="50.4">runner</text>
+<text class="ab" x="445.2" y="14" textLength="8.4">@</text>
+<text class="aa" x="453.6" y="14" textLength="109.2">runnervmlun5p</text>
+<text class="aa" x="117.6" y="32" textLength="184.8">.&apos;,:clooo:  .:looooo:.</text>
+<text class="ab" x="394.8" y="32" textLength="168">--------------------</text>
+<text class="aa" x="92.4" y="50" textLength="218.4">.;looooooooc  .oooooooooo&apos;</text>
+<text class="aa" x="394.8" y="50" textLength="16.8">OS</text>
+<text class="ab" x="411.6" y="50" textLength="352.8">: Ubuntu 24.04.5 LTS (Noble Numbat) x86_64</text>
+<text class="aa" x="67.2" y="68" textLength="243.6">.;looooool:,&apos;&apos;.  :ooooooooooc</text>
+<text class="aa" x="394.8" y="68" textLength="33.6">Host</text>
+<text class="ab" x="428.4" y="68" textLength="378">: Virtual Machine (Hyper-V UEFI Release v4.1)</text>
+<text class="aa" x="58.8" y="86" textLength="252">;looool;.         &apos;oooooooooo,</text>
+<text class="aa" x="394.8" y="86" textLength="50.4">Kernel</text>
+<text class="ab" x="445.2" y="86" textLength="210">: Linux 6.17.0-1022-azure</text>
+<text class="aa" x="50.4" y="104" textLength="285.6">;clool&apos;             .cooooooc.  ,,</text>
+<text class="aa" x="394.8" y="104" textLength="50.4">Uptime</text>
+<text class="ab" x="445.2" y="104" textLength="67.2">: 7 mins</text>
+<text class="aa" x="75.6" y="122" textLength="268.8">...                ......  .:oo,</text>
+<text class="aa" x="394.8" y="122" textLength="67.2">Packages</text>
+<text class="ab" x="462" y="122" textLength="109.2">: 1316 (dpkg)</text>
+<text class="aa" x="16.8" y="140" textLength="336">.;clol:,.                        .loooo&apos;</text>
+<text class="aa" x="394.8" y="140" textLength="42">Shell</text>
+<text class="ab" x="436.8" y="140" textLength="109.2">: console2svg</text>
+<text class="aa" x="8.4" y="158" textLength="344.4">:ooooooooo,                        &apos;ooool</text>
+<text class="aa" x="394.8" y="158" textLength="159.6">Display (Virtual-1)</text>
+<text class="ab" x="554.4" y="158" textLength="84">: 1024x768</text>
+<text class="aa" y="176" textLength="361.2">&apos;ooooooooooo.                        loooo.</text>
+<text class="aa" x="394.8" y="176" textLength="42">Theme</text>
+<text class="ab" x="436.8" y="176" textLength="109.2">: Yaru [GTK3]</text>
+<text class="aa" y="194" textLength="361.2">&apos;ooooooooool                         coooo.</text>
+<text class="aa" x="394.8" y="194" textLength="42">Icons</text>
+<text class="ab" x="436.8" y="194" textLength="109.2">: Yaru [GTK3]</text>
+<text class="aa" x="8.4" y="212" textLength="352.8">,loooooooc.                        .loooo.</text>
+<text class="aa" x="394.8" y="212" textLength="50.4">Cursor</text>
+<text class="ab" x="445.2" y="212" textLength="75.6">: Adwaita</text>
+<text class="aa" x="25.2" y="230" textLength="327.6">.,;;;&apos;.                          ;ooooc</text>
+<text class="aa" x="394.8" y="230" textLength="67.2">Terminal</text>
+<text class="ab" x="462" y="230" textLength="126">: Runner.Worker</text>
+<text class="aa" x="58.8" y="248" textLength="294">...                         ,ooool.</text>
+<text class="aa" x="394.8" y="248" textLength="25.2">CPU</text>
+<text class="ab" x="420" y="248" textLength="403.2">: Intel(R) Xeon(R) Platinum 8370C (4) @ 2.80 GHz</text>
+<text class="aa" x="33.6" y="266" textLength="310.8">.cooooc.              ..&apos;,,&apos;.  .cooo.</text>
+<text class="aa" x="394.8" y="266" textLength="50.4">Memory</text>
+<text class="ab" x="445.2" y="266" textLength="201.6">: 1.03 GiB / 15.61 GiB (</text>
+<text class="ac" x="646.8" y="266" textLength="16.8">7%</text>
+<text class="ab" x="663.6" y="266" textLength="8.4">)</text>
+<text class="aa" x="50.4" y="284" textLength="285.6">;ooooo:.           ;oooooooc.  :l.</text>
+<text class="aa" x="394.8" y="284" textLength="33.6">Swap</text>
+<text class="ab" x="428.4" y="284" textLength="151.2">: 0 B / 3.00 GiB (</text>
+<text class="ac" x="579.6" y="284" textLength="16.8">0%</text>
+<text class="ab" x="596.4" y="284" textLength="8.4">)</text>
+<text class="aa" x="58.8" y="302" textLength="243.6">.coooooc,..      coooooooooo.</text>
+<text class="aa" x="394.8" y="302" textLength="67.2">Disk (/)</text>
+<text class="ab" x="462" y="302" textLength="218.4">: 61.04 GiB / 144.26 GiB (</text>
+<text class="ac" x="680.4" y="302" textLength="25.2">42%</text>
+<text class="ab" x="705.6" y="302" textLength="67.2">) - ext4</text>
+<text class="aa" x="75.6" y="320" textLength="226.8">.:ooooooolc:. .ooooooooooo&apos;</text>
+<text class="aa" x="394.8" y="320" textLength="126">Local IP (eth0)</text>
+<text class="ab" x="520.8" y="320" textLength="126">: 10.1.0.167/20</text>
+<text class="aa" x="92.4" y="338" textLength="201.6">.&apos;:loooooo;  ,oooooooooc</text>
+<text class="aa" x="394.8" y="338" textLength="50.4">Locale</text>
+<text class="ab" x="445.2" y="338" textLength="75.6">: C.UTF-8</text>
+<text class="aa" x="126" y="356" textLength="159.6">..&apos;;::c&apos;  .;loooo:&apos;</text>
+</g>
+</svg>

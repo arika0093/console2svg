@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="188" viewBox="0 0 400 188" role="img" aria-label="console2svg output">
+<style>
+.c2.c { font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace; font-size: 14px; }
+.c2 text { white-space: pre; dominant-baseline: alphabetic; }
+.c2 .q { shape-rendering: crispEdges; }
+.c2 .aa{fill:#d4d4d4}
+</style><defs><pattern id="c2-redacted-stripe" patternUnits="userSpaceOnUse" width="8" height="8"><path d="M0 0h8v8H0z" fill="#0c0c0c"/><path d="M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6" stroke="#d4d4d4" stroke-width="2" opacity="0.3"/></pattern></defs><defs>
+<linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1d2e"/><stop offset="100%" stop-color="#252840"/></linearGradient>
+</defs>
+<rect width="400" height="188" fill="url(#c2bg)"/>
+<rect x="20.5" y="20.5" width="353" height="141" fill="#333" stroke="#333"/>
+<rect x="21" y="21" width="352" height="34" fill="#333"/>
+<path d="M 28,55 L 28,31 Q 28,26 33,26 L 183,26 Q 188,26 188,31 L 188,55 Z" fill="#0c0c0c"/>
+<polyline points="36,35.5 40,39.5 36,43.5" fill="none" stroke="#cccccc" stroke-width="1.2" stroke-linejoin="round"/>
+<line x1="43" y1="44" x2="49" y2="44" stroke="#cccccc" stroke-width="1.2"/>
+<line x1="172.5" y1="36" x2="179.5" y2="43" stroke="#888888" stroke-width="1.1"/>
+<line x1="179.5" y1="36" x2="172.5" y2="43" stroke="#888888" stroke-width="1.1"/>
+<line x1="254" y1="39.5" x2="264" y2="39.5" stroke="#cccccc" stroke-width="1.2"/>
+<rect x="300" y="34.5" width="10" height="10" fill="none" stroke="#cccccc" stroke-width="1.2"/>
+<line x1="346" y1="34.5" x2="356" y2="44.5" stroke="#cccccc" stroke-width="1.3"/>
+<line x1="356" y1="34.5" x2="346" y2="44.5" stroke="#cccccc" stroke-width="1.3"/>
+
+<rect x="21" y="55" width="352" height="106" fill="#0c0c0c"/>
+<g class="c2 c" xml:space="preserve"><rect x="29" y="63" width="336" height="18" fill="#0c0c0c"/>
+<text class="aa" x="29" y="77">$ dotnet --version</text></g>
+<g class="c2 c" transform="translate(29 81)">
+<rect width="336" height="72" fill="#0c0c0c"/>
+</g>
+<g class="c2 c" xml:space="preserve" transform="translate(29 81)">
+<text class="aa" y="14" textLength="193.2">11.0.100-rc.1.26425.128</text>
+</g>
+</svg>

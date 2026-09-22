@@ -14,6 +14,7 @@ console2svg capture -o output.png -w 100 -h 12 -- console2svg
 ```
 
 <!-- c2s::  -w 100 -h 12 -- console2svg -->
+![console2svg](../../../../docs-site/public/assets/generated/0d6442f444880dcbc2d52d7ad52a0356c5357cf309ec144fb99303187a82b04d.svg)
 
 ## 渲染引擎
 
@@ -33,3 +34,4 @@ console2svg capture -o result.png --svg-converter rsvg-convert -- console2svg
 ```
 
 <!-- c2s::  -w 100 -h 12 --svg-converter rsvg-convert -- console2svg -->
+![console2svg](../../../../docs-site/public/assets/generated/6d819ba32340b1b024d0e8d042417b9ff5fea0d3a6b6ac36a59d2827b56f835e.svg)

@@ -35,6 +35,7 @@ console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
 ```
 
 <!-- c2s::  -w 64 -h 6 -c -d macos-pc --background "#003060" --opacity 0.85 -- dotnet --version -->
+![dotnet --version](../../../docs-site/public/assets/generated/f1dcbb63caa797f9c6f4b95f17d0bdd94bc26feec389a89e8465ad8398547db2.svg)
 
 
 ### グラデーション
@@ -47,6 +48,7 @@ console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
 ```
 
 <!-- c2s::  -w 64 -h 6 -c -d macos-pc --background "#004060" "#0080c0" --opacity 0.85 -- dotnet --version -->
+![dotnet --version](../../../docs-site/public/assets/generated/b32de9e292830290c6db90acb153ab8872f09ec3e273dec8e9e048a41990e1bf.svg)
 
 
 ### 画像背景
@@ -59,6 +61,7 @@ console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
 ```
 
 <!-- c2s::  -w 64 -h 6 -c -d macos-pc --background ../../../docs-site/public/assets/image2.png --opacity 0.85 -- dotnet --version -->
+![dotnet --version](../../../docs-site/public/assets/generated/e0b69fb7ee9a0736e594acc67cd731ed81c2474864f0235eb939ba40c5d92ea1.svg)
 
 
 ## 余白と不透明度

@@ -14,6 +14,7 @@ console2svg capture -w 100 -h 24 -c -t nord -- console2svg
 ```
 
 <!-- c2s::  -w 100 -h 24 -c -t nord -- console2svg -->
+![console2svg](../../../../docs-site/public/assets/generated/80559a1eb4069761d1541183984cdd5b7b22be8e2380448389257e4f83e86e27.svg)
 
 可以在[内置主题概览](./built-in-theme-list.mdx)中查看主题 ID。`theme list` 会同时显示内置主题和已安装主题。
 

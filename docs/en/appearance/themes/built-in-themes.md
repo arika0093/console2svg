@@ -14,6 +14,7 @@ console2svg capture -w 100 -h 24 -c -t nord -- console2svg
 ```
 
 <!-- c2s::  -w 100 -h 24 -c -t nord -- console2svg -->
+![console2svg](../../../../docs-site/public/assets/generated/80559a1eb4069761d1541183984cdd5b7b22be8e2380448389257e4f83e86e27.svg)
 
 Theme IDs are listed in [Built-in theme overview](./built-in-theme-list.mdx). `theme list` shows both built-in and installed themes together.
 

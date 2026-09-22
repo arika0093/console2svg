@@ -1,0 +1,1373 @@
+{
+  "version": 1,
+  "generator": {
+    "name": "console2svg",
+    "version": "0.9.3.35"
+  },
+  "objects": {
+    "b310717103972d25914acde83b192cfb2ccdb8bc583e58a712de0e006fece3e9.svg": {
+      "path": "generated/b310717103972d25914acde83b192cfb2ccdb8bc583e58a712de0e006fece3e9.svg",
+      "sha256": "87ef9ac17163e3e53fdc9401d2a7e05b7e2be87d384ba15a0e28a3d96096e556",
+      "size": 1362,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "df4ae3d2faf025c24faaaa361bd8c86aa74266c22afe4b310e15643606f24c66.svg": {
+      "path": "generated/df4ae3d2faf025c24faaaa361bd8c86aa74266c22afe4b310e15643606f24c66.svg",
+      "sha256": "9fc03fceefe5078f41e9d661bdcd76d7176ae75e108405f93cc5ceda06d76fc1",
+      "size": 1757,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "57425e021433221c8f314c25c1447583cde5862ba179b2a39328c002878d9083.svg": {
+      "path": "generated/57425e021433221c8f314c25c1447583cde5862ba179b2a39328c002878d9083.svg",
+      "sha256": "4a9b2f371f50f2e8cf1ae7e58a361c654ed7d5b5549959139d0aea445cf0396d",
+      "size": 1483,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "f6f62563abc7ff55674b3282fe0e7c4fe2365dff314fb13d20dceb8e9d28133f.svg": {
+      "path": "generated/f6f62563abc7ff55674b3282fe0e7c4fe2365dff314fb13d20dceb8e9d28133f.svg",
+      "sha256": "8c6ba94b9d203e2dd2a45d86f92d961447962b9121546567108620ab7febe1b4",
+      "size": 2206,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "c9ca7434153c6594783fd5347cf7e7cf7f52ccc220d2d3b77653de3dee947887.svg": {
+      "path": "generated/c9ca7434153c6594783fd5347cf7e7cf7f52ccc220d2d3b77653de3dee947887.svg",
+      "sha256": "1babf5c95793580dfd102c52ee0ee38e6cbd056708ab80a2571bef3165da609d",
+      "size": 2447,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "e2d5b50c8f680a763cc59151bb009963de9e55968faf965b37e319e5acd40f87.svg": {
+      "path": "generated/e2d5b50c8f680a763cc59151bb009963de9e55968faf965b37e319e5acd40f87.svg",
+      "sha256": "f34ec6702063a1914712b4294e10cb82f25aa7beccf8f6bb63b645e6002e4e88",
+      "size": 1724,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "8070f680a61369fbdab04b39fe37a0868f39aed3ec8002a25d3b677d099ee6e7.svg": {
+      "path": "generated/8070f680a61369fbdab04b39fe37a0868f39aed3ec8002a25d3b677d099ee6e7.svg",
+      "sha256": "aeb51ff98457e2185506e800e2e234800df5a06b4b470b87dcce7b42d3a50bdb",
+      "size": 1724,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "5d3a99941512bf8d6e64b1e8aa87be2ae3a639be77deed462bcdd798e6275fcb.svg": {
+      "path": "generated/5d3a99941512bf8d6e64b1e8aa87be2ae3a639be77deed462bcdd798e6275fcb.svg",
+      "sha256": "989b99006bd9b51e7285aa4629c3cae06e5b2a4b24ae1f0ef33cb950f1ded7bd",
+      "size": 1724,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "a28e8def8171a4188dc854fb2d1b433bbc4b30942693e50a427960847954eb58.svg": {
+      "path": "generated/a28e8def8171a4188dc854fb2d1b433bbc4b30942693e50a427960847954eb58.svg",
+      "sha256": "ffe3582e9fe9c858ccb0c6f780a589814f1e2841c6942b7f9203bf28c2532ef4",
+      "size": 1724,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "328dd320ea777244f5b5fc293645101914d75f4668853c9f96ceb725e52f5626.svg": {
+      "path": "generated/328dd320ea777244f5b5fc293645101914d75f4668853c9f96ceb725e52f5626.svg",
+      "sha256": "4fecc99560d28baf8421bc577c3e36ca2d5fd89ea8ee2b828d6e3eeedf72cf8b",
+      "size": 1724,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "e0c66006eda18c514f4e08703bcdecd5ce2006c0d509e61ba7756425ac75deec.svg": {
+      "path": "generated/e0c66006eda18c514f4e08703bcdecd5ce2006c0d509e61ba7756425ac75deec.svg",
+      "sha256": "e5774af4ebbde7325103107b961ed9991f11a6d10e3b81741f042b8b320486b9",
+      "size": 1724,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "857b93d6ba67898860455d7a4f5504f61e30d03caf3b38bd5b47742da58bb53e.svg": {
+      "path": "generated/857b93d6ba67898860455d7a4f5504f61e30d03caf3b38bd5b47742da58bb53e.svg",
+      "sha256": "e5e01419fa76e816d6da323f349d4a35dceae6f34a44d2e117c20fbc672ff40e",
+      "size": 1724,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "832a4c9268e9ad8192133f9cc684e66393e2808138685318b8c279d45b0f9813.svg": {
+      "path": "generated/832a4c9268e9ad8192133f9cc684e66393e2808138685318b8c279d45b0f9813.svg",
+      "sha256": "8033bf3e85f87c1c059ec3fd3a5ea5218b13bca85387b4547d930ccff3fec2d7",
+      "size": 1724,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "2326d134734ebf4dcd33c9e43e720ddeedfbc70548e8a5429af823517296aafe.svg": {
+      "path": "generated/2326d134734ebf4dcd33c9e43e720ddeedfbc70548e8a5429af823517296aafe.svg",
+      "sha256": "191d0df6917564951f54b4f34131d13936424fddab11943e979ac57bec0cb0c0",
+      "size": 1724,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "3b9fa22e3c98b7dce9466b0898e9e032fb40ef26d55b5b9eb76b003a079aa37d.svg": {
+      "path": "generated/3b9fa22e3c98b7dce9466b0898e9e032fb40ef26d55b5b9eb76b003a079aa37d.svg",
+      "sha256": "0dc51d1b05030ef7fc521df619d709f84d0cb6c1bd722d7709206ee06417d058",
+      "size": 1724,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "9e7216ee3316ac33de30abe28d8d2ec5fc49c4e1e65668446028d6a0bda3111b.svg": {
+      "path": "generated/9e7216ee3316ac33de30abe28d8d2ec5fc49c4e1e65668446028d6a0bda3111b.svg",
+      "sha256": "be60afc5ffa962cf683eaaf6db29937c9e62a2c0b098eb24e5560c661c58bebe",
+      "size": 1724,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "e327ebdc788303f91c2211525643ada48e526f78bda23dc6f0e35518f3a77f84.svg": {
+      "path": "generated/e327ebdc788303f91c2211525643ada48e526f78bda23dc6f0e35518f3a77f84.svg",
+      "sha256": "e095d0cecf2c80d400edf8bec406b9e0558ef5c6dff0e50dbd6b8ecd9af3e9c5",
+      "size": 1724,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "8648f647adaa46f5f12b018babdfee34bd1c6003ca273dc6a4414100901f68c2.svg": {
+      "path": "generated/8648f647adaa46f5f12b018babdfee34bd1c6003ca273dc6a4414100901f68c2.svg",
+      "sha256": "f5597c2b133e6e42df7a9ce59a033e7f6e59d15275e0716e8af8d0b6b4f45048",
+      "size": 1724,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "80559a1eb4069761d1541183984cdd5b7b22be8e2380448389257e4f83e86e27.svg": {
+      "path": "generated/80559a1eb4069761d1541183984cdd5b7b22be8e2380448389257e4f83e86e27.svg",
+      "sha256": "433c4106d60c28b700539faaba94ebe6a96caf1d5ceddfdedfebd03b4a08d123",
+      "size": 4336,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "e8f388497c56be5289784c57e291d9e89d7136a017945109c54fa1c39999e5ed.svg": {
+      "path": "generated/e8f388497c56be5289784c57e291d9e89d7136a017945109c54fa1c39999e5ed.svg",
+      "sha256": "448c896eb616b02279b72558a5953c8fe6a6509ac2018679fce784655f79dbd9",
+      "size": 1715,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "85fc7ada30685126f9aa5b54fa4c277c064b707e9ef6fe9b326ed7c2c8633f8b.svg": {
+      "path": "generated/85fc7ada30685126f9aa5b54fa4c277c064b707e9ef6fe9b326ed7c2c8633f8b.svg",
+      "sha256": "d7dad9b54cab72fcb21d9c00853e8b8d9076dcce924ccedd4e5c4d7e67a46235",
+      "size": 1724,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "4e1fa268bddd0b30a7a7a0bed3f5cb12988e2a21940eeee661f639b225a7d868.svg": {
+      "path": "generated/4e1fa268bddd0b30a7a7a0bed3f5cb12988e2a21940eeee661f639b225a7d868.svg",
+      "sha256": "897f647002ea9740a9c708e1b8c930ba970b6bd0f5db0a26259a3e252e537da9",
+      "size": 2306,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "50ffc9733f2479c384a0ec06cc591cbd081232913884bcbb0ca4a29d6d8b346f.svg": {
+      "path": "generated/50ffc9733f2479c384a0ec06cc591cbd081232913884bcbb0ca4a29d6d8b346f.svg",
+      "sha256": "a9c8ab7c7a1883cb646297ecfbb9fbc554ec24e9809e9051e0d380d8304e0250",
+      "size": 2322,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "171066a411e8094643c035431a0b7ef0922ff83ef9e0cfb6b1d35d8ae9932569.svg": {
+      "path": "generated/171066a411e8094643c035431a0b7ef0922ff83ef9e0cfb6b1d35d8ae9932569.svg",
+      "sha256": "51129e622f73cce7419071073b63823db84fefb25fed08cbebad753c2054dd70",
+      "size": 1375,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "7a43acbe63327f74e90d1fb9a9c3c7d0a108ac9c7f2de761830c732c28b61557.svg": {
+      "path": "generated/7a43acbe63327f74e90d1fb9a9c3c7d0a108ac9c7f2de761830c732c28b61557.svg",
+      "sha256": "1c2c6ec9ea42ccadab36bd3786ee09f5c8d933f8168cb3e3de344877c0cf1575",
+      "size": 1392,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "f1dcbb63caa797f9c6f4b95f17d0bdd94bc26feec389a89e8465ad8398547db2.svg": {
+      "path": "generated/f1dcbb63caa797f9c6f4b95f17d0bdd94bc26feec389a89e8465ad8398547db2.svg",
+      "sha256": "d329f54ed90bd218c0db3d09067af5f79dc2213d86a5f235be6b1b75c5c43726",
+      "size": 1585,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "b32de9e292830290c6db90acb153ab8872f09ec3e273dec8e9e048a41990e1bf.svg": {
+      "path": "generated/b32de9e292830290c6db90acb153ab8872f09ec3e273dec8e9e048a41990e1bf.svg",
+      "sha256": "73f8c2647c11ecfd3174d19ba92b4e297aa52179823e585c0f220ee0383d526c",
+      "size": 1765,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "e0b69fb7ee9a0736e594acc67cd731ed81c2474864f0235eb939ba40c5d92ea1.svg": {
+      "path": "generated/e0b69fb7ee9a0736e594acc67cd731ed81c2474864f0235eb939ba40c5d92ea1.svg",
+      "sha256": "09a08ee7dd70f93c848386c84e31e2caa90da0e2c6bcfe98317120635c499902",
+      "size": 1945293,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "0d6442f444880dcbc2d52d7ad52a0356c5357cf309ec144fb99303187a82b04d.svg": {
+      "path": "generated/0d6442f444880dcbc2d52d7ad52a0356c5357cf309ec144fb99303187a82b04d.svg",
+      "sha256": "50805dc2a7e1a01fd4d5707b5d4d86b4fa5d59e5bce697a9b12c2d98a24c7f35",
+      "size": 2194,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "6d819ba32340b1b024d0e8d042417b9ff5fea0d3a6b6ac36a59d2827b56f835e.svg": {
+      "path": "generated/6d819ba32340b1b024d0e8d042417b9ff5fea0d3a6b6ac36a59d2827b56f835e.svg",
+      "sha256": "50805dc2a7e1a01fd4d5707b5d4d86b4fa5d59e5bce697a9b12c2d98a24c7f35",
+      "size": 2194,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "efd72668b53794a7ddc2851ef05cfd7dc3282247b93581072ec272fe800949b9.svg": {
+      "path": "generated/efd72668b53794a7ddc2851ef05cfd7dc3282247b93581072ec272fe800949b9.svg",
+      "sha256": "77deb6974e4c064a9316bce1bb271696c0c428105f40cb2d0422ac610a5fd6b6",
+      "size": 2200,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "91e04cd6256ff1436aff826a9578d2dbe19fe6f4700e49d4cef1a19b55ecdd18.svg": {
+      "path": "generated/91e04cd6256ff1436aff826a9578d2dbe19fe6f4700e49d4cef1a19b55ecdd18.svg",
+      "sha256": "30ade9336326cb94737b26967e43b95ae01842af2ee37987417591b4451edcd0",
+      "size": 1543,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "64e81dbde347cc79927af4f41ab46394eede6502f4b24034c454379f0cb266e0.svg": {
+      "path": "generated/64e81dbde347cc79927af4f41ab46394eede6502f4b24034c454379f0cb266e0.svg",
+      "sha256": "896a063c9efac2501b4d664ebfcf7b489e1fbe4b7ba7413d6733a350334a8958",
+      "size": 1483,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "1786f46196edc465ac81932dd4e68c8b64a4bc38b64798b6a50a8f9c65cc2b7d.svg": {
+      "path": "generated/1786f46196edc465ac81932dd4e68c8b64a4bc38b64798b6a50a8f9c65cc2b7d.svg",
+      "sha256": "c3d315fda08a7dc125c7ad5fe3528cedfc2b22079bcfcd419661a401705cba34",
+      "size": 2264,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "2fd1a1e86f3800586fe68510f29cc531b648a78eeae0b8ac3c04949f978fa70d.svg": {
+      "path": "generated/2fd1a1e86f3800586fe68510f29cc531b648a78eeae0b8ac3c04949f978fa70d.svg",
+      "sha256": "f52dc6eeed3a3fa12f8c0683de8a4bc1c3d2f1b49732d00ac26218cac8298099",
+      "size": 2093982,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "1168383edb316a04392e2348ae8ab6ec3615824f2cd0b58bdeb976e941f4e358.svg": {
+      "path": "generated/1168383edb316a04392e2348ae8ab6ec3615824f2cd0b58bdeb976e941f4e358.svg",
+      "sha256": "37b6c3a124b0f191c63997e3b783a13ef2cf3224dd548e4372c4c71f74162827",
+      "size": 2473,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "ac741e6cec0f0c9d5045ad4c7819653c1134c59619e345a33655178e47d24739.svg": {
+      "path": "generated/ac741e6cec0f0c9d5045ad4c7819653c1134c59619e345a33655178e47d24739.svg",
+      "sha256": "130aba222ecde10ff7ae77688b723b9daed8993003e3da3d47ce89a55a01d9d6",
+      "size": 1366,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "afbb6e4822b44ddeebfb08b1837af54dfdf3c9d042573d7c39c7e445bcb0da04.svg": {
+      "path": "generated/afbb6e4822b44ddeebfb08b1837af54dfdf3c9d042573d7c39c7e445bcb0da04.svg",
+      "sha256": "b2cb8f2095fc971356bda354f2765df59f86dcec79e0f43e7926b85d2b6d09b7",
+      "size": 4129,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "5e6a635cfa06f343d4964478e84bc1b40c722fcc0562b4ef72eaae0975309797.svg": {
+      "path": "generated/5e6a635cfa06f343d4964478e84bc1b40c722fcc0562b4ef72eaae0975309797.svg",
+      "sha256": "4ce2265408b80db8d136d1cc7655ce06967925f165f692f2f52f0c296cc9ff35",
+      "size": 8960,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "253120f40b0d27e72f6b42be4a044c01fb5b8fb40183d6185856d85464c07162.svg": {
+      "path": "generated/253120f40b0d27e72f6b42be4a044c01fb5b8fb40183d6185856d85464c07162.svg",
+      "sha256": "d45052cfa77bbafa1f848e473e6173182e4e64461e4438ef08fb274d8f0ec979",
+      "size": 1525281,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "5dff00e5d5f694f9988ae20313b39a63732061bba83fbd66bfef0dcf34ef21ba.svg": {
+      "path": "generated/5dff00e5d5f694f9988ae20313b39a63732061bba83fbd66bfef0dcf34ef21ba.svg",
+      "sha256": "352ec67bc29f3fc8ea35c0743406d8bfb335da2888502e74b509bf55fe9cfa0e",
+      "size": 425300,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "c65f78f1cc9c43fb1b47803568a293f929b1e7487fc4866e49405802a31c9c10.svg": {
+      "path": "generated/c65f78f1cc9c43fb1b47803568a293f929b1e7487fc4866e49405802a31c9c10.svg",
+      "sha256": "6e2bed3e428fb1f78d32fa84a04130ab5c54dde9613f23e6028c85128a748adf",
+      "size": 1392580,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "9a5669756ecb4a1bb0ec1068ac91541fb9d5963ecc24b3e8ab90cc0a3b765cb7.svg": {
+      "path": "generated/9a5669756ecb4a1bb0ec1068ac91541fb9d5963ecc24b3e8ab90cc0a3b765cb7.svg",
+      "sha256": "56f7fcd09d41588304e633e94526e815c85fc2b66d0af8e9edc956f7e623eebc",
+      "size": 331137,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "e2f2005359497cd98d5307a993961a3e5eafb1b7a03a8fc96655c1b58778a221.svg": {
+      "path": "generated/e2f2005359497cd98d5307a993961a3e5eafb1b7a03a8fc96655c1b58778a221.svg",
+      "sha256": "1b61f092ac9ea6888f6ef6753d753bf5b3faca461ff20f651479ce51d2f013fa",
+      "size": 26470,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "b1e59c865ca27ae7fde19c5a43b5a4482a3d04ce53eee3e99c97a38730ce21b8.svg": {
+      "path": "generated/b1e59c865ca27ae7fde19c5a43b5a4482a3d04ce53eee3e99c97a38730ce21b8.svg",
+      "sha256": "12cab3d202704f06de4b2dad6dcf665e792130400858378953983dec48ed17de",
+      "size": 26773,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "9ed3e66381665f2d47398a97042a5a695104b8d963dfe45e58a95500920ed14e.svg": {
+      "path": "generated/9ed3e66381665f2d47398a97042a5a695104b8d963dfe45e58a95500920ed14e.svg",
+      "sha256": "812e073896b99456fb1afd1ddc8909ac49ac1612d1e31df3ce9289a233e37b3f",
+      "size": 3529,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "660548a8a54311b9c7c5acf74b27b9cbee67081fa6dda8282358a3acb877e900.svg": {
+      "path": "generated/660548a8a54311b9c7c5acf74b27b9cbee67081fa6dda8282358a3acb877e900.svg",
+      "sha256": "23f4ae5d47f65d11f17e1f0d5409ab4d3246a263f5ad1fe1cf80b1887407f054",
+      "size": 52913,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "9fcf63ec925cfae7c481653192122165c6aad7710ce2d2105ca833e1aefb150a.svg": {
+      "path": "generated/9fcf63ec925cfae7c481653192122165c6aad7710ce2d2105ca833e1aefb150a.svg",
+      "sha256": "4447cd9866441a8d3dec2f14b55220b80a37fc9d2ecf6eb4d86d47a4fbe37c46",
+      "size": 8465,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "969886abd1dbf71435005c11c77797e06cba1d9bfed6e74e9f479466272bc8cf.svg": {
+      "path": "generated/969886abd1dbf71435005c11c77797e06cba1d9bfed6e74e9f479466272bc8cf.svg",
+      "sha256": "d45052cfa77bbafa1f848e473e6173182e4e64461e4438ef08fb274d8f0ec979",
+      "size": 1525281,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "dd0b63528a7b6642677247acf28a6832e77d426c38a46badaa5ea780cbca8522.svg": {
+      "path": "generated/dd0b63528a7b6642677247acf28a6832e77d426c38a46badaa5ea780cbca8522.svg",
+      "sha256": "ff6d90341dc07197cc73951cb6b64cda1f3969a52cbcf48d24bb0ff2eb41aecf",
+      "size": 4251,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "de2a48c5f3897d0c85242dad9d9b9a276920f3b77a48af153b90028593183cf3.svg": {
+      "path": "generated/de2a48c5f3897d0c85242dad9d9b9a276920f3b77a48af153b90028593183cf3.svg",
+      "sha256": "d45052cfa77bbafa1f848e473e6173182e4e64461e4438ef08fb274d8f0ec979",
+      "size": 1525281,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "3db1869029bcccb66f94c6968e41931e7c38082627debe525d7846575d6b7443.svg": {
+      "path": "generated/3db1869029bcccb66f94c6968e41931e7c38082627debe525d7846575d6b7443.svg",
+      "sha256": "b2cb8f2095fc971356bda354f2765df59f86dcec79e0f43e7926b85d2b6d09b7",
+      "size": 4129,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "4fdacba2b25de55f7798f796d8d4a2ac99697a5c2043cae86fc7984536b44d58.svg": {
+      "path": "generated/4fdacba2b25de55f7798f796d8d4a2ac99697a5c2043cae86fc7984536b44d58.svg",
+      "sha256": "7615537ddca8b945decfb72cf7cedcc355bed9c00a3958090068e005b156724a",
+      "size": 8960,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "4e0ce507c52102968630f4cfa19a80f2f7c8ed262bf61e4ddfa031e2fd62d704.svg": {
+      "path": "generated/4e0ce507c52102968630f4cfa19a80f2f7c8ed262bf61e4ddfa031e2fd62d704.svg",
+      "sha256": "5590f9d56a3df2eb0160fa87b00689abefe6fe191c04dc220e2cf6fa49186ba9",
+      "size": 425276,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "ce27ec49eb3997dc52d2b70a35fb0911b332f4410c4ddee3ffb5c4ffc32be697.svg": {
+      "path": "generated/ce27ec49eb3997dc52d2b70a35fb0911b332f4410c4ddee3ffb5c4ffc32be697.svg",
+      "sha256": "079771ad95288ebfa021f3b535b72db79a593a7dfa1b7240373de18fdc9f8e7f",
+      "size": 1487403,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "ec7ec60fe7a04cb771d42db643321cc4d82ea01852ccbc63b9aacd50e1b13543.svg": {
+      "path": "generated/ec7ec60fe7a04cb771d42db643321cc4d82ea01852ccbc63b9aacd50e1b13543.svg",
+      "sha256": "6d9fea075d912ae3acc0cdafe9013fffce1317f55de41857a63a0e951e32d7ff",
+      "size": 331098,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "f822e14508eca83edd0e965708312f0776d556582d00358ae978bca009aeeed8.svg": {
+      "path": "generated/f822e14508eca83edd0e965708312f0776d556582d00358ae978bca009aeeed8.svg",
+      "sha256": "9184f03ba58673593b52accb61c0a2c2090afab156f9c3e1bea476e86a8f8324",
+      "size": 26998,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "6606e28c18dfdaf8875447255430db45257540911b133388e146b70f3ce47a9d.svg": {
+      "path": "generated/6606e28c18dfdaf8875447255430db45257540911b133388e146b70f3ce47a9d.svg",
+      "sha256": "368e70834fb7ef7e820e30a57255d33adf54cb856a878e3ac67c5930fd83609c",
+      "size": 27179,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "843cbb04bb12ee70d476301c8a305107b886a49a97613f6980c3d410af0e140a.svg": {
+      "path": "generated/843cbb04bb12ee70d476301c8a305107b886a49a97613f6980c3d410af0e140a.svg",
+      "sha256": "812e073896b99456fb1afd1ddc8909ac49ac1612d1e31df3ce9289a233e37b3f",
+      "size": 3529,
+      "mediaType": "image/svg\u002Bxml"
+    }
+  },
+  "assets": {
+    "docs/en/appearance/advanced/fine-tuning-1.svg": {
+      "object": "b310717103972d25914acde83b192cfb2ccdb8bc583e58a712de0e006fece3e9.svg",
+      "owners": [
+        "docs/en/appearance/advanced/fine-tuning.md"
+      ]
+    },
+    "docs/en/appearance/advanced/font-1.svg": {
+      "object": "df4ae3d2faf025c24faaaa361bd8c86aa74266c22afe4b310e15643606f24c66.svg",
+      "owners": [
+        "docs/en/appearance/advanced/font.md"
+      ]
+    },
+    "docs/en/appearance/terminal-width-and-height-1.svg": {
+      "object": "57425e021433221c8f314c25c1447583cde5862ba179b2a39328c002878d9083.svg",
+      "owners": [
+        "docs/en/appearance/terminal-width-and-height.md"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-full-themes-1.svg": {
+      "object": "f6f62563abc7ff55674b3282fe0e7c4fe2365dff314fb13d20dceb8e9d28133f.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-full-themes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-full-themes-2.svg": {
+      "object": "c9ca7434153c6594783fd5347cf7e7cf7f52ccc220d2d3b77653de3dee947887.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-full-themes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-palettes-1.svg": {
+      "object": "e2d5b50c8f680a763cc59151bb009963de9e55968faf965b37e319e5acd40f87.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-palettes-10.svg": {
+      "object": "8070f680a61369fbdab04b39fe37a0868f39aed3ec8002a25d3b677d099ee6e7.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-palettes-11.svg": {
+      "object": "5d3a99941512bf8d6e64b1e8aa87be2ae3a639be77deed462bcdd798e6275fcb.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-palettes-12.svg": {
+      "object": "a28e8def8171a4188dc854fb2d1b433bbc4b30942693e50a427960847954eb58.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-palettes-13.svg": {
+      "object": "328dd320ea777244f5b5fc293645101914d75f4668853c9f96ceb725e52f5626.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-palettes-2.svg": {
+      "object": "e0c66006eda18c514f4e08703bcdecd5ce2006c0d509e61ba7756425ac75deec.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-palettes-3.svg": {
+      "object": "857b93d6ba67898860455d7a4f5504f61e30d03caf3b38bd5b47742da58bb53e.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-palettes-4.svg": {
+      "object": "832a4c9268e9ad8192133f9cc684e66393e2808138685318b8c279d45b0f9813.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-palettes-5.svg": {
+      "object": "2326d134734ebf4dcd33c9e43e720ddeedfbc70548e8a5429af823517296aafe.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-palettes-6.svg": {
+      "object": "3b9fa22e3c98b7dce9466b0898e9e032fb40ef26d55b5b9eb76b003a079aa37d.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-palettes-7.svg": {
+      "object": "9e7216ee3316ac33de30abe28d8d2ec5fc49c4e1e65668446028d6a0bda3111b.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-palettes-8.svg": {
+      "object": "e327ebdc788303f91c2211525643ada48e526f78bda23dc6f0e35518f3a77f84.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-palettes-9.svg": {
+      "object": "8648f647adaa46f5f12b018babdfee34bd1c6003ca273dc6a4414100901f68c2.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-themes-1.svg": {
+      "object": "80559a1eb4069761d1541183984cdd5b7b22be8e2380448389257e4f83e86e27.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-themes.md"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-window-themes-1.svg": {
+      "object": "e8f388497c56be5289784c57e291d9e89d7136a017945109c54fa1c39999e5ed.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-window-themes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-window-themes-2.svg": {
+      "object": "85fc7ada30685126f9aa5b54fa4c277c064b707e9ef6fe9b326ed7c2c8633f8b.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-window-themes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-window-themes-3.svg": {
+      "object": "4e1fa268bddd0b30a7a7a0bed3f5cb12988e2a21940eeee661f639b225a7d868.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-window-themes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-window-themes-4.svg": {
+      "object": "50ffc9733f2479c384a0ec06cc591cbd081232913884bcbb0ca4a29d6d8b346f.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-window-themes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-window-themes-5.svg": {
+      "object": "171066a411e8094643c035431a0b7ef0922ff83ef9e0cfb6b1d35d8ae9932569.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-window-themes.mdx"
+      ]
+    },
+    "docs/en/appearance/themes/built-in-window-themes-6.svg": {
+      "object": "7a43acbe63327f74e90d1fb9a9c3c7d0a108ac9c7f2de761830c732c28b61557.svg",
+      "owners": [
+        "docs/en/appearance/themes/built-in-window-themes.mdx"
+      ]
+    },
+    "docs/en/appearance/window-and-background-1.svg": {
+      "object": "f1dcbb63caa797f9c6f4b95f17d0bdd94bc26feec389a89e8465ad8398547db2.svg",
+      "owners": [
+        "docs/en/appearance/window-and-background.md"
+      ]
+    },
+    "docs/en/appearance/window-and-background-2.svg": {
+      "object": "b32de9e292830290c6db90acb153ab8872f09ec3e273dec8e9e048a41990e1bf.svg",
+      "owners": [
+        "docs/en/appearance/window-and-background.md"
+      ]
+    },
+    "docs/en/appearance/window-and-background-3.svg": {
+      "object": "e0b69fb7ee9a0736e594acc67cd731ed81c2474864f0235eb939ba40c5d92ea1.svg",
+      "owners": [
+        "docs/en/appearance/window-and-background.md"
+      ]
+    },
+    "docs/en/basic-usage/capturing-images/convert-to-png-1.svg": {
+      "object": "0d6442f444880dcbc2d52d7ad52a0356c5357cf309ec144fb99303187a82b04d.svg",
+      "owners": [
+        "docs/en/basic-usage/capturing-images/convert-to-png.md"
+      ]
+    },
+    "docs/en/basic-usage/capturing-images/convert-to-png-2.svg": {
+      "object": "6d819ba32340b1b024d0e8d042417b9ff5fea0d3a6b6ac36a59d2827b56f835e.svg",
+      "owners": [
+        "docs/en/basic-usage/capturing-images/convert-to-png.md"
+      ]
+    },
+    "docs/en/basic-usage/capturing-images/crop-1.svg": {
+      "object": "efd72668b53794a7ddc2851ef05cfd7dc3282247b93581072ec272fe800949b9.svg",
+      "owners": [
+        "docs/en/basic-usage/capturing-images/crop.md"
+      ]
+    },
+    "docs/en/basic-usage/capturing-images/crop-2.svg": {
+      "object": "91e04cd6256ff1436aff826a9578d2dbe19fe6f4700e49d4cef1a19b55ecdd18.svg",
+      "owners": [
+        "docs/en/basic-usage/capturing-images/crop.md"
+      ]
+    },
+    "docs/en/basic-usage/capturing-images/crop-3.svg": {
+      "object": "64e81dbde347cc79927af4f41ab46394eede6502f4b24034c454379f0cb266e0.svg",
+      "owners": [
+        "docs/en/basic-usage/capturing-images/crop.md"
+      ]
+    },
+    "docs/en/basic-usage/capturing-images/overview-1.svg": {
+      "object": "1786f46196edc465ac81932dd4e68c8b64a4bc38b64798b6a50a8f9c65cc2b7d.svg",
+      "owners": [
+        "docs/en/basic-usage/capturing-images/overview.mdx"
+      ]
+    },
+    "docs/en/basic-usage/capturing-videos/convert-to-video-1.svg": {
+      "object": "2fd1a1e86f3800586fe68510f29cc531b648a78eeae0b8ac3c04949f978fa70d.svg",
+      "owners": [
+        "docs/en/basic-usage/capturing-videos/convert-to-video.mdx"
+      ]
+    },
+    "docs/en/basic-usage/capturing-videos/convert-to-video-2.svg": {
+      "object": "2fd1a1e86f3800586fe68510f29cc531b648a78eeae0b8ac3c04949f978fa70d.svg",
+      "owners": [
+        "docs/en/basic-usage/capturing-videos/convert-to-video.mdx"
+      ]
+    },
+    "docs/en/basic-usage/capturing-videos/convert-to-video-3.svg": {
+      "object": "2fd1a1e86f3800586fe68510f29cc531b648a78eeae0b8ac3c04949f978fa70d.svg",
+      "owners": [
+        "docs/en/basic-usage/capturing-videos/convert-to-video.mdx"
+      ]
+    },
+    "docs/en/basic-usage/masking-secrets/auto-masking-1.svg": {
+      "object": "1168383edb316a04392e2348ae8ab6ec3615824f2cd0b58bdeb976e941f4e358.svg",
+      "owners": [
+        "docs/en/basic-usage/masking-secrets/auto-masking.md"
+      ]
+    },
+    "docs/en/basic-usage/masking-secrets/manual-masking-1.svg": {
+      "object": "ac741e6cec0f0c9d5045ad4c7819653c1134c59619e345a33655178e47d24739.svg",
+      "owners": [
+        "docs/en/basic-usage/masking-secrets/manual-masking.md"
+      ]
+    },
+    "docs/en/gallery-1.svg": {
+      "object": "afbb6e4822b44ddeebfb08b1837af54dfdf3c9d042573d7c39c7e445bcb0da04.svg",
+      "owners": [
+        "docs/en/gallery.mdx"
+      ]
+    },
+    "docs/en/gallery-2.svg": {
+      "object": "5e6a635cfa06f343d4964478e84bc1b40c722fcc0562b4ef72eaae0975309797.svg",
+      "owners": [
+        "docs/en/gallery.mdx"
+      ]
+    },
+    "docs/en/gallery-3.svg": {
+      "object": "253120f40b0d27e72f6b42be4a044c01fb5b8fb40183d6185856d85464c07162.svg",
+      "owners": [
+        "docs/en/gallery.mdx"
+      ]
+    },
+    "docs/en/gallery-4.svg": {
+      "object": "5dff00e5d5f694f9988ae20313b39a63732061bba83fbd66bfef0dcf34ef21ba.svg",
+      "owners": [
+        "docs/en/gallery.mdx"
+      ]
+    },
+    "docs/en/gallery-5.svg": {
+      "object": "c65f78f1cc9c43fb1b47803568a293f929b1e7487fc4866e49405802a31c9c10.svg",
+      "owners": [
+        "docs/en/gallery.mdx"
+      ]
+    },
+    "docs/en/gallery-6.svg": {
+      "object": "9a5669756ecb4a1bb0ec1068ac91541fb9d5963ecc24b3e8ab90cc0a3b765cb7.svg",
+      "owners": [
+        "docs/en/gallery.mdx"
+      ]
+    },
+    "docs/en/gallery-7.svg": {
+      "object": "e2f2005359497cd98d5307a993961a3e5eafb1b7a03a8fc96655c1b58778a221.svg",
+      "owners": [
+        "docs/en/gallery.mdx"
+      ]
+    },
+    "docs/en/gallery-8.svg": {
+      "object": "b1e59c865ca27ae7fde19c5a43b5a4482a3d04ce53eee3e99c97a38730ce21b8.svg",
+      "owners": [
+        "docs/en/gallery.mdx"
+      ]
+    },
+    "docs/en/gallery-9.svg": {
+      "object": "9ed3e66381665f2d47398a97042a5a695104b8d963dfe45e58a95500920ed14e.svg",
+      "owners": [
+        "docs/en/gallery.mdx"
+      ]
+    },
+    "docs/en/getting-started/quick-start-1.svg": {
+      "object": "660548a8a54311b9c7c5acf74b27b9cbee67081fa6dda8282358a3acb877e900.svg",
+      "owners": [
+        "docs/en/getting-started/quick-start.mdx"
+      ]
+    },
+    "docs/en/getting-started/why-svg-1.svg": {
+      "object": "9fcf63ec925cfae7c481653192122165c6aad7710ce2d2105ca833e1aefb150a.svg",
+      "owners": [
+        "docs/en/getting-started/why-svg.mdx"
+      ]
+    },
+    "docs/en/getting-started/why-svg-2.svg": {
+      "object": "9fcf63ec925cfae7c481653192122165c6aad7710ce2d2105ca833e1aefb150a.svg",
+      "owners": [
+        "docs/en/getting-started/why-svg.mdx"
+      ]
+    },
+    "docs/en/index-1.svg": {
+      "object": "969886abd1dbf71435005c11c77797e06cba1d9bfed6e74e9f479466272bc8cf.svg",
+      "owners": [
+        "docs/en/index.mdx"
+      ]
+    },
+    "docs/en/reference/status-1.svg": {
+      "object": "dd0b63528a7b6642677247acf28a6832e77d426c38a46badaa5ea780cbca8522.svg",
+      "owners": [
+        "docs/en/reference/status.md"
+      ]
+    },
+    "docs/ja/appearance/advanced/fine-tuning-1.svg": {
+      "object": "b310717103972d25914acde83b192cfb2ccdb8bc583e58a712de0e006fece3e9.svg",
+      "owners": [
+        "docs/ja/appearance/advanced/fine-tuning.md"
+      ]
+    },
+    "docs/ja/appearance/advanced/font-1.svg": {
+      "object": "df4ae3d2faf025c24faaaa361bd8c86aa74266c22afe4b310e15643606f24c66.svg",
+      "owners": [
+        "docs/ja/appearance/advanced/font.md"
+      ]
+    },
+    "docs/ja/appearance/terminal-width-and-height-1.svg": {
+      "object": "57425e021433221c8f314c25c1447583cde5862ba179b2a39328c002878d9083.svg",
+      "owners": [
+        "docs/ja/appearance/terminal-width-and-height.md"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-full-themes-1.svg": {
+      "object": "f6f62563abc7ff55674b3282fe0e7c4fe2365dff314fb13d20dceb8e9d28133f.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-full-themes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-full-themes-2.svg": {
+      "object": "c9ca7434153c6594783fd5347cf7e7cf7f52ccc220d2d3b77653de3dee947887.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-full-themes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-palettes-1.svg": {
+      "object": "e2d5b50c8f680a763cc59151bb009963de9e55968faf965b37e319e5acd40f87.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-palettes-10.svg": {
+      "object": "8070f680a61369fbdab04b39fe37a0868f39aed3ec8002a25d3b677d099ee6e7.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-palettes-11.svg": {
+      "object": "5d3a99941512bf8d6e64b1e8aa87be2ae3a639be77deed462bcdd798e6275fcb.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-palettes-12.svg": {
+      "object": "a28e8def8171a4188dc854fb2d1b433bbc4b30942693e50a427960847954eb58.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-palettes-13.svg": {
+      "object": "328dd320ea777244f5b5fc293645101914d75f4668853c9f96ceb725e52f5626.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-palettes-2.svg": {
+      "object": "e0c66006eda18c514f4e08703bcdecd5ce2006c0d509e61ba7756425ac75deec.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-palettes-3.svg": {
+      "object": "857b93d6ba67898860455d7a4f5504f61e30d03caf3b38bd5b47742da58bb53e.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-palettes-4.svg": {
+      "object": "832a4c9268e9ad8192133f9cc684e66393e2808138685318b8c279d45b0f9813.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-palettes-5.svg": {
+      "object": "2326d134734ebf4dcd33c9e43e720ddeedfbc70548e8a5429af823517296aafe.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-palettes-6.svg": {
+      "object": "3b9fa22e3c98b7dce9466b0898e9e032fb40ef26d55b5b9eb76b003a079aa37d.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-palettes-7.svg": {
+      "object": "9e7216ee3316ac33de30abe28d8d2ec5fc49c4e1e65668446028d6a0bda3111b.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-palettes-8.svg": {
+      "object": "e327ebdc788303f91c2211525643ada48e526f78bda23dc6f0e35518f3a77f84.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-palettes-9.svg": {
+      "object": "8648f647adaa46f5f12b018babdfee34bd1c6003ca273dc6a4414100901f68c2.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-themes-1.svg": {
+      "object": "80559a1eb4069761d1541183984cdd5b7b22be8e2380448389257e4f83e86e27.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-themes.md"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-window-themes-1.svg": {
+      "object": "e8f388497c56be5289784c57e291d9e89d7136a017945109c54fa1c39999e5ed.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-window-themes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-window-themes-2.svg": {
+      "object": "85fc7ada30685126f9aa5b54fa4c277c064b707e9ef6fe9b326ed7c2c8633f8b.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-window-themes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-window-themes-3.svg": {
+      "object": "4e1fa268bddd0b30a7a7a0bed3f5cb12988e2a21940eeee661f639b225a7d868.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-window-themes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-window-themes-4.svg": {
+      "object": "50ffc9733f2479c384a0ec06cc591cbd081232913884bcbb0ca4a29d6d8b346f.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-window-themes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-window-themes-5.svg": {
+      "object": "171066a411e8094643c035431a0b7ef0922ff83ef9e0cfb6b1d35d8ae9932569.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-window-themes.mdx"
+      ]
+    },
+    "docs/ja/appearance/themes/built-in-window-themes-6.svg": {
+      "object": "7a43acbe63327f74e90d1fb9a9c3c7d0a108ac9c7f2de761830c732c28b61557.svg",
+      "owners": [
+        "docs/ja/appearance/themes/built-in-window-themes.mdx"
+      ]
+    },
+    "docs/ja/appearance/window-and-background-1.svg": {
+      "object": "f1dcbb63caa797f9c6f4b95f17d0bdd94bc26feec389a89e8465ad8398547db2.svg",
+      "owners": [
+        "docs/ja/appearance/window-and-background.md"
+      ]
+    },
+    "docs/ja/appearance/window-and-background-2.svg": {
+      "object": "b32de9e292830290c6db90acb153ab8872f09ec3e273dec8e9e048a41990e1bf.svg",
+      "owners": [
+        "docs/ja/appearance/window-and-background.md"
+      ]
+    },
+    "docs/ja/appearance/window-and-background-3.svg": {
+      "object": "e0b69fb7ee9a0736e594acc67cd731ed81c2474864f0235eb939ba40c5d92ea1.svg",
+      "owners": [
+        "docs/ja/appearance/window-and-background.md"
+      ]
+    },
+    "docs/ja/basic-usage/capturing-images/convert-to-png-1.svg": {
+      "object": "0d6442f444880dcbc2d52d7ad52a0356c5357cf309ec144fb99303187a82b04d.svg",
+      "owners": [
+        "docs/ja/basic-usage/capturing-images/convert-to-png.md"
+      ]
+    },
+    "docs/ja/basic-usage/capturing-images/convert-to-png-2.svg": {
+      "object": "6d819ba32340b1b024d0e8d042417b9ff5fea0d3a6b6ac36a59d2827b56f835e.svg",
+      "owners": [
+        "docs/ja/basic-usage/capturing-images/convert-to-png.md"
+      ]
+    },
+    "docs/ja/basic-usage/capturing-images/crop-1.svg": {
+      "object": "efd72668b53794a7ddc2851ef05cfd7dc3282247b93581072ec272fe800949b9.svg",
+      "owners": [
+        "docs/ja/basic-usage/capturing-images/crop.md"
+      ]
+    },
+    "docs/ja/basic-usage/capturing-images/crop-2.svg": {
+      "object": "91e04cd6256ff1436aff826a9578d2dbe19fe6f4700e49d4cef1a19b55ecdd18.svg",
+      "owners": [
+        "docs/ja/basic-usage/capturing-images/crop.md"
+      ]
+    },
+    "docs/ja/basic-usage/capturing-images/crop-3.svg": {
+      "object": "64e81dbde347cc79927af4f41ab46394eede6502f4b24034c454379f0cb266e0.svg",
+      "owners": [
+        "docs/ja/basic-usage/capturing-images/crop.md"
+      ]
+    },
+    "docs/ja/basic-usage/capturing-images/overview-1.svg": {
+      "object": "1786f46196edc465ac81932dd4e68c8b64a4bc38b64798b6a50a8f9c65cc2b7d.svg",
+      "owners": [
+        "docs/ja/basic-usage/capturing-images/overview.mdx"
+      ]
+    },
+    "docs/ja/basic-usage/capturing-videos/convert-to-video-1.svg": {
+      "object": "2fd1a1e86f3800586fe68510f29cc531b648a78eeae0b8ac3c04949f978fa70d.svg",
+      "owners": [
+        "docs/ja/basic-usage/capturing-videos/convert-to-video.mdx"
+      ]
+    },
+    "docs/ja/basic-usage/capturing-videos/convert-to-video-2.svg": {
+      "object": "2fd1a1e86f3800586fe68510f29cc531b648a78eeae0b8ac3c04949f978fa70d.svg",
+      "owners": [
+        "docs/ja/basic-usage/capturing-videos/convert-to-video.mdx"
+      ]
+    },
+    "docs/ja/basic-usage/capturing-videos/convert-to-video-3.svg": {
+      "object": "2fd1a1e86f3800586fe68510f29cc531b648a78eeae0b8ac3c04949f978fa70d.svg",
+      "owners": [
+        "docs/ja/basic-usage/capturing-videos/convert-to-video.mdx"
+      ]
+    },
+    "docs/ja/basic-usage/masking-secrets/auto-masking-1.svg": {
+      "object": "1168383edb316a04392e2348ae8ab6ec3615824f2cd0b58bdeb976e941f4e358.svg",
+      "owners": [
+        "docs/ja/basic-usage/masking-secrets/auto-masking.md"
+      ]
+    },
+    "docs/ja/basic-usage/masking-secrets/manual-masking-1.svg": {
+      "object": "ac741e6cec0f0c9d5045ad4c7819653c1134c59619e345a33655178e47d24739.svg",
+      "owners": [
+        "docs/ja/basic-usage/masking-secrets/manual-masking.md"
+      ]
+    },
+    "docs/ja/gallery-1.svg": {
+      "object": "afbb6e4822b44ddeebfb08b1837af54dfdf3c9d042573d7c39c7e445bcb0da04.svg",
+      "owners": [
+        "docs/ja/gallery.mdx"
+      ]
+    },
+    "docs/ja/gallery-2.svg": {
+      "object": "5e6a635cfa06f343d4964478e84bc1b40c722fcc0562b4ef72eaae0975309797.svg",
+      "owners": [
+        "docs/ja/gallery.mdx"
+      ]
+    },
+    "docs/ja/gallery-3.svg": {
+      "object": "253120f40b0d27e72f6b42be4a044c01fb5b8fb40183d6185856d85464c07162.svg",
+      "owners": [
+        "docs/ja/gallery.mdx"
+      ]
+    },
+    "docs/ja/gallery-4.svg": {
+      "object": "5dff00e5d5f694f9988ae20313b39a63732061bba83fbd66bfef0dcf34ef21ba.svg",
+      "owners": [
+        "docs/ja/gallery.mdx"
+      ]
+    },
+    "docs/ja/gallery-5.svg": {
+      "object": "c65f78f1cc9c43fb1b47803568a293f929b1e7487fc4866e49405802a31c9c10.svg",
+      "owners": [
+        "docs/ja/gallery.mdx"
+      ]
+    },
+    "docs/ja/gallery-6.svg": {
+      "object": "9a5669756ecb4a1bb0ec1068ac91541fb9d5963ecc24b3e8ab90cc0a3b765cb7.svg",
+      "owners": [
+        "docs/ja/gallery.mdx"
+      ]
+    },
+    "docs/ja/gallery-7.svg": {
+      "object": "e2f2005359497cd98d5307a993961a3e5eafb1b7a03a8fc96655c1b58778a221.svg",
+      "owners": [
+        "docs/ja/gallery.mdx"
+      ]
+    },
+    "docs/ja/gallery-8.svg": {
+      "object": "b1e59c865ca27ae7fde19c5a43b5a4482a3d04ce53eee3e99c97a38730ce21b8.svg",
+      "owners": [
+        "docs/ja/gallery.mdx"
+      ]
+    },
+    "docs/ja/gallery-9.svg": {
+      "object": "9ed3e66381665f2d47398a97042a5a695104b8d963dfe45e58a95500920ed14e.svg",
+      "owners": [
+        "docs/ja/gallery.mdx"
+      ]
+    },
+    "docs/ja/getting-started/quick-start-1.svg": {
+      "object": "660548a8a54311b9c7c5acf74b27b9cbee67081fa6dda8282358a3acb877e900.svg",
+      "owners": [
+        "docs/ja/getting-started/quick-start.mdx"
+      ]
+    },
+    "docs/ja/getting-started/why-svg-1.svg": {
+      "object": "9fcf63ec925cfae7c481653192122165c6aad7710ce2d2105ca833e1aefb150a.svg",
+      "owners": [
+        "docs/ja/getting-started/why-svg.mdx"
+      ]
+    },
+    "docs/ja/getting-started/why-svg-2.svg": {
+      "object": "9fcf63ec925cfae7c481653192122165c6aad7710ce2d2105ca833e1aefb150a.svg",
+      "owners": [
+        "docs/ja/getting-started/why-svg.mdx"
+      ]
+    },
+    "docs/ja/index-1.svg": {
+      "object": "969886abd1dbf71435005c11c77797e06cba1d9bfed6e74e9f479466272bc8cf.svg",
+      "owners": [
+        "docs/ja/index.mdx"
+      ]
+    },
+    "docs/ja/reference/status-1.svg": {
+      "object": "dd0b63528a7b6642677247acf28a6832e77d426c38a46badaa5ea780cbca8522.svg",
+      "owners": [
+        "docs/ja/reference/status.md"
+      ]
+    },
+    "docs/zh/appearance/advanced/fine-tuning-1.svg": {
+      "object": "b310717103972d25914acde83b192cfb2ccdb8bc583e58a712de0e006fece3e9.svg",
+      "owners": [
+        "docs/zh/appearance/advanced/fine-tuning.md"
+      ]
+    },
+    "docs/zh/appearance/advanced/font-1.svg": {
+      "object": "df4ae3d2faf025c24faaaa361bd8c86aa74266c22afe4b310e15643606f24c66.svg",
+      "owners": [
+        "docs/zh/appearance/advanced/font.md"
+      ]
+    },
+    "docs/zh/appearance/terminal-width-and-height-1.svg": {
+      "object": "57425e021433221c8f314c25c1447583cde5862ba179b2a39328c002878d9083.svg",
+      "owners": [
+        "docs/zh/appearance/terminal-width-and-height.md"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-full-themes-1.svg": {
+      "object": "f6f62563abc7ff55674b3282fe0e7c4fe2365dff314fb13d20dceb8e9d28133f.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-full-themes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-full-themes-2.svg": {
+      "object": "c9ca7434153c6594783fd5347cf7e7cf7f52ccc220d2d3b77653de3dee947887.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-full-themes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-palettes-1.svg": {
+      "object": "e2d5b50c8f680a763cc59151bb009963de9e55968faf965b37e319e5acd40f87.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-palettes-10.svg": {
+      "object": "8070f680a61369fbdab04b39fe37a0868f39aed3ec8002a25d3b677d099ee6e7.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-palettes-11.svg": {
+      "object": "5d3a99941512bf8d6e64b1e8aa87be2ae3a639be77deed462bcdd798e6275fcb.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-palettes-12.svg": {
+      "object": "a28e8def8171a4188dc854fb2d1b433bbc4b30942693e50a427960847954eb58.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-palettes-13.svg": {
+      "object": "328dd320ea777244f5b5fc293645101914d75f4668853c9f96ceb725e52f5626.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-palettes-2.svg": {
+      "object": "e0c66006eda18c514f4e08703bcdecd5ce2006c0d509e61ba7756425ac75deec.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-palettes-3.svg": {
+      "object": "857b93d6ba67898860455d7a4f5504f61e30d03caf3b38bd5b47742da58bb53e.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-palettes-4.svg": {
+      "object": "832a4c9268e9ad8192133f9cc684e66393e2808138685318b8c279d45b0f9813.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-palettes-5.svg": {
+      "object": "2326d134734ebf4dcd33c9e43e720ddeedfbc70548e8a5429af823517296aafe.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-palettes-6.svg": {
+      "object": "3b9fa22e3c98b7dce9466b0898e9e032fb40ef26d55b5b9eb76b003a079aa37d.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-palettes-7.svg": {
+      "object": "9e7216ee3316ac33de30abe28d8d2ec5fc49c4e1e65668446028d6a0bda3111b.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-palettes-8.svg": {
+      "object": "e327ebdc788303f91c2211525643ada48e526f78bda23dc6f0e35518f3a77f84.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-palettes-9.svg": {
+      "object": "8648f647adaa46f5f12b018babdfee34bd1c6003ca273dc6a4414100901f68c2.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-palettes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-themes-1.svg": {
+      "object": "80559a1eb4069761d1541183984cdd5b7b22be8e2380448389257e4f83e86e27.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-themes.md"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-window-themes-1.svg": {
+      "object": "e8f388497c56be5289784c57e291d9e89d7136a017945109c54fa1c39999e5ed.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-window-themes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-window-themes-2.svg": {
+      "object": "85fc7ada30685126f9aa5b54fa4c277c064b707e9ef6fe9b326ed7c2c8633f8b.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-window-themes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-window-themes-3.svg": {
+      "object": "4e1fa268bddd0b30a7a7a0bed3f5cb12988e2a21940eeee661f639b225a7d868.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-window-themes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-window-themes-4.svg": {
+      "object": "50ffc9733f2479c384a0ec06cc591cbd081232913884bcbb0ca4a29d6d8b346f.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-window-themes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-window-themes-5.svg": {
+      "object": "171066a411e8094643c035431a0b7ef0922ff83ef9e0cfb6b1d35d8ae9932569.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-window-themes.mdx"
+      ]
+    },
+    "docs/zh/appearance/themes/built-in-window-themes-6.svg": {
+      "object": "7a43acbe63327f74e90d1fb9a9c3c7d0a108ac9c7f2de761830c732c28b61557.svg",
+      "owners": [
+        "docs/zh/appearance/themes/built-in-window-themes.mdx"
+      ]
+    },
+    "docs/zh/appearance/window-and-background-1.svg": {
+      "object": "f1dcbb63caa797f9c6f4b95f17d0bdd94bc26feec389a89e8465ad8398547db2.svg",
+      "owners": [
+        "docs/zh/appearance/window-and-background.md"
+      ]
+    },
+    "docs/zh/appearance/window-and-background-2.svg": {
+      "object": "b32de9e292830290c6db90acb153ab8872f09ec3e273dec8e9e048a41990e1bf.svg",
+      "owners": [
+        "docs/zh/appearance/window-and-background.md"
+      ]
+    },
+    "docs/zh/appearance/window-and-background-3.svg": {
+      "object": "e0b69fb7ee9a0736e594acc67cd731ed81c2474864f0235eb939ba40c5d92ea1.svg",
+      "owners": [
+        "docs/zh/appearance/window-and-background.md"
+      ]
+    },
+    "docs/zh/basic-usage/capturing-images/convert-to-png-1.svg": {
+      "object": "0d6442f444880dcbc2d52d7ad52a0356c5357cf309ec144fb99303187a82b04d.svg",
+      "owners": [
+        "docs/zh/basic-usage/capturing-images/convert-to-png.md"
+      ]
+    },
+    "docs/zh/basic-usage/capturing-images/convert-to-png-2.svg": {
+      "object": "6d819ba32340b1b024d0e8d042417b9ff5fea0d3a6b6ac36a59d2827b56f835e.svg",
+      "owners": [
+        "docs/zh/basic-usage/capturing-images/convert-to-png.md"
+      ]
+    },
+    "docs/zh/basic-usage/capturing-images/crop-1.svg": {
+      "object": "efd72668b53794a7ddc2851ef05cfd7dc3282247b93581072ec272fe800949b9.svg",
+      "owners": [
+        "docs/zh/basic-usage/capturing-images/crop.md"
+      ]
+    },
+    "docs/zh/basic-usage/capturing-images/crop-2.svg": {
+      "object": "91e04cd6256ff1436aff826a9578d2dbe19fe6f4700e49d4cef1a19b55ecdd18.svg",
+      "owners": [
+        "docs/zh/basic-usage/capturing-images/crop.md"
+      ]
+    },
+    "docs/zh/basic-usage/capturing-images/crop-3.svg": {
+      "object": "64e81dbde347cc79927af4f41ab46394eede6502f4b24034c454379f0cb266e0.svg",
+      "owners": [
+        "docs/zh/basic-usage/capturing-images/crop.md"
+      ]
+    },
+    "docs/zh/basic-usage/capturing-images/overview-1.svg": {
+      "object": "1786f46196edc465ac81932dd4e68c8b64a4bc38b64798b6a50a8f9c65cc2b7d.svg",
+      "owners": [
+        "docs/zh/basic-usage/capturing-images/overview.mdx"
+      ]
+    },
+    "docs/zh/basic-usage/capturing-videos/convert-to-video-1.svg": {
+      "object": "2fd1a1e86f3800586fe68510f29cc531b648a78eeae0b8ac3c04949f978fa70d.svg",
+      "owners": [
+        "docs/zh/basic-usage/capturing-videos/convert-to-video.mdx"
+      ]
+    },
+    "docs/zh/basic-usage/capturing-videos/convert-to-video-2.svg": {
+      "object": "2fd1a1e86f3800586fe68510f29cc531b648a78eeae0b8ac3c04949f978fa70d.svg",
+      "owners": [
+        "docs/zh/basic-usage/capturing-videos/convert-to-video.mdx"
+      ]
+    },
+    "docs/zh/basic-usage/capturing-videos/convert-to-video-3.svg": {
+      "object": "2fd1a1e86f3800586fe68510f29cc531b648a78eeae0b8ac3c04949f978fa70d.svg",
+      "owners": [
+        "docs/zh/basic-usage/capturing-videos/convert-to-video.mdx"
+      ]
+    },
+    "docs/zh/basic-usage/masking-secrets/auto-masking-1.svg": {
+      "object": "1168383edb316a04392e2348ae8ab6ec3615824f2cd0b58bdeb976e941f4e358.svg",
+      "owners": [
+        "docs/zh/basic-usage/masking-secrets/auto-masking.md"
+      ]
+    },
+    "docs/zh/basic-usage/masking-secrets/manual-masking-1.svg": {
+      "object": "ac741e6cec0f0c9d5045ad4c7819653c1134c59619e345a33655178e47d24739.svg",
+      "owners": [
+        "docs/zh/basic-usage/masking-secrets/manual-masking.md"
+      ]
+    },
+    "docs/zh/gallery-1.svg": {
+      "object": "afbb6e4822b44ddeebfb08b1837af54dfdf3c9d042573d7c39c7e445bcb0da04.svg",
+      "owners": [
+        "docs/zh/gallery.mdx"
+      ]
+    },
+    "docs/zh/gallery-2.svg": {
+      "object": "5e6a635cfa06f343d4964478e84bc1b40c722fcc0562b4ef72eaae0975309797.svg",
+      "owners": [
+        "docs/zh/gallery.mdx"
+      ]
+    },
+    "docs/zh/gallery-3.svg": {
+      "object": "253120f40b0d27e72f6b42be4a044c01fb5b8fb40183d6185856d85464c07162.svg",
+      "owners": [
+        "docs/zh/gallery.mdx"
+      ]
+    },
+    "docs/zh/gallery-4.svg": {
+      "object": "5dff00e5d5f694f9988ae20313b39a63732061bba83fbd66bfef0dcf34ef21ba.svg",
+      "owners": [
+        "docs/zh/gallery.mdx"
+      ]
+    },
+    "docs/zh/gallery-5.svg": {
+      "object": "c65f78f1cc9c43fb1b47803568a293f929b1e7487fc4866e49405802a31c9c10.svg",
+      "owners": [
+        "docs/zh/gallery.mdx"
+      ]
+    },
+    "docs/zh/gallery-6.svg": {
+      "object": "9a5669756ecb4a1bb0ec1068ac91541fb9d5963ecc24b3e8ab90cc0a3b765cb7.svg",
+      "owners": [
+        "docs/zh/gallery.mdx"
+      ]
+    },
+    "docs/zh/gallery-7.svg": {
+      "object": "e2f2005359497cd98d5307a993961a3e5eafb1b7a03a8fc96655c1b58778a221.svg",
+      "owners": [
+        "docs/zh/gallery.mdx"
+      ]
+    },
+    "docs/zh/gallery-8.svg": {
+      "object": "b1e59c865ca27ae7fde19c5a43b5a4482a3d04ce53eee3e99c97a38730ce21b8.svg",
+      "owners": [
+        "docs/zh/gallery.mdx"
+      ]
+    },
+    "docs/zh/gallery-9.svg": {
+      "object": "9ed3e66381665f2d47398a97042a5a695104b8d963dfe45e58a95500920ed14e.svg",
+      "owners": [
+        "docs/zh/gallery.mdx"
+      ]
+    },
+    "docs/zh/getting-started/quick-start-1.svg": {
+      "object": "660548a8a54311b9c7c5acf74b27b9cbee67081fa6dda8282358a3acb877e900.svg",
+      "owners": [
+        "docs/zh/getting-started/quick-start.mdx"
+      ]
+    },
+    "docs/zh/getting-started/why-svg-1.svg": {
+      "object": "9fcf63ec925cfae7c481653192122165c6aad7710ce2d2105ca833e1aefb150a.svg",
+      "owners": [
+        "docs/zh/getting-started/why-svg.mdx"
+      ]
+    },
+    "docs/zh/getting-started/why-svg-2.svg": {
+      "object": "9fcf63ec925cfae7c481653192122165c6aad7710ce2d2105ca833e1aefb150a.svg",
+      "owners": [
+        "docs/zh/getting-started/why-svg.mdx"
+      ]
+    },
+    "docs/zh/index-1.svg": {
+      "object": "969886abd1dbf71435005c11c77797e06cba1d9bfed6e74e9f479466272bc8cf.svg",
+      "owners": [
+        "docs/zh/index.mdx"
+      ]
+    },
+    "docs/zh/reference/status-1.svg": {
+      "object": "dd0b63528a7b6642677247acf28a6832e77d426c38a46badaa5ea780cbca8522.svg",
+      "owners": [
+        "docs/zh/reference/status.md"
+      ]
+    },
+    "README-1.svg": {
+      "object": "de2a48c5f3897d0c85242dad9d9b9a276920f3b77a48af153b90028593183cf3.svg",
+      "owners": [
+        "README.md"
+      ]
+    },
+    "README-2.svg": {
+      "object": "3db1869029bcccb66f94c6968e41931e7c38082627debe525d7846575d6b7443.svg",
+      "owners": [
+        "README.md"
+      ]
+    },
+    "README-3.svg": {
+      "object": "4fdacba2b25de55f7798f796d8d4a2ac99697a5c2043cae86fc7984536b44d58.svg",
+      "owners": [
+        "README.md"
+      ]
+    },
+    "README-4.svg": {
+      "object": "4e0ce507c52102968630f4cfa19a80f2f7c8ed262bf61e4ddfa031e2fd62d704.svg",
+      "owners": [
+        "README.md"
+      ]
+    },
+    "README-5.svg": {
+      "object": "ce27ec49eb3997dc52d2b70a35fb0911b332f4410c4ddee3ffb5c4ffc32be697.svg",
+      "owners": [
+        "README.md"
+      ]
+    },
+    "README-6.svg": {
+      "object": "ec7ec60fe7a04cb771d42db643321cc4d82ea01852ccbc63b9aacd50e1b13543.svg",
+      "owners": [
+        "README.md"
+      ]
+    },
+    "README-7.svg": {
+      "object": "f822e14508eca83edd0e965708312f0776d556582d00358ae978bca009aeeed8.svg",
+      "owners": [
+        "README.md"
+      ]
+    },
+    "README-8.svg": {
+      "object": "6606e28c18dfdaf8875447255430db45257540911b133388e146b70f3ce47a9d.svg",
+      "owners": [
+        "README.md"
+      ]
+    },
+    "README-9.svg": {
+      "object": "843cbb04bb12ee70d476301c8a305107b886a49a97613f6980c3d410af0e140a.svg",
+      "owners": [
+        "README.md"
+      ]
+    }
+  }
+}

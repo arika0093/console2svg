@@ -15,6 +15,7 @@ console2svg status
 输出示例（版本、路径和可用性会因环境而异）：
 
 <!-- c2s::  -w 100 -- console2svg status -->
+![console2svg status](../../../docs-site/public/assets/generated/dd0b63528a7b6642677247acf28a6832e77d426c38a46badaa5ea780cbca8522.svg)
 
 ## 切换输出格式
 

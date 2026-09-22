@@ -13,6 +13,7 @@ console2svg capture -w 50 -h 5 -- console2svg
 ```
 
 <!-- c2s::  -w 50 -h 5 -- console2svg -->
+![console2svg](../../../docs-site/public/assets/generated/57425e021433221c8f314c25c1447583cde5862ba179b2a39328c002878d9083.svg)
 
 この例では、横50文字・縦5行のターミナル領域を作成します。
 出力するコマンドが領域を超える場合は、端末と同じように折り返しやスクロールが発生します。

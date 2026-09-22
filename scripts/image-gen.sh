@@ -4,7 +4,7 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_root"
-assets_dir="$repo_root/docs/assets"
+assets_dir="${CONSOLE2SVG_ASSETS_DIR:-$repo_root/docs/assets}"
 mkdir -p "$assets_dir/window" "$assets_dir/themes"
 
 local_console2svg_dir=
@@ -39,7 +39,11 @@ SECRET_HASH=fedcba9876543210fedcba9876543210
 EOF
 
 # Documentation images are declared next to their Markdown examples.
-console2svg batch markdown -i "$repo_root/docs" -o "$assets_dir"
+batch_args=(batch markdown -i "$repo_root/docs" -o "$assets_dir")
+if [[ -n "${CONSOLE2SVG_BATCH_LINK_BASE:-}" ]]; then
+  batch_args+=(--link-base "$CONSOLE2SVG_BATCH_LINK_BASE")
+fi
+console2svg "${batch_args[@]}"
 
 # Interactive and tmux demos are not supported by batch markdown.
 bash ./scripts/demos/generate-interactive.sh

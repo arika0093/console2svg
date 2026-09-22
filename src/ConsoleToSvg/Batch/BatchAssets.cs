@@ -54,7 +54,7 @@ public sealed record BatchRestoreResult(
 
 public static class BatchAssets
 {
-    private const string GeneratedDirectory = ".generated";
+    private const string GeneratedDirectory = "generated";
 
     public static string ComputeRecipeHash(BatchParsedJob job, string extension)
     {

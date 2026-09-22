@@ -385,6 +385,7 @@ public sealed partial class ConsoleToSvgCommandLine
 
                 options!.BatchInputPath = parseResult.GetValue(_symbols.BatchInput) ?? "docs";
                 options.BatchOutputDir = parseResult.GetValue(_symbols.BatchOutput) ?? "assets";
+                options.BatchLinkBase = parseResult.GetValue(_symbols.BatchLinkBase);
                 options.BatchFilters = parseResult.GetValue(_symbols.BatchFilter) ?? [];
                 options.BatchDryRun = parseResult.GetValue(_symbols.BatchDryRun);
                 options.BatchPlaceholder = parseResult.GetValue(_symbols.BatchPlaceholder);

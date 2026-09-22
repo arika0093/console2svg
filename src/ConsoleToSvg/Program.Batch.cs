@@ -45,6 +45,14 @@ internal static partial class Program
 
         var inputPath = Path.GetFullPath(options.BatchInputPath ?? "docs");
         var outputDir = Path.GetFullPath(options.BatchOutputDir ?? "assets");
+        if (!TryNormalizeBatchLinkBase(options.BatchLinkBase, out var linkBase))
+        {
+            await Console.Error.WriteLineAsync(
+                "--link-base must be a root-relative URL path without query, fragment, or traversal segments.".AsMemory(),
+                ct
+            );
+            return 1;
+        }
         if (!TryFindBatchFiles(inputPath, out var inputRoot, out var files, out var inputError))
         {
             await Console.Error.WriteLineAsync(inputError.AsMemory(), ct);
@@ -147,26 +155,10 @@ internal static partial class Program
                 ct.ThrowIfCancellationRequested();
                 if (generatedOutputs.Contains(resolved.CanonicalPath))
                 {
-                    try
-                    {
-                        BatchAssets.MaterializeAlias(
-                            outputDir,
-                            resolved.CanonicalPath,
-                            resolved.OutputPath,
-                            options.BatchPlaceholder
-                        );
-                    }
-                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-                    {
-                        failures.Add(
-                            $"{plan.RelativePath}:{resolved.Job.MarkerLine}: could not materialize output: {ex.Message}"
-                        );
-                        continue;
-                    }
                     links.Add(
                         new BatchLink(
                             resolved.Job,
-                            BatchExecutor.Relativize(plan.Path, resolved.OutputPath)
+                            BuildBatchLink(plan.Path, outputDir, resolved, linkBase)
                         )
                     );
                     continue;
@@ -215,26 +207,10 @@ internal static partial class Program
                     continue;
                 }
 
-                try
-                {
-                    BatchAssets.MaterializeAlias(
-                        outputDir,
-                        resolved.CanonicalPath,
-                        resolved.OutputPath,
-                        options.BatchPlaceholder
-                    );
-                }
-                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-                {
-                    failures.Add(
-                        $"{plan.RelativePath}:{resolved.Job.MarkerLine}: could not materialize output: {ex.Message}"
-                    );
-                    continue;
-                }
                 links.Add(
                     new BatchLink(
                         resolved.Job,
-                        BatchExecutor.Relativize(plan.Path, resolved.OutputPath)
+                        BuildBatchLink(plan.Path, outputDir, resolved, linkBase)
                     )
                 );
                 generatedOutputs.Add(resolved.CanonicalPath);
@@ -250,7 +226,21 @@ internal static partial class Program
                 continue;
             }
 
-            var rewritten = BatchMarkdown.RewriteLinks(plan.Original, links);
+            var assetLinks = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (var resolved in plan.Jobs)
+            {
+                var canonicalLink = BuildBatchLink(plan.Path, outputDir, resolved, linkBase);
+                assetLinks[BatchExecutor.Relativize(plan.Path, resolved.OutputPath)] =
+                    canonicalLink;
+                var logicalPath = BatchExecutor.NormalizePath(
+                    Path.GetRelativePath(outputDir, resolved.OutputPath)
+                );
+                assetLinks[$"/assets/{logicalPath}"] = canonicalLink;
+            }
+            var rewritten = BatchMarkdown.RewriteAssetLinks(
+                BatchMarkdown.RewriteLinks(plan.Original, links),
+                assetLinks
+            );
             if (!string.Equals(rewritten, plan.Original, StringComparison.Ordinal))
             {
                 await File.WriteAllTextAsync(
@@ -628,7 +618,10 @@ internal static partial class Program
                 );
                 if (
                     relativeOutput.Equals("assets.json", StringComparison.OrdinalIgnoreCase)
-                    || relativeOutput.StartsWith(".generated/", StringComparison.OrdinalIgnoreCase)
+                    || (
+                        relativeOutput.StartsWith("generated/", StringComparison.OrdinalIgnoreCase)
+                        && job.ExistingLinkTarget is null
+                    )
                 )
                 {
                     failures.Add(
@@ -726,6 +719,51 @@ internal static partial class Program
         }
 
         return null;
+    }
+
+    private static string BuildBatchLink(
+        string markdownPath,
+        string outputDir,
+        BatchResolvedJob resolved,
+        string? linkBase
+    )
+    {
+        var path = resolved.CanonicalPath;
+        if (linkBase is null)
+        {
+            return BatchExecutor.Relativize(markdownPath, path);
+        }
+
+        var relative = BatchExecutor.NormalizePath(Path.GetRelativePath(outputDir, path));
+        return linkBase == "/" ? $"/{relative}" : $"{linkBase}/{relative}";
+    }
+
+    private static bool TryNormalizeBatchLinkBase(string? value, out string? normalized)
+    {
+        normalized = null;
+        if (value is null)
+        {
+            return true;
+        }
+
+        var candidate = value.Trim();
+        if (
+            candidate.Length == 0
+            || !candidate.StartsWith('/', StringComparison.Ordinal)
+            || candidate.StartsWith("//", StringComparison.Ordinal)
+            || candidate.Contains('\\')
+            || candidate.Contains('?')
+            || candidate.Contains('#')
+            || candidate
+                .Split('/', StringSplitOptions.RemoveEmptyEntries)
+                .Any(segment => segment is "." or "..")
+        )
+        {
+            return false;
+        }
+
+        normalized = candidate.Length == 1 ? candidate : candidate.TrimEnd('/');
+        return true;
     }
 
     private static AppOptions BuildBatchJobOptions(

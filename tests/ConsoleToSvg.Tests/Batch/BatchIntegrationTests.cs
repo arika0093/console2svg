@@ -38,13 +38,10 @@ public sealed class BatchIntegrationTests
             ]);
 
             exitCode.ShouldBe(0);
-            var generated = Directory.GetFiles(Path.Combine(output, ".generated"));
+            var generated = Directory.GetFiles(Path.Combine(output, "generated"));
             generated.Length.ShouldBe(1);
-            var english = Path.Combine(output, "en", "guide-1.svg");
-            var japanese = Path.Combine(output, "ja", "guide-1.svg");
-            File.Exists(english).ShouldBeTrue();
-            File.Exists(japanese).ShouldBeTrue();
-            (await File.ReadAllTextAsync(english)).ShouldBe(await File.ReadAllTextAsync(japanese));
+            var canonical = generated.Single();
+            (await File.ReadAllTextAsync(canonical)).ShouldNotBeEmpty();
             using var document = JsonDocument.Parse(await File.ReadAllTextAsync(manifest));
             var assets = document.RootElement.GetProperty("assets");
             assets.EnumerateObject().Count().ShouldBe(2);
@@ -57,7 +54,7 @@ public sealed class BatchIntegrationTests
     }
 
     [Test]
-    public async Task PlaceholderCreatesAliasesWithoutExecutingCommandsOrManifest()
+    public async Task PlaceholderCreatesCanonicalObjectWithoutExecutingCommandsOrManifest()
     {
         var root = CreateTempDirectory();
         try
@@ -85,11 +82,9 @@ public sealed class BatchIntegrationTests
             exitCode.ShouldBe(0);
             File.Exists(sideEffect).ShouldBeFalse();
             File.Exists(manifest).ShouldBeFalse();
-            var logical = Path.Combine(output, "guide-1.svg");
-            (await File.ReadAllTextAsync(logical)).ShouldBe(string.Empty);
-            Directory.GetFiles(Path.Combine(output, ".generated")).Single().ShouldNotBeNull();
+            var canonical = Directory.GetFiles(Path.Combine(output, "generated")).Single();
+            (await File.ReadAllTextAsync(canonical)).ShouldBe(string.Empty);
 
-            await File.WriteAllTextAsync(logical, "existing");
             exitCode = await Program.Main([
                 "batch",
                 "markdown",
@@ -100,7 +95,7 @@ public sealed class BatchIntegrationTests
                 "--placeholder",
             ]);
             exitCode.ShouldBe(0);
-            (await File.ReadAllTextAsync(logical)).ShouldBe("existing");
+            (await File.ReadAllTextAsync(canonical)).ShouldBe(string.Empty);
         }
         finally
         {
@@ -116,8 +111,8 @@ public sealed class BatchIntegrationTests
         {
             var published = Path.Combine(root, "published");
             var output = Path.Combine(root, "restored");
-            Directory.CreateDirectory(Path.Combine(published, ".generated"));
-            var asset = Path.Combine(published, ".generated", "recipe.svg");
+            Directory.CreateDirectory(Path.Combine(published, "generated"));
+            var asset = Path.Combine(published, "generated", "recipe.svg");
             var bytes = Encoding.UTF8.GetBytes("<svg>restored</svg>");
             await File.WriteAllBytesAsync(asset, bytes);
             var manifest = new BatchAssetManifest
@@ -127,7 +122,7 @@ public sealed class BatchIntegrationTests
                 {
                     ["recipe.svg"] = new BatchAssetObject
                     {
-                        Path = ".generated/recipe.svg",
+                        Path = "generated/recipe.svg",
                         Sha256 = Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant(),
                         Size = bytes.Length,
                         MediaType = "image/svg+xml",
@@ -156,7 +151,7 @@ public sealed class BatchIntegrationTests
             (await File.ReadAllTextAsync(Path.Combine(output, "ja", "guide.svg")))
                 .ShouldBe("<svg>restored</svg>");
 
-            await File.WriteAllTextAsync(Path.Combine(output, ".generated", "recipe.svg"), "bad");
+            await File.WriteAllTextAsync(Path.Combine(output, "generated", "recipe.svg"), "bad");
             exitCode = await Program.Main([
                 "batch",
                 "restore",
@@ -165,7 +160,7 @@ public sealed class BatchIntegrationTests
                 output,
             ]);
             exitCode.ShouldBe(0);
-            (await File.ReadAllTextAsync(Path.Combine(output, ".generated", "recipe.svg")))
+            (await File.ReadAllTextAsync(Path.Combine(output, "generated", "recipe.svg")))
                 .ShouldBe("<svg>restored</svg>");
         }
         finally
@@ -525,9 +520,55 @@ public sealed class BatchIntegrationTests
             var exitCode = await Program.Main(["batch", "markdown", "-i", docs, "-o", output]);
 
             exitCode.ShouldBe(0);
-            File.Exists(Path.Combine(output, "reference", "guide-1.svg")).ShouldBeTrue();
+            Directory.GetFiles(Path.Combine(output, "generated")).Length.ShouldBe(1);
             var rewritten = await File.ReadAllTextAsync(markdownPath);
-            rewritten.ShouldContain("![echo hello](../../assets/reference/guide-1.svg)");
+            rewritten.ShouldMatch(@"!\[echo hello\]\(../../assets/generated/[0-9a-f]{64}\.svg\)");
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task ObjectLinksUsePublicBaseAndRemainIdempotent()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var docs = Path.Combine(root, "docs");
+            var markdownPath = Path.Combine(docs, "guide.md");
+            var output = Path.Combine(root, "public", "assets");
+            Directory.CreateDirectory(docs);
+            await File.WriteAllTextAsync(
+                markdownPath,
+                "<!-- c2s:: -w 20 -h 2 -- echo public -->"
+            );
+
+            var args = new[]
+            {
+                "batch",
+                "markdown",
+                "-i",
+                docs,
+                "-o",
+                output,
+                "--link-base",
+                "/assets",
+            };
+            (await Program.Main(args)).ShouldBe(0);
+
+            var first = await File.ReadAllTextAsync(markdownPath);
+            first.ShouldMatch(
+                @"!\[echo public\]\(/assets/generated/[0-9a-f]{64}\.svg\)"
+            );
+            Directory.GetFiles(Path.Combine(output, "generated")).Length.ShouldBe(1);
+            File.Exists(Path.Combine(output, "guide-1.svg")).ShouldBeFalse();
+
+            (await Program.Main(args)).ShouldBe(0);
+            (await File.ReadAllTextAsync(markdownPath)).ShouldBe(first);
+            Directory.GetFiles(Path.Combine(output, "generated")).Length.ShouldBe(1);
+            File.Exists(Path.Combine(output, "guide-2.svg")).ShouldBeFalse();
         }
         finally
         {
@@ -559,7 +600,7 @@ public sealed class BatchIntegrationTests
             var exitCode = await Program.Main(["batch", "markdown", "-i", docs, "-o", output]);
 
             exitCode.ShouldBe(0);
-            File.Exists(Path.Combine(output, "sample", "test-7.svg")).ShouldBeTrue();
+            Directory.GetFiles(Path.Combine(output, "generated")).Length.ShouldBe(1);
             File.Exists(Path.Combine(output, "hoge", "test-1.svg")).ShouldBeFalse();
         }
         finally
@@ -664,11 +705,12 @@ public sealed class BatchIntegrationTests
             ]);
 
             exitCode.ShouldBe(0);
-            File.Exists(Path.Combine(output, "shared.svg")).ShouldBeTrue();
+            Directory.GetFiles(Path.Combine(output, "generated")).Length.ShouldBe(1);
+            var canonicalLink = "generated/";
             (await File.ReadAllTextAsync(Path.Combine(docs, "en", "guide.md")))
-                .ShouldContain("../../assets/shared.svg");
+                .ShouldContain(canonicalLink);
             (await File.ReadAllTextAsync(Path.Combine(docs, "ja", "guide.md")))
-                .ShouldContain("../../assets/shared.svg");
+                .ShouldContain(canonicalLink);
         }
         finally
         {
@@ -859,7 +901,9 @@ public sealed class BatchIntegrationTests
             ]);
 
             exitCode.ShouldBe(0);
-            var svg = await File.ReadAllTextAsync(Path.Combine(output, "background.svg"));
+            var svg = await File.ReadAllTextAsync(
+                Directory.GetFiles(Path.Combine(output, "generated")).Single()
+            );
             svg.ShouldContain(
                 "data:image/png;base64,"
                     + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("batch-background"))
@@ -904,9 +948,7 @@ public sealed class BatchIntegrationTests
             var exitCode = await Program.Main(["batch", "markdown", "-i", docs, "-o", output]);
 
             exitCode.ShouldBe(0);
-            File.Exists(Path.Combine(output, "replay.svg")).ShouldBeTrue();
-            File.Exists(Path.Combine(output, "cwd.svg")).ShouldBeTrue();
-            File.Exists(Path.Combine(output, "replay-save.svg")).ShouldBeTrue();
+            Directory.GetFiles(Path.Combine(output, "generated")).Length.ShouldBe(3);
             File.Exists(Path.Combine(markdownDirectory, "setup-relative.txt")).ShouldBeTrue();
             File.Exists(Path.Combine(markdownDirectory, "capture-relative.txt")).ShouldBeTrue();
             File.Exists(Path.Combine(markdownDirectory, "teardown-relative.txt")).ShouldBeTrue();
@@ -948,7 +990,7 @@ public sealed class BatchIntegrationTests
 
             exitCode.ShouldBe(1);
             File.Exists(Path.Combine(output, "missing.svg")).ShouldBeFalse();
-            File.Exists(Path.Combine(output, "later.svg")).ShouldBeTrue();
+            Directory.GetFiles(Path.Combine(output, "generated")).Length.ShouldBe(1);
         }
         finally
         {

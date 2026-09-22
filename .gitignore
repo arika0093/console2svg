@@ -1,5 +1,5 @@
 *.db*
-.generated/
+generated/
 src/ConsoleToSvg.Converter/native/resvg-wrapper/target/
 native-assets/
 exported/

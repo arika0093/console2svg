@@ -284,6 +284,50 @@ public static class BatchMarkdown
         return result;
     }
 
+    public static string RewriteAssetLinks(
+        string markdown,
+        IReadOnlyDictionary<string, string> replacements
+    )
+    {
+        if (replacements.Count == 0)
+        {
+            return markdown;
+        }
+
+        var result = markdown;
+        foreach (var pattern in new[] { MarkdownImagePattern, HtmlImagePattern, HtmlSourcePattern })
+        {
+            var fences = FindCodeFences(result);
+            result = pattern.Replace(
+                result,
+                match =>
+                {
+                    if (fences.Any(fence => match.Index >= fence.Start && match.Index < fence.End))
+                    {
+                        return match.Value;
+                    }
+
+                    var target = match.Groups["target"];
+                    var unwrapped = target.Value.Trim('<', '>');
+                    if (!replacements.TryGetValue(unwrapped, out var replacement))
+                    {
+                        return match.Value;
+                    }
+
+                    var replacementTarget = target.Value.StartsWith('<')
+                        ? $"<{replacement}>"
+                        : replacement;
+                    var targetOffset = target.Index - match.Index;
+                    return match.Value[..targetOffset]
+                        + replacementTarget
+                        + match.Value[(targetOffset + target.Length)..];
+                }
+            );
+        }
+
+        return result;
+    }
+
     public static IReadOnlyList<string> FindImageTargets(string markdown)
     {
         var fences = FindCodeFences(markdown);

@@ -435,6 +435,8 @@ public sealed class BatchMarkdownTests
             "--filter",
             "reference/**",
             "tutorial/*.md",
+            "--link-base",
+            "/assets",
             "--dry-run"
         );
 
@@ -443,6 +445,7 @@ public sealed class BatchMarkdownTests
         invocation.Options!.Workflow.ShouldBe(Workflow.Batch);
         invocation.Options.BatchInputPath.ShouldBe("docs/guide.md");
         invocation.Options.BatchOutputDir.ShouldBe("assets");
+        invocation.Options.BatchLinkBase.ShouldBe("/assets");
         invocation.Options.BatchFilters.ShouldBe(["reference/**", "tutorial/*.md"]);
         invocation.Options.BatchDryRun.ShouldBeTrue();
     }

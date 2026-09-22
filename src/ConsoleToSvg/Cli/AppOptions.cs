@@ -251,6 +251,9 @@ public sealed class AppOptions
     /// <summary>Batch markdown mode: generated image output directory.</summary>
     public string? BatchOutputDir { get; set; }
 
+    /// <summary>Batch markdown mode: public URL prefix used for inserted asset links.</summary>
+    public string? BatchLinkBase { get; set; }
+
     /// <summary>Batch markdown mode: input-relative glob filters.</summary>
     public string[] BatchFilters { get; set; } = [];
 

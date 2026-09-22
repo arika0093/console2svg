@@ -154,6 +154,12 @@ public sealed partial class ConsoleToSvgCommandLine
                 Description = "Generated image output directory.",
                 HelpName = "dir",
             };
+        public Option<string> BatchLinkBase { get; } =
+            new("--link-base")
+            {
+                Description = "Root-relative public URL prefix for inserted asset links.",
+                HelpName = "path",
+            };
         public Option<string[]> BatchFilter { get; } =
             new("--filter")
             {
@@ -317,7 +323,15 @@ public sealed partial class ConsoleToSvgCommandLine
             CaptureOptions.Except([Interactive, TmuxTarget, History]).Concat([TmuxTarget, History]);
 
         public IEnumerable<Option> BatchMarkdownOptions =>
-            [BatchInput, BatchOutput, BatchFilter, BatchDryRun, BatchPlaceholder, Verbose];
+            [
+                BatchInput,
+                BatchOutput,
+                BatchLinkBase,
+                BatchFilter,
+                BatchDryRun,
+                BatchPlaceholder,
+                Verbose,
+            ];
 
         public IEnumerable<Option> BatchRestoreOptions =>
             [BatchRestoreOutput, BatchRestoreFilter, BatchRestoreDryRun, BatchForce, BatchPrune];

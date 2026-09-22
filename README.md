@@ -64,6 +64,8 @@ console2svg capture -w 100 -h 10 -c -d macos-pc \
     -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
 ```
 
+<!-- c2s:: -w 100 -h 10 -c -d macos-pc --background "docs-site/public/assets/image1.png" --opacity 0.95 -- oh-my-logo "console2svg" mint --filled --letter-spacing 0 -->
+![oh-my-logo "console2svg" mint --filled --letter-spacing 0](docs-site/public/assets/generated/de2a48c5f3897d0c85242dad9d9b9a276920f3b77a48af153b90028593183cf3.svg)
 
 ### Animation
 

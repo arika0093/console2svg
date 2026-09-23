@@ -12,7 +12,9 @@ on:
       - 'src/ConsoleToSvg.Core/Svg/**'
       - 'scripts/image-gen-common.sh'
       - 'scripts/image-gen-docs.sh'
-      - 'scripts/demos/**'
+      - 'assets/image1.png'
+      - 'assets/cmd-bash-vim.svg'
+      - 'assets/cmd-interactive.svg'
       - '.github/workflows/docs-pages.yaml'
   workflow_dispatch:
 

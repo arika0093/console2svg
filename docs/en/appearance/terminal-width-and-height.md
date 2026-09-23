@@ -13,7 +13,6 @@ console2svg capture -w 50 -h 5 -- console2svg
 ```
 
 <!-- c2s::  -w 50 -h 5 -- console2svg -->
-![console2svg](/assets/generated/57425e021433.svg)
 
 This example creates a terminal area that is 50 characters wide and 5 lines tall.
 If the command output exceeds the area, wrapping and scrolling occur just as they would in a terminal.

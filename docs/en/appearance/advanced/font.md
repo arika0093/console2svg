@@ -15,7 +15,6 @@ console2svg capture --font "Courier New, monospace" -h 10 -- console2svg
 ```
 
 <!-- c2s::  -w 100 -h 10 --font "Courier New, monospace" -- console2svg -->
-![console2svg](/assets/generated/df4ae3d2faf0.svg)
 
 > [!WARNING]
 > The viewer's fonts are used, not the fonts on the environment that generated the SVG. Specifying fallback fonts (such as `monospace`) is recommended.

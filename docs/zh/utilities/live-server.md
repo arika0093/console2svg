@@ -22,7 +22,6 @@ Live server listening on http://127.0.0.1:38473/
 
 在浏览器中打开此 URL，即可低延迟、以矢量质量显示终端状态。
 
-![console2svg live-server](/assets/cmd-liveserver.png)
 
 ## 选项
 

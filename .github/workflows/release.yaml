@@ -193,10 +193,8 @@ jobs:
       - name: Setup console2svg
         uses: ./
 
-      - name: Generate images
-        run: |
-          bash scripts/image-gen-docs.sh
-          bash scripts/image-gen-readme.sh
+      - name: Generate README images
+        run: bash scripts/image-gen-readme.sh
 
       - name: Commit & Push
         uses: stefanzweifel/git-auto-commit-action@v7

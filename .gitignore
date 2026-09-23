@@ -2,8 +2,7 @@
 generated/
 !assets/
 !assets/**
-!docs-site/public/assets/generated/
-!docs-site/public/assets/generated/**
+docs-site/public/assets/
 src/ConsoleToSvg.Converter/native/resvg-wrapper/target/
 native-assets/
 exported/

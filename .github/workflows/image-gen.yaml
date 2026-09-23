@@ -1,4 +1,4 @@
-name: Generate Documentation Assets
+name: Generate README Assets
 
 on:
   push:
@@ -28,13 +28,11 @@ jobs:
         with:
           version: 'develop'
 
-      - name: Generate images
-        run: |
-          bash scripts/image-gen-docs.sh
-          bash scripts/image-gen-readme.sh
+      - name: Generate README images
+        run: bash scripts/image-gen-readme.sh
 
       - name: Commit & Push
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_message: "[skip-ci] chore: regenerate documentation assets"
+          commit_message: "[skip-ci] chore: regenerate README assets"
           branch: ${{ github.ref_name }}

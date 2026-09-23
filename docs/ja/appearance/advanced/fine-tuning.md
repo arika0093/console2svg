@@ -32,4 +32,3 @@ console2svg capture --header "user@server:~$ ./build.sh" -- ./build.sh
 ```
 
 <!-- c2s::  -w 100 -h 4 --prompt "[HELLO!] $" --header "my-custom-header" --forecolor "#00f040" --backcolor "#042515" -- echo "hi" -->
-![echo "hi"](/assets/generated/b31071710397.svg)

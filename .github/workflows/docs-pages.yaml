@@ -8,6 +8,7 @@ on:
       - 'version.json'
       - 'docs/**'
       - 'docs-site/**'
+      - 'src/ConsoleToSvg/**'
       - 'src/ConsoleToSvg.Core/Svg/**'
       - 'scripts/image-gen-common.sh'
       - 'scripts/image-gen-docs.sh'

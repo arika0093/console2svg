@@ -2,7 +2,7 @@
   "version": 1,
   "generator": {
     "name": "console2svg",
-    "version": "0.10.0.9"
+    "version": "0.10.1.0"
   },
   "objects": {
     "110df72e47f9.svg": {
@@ -19,20 +19,20 @@
     },
     "4e0ce507c521.svg": {
       "path": "generated/4e0ce507c521.svg",
-      "sha256": "9b8caf7e8350d364f3a69a9e71a04961aca62e2a1587fb8b7f3091f05ba3d099",
-      "size": 422748,
+      "sha256": "2270af7a724d0adfadce264c4088640968b12db7d76c1e75927bb15ce2f8a457",
+      "size": 426464,
       "mediaType": "image/svg\u002Bxml"
     },
     "4fdacba2b25d.svg": {
       "path": "generated/4fdacba2b25d.svg",
-      "sha256": "35184deb44db523bffea8aad81d0dbd2edb1a18e59b5772a99ecc286a6139705",
-      "size": 8952,
+      "sha256": "4716993931d377df4c7f7c6351ce62c43bf17495420a8d7de43b017493ceef82",
+      "size": 8950,
       "mediaType": "image/svg\u002Bxml"
     },
     "6606e28c18df.svg": {
       "path": "generated/6606e28c18df.svg",
-      "sha256": "c313508fbb313fbbafc193e13fe22a97b3a8b5fbd808a97afe67f3e2918125fe",
-      "size": 28395,
+      "sha256": "33d01d1cf3fe4cef05235864f400aa133641bbb34afc49a7b3c31414f445402e",
+      "size": 28921,
       "mediaType": "image/svg\u002Bxml"
     },
     "843cbb04bb12.svg": {
@@ -43,20 +43,20 @@
     },
     "ce27ec49eb39.svg": {
       "path": "generated/ce27ec49eb39.svg",
-      "sha256": "9d521d6bf937282980d378dd863657987dab8671afe69bb759eaa46e72e3ccab",
-      "size": 1625417,
+      "sha256": "72b9559fed1d32cb987d150f5c089974693de4b5b0968247dd7f68c297933731",
+      "size": 1556503,
       "mediaType": "image/svg\u002Bxml"
     },
     "ec7ec60fe7a0.svg": {
       "path": "generated/ec7ec60fe7a0.svg",
-      "sha256": "2aa6f3c82c8681b4959a75cbe415c698d7bae1943c871348a9d077f91eab092c",
-      "size": 331098,
+      "sha256": "16d15013f6dd8dd8f11d1faed98c518ec5b3867554a5eea170daa8289e74c9ef",
+      "size": 331091,
       "mediaType": "image/svg\u002Bxml"
     },
     "f822e14508ec.svg": {
       "path": "generated/f822e14508ec.svg",
-      "sha256": "c37fc21948fb3bc9c095d1eecfe6700c07c306998f9be07da8bd33c24ed6aab9",
-      "size": 26042,
+      "sha256": "901ac46a6f78224b096dbfe5270da843bd81702c4b8c9fb8c77ac5a9896861d0",
+      "size": 21835,
       "mediaType": "image/svg\u002Bxml"
     }
   },

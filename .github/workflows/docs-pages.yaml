@@ -9,6 +9,9 @@ on:
       - 'docs/**'
       - 'docs-site/**'
       - 'src/ConsoleToSvg.Core/Svg/**'
+      - 'scripts/image-gen-common.sh'
+      - 'scripts/image-gen-docs.sh'
+      - 'scripts/demos/**'
       - '.github/workflows/docs-pages.yaml'
   workflow_dispatch:
 
@@ -82,10 +85,7 @@ jobs:
           version: develop
 
       - name: Generate documentation images
-        env:
-          CONSOLE2SVG_ASSETS_DIR: ${{ github.workspace }}/docs-site/public/assets
-          CONSOLE2SVG_BATCH_LINK_BASE: /assets
-        run: bash scripts/image-gen.sh
+        run: bash scripts/image-gen-docs.sh
 
       - name: Build documentation
         working-directory: docs-site

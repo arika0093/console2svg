@@ -194,7 +194,9 @@ jobs:
         uses: ./
 
       - name: Generate images
-        run: bash scripts/image-gen.sh
+        run: |
+          bash scripts/image-gen-docs.sh
+          bash scripts/image-gen-readme.sh
 
       - name: Commit & Push
         uses: stefanzweifel/git-auto-commit-action@v7

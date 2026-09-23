@@ -1,7 +1,7 @@
 <div align="center">
 
-<!-- c2s:: -w 100 -h 10 -c -d macos-pc --background "docs-site/public/assets/image1.png" --opacity 0.95 -- oh-my-logo "console2svg" mint --filled --letter-spacing 0 -->
-![oh-my-logo "console2svg" mint --filled --letter-spacing 0](docs-site/public/assets/generated/de2a48c5f3897d0c85242dad9d9b9a276920f3b77a48af153b90028593183cf3.svg)
+<!-- c2s:: -w 100 -h 10 -c -d macos-pc --background "assets/image1.png" --opacity 0.95 -- oh-my-logo "console2svg" mint --filled --letter-spacing 0 -->
+![oh-my-logo "console2svg" mint --filled --letter-spacing 0](assets/generated/110df72e47f948e9a529e6447495c440640fddb56d0117c546aa2520a767f079.svg)
 
 *Share your terminal beautifully.*
 
@@ -39,7 +39,7 @@ console2svg capture -- console2svg
 ```
 
 <!-- c2s:: -w 120 -- console2svg -->
-![console2svg](docs-site/public/assets/generated/3db1869029bcccb66f94c6968e41931e7c38082627debe525d7846575d6b7443.svg)
+![console2svg](assets/generated/3db1869029bcccb66f94c6968e41931e7c38082627debe525d7846575d6b7443.svg)
 
 ### With a frame
 
@@ -50,7 +50,7 @@ console2svg capture -w 100 -c -d macos-pc -- fastfetch
 ```
 
 <!-- c2s:: -w 100 -c -d macos-pc -- fastfetch -->
-![fastfetch](docs-site/public/assets/generated/4fdacba2b25de55f7798f796d8d4a2ac99697a5c2043cae86fc7984536b44d58.svg)
+![fastfetch](assets/generated/4fdacba2b25de55f7798f796d8d4a2ac99697a5c2043cae86fc7984536b44d58.svg)
 
 ### Background and transparency settings
 
@@ -58,12 +58,12 @@ You can make the output quite stylish with a background image and opacity:
 
 ```bash
 console2svg capture -w 100 -h 10 -c -d macos-pc \
-    --background "docs-site/public/assets/image1.png" --opacity 0.95 \
+    --background "assets/image1.png" --opacity 0.95 \
     -- oh-my-logo "console2svg" mint --filled --letter-spacing 0
 ```
 
-<!-- c2s:: -w 100 -h 10 -c -d macos-pc --background "docs-site/public/assets/image1.png" --opacity 0.95 -- oh-my-logo "console2svg" mint --filled --letter-spacing 0 -->
-![oh-my-logo "console2svg" mint --filled --letter-spacing 0](docs-site/public/assets/generated/de2a48c5f3897d0c85242dad9d9b9a276920f3b77a48af153b90028593183cf3.svg)
+<!-- c2s:: -w 100 -h 10 -c -d macos-pc --background "assets/image1.png" --opacity 0.95 -- oh-my-logo "console2svg" mint --filled --letter-spacing 0 -->
+![oh-my-logo "console2svg" mint --filled --letter-spacing 0](assets/generated/110df72e47f948e9a529e6447495c440640fddb56d0117c546aa2520a767f079.svg)
 
 ### Animation
 
@@ -74,7 +74,7 @@ console2svg capture -c -d -v -- sl
 ```
 
 <!-- c2s:: -w 120 -h 16 -c -d -v -- sl -->
-![sl](docs-site/public/assets/generated/4e0ce507c52102968630f4cfa19a80f2f7c8ed262bf61e4ddfa031e2fd62d704.svg)
+![sl](assets/generated/4e0ce507c52102968630f4cfa19a80f2f7c8ed262bf61e4ddfa031e2fd62d704.svg)
 
 #### `cmatrix`
 
@@ -83,7 +83,7 @@ console2svg capture -w 100 -h 24 -c -d macos-pc -v --timeout 5 -- cmatrix -ab
 ```
 
 <!-- c2s:: -w 100 -h 24 -c -d macos-pc -v --timeout 5 -- cmatrix -ab -->
-![cmatrix -ab](docs-site/public/assets/generated/ce27ec49eb3997dc52d2b70a35fb0911b332f4410c4ddee3ffb5c4ffc32be697.svg)
+![cmatrix -ab](assets/generated/ce27ec49eb3997dc52d2b70a35fb0911b332f4410c4ddee3ffb5c4ffc32be697.svg)
 
 #### `nyancat`
 
@@ -92,7 +92,7 @@ console2svg capture -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat
 ```
 
 <!-- c2s:: -w 160 -h 28 -c -d -v --timeout 5 --sleep 0.5 -- nyancat -->
-![nyancat](docs-site/public/assets/generated/ec7ec60fe7a04cb771d42db643321cc4d82ea01852ccbc63b9aacd50e1b13543.svg)
+![nyancat](assets/generated/ec7ec60fe7a04cb771d42db643321cc4d82ea01852ccbc63b9aacd50e1b13543.svg)
 
 ### Replay playback
 
@@ -102,7 +102,7 @@ Replay a file prepared in advance to reproduce the same output in CI environment
 console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash
 ```
 
-![console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash](./docs-site/public/assets/cmd-bash-vim.svg)
+![console2svg replay ./replay.json -w 80 -h 20 -v -c -d macos -- bash](./assets/cmd-bash-vim.svg)
 
 ### Interactive capture
 
@@ -112,7 +112,7 @@ Start recording with the `F9` key, then press `F9` again to stop recording.
 console2svg interactive -d macos
 ```
 
-![An interactive console2svg capture](./docs-site/public/assets/cmd-interactive.svg)
+![An interactive console2svg capture](./assets/cmd-interactive.svg)
 
 ### Theme support
 
@@ -123,21 +123,21 @@ console2svg capture -w 100 -h 24 -c -d macos -t nord --timeout 2 -- cmatrix -ab
 ```
 
 <!-- c2s:: -w 100 -h 24 -c -d macos -t nord --timeout 2 -- cmatrix -ab -->
-![cmatrix -ab](docs-site/public/assets/generated/f822e14508eca83edd0e965708312f0776d556582d00358ae978bca009aeeed8.svg)
+![cmatrix -ab](assets/generated/f822e14508eca83edd0e965708312f0776d556582d00358ae978bca009aeeed8.svg)
 
 ```bash
 console2svg capture -w 100 -h 24 -c -t cyberpunk-pc --timeout 2 -- cmatrix -ab
 ```
 
 <!-- c2s:: -w 100 -h 24 -c -t cyberpunk-pc --timeout 2 -- cmatrix -ab -->
-![cmatrix -ab](docs-site/public/assets/generated/6606e28c18dfdaf8875447255430db45257540911b133388e146b70f3ce47a9d.svg)
+![cmatrix -ab](assets/generated/6606e28c18dfdaf8875447255430db45257540911b133388e146b70f3ce47a9d.svg)
 
 ### Sensitive information masking
 
 Common secrets are masked automatically when capturing terminal output.
 
 <!-- c2s:: -w 80 -h 14 -d macos-pc -t github-dark -- cat .env -->
-![cat .env](docs-site/public/assets/generated/843cbb04bb12ee70d476301c8a305107b886a49a97613f6980c3d410af0e140a.svg)
+![cat .env](assets/generated/843cbb04bb12ee70d476301c8a305107b886a49a97613f6980c3d410af0e140a.svg)
 
 ## Install
 

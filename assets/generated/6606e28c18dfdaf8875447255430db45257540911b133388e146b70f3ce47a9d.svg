@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="952" height="593" viewBox="0 0 952 593" role="img" aria-label="console2svg output">
+<style>
+.c2.c { font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace; font-size: 14px; }
+.c2 text { white-space: pre; dominant-baseline: alphabetic; }
+.c2 .q { shape-rendering: crispEdges; }
+.c2 .aa{fill:#d8f9ff}
+</style><defs><pattern id="c2-redacted-stripe" patternUnits="userSpaceOnUse" width="8" height="8"><path d="M0 0h8v8H0z" fill="#090b1a"/><path d="M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6" stroke="#d8f9ff" stroke-width="2" opacity="0.3"/></pattern></defs><defs>
+<linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#09051a"/><stop offset="100%" stop-color="#17104a"/></linearGradient>
+</defs>
+<rect width="952" height="593" fill="url(#c2bg)"/>
+<g opacity="0.85">
+<rect x="31" y="31" width="880" height="521" fill="#090b1a" stroke="#27e8ff" stroke-width="1.5"/>
+<path d="M 38,38 H 904 V 61 H 38 Z" fill="#151333" stroke="#ff3c9e" stroke-width="1"/>
+<path d="M 43,43 h 22 M 43,48 h 12" stroke="#27e8ff" stroke-width="2"/>
+<text x="74" y="53" fill="#ff65b1" font-family="monospace" font-size="11" font-weight="bold">SYS://NEON-TERMINAL</text>
+<path d="M 844,43 h 14 v 12 h -14 Z M 865,43 h 14 v 12 h -14 Z M 886,43 h 14 v 12 h -14 Z" fill="none" stroke="#27e8ff" stroke-width="1.5"/>
+<path d="M 31,31 h 18 M 31,31 v 18 M 911,31 h -18 M 911,31 v 18 M 31,552 h 18 M 31,552 v -18 M 911,552 h -18 M 911,552 v -18" stroke="#ff3c9e" stroke-width="3"/>
+
+<rect x="40" y="71" width="862" height="472" fill="#090b1a"/>
+<g class="c2 c" xml:space="preserve"><rect x="51" y="82" width="840" height="18" fill="#090b1a"/>
+<text class="aa" x="51" y="96">$ cmatrix -ab</text></g>
+<g class="c2 c" transform="translate(51 100)">
+<rect width="840" height="432" fill="#090b1a"/>
+</g>
+</g>
+<g class="c2 c" xml:space="preserve" transform="translate(51 100)">
+<text class="aa" y="14" textLength="75.6">&apos;cmatrix&apos;</text>
+<text class="aa" x="84" y="14" textLength="16.8">は</text>
+<text class="aa" x="100.8" y="14" textLength="16.8">、</text>
+<text class="aa" x="117.6" y="14" textLength="16.8">内</text>
+<text class="aa" x="134.4" y="14" textLength="16.8">部</text>
+<text class="aa" x="151.2" y="14" textLength="16.8">コ</text>
+<text class="aa" x="168" y="14" textLength="16.8">マ</text>
+<text class="aa" x="184.8" y="14" textLength="16.8">ン</text>
+<text class="aa" x="201.6" y="14" textLength="16.8">ド</text>
+<text class="aa" x="218.4" y="14" textLength="16.8">ま</text>
+<text class="aa" x="235.2" y="14" textLength="16.8">た</text>
+<text class="aa" x="252" y="14" textLength="16.8">は</text>
+<text class="aa" x="268.8" y="14" textLength="16.8">外</text>
+<text class="aa" x="285.6" y="14" textLength="16.8">部</text>
+<text class="aa" x="302.4" y="14" textLength="16.8">コ</text>
+<text class="aa" x="319.2" y="14" textLength="16.8">マ</text>
+<text class="aa" x="336" y="14" textLength="16.8">ン</text>
+<text class="aa" x="352.8" y="14" textLength="16.8">ド</text>
+<text class="aa" x="369.6" y="14" textLength="16.8">、</text>
+<text class="aa" y="32" textLength="16.8">操</text>
+<text class="aa" x="16.8" y="32" textLength="16.8">作</text>
+<text class="aa" x="33.6" y="32" textLength="16.8">可</text>
+<text class="aa" x="50.4" y="32" textLength="16.8">能</text>
+<text class="aa" x="67.2" y="32" textLength="16.8">な</text>
+<text class="aa" x="84" y="32" textLength="16.8">プ</text>
+<text class="aa" x="100.8" y="32" textLength="16.8">ロ</text>
+<text class="aa" x="117.6" y="32" textLength="16.8">グ</text>
+<text class="aa" x="134.4" y="32" textLength="16.8">ラ</text>
+<text class="aa" x="151.2" y="32" textLength="16.8">ム</text>
+<text class="aa" x="168" y="32" textLength="16.8">ま</text>
+<text class="aa" x="184.8" y="32" textLength="16.8">た</text>
+<text class="aa" x="201.6" y="32" textLength="16.8">は</text>
+<text class="aa" x="218.4" y="32" textLength="16.8">バ</text>
+<text class="aa" x="235.2" y="32" textLength="16.8">ッ</text>
+<text class="aa" x="252" y="32" textLength="16.8">チ</text>
+<text class="aa" x="277.2" y="32" textLength="16.8">フ</text>
+<text class="aa" x="294" y="32" textLength="16.8">ァ</text>
+<text class="aa" x="310.8" y="32" textLength="16.8">イ</text>
+<text class="aa" x="327.6" y="32" textLength="16.8">ル</text>
+<text class="aa" x="344.4" y="32" textLength="16.8">と</text>
+<text class="aa" x="361.2" y="32" textLength="16.8">し</text>
+<text class="aa" x="378" y="32" textLength="16.8">て</text>
+<text class="aa" x="394.8" y="32" textLength="16.8">認</text>
+<text class="aa" x="411.6" y="32" textLength="16.8">識</text>
+<text class="aa" x="428.4" y="32" textLength="16.8">さ</text>
+<text class="aa" x="445.2" y="32" textLength="16.8">れ</text>
+<text class="aa" x="462" y="32" textLength="16.8">て</text>
+<text class="aa" x="478.8" y="32" textLength="16.8">い</text>
+<text class="aa" x="495.6" y="32" textLength="16.8">ま</text>
+<text class="aa" x="512.4" y="32" textLength="16.8">せ</text>
+<text class="aa" x="529.2" y="32" textLength="16.8">ん</text>
+<text class="aa" x="546" y="32" textLength="16.8">。</text>
+</g>
+</svg>

@@ -1,5 +1,7 @@
 *.db*
 generated/
+!assets/
+!assets/**
 !docs-site/public/assets/generated/
 !docs-site/public/assets/generated/**
 src/ConsoleToSvg.Converter/native/resvg-wrapper/target/

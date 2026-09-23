@@ -125,23 +125,28 @@ public readonly struct ScreenCell : IEquatable<ScreenCell>
         string text,
         TextStyle style,
         bool isWide = false,
-        bool isWideContinuation = false
+        bool isWideContinuation = false,
+        string? hyperlink = null
     )
-        : this(text, new CellStyle(style), isWide, isWideContinuation) { }
+        : this(text, new CellStyle(style), isWide, isWideContinuation, hyperlink) { }
 
     internal ScreenCell(
         string text,
         CellStyle style,
         bool isWide = false,
-        bool isWideContinuation = false
+        bool isWideContinuation = false,
+        string? hyperlink = null
     )
     {
         Text = text;
         _style = style;
         _flags = (byte)((isWide ? Wide : 0) | (isWideContinuation ? WideContinuation : 0));
+        Hyperlink = string.IsNullOrEmpty(hyperlink) ? null : hyperlink;
     }
 
     public string Text { get; }
+
+    public string? Hyperlink { get; }
 
     internal CellStyle Style => _style;
 
@@ -154,6 +159,7 @@ public readonly struct ScreenCell : IEquatable<ScreenCell>
             var value =
                 _style.VisualSignature
                 ^ BitOperations.RotateLeft(GetTextSignature(Text), 17)
+                ^ BitOperations.RotateLeft(GetLinkSignature(Hyperlink), 29)
                 ^ ((ulong)_flags * 0x9E3779B97F4A7C15UL);
             value = (value ^ (value >> 30)) * 0xBF58476D1CE4E5B9UL;
             value = (value ^ (value >> 27)) * 0x94D049BB133111EBUL;
@@ -203,6 +209,7 @@ public readonly struct ScreenCell : IEquatable<ScreenCell>
     public bool Equals(ScreenCell other) =>
         _flags == other._flags
         && string.Equals(Text, other.Text, StringComparison.Ordinal)
+        && string.Equals(Hyperlink, other.Hyperlink, StringComparison.Ordinal)
         && (
             ReferenceEquals(_style, other._style)
             || EqualityComparer<CellStyle>.Default.Equals(_style, other._style)
@@ -210,7 +217,7 @@ public readonly struct ScreenCell : IEquatable<ScreenCell>
 
     public override bool Equals(object? obj) => obj is ScreenCell other && Equals(other);
 
-    public override int GetHashCode() => HashCode.Combine(Text, _style, _flags);
+    public override int GetHashCode() => HashCode.Combine(Text, _style, _flags, Hyperlink);
 
     private bool HasStyle(TextStyleAttributes attribute) =>
         _style is not null && (_style.Attributes & attribute) != 0;
@@ -219,6 +226,11 @@ public readonly struct ScreenCell : IEquatable<ScreenCell>
         text.Length == 1 && text[0] < AsciiTextSignatures.Length
             ? AsciiTextSignatures[text[0]]
             : XxHash3.HashToUInt64(MemoryMarshal.AsBytes(text.AsSpan()));
+
+    private static ulong GetLinkSignature(string? hyperlink) =>
+        string.IsNullOrEmpty(hyperlink)
+            ? 0UL
+            : XxHash3.HashToUInt64(MemoryMarshal.AsBytes(hyperlink.AsSpan()));
 
     private static ulong[] CreateAsciiTextSignatures()
     {
@@ -770,19 +782,20 @@ public sealed partial class ScreenBuffer
         string text,
         in TextStyle style,
         bool isWide = false,
-        bool isWideContinuation = false
+        bool isWideContinuation = false,
+        string? hyperlink = null
     )
     {
         var cellStyle = ResolveCellStyle(style);
-        return new ScreenCell(text, cellStyle, isWide, isWideContinuation);
+        return new ScreenCell(text, cellStyle, isWide, isWideContinuation, hyperlink);
     }
 
     public void PutChar(char value, TextStyle style)
     {
-        PutChar(value, ResolveCellStyle(style));
+        PutChar(value, ResolveCellStyle(style), null);
     }
 
-    internal void PutChar(char value, CellStyle cellStyle)
+    internal void PutChar(char value, CellStyle cellStyle, string? hyperlink = null)
     {
         if (value == '\n')
         {
@@ -819,7 +832,7 @@ public sealed partial class ScreenBuffer
             var spaces = Math.Max(1, nextStop - CursorCol);
             for (var i = 0; i < spaces; i++)
             {
-                PutPrintable(" ", cellStyle);
+                PutPrintable(" ", cellStyle, hyperlink);
             }
 
             return;
@@ -830,17 +843,17 @@ public sealed partial class ScreenBuffer
             return;
         }
 
-        PutPrintable(ToSingleCharString(value), cellStyle);
+        PutPrintable(ToSingleCharString(value), cellStyle, hyperlink);
     }
 
     public void PutSurrogatePair(string cluster, TextStyle style)
     {
-        PutPrintable(cluster, ResolveCellStyle(style));
+        PutPrintable(cluster, ResolveCellStyle(style), null);
     }
 
-    internal void PutSurrogatePair(string cluster, CellStyle cellStyle)
+    internal void PutSurrogatePair(string cluster, CellStyle cellStyle, string? hyperlink = null)
     {
-        PutPrintable(cluster, cellStyle);
+        PutPrintable(cluster, cellStyle, hyperlink);
     }
 
     public void RepeatPreviousCharacter(int count)
@@ -870,7 +883,7 @@ public sealed partial class ScreenBuffer
 
         for (var i = 0; i < count; i++)
         {
-            PutPrintable(previous.Text, previous.Style);
+            PutPrintable(previous.Text, previous.Style, previous.Hyperlink);
         }
     }
 
@@ -909,7 +922,8 @@ public sealed partial class ScreenBuffer
                 prev.Text + ToSingleCharString(combining),
                 prev.ToTextStyle(),
                 prev.IsWide,
-                prev.IsWideContinuation
+                prev.IsWideContinuation,
+                prev.Hyperlink
             )
         );
 
@@ -936,12 +950,24 @@ public sealed partial class ScreenBuffer
         SetCell(
             row,
             col,
-            CreateCell(cell.Text, cell.ToTextStyle(), isWide: true, isWideContinuation: false)
+            CreateCell(
+                cell.Text,
+                cell.ToTextStyle(),
+                isWide: true,
+                isWideContinuation: false,
+                hyperlink: cell.Hyperlink
+            )
         );
         SetCell(
             row,
             col + 1,
-            CreateCell(" ", cell.ToTextStyle(), isWide: false, isWideContinuation: true)
+            CreateCell(
+                " ",
+                cell.ToTextStyle(),
+                isWide: false,
+                isWideContinuation: true,
+                hyperlink: cell.Hyperlink
+            )
         );
 
         if (CursorRow == row && CursorCol == col + 1)
@@ -955,7 +981,7 @@ public sealed partial class ScreenBuffer
         }
     }
 
-    private void PutPrintable(string text, CellStyle cellStyle)
+    private void PutPrintable(string text, CellStyle cellStyle, string? hyperlink = null)
     {
         // Apply any pending wrap from the previous character filling the last column
         if (_pendingWrap)
@@ -978,12 +1004,12 @@ public sealed partial class ScreenBuffer
             Index();
         }
 
-        SetCell(CursorRow, CursorCol, new ScreenCell(text, cellStyle, isWide));
+        SetCell(CursorRow, CursorCol, new ScreenCell(text, cellStyle, isWide, false, hyperlink));
         CursorCol++;
 
         if (isWide && CursorCol < Width)
         {
-            SetCell(CursorRow, CursorCol, new ScreenCell(" ", cellStyle, false, true));
+            SetCell(CursorRow, CursorCol, new ScreenCell(" ", cellStyle, false, true, hyperlink));
             CursorCol++;
         }
 

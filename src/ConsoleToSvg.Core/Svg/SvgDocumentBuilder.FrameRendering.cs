@@ -351,6 +351,7 @@ internal static partial class SvgDocumentBuilder
                 fgOverline = false,
                 fgBlink = false;
             string? fgUnderlineColor = null;
+            string? fgRunHyperlink = null;
             int fgRunCellCount = 0;
             int pendingSpaces = 0;
 
@@ -383,6 +384,12 @@ internal static partial class SvgDocumentBuilder
                 )
                     ? null
                     : effectiveLengthAdjust;
+                if (fgRunHyperlink != null)
+                {
+                    sb.Append("<a href=\"");
+                    sb.Append(EscapeAttribute(fgRunHyperlink));
+                    sb.Append("\">");
+                }
                 sb.Append("<text class=\"");
                 sb.Append(textClass);
                 sb.Append("\"");
@@ -412,14 +419,25 @@ internal static partial class SvgDocumentBuilder
                 {
                     sb.Append(ApplyMask(fgRunText.ToString(), maskPatterns));
                 }
-                sb.Append("</text>\n");
+                sb.Append("</text>");
+                if (fgRunHyperlink != null)
+                {
+                    sb.Append("</a>");
+                }
+                sb.Append("\n");
                 fgRunText.Clear();
                 fgRunCellCount = 0;
                 fgRunColor = null;
+                fgRunHyperlink = null;
             }
 
             bool MatchesRunStyle(string effectiveFg, in ScreenCell cell) =>
                 string.Equals(effectiveFg, fgRunColor, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(
+                    GetSafeHyperlink(cell.Hyperlink),
+                    fgRunHyperlink,
+                    StringComparison.Ordinal
+                )
                 && cell.Bold == fgBold
                 && cell.Italic == fgItalic
                 && cell.Underline == fgUnderline
@@ -562,6 +580,7 @@ internal static partial class SvgDocumentBuilder
                     fgOverline = cell.Overline;
                     fgBlink = cell.Blink;
                     fgUnderlineColor = cell.UnderlineColor;
+                    fgRunHyperlink = GetSafeHyperlink(cell.Hyperlink);
                 }
 
                 if (pendingSpaces > 0)
@@ -1633,6 +1652,24 @@ internal static partial class SvgDocumentBuilder
         sb.Append("\" stroke-width=\"");
         sb.Append(BackgroundSeamStrokeWidth);
         sb.Append("\" vector-effect=\"non-scaling-stroke\"/>\n");
+    }
+
+    private static string? GetSafeHyperlink(string? uri)
+    {
+        if (string.IsNullOrEmpty(uri))
+        {
+            return null;
+        }
+
+        if (
+            uri.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            || uri.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            return uri;
+        }
+
+        return null;
     }
 
     private static string EscapeText(string value)

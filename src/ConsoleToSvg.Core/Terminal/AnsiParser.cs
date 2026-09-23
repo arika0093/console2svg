@@ -16,6 +16,8 @@ public sealed partial class AnsiParser
     private CharacterSet _g0CharacterSet;
     private CharacterSet _g1CharacterSet;
     private bool _useG1CharacterSet;
+    private string? _activeHyperlink;
+    private string? _savedDecHyperlink;
     private TextStyle _savedDecStyle;
     private CharacterSet _savedDecG0CharacterSet;
     private CharacterSet _savedDecG1CharacterSet;
@@ -100,7 +102,7 @@ public sealed partial class AnsiParser
             {
                 var cluster = text.Substring(i, 2);
                 i++;
-                _buffer.PutSurrogatePair(cluster, _cellStyle);
+                _buffer.PutSurrogatePair(cluster, _cellStyle, _activeHyperlink);
                 continue;
             }
 
@@ -135,7 +137,7 @@ public sealed partial class AnsiParser
                 }
             }
 
-            _buffer.PutChar(TranslateCharacterSet(ch), _cellStyle);
+            _buffer.PutChar(TranslateCharacterSet(ch), _cellStyle, _activeHyperlink);
         }
     }
 
@@ -201,7 +203,7 @@ public sealed partial class AnsiParser
             case '[':
                 return TryHandleCsi(text, index + 2, out endIndex);
             case ']':
-                return TrySkipOsc(text, index + 2, out endIndex);
+                return TryHandleOsc(text, index + 2, out endIndex);
             case 'P':
             case '_':
             case '^':
@@ -224,6 +226,7 @@ public sealed partial class AnsiParser
                 _savedDecG0CharacterSet = _g0CharacterSet;
                 _savedDecG1CharacterSet = _g1CharacterSet;
                 _savedDecUseG1CharacterSet = _useG1CharacterSet;
+                _savedDecHyperlink = _activeHyperlink;
                 _savedDecOriginMode = _buffer.OriginMode;
                 endIndex = index + 1;
                 return true;
@@ -232,6 +235,7 @@ public sealed partial class AnsiParser
                 _g0CharacterSet = _savedDecG0CharacterSet;
                 _g1CharacterSet = _savedDecG1CharacterSet;
                 _useG1CharacterSet = _savedDecUseG1CharacterSet;
+                _activeHyperlink = _savedDecHyperlink;
                 _buffer.SetOriginMode(_savedDecOriginMode);
                 _buffer.RestoreCursor();
                 endIndex = index + 1;
@@ -256,6 +260,7 @@ public sealed partial class AnsiParser
                 _buffer.ClearDisplay(2);
                 _buffer.MoveCursorTo(0, 0);
                 _style = _buffer.DefaultStyle;
+                _activeHyperlink = null;
                 endIndex = index + 1;
                 return true;
             default:
@@ -303,26 +308,86 @@ public sealed partial class AnsiParser
         return true;
     }
 
-    private static bool TrySkipOsc(string text, int start, out int endIndex)
+    private bool TryHandleOsc(string text, int start, out int endIndex)
     {
         endIndex = text.Length - 1;
         for (var i = start; i < text.Length; i++)
         {
             if (text[i] == '\a')
             {
+                HandleOscPayload(text.Substring(start, i - start));
                 endIndex = i;
                 return true;
             }
 
-            if (text[i] == '\u001b' && i + 1 < text.Length && text[i + 1] == '\\')
+            if (text[i] == '\u001b')
             {
-                endIndex = i + 1;
-                return true;
+                if (i + 1 >= text.Length)
+                {
+                    return false;
+                }
+
+                if (text[i + 1] == '\\')
+                {
+                    HandleOscPayload(text.Substring(start, i - start));
+                    endIndex = i + 1;
+                    return true;
+                }
             }
         }
 
         return false;
     }
+
+    private static bool TrySkipStString(string text, int start, out int endIndex)
+    {
+        endIndex = text.Length - 1;
+        for (var i = start; i < text.Length; i++)
+        {
+            if (text[i] == '\u001b')
+            {
+                if (i + 1 >= text.Length)
+                {
+                    return false;
+                }
+
+                if (text[i + 1] == '\\')
+                {
+                    endIndex = i + 1;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void HandleOscPayload(string payload)
+    {
+        if (!payload.StartsWith("8;", StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        var separator = payload.IndexOf(';', 2);
+        if (separator < 0)
+        {
+            return;
+        }
+
+        var uri = payload.Substring(separator + 1);
+        if (string.IsNullOrEmpty(uri))
+        {
+            _activeHyperlink = null;
+            return;
+        }
+
+        _activeHyperlink = IsSafeHttpUri(uri) ? uri : null;
+    }
+
+    private static bool IsSafeHttpUri(string uri) =>
+        uri.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+        || uri.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
 
     // Skips the body of a caret-notation OSC sequence up to:
     //   • BEL (\a)
@@ -353,28 +418,5 @@ public sealed partial class AnsiParser
         }
 
         return false; // incomplete — caller will store as pending
-    }
-
-    private static bool TrySkipStString(string text, int start, out int endIndex)
-    {
-        endIndex = text.Length - 1;
-        for (var i = start; i < text.Length; i++)
-        {
-            if (text[i] == '\u001b')
-            {
-                if (i + 1 >= text.Length)
-                {
-                    return false;
-                }
-
-                if (text[i + 1] == '\\')
-                {
-                    endIndex = i + 1;
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 }

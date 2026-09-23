@@ -86,7 +86,7 @@ public static partial class SvgConverter
     public static string RsvgConvertPath => FindRsvgConvertExecutable();
 
     /// <summary>The resvg crate version statically linked into the bundled native renderer.</summary>
-    public const string BundledResvgVersion = "0.43.0";
+    public static string BundledResvgVersion => ResvgNative.TryGetVersion() ?? "unknown";
 
     /// <summary>Returns the MP4 codec selected by the installed ffmpeg build.</summary>
     public static string? GetMp4CodecForStatus(string ffmpegPath)

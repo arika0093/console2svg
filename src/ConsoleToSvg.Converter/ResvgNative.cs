@@ -130,6 +130,46 @@ internal static class ResvgNative
         }
     }
 
+    [DllImport(
+        LibraryName,
+        CallingConvention = CallingConvention.Cdecl,
+        EntryPoint = "c2s_resvg_version"
+    )]
+    private static extern IntPtr c2s_resvg_version(out nuint length);
+
+    public static string? TryGetVersion()
+    {
+        try
+        {
+            var ptr = c2s_resvg_version(out var length);
+            if (ptr == IntPtr.Zero)
+            {
+                return null;
+            }
+            var len = checked((int)length);
+            if (len <= 0)
+            {
+                return null;
+            }
+            var bytes = new byte[len];
+            Marshal.Copy(ptr, bytes, 0, len);
+            var version = Encoding.UTF8.GetString(bytes);
+            if (string.IsNullOrWhiteSpace(version) || version == "unknown")
+            {
+                return null;
+            }
+            return version;
+        }
+        catch (Exception ex)
+            when (ex is DllNotFoundException
+                || ex is EntryPointNotFoundException
+                || ex is TypeLoadException
+            )
+        {
+            return null;
+        }
+    }
+
     private static void ThrowForStatus(int status)
     {
         if (status == 0)

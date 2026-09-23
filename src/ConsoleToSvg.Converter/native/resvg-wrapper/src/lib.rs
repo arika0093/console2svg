@@ -107,3 +107,16 @@ pub extern "C" fn c2s_resvg_free_buffer(buffer: *mut u8, length: usize) {
         }
     }
 }
+
+static RESVG_VERSION: &str = env!("RESVG_VERSION");
+
+#[no_mangle]
+pub extern "C" fn c2s_resvg_version(out_length: *mut usize) -> *const u8 {
+    if out_length.is_null() {
+        return std::ptr::null();
+    }
+    unsafe {
+        *out_length = RESVG_VERSION.len();
+    }
+    RESVG_VERSION.as_ptr()
+}

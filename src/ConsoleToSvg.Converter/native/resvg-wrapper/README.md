@@ -6,7 +6,7 @@ instead of rescanning system fonts.
 
 The managed boundary is `../../ResvgNative.cs`. It intentionally exposes only the options used
 by ConsoleToSvg: SVG input and optional output width and height. Keep the C ABI and the managed
-P/Invoke declarations in sync.
+P/Invoke declarations in sync. `c2s_resvg_version` exposes the linked resvg crate version, baked in at compile time from Cargo.lock by build.rs, so that status reporting always matches the actual native binary.
 
 Build a runtime library with:
 

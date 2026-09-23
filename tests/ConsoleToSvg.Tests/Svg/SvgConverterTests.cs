@@ -105,4 +105,94 @@ public sealed class SvgConverterTests
         webmArgs.Length.ShouldBe(14);
         webmArgs[13].ShouldBe("output.webm");
     }
+
+    [Test]
+    public void BundledResvgVersionMatchesCargoLockOrUnknown()
+    {
+        if (!SvgConverter.IsResvgAvailable)
+        {
+            SvgConverter.BundledResvgVersion.ShouldBe("unknown");
+            return;
+        }
+
+        var cargoLock = FindResvgWrapperCargoLock();
+        cargoLock.ShouldNotBeNull();
+
+        var expected = FindLockedPackageVersion(cargoLock, "resvg");
+        expected.ShouldNotBeNull();
+
+        SvgConverter.BundledResvgVersion.ShouldBe(expected);
+    }
+
+    private static string FindResvgWrapperCargoLock()
+    {
+        DirectoryInfo? directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(
+                directory.FullName,
+                "src",
+                "ConsoleToSvg.Converter",
+                "native",
+                "resvg-wrapper",
+                "Cargo.lock"
+            );
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+            directory = directory.Parent;
+        }
+        throw new FileNotFoundException("Could not locate resvg-wrapper Cargo.lock.");
+    }
+
+    private static string FindLockedPackageVersion(string cargoLock, string name)
+    {
+        var inPackage = false;
+        var isTarget = false;
+        string? version = null;
+        foreach (var rawLine in File.ReadAllLines(cargoLock))
+        {
+            var line = rawLine.Trim();
+            if (line == "[[package]]")
+            {
+                if (isTarget && version is not null)
+                {
+                    return version;
+                }
+                inPackage = true;
+                isTarget = false;
+                version = null;
+                continue;
+            }
+            if (!inPackage)
+            {
+                continue;
+            }
+            if (line.StartsWith("name = ", StringComparison.Ordinal))
+            {
+                var packageName = line.Replace("name = ", string.Empty).Replace("\"", string.Empty);
+                isTarget = packageName == name;
+            }
+            else if (
+                line.StartsWith("version = ", StringComparison.Ordinal) && version is null
+            )
+            {
+                version = line.Replace("version = ", string.Empty).Replace("\"", string.Empty);
+            }
+            if (
+                isTarget
+                && version is not null
+                && line.StartsWith("source = ", StringComparison.Ordinal)
+            )
+            {
+                return version;
+            }
+        }
+        if (isTarget && version is not null)
+        {
+            return version;
+        }
+        throw new InvalidOperationException("Could not find package in Cargo.lock.");
+    }
 }

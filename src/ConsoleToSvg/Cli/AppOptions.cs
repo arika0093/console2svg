@@ -108,6 +108,15 @@ public sealed class AppOptions
 
     public string OutputPath { get; set; } = "output.svg";
 
+    /// <summary>
+    /// Explicit output format selected with <c>--format</c> (svg, png, gif, mp4, ...).
+    /// When set it overrides the extension of <see cref="OutputPath"/>.
+    /// </summary>
+    public string? Format { get; set; }
+
+    /// <summary>True when <c>--format</c> was explicitly supplied on the command line.</summary>
+    public bool IsFormatExplicit { get; set; }
+
     public OutputMode Mode { get; set; } = OutputMode.Image;
 
     /// <summary>Patterns to mask in output (replaced with asterisks).</summary>

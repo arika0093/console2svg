@@ -133,6 +133,13 @@ public sealed partial class ConsoleToSvgCommandLine
             options.EmbedReplay = true;
         }
 
+        if (IsSpecified(result, _symbols.Format))
+        {
+            options.Format = OutputFormats.Normalize(result.GetValue(_symbols.Format)!);
+            options.IsFormatExplicit = true;
+            options.OutputPath = OutputFormats.ApplyFormat(options.OutputPath, options.Format);
+        }
+
         var mode = result.GetValue(_symbols.Mode);
         if (IsVideoMoreRecent(result))
         {
@@ -480,6 +487,16 @@ public sealed partial class ConsoleToSvgCommandLine
         if (string.IsNullOrWhiteSpace(options.OutputPath))
         {
             error = "--out must not be empty.";
+            return false;
+        }
+
+        if (
+            options.StdOut
+            && options.IsFormatExplicit
+            && !string.Equals(options.Format, "svg", StringComparison.Ordinal)
+        )
+        {
+            error = "--stdout only supports SVG output.";
             return false;
         }
 

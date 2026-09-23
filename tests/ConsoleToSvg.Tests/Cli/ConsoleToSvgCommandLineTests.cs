@@ -155,6 +155,59 @@ public sealed class ConsoleToSvgCommandLineTests
     }
 
     [Test]
+    public async Task FormatOptionOverridesTheOutputExtension()
+    {
+        var defaultName = await InvokeAsync("capture", "--format", "png", "--", "echo");
+        defaultName.ExitCode.ShouldBe(0);
+        defaultName.Options!.Format.ShouldBe("png");
+        defaultName.Options.IsFormatExplicit.ShouldBeTrue();
+        defaultName.Options.OutputPath.ShouldBe("output.png");
+
+        var explicitName = await InvokeAsync(
+            "capture",
+            "--format",
+            "gif",
+            "-o",
+            "result.svg",
+            "--",
+            "echo"
+        );
+        explicitName.ExitCode.ShouldBe(0);
+        explicitName.Options!.Format.ShouldBe("gif");
+        explicitName.Options.OutputPath.ShouldBe("result.gif");
+
+        var jpeg = await InvokeAsync("capture", "--format", "jpeg", "--", "echo");
+        jpeg.Options!.Format.ShouldBe("jpg");
+        jpeg.Options.OutputPath.ShouldBe("output.jpg");
+    }
+
+    [Test]
+    public async Task StdoutRejectsNonSvgFormats()
+    {
+        var invocation = await InvokeAsync(
+            "capture",
+            "--stdout",
+            "--format",
+            "png",
+            "--",
+            "echo"
+        );
+
+        invocation.ExitCode.ShouldBe(1);
+        invocation.Options.ShouldBeNull();
+        invocation.Error.ShouldContain("--stdout only supports SVG output.");
+    }
+
+    [Test]
+    public async Task LiveServerDoesNotExposeTheFormatOption()
+    {
+        var help = await InvokeAsync("live-server", "--help");
+
+        help.ExitCode.ShouldBe(0);
+        help.Output.ShouldNotContain("--format");
+    }
+
+    [Test]
     public async Task UpdateMapsCheckForceAndYesOptions()
     {
         var invocation = await InvokeAsync("update", "--check", "-f", "-y");

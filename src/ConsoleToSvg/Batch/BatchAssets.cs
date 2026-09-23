@@ -194,6 +194,7 @@ public static class BatchAssets
         {
             ".svg" => "image/svg+xml",
             ".png" => "image/png",
+            ".jpg" or ".jpeg" => "image/jpeg",
             ".gif" => "image/gif",
             ".webp" => "image/webp",
             ".mp4" => "video/mp4",

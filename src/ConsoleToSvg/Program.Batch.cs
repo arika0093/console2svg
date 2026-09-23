@@ -99,7 +99,7 @@ internal static partial class Program
 
         if (failures.Count == 0)
         {
-            ResolveBatchOutputs(plans, inputRoot, outputDir, failures);
+            ResolveBatchOutputs(plans, inputRoot, outputDir, options.Format, failures);
         }
 
         if (failures.Count == 0 && filters.Length > 0)
@@ -588,6 +588,7 @@ internal static partial class Program
         IReadOnlyList<BatchFilePlan> plans,
         string inputRoot,
         string outputDir,
+        string? defaultFormat,
         List<string> failures
     )
     {
@@ -598,7 +599,14 @@ internal static partial class Program
         {
             foreach (var job in plan.Parsed.Jobs)
             {
-                var output = ResolveBatchOutput(plan, job, inputRoot, outputDir, owners.Keys);
+                var output = ResolveBatchOutput(
+                    plan,
+                    job,
+                    inputRoot,
+                    outputDir,
+                    owners.Keys,
+                    defaultFormat
+                );
                 if (output is null)
                 {
                     failures.Add(
@@ -676,7 +684,8 @@ internal static partial class Program
         BatchParsedJob job,
         string inputRoot,
         string outputDir,
-        ICollection<string> plannedOutputs
+        ICollection<string> plannedOutputs,
+        string? defaultFormat
     )
     {
         if (job.OutputRelative is not null)
@@ -684,6 +693,7 @@ internal static partial class Program
             return BatchExecutor.ResolveOutput(outputDir, job.OutputRelative);
         }
 
+        var format = job.CaptureOptions.Format ?? defaultFormat;
         if (job.ExistingLinkTarget is not null)
         {
             var existing = BatchExecutor.ResolveMarkdownLink(plan.Path, job.ExistingLinkTarget);
@@ -693,17 +703,18 @@ internal static partial class Program
                 && !string.IsNullOrWhiteSpace(Path.GetExtension(existing))
             )
             {
-                return existing;
+                return format is null ? existing : Path.ChangeExtension(existing, format);
             }
         }
 
         var relativeMarkdown = Path.GetRelativePath(inputRoot, plan.Path);
         var relativeDirectory = Path.GetDirectoryName(relativeMarkdown) ?? string.Empty;
         var stem = Path.GetFileNameWithoutExtension(plan.Path);
+        var extension = format ?? "svg";
         var index = 1;
         while (index < int.MaxValue)
         {
-            var relativeOutput = Path.Combine(relativeDirectory, $"{stem}-{index}.svg");
+            var relativeOutput = Path.Combine(relativeDirectory, $"{stem}-{index}.{extension}");
             var candidate = BatchExecutor.ResolveOutput(outputDir, relativeOutput);
             if (candidate is null)
             {

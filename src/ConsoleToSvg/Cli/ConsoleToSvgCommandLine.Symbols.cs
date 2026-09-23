@@ -17,6 +17,12 @@ public sealed partial class ConsoleToSvgCommandLine
     {
         public Option<FileInfo> OutputPath { get; } =
             PathOption("--out", "Output file path.", "path", "-o");
+        public Option<string> Format { get; } =
+            StringChoice(
+                "--format",
+                "Output format (svg, png, jpg, webp, gif, mp4, webm); overrides the -o extension.",
+                OutputFormats.Supported
+            );
         public Option<string> InputCastPath { get; } =
             RequiredString("--in", "Read an asciicast v2 file instead of recording.");
         public Option<bool> StdOut { get; } = Flag("--stdout", "Write SVG to standard output.");
@@ -197,6 +203,7 @@ public sealed partial class ConsoleToSvgCommandLine
         public IEnumerable<Option> Options =>
             [
                 OutputPath,
+                Format,
                 StdOut,
                 Mode,
                 Video,
@@ -288,6 +295,7 @@ public sealed partial class ConsoleToSvgCommandLine
         public IEnumerable<Option> LiveServerOptions =>
             Options.Except([
                 OutputPath,
+                Format,
                 InputCastPath,
                 StdOut,
                 Mode,
@@ -328,6 +336,7 @@ public sealed partial class ConsoleToSvgCommandLine
                 BatchOutput,
                 BatchLinkBase,
                 BatchFilter,
+                Format,
                 BatchDryRun,
                 BatchPlaceholder,
                 Verbose,

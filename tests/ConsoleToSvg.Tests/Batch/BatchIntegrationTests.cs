@@ -104,6 +104,146 @@ public sealed class BatchIntegrationTests
     }
 
     [Test]
+    public async Task FormatOptionSelectsTheAutoOutputExtension()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var docs = Path.Combine(root, "docs");
+            var markdownPath = Path.Combine(docs, "guide.md");
+            var output = Path.Combine(root, "assets");
+            Directory.CreateDirectory(docs);
+            await File.WriteAllTextAsync(
+                markdownPath,
+                "<!-- c2s:: --format png -w 20 -h 2 -- echo formatted -->"
+            );
+
+            var args = new[]
+            {
+                "batch",
+                "markdown",
+                "-i",
+                docs,
+                "-o",
+                output,
+                "--link-base",
+                "/assets",
+                "--placeholder",
+            };
+            (await Program.Main(args)).ShouldBe(0);
+
+            Directory.GetFiles(Path.Combine(output, "generated"))
+                .Single()
+                .ShouldEndWith(".png");
+            var rewritten = await File.ReadAllTextAsync(markdownPath);
+            rewritten.ShouldMatch(@"!\[echo formatted\]\(/assets/generated/[0-9a-f]{12}\.png\)");
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task FormatOptionRetargetsAnExistingHtmlSource()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var docs = Path.Combine(root, "docs");
+            var markdownPath = Path.Combine(docs, "video.mdx");
+            var output = Path.Combine(root, "assets");
+            Directory.CreateDirectory(docs);
+            await File.WriteAllTextAsync(
+                markdownPath,
+                """
+                <video controls width="600">
+                  {/* c2s:: --format mp4 -w 20 -h 2 -v -- echo video */}
+                  <source src="../assets/generated/old.svg" type="video/mp4" />
+                </video>
+                """
+            );
+
+            var args = new[]
+            {
+                "batch",
+                "markdown",
+                "-i",
+                docs,
+                "-o",
+                output,
+                "--link-base",
+                "/assets",
+                "--placeholder",
+            };
+            (await Program.Main(args)).ShouldBe(0);
+
+            Directory.GetFiles(Path.Combine(output, "generated")).Single().ShouldEndWith(".mp4");
+            var rewritten = await File.ReadAllTextAsync(markdownPath);
+            rewritten.ShouldMatch(
+                @"<source src=""/assets/generated/[0-9a-f]{12}\.mp4"" type=""video/mp4"" />"
+            );
+            rewritten.ShouldNotContain("old.svg");
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task BatchFormatOptionIsTheDefaultForMarkersWithoutTheirOwnFormat()
+    {
+        var root = CreateTempDirectory();
+        try
+        {
+            var docs = Path.Combine(root, "docs");
+            var markdownPath = Path.Combine(docs, "guide.md");
+            var output = Path.Combine(root, "assets");
+            Directory.CreateDirectory(docs);
+            await File.WriteAllTextAsync(
+                markdownPath,
+                """
+                <!-- c2s:: -w 20 -h 2 -- echo defaulted -->
+                <!-- c2s:: --format png -w 20 -h 2 -- echo explicit -->
+                """
+            );
+
+            var args = new[]
+            {
+                "batch",
+                "markdown",
+                "-i",
+                docs,
+                "-o",
+                output,
+                "--link-base",
+                "/assets",
+                "--format",
+                "webp",
+                "--placeholder",
+            };
+            (await Program.Main(args)).ShouldBe(0);
+
+            var generated = Directory
+                .GetFiles(Path.Combine(output, "generated"))
+                .Select(Path.GetFileName)
+                .ToArray();
+            generated.Length.ShouldBe(2);
+            generated.Count(name => name!.EndsWith(".webp")).ShouldBe(1);
+            generated.Count(name => name!.EndsWith(".png")).ShouldBe(1);
+
+            var rewritten = await File.ReadAllTextAsync(markdownPath);
+            rewritten.ShouldMatch(@"!\[echo defaulted\]\(/assets/generated/[0-9a-f]{12}\.webp\)");
+            rewritten.ShouldMatch(@"!\[echo explicit\]\(/assets/generated/[0-9a-f]{12}\.png\)");
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
     public async Task RestoreVerifiesContentAndMaterializesAliases()
     {
         var root = CreateTempDirectory();

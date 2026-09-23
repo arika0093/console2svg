@@ -14,7 +14,7 @@ Specify the window frame with the `-d` or `--window <style>` option. If you spec
 console2svg capture -d macos-pc -- fastfetch
 ```
 
-![console2svg capture -d macos-pc -- fastfetch](/assets/cmd-window.svg)
+<!-- c2s:: -d macos-pc -- fastfetch -->
 
 ### List
 

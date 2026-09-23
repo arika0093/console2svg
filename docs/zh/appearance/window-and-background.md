@@ -14,7 +14,7 @@ description: 指定 macOS 风格或 Windows 风格窗口装饰（Chrome）、背
 console2svg capture -d macos-pc -- fastfetch
 ```
 
-![console2svg capture -d macos-pc -- fastfetch](/assets/cmd-window.svg)
+<!-- c2s:: -d macos-pc -- fastfetch -->
 
 ### 列表
 

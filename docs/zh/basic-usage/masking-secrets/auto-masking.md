@@ -40,7 +40,7 @@ EOF
 console2svg capture -80 -h 14 -d macos-pc -t github-dark -- cat .env
 ```
 
-![console2svg 自动遮盖机密信息的捕获结果](/assets/cmd-gallery-mask.svg)
+<!-- c2s:: -w 80 -h 14 -d macos-pc -t github-dark -- cat ../../../../.env -->
 
 ## 启用和禁用
 

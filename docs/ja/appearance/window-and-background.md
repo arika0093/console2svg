@@ -14,7 +14,7 @@ description: macOS風やWindows風のウインドウ装飾（Chrome）や背景�
 console2svg capture -d macos-pc -- fastfetch
 ```
 
-![console2svg capture -d macos-pc -- fastfetch](/assets/cmd-window.svg)
+<!-- c2s:: -d macos-pc -- fastfetch -->
 
 ### 一覧
 

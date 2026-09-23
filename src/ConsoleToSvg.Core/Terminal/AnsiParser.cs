@@ -203,7 +203,10 @@ public sealed partial class AnsiParser
             case ']':
                 return TrySkipOsc(text, index + 2, out endIndex);
             case 'P':
-                return TrySkipDcs(text, index + 2, out endIndex);
+            case '_':
+            case '^':
+            case 'X':
+                return TrySkipStString(text, index + 2, out endIndex);
             case '(':
             case ')':
                 return TryHandleCharacterSetDesignation(next, text, index + 2, out endIndex);
@@ -352,6 +355,26 @@ public sealed partial class AnsiParser
         return false; // incomplete — caller will store as pending
     }
 
-    private static bool TrySkipDcs(string text, int start, out int endIndex) =>
-        TrySkipOsc(text, start, out endIndex);
+    private static bool TrySkipStString(string text, int start, out int endIndex)
+    {
+        endIndex = text.Length - 1;
+        for (var i = start; i < text.Length; i++)
+        {
+            if (text[i] == '\u001b')
+            {
+                if (i + 1 >= text.Length)
+                {
+                    return false;
+                }
+
+                if (text[i + 1] == '\\')
+                {
+                    endIndex = i + 1;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }

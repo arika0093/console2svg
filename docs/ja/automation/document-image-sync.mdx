@@ -24,6 +24,7 @@ import { FileTree, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
 
 ## 基本的な使い方
+### 概要
 
 <Steps>
 
@@ -49,12 +50,196 @@ import { FileTree, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
    `dotnet --info`を実行すると以下のような出力が得られます。
    
    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
-   + ![dotnet --info](../assets/sample-QzOus8.svg)
+   + ![dotnet --info](../assets/generated/file-hash.svg)
    ```
    > [!NOTE]
    > すでに直後に画像参照が存在する場合、その画像を更新するだけです。
    
 </Steps>
+
+### 引数指定
+
+```bash title="Terminal"
+console2svg batch markdown \
+  -i ./docs \
+  -o ./my-docs-site/public/assets \
+  --link-base /assets
+```
+
+それぞれ：
+* `-i`: `c2s`マーカーを検知する対象のmarkdownが格納されているディレクトリ。
+* `-o`: 画像の生成先ディレクトリ。
+* `--link-base`: markdown上のリンク起点パス。
+
+`--link-base`は、実際に生成されるパスとmarkdown上のパスを別々にしたいケースにおいて有用です。
+例として、astro等の画像は`/public/`配下(例えば`/public/assets/`)に設置するとパフォーマンス上有利です(こうすることで`.astro/`配下にコピーされない)
+しかし、それを参照するためにはmarkdown上で`/assets`と絶対パス指定で指定する必要があります。
+その際、上記のように指定することで意図した参照を実現できます。
+
+## 画像をgit管理する場合
+
+生成された画像をgit管理に含めたい場合は、単純に変更点をそのままコミットするだけです。
+
+```bash
+console2svg batch markdown -i README.md -o ./assets
+git add -A
+git commit -m "[skip-ci] update README figure"
+git push
+```
+
+これで、`README.md`上のリンクが追記された状態で管理できます。
+
+```diff lang="markdown" title="README.md"
+<!-- c2s:: echo "My-Hero-Img" -->
++ ![echo "My-Hero-Img"](assets/generated/random-hash.svg)
+```
+
+## 画像をgit管理しない場合
+
+一方、ドキュメントサイトなど、数が多くgit管理すると容量上の問題がある場合もあります。
+その場合は、画像タグを付与せずに`c2s`マーカーのみを記述し、画像タグはgit管理に含めないようにします。
+
+```markdown title="docs-site-file.md"
+<!-- c2s:: echo "My-Hero-Img" -->
+
+> NOTE: 画像タグを含めないことでconsole2svgに処理を自動で委託できます。
+```
+
+その後、ドキュメントサイトの生成時に`batch markdown`も合わせて実行するようにします。
+
+```bash
+# ... setup console2svg
+console2svg batch markdown -i ./docs -o ./assets
+npm run build
+# ... and upload pages assets
+```
+ただし、この場合はローカルビルド時に（当然ながら）画像が存在しないことになります。
+この回避策として、以下の2つの解決手段があります。
+
+### `batch restore`
+
+`batch markdown`コマンドを実行すると、__自動で`assets.json`ファイルが生成__ されます。
+
+<FileTree>
+
+- assets/
+  - generated/
+  - ...
+  - **assets.json**
+
+</FileTree>
+
+この`assets.json`を使用して、リモート上(主にGitHub Actions等)で生成された画像をローカルにコピーできます。
+
+<Steps>
+
+1. まず、画像の生成先を`.gitignore`に追記します。
+
+   ```diff title=".gitignore"
+   + ./assets
+   ```
+
+2. GitHub Pagesなどにページを公開します。
+
+   ```bash title="sample-deploy.sh"
+   # generate images
+   console2svg batch markdown -i ./docs -o 
+   # and push gh-pages
+   git add -A
+   git commit -m "[skip-ci] update images"
+   git push origin gh-pages 
+   ```
+
+   この際、`assets.json`も同時にデプロイします。
+
+3. `batch restore`コマンドで、CI上で生成した画像をローカルに戻します。
+
+   ```bash
+   console2svg batch restore -o ./assets \ 
+       https://github.com/user/repo/blob/main/assets/assets.json
+   ```
+   > [!TIP]
+   > 標準ではリモートに存在しなかったファイルは削除しません。
+   > 必要な場合は`--prune`で自動削除を利用できます。
+
+</Steps>
+
+実際に生成された画像を利用できる一方で、一度リモート上で実行するまでは画像が利用できない欠点があります。
+
+
+### `--placeholder`
+ダミーの（ファイルサイズ0の）ファイルを自動で生成することができます。
+
+```bash title="Terminal" "--placeholder"
+console2svg batch markdown -i ./docs -o ./assets --placeholder
+```
+
+> [!TIP]
+> すでにファイルが存在する場合は単に無視されます。
+
+## 生成されたファイル
+
+各コマンドの出力結果は、`generated/`配下に、コマンド単位で生成されます。
+ここで重要なのは **実行するコマンドが同一なら同一出力となる** ことです。
+
+例えば、以下のmarkdownファイルを対象に生成するケースを考えてみます。
+
+<Tabs>
+  <TabItem label="example1.md">
+    ```markdown
+    例えば3回同じ結果を並べるとき
+
+    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
+    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
+    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
+    ```
+  </TabItem>
+  <TabItem label="example2.md">
+    ```markdown
+    そして別ファイルで同じ出力を参照するとき
+    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
+    ```
+  </TabItem>
+  <TabItem label="example3.md">
+    ```markdown
+    そして別ファイルで微妙に違う出力を参照するとき
+    <!-- c2s:: -w 80 -h 6 --- dotnet --info | head -n10 -->
+    ```
+  </TabItem>
+</Tabs>
+
+この場合、以下のように生成されます。
+
+<FileTree>
+
+- assets/
+  - generated/
+    - **(w100_h12_dotnet_info_head_n10).svg**
+    - **(w80_h6_dotnet_info_head_n10).svg**
+  - assets.json
+
+</FileTree>
+
+要するに、同一の結果が期待される場合はそれをキャッシュしています。
+これは主に多言語対応の際に便利です。
+
+<Tabs>
+  <TabItem label="英語版">
+    ```markdown
+    Hello!
+    <!-- c2s:: -w 100 -h 12 --- my_command -->
+    ```
+  </TabItem>
+  <TabItem label="日本語版">
+    ```markdown
+    こんにちは！
+    <!-- c2s:: -w 100 -h 12 --- my_command -->
+    ```
+  </TabItem>
+</Tabs>
+
+上記のように、各言語ごとに別のドキュメントを作成する場合でも
+`c2s`マーカーを他言語版で削除する必要はなく、生成ファイルも単一で済みます。
 
 ## markdown
 ### 簡易的な指定
@@ -112,18 +297,6 @@ teardown: rm -f test.cs result.txt
 `{code:<id>}` は、指定したコードブロックの内容に置き換えられます。
 
 ## CLI
-### 仮ファイルの生成
-
-ダミーの（ファイルサイズ0の）ファイルを自動で生成することができます。
-これは [Astro](https://docs.astro.build)などにおいて、画像がないとビルドに失敗する現象を簡易的に回避するための機能です。
-
-```bash title="Terminal" "--placeholder"
-console2svg batch markdown -i ./docs -o ./assets --placeholder
-```
-
-> [!TIP]
-> すでにファイルが存在する場合は単に無視されます。
-
 ### フィルター
 
 開発中は、入力ディレクトリからの相対パスに対してグロブフィルターを指定できます。フィルターは複数回指定できます。
@@ -131,136 +304,6 @@ console2svg batch markdown -i ./docs -o ./assets --placeholder
 ```bash title="Terminal" "--filter"
 console2svg batch markdown -i ./docs -o ./assets --filter "reference/**"
 ```
-
-## 生成された画像はgit管理すべきか？
-
-README等で参照しておらず、専用ドキュメントページでしか使用しないなら不要です。
-ただし、そのままだと以下の問題が発生します。
-
-* 生成された`svg`/`png`等をすべてgitレポジトリに同梱する
-  * ファイルサイズを圧迫し、`git pull`などの操作が非常に遅くなる。
-* 生成された`svg`/`png`等を`.gitignore`に追加する
-  * cloneした時点ではAstro等のビルドがローカルで起動できなくなる。
-    * [仮ファイルの生成](#仮ファイルの生成)機能で暫定的に対処することはできるが、実際の出力と異なってしまう。
-  * 画像自体が古くなり、ローカルとリモートとで閲覧差異が生じる。
-
-そこで、緩和用のコマンド`batch restore`が用意されています。
-
-### `assets.json`
-
-`batch markdown`コマンドを実行すると、__自動で`assets.json`ファイルが生成__ されます。
-
-<FileTree>
-
-- assets/
-  - generated/
-  - ...
-  - **assets.json**
-
-</FileTree>
-
-### リモート画像を一括取得する
-
-以下のように使用することができます。
-
-<Steps>
-
-1. まず、画像の生成先を`.gitignore`に追記します。
-
-   ```diff title=".gitignore"
-   + ./assets
-   ```
-
-2. GitHub Pagesなどにページを公開します。
-
-   ```bash title="sample-deploy.sh"
-   # generate images
-   console2svg batch markdown -i ./docs -o 
-   # and push gh-pages
-   git add -A
-   git commit -m "[skip-ci] update images"
-   git push origin gh-pages 
-   ```
-
-   この際、`assets.json`も同時にデプロイします。
-
-3. `batch restore`コマンドで、CI上で生成した画像をローカルに戻します。
-
-   ```bash
-   console2svg batch restore -o ./assets \ 
-       https://github.com/user/repo/blob/main/assets/assets.json
-   ```
-   > [!TIP]
-   > 標準ではリモートに存在しなかったファイルは削除しません。必要な場合は`--prune`で自動削除を利用できます。
-
-</Steps>
-
-
-## 生成されたファイル
-
-各コマンドの出力結果は、`generated/`配下に、コマンド単位で生成されます。
-ここで重要なのは **実行するコマンドが同一なら同一出力となる** ことです。
-
-例えば、以下のmarkdownファイルを対象に生成するケースを考えてみます。
-
-<Tabs>
-  <TabItem label="example1.md">
-    ```markdown
-    例えば3回同じ結果を並べるとき
-
-    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
-    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
-    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
-    ```
-  </TabItem>
-  <TabItem label="example2.md">
-    ```markdown
-    そして別ファイルで同じ出力を参照するとき
-    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
-    ```
-  </TabItem>
-  <TabItem label="example3.md">
-    ```markdown
-    そして別ファイルで微妙に違う出力を参照するとき
-    <!-- c2s:: -w 80 -h 6 --- dotnet --info | head -n10 -->
-    ```
-  </TabItem>
-</Tabs>
-
-
-
-この場合、以下のように生成されます。
-
-<FileTree>
-
-- assets/
-  - generated/
-    - **(w100_h12_dotnet_info_head_n10).svg**
-    - **(w80_h6_dotnet_info_head_n10).svg**
-  - assets.json
-
-</FileTree>
-
-要するに、同一の結果が期待される場合はそれをキャッシュしています。
-これは主に多言語対応の際に便利です。
-
-<Tabs>
-  <TabItem label="英語版">
-    ```markdown
-    Hello!
-    <!-- c2s:: -w 100 -h 12 --- my_command -->
-    ```
-  </TabItem>
-  <TabItem label="日本語版">
-    ```markdown
-    こんにちは！
-    <!-- c2s:: -w 100 -h 12 --- my_command -->
-    ```
-  </TabItem>
-</Tabs>
-
-上記のように、各言語ごとに別のドキュメントを作成する場合でも
-`c2s`マーカーを他言語版で削除する必要はなく、生成ファイルも単一で済みます。
 
 ## 注意事項
 

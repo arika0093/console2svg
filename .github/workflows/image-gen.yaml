@@ -1,0 +1,40 @@
+name: Generate Documentation Assets
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  image-gen:
+    if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip-ci]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '11.0.x'
+          dotnet-quality: preview
+
+      - name: Setup console2svg
+        uses: ./
+        with:
+          version: 'develop'
+
+      - name: Generate images
+        run: |
+          bash scripts/image-gen-docs.sh
+          bash scripts/image-gen-readme.sh
+
+      - name: Commit & Push
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "[skip-ci] chore: regenerate documentation assets"
+          branch: ${{ github.ref_name }}

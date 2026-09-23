@@ -15,6 +15,10 @@ console2svg capture [options] -- command [args...]
 
 指定输出文件。根据扩展名选择 SVG、PNG、GIF 等格式。
 
+### `--format <format>`
+
+显式指定输出格式：`svg`、`png`、`jpg`、`webp`、`gif`、`mp4` 或 `webm`。优先于 `-o` 的扩展名。
+
 ### `--stdout`
 
 将 SVG 写入标准输出。

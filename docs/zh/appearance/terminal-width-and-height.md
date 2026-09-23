@@ -13,7 +13,6 @@ console2svg capture -w 50 -h 5 -- console2svg
 ```
 
 <!-- c2s::  -w 50 -h 5 -- console2svg -->
-![console2svg](../../../docs-site/public/assets/generated/57425e021433221c8f314c25c1447583cde5862ba179b2a39328c002878d9083.svg)
 
 此示例会创建横向 50 个字符、纵向 5 行的终端区域。
 如果输出命令超出该区域，会像普通终端一样发生换行或滚动。

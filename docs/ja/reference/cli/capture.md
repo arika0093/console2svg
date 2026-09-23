@@ -15,6 +15,10 @@ console2svg capture [options] -- command [args...]
 
 出力ファイルを指定します。拡張子に応じてSVG、PNG、GIFなどの形式を選択できます。
 
+### `--format <format>`
+
+出力形式を明示的に指定します（`svg`、`png`、`jpg`、`webp`、`gif`、`mp4`、`webm`）。`-o` の拡張子より優先されます。
+
 ### `--stdout`
 
 SVGを標準出力へ書き出します。

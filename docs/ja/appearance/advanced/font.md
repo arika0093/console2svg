@@ -15,7 +15,6 @@ console2svg capture --font "Courier New, monospace" -h 10 -- console2svg
 ```
 
 <!-- c2s::  -w 100 -h 10 --font "Courier New, monospace" -- console2svg -->
-![console2svg](../../../../docs-site/public/assets/generated/df4ae3d2faf025c24faaaa361bd8c86aa74266c22afe4b310e15643606f24c66.svg)
 
 > [!WARNING]
 > SVGを生成する環境ではなく、閲覧する側のフォントが使用されます。フォールバックフォント(`monospace` など)の指定を推奨します。

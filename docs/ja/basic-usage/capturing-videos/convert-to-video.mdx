@@ -9,7 +9,7 @@ import { Steps } from '@astrojs/starlight/components';
 
 ## 出力例
 
-`-o` オプションで目的の拡張子を指定します。システムに `ffmpeg` がインストールされている場合、自動的にエンコード処理が実行されます。
+`-o` オプションで目的の拡張子を指定します（`--format` でも指定できます）。システムに `ffmpeg` がインストールされている場合、自動的にエンコード処理が実行されます。
 
 ### GIFアニメーション
 
@@ -17,8 +17,7 @@ import { Steps } from '@astrojs/starlight/components';
 console2svg capture -v -o demo.gif -- cmatrix -ab
 ```
 
-{/* c2s::  -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab */}
-![cmatrix -ab](../../../../docs-site/public/assets/generated/2fd1a1e86f3800586fe68510f29cc531b648a78eeae0b8ac3c04949f978fa70d.svg)
+{/* c2s:: --format gif -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab */}
 
 ### MP4動画
 
@@ -27,7 +26,7 @@ console2svg capture -v -o demo.mp4 -- cmatrix -ab
 ```
 
 <video controls width="600">
-  {/* c2s::  -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab */}
+  {/* c2s:: --format mp4 -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab */}
   <source src="../../../../docs-site/public/assets/generated/2fd1a1e86f3800586fe68510f29cc531b648a78eeae0b8ac3c04949f978fa70d.svg" type="video/mp4" />
 </video>
 
@@ -38,7 +37,7 @@ console2svg capture -v -o demo.webm -- cmatrix -ab
 ```
 
 <video controls width="600">
-  {/* c2s::  -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab */}
+  {/* c2s:: --format webm -w 100 -h 24 -v -c -d macos-pc --timeout 5 --fps 30 -- cmatrix -ab */}
   <source src="../../../../docs-site/public/assets/generated/2fd1a1e86f3800586fe68510f29cc531b648a78eeae0b8ac3c04949f978fa70d.svg" type="video/webm" />
 </video>
 

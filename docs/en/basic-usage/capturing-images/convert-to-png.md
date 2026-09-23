@@ -7,14 +7,13 @@ You can directly output capture results as PNG images for platforms and applicat
 
 ## Output in PNG format
 
-Simply specify `.png` as the extension with the `-o` option, and rasterization is performed automatically.
+Specify `.png` as the extension with the `-o` option (or use `--format png`), and rasterization is performed automatically.
 
 ```bash title="Terminal" "-o output.png"
 console2svg capture -o output.png -w 100 -h 12 -- console2svg
 ```
 
-<!-- c2s::  -w 100 -h 12 -- console2svg -->
-![console2svg](../../../../docs-site/public/assets/generated/0d6442f444880dcbc2d52d7ad52a0356c5357cf309ec144fb99303187a82b04d.svg)
+<!-- c2s:: --format png -w 100 -h 12 -- console2svg -->
 
 ## Rendering engines
 
@@ -33,5 +32,4 @@ If needed, you can also switch conversion engines with the `--svg-converter` opt
 console2svg capture -o result.png --svg-converter rsvg-convert -- console2svg
 ```
 
-<!-- c2s::  -w 100 -h 12 --svg-converter rsvg-convert -- console2svg -->
-![console2svg](../../../../docs-site/public/assets/generated/6d819ba32340b1b024d0e8d042417b9ff5fea0d3a6b6ac36a59d2827b56f835e.svg)
+<!-- c2s:: --format png -w 100 -h 12 --svg-converter rsvg-convert -- console2svg -->

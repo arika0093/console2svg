@@ -254,6 +254,14 @@ You can specify various options after the `c2s::` marker.
 > [!NOTE]
 > Currently, options with side effects other than capture, such as `--save-cast`, `--save-frames`, `--embed-*`, and `--stdout`, cannot be used.
 
+### Output format
+
+Output is SVG by default. Use `--format` to request another format; the output file name is generated automatically.
+
+```markdown title="example.md" "--format png"
+<!-- c2s:: -w 100 -h 12 --format png -- console2svg -->
+```
+
 ### Setup and teardown
 
 If you write YAML-formatted settings after the marker, you can specify setup before execution, a replacement for the command to run, and teardown after execution.

@@ -7,14 +7,13 @@ description: 将拍摄的终端输出自动转换为 PNG 栅格图片的方法�
 
 ## 以 PNG 格式输出
 
-只需通过 `-o` 选项指定 `.png` 扩展名，就会自动执行栅格化处理。
+只需通过 `-o` 选项指定 `.png` 扩展名（或使用 `--format png`），就会自动执行栅格化处理。
 
 ```bash title="Terminal" "-o output.png"
 console2svg capture -o output.png -w 100 -h 12 -- console2svg
 ```
 
-<!-- c2s::  -w 100 -h 12 -- console2svg -->
-![console2svg](../../../../docs-site/public/assets/generated/0d6442f444880dcbc2d52d7ad52a0356c5357cf309ec144fb99303187a82b04d.svg)
+<!-- c2s:: --format png -w 100 -h 12 -- console2svg -->
 
 ## 渲染引擎
 
@@ -33,5 +32,4 @@ console2svg 内置了 [resvg](https://github.com/linebender/resvg)（Rust 编写
 console2svg capture -o result.png --svg-converter rsvg-convert -- console2svg
 ```
 
-<!-- c2s::  -w 100 -h 12 --svg-converter rsvg-convert -- console2svg -->
-![console2svg](../../../../docs-site/public/assets/generated/6d819ba32340b1b024d0e8d042417b9ff5fea0d3a6b6ac36a59d2827b56f835e.svg)
+<!-- c2s:: --format png -w 100 -h 12 --svg-converter rsvg-convert -- console2svg -->

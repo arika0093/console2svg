@@ -15,6 +15,10 @@ Runs the specified command in a PTY and saves the final screen as an SVG. Add `-
 
 Specify the output file. SVG, PNG, GIF, and other formats are selected based on the extension.
 
+### `--format <format>`
+
+Select the output format explicitly: `svg`, `png`, `jpg`, `webp`, `gif`, `mp4`, or `webm`. Overrides the extension of `-o`.
+
 ### `--stdout`
 
 Write the SVG to standard output.

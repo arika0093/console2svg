@@ -16,7 +16,6 @@ console2svg capture --mask "1234567890abcdef" -w 100 -h 12 \
 ```
 
 <!-- c2s::  -w 100 -h 4 --mask 1234567890abcdef -- echo "this value will be redacted:: 1234567890abcdef" -->
-![echo "this value will be redacted:: 1234567890abcdef"](../../../../docs-site/public/assets/generated/ac741e6cec0f0c9d5045ad4c7819653c1134c59619e345a33655178e47d24739.svg)
 
 ## Specifying multiple patterns
 

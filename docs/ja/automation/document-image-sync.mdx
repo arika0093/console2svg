@@ -253,6 +253,14 @@ console2svg batch markdown -i ./docs -o ./assets --placeholder
 > [!NOTE]
 > 現在, `--save-cast`、`--save-frames`、`--embed-*`、`--stdout` など、キャプチャ以外の副作用を持つオプションは使用できません。
 
+### 出力形式
+
+既定ではSVGが出力されます。`--format` を使うと別の形式を指定でき、出力ファイル名は自動生成されます。
+
+```markdown title="example.md" "--format png"
+<!-- c2s:: -w 100 -h 12 --format png -- console2svg -->
+```
+
 ### セットアップと後処理
 
 マーカーの後ろにYAML形式の設定を記述すると、実行前のセットアップ、実行内容の置き換え、実行後の後処理を指定できます。

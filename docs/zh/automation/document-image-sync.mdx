@@ -255,6 +255,14 @@ console2svg batch markdown -i ./docs -o ./assets --placeholder
 > [!NOTE]
 > 目前无法使用 `--save-cast`、`--save-frames`、`--embed-*`、`--stdout` 等带有捕获之外副作用的选项。
 
+### 输出格式
+
+默认输出 SVG。使用 `--format` 可以指定其他格式，输出文件名会自动生成。
+
+```markdown title="example.md" "--format png"
+<!-- c2s:: -w 100 -h 12 --format png -- console2svg -->
+```
+
 ### 前置与后处理
 
 在标记后面用 YAML 格式书写设置，可以指定执行前的前置处理、要执行内容的替换，以及执行后的后处理。

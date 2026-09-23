@@ -55,6 +55,7 @@ public sealed record BatchRestoreResult(
 public static class BatchAssets
 {
     private const string GeneratedDirectory = "generated";
+    private const int CanonicalHashLength = 12;
 
     public static string ComputeRecipeHash(BatchParsedJob job, string extension)
     {
@@ -127,8 +128,14 @@ public static class BatchAssets
             .ToLowerInvariant();
     }
 
-    public static string GetCanonicalPath(string outputDir, string recipeHash, string extension) =>
-        Path.Combine(outputDir, GeneratedDirectory, recipeHash + extension.ToLowerInvariant());
+    public static string GetCanonicalPath(string outputDir, string recipeHash, string extension)
+    {
+        var cropped =
+            recipeHash.Length > CanonicalHashLength
+                ? recipeHash[..CanonicalHashLength]
+                : recipeHash;
+        return Path.Combine(outputDir, GeneratedDirectory, cropped + extension.ToLowerInvariant());
+    }
 
     public static void MaterializeAlias(
         string outputDir,

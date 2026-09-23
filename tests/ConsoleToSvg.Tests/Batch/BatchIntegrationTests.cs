@@ -522,7 +522,7 @@ public sealed class BatchIntegrationTests
             exitCode.ShouldBe(0);
             Directory.GetFiles(Path.Combine(output, "generated")).Length.ShouldBe(1);
             var rewritten = await File.ReadAllTextAsync(markdownPath);
-            rewritten.ShouldMatch(@"!\[echo hello\]\(../../assets/generated/[0-9a-f]{64}\.svg\)");
+            rewritten.ShouldMatch(@"!\[echo hello\]\(../../assets/generated/[0-9a-f]{12}\.svg\)");
         }
         finally
         {
@@ -560,7 +560,7 @@ public sealed class BatchIntegrationTests
 
             var first = await File.ReadAllTextAsync(markdownPath);
             first.ShouldMatch(
-                @"!\[echo public\]\(/assets/generated/[0-9a-f]{64}\.svg\)"
+                @"!\[echo public\]\(/assets/generated/[0-9a-f]{12}\.svg\)"
             );
             Directory.GetFiles(Path.Combine(output, "generated")).Length.ShouldBe(1);
             File.Exists(Path.Combine(output, "guide-1.svg")).ShouldBeFalse();

@@ -837,21 +837,12 @@ public static partial class InteractiveRecorder
                     // write so multi-byte VT sequences (e.g. ESC [ A) arrive
                     // atomically instead of being split across writes.
                     var batch = new List<byte>(bytes.Length + 16);
-                    // ConPTY expects UTF-8 input, but a Windows console delivers
-                    // bytes in Console.InputEncoding (e.g. CP932/Shift_JIS on
-                    // Japanese Windows). Forwarding those bytes raw garbles CJK
-                    // input (each Shift_JIS byte becomes U+FFFD). Decode with a
-                    // persistent decoder and re-encode as UTF-8. ASCII (including
-                    // VT sequences) round-trips unchanged. Only for real console
-                    // input; piped input keeps byte-exact forwarding.
-                    var hostInputEncoding =
-                        RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                        && input is not null
-                        && !Console.IsInputRedirected
-                            ? Console.InputEncoding
-                            : null;
-                    var transcodeDecoder = hostInputEncoding?.GetDecoder();
-                    var transcodeChars = transcodeDecoder is not null ? new char[512] : null;
+                    // ENABLE_VIRTUAL_TERMINAL_INPUT (set by ConsoleInputMode) makes
+                    // Windows encode console input as UTF-8/VT bytes.  Do not decode
+                    // those bytes with Console.InputEncoding: on Japanese Windows it
+                    // is commonly CP932, which turns UTF-8 input such as "あ" into
+                    // mojibake (for example, "□~A~B") before it reaches ConPTY.
+                    // Keeping the bytes unchanged also preserves VT key sequences.
                     var inputGate = new SemaphoreSlim(1, 1);
                     long escapePendingVersion = 0;
                     logger.ZLogDebug($"Interactive input forwarding started.");
@@ -860,32 +851,6 @@ public static partial class InteractiveRecorder
                     {
                         if (batch.Count == 0)
                         {
-                            return;
-                        }
-
-                        if (transcodeDecoder is not null && transcodeChars is not null)
-                        {
-                            var batchArray = batch.ToArray();
-                            var charCount = transcodeDecoder.GetChars(
-                                batchArray,
-                                0,
-                                batchArray.Length,
-                                transcodeChars,
-                                0,
-                                flush: false
-                            );
-                            batch.Clear();
-                            if (charCount <= 0)
-                            {
-                                // Incomplete trailing multibyte sequence; the
-                                // decoder holds it until the next read completes it.
-                                return;
-                            }
-
-                            var utf8 = Encoding.UTF8.GetBytes(transcodeChars, 0, charCount);
-                            await connection
-                                .WriterStream.WriteAsync(utf8.AsMemory(), lifetime.Token)
-                                .ConfigureAwait(false);
                             return;
                         }
 
@@ -1093,7 +1058,7 @@ public static partial class InteractiveRecorder
                                 }
 
                                 // Flush any remaining input from this host read as one
-                                // PTY write (transcoded to UTF-8 on Windows consoles).
+                                // PTY write; Windows VT input is already UTF-8.
                                 await WriteBatchAsync().ConfigureAwait(false);
 
                                 // Function keys and other VT input can arrive across reads.

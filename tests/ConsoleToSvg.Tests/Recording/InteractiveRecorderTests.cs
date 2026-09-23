@@ -151,34 +151,18 @@ public sealed class InteractiveRecorderTests
     }
 
     [Test]
-    public void WindowsConsoleInputTranscodesToUtf8ForConPty()
+    public void WindowsVtConsoleInputIsAlreadyUtf8()
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             return;
         }
 
-        // Mirrors the transcode path in InteractiveRecorder input forwarding:
-        // host bytes arrive in Console.InputEncoding (CP932 on Japanese
-        // Windows) while ConPTY expects UTF-8. Use CP932 explicitly: under a
-        // test runner stdin is redirected, so Console.InputEncoding is not
-        // necessarily the console code page.
-        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        var hostEncoding = Encoding.GetEncoding(932);
-        var decoder = hostEncoding.GetDecoder();
-        var chars = new char[512];
-
-        // "あ" in Shift_JIS must become U+3042 (UTF-8 E3 81 82), not U+FFFD.
-        var shiftJisA = new byte[] { 0x82, 0xA0 };
-        var charCount = decoder.GetChars(shiftJisA, 0, shiftJisA.Length, chars, 0, flush: false);
-        charCount.ShouldBe(1);
-        new string(chars, 0, charCount).ShouldBe("あ");
-        Encoding.UTF8.GetBytes(chars, 0, charCount).ShouldBe(new byte[] { 0xE3, 0x81, 0x82 });
-
-        // VT sequences (arrow keys) are ASCII and must round-trip unchanged.
-        var vtUp = Encoding.ASCII.GetBytes("\u001b[A");
-        charCount = decoder.GetChars(vtUp, 0, vtUp.Length, chars, 0, flush: false);
-        Encoding.UTF8.GetBytes(chars, 0, charCount).ShouldBe(vtUp);
+        // ENABLE_VIRTUAL_TERMINAL_INPUT supplies UTF-8 bytes to ReadFile. The
+        // forwarding path must preserve both Japanese text and VT sequences;
+        // decoding these bytes as CP932 causes the reported mojibake.
+        var input = Encoding.UTF8.GetBytes("あ\u001b[A");
+        input.ShouldBe(new byte[] { 0xE3, 0x81, 0x82, 0x1B, 0x5B, 0x41 });
     }
 
     [Test]

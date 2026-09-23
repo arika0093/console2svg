@@ -335,7 +335,15 @@ public static partial class QuickLeaks
             return;
         }
         var separator = text[anchorStart - 1];
+        var separatorLength =
+            separator == '\\' && anchorStart >= 2 && text[anchorStart - 2] == '\\' ? 2 : 1;
         var nextSeparator = text[anchorStart + directoryLength];
+        var nextSeparatorLength =
+            nextSeparator == '\\'
+            && anchorStart + directoryLength + 1 < text.Length
+            && text[anchorStart + directoryLength + 1] == '\\'
+                ? 2
+                : 1;
         if (
             (isHome && (separator != '/' || nextSeparator != '/'))
             || (!isHome && (separator is not ('/' or '\\') || nextSeparator is not ('/' or '\\')))
@@ -347,14 +355,14 @@ public static partial class QuickLeaks
         var matchStart = anchorStart - 1;
         if (
             !isHome
-            && anchorStart >= 3
-            && text[anchorStart - 2] == ':'
-            && IsAsciiLetter(text[anchorStart - 3])
+            && anchorStart >= separatorLength + 2
+            && text[anchorStart - separatorLength - 1] == ':'
+            && IsAsciiLetter(text[anchorStart - separatorLength - 2])
         )
         {
-            matchStart = anchorStart - 3;
+            matchStart = anchorStart - separatorLength - 2;
         }
-        var usernameEnd = anchorStart + directoryLength + 1;
+        var usernameEnd = anchorStart + directoryLength + nextSeparatorLength;
         var usernameStart = usernameEnd;
         while (usernameEnd < text.Length && IsHomeDirectoryUsernameCharacter(text[usernameEnd]))
         {

@@ -439,6 +439,7 @@ public sealed class QuickLeaksTests
             {
                 "/home/alice/project",
                 "C:\\Users\\alice\\project",
+                "C:\\\\Users\\\\alice\\\\project",
                 "\\Users\\alice",
                 "C:/Users/alice/project",
             }

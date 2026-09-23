@@ -8505,8 +8505,8 @@
       "fixedOffset": 0,
       "fallbackReason": null,
       "canCrossNewline": false,
-      "pattern": "(?i)(?:/(?:home|Users)/[A-Za-z0-9._-]+|(?:[A-Za-z]:)?(?:\\\\|/)Users(?:\\\\|/)[A-Za-z0-9._-]+)",
-      "earlyPattern": "(?i)(?:/(?:home|Users)/[A-Za-z0-9._-]*|(?:[A-Za-z]:)?(?:\\\\|/)Users(?:\\\\|/)[A-Za-z0-9._-]*)",
+      "pattern": "(?i)(?:/(?:home|Users)/[A-Za-z0-9._-]+|(?:[A-Za-z]:)?(?:\\\\{1,2}|/)Users(?:\\\\{1,2}|/)[A-Za-z0-9._-]+)",
+      "earlyPattern": "(?i)(?:/(?:home|Users)/[A-Za-z0-9._-]*|(?:[A-Za-z]:)?(?:\\\\{0,2}|/)Users(?:\\\\{0,2}|/)[A-Za-z0-9._-]*)",
       "prefixToken": null,
       "assignment": null
     },

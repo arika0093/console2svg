@@ -15,6 +15,7 @@ console2svg status
 Example output (versions, paths, and availability vary by environment):
 
 <!-- c2s::  -w 100 -- console2svg status -->
+![console2svg status](/assets/generated/dd0b63528a7b.svg)
 
 ## Switching output formats
 

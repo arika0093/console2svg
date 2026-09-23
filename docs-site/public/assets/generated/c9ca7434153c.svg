@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="952" height="287" viewBox="0 0 952 287" role="img" aria-label="console2svg output">
+<style>
+.c2.c { font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace; font-size: 14px; }
+.c2 text { white-space: pre; dominant-baseline: alphabetic; }
+.c2 .q { shape-rendering: crispEdges; }
+.c2 .aa{fill:#FFFF71;font-weight:bold}
+.c2 .ab{fill:#d8f9ff}
+.c2 .ac{fill:#4deeff}
+</style><defs><pattern id="c2-redacted-stripe" patternUnits="userSpaceOnUse" width="8" height="8"><path d="M0 0h8v8H0z" fill="#090b1a"/><path d="M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6" stroke="#d8f9ff" stroke-width="2" opacity="0.3"/></pattern></defs><defs>
+<linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#09051a"/><stop offset="100%" stop-color="#17104a"/></linearGradient>
+</defs>
+<rect width="952" height="287" fill="url(#c2bg)"/>
+<g opacity="0.85">
+<rect x="31" y="31" width="880" height="215" fill="#090b1a" stroke="#27e8ff" stroke-width="1.5"/>
+<path d="M 38,38 H 904 V 61 H 38 Z" fill="#151333" stroke="#ff3c9e" stroke-width="1"/>
+<path d="M 43,43 h 22 M 43,48 h 12" stroke="#27e8ff" stroke-width="2"/>
+<text x="74" y="53" fill="#ff65b1" font-family="monospace" font-size="11" font-weight="bold">SYS://NEON-TERMINAL</text>
+<path d="M 844,43 h 14 v 12 h -14 Z M 865,43 h 14 v 12 h -14 Z M 886,43 h 14 v 12 h -14 Z" fill="none" stroke="#27e8ff" stroke-width="1.5"/>
+<path d="M 31,31 h 18 M 31,31 v 18 M 911,31 h -18 M 911,31 v 18 M 31,246 h 18 M 31,246 v -18 M 911,246 h -18 M 911,246 v -18" stroke="#ff3c9e" stroke-width="3"/>
+
+<rect x="40" y="71" width="862" height="166" fill="#090b1a"/>
+<g class="c2 c" transform="translate(51 82)">
+<rect width="840" height="144" fill="#090b1a"/>
+</g>
+</g>
+<g class="c2 c" xml:space="preserve" transform="translate(51 82)">
+<text class="aa" y="14" textLength="100.8">Description:</text>
+<text class="ab" x="16.8" y="32" textLength="260.4">Convert terminal output to SVG.</text>
+<text class="aa" y="68" textLength="50.4">Usage:</text>
+<text class="ab" x="16.8" y="86" textLength="260.4">console2svg [command] [options]</text>
+<text class="aa" y="122" textLength="67.2">Options:</text>
+<text class="ac" x="16.8" y="140" textLength="50.4">--help</text>
+<text class="ab" x="109.2" y="140" textLength="260.4">Show help and usage information</text>
+</g>
+</svg>

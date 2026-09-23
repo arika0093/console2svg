@@ -41,6 +41,7 @@ console2svg capture -80 -h 14 -d macos-pc -t github-dark -- cat .env
 ```
 
 <!-- c2s:: -w 80 -h 14 -d macos-pc -t github-dark -- cat ../../../../.env -->
+![cat ../../../../.env](/assets/generated/195f19ed73d3.svg)
 
 ## 有効化と無効化
 
@@ -53,3 +54,4 @@ console2svg capture -80 -h 14 -d macos-pc -t github-dark --mask-auto false -- ca
 ```
 
 <!-- c2s::  -w 80 -h 14 -d macos-pc -t github-dark --mask-auto false -- cat ../../../../.env -->
+![cat ../../../../.env](/assets/generated/1168383edb31.svg)

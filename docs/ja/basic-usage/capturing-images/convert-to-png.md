@@ -14,6 +14,7 @@ console2svg capture -o output.png -w 100 -h 12 -- console2svg
 ```
 
 <!-- c2s:: --format png -w 100 -h 12 -- console2svg -->
+![console2svg](/assets/generated/79eee1d64157.png)
 
 ## レンダリングエンジン
 
@@ -33,3 +34,4 @@ console2svg capture -o result.png --svg-converter rsvg-convert -- console2svg
 ```
 
 <!-- c2s:: --format png -w 100 -h 12 --svg-converter rsvg-convert -- console2svg -->
+![console2svg](/assets/generated/28fd217fb344.png)

@@ -15,6 +15,7 @@ console2svg status
 出力例（環境によってバージョン、パス、利用可否は変わります）:
 
 <!-- c2s::  -w 100 -- console2svg status -->
+![console2svg status](/assets/generated/dd0b63528a7b.svg)
 
 
 ## 出力フォーマットの切り替え

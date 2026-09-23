@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/dotnet/Nerdbank.GitVersioning/main/src/NerdBank.GitVersioning/version.schema.json",
-  "version": "0.9.3",
+  "version": "0.10.0",
   "nuGetPackageVersion": {
     "semVer": 2.0
   },
@@ -8,11 +8,6 @@
     "^refs/heads/main",
     "^refs/heads/release/v\\d+(?:\\.\\d+)?$"
   ],
-  "cloudBuild": {
-    "buildNumber": {
-      "enabled": true
-    }
-  },
   "release": {
     "branchName": "release/v{version}"
   },

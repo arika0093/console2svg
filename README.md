@@ -7,8 +7,6 @@
 
 </div>
 
-# console2svg
-
 ## Why console2svg?
 
 Convert terminal output into images for READMEs, blog posts, assignments, and documentation.
@@ -141,8 +139,6 @@ Common secrets are masked automatically when capturing terminal output.
 <!-- c2s:: -w 80 -h 14 -d macos-pc -t github-dark -- cat .env -->
 ![cat .env](docs-site/public/assets/generated/843cbb04bb12ee70d476301c8a305107b886a49a97613f6980c3d410af0e140a.svg)
 
-See the [gallery](https://console2svg.eclairs.cc/en/gallery/) for more examples and the [quick start guide](https://console2svg.eclairs.cc/en/getting-started/quick-start/) to try console2svg.
-
 ## Install
 
 ### Linux/macOS
@@ -155,7 +151,7 @@ curl -sSL https://raw.githubusercontent.com/arika0093/console2svg/main/install.s
 
 ### Windows
 
-The easiest way is to use `winget` or `npm`.
+The easiest way is to use `winget`.
 
 ```powershell
 # Windows Package Manager (WinGet)

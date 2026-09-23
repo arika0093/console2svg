@@ -9,8 +9,6 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
     <SuppressTfmSupportBuildErrors>true</SuppressTfmSupportBuildErrors>
-    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-    <CompilerGeneratedFilesOutputPath>.generated</CompilerGeneratedFilesOutputPath>
     <PublishAot>true</PublishAot>
   </PropertyGroup>
   <ItemGroup>

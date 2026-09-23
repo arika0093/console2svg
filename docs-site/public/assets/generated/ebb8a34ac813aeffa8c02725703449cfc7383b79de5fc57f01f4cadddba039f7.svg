@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="448" viewBox="0 0 1024 448" role="img" aria-label="console2svg output">
+<svg xmlns="http://www.w3.org/2000/svg" width="898" height="517" viewBox="0 0 898 517" role="img" aria-label="console2svg output">
 <style>
 .c2.c { font-family: "JetBrains Mono","Cascadia Mono","Segoe UI Mono","Noto Sans Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono",monospace; font-size: 14px; }
 .c2 text { white-space: pre; dominant-baseline: alphabetic; }
@@ -9,10 +9,16 @@
 </style><defs><pattern id="c2-redacted-stripe" patternUnits="userSpaceOnUse" width="8" height="8"><path d="M0 0h8v8H0z" fill="#1e1e1e"/><path d="M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6" stroke="#d4d4d4" stroke-width="2" opacity="0.3"/></pattern></defs><defs>
 <linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1d2e"/><stop offset="100%" stop-color="#252840"/></linearGradient>
 </defs>
-<rect width="1024" height="448" fill="url(#c2bg)"/>
-<rect width="1024" height="448" fill="#1e1e1e"/>
-<g class="c2 c" transform="translate(8 8)">
-<rect width="1008" height="432" fill="#1e1e1e"/>
+<rect width="898" height="517" fill="url(#c2bg)"/>
+<rect x="20.5" y="20.5" rx="10" ry="10" width="857" height="476" fill="#1f1f1f" stroke="#3a3a3a"/>
+<rect x="21" y="21" rx="9" ry="9" width="856" height="27" fill="#2c2c2c"/>
+<circle cx="34" cy="34" r="5" fill="#ff5f57"/>
+<circle cx="50" cy="34" r="5" fill="#febc2e"/>
+<circle cx="66" cy="34" r="5" fill="#28c840"/>
+
+<rect x="21" y="48" width="856" height="448" rx="9" ry="9" fill="#1e1e1e"/>
+<g class="c2 c" transform="translate(29 56)">
+<rect width="840" height="432" fill="#1e1e1e"/>
 <rect class="q" x="420" y="360" width="25.2" height="18" fill="#cd3131" stroke="#cd3131" stroke-width="2" vector-effect="non-scaling-stroke"/>
 <rect class="q" x="445.2" y="360" width="25.2" height="18" fill="#0dbc79" stroke="#0dbc79" stroke-width="2" vector-effect="non-scaling-stroke"/>
 <rect class="q" x="470.4" y="360" width="25.2" height="18" fill="#e5e510" stroke="#e5e510" stroke-width="2" vector-effect="non-scaling-stroke"/>
@@ -29,7 +35,7 @@
 <rect class="q" x="546" y="378" width="25.2" height="18" fill="#29b8db" stroke="#29b8db" stroke-width="2" vector-effect="non-scaling-stroke"/>
 <rect class="q" x="571.2" y="378" width="25.2" height="18" fill="#ffffff" stroke="#ffffff" stroke-width="2" vector-effect="non-scaling-stroke"/>
 </g>
-<g class="c2 c" xml:space="preserve" transform="translate(8 8)">
+<g class="c2 c" xml:space="preserve" transform="translate(29 56)">
 <text class="aa" x="243.6" y="14" textLength="33.6">....</text>
 <text class="aa" x="394.8" y="14" textLength="50.4">runner</text>
 <text class="ab" x="445.2" y="14" textLength="8.4">@</text>
@@ -71,12 +77,12 @@
 <text class="ab" x="462" y="230" textLength="126">: Runner.Worker</text>
 <text class="aa" x="58.8" y="248" textLength="294">...                         ,ooool.</text>
 <text class="aa" x="394.8" y="248" textLength="25.2">CPU</text>
-<text class="ab" x="420" y="248" textLength="319.2">: AMD EPYC 9V74 80-Core (4) @ 3.69 GHz</text>
+<text class="ab" x="420" y="248" textLength="319.2">: AMD EPYC 9V74 80-Core (4) @ 3.70 GHz</text>
 <text class="aa" x="33.6" y="266" textLength="310.8">.cooooc.              ..&apos;,,&apos;.  .cooo.</text>
 <text class="aa" x="394.8" y="266" textLength="50.4">Memory</text>
-<text class="ab" x="445.2" y="266" textLength="226.8">: 1006.90 MiB / 15.61 GiB (</text>
-<text class="ac" x="672" y="266" textLength="16.8">6%</text>
-<text class="ab" x="688.8" y="266" textLength="8.4">)</text>
+<text class="ab" x="445.2" y="266" textLength="201.6">: 1.13 GiB / 15.61 GiB (</text>
+<text class="ac" x="646.8" y="266" textLength="16.8">7%</text>
+<text class="ab" x="663.6" y="266" textLength="8.4">)</text>
 <text class="aa" x="50.4" y="284" textLength="285.6">;ooooo:.           ;oooooooc.  :l.</text>
 <text class="aa" x="394.8" y="284" textLength="33.6">Swap</text>
 <text class="ab" x="428.4" y="284" textLength="151.2">: 0 B / 3.00 GiB (</text>

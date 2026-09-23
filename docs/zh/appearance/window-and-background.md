@@ -15,6 +15,7 @@ console2svg capture -d macos-pc -- fastfetch
 ```
 
 <!-- c2s:: -d macos-pc -- fastfetch -->
+![fastfetch](../../../docs-site/public/assets/generated/ebb8a34ac813aeffa8c02725703449cfc7383b79de5fc57f01f4cadddba039f7.svg)
 
 ### 列表
 

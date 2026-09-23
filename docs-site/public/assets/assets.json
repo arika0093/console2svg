@@ -2,9 +2,45 @@
   "version": 1,
   "generator": {
     "name": "console2svg",
-    "version": "0.10.0.2"
+    "version": "0.10.0.6"
   },
   "objects": {
+    "ebb8a34ac813aeffa8c02725703449cfc7383b79de5fc57f01f4cadddba039f7.svg": {
+      "path": "generated/ebb8a34ac813aeffa8c02725703449cfc7383b79de5fc57f01f4cadddba039f7.svg",
+      "sha256": "1147d289f8204d7a3230eb01aa280ff00a091018b2d34cd4c1ccd0e03d3aaa89",
+      "size": 8798,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "b22b00b5dd6cb034388c28e111147a4ac3b3fe8dc1198389b6882c10adf1d2fe.svg": {
+      "path": "generated/b22b00b5dd6cb034388c28e111147a4ac3b3fe8dc1198389b6882c10adf1d2fe.svg",
+      "sha256": "8a93a0639ec8902846540f5139b208e7100832788eaa22e40db0bd82c50ac8b5",
+      "size": 4183,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "30342673aada1e33661264a4b949dea31665fc7d90071a6b57bb881ed6e4ec35.svg": {
+      "path": "generated/30342673aada1e33661264a4b949dea31665fc7d90071a6b57bb881ed6e4ec35.svg",
+      "sha256": "98c30bfbeca5087731ad4f619a96be08f55f2d10f122482caf5bd243221fc6e3",
+      "size": 417960,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "9a5669756ecb4a1bb0ec1068ac91541fb9d5963ecc24b3e8ab90cc0a3b765cb7.svg": {
+      "path": "generated/9a5669756ecb4a1bb0ec1068ac91541fb9d5963ecc24b3e8ab90cc0a3b765cb7.svg",
+      "sha256": "54b75aa9221a404434b744f47bb7271b7b1a7e1b1181a640ff045d88926406d5",
+      "size": 331091,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "195f19ed73d3b7b93f0e9a6801883912988f14fe0ca5e6c949ed3072d45a69c5.svg": {
+      "path": "generated/195f19ed73d3b7b93f0e9a6801883912988f14fe0ca5e6c949ed3072d45a69c5.svg",
+      "sha256": "812e073896b99456fb1afd1ddc8909ac49ac1612d1e31df3ce9289a233e37b3f",
+      "size": 3529,
+      "mediaType": "image/svg\u002Bxml"
+    },
+    "2a23faec7ab1cfd0b329ed640a816a7f607c024ba353edf1956f18475ddb8262.svg": {
+      "path": "generated/2a23faec7ab1cfd0b329ed640a816a7f607c024ba353edf1956f18475ddb8262.svg",
+      "sha256": "cb90b852eb789da807d11b5c434f88e6ffbd9174ff4d69a263234ba6cd724e48",
+      "size": 339546,
+      "mediaType": "image/svg\u002Bxml"
+    },
     "0d6442f444880dcbc2d52d7ad52a0356c5357cf309ec144fb99303187a82b04d.svg": {
       "path": "generated/0d6442f444880dcbc2d52d7ad52a0356c5357cf309ec144fb99303187a82b04d.svg",
       "sha256": "50805dc2a7e1a01fd4d5707b5d4d86b4fa5d59e5bce697a9b12c2d98a24c7f35",
@@ -43,8 +79,8 @@
     },
     "2fd1a1e86f3800586fe68510f29cc531b648a78eeae0b8ac3c04949f978fa70d.svg": {
       "path": "generated/2fd1a1e86f3800586fe68510f29cc531b648a78eeae0b8ac3c04949f978fa70d.svg",
-      "sha256": "56a567f61f20465be1a35ecdfb4ee880dbd88944659d328117f8d0b1a5ef2e28",
-      "size": 2266758,
+      "sha256": "f73261f1c5b3df5aadd768b31542a7d84e6fc68ed6c94c02301b127a515c45f4",
+      "size": 2177185,
       "mediaType": "image/svg\u002Bxml"
     },
     "328dd320ea777244f5b5fc293645101914d75f4668853c9f96ceb725e52f5626.svg": {
@@ -91,7 +127,7 @@
     },
     "5e6a635cfa06f343d4964478e84bc1b40c722fcc0562b4ef72eaae0975309797.svg": {
       "path": "generated/5e6a635cfa06f343d4964478e84bc1b40c722fcc0562b4ef72eaae0975309797.svg",
-      "sha256": "8965eb610b6c32d48fae28b6b5a8ca6b4b176dd3a4216a8e6cd274c24ad97e01",
+      "sha256": "e16d44793b7f42dc4ef4339203adad81d19c4e95ff65d8ca14b923a7ecd12e9c",
       "size": 8950,
       "mediaType": "image/svg\u002Bxml"
     },
@@ -167,12 +203,6 @@
       "size": 1525281,
       "mediaType": "image/svg\u002Bxml"
     },
-    "9a5669756ecb4a1bb0ec1068ac91541fb9d5963ecc24b3e8ab90cc0a3b765cb7.svg": {
-      "path": "generated/9a5669756ecb4a1bb0ec1068ac91541fb9d5963ecc24b3e8ab90cc0a3b765cb7.svg",
-      "sha256": "5a850a86cb7ad477382c0f1e9c5472e085a314b2f3acf5cc4959757af607bc63",
-      "size": 331091,
-      "mediaType": "image/svg\u002Bxml"
-    },
     "9e7216ee3316ac33de30abe28d8d2ec5fc49c4e1e65668446028d6a0bda3111b.svg": {
       "path": "generated/9e7216ee3316ac33de30abe28d8d2ec5fc49c4e1e65668446028d6a0bda3111b.svg",
       "sha256": "be60afc5ffa962cf683eaaf6db29937c9e62a2c0b098eb24e5560c661c58bebe",
@@ -187,8 +217,8 @@
     },
     "9fcf63ec925cfae7c481653192122165c6aad7710ce2d2105ca833e1aefb150a.svg": {
       "path": "generated/9fcf63ec925cfae7c481653192122165c6aad7710ce2d2105ca833e1aefb150a.svg",
-      "sha256": "a189776d15b4c8b0f1bab4d53f0e87a28923e56c3b675c4bb452dec0684e418e",
-      "size": 8455,
+      "sha256": "b56438649562a7248e63c01b3e7f12a6ab9ec9081ec5d4565fec6537a0a02eb5",
+      "size": 8456,
       "mediaType": "image/svg\u002Bxml"
     },
     "a28e8def8171a4188dc854fb2d1b433bbc4b30942693e50a427960847954eb58.svg": {
@@ -211,8 +241,8 @@
     },
     "b1e59c865ca27ae7fde19c5a43b5a4482a3d04ce53eee3e99c97a38730ce21b8.svg": {
       "path": "generated/b1e59c865ca27ae7fde19c5a43b5a4482a3d04ce53eee3e99c97a38730ce21b8.svg",
-      "sha256": "bd0f6e5ef37cd383dc0ca731768145de7304752253f54bcdebfb0de2a72b140e",
-      "size": 25562,
+      "sha256": "8433fe3e72b9c89302585decfd6757e79406a5d3a3a359a582ef78f693ce10cd",
+      "size": 25635,
       "mediaType": "image/svg\u002Bxml"
     },
     "b310717103972d25914acde83b192cfb2ccdb8bc583e58a712de0e006fece3e9.svg": {
@@ -229,8 +259,8 @@
     },
     "c65f78f1cc9c43fb1b47803568a293f929b1e7487fc4866e49405802a31c9c10.svg": {
       "path": "generated/c65f78f1cc9c43fb1b47803568a293f929b1e7487fc4866e49405802a31c9c10.svg",
-      "sha256": "cb721fca2add70ddbecf39a2ddd8eabe450ae54710c2a0bd4cb1acb4ea71c284",
-      "size": 1630069,
+      "sha256": "911f6f295bd01f7fba9f61e31b80fdce5857d32fc065fcbf9d3b0b395d69504d",
+      "size": 1662179,
       "mediaType": "image/svg\u002Bxml"
     },
     "c9ca7434153c6594783fd5347cf7e7cf7f52ccc220d2d3b77653de3dee947887.svg": {
@@ -241,7 +271,7 @@
     },
     "dd0b63528a7b6642677247acf28a6832e77d426c38a46badaa5ea780cbca8522.svg": {
       "path": "generated/dd0b63528a7b6642677247acf28a6832e77d426c38a46badaa5ea780cbca8522.svg",
-      "sha256": "e011e4f4b09be8928b5b59a31c000f50ea9446161d0cfa15c0167d06c808c372",
+      "sha256": "ac150d04f34be784f9c85da81aecaa8dd264a7e71a9ea0a4db6c004fd15bdfe4",
       "size": 4251,
       "mediaType": "image/svg\u002Bxml"
     },
@@ -271,8 +301,8 @@
     },
     "e2f2005359497cd98d5307a993961a3e5eafb1b7a03a8fc96655c1b58778a221.svg": {
       "path": "generated/e2f2005359497cd98d5307a993961a3e5eafb1b7a03a8fc96655c1b58778a221.svg",
-      "sha256": "35a997bc97cf658d9f7d88861045bc4662a55aa2e4300f717f785f79cb76785f",
-      "size": 30093,
+      "sha256": "dadc3a6a2a84bd6c3ccac2ce303aa6dbf7974b1d67783e51abb11054c562cde8",
+      "size": 24959,
       "mediaType": "image/svg\u002Bxml"
     },
     "e327ebdc788303f91c2211525643ada48e526f78bda23dc6f0e35518f3a77f84.svg": {
@@ -313,20 +343,20 @@
     },
     "4e0ce507c52102968630f4cfa19a80f2f7c8ed262bf61e4ddfa031e2fd62d704.svg": {
       "path": "generated/4e0ce507c52102968630f4cfa19a80f2f7c8ed262bf61e4ddfa031e2fd62d704.svg",
-      "sha256": "ceb561ec688f0ea1cdcd4bedcad8b89e4e93eee82325c9bbc32979e71de538e3",
-      "size": 425457,
+      "sha256": "4b195b0c029947df75d2cce6019cbed7bea26a0e5c3e66f8ba3aeb9237e1e742",
+      "size": 425503,
       "mediaType": "image/svg\u002Bxml"
     },
     "4fdacba2b25de55f7798f796d8d4a2ac99697a5c2043cae86fc7984536b44d58.svg": {
       "path": "generated/4fdacba2b25de55f7798f796d8d4a2ac99697a5c2043cae86fc7984536b44d58.svg",
-      "sha256": "fd3a7a361c3df72650d670519801b666fe62a5e9ea388928dec4ae0fdc25dbbf",
+      "sha256": "73e95d4b939d65bc35c9939906e790d4ef63e7adc10b1f1a9a2a58a4e74567f7",
       "size": 8950,
       "mediaType": "image/svg\u002Bxml"
     },
     "6606e28c18dfdaf8875447255430db45257540911b133388e146b70f3ce47a9d.svg": {
       "path": "generated/6606e28c18dfdaf8875447255430db45257540911b133388e146b70f3ce47a9d.svg",
-      "sha256": "732f6213d7a08892009a61fc18d2ec21cee893867f879c07d2f47b526bacda24",
-      "size": 25801,
+      "sha256": "5b93de452caf540a9180622fd609ae7eaa14f568e77a7df1e222d5dbf94d4577",
+      "size": 28960,
       "mediaType": "image/svg\u002Bxml"
     },
     "843cbb04bb12ee70d476301c8a305107b886a49a97613f6980c3d410af0e140a.svg": {
@@ -337,8 +367,8 @@
     },
     "ce27ec49eb3997dc52d2b70a35fb0911b332f4410c4ddee3ffb5c4ffc32be697.svg": {
       "path": "generated/ce27ec49eb3997dc52d2b70a35fb0911b332f4410c4ddee3ffb5c4ffc32be697.svg",
-      "sha256": "67147a2b7383d4e9d19d7f3d0b16a32c75c82f3d79463b1cdfbc92364f071657",
-      "size": 1427490,
+      "sha256": "66ad28da8494e11dc3a39a95571a50fc509e2c1a756eca7ff1efd1dcc24cfda6",
+      "size": 1600426,
       "mediaType": "image/svg\u002Bxml"
     },
     "de2a48c5f3897d0c85242dad9d9b9a276920f3b77a48af153b90028593183cf3.svg": {
@@ -349,18 +379,162 @@
     },
     "ec7ec60fe7a04cb771d42db643321cc4d82ea01852ccbc63b9aacd50e1b13543.svg": {
       "path": "generated/ec7ec60fe7a04cb771d42db643321cc4d82ea01852ccbc63b9aacd50e1b13543.svg",
-      "sha256": "bcc4b51c9b14083462bc8a7eb72c5e724eb8cfe417f74dcb0ecafa8257c57b23",
-      "size": 331091,
+      "sha256": "487d4dfe76d77ab4adcbf719c4a55b13938b5535ef4a43fdd4b473a97df25d80",
+      "size": 331089,
       "mediaType": "image/svg\u002Bxml"
     },
     "f822e14508eca83edd0e965708312f0776d556582d00358ae978bca009aeeed8.svg": {
       "path": "generated/f822e14508eca83edd0e965708312f0776d556582d00358ae978bca009aeeed8.svg",
-      "sha256": "04a4d1b05a0ae9a468fa12c8c743b5fe8631ffaee5707649b2769436ab1faa09",
-      "size": 27742,
+      "sha256": "3cf533c31b82e445c2b2bcd7df694d24a2a7c792f682253fd5be9387ee5713fd",
+      "size": 29912,
       "mediaType": "image/svg\u002Bxml"
     }
   },
   "assets": {
+    "docs/en/appearance/window-and-background-1.svg": {
+      "object": "ebb8a34ac813aeffa8c02725703449cfc7383b79de5fc57f01f4cadddba039f7.svg",
+      "owners": [
+        "docs/en/appearance/window-and-background.md"
+      ]
+    },
+    "docs/en/basic-usage/capturing-images/overview-1.svg": {
+      "object": "b22b00b5dd6cb034388c28e111147a4ac3b3fe8dc1198389b6882c10adf1d2fe.svg",
+      "owners": [
+        "docs/en/basic-usage/capturing-images/overview.mdx"
+      ]
+    },
+    "docs/en/basic-usage/capturing-videos/overview-1.svg": {
+      "object": "30342673aada1e33661264a4b949dea31665fc7d90071a6b57bb881ed6e4ec35.svg",
+      "owners": [
+        "docs/en/basic-usage/capturing-videos/overview.mdx"
+      ]
+    },
+    "docs/en/basic-usage/capturing-videos/overview-2.svg": {
+      "object": "9a5669756ecb4a1bb0ec1068ac91541fb9d5963ecc24b3e8ab90cc0a3b765cb7.svg",
+      "owners": [
+        "docs/en/basic-usage/capturing-videos/overview.mdx"
+      ]
+    },
+    "docs/en/basic-usage/masking-secrets/auto-masking-1.svg": {
+      "object": "195f19ed73d3b7b93f0e9a6801883912988f14fe0ca5e6c949ed3072d45a69c5.svg",
+      "owners": [
+        "docs/en/basic-usage/masking-secrets/auto-masking.md"
+      ]
+    },
+    "docs/en/getting-started/quick-start-1.svg": {
+      "object": "b22b00b5dd6cb034388c28e111147a4ac3b3fe8dc1198389b6882c10adf1d2fe.svg",
+      "owners": [
+        "docs/en/getting-started/quick-start.mdx"
+      ]
+    },
+    "docs/en/getting-started/quick-start-2.svg": {
+      "object": "30342673aada1e33661264a4b949dea31665fc7d90071a6b57bb881ed6e4ec35.svg",
+      "owners": [
+        "docs/en/getting-started/quick-start.mdx"
+      ]
+    },
+    "docs/en/getting-started/quick-start-3.svg": {
+      "object": "2a23faec7ab1cfd0b329ed640a816a7f607c024ba353edf1956f18475ddb8262.svg",
+      "owners": [
+        "docs/en/getting-started/quick-start.mdx"
+      ]
+    },
+    "docs/ja/appearance/window-and-background-1.svg": {
+      "object": "ebb8a34ac813aeffa8c02725703449cfc7383b79de5fc57f01f4cadddba039f7.svg",
+      "owners": [
+        "docs/ja/appearance/window-and-background.md"
+      ]
+    },
+    "docs/ja/basic-usage/capturing-images/overview-1.svg": {
+      "object": "b22b00b5dd6cb034388c28e111147a4ac3b3fe8dc1198389b6882c10adf1d2fe.svg",
+      "owners": [
+        "docs/ja/basic-usage/capturing-images/overview.mdx"
+      ]
+    },
+    "docs/ja/basic-usage/capturing-videos/overview-1.svg": {
+      "object": "30342673aada1e33661264a4b949dea31665fc7d90071a6b57bb881ed6e4ec35.svg",
+      "owners": [
+        "docs/ja/basic-usage/capturing-videos/overview.mdx"
+      ]
+    },
+    "docs/ja/basic-usage/capturing-videos/overview-2.svg": {
+      "object": "9a5669756ecb4a1bb0ec1068ac91541fb9d5963ecc24b3e8ab90cc0a3b765cb7.svg",
+      "owners": [
+        "docs/ja/basic-usage/capturing-videos/overview.mdx"
+      ]
+    },
+    "docs/ja/basic-usage/masking-secrets/auto-masking-1.svg": {
+      "object": "195f19ed73d3b7b93f0e9a6801883912988f14fe0ca5e6c949ed3072d45a69c5.svg",
+      "owners": [
+        "docs/ja/basic-usage/masking-secrets/auto-masking.md"
+      ]
+    },
+    "docs/ja/getting-started/quick-start-1.svg": {
+      "object": "b22b00b5dd6cb034388c28e111147a4ac3b3fe8dc1198389b6882c10adf1d2fe.svg",
+      "owners": [
+        "docs/ja/getting-started/quick-start.mdx"
+      ]
+    },
+    "docs/ja/getting-started/quick-start-2.svg": {
+      "object": "30342673aada1e33661264a4b949dea31665fc7d90071a6b57bb881ed6e4ec35.svg",
+      "owners": [
+        "docs/ja/getting-started/quick-start.mdx"
+      ]
+    },
+    "docs/ja/getting-started/quick-start-3.svg": {
+      "object": "2a23faec7ab1cfd0b329ed640a816a7f607c024ba353edf1956f18475ddb8262.svg",
+      "owners": [
+        "docs/ja/getting-started/quick-start.mdx"
+      ]
+    },
+    "docs/zh/appearance/window-and-background-1.svg": {
+      "object": "ebb8a34ac813aeffa8c02725703449cfc7383b79de5fc57f01f4cadddba039f7.svg",
+      "owners": [
+        "docs/zh/appearance/window-and-background.md"
+      ]
+    },
+    "docs/zh/basic-usage/capturing-images/overview-1.svg": {
+      "object": "b22b00b5dd6cb034388c28e111147a4ac3b3fe8dc1198389b6882c10adf1d2fe.svg",
+      "owners": [
+        "docs/zh/basic-usage/capturing-images/overview.mdx"
+      ]
+    },
+    "docs/zh/basic-usage/capturing-videos/overview-1.svg": {
+      "object": "30342673aada1e33661264a4b949dea31665fc7d90071a6b57bb881ed6e4ec35.svg",
+      "owners": [
+        "docs/zh/basic-usage/capturing-videos/overview.mdx"
+      ]
+    },
+    "docs/zh/basic-usage/capturing-videos/overview-2.svg": {
+      "object": "9a5669756ecb4a1bb0ec1068ac91541fb9d5963ecc24b3e8ab90cc0a3b765cb7.svg",
+      "owners": [
+        "docs/zh/basic-usage/capturing-videos/overview.mdx"
+      ]
+    },
+    "docs/zh/basic-usage/masking-secrets/auto-masking-1.svg": {
+      "object": "195f19ed73d3b7b93f0e9a6801883912988f14fe0ca5e6c949ed3072d45a69c5.svg",
+      "owners": [
+        "docs/zh/basic-usage/masking-secrets/auto-masking.md"
+      ]
+    },
+    "docs/zh/getting-started/quick-start-1.svg": {
+      "object": "b22b00b5dd6cb034388c28e111147a4ac3b3fe8dc1198389b6882c10adf1d2fe.svg",
+      "owners": [
+        "docs/zh/getting-started/quick-start.mdx"
+      ]
+    },
+    "docs/zh/getting-started/quick-start-2.svg": {
+      "object": "30342673aada1e33661264a4b949dea31665fc7d90071a6b57bb881ed6e4ec35.svg",
+      "owners": [
+        "docs/zh/getting-started/quick-start.mdx"
+      ]
+    },
+    "docs/zh/getting-started/quick-start-3.svg": {
+      "object": "2a23faec7ab1cfd0b329ed640a816a7f607c024ba353edf1956f18475ddb8262.svg",
+      "owners": [
+        "docs/zh/getting-started/quick-start.mdx"
+      ]
+    },
     "generated/0d6442f444880dcbc2d52d7ad52a0356c5357cf309ec144fb99303187a82b04d.svg": {
       "object": "0d6442f444880dcbc2d52d7ad52a0356c5357cf309ec144fb99303187a82b04d.svg",
       "owners": [

@@ -868,43 +868,45 @@
 </g>
 <g id="c2r161" class="c2 c" xml:space="preserve">
 <use href="#c2e0"/>
-<text class="aa" x="814.8" y="14" textLength="168">====        ________</text>
+<text class="aa" x="823.2" y="14" textLength="168">====        ________</text>
 </g>
 <g id="c2r162" class="c2 c" xml:space="preserve">
 <use href="#c2e0"/>
-<text class="aa" x="781.2" y="14" textLength="226.8">_D _|  |_______/        \__</text>
+<text class="aa" x="789.6" y="14" textLength="218.4">_D _|  |_______/        \_</text>
 </g>
 <g id="c2r163" class="c2 c" xml:space="preserve">
 <use href="#c2e0"/>
-<text class="aa" x="789.6" y="14" textLength="218.4">|(_)---  |   H\________/ |</text>
+<text class="aa" x="798" y="14" textLength="201.6">|(_)---  |   H\________/</text>
 </g>
 <g id="c2r164" class="c2 c" xml:space="preserve">
 <use href="#c2e0"/>
-<text class="aa" x="789.6" y="14" textLength="218.4">/     |  |   H  |  |     |</text>
+<text class="aa" x="798" y="14" textLength="168">/     |  |   H  |  |</text>
 </g>
 <g id="c2r165" class="c2 c" xml:space="preserve">
 <use href="#c2e0"/>
-<text class="aa" x="781.2" y="14" textLength="226.8">|      |  |   H  |__-------</text>
+<text class="aa" x="789.6" y="14" textLength="218.4">|      |  |   H  |__------</text>
 </g>
 <g id="c2r166" class="c2 c" xml:space="preserve">
 <use href="#c2e0"/>
-<text class="aa" x="781.2" y="14" textLength="226.8">| ________|___H__/__|_____/</text>
+<text class="aa" x="789.6" y="14" textLength="218.4">| ________|___H__/__|_____</text>
 </g>
 <g id="c2r167" class="c2 c" xml:space="preserve">
 <use href="#c2e0"/>
-<text class="aa" x="781.2" y="14" textLength="218.4">|/ |   |-----------I_____I</text>
+<text class="aa" x="789.6" y="14" textLength="218.4">|/ |   |-----------I_____I</text>
 </g>
 <g id="c2r168" class="c2 c" xml:space="preserve">
 <use href="#c2e0"/>
-<text class="aa" x="764.4" y="14" textLength="226.8">__/ =| o |=-~~\  /~~\  /~~\</text>
+<text class="aa" x="772.8" y="14" textLength="226.8">__/ =| o |=-~~\  /~~\  /~~\</text>
 </g>
-<g id="c2r169" class="c2 c" xml:space="preserve">
-<use href="#c2e0"/>
-<text class="aa" x="772.8" y="14" textLength="235.2">|/-=|___|=    ||    ||    ||</text>
+<g id="c2r169" class="c2 c"><use href="#c2r157"/>
+<g xml:space="preserve" transform="translate(781.2)">
+<use href="#c2e15"/>
+<text class="aa" y="14" textLength="134.4">|/-=|___|=O=====</text>
+</g>
 </g>
 <g id="c2r170" class="c2 c" xml:space="preserve">
 <use href="#c2e0"/>
-<text class="aa" x="781.2" y="14" textLength="226.8">\_/      \O=====O=====O====</text>
+<text class="aa" x="789.6" y="14" textLength="210">\_/      \__/  \__/  \__/</text>
 </g>
 <g id="c2r171" class="c2 c"><use href="#c2r159"/>
 <g xml:space="preserve" transform="translate(823.2)">
@@ -950,9 +952,11 @@
 <use href="#c2e0"/>
 <text class="aa" x="747.6" y="14" textLength="260.4">__/ =| o |=-~~\  /~~\  /~~\  /~</text>
 </g>
-<g id="c2r181" class="c2 c" xml:space="preserve">
-<use href="#c2e0"/>
-<text class="aa" x="756" y="14" textLength="252">|/-=|___|=   O=====O=====O====</text>
+<g id="c2r181" class="c2 c"><use href="#c2r169"/>
+<g xml:space="preserve" transform="translate(756)">
+<use href="#c2e13"/>
+<text class="aa" y="14" textLength="84">|/-=|___|=</text>
+</g>
 </g>
 <g id="c2r182" class="c2 c" xml:space="preserve">
 <use href="#c2e0"/>

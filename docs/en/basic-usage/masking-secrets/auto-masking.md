@@ -41,6 +41,7 @@ console2svg capture -80 -h 14 -d macos-pc -t github-dark -- cat .env
 ```
 
 <!-- c2s:: -w 80 -h 14 -d macos-pc -t github-dark -- cat ../../../../.env -->
+![cat ../../../../.env](../../../../docs-site/public/assets/generated/195f19ed73d3b7b93f0e9a6801883912988f14fe0ca5e6c949ed3072d45a69c5.svg)
 
 ## Enabling and disabling
 

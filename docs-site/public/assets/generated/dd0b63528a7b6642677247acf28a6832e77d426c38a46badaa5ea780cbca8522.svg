@@ -14,8 +14,8 @@
 <rect width="840" height="540" fill="#1e1e1e"/>
 </g>
 <g class="c2 c" xml:space="preserve" transform="translate(8 8)">
-<text class="aa" y="14" textLength="294">Version         0.9.3.35+1eebc04e8a</text>
-<text class="aa" x="16.8" y="32" textLength="310.8">Commit at     2026-09-22 23:16:17 UTC</text>
+<text class="aa" y="14" textLength="294">Version         0.10.0.0+fa51d558bf</text>
+<text class="aa" x="16.8" y="32" textLength="310.8">Commit at     2026-09-23 05:08:49 UTC</text>
 <text class="aa" y="50" textLength="336">Platform        Ubuntu 24.04.5 LTS / X64</text>
 <text class="aa" y="68" textLength="604.8">Executable      /opt/hostedtoolcache/console2svg/develop/X64/console2svg</text>
 <text class="aa" x="16.8" y="86" textLength="201.6">Channel       standalone</text>

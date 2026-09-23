@@ -398,6 +398,29 @@ public sealed class BatchMarkdownTests
     }
 
     [Test]
+    public void RewritePreservesMarkerIndentationWhenInsertingALink()
+    {
+        var markdown = """
+            <Steps>
+
+            1. Run it.
+
+               {/* c2s:: -- echo hi */}
+
+            </Steps>
+            """;
+        var result = Parse(markdown, "page.mdx");
+
+        var rewritten = BatchMarkdown.RewriteLinks(
+            markdown,
+            [new BatchLink(result.Jobs[0], "/assets/generated/x.svg")]
+        );
+
+        rewritten.ShouldContain("   ![echo hi](/assets/generated/x.svg)");
+        rewritten.ShouldNotContain("\n![echo hi]");
+    }
+
+    [Test]
     public void RewriteUpdatesExistingLinkAndIsIdempotent()
     {
         var markdown = """

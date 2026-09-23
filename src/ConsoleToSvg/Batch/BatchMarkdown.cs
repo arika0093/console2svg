@@ -839,7 +839,8 @@ public static class BatchMarkdown
             return htmlRewrite;
         }
 
-        var imageLine = $"![{link.Job.Alt}]({link.RelativeLink})";
+        var imageLine =
+            $"{IndentationAt(markdown, link.Job.MarkerStart)}![{link.Job.Alt}]({link.RelativeLink})";
         var markerLineEnd = markdown.IndexOf('\n', link.Job.MarkerEnd);
         if (markerLineEnd < 0)
         {
@@ -884,6 +885,13 @@ public static class BatchMarkdown
         }
 
         return markdown;
+    }
+
+    private static string IndentationAt(string markdown, int offset)
+    {
+        var lineStart = markdown.LastIndexOf('\n', offset) + 1;
+        var indent = markdown[lineStart..offset];
+        return indent.All(ch => ch is ' ' or '\t') ? indent : string.Empty;
     }
 
     private static string? RewriteAssociatedHtmlImage(string markdown, BatchLink link)

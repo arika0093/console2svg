@@ -36,7 +36,7 @@ public static partial class InteractiveRecorder
         bool captureControlsEnabled = true,
         Func<(int Width, int Height)>? terminalSizeProvider = null,
         string? saveCastPath = null,
-        // Opt-in mouse passthrough (--mouse, default false; see AppOptions.Mouse).
+        // Mouse passthrough (--mouse, default true; see AppOptions.Mouse).
         bool mousePassthrough = false
     )
     {

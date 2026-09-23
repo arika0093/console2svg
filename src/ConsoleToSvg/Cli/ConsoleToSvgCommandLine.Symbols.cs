@@ -88,9 +88,9 @@ public sealed partial class ConsoleToSvgCommandLine
             new("--mouse")
             {
                 Description =
-                    "Forward mouse tracking in interactive/live-server (default: false). Lets TUI apps scroll with the wheel; host selection is owned by the child while enabled.",
+                    "Forward mouse tracking in interactive/live-server (default: true). Lets TUI apps scroll with the wheel; host selection is owned by the child while enabled.",
                 Arity = ArgumentArity.ZeroOrOne,
-                DefaultValueFactory = _ => false,
+                DefaultValueFactory = _ => true,
             };
         public Option<bool> NoLoop { get; } = Flag("--no-loop", "Disable animated SVG looping.");
         public Option<double?> Fps { get; } =

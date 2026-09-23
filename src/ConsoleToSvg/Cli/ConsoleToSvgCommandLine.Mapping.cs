@@ -166,6 +166,16 @@ public sealed partial class ConsoleToSvgCommandLine
         options.IsMarginExplicit = IsSpecified(result, _symbols.Margin);
         options.IsPaddingExplicit = IsSpecified(result, _symbols.Padding);
         options.IsOpacityExplicit = IsSpecified(result, _symbols.Opacity);
+        options.IsMouseExplicit = IsSpecified(result, _symbols.Mouse);
+        if (
+            !options.IsMouseExplicit
+            && options.Workflow != Workflow.Interactive
+            && options.Workflow != Workflow.LiveServer
+            && !options.Interactive
+        )
+        {
+            options.Mouse = false;
+        }
 
         var themes = result.GetValue(_symbols.Theme);
         if (themes is not null)
@@ -483,7 +493,8 @@ public sealed partial class ConsoleToSvgCommandLine
         }
 
         if (
-            options.Mouse
+            options.IsMouseExplicit
+            && options.Mouse
             && options.Workflow != Workflow.Interactive
             && options.Workflow != Workflow.LiveServer
             && !options.Interactive

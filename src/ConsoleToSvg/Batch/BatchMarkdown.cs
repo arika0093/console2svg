@@ -257,7 +257,7 @@ public static class BatchMarkdown
             unsupported = "--verbose-log";
         else if (!options.LiveServerResize)
             unsupported = "--no-resize";
-        else if (options.Mouse)
+        else if (options.IsMouseExplicit && options.Mouse)
             unsupported = "--mouse";
 
         error = unsupported is null

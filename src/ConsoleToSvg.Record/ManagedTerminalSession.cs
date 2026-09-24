@@ -76,8 +76,15 @@ public sealed class ManagedSessionInput
 public sealed class ManagedSessionResponse
 {
     public bool Success { get; set; } = true;
+    public string? ErrorCode { get; set; }
     public string? Error { get; set; }
     public ManagedSessionSnapshot Session { get; set; } = new();
+}
+
+public sealed class ManagedSessionException(string code, string message, Exception? inner = null)
+    : InvalidOperationException(message, inner)
+{
+    public string Code { get; } = code;
 }
 
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
@@ -178,7 +185,7 @@ public static class ManagedTerminalSessionHost
             }
             else if (runtime is null)
             {
-                response = Failure("The managed session has not started.");
+                response = Failure("session_not_started", "The managed session has not started.");
             }
             else
             {
@@ -210,8 +217,8 @@ public static class ManagedTerminalSessionHost
         }
     }
 
-    private static ManagedSessionResponse Failure(string error) =>
-        new() { Success = false, Error = error };
+    private static ManagedSessionResponse Failure(string code, string error) =>
+        new() { Success = false, ErrorCode = code, Error = error };
 
     private sealed class SessionRuntime : IAsyncDisposable
     {
@@ -361,7 +368,10 @@ public static class ManagedTerminalSessionHost
                         return (CreateResponse(includeText: true), true);
                     default:
                         return (
-                            Failure($"Unsupported session operation '{request.Operation}'."),
+                            Failure(
+                                "invalid_operation",
+                                $"Unsupported session operation '{request.Operation}'."
+                            ),
                             false
                         );
                 }
@@ -375,7 +385,16 @@ public static class ManagedTerminalSessionHost
                             or UnauthorizedAccessException
                 )
             {
-                return (Failure(exception.Message), false);
+                var code = exception switch
+                {
+                    ManagedSessionException managed => managed.Code,
+                    InvalidDataException or ArgumentException => "invalid_request",
+                    UnauthorizedAccessException => "permission_denied",
+                    IOException => "io_error",
+                    InvalidOperationException => "session_exited",
+                    _ => "session_error",
+                };
+                return (Failure(code, exception.Message), false);
             }
         }
 
@@ -639,7 +658,8 @@ public static class ManagedTerminalSessionHost
         {
             if (_snapshot.State != "running")
             {
-                throw new InvalidOperationException(
+                throw new ManagedSessionException(
+                    "session_exited",
                     $"Session '{_snapshot.Id}' is {_snapshot.State}; it cannot accept input or be resized."
                 );
             }
@@ -842,7 +862,7 @@ public static class ManagedTerminalSessionHost
         {
             if (string.IsNullOrWhiteSpace(key))
             {
-                throw new InvalidDataException("A key name is required.");
+                throw new ManagedSessionException("unsupported_key", "A key name is required.");
             }
 
             var normalized = key.Trim();
@@ -901,7 +921,10 @@ public static class ManagedTerminalSessionHost
             var parts = key.Split('+');
             if (parts.Length < 2 || parts.Any(string.IsNullOrWhiteSpace))
             {
-                throw new InvalidDataException($"Unsupported terminal key '{key}'.");
+                throw new ManagedSessionException(
+                    "unsupported_key",
+                    $"Unsupported terminal key '{key}'."
+                );
             }
 
             var modifiers = 0;
@@ -916,7 +939,10 @@ public static class ManagedTerminalSessionHost
                 };
                 if (flag == 0 || (modifiers & flag) != 0)
                 {
-                    throw new InvalidDataException($"Unsupported terminal key '{key}'.");
+                    throw new ManagedSessionException(
+                        "unsupported_key",
+                        $"Unsupported terminal key '{key}'."
+                    );
                 }
                 modifiers |= flag;
             }
@@ -978,7 +1004,10 @@ public static class ManagedTerminalSessionHost
                 return Encoding.UTF8.GetBytes(char.ToUpperInvariant(value[0]).ToString());
             }
 
-            throw new InvalidDataException($"Unsupported terminal key '{key}'.");
+            throw new ManagedSessionException(
+                "unsupported_key",
+                $"Unsupported terminal key '{key}'."
+            );
         }
 
         private static byte[] EncodeRawHex(string input)
@@ -1223,7 +1252,8 @@ public static class ManagedTerminalSessionManager
                     return new ManagedSessionResponse { Session = initialSnapshot };
                 case "send":
                 case "resize":
-                    throw new InvalidOperationException(
+                    throw new ManagedSessionException(
+                        "session_exited",
                         $"Session '{id}' is {initialSnapshot.State}; it cannot accept input or be resized."
                     );
                 case "capture":
@@ -1233,7 +1263,8 @@ public static class ManagedTerminalSessionManager
                 case "stop":
                     if (initialSnapshot.State == "unavailable")
                     {
-                        throw new InvalidOperationException(
+                        throw new ManagedSessionException(
+                            "host_unavailable",
                             $"The host for session '{id}' is unavailable; it could not be stopped."
                         );
                     }
@@ -1277,7 +1308,8 @@ public static class ManagedTerminalSessionManager
             {
                 if (snapshot.State == "unavailable")
                 {
-                    throw new InvalidOperationException(
+                    throw new ManagedSessionException(
+                        "host_unavailable",
                         $"The host for session '{id}' is unavailable; it could not be stopped."
                     );
                 }
@@ -1299,7 +1331,8 @@ public static class ManagedTerminalSessionManager
                 return new ManagedSessionResponse { Session = snapshot };
             }
 
-            throw new InvalidOperationException(
+            throw new ManagedSessionException(
+                "host_unavailable",
                 $"The host for session '{id}' is unavailable. The session state could not be changed: {exception.Message}"
             );
         }
@@ -1309,12 +1342,21 @@ public static class ManagedTerminalSessionManager
             var snapshot = LoadSnapshot(directory);
             if (snapshot.State == "running")
             {
-                throw new InvalidOperationException(
+                throw new ManagedSessionException(
+                    "host_unavailable",
                     $"The host for session '{id}' is unavailable. The screen cannot be captured: {exception.Message}"
                 );
             }
             await RenderSnapshotAsync(snapshot, request, cancellationToken).ConfigureAwait(false);
             return new ManagedSessionResponse { Session = snapshot };
+        }
+        catch (Exception exception) when (exception is IOException or TimeoutException)
+        {
+            throw new ManagedSessionException(
+                "host_unavailable",
+                $"The host for session '{id}' is unavailable: {exception.Message}",
+                exception
+            );
         }
     }
 
@@ -1674,14 +1716,20 @@ public static class ManagedTerminalSessionManager
     {
         if (!IsValidId(id))
         {
-            throw new InvalidOperationException($"Unknown managed session ID '{id}'.");
+            throw new ManagedSessionException(
+                "session_not_found",
+                $"Unknown managed session ID '{id}'."
+            );
         }
 
         var directory = Path.Combine(GetSessionRoot(), id);
         var manifestPath = Path.Combine(directory, "manifest.json");
         if (!File.Exists(manifestPath))
         {
-            throw new InvalidOperationException($"Unknown or expired managed session ID '{id}'.");
+            throw new ManagedSessionException(
+                "session_not_found",
+                $"Unknown or expired managed session ID '{id}'."
+            );
         }
 
         var manifest =
@@ -1694,7 +1742,10 @@ public static class ManagedTerminalSessionManager
         if (snapshot.ExpiresAt is DateTimeOffset expiry && expiry <= DateTimeOffset.UtcNow)
         {
             Directory.Delete(directory, recursive: true);
-            throw new InvalidOperationException($"Unknown or expired managed session ID '{id}'.");
+            throw new ManagedSessionException(
+                "session_expired",
+                $"Managed session '{id}' has expired."
+            );
         }
 
         return (manifest, directory);
@@ -1793,7 +1844,8 @@ public static class ManagedTerminalSessionManager
     {
         if (!response.Success)
         {
-            throw new InvalidOperationException(
+            throw new ManagedSessionException(
+                response.ErrorCode ?? "session_error",
                 response.Error ?? "Managed session operation failed."
             );
         }

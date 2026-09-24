@@ -22,6 +22,10 @@ console2svg session stop --all [--yes]
 
 なお、**すべての `session` サブコマンドは標準出力へ構造化 JSON を出力します**（JSON 出力を有効化するオプションは不要です）。診断ログは標準エラー出力へ分離されます。
 
+操作に失敗した場合も標準出力に JSON エンベロープを返します（例: `{"schemaVersion":1,"status":"error","error":{"code":"session_not_found","message":"..."}}`）。分岐には `error.code` を使ってください。`error.message` と標準エラー出力の診断文は人向けで、文面が変わる場合があります。`session wait` は条件結果と画面情報を保ち、失敗時に `status: "error"` と `error.code` を加えます。`session stop --all` の `failed` にはセッションごとの `{sessionId, code, message}` が入ります。
+
+安定したエラーコードは `session_not_found`、`session_expired`、`session_exited`、`host_unavailable`、`unsupported_key`、`invalid_condition`、`wait_timeout`、`cancelled` です。その他のコードは `session_not_started`、`invalid_request`、`invalid_operation`、`permission_denied`、`io_error`、`session_error` です。
+
 ## サブコマンド一覧と操作フロー
 
 ### 1. セッションの起動: `start`

@@ -17,6 +17,7 @@ The agent follows these instructions to execute the JSON-based subcommands detai
 
 All `console2svg session` subcommands return responses to stdout in JSON format.
 This allows LLMs to reliably inspect exit statuses and screen states as structured objects without relying on brittle regex parsing.
+On failure, branch on `error.code`; `error.message` and standard-error diagnostics are for people and may change.
 
 ## Basic Interactive Workflow
 

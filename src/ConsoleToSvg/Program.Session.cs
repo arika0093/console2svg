@@ -37,6 +37,9 @@ internal sealed class SessionReadOutput
 internal sealed class SessionWaitOutput
 {
     public int SchemaVersion { get; init; } = 1;
+    public string Status { get; init; } = "completed";
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public SessionErrorDetail? Error { get; init; }
     public string SessionId { get; init; } = string.Empty;
     public string State { get; init; } = string.Empty;
     public int ProcessId { get; init; }
@@ -48,6 +51,19 @@ internal sealed class SessionWaitOutput
     public bool Matched { get; init; }
     public bool TimedOut { get; init; }
     public CaptureJsonScreen Screen { get; init; } = new();
+}
+
+internal sealed class SessionErrorDetail
+{
+    public string Code { get; init; } = string.Empty;
+    public string Message { get; init; } = string.Empty;
+}
+
+internal sealed class SessionErrorOutput
+{
+    public int SchemaVersion { get; init; } = 1;
+    public string Status { get; init; } = "error";
+    public SessionErrorDetail Error { get; init; } = new();
 }
 
 internal sealed class SessionTextCondition
@@ -124,7 +140,14 @@ internal sealed class SessionStopAllOutput
 {
     public int SchemaVersion { get; init; } = 1;
     public string[] Stopped { get; init; } = [];
-    public string[] Failed { get; init; } = [];
+    public SessionOperationFailure[] Failed { get; init; } = [];
+}
+
+internal sealed class SessionOperationFailure
+{
+    public string SessionId { get; init; } = string.Empty;
+    public string Code { get; init; } = string.Empty;
+    public string Message { get; init; } = string.Empty;
 }
 
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
@@ -135,6 +158,7 @@ internal sealed class SessionStopAllOutput
 [JsonSerializable(typeof(SessionOperationOutput))]
 [JsonSerializable(typeof(SessionCaptureOutput))]
 [JsonSerializable(typeof(SessionStopAllOutput))]
+[JsonSerializable(typeof(SessionErrorOutput))]
 internal sealed partial class SessionOutputJsonContext : JsonSerializerContext { }
 
 internal static partial class Program
@@ -207,6 +231,7 @@ internal static partial class Program
             when (exception
                     is InvalidOperationException
                         or IOException
+                        or InvalidDataException
                         or UnauthorizedAccessException
                         or ArgumentException
                         or TimeoutException
@@ -214,8 +239,8 @@ internal static partial class Program
                         or JsonException
             )
         {
-            await Console
-                .Error.WriteLineAsync(exception.Message.AsMemory(), CancellationToken.None)
+            var code = GetSessionErrorCode(exception, options.RequestedSessionAction);
+            await WriteSessionErrorAsync(code, exception.Message, cancellationToken)
                 .ConfigureAwait(false);
             return 1;
         }
@@ -461,6 +486,20 @@ internal static partial class Program
         WriteSessionJson(
             new SessionWaitOutput
             {
+                Status = matched ? "completed" : "error",
+                Error = matched
+                    ? null
+                    : new SessionErrorDetail
+                    {
+                        Code = timedOut
+                            ? "wait_timeout"
+                            : session.State == "unavailable"
+                                ? "host_unavailable"
+                                : "session_exited",
+                        Message = timedOut
+                            ? $"Timed out waiting for text '{text}'."
+                            : $"Session '{session.Id}' ended before the condition matched.",
+                    },
                 SessionId = session.Id,
                 State = session.State,
                 ProcessId = session.ProcessId,
@@ -487,6 +526,14 @@ internal static partial class Program
             },
             SessionOutputJsonContext.Default.SessionWaitOutput
         );
+        if (!matched)
+        {
+            Console.Error.WriteLine(
+                timedOut
+                    ? $"Timed out waiting for text '{text}'."
+                    : $"Session '{session.Id}' ended before the condition matched."
+            );
+        }
         return matched ? 0 : 1;
     }
 
@@ -641,12 +688,18 @@ internal static partial class Program
                 .ConfigureAwait(false);
             if (!string.Equals(confirmation, "y", StringComparison.OrdinalIgnoreCase))
             {
+                await WriteSessionErrorAsync(
+                        "cancelled",
+                        "Session stop was cancelled.",
+                        cancellationToken
+                    )
+                    .ConfigureAwait(false);
                 return 1;
             }
         }
 
         var stopped = new System.Collections.Generic.List<string>();
-        var failed = new System.Collections.Generic.List<string>();
+        var failed = new System.Collections.Generic.List<SessionOperationFailure>();
         foreach (var sessionId in active.Select(session => session.Id))
         {
             try
@@ -668,7 +721,15 @@ internal static partial class Program
                             or UnauthorizedAccessException
                 )
             {
-                failed.Add($"{sessionId}: {exception.Message}");
+                Console.Error.WriteLine($"{sessionId}: {exception.Message}");
+                failed.Add(
+                    new SessionOperationFailure
+                    {
+                        SessionId = sessionId,
+                        Code = GetSessionErrorCode(exception, SessionAction.Stop),
+                        Message = exception.Message,
+                    }
+                );
             }
         }
 
@@ -699,6 +760,41 @@ internal static partial class Program
     private static string RequireSessionId(AppOptions options) =>
         options.SessionId
         ?? throw new InvalidOperationException("A managed session ID is required.");
+
+    private static string GetSessionErrorCode(Exception exception, SessionAction? action) =>
+        exception switch
+        {
+            ManagedSessionException sessionException => sessionException.Code,
+            FormatException or ArgumentException when action == SessionAction.Wait =>
+                "invalid_condition",
+            InvalidDataException => "invalid_request",
+            IOException or TimeoutException when action == SessionAction.Capture => "io_error",
+            IOException or TimeoutException => "host_unavailable",
+            OperationCanceledException => "cancelled",
+            UnauthorizedAccessException => "permission_denied",
+            ArgumentException or FormatException => "invalid_request",
+            InvalidOperationException => "invalid_request",
+            _ => "session_error",
+        };
+
+    private static async Task WriteSessionErrorAsync(
+        string code,
+        string message,
+        CancellationToken cancellationToken
+    )
+    {
+        await WriteSessionJsonAsync(
+                new SessionErrorOutput
+                {
+                    Error = new SessionErrorDetail { Code = code, Message = message },
+                },
+                SessionOutputJsonContext.Default.SessionErrorOutput,
+                cancellationToken
+            )
+            .ConfigureAwait(false);
+        await Console.Error.WriteLineAsync(message.AsMemory(), CancellationToken.None)
+            .ConfigureAwait(false);
+    }
 
     private static TimeSpan? ParseOptionalSessionDuration(string? value, string optionName)
     {

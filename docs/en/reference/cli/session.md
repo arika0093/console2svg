@@ -22,6 +22,10 @@ This is especially powerful for stepping through and controlling interactive TUI
 
 Note that **all `session` subcommands output structured JSON to standard output** (no flag required to enable JSON output). Diagnostic logs are routed separately to standard error.
 
+Operation failures also return a JSON envelope on standard output: `{"schemaVersion":1,"status":"error","error":{"code":"session_not_found","message":"..."}}`. Branch on `error.code`; `error.message` and the matching standard-error diagnostic are for people and may change. `session wait` keeps its condition result and screen details, and adds `status: "error"` plus `error.code` when it fails. `session stop --all` reports per-session `{sessionId, code, message}` objects in `failed`.
+
+Stable error codes are `session_not_found`, `session_expired`, `session_exited`, `host_unavailable`, `unsupported_key`, `invalid_condition`, `wait_timeout`, and `cancelled`. Other stable categories are `session_not_started`, `invalid_request`, `invalid_operation`, `permission_denied`, `io_error`, and `session_error`.
+
 ## Subcommands and Operational Flow
 
 ### 1. Launching a Session: `start`

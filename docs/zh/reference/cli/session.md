@@ -22,6 +22,10 @@ console2svg session stop --all [--yes]
 
 需要注意的是，**所有 `session` 子命令都会向标准输出输出结构化 JSON**（无需额外选项启用 JSON 输出）。诊断日志将独立输出至标准错误。
 
+操作失败时也会在标准输出返回 JSON 错误封装，例如 `{"schemaVersion":1,"status":"error","error":{"code":"session_not_found","message":"..."}}`。程序应根据 `error.code` 分支；`error.message` 和标准错误诊断面向用户，文字可能调整。`session wait` 保留条件结果和屏幕信息，并在失败时添加 `status: "error"` 与 `error.code`。`session stop --all` 的 `failed` 数组包含每个会话的 `{sessionId, code, message}`。
+
+稳定错误码包括 `session_not_found`、`session_expired`、`session_exited`、`host_unavailable`、`unsupported_key`、`invalid_condition`、`wait_timeout` 和 `cancelled`。其他代码为 `session_not_started`、`invalid_request`、`invalid_operation`、`permission_denied`、`io_error` 和 `session_error`。
+
 ## 子命令列表与操作流程
 
 ### 1. 启动会话：`start`

@@ -190,6 +190,10 @@ internal static partial class Program
             CancellationToken cancellationToken
         )
         {
+            await Console.Error.WriteLineAsync(
+                $"Running: {command.DisplayName}".AsMemory(),
+                cancellationToken
+            ).ConfigureAwait(false);
             var executable = FindExecutableInPath(command.Executable);
             if (executable is null)
             {
@@ -472,7 +476,34 @@ internal static partial class Program
             .Content.ReadAsStreamAsync(cancellationToken)
             .ConfigureAwait(false);
         await using var target = File.Create(destination);
-        await source.CopyToAsync(target, cancellationToken).ConfigureAwait(false);
+        var totalBytes = response.Content.Headers.ContentLength;
+        var copiedBytes = 0L;
+        var buffer = new byte[81920];
+        int read;
+        while ((read = await source.ReadAsync(buffer, cancellationToken).ConfigureAwait(false)) > 0)
+        {
+            await target.WriteAsync(buffer.AsMemory(0, read), cancellationToken)
+                .ConfigureAwait(false);
+            copiedBytes += read;
+            if (totalBytes is > 0)
+            {
+                var percentage = copiedBytes * 100d / totalBytes.Value;
+                await Console.Error.WriteAsync(
+                    $"\rDownloading {Path.GetFileName(destination)}: {percentage,6:0.0}%".AsMemory(),
+                    cancellationToken
+                ).ConfigureAwait(false);
+            }
+            else
+            {
+                await Console.Error.WriteAsync(
+                    $"\rDownloading {Path.GetFileName(destination)}: {copiedBytes:N0} bytes"
+                        .AsMemory(),
+                    cancellationToken
+                ).ConfigureAwait(false);
+            }
+        }
+
+        await Console.Error.WriteLineAsync(string.Empty).ConfigureAwait(false);
     }
 
     private static async Task VerifyDigestAsync(
@@ -523,6 +554,10 @@ internal static partial class Program
         process.StartInfo.ArgumentList.Add(archivePath);
         process.StartInfo.ArgumentList.Add("-C");
         process.StartInfo.ArgumentList.Add(destination);
+        await Console.Error.WriteLineAsync(
+            $"Running: {tar} -xzf {archivePath} -C {destination}".AsMemory(),
+            cancellationToken
+        ).ConfigureAwait(false);
         process.Start();
         var error = await process
             .StandardError.ReadToEndAsync(cancellationToken)

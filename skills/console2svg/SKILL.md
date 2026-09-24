@@ -43,12 +43,13 @@ console2svg session list
 console2svg session read <sessionId> --wait 1s
 console2svg session send <sessionId> --keys Enter
 console2svg session send <sessionId> --text "search query"
+console2svg session send <sessionId> --text "i" --keys Enter --text "hello" --keys Esc
 console2svg session resize <sessionId> --width 120 --height 40
 console2svg session capture <sessionId> -o /tmp/tui-screen.svg
 console2svg session stop <sessionId>
 ```
 
-Session commands always return JSON.
+`--text` and `--keys` may be repeated in one `session send`; inputs are sent in argument order. Session commands always return JSON, and `session list` shows only starting or running sessions.
 
 ## Documentation
 

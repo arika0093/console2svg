@@ -45,6 +45,8 @@ public enum SessionAction
     Host,
 }
 
+public sealed record SessionInputStep(bool IsText, string Value);
+
 public enum BatchAction
 {
     Markdown,
@@ -78,8 +80,7 @@ public sealed class AppOptions
     public bool UpdateYes { get; set; }
     public SessionAction? RequestedSessionAction { get; set; }
     public string? SessionId { get; set; }
-    public string? SessionText { get; set; }
-    public string? SessionKey { get; set; }
+    public List<SessionInputStep> SessionInputs { get; } = [];
     public string? SessionWait { get; set; }
     public bool SessionAll { get; set; }
     public bool SessionYes { get; set; }

@@ -458,27 +458,22 @@ public sealed partial class ConsoleToSvgCommandLine
         send.SetAction(
             (parseResult, cancellationToken) =>
             {
-                var keys = parseResult.GetValue(_symbols.SessionKeys);
-                var text = parseResult.GetValue(_symbols.SessionText);
-                if ((keys is null) == (text is null))
+                var inputs = ParseSessionInputs(parseResult);
+                if (inputs.Count == 0)
                 {
                     parseResult.InvocationConfiguration.Error.WriteLine(
-                        "Specify exactly one of --keys or --text."
+                        "Specify at least one --keys or --text input."
                     );
                     return Task.FromResult(1);
                 }
-                return _handler(
-                    new AppOptions
-                    {
-                        Workflow = Workflow.Session,
-                        RequestedSessionAction = SessionAction.Send,
-                        SessionId = parseResult.GetRequiredValue(sendId),
-                        SessionKey = keys,
-                        SessionText = text,
-                    },
-                    parseResult,
-                    cancellationToken
-                );
+                var options = new AppOptions
+                {
+                    Workflow = Workflow.Session,
+                    RequestedSessionAction = SessionAction.Send,
+                    SessionId = parseResult.GetRequiredValue(sendId),
+                };
+                options.SessionInputs.AddRange(inputs);
+                return _handler(options, parseResult, cancellationToken);
             }
         );
         session.Subcommands.Add(send);
@@ -604,6 +599,27 @@ public sealed partial class ConsoleToSvgCommandLine
         );
         session.Subcommands.Add(host);
         root.Subcommands.Add(session);
+    }
+
+    private static List<SessionInputStep> ParseSessionInputs(ParseResult parseResult)
+    {
+        var inputs = new List<SessionInputStep>();
+        var tokens = parseResult.Tokens;
+        for (var index = 0; index < tokens.Count; index++)
+        {
+            var token = tokens[index].Value;
+            var isText = token == "--text" || token.StartsWith("--text=", StringComparison.Ordinal);
+            var isKey = token == "--keys" || token.StartsWith("--keys=", StringComparison.Ordinal);
+            if (!isText && !isKey)
+            {
+                continue;
+            }
+
+            var equalsIndex = token.IndexOf('=');
+            var value = equalsIndex >= 0 ? token[(equalsIndex + 1)..] : tokens[++index].Value;
+            inputs.Add(new SessionInputStep(isText, value));
+        }
+        return inputs;
     }
 
     private void SetSessionAction(

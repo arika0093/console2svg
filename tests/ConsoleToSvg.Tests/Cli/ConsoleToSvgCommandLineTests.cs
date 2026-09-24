@@ -343,7 +343,19 @@ public sealed class ConsoleToSvgCommandLineTests
             "read value"
         );
         var read = await InvokeAsync("session", "read", "s_abc", "--wait", "1s");
-        var send = await InvokeAsync("session", "send", "s_abc", "--keys", "Ctrl+C");
+        var send = await InvokeAsync(
+            "session",
+            "send",
+            "s_abc",
+            "--text",
+            "i",
+            "--keys",
+            "Enter",
+            "--text",
+            "hello",
+            "--keys",
+            "Esc"
+        );
         var resize = await InvokeAsync(
             "session",
             "resize",
@@ -373,7 +385,14 @@ public sealed class ConsoleToSvgCommandLineTests
         read.Options.SessionId.ShouldBe("s_abc");
         read.Options.SessionWait.ShouldBe("1s");
         send.ExitCode.ShouldBe(0);
-        send.Options!.SessionKey.ShouldBe("Ctrl+C");
+        send.Options!.SessionInputs.ShouldBe(
+            [
+                new SessionInputStep(true, "i"),
+                new SessionInputStep(false, "Enter"),
+                new SessionInputStep(true, "hello"),
+                new SessionInputStep(false, "Esc"),
+            ]
+        );
         resize.ExitCode.ShouldBe(0);
         resize.Options!.SessionWidth.ShouldBe(100);
         resize.Options.SessionHeight.ShouldBe(40);
@@ -396,23 +415,31 @@ public sealed class ConsoleToSvgCommandLineTests
     }
 
     [Test]
-    public async Task SessionSendRequiresExactlyOneInputMode()
+    public async Task SessionSendRequiresAtLeastOneInputStep()
     {
         var missing = await InvokeAsync("session", "send", "s_abc");
-        var both = await InvokeAsync(
+        var repeated = await InvokeAsync(
             "session",
             "send",
             "s_abc",
+            "--text",
+            "hello",
             "--keys",
             "Enter",
             "--text",
-            "hello"
+            "again"
         );
 
         missing.ExitCode.ShouldBe(1);
-        missing.Error.ShouldContain("exactly one of --keys or --text");
-        both.ExitCode.ShouldBe(1);
-        both.Error.ShouldContain("exactly one of --keys or --text");
+        missing.Error.ShouldContain("at least one --keys or --text");
+        repeated.ExitCode.ShouldBe(0);
+        repeated.Options!.SessionInputs.ShouldBe(
+            [
+                new SessionInputStep(true, "hello"),
+                new SessionInputStep(false, "Enter"),
+                new SessionInputStep(true, "again"),
+            ]
+        );
     }
 
     [Test]

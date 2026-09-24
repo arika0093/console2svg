@@ -67,6 +67,7 @@ console2svg session capture s_a1b2c3d4e5f6 -o /tmp/current-screen.svg
 
 `session read` 返回屏幕纯文本及光标坐标，而 `session capture` 则导出包含颜色、字体样式的真实几何排版。
 多模态 LLM 可直接读取生成的 SVG 图片，分析是否存在布局变形或色彩对比度异常。
+`session list` 仅显示正在启动或运行中的会话。进程已退出的会话不会显示在列表中，但在保留期内仍可通过 ID 读取或捕获。使用 `session stop` 显式停止的会话会被删除，之后无法再通过 ID 访问。
 
 ### 4. 发送按键输入
 
@@ -78,9 +79,12 @@ console2svg session send s_a1b2c3d4e5f6 --text "git status"
 
 # 发送 Enter 或方向键等特殊功能键
 console2svg session send s_a1b2c3d4e5f6 --keys Enter
+
+# 按指定顺序连续发送文本和按键
+console2svg session send s_a1b2c3d4e5f6 --text "i" --keys Enter --text "hello" --keys Esc
 ```
 
-文本与特殊功能键可以根据需要多次连续发送。
+`--text` 和 `--keys` 可以重复指定，输入会按指定顺序发送。
 发送完毕后，可再次调用 `session read` 检查界面是否如预期发生状态迁移。
 
 ### 5. 终止会话

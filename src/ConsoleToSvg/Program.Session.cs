@@ -222,6 +222,7 @@ internal static partial class Program
         var output = new SessionListOutput
         {
             Sessions = sessions
+                .Where(session => session.State is "starting" or "running")
                 .Select(session => new SessionSummaryOutput
                 {
                     SessionId = session.Id,
@@ -281,18 +282,27 @@ internal static partial class Program
         CancellationToken cancellationToken
     )
     {
-        var response = await ManagedTerminalSessionManager
-            .RequestAsync(
-                RequireSessionId(options),
-                new ManagedSessionRequest
-                {
-                    Operation = "send",
-                    Text = options.SessionText,
-                    Key = options.SessionKey,
-                },
-                cancellationToken
-            )
-            .ConfigureAwait(false);
+        ManagedSessionResponse? response = null;
+        foreach (var input in options.SessionInputs)
+        {
+            response = await ManagedTerminalSessionManager
+                .RequestAsync(
+                    RequireSessionId(options),
+                    new ManagedSessionRequest
+                    {
+                        Operation = "send",
+                        Text = input.IsText ? input.Value : null,
+                        Key = input.IsText ? null : input.Value,
+                    },
+                    cancellationToken
+                )
+                .ConfigureAwait(false);
+        }
+
+        if (response is null)
+        {
+            throw new InvalidOperationException("At least one session input is required.");
+        }
         return WriteSessionOperation(response.Session);
     }
 

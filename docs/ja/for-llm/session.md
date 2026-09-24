@@ -67,6 +67,7 @@ console2svg session capture s_a1b2c3d4e5f6 -o /tmp/current-screen.svg
 
 `session read` は画面上の文字列とカーソル座標を返し、`session capture` は色やフォント属性を含む実際の描画結果を保存します。
 マルチモーダル対応の LLM であれば、生成された SVG 画像を直接読み込んでレイアウト崩れや配色の違和感を検知できます。
+`session list` には起動中・起動処理中のセッションのみが表示されます。プロセス終了済みのセッションは一覧に表示されませんが、保持期間中は ID で読み取りやキャプチャができます。`session stop` で明示的に停止したセッションは削除され、ID からアクセスできなくなります。
 
 ### 4. キー入力の送信
 
@@ -78,9 +79,12 @@ console2svg session send s_a1b2c3d4e5f6 --text "git status"
 
 # Enter や矢印キーなどの特殊キーを送信
 console2svg session send s_a1b2c3d4e5f6 --keys Enter
+
+# テキスト入力とキー入力を指定順に連続送信
+console2svg session send s_a1b2c3d4e5f6 --text "i" --keys Enter --text "hello" --keys Esc
 ```
 
-テキスト入力と特殊キー送信は、必要に応じて連続して実行できます。
+`--text` と `--keys` は複数回指定でき、指定した順序で送信されます。
 送信後は再び `session read` を呼び出し、期待する画面状態に遷移したかを検証します。
 
 ### 5. セッションの破棄

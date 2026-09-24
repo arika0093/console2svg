@@ -154,10 +154,19 @@ public sealed partial class ConsoleToSvgCommandLine
         public Option<int?> SessionHeight { get; } = PositiveInt("--height", "Terminal height.");
         public Option<string> SessionWait { get; } =
             RequiredString("--wait", "Wait for a screen change (for example, 1s).");
-        public Option<string> SessionText { get; } =
-            RequiredString("--text", "Literal text to send to the session.");
-        public Option<string> SessionKeys { get; } =
-            RequiredString("--keys", "Terminal key to send (for example, Enter or Ctrl+C).");
+        public Option<string[]> SessionText { get; } =
+            new("--text")
+            {
+                Arity = ArgumentArity.OneOrMore,
+                Description = "Literal text to send to the session; may be repeated.",
+            };
+        public Option<string[]> SessionKeys { get; } =
+            new("--keys")
+            {
+                Arity = ArgumentArity.OneOrMore,
+                Description =
+                    "Terminal key to send (for example, Enter or Ctrl+C); may be repeated.",
+            };
         public Option<string> SessionWorkingDirectory { get; } =
             RequiredString("--cwd", "Working directory for the command.");
         public Option<string> SessionPipeName { get; } =

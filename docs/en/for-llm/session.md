@@ -67,6 +67,7 @@ console2svg session capture s_a1b2c3d4e5f6 -o /tmp/current-screen.svg
 
 `session read` returns the screen text and cursor coordinates, while `session capture` exports actual colors, styling, and geometry.
 Multimodal LLMs can directly inspect the resulting SVG image to detect layout misalignment or color contrast anomalies.
+`session list` shows only starting or running sessions. Exited processes are omitted from the list but remain readable and capturable by ID during the retention period. Sessions explicitly stopped with `session stop` are deleted and can no longer be accessed by ID.
 
 ### 4. Sending Keystrokes and Input
 
@@ -78,9 +79,12 @@ console2svg session send s_a1b2c3d4e5f6 --text "git status"
 
 # Send special keys like Enter or arrow keys
 console2svg session send s_a1b2c3d4e5f6 --keys Enter
+
+# Send text and keys sequentially in the specified order
+console2svg session send s_a1b2c3d4e5f6 --text "i" --keys Enter --text "hello" --keys Esc
 ```
 
-Text and special keys can be dispatched sequentially as needed.
+`--text` and `--keys` may be repeated; inputs are sent in the order specified.
 After sending input, call `session read` again to verify that the terminal reached the expected state.
 
 ### 5. Terminating the Session

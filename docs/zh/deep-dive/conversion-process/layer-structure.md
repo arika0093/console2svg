@@ -35,7 +35,7 @@ console2svg 构建的 SVG 具有清晰的分层分组（`<g>`）结构：
     <!-- 图层 3：终端客户区的基础背景 -->
     <rect class="c2s-terminal-bg" x="0" y="32" width="858" height="248" fill="#11111b"/>
 
-    <!-- 图层 4：命令标题栏（指定 --with-command 时） -->
+    <!-- 图层 4：命令标题栏（指定 with-command 时） -->
     <g class="c2s-command-header" transform="translate(14, 52)">
       <text class="c2s-prompt" fill="#a6adc8">$</text>
       <text class="c2s-command" x="16" fill="#cdd6f4">fastfetch</text>

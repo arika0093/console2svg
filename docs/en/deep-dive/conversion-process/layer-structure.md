@@ -35,7 +35,7 @@ The SVG structure assembled by console2svg follows a hierarchical group (`<g>`) 
     <!-- Layer 3: Base background for terminal client area -->
     <rect class="c2s-terminal-bg" x="0" y="32" width="858" height="248" fill="#11111b"/>
 
-    <!-- Layer 4: Command header (when --with-command is specified) -->
+    <!-- Layer 4: Command header (when with-command is specified) -->
     <g class="c2s-command-header" transform="translate(14, 52)">
       <text class="c2s-prompt" fill="#a6adc8">$</text>
       <text class="c2s-command" x="16" fill="#cdd6f4">fastfetch</text>

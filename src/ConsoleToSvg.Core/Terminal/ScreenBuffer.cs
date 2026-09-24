@@ -569,6 +569,109 @@ public sealed partial class ScreenBuffer
         return true;
     }
 
+    /// <summary>Creates a durable snapshot of the currently visible viewport.</summary>
+    public ScreenBufferSnapshot CreateSnapshot()
+    {
+        var cells = new ScreenCellSnapshot[checked(Width * Height)];
+        for (var row = 0; row < Height; row++)
+        {
+            for (var col = 0; col < Width; col++)
+            {
+                var cell = GetCell(row, col);
+                cells[row * Width + col] = new ScreenCellSnapshot
+                {
+                    Text = cell.Text,
+                    Foreground = cell.Foreground,
+                    Background = cell.Background,
+                    UnderlineColor = cell.UnderlineColor,
+                    Hyperlink = cell.Hyperlink,
+                    Bold = cell.Bold,
+                    Italic = cell.Italic,
+                    Underline = cell.Underline,
+                    Reversed = cell.Reversed,
+                    Faint = cell.Faint,
+                    Hidden = cell.Hidden,
+                    Strikethrough = cell.Strikethrough,
+                    Overline = cell.Overline,
+                    Blink = cell.Blink,
+                    IsWide = cell.IsWide,
+                    IsWideContinuation = cell.IsWideContinuation,
+                };
+            }
+        }
+
+        return new ScreenBufferSnapshot
+        {
+            Width = Width,
+            Height = Height,
+            CursorRow = CursorRow,
+            CursorColumn = CursorCol,
+            CursorVisible = _cursorVisible,
+            IsAlternateScreen = _isAltScreen,
+            Cells = cells,
+        };
+    }
+
+    /// <summary>Restores a visible viewport from a durable snapshot.</summary>
+    public static ScreenBuffer FromSnapshot(ScreenBufferSnapshot snapshot, Theme theme)
+    {
+        ArgumentNullException.ThrowIfNull(snapshot);
+        ArgumentNullException.ThrowIfNull(theme);
+        if (
+            snapshot.SchemaVersion != 1
+            || snapshot.Width is < 1 or > 500
+            || snapshot.Height is < 1 or > 500
+            || snapshot.CursorRow < 0
+            || snapshot.CursorRow >= snapshot.Height
+            || snapshot.CursorColumn < 0
+            || snapshot.CursorColumn >= snapshot.Width
+            || snapshot.Cells.Length != checked(snapshot.Width * snapshot.Height)
+        )
+        {
+            throw new ArgumentException("The terminal screen snapshot is invalid.", nameof(snapshot));
+        }
+
+        var buffer = new ScreenBuffer(snapshot.Width, snapshot.Height, theme)
+        {
+            CursorRow = snapshot.CursorRow,
+            CursorCol = snapshot.CursorColumn,
+            _cursorVisible = snapshot.CursorVisible,
+            _isAltScreen = snapshot.IsAlternateScreen,
+        };
+        buffer._cells = buffer._isAltScreen ? buffer._altCells : buffer._mainCells;
+        buffer._rowsShared = buffer._isAltScreen ? buffer._altRowsShared : buffer._mainRowsShared;
+        for (var row = 0; row < snapshot.Height; row++)
+        {
+            for (var col = 0; col < snapshot.Width; col++)
+            {
+                var saved = snapshot.Cells[row * snapshot.Width + col];
+                var style = new TextStyle(
+                    saved.Foreground,
+                    saved.Background,
+                    saved.Bold,
+                    saved.Italic,
+                    saved.Underline,
+                    saved.Reversed,
+                    saved.Faint,
+                    saved.Hidden,
+                    saved.Strikethrough,
+                    saved.Overline,
+                    saved.Blink,
+                    saved.UnderlineColor
+                );
+                buffer._cells[row][col] = new ScreenCell(
+                    saved.Text,
+                    style,
+                    saved.IsWide,
+                    saved.IsWideContinuation,
+                    saved.Hyperlink
+                );
+            }
+        }
+
+        return buffer;
+    }
+
     public ScreenCell GetScrollbackCell(int scrollbackRow, int col)
     {
         if (scrollbackRow < 0 || scrollbackRow >= _scrollbackRows.Count || col < 0 || col >= Width)

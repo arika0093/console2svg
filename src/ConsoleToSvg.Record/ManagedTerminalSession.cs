@@ -38,6 +38,8 @@ public sealed class ManagedSessionSnapshot
     public long Version { get; set; }
     public string Text { get; set; } = string.Empty;
     public bool TextTruncated { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ScreenBufferSnapshot? Screen { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
     public DateTimeOffset? ExpiresAt { get; set; }
 }
@@ -221,6 +223,7 @@ public static class ManagedTerminalSessionHost
             _connection = connection;
             _emulator = emulator;
             _snapshot = snapshot;
+            _snapshot.Screen = _emulator.Buffer.CreateSnapshot();
             PersistSnapshotLocked();
             _readerTask = ReadOutputAsync();
             _exitTask = MonitorExitAsync();
@@ -363,6 +366,9 @@ public static class ManagedTerminalSessionHost
                 {
                     snapshot.Text = string.Empty;
                 }
+                // Durable terminal state stays in snapshot.json. It is needed only
+                // after the host exits, and would make every IPC response large.
+                snapshot.Screen = null;
                 return new ManagedSessionResponse { Session = snapshot };
             }
         }
@@ -562,6 +568,7 @@ public static class ManagedTerminalSessionHost
         {
             _snapshot.Version++;
             (_snapshot.Text, _snapshot.TextTruncated) = ReadScreenText(_emulator.Buffer);
+            _snapshot.Screen = _emulator.Buffer.CreateSnapshot();
             _snapshot.UpdatedAt = DateTimeOffset.UtcNow;
             var previous = _changeSignal;
             _changeSignal = NewScreenChanged();
@@ -735,6 +742,7 @@ public static class ManagedTerminalSessionHost
                 Version = source.Version,
                 Text = source.Text,
                 TextTruncated = source.TextTruncated,
+                Screen = source.Screen,
                 UpdatedAt = source.UpdatedAt,
                 ExpiresAt = source.ExpiresAt,
             };
@@ -991,12 +999,10 @@ public static class ManagedTerminalSessionManager
             throw new InvalidOperationException("An output path is required for session capture.");
         }
 
-        var emulator = new TerminalEmulator(
-            snapshot.Width,
-            snapshot.Height,
-            request.RenderOptions?.TerminalTheme ?? Theme.Resolve("dark")
-        );
-        emulator.Process(snapshot.Text);
+        var theme = request.RenderOptions?.TerminalTheme ?? Theme.Resolve("dark");
+        var screen = snapshot.Screen is { } savedScreen
+            ? ScreenBuffer.FromSnapshot(savedScreen, theme)
+            : RestoreLegacyTextSnapshot(snapshot, theme);
         var outputPath = Path.GetFullPath(request.OutputPath);
         var outputDirectory = Path.GetDirectoryName(outputPath);
         if (!string.IsNullOrEmpty(outputDirectory))
@@ -1006,13 +1012,23 @@ public static class ManagedTerminalSessionManager
         await File.WriteAllTextAsync(
                 outputPath,
                 SvgRenderer.Render(
-                    emulator.Buffer,
+                    screen,
                     request.RenderOptions ?? new SvgRenderOptions()
                 ),
                 new UTF8Encoding(false),
                 cancellationToken
             )
             .ConfigureAwait(false);
+    }
+
+    private static ScreenBuffer RestoreLegacyTextSnapshot(
+        ManagedSessionSnapshot snapshot,
+        Theme theme
+    )
+    {
+        var emulator = new TerminalEmulator(snapshot.Width, snapshot.Height, theme);
+        emulator.Process(snapshot.Text);
+        return emulator.Buffer;
     }
 
     public static IReadOnlyList<ManagedSessionSnapshot> List()

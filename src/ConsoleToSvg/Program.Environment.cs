@@ -23,7 +23,7 @@ internal static partial class Program
         bool verbose,
         string? logPath,
         EmbeddedLogCollector? embeddedLogCollector = null,
-        bool maskAuto = false,
+        bool maskAuto = true,
         IReadOnlyList<string>? maskPatterns = null
     )
     {

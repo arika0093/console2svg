@@ -101,15 +101,21 @@ public sealed class ConsoleToSvgCommandLineTests
     }
 
     [Test]
-    public async Task AutomaticMaskingIsOptInOutsideMarkdownBatchMode()
+    public async Task AutomaticMaskingIsEnabledByDefaultOutsideMarkdownBatchMode()
     {
         var defaultInvocation = await InvokeAsync("capture", "--", "echo");
-        var explicitInvocation = await InvokeAsync("capture", "--mask-auto", "--", "echo");
+        var disabledInvocation = await InvokeAsync(
+            "capture",
+            "--mask-auto",
+            "false",
+            "--",
+            "echo"
+        );
 
-        defaultInvocation.Options!.MaskAuto.ShouldBeFalse();
+        defaultInvocation.Options!.MaskAuto.ShouldBeTrue();
         defaultInvocation.Options.IsMaskAutoExplicit.ShouldBeFalse();
-        explicitInvocation.Options!.MaskAuto.ShouldBeTrue();
-        explicitInvocation.Options.IsMaskAutoExplicit.ShouldBeTrue();
+        disabledInvocation.Options!.MaskAuto.ShouldBeFalse();
+        disabledInvocation.Options.IsMaskAutoExplicit.ShouldBeTrue();
     }
 
     [Test]

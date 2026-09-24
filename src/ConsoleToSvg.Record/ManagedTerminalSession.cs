@@ -56,6 +56,7 @@ public sealed class ManagedSessionRequest
     public string? WorkingDirectory { get; set; }
     public bool NoDeleteEnvs { get; set; }
     public bool IncludeStructuredScreen { get; set; }
+    public ManagedSessionInput[]? Inputs { get; set; }
     public string? Text { get; set; }
     public string? Key { get; set; }
     public int Width { get; set; }
@@ -64,6 +65,12 @@ public sealed class ManagedSessionRequest
     public long SinceVersion { get; set; } = -1;
     public string? OutputPath { get; set; }
     public SvgRenderOptions? RenderOptions { get; set; }
+}
+
+public sealed class ManagedSessionInput
+{
+    public string Type { get; set; } = string.Empty;
+    public string Value { get; set; } = string.Empty;
 }
 
 public sealed class ManagedSessionResponse
@@ -425,9 +432,7 @@ public static class ManagedTerminalSessionHost
             CancellationToken cancellationToken
         )
         {
-            var input = request.Text is not null
-                ? Encoding.UTF8.GetBytes(request.Text)
-                : EncodeKey(request.Key);
+            var input = EncodeInputs(request);
             lock (_gate)
             {
                 EnsureRunning();
@@ -437,6 +442,37 @@ public static class ManagedTerminalSessionHost
                 .WriterStream.WriteAsync(input, cancellationToken)
                 .ConfigureAwait(false);
             await _connection.WriterStream.FlushAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        private static byte[] EncodeInputs(ManagedSessionRequest request)
+        {
+            if (request.Inputs is not { Length: > 0 } inputs)
+            {
+                return request.Text is not null
+                    ? Encoding.UTF8.GetBytes(request.Text)
+                    : EncodeKey(request.Key);
+            }
+
+            using var stream = new MemoryStream();
+            foreach (var input in inputs)
+            {
+                if (input is null || input.Value is null)
+                {
+                    throw new InvalidDataException("A session input step is incomplete.");
+                }
+
+                var bytes = input.Type switch
+                {
+                    "text" => Encoding.UTF8.GetBytes(input.Value),
+                    "key" => EncodeKey(input.Value),
+                    _ => throw new InvalidDataException(
+                        $"Unsupported session input type '{input.Type}'."
+                    ),
+                };
+                stream.Write(bytes);
+            }
+
+            return stream.ToArray();
         }
 
         private void Resize(int width, int height)

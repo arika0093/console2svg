@@ -490,27 +490,29 @@ internal static partial class Program
         CancellationToken cancellationToken
     )
     {
-        ManagedSessionResponse? response = null;
-        foreach (var input in options.SessionInputs)
-        {
-            response = await ManagedTerminalSessionManager
-                .RequestAsync(
-                    RequireSessionId(options),
-                    new ManagedSessionRequest
-                    {
-                        Operation = "send",
-                        Text = input.IsText ? input.Value : null,
-                        Key = input.IsText ? null : input.Value,
-                    },
-                    cancellationToken
-                )
-                .ConfigureAwait(false);
-        }
-
-        if (response is null)
+        if (options.SessionInputs.Count == 0)
         {
             throw new InvalidOperationException("At least one session input is required.");
         }
+        var response = await ManagedTerminalSessionManager
+            .RequestAsync(
+                RequireSessionId(options),
+                new ManagedSessionRequest
+                {
+                    Operation = "send",
+                    Inputs = options
+                        .SessionInputs.Select(input =>
+                            new ManagedSessionInput
+                            {
+                                Type = input.IsText ? "text" : "key",
+                                Value = input.Value,
+                            }
+                        )
+                        .ToArray(),
+                },
+                cancellationToken
+            )
+            .ConfigureAwait(false);
         return WriteSessionOperation(response.Session);
     }
 

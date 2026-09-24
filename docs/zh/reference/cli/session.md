@@ -87,6 +87,8 @@ console2svg session send s_abc123 --keys Ctrl+C
 * `--text <text>`：原样发送指定字符串，不附加换行符。
 * `--keys <key>`：发送特殊按键。支持的按键包括：`Enter`、`Tab`、`Escape`（`Esc`）、`Backspace`、`Delete`、`Up`、`Down`、`Left`、`Right`、`Home`、`End`、`PageUp`、`PageDown`、`Ctrl+A`～`Ctrl+Z`，或任意单个可打印字符。
 
+重复指定 `--text` 和 `--keys` 时，会按命令行顺序通过一个主机请求发送，因此其他客户端无法在这些输入步骤之间插入内容。
+
 发送输入后，立即调用 `session read` 即可查看程序响应后的最新屏幕。
 
 ### 5. 调整窗口尺寸：`resize`

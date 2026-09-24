@@ -87,6 +87,8 @@ console2svg session send s_abc123 --keys Ctrl+C
 * `--text <text>`: Sends the specified string as-is without appending newlines.
 * `--keys <key>`: Sends a special key. Supported keys: `Enter`, `Tab`, `Escape` (`Esc`), `Backspace`, `Delete`, `Up`, `Down`, `Left`, `Right`, `Home`, `End`, `PageUp`, `PageDown`, `Ctrl+A`–`Ctrl+Z`, or any single printable character.
 
+Repeated `--text` and `--keys` options are sent in their command-line order as one host request, so another client cannot insert input between the steps.
+
 Calling `session read` immediately after sending input lets you inspect the updated screen after the program responds.
 
 ### 5. Resizing Terminal Window: `resize`

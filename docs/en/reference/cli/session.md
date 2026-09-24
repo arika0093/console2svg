@@ -26,6 +26,8 @@ Operation failures also return a JSON envelope on standard output: `{"schemaVers
 
 Stable error codes are `session_not_found`, `session_expired`, `session_exited`, `host_unavailable`, `unsupported_key`, `invalid_condition`, `wait_timeout`, and `cancelled`. Other stable categories are `session_not_started`, `invalid_request`, `invalid_operation`, `permission_denied`, `io_error`, and `session_error`.
 
+The host accepts one IPC request at a time and applies actions in connection-acceptance order; one compound `send` remains a single action. A read wait returns control after at most 100 ms so it cannot hold the request slot for a long poll. Waiting for the host response is bounded to five seconds, and cancelling the CLI cancels that wait.
+
 ## Subcommands and Operational Flow
 
 ### 1. Launching a Session: `start`

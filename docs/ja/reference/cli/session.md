@@ -26,6 +26,8 @@ console2svg session stop --all [--yes]
 
 安定したエラーコードは `session_not_found`、`session_expired`、`session_exited`、`host_unavailable`、`unsupported_key`、`invalid_condition`、`wait_timeout`、`cancelled` です。その他のコードは `session_not_started`、`invalid_request`、`invalid_operation`、`permission_denied`、`io_error`、`session_error` です。
 
+ホストは IPC 要求を一度に一つ受け付け、接続を受け付けた順に操作を実行します。複合 `send` は一つの操作として扱います。画面読み取りの待機は最大100msで要求スロットを返すため、長いポーリングで入力を塞ぎません。ホスト応答の待機上限は5秒で、CLI をキャンセルすると待機もキャンセルされます。
+
 ## サブコマンド一覧と操作フロー
 
 ### 1. セッションの起動: `start`

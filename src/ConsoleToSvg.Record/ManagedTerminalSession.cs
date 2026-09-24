@@ -449,7 +449,7 @@ public static class ManagedTerminalSessionHost
                 changeTask = _changeSignal.Task;
             }
 
-            var delay = Task.Delay(Math.Min(request.WaitMs, 60_000), cancellationToken);
+            var delay = Task.Delay(Math.Min(request.WaitMs, 100), cancellationToken);
             await Task.WhenAny(changeTask, delay).ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested();
             return CreateResponse(
@@ -1114,6 +1114,7 @@ public static class ManagedTerminalSessionHost
 public static class ManagedTerminalSessionManager
 {
     private static readonly TimeSpan ExitedSessionRetention = TimeSpan.FromHours(24);
+    private static readonly TimeSpan PipeRequestTimeout = TimeSpan.FromSeconds(5);
     private const string RootDirectoryName = "sessions";
 
     public static string GetSessionRoot() =>
@@ -1288,7 +1289,11 @@ public static class ManagedTerminalSessionManager
 
         try
         {
-            var response = await SendToPipeWithRetryAsync(manifest, request, cancellationToken)
+            using var pipeTimeout = CancellationTokenSource.CreateLinkedTokenSource(
+                cancellationToken
+            );
+            pipeTimeout.CancelAfter(PipeRequestTimeout);
+            var response = await SendToPipeWithRetryAsync(manifest, request, pipeTimeout.Token)
                 .ConfigureAwait(false);
             EnsureSuccess(response);
             if (request.Operation == "stop")
@@ -1297,6 +1302,14 @@ public static class ManagedTerminalSessionManager
                     .ConfigureAwait(false);
             }
             return response;
+        }
+        catch (OperationCanceledException exception) when (!cancellationToken.IsCancellationRequested)
+        {
+            throw new ManagedSessionException(
+                "host_unavailable",
+                $"The host for session '{id}' did not respond within {PipeRequestTimeout.TotalSeconds:0} seconds.",
+                exception
+            );
         }
         catch (Exception exception)
             when (exception is (IOException or TimeoutException)

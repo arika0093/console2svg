@@ -26,6 +26,8 @@ console2svg session stop --all [--yes]
 
 稳定错误码包括 `session_not_found`、`session_expired`、`session_exited`、`host_unavailable`、`unsupported_key`、`invalid_condition`、`wait_timeout` 和 `cancelled`。其他代码为 `session_not_started`、`invalid_request`、`invalid_operation`、`permission_denied`、`io_error` 和 `session_error`。
 
+主机一次处理一个 IPC 请求，并按连接被接受的顺序执行操作；一次复合 `send` 始终作为一个操作处理。屏幕读取等待最多100ms 后就会释放请求槽，因此长轮询不会长时间阻塞输入。等待主机响应的上限为5秒，取消 CLI 也会取消该等待。
+
 ## 子命令列表与操作流程
 
 ### 1. 启动会话：`start`

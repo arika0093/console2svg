@@ -6,7 +6,8 @@ description: Subcommands to launch, interact with, and capture background termin
 ```bash title="Terminal"
 console2svg session start [options] -- command [args...]
 console2svg session list
-console2svg session read <id> [--wait <duration>]
+console2svg session read <id>
+console2svg session wait <id> --text <literal> [--until present|absent] [--stable-for <duration>] [--timeout <duration>]
 console2svg session send <id> (--keys <key> | --text <text>)
 console2svg session resize <id> --width <columns> --height <rows>
 console2svg session capture <id> [-o <path>] [appearance options]
@@ -38,19 +39,34 @@ The response includes a unique `sessionId` (e.g. `s_abc123`), process lifecycle 
 
 ### 2. Reading Screen State: `read`
 
-Retrieves the current screen content of the session as plain text.
+Returns the current screen content of the session as plain text.
 
 ```bash title="Terminal"
-console2svg session read s_abc123 --wait 2s
+console2svg session read s_abc123
 ```
 
 * `<id>`: Target session ID
-* `--wait <duration>`: Time to wait for screen changes (e.g. `500ms`, `2s`; maximum 60 seconds)
 
 The `screen` object in the response contains terminal width and height, plain text screen content (`text`, up to 200,000 characters), and whether the output was truncated (`truncated`).
-When a wait duration is specified, the latest screen is returned as soon as a change occurs or upon timeout (a timeout is a normal response with `timedOut: true`, not an error).
 
-### 3. Sending Keystrokes and Text: `send`
+### 3. Waiting for screen text: `wait`
+
+Waits for literal text to appear or disappear from the screen. Matching is case-sensitive and uses substring matching.
+
+```bash title="Terminal"
+console2svg session wait s_abc123 --text "Hi! How can I help?"
+console2svg session wait s_abc123 --text "Working" --until absent --stable-for 2s --timeout 3m
+```
+
+* `--text <literal>`: Required literal text to match
+* `--until <present|absent>`: Match when the text is present (default) or absent
+* `--stable-for <duration>`: Require the condition to remain true for this duration (default: no delay)
+* `--timeout <duration>`: Optional timeout; there is no maximum, and omitting it waits until the condition is met, the session ends, or the command is cancelled
+
+For `--until absent`, the text must first have appeared in a screen before its disappearance can match. Durations accept `ms`, `s`, `m`, or `h` units (for example, `500ms`, `2s`, `3m`, `1h`); a number without a unit means seconds.
+The JSON response includes `result` (`matched`, `timeout`, or `session-ended`), `matched`, `timedOut`, the latest screen, and its version. The command exits with status 0 only for `matched`; timeout and session end return status 1. Ctrl+C cancels an unbounded wait.
+
+### 4. Sending Keystrokes and Text: `send`
 
 Sends keyboard input or text strings to the running program.
 
@@ -69,7 +85,7 @@ console2svg session send s_abc123 --keys Ctrl+C
 
 Calling `session read` immediately after sending input lets you inspect the updated screen after the program responds.
 
-### 4. Resizing Terminal Window: `resize`
+### 5. Resizing Terminal Window: `resize`
 
 Dynamically changes the size of the active virtual terminal window.
 
@@ -79,7 +95,7 @@ console2svg session resize s_abc123 --width 140 --height 45
 
 Sends SIGWINCH (window resize signal) to the child process, triggering supported TUI applications to redraw their screen.
 
-### 5. Capturing Current Screen: `capture`
+### 6. Capturing Current Screen: `capture`
 
 Saves the session's current screen buffer as a high-quality still SVG image.
 
@@ -90,7 +106,7 @@ console2svg session capture s_abc123 -o current-screen.svg -d macos -t dracula
 * `-o <path>`: Destination SVG file path
 * Appearance options: All appearance options from `capture` are supported, including window decorations (`-d`), themes (`-t`), foreground/background colors, fonts, and padding.
 
-### 6. Listing Active Sessions: `list`
+### 7. Listing Active Sessions: `list`
 
 Retrieves a list of all currently running sessions.
 
@@ -98,7 +114,7 @@ Retrieves a list of all currently running sessions.
 console2svg session list
 ```
 
-### 7. Terminating a Session: `stop`
+### 8. Terminating a Session: `stop`
 
 Stops the session, terminates the associated process tree, and cleans up resources.
 

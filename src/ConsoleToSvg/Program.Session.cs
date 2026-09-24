@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -30,8 +31,58 @@ internal sealed class SessionReadOutput
     public int ProcessId { get; init; }
     public int? ExitCode { get; init; }
     public long Version { get; init; }
+    public CaptureJsonScreen Screen { get; init; } = new();
+}
+
+internal sealed class SessionWaitOutput
+{
+    public int SchemaVersion { get; init; } = 1;
+    public string SessionId { get; init; } = string.Empty;
+    public string State { get; init; } = string.Empty;
+    public int ProcessId { get; init; }
+    public int? ExitCode { get; init; }
+    public long Version { get; init; }
+    public string Result { get; init; } = string.Empty;
+    public string Until { get; init; } = string.Empty;
+    public string Text { get; init; } = string.Empty;
+    public bool Matched { get; init; }
     public bool TimedOut { get; init; }
     public CaptureJsonScreen Screen { get; init; } = new();
+}
+
+internal sealed class SessionTextCondition
+{
+    private readonly string _text;
+    private readonly bool _untilAbsent;
+    private bool _hasBeenPresent;
+
+    public SessionTextCondition(string text, bool untilAbsent)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            throw new ArgumentException("The screen text must not be empty.", nameof(text));
+        }
+
+        _text = text;
+        _untilAbsent = untilAbsent;
+    }
+
+    public bool IsSatisfied(string screenText)
+    {
+        var containsText = screenText.Contains(_text, StringComparison.Ordinal);
+        if (!_untilAbsent)
+        {
+            return containsText;
+        }
+
+        if (containsText)
+        {
+            _hasBeenPresent = true;
+            return false;
+        }
+
+        return _hasBeenPresent;
+    }
 }
 
 internal sealed class SessionSummaryOutput
@@ -77,6 +128,7 @@ internal sealed class SessionStopAllOutput
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 [JsonSerializable(typeof(SessionStartOutput))]
 [JsonSerializable(typeof(SessionReadOutput))]
+[JsonSerializable(typeof(SessionWaitOutput))]
 [JsonSerializable(typeof(SessionListOutput))]
 [JsonSerializable(typeof(SessionOperationOutput))]
 [JsonSerializable(typeof(SessionCaptureOutput))]
@@ -132,6 +184,8 @@ internal static partial class Program
                     .ConfigureAwait(false),
                 SessionAction.List => WriteManagedSessionList(),
                 SessionAction.Read => await ReadManagedSessionAsync(options, cancellationToken)
+                    .ConfigureAwait(false),
+                SessionAction.Wait => await WaitManagedSessionAsync(options, cancellationToken)
                     .ConfigureAwait(false),
                 SessionAction.Send => await SendManagedSessionInputAsync(options, cancellationToken)
                     .ConfigureAwait(false),
@@ -244,11 +298,10 @@ internal static partial class Program
         CancellationToken cancellationToken
     )
     {
-        var waitMs = ParseSessionWait(options.SessionWait);
         var response = await ManagedTerminalSessionManager
             .RequestAsync(
                 RequireSessionId(options),
-                new ManagedSessionRequest { Operation = "read", WaitMs = waitMs },
+                new ManagedSessionRequest { Operation = "read" },
                 cancellationToken
             )
             .ConfigureAwait(false);
@@ -261,7 +314,6 @@ internal static partial class Program
                     ProcessId = session.ProcessId,
                     ExitCode = session.ExitCode,
                     Version = session.Version,
-                    TimedOut = response.TimedOut,
                     Screen = new CaptureJsonScreen
                     {
                         Width = session.Width,
@@ -275,6 +327,145 @@ internal static partial class Program
             )
             .ConfigureAwait(false);
         return 0;
+    }
+
+    private static async Task<int> WaitManagedSessionAsync(
+        AppOptions options,
+        CancellationToken cancellationToken
+    )
+    {
+        var text =
+            options.SessionWaitText
+            ?? throw new InvalidOperationException("Screen text is required.");
+        var until = options.SessionWaitUntil ?? "present";
+        var untilAbsent = until.Equals("absent", StringComparison.OrdinalIgnoreCase);
+        var stableFor = ParseOptionalSessionDuration(options.SessionWaitStableFor, "--stable-for");
+        var timeout = ParseOptionalSessionDuration(options.SessionWaitTimeout, "--timeout");
+        var condition = new SessionTextCondition(text, untilAbsent);
+        var stopwatch = Stopwatch.StartNew();
+        long? conditionStartedAt = null;
+        ManagedSessionSnapshot? snapshot = null;
+
+        while (true)
+        {
+            if (snapshot is null)
+            {
+                snapshot = (
+                    await ManagedTerminalSessionManager
+                        .RequestAsync(
+                            RequireSessionId(options),
+                            new ManagedSessionRequest { Operation = "read" },
+                            cancellationToken
+                        )
+                        .ConfigureAwait(false)
+                ).Session;
+            }
+
+            var matched = condition.IsSatisfied(snapshot.Text);
+            if (!matched)
+            {
+                conditionStartedAt = null;
+            }
+            else if (conditionStartedAt is null)
+            {
+                conditionStartedAt = Stopwatch.GetTimestamp();
+            }
+
+            var stableElapsed = conditionStartedAt is long startedAt
+                ? Stopwatch.GetElapsedTime(startedAt)
+                : TimeSpan.Zero;
+            if (matched && stableElapsed >= (stableFor ?? TimeSpan.Zero))
+            {
+                return WriteSessionWait(snapshot, text, until, "matched", matched, timedOut: false);
+            }
+
+            if (timeout is TimeSpan timeoutValue && stopwatch.Elapsed >= timeoutValue)
+            {
+                return WriteSessionWait(
+                    snapshot,
+                    text,
+                    until,
+                    "timeout",
+                    matched: false,
+                    timedOut: true
+                );
+            }
+
+            if (snapshot.State != "running")
+            {
+                return WriteSessionWait(
+                    snapshot,
+                    text,
+                    until,
+                    "session-ended",
+                    matched: false,
+                    timedOut: false
+                );
+            }
+
+            var waitFor = TimeSpan.FromSeconds(1);
+            if (matched && stableFor is TimeSpan stableDuration)
+            {
+                waitFor = Min(waitFor, stableDuration - stableElapsed);
+            }
+            if (timeout is TimeSpan timeoutDuration)
+            {
+                waitFor = Min(waitFor, timeoutDuration - stopwatch.Elapsed);
+            }
+
+            var waitMs = Math.Max(1, (int)Math.Ceiling(waitFor.TotalMilliseconds));
+            var response = await ManagedTerminalSessionManager
+                .RequestAsync(
+                    RequireSessionId(options),
+                    new ManagedSessionRequest
+                    {
+                        Operation = "read",
+                        WaitMs = waitMs,
+                        SinceVersion = snapshot.Version,
+                    },
+                    cancellationToken
+                )
+                .ConfigureAwait(false);
+            snapshot = response.Session;
+        }
+    }
+
+    private static TimeSpan Min(TimeSpan first, TimeSpan second) =>
+        first <= second ? first : second;
+
+    private static int WriteSessionWait(
+        ManagedSessionSnapshot session,
+        string text,
+        string until,
+        string result,
+        bool matched,
+        bool timedOut
+    )
+    {
+        WriteSessionJson(
+            new SessionWaitOutput
+            {
+                SessionId = session.Id,
+                State = session.State,
+                ProcessId = session.ProcessId,
+                ExitCode = session.ExitCode,
+                Version = session.Version,
+                Result = result,
+                Until = until,
+                Text = text,
+                Matched = matched,
+                TimedOut = timedOut,
+                Screen = new CaptureJsonScreen
+                {
+                    Width = session.Width,
+                    Height = session.Height,
+                    Text = session.Text,
+                    Truncated = session.TextTruncated,
+                },
+            },
+            SessionOutputJsonContext.Default.SessionWaitOutput
+        );
+        return matched ? 0 : 1;
     }
 
     private static async Task<int> SendManagedSessionInputAsync(
@@ -485,11 +676,11 @@ internal static partial class Program
         options.SessionId
         ?? throw new InvalidOperationException("A managed session ID is required.");
 
-    private static int ParseSessionWait(string? value)
+    private static TimeSpan? ParseOptionalSessionDuration(string? value, string optionName)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (value is null)
         {
-            return 0;
+            return null;
         }
 
         var text = value.Trim();
@@ -508,6 +699,11 @@ internal static partial class Program
             multiplier = 60_000d;
             text = text[..^1];
         }
+        else if (text.EndsWith('h'))
+        {
+            multiplier = 3_600_000d;
+            text = text[..^1];
+        }
 
         if (
             !double.TryParse(
@@ -519,19 +715,20 @@ internal static partial class Program
             || double.IsNaN(amount)
             || double.IsInfinity(amount)
             || amount <= 0
+            || amount * multiplier > TimeSpan.MaxValue.TotalMilliseconds
         )
         {
             throw new FormatException(
-                "--wait must be a positive duration such as 500ms, 1s, or 1m."
+                $"{optionName} must be a positive duration such as 500ms, 1s, 2m, or 1h."
             );
         }
 
-        var milliseconds = Math.Ceiling(amount * multiplier);
-        if (milliseconds > 60_000)
+        var duration = TimeSpan.FromMilliseconds(amount * multiplier);
+        if (duration == TimeSpan.Zero)
         {
-            throw new FormatException("--wait must not exceed 60 seconds.");
+            throw new FormatException($"{optionName} is too small to represent.");
         }
-        return (int)milliseconds;
+        return duration;
     }
 
     private static void WriteSessionJson<T>(

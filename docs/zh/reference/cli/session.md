@@ -6,7 +6,8 @@ description: 跨 CLI 调用启动、操作和捕获后台终端会话的命令�
 ```bash title="Terminal"
 console2svg session start [options] -- command [args...]
 console2svg session list
-console2svg session read <id> [--wait <duration>]
+console2svg session read <id>
+console2svg session wait <id> --text <literal> [--until present|absent] [--stable-for <duration>] [--timeout <duration>]
 console2svg session send <id> (--keys <key> | --text <text>)
 console2svg session resize <id> --width <columns> --height <rows>
 console2svg session capture <id> [-o <path>] [appearance options]
@@ -38,19 +39,34 @@ console2svg session start --width 120 --height 30 -- btop
 
 ### 2. 读取屏幕状态：`read`
 
-以纯文本形式获取会话当前的屏幕内容。
+以纯文本形式返回会话当前的屏幕内容。
 
 ```bash title="Terminal"
-console2svg session read s_abc123 --wait 2s
+console2svg session read s_abc123
 ```
 
 * `<id>`：目标会话 ID
-* `--wait <duration>`：等待屏幕发生变化的持续时间（例如：`500ms`、`2s`；最长 60 秒）
 
 响应中的 `screen` 对象包含终端宽高、屏幕纯文本（`text`，最多 200,000 字符）以及是否被截断（`truncated`）。
-指定等待时间后，一旦检测到屏幕变化或达到超时时间，便会返回最新画面（超时并非错误，而是作为正常响应返回 `timedOut: true`）。
 
-### 3. 发送按键与文本：`send`
+### 3. 等待屏幕文本：`wait`
+
+等待指定文本出现在屏幕上或从屏幕消失。匹配区分大小写，并采用子字符串匹配。
+
+```bash title="Terminal"
+console2svg session wait s_abc123 --text "Hi! How can I help?"
+console2svg session wait s_abc123 --text "Working" --until absent --stable-for 2s --timeout 3m
+```
+
+* `--text <literal>`：必需的匹配文本
+* `--until <present|absent>`：等待文本出现（默认）或消失
+* `--stable-for <duration>`：条件持续满足此时间后才成功（默认：不额外等待）
+* `--timeout <duration>`：可选超时；没有最大限制。省略时一直等到条件满足、会话结束或命令被取消
+
+使用 `--until absent` 时，目标文本必须先在屏幕上出现，之后消失才算匹配。时间单位支持 `ms`、`s`、`m`、`h`（例如 `500ms`、`2s`、`3m`、`1h`）；不带单位的数字按秒处理。
+JSON 响应包含 `result`（`matched`、`timeout` 或 `session-ended`）、`matched`、`timedOut`、最新屏幕及其版本。只有匹配成功时退出码为 0；超时或会话结束时退出码为 1。无上限等待可用 Ctrl+C 取消。
+
+### 4. 发送按键与文本：`send`
 
 向正在运行的程序发送键盘输入或文本字符串。
 
@@ -69,7 +85,7 @@ console2svg session send s_abc123 --keys Ctrl+C
 
 发送输入后，立即调用 `session read` 即可查看程序响应后的最新屏幕。
 
-### 4. 调整窗口尺寸：`resize`
+### 5. 调整窗口尺寸：`resize`
 
 动态修改运行中虚拟终端窗口的尺寸。
 
@@ -79,7 +95,7 @@ console2svg session resize s_abc123 --width 140 --height 45
 
 向子进程发送 SIGWINCH（窗口大小改变信号），促使支持的 TUI 应用程序重绘画面。
 
-### 5. 捕获当前屏幕：`capture`
+### 6. 捕获当前屏幕：`capture`
 
 将该会话当前的屏幕缓冲区保存为高质量静态 SVG 图片。
 
@@ -90,7 +106,7 @@ console2svg session capture s_abc123 -o current-screen.svg -d macos -t dracula
 * `-o <path>`：输出目标 SVG 文件路径
 * 外观选项：支持与 `capture` 相同的所有外观选项，包括窗口装饰（`-d`）、主题（`-t`）、文字与背景色、字体、边距等。
 
-### 6. 查看会话列表：`list`
+### 7. 查看会话列表：`list`
 
 获取当前所有启动中的会话列表。
 
@@ -98,7 +114,7 @@ console2svg session capture s_abc123 -o current-screen.svg -d macos -t dracula
 console2svg session list
 ```
 
-### 7. 终止会话：`stop`
+### 8. 终止会话：`stop`
 
 停止会话，结束关联的进程树并清理资源。
 

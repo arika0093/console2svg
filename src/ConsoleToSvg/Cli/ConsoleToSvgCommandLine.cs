@@ -443,9 +443,54 @@ public sealed partial class ConsoleToSvgCommandLine
             Hidden = true,
         };
         read.Arguments.Add(readId);
-        AddOptions(read, [_symbols.SessionWait]);
         SetSessionAction(read, SessionAction.Read, readId);
         session.Subcommands.Add(read);
+
+        var wait = new Command("wait", "Wait for literal text in a managed session screen.");
+        var waitId = new Argument<string>("id")
+        {
+            Description = "Managed session ID.",
+            Hidden = true,
+        };
+        wait.Arguments.Add(waitId);
+        AddOptions(
+            wait,
+            [
+                _symbols.SessionWaitText,
+                _symbols.SessionWaitUntil,
+                _symbols.SessionWaitStableFor,
+                _symbols.SessionWaitTimeout,
+            ]
+        );
+        wait.SetAction(
+            (parseResult, cancellationToken) =>
+            {
+                var text = parseResult.GetValue(_symbols.SessionWaitText);
+                if (text is null)
+                {
+                    parseResult.InvocationConfiguration.Error.WriteLine(
+                        "Specify the literal text to wait for with --text."
+                    );
+                    return Task.FromResult(1);
+                }
+
+                return _handler(
+                    new AppOptions
+                    {
+                        Workflow = Workflow.Session,
+                        RequestedSessionAction = SessionAction.Wait,
+                        SessionId = parseResult.GetRequiredValue(waitId),
+                        SessionWaitText = text,
+                        SessionWaitUntil = parseResult.GetValue(_symbols.SessionWaitUntil),
+                        SessionWaitStableFor = parseResult.GetValue(_symbols.SessionWaitStableFor),
+                        SessionWaitTimeout = parseResult.GetValue(_symbols.SessionWaitTimeout),
+                    },
+                    parseResult,
+                    cancellationToken
+                );
+            }
+        );
+        session.Subcommands.Add(wait);
 
         var send = new Command("send", "Send a key or literal text to a managed session.");
         var sendId = new Argument<string>("id")
@@ -638,7 +683,6 @@ public sealed partial class ConsoleToSvgCommandLine
                         SessionId = idArgument is null
                             ? null
                             : parseResult.GetRequiredValue(idArgument),
-                        SessionWait = parseResult.GetValue(_symbols.SessionWait),
                     },
                     parseResult,
                     cancellationToken

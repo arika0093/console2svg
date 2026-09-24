@@ -63,7 +63,6 @@ public sealed class ManagedSessionResponse
     public bool Success { get; set; } = true;
     public string? Error { get; set; }
     public ManagedSessionSnapshot Session { get; set; } = new();
-    public bool TimedOut { get; set; }
 }
 
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
@@ -127,7 +126,15 @@ public static class ManagedTerminalSessionHost
             {
                 AutoFlush = true,
             };
-            var requestLine = await reader.ReadLineAsync(cancellationToken).ConfigureAwait(false);
+            string? requestLine;
+            try
+            {
+                requestLine = await reader.ReadLineAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (IOException) when (!cancellationToken.IsCancellationRequested)
+            {
+                continue;
+            }
             if (requestLine is null)
             {
                 continue;
@@ -169,10 +176,17 @@ public static class ManagedTerminalSessionHost
                 response,
                 ManagedSessionJsonContext.Default.ManagedSessionResponse
             );
-            await writer
-                .WriteLineAsync(responseJson.AsMemory(), cancellationToken)
-                .ConfigureAwait(false);
-            await writer.FlushAsync(cancellationToken).ConfigureAwait(false);
+            try
+            {
+                await writer
+                    .WriteLineAsync(responseJson.AsMemory(), cancellationToken)
+                    .ConfigureAwait(false);
+                await writer.FlushAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (IOException) when (!cancellationToken.IsCancellationRequested)
+            {
+                continue;
+            }
         }
 
         if (runtime is not null)
@@ -376,11 +390,9 @@ public static class ManagedTerminalSessionHost
             }
 
             var delay = Task.Delay(Math.Min(request.WaitMs, 60_000), cancellationToken);
-            var completed = await Task.WhenAny(changeTask, delay).ConfigureAwait(false);
+            await Task.WhenAny(changeTask, delay).ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested();
-            var response = CreateResponse(includeText: true);
-            response.TimedOut = completed == delay && response.Session.Version == version;
-            return response;
+            return CreateResponse(includeText: true);
         }
 
         private async Task SendAsync(
@@ -907,7 +919,7 @@ public static class ManagedTerminalSessionManager
 
         try
         {
-            var response = await SendToPipeAsync(manifest.PipeName, request, cancellationToken)
+            var response = await SendToPipeWithRetryAsync(manifest, request, cancellationToken)
                 .ConfigureAwait(false);
             EnsureSuccess(response);
             if (request.Operation == "stop")
@@ -946,11 +958,11 @@ public static class ManagedTerminalSessionManager
 
             if (snapshot.State != "running")
             {
-                return new ManagedSessionResponse { Session = snapshot, TimedOut = false };
+                return new ManagedSessionResponse { Session = snapshot };
             }
 
             throw new InvalidOperationException(
-                $"The host for session '{id}' is unavailable. The session state could not be changed."
+                $"The host for session '{id}' is unavailable. The session state could not be changed: {exception.Message}"
             );
         }
         catch (Exception exception)
@@ -960,7 +972,7 @@ public static class ManagedTerminalSessionManager
             if (snapshot.State == "running")
             {
                 throw new InvalidOperationException(
-                    $"The host for session '{id}' is unavailable. The screen cannot be captured."
+                    $"The host for session '{id}' is unavailable. The screen cannot be captured: {exception.Message}"
                 );
             }
             await RenderSnapshotAsync(snapshot, request, cancellationToken).ConfigureAwait(false);
@@ -1185,16 +1197,12 @@ public static class ManagedTerminalSessionManager
     private static async Task<ManagedSessionResponse> SendToPipeAsync(
         string pipeName,
         ManagedSessionRequest request,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken,
+        ManagedSessionManifest? manifest = null
     )
     {
-        using var client = new NamedPipeClientStream(
-            ".",
-            pipeName,
-            PipeDirection.InOut,
-            PipeOptions.Asynchronous
-        );
-        await client.ConnectAsync(1000, cancellationToken).ConfigureAwait(false);
+        using var client = await ConnectToPipeAsync(pipeName, cancellationToken, manifest)
+            .ConfigureAwait(false);
         using var reader = new StreamReader(client, new UTF8Encoding(false), false, 4096, true);
         using var writer = new StreamWriter(client, new UTF8Encoding(false), 4096, true)
         {
@@ -1222,6 +1230,98 @@ public static class ManagedTerminalSessionManager
             ?? throw new InvalidDataException(
                 "The managed session host returned an empty response."
             );
+    }
+
+    private static async Task<ManagedSessionResponse> SendToPipeWithRetryAsync(
+        ManagedSessionManifest manifest,
+        ManagedSessionRequest request,
+        CancellationToken cancellationToken
+    )
+    {
+        while (true)
+        {
+            try
+            {
+                return await SendToPipeAsync(
+                        manifest.PipeName,
+                        request,
+                        cancellationToken,
+                        manifest
+                    )
+                    .ConfigureAwait(false);
+            }
+            catch (IOException)
+                when ((request.Operation is "read" or "capture") && IsHostRunning(manifest))
+            {
+                await Task.Delay(25, cancellationToken).ConfigureAwait(false);
+            }
+        }
+    }
+
+    private static async Task<NamedPipeClientStream> ConnectToPipeAsync(
+        string pipeName,
+        CancellationToken cancellationToken,
+        ManagedSessionManifest? manifest
+    )
+    {
+        while (true)
+        {
+            var client = new NamedPipeClientStream(
+                ".",
+                pipeName,
+                PipeDirection.InOut,
+                PipeOptions.Asynchronous
+            );
+            try
+            {
+                await client.ConnectAsync(1000, cancellationToken).ConfigureAwait(false);
+                return client;
+            }
+            catch (Exception exception)
+                when (manifest is not null && exception is (TimeoutException or IOException))
+            {
+                await client.DisposeAsync().ConfigureAwait(false);
+                if (!IsHostRunning(manifest))
+                {
+                    throw new IOException(
+                        $"The host for session '{manifest.Id}' is unavailable.",
+                        exception
+                    );
+                }
+                await Task.Delay(25, cancellationToken).ConfigureAwait(false);
+            }
+            catch
+            {
+                await client.DisposeAsync().ConfigureAwait(false);
+                throw;
+            }
+        }
+    }
+
+    private static bool IsHostRunning(ManagedSessionManifest manifest)
+    {
+        try
+        {
+            using var process = Process.GetProcessById(manifest.WorkerProcessId);
+            if (process.HasExited)
+            {
+                return false;
+            }
+
+            return manifest.WorkerStartedAt is not DateTimeOffset startedAt
+                || Math.Abs(
+                    (process.StartTime.ToUniversalTime() - startedAt.UtcDateTime).TotalSeconds
+                ) < 2;
+        }
+        catch (Exception exception)
+            when (exception
+                    is ArgumentException
+                        or InvalidOperationException
+                        or System.ComponentModel.Win32Exception
+            )
+        {
+            return false;
+        }
     }
 
     private static (ManagedSessionManifest Manifest, string Directory) LoadManifest(string id)

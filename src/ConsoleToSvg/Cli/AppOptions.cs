@@ -38,6 +38,7 @@ public enum SessionAction
     Start,
     List,
     Read,
+    Wait,
     Send,
     Resize,
     Capture,
@@ -81,7 +82,10 @@ public sealed class AppOptions
     public SessionAction? RequestedSessionAction { get; set; }
     public string? SessionId { get; set; }
     public List<SessionInputStep> SessionInputs { get; } = [];
-    public string? SessionWait { get; set; }
+    public string? SessionWaitText { get; set; }
+    public string? SessionWaitUntil { get; set; }
+    public string? SessionWaitStableFor { get; set; }
+    public string? SessionWaitTimeout { get; set; }
     public bool SessionAll { get; set; }
     public bool SessionYes { get; set; }
     public int SessionWidth { get; set; } = 100;

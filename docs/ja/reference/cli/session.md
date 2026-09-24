@@ -6,7 +6,8 @@ description: CLI 呼び出しをまたいでバックグラウンドの端末セ
 ```bash title="Terminal"
 console2svg session start [options] -- command [args...]
 console2svg session list
-console2svg session read <id> [--wait <duration>]
+console2svg session read <id>
+console2svg session wait <id> --text <literal> [--until present|absent] [--stable-for <duration>] [--timeout <duration>]
 console2svg session send <id> (--keys <key> | --text <text>)
 console2svg session resize <id> --width <columns> --height <rows>
 console2svg session capture <id> [-o <path>] [appearance options]
@@ -38,19 +39,34 @@ console2svg session start --width 120 --height 30 -- btop
 
 ### 2. 画面状態の読み取り: `read`
 
-セッションの現在の画面内容をプレーンテキストで取得します。
+セッションの現在の画面内容をプレーンテキストで返します。
 
 ```bash title="Terminal"
-console2svg session read s_abc123 --wait 2s
+console2svg session read s_abc123
 ```
 
 * `<id>`: 対象のセッション ID
-* `--wait <duration>`: 画面に変化が生じるまで待機する時間（例: `500ms`、`2s`。最大 60 秒）
 
 レスポンスの `screen` オブジェクトには、端末の幅・高さ、画面のプレーンテキスト（`text`、最大 200,000 文字）、および切り捨て有無（`truncated`）が含まれます。
-待機時間を指定した場合、画面変化を検知するかタイムアウトに達した時点で最新の画面を返却します（タイムアウトはエラーではなく正常応答として `timedOut: true` が返ります）。
 
-### 3. キー入力とテキスト送信: `send`
+### 3. 画面テキストの待機: `wait`
+
+画面に指定した文字列が現れる、または消えるまで待機します。文字列は大文字・小文字を区別し、部分一致で判定します。
+
+```bash title="Terminal"
+console2svg session wait s_abc123 --text "Hi! How can I help?"
+console2svg session wait s_abc123 --text "Working" --until absent --stable-for 2s --timeout 3m
+```
+
+* `--text <literal>`: 一致させる文字列（必須）
+* `--until <present|absent>`: 文字列の出現（既定）または消失を待機
+* `--stable-for <duration>`: 条件がこの時間継続した場合に成立（既定: 追加待機なし）
+* `--timeout <duration>`: 任意のタイムアウト。上限はなく、省略時は条件成立、セッション終了、またはコマンドのキャンセルまで待機
+
+`--until absent` では、対象文字列が一度画面に表示された後に消えた場合に成立します。時間単位は `ms`、`s`、`m`、`h`（例: `500ms`、`2s`、`3m`、`1h`）に対応し、単位を省略すると秒として扱います。
+JSONレスポンスには `result`（`matched`、`timeout`、`session-ended`）、`matched`、`timedOut`、最新画面とそのバージョンが含まれます。条件成立時のみ終了コード0となり、タイムアウトまたはセッション終了時は終了コード1です。上限なしの待機は Ctrl+C でキャンセルできます。
+
+### 4. キー入力とテキスト送信: `send`
 
 実行中のプログラムへキーボード入力やテキストを送信します。
 
@@ -69,7 +85,7 @@ console2svg session send s_abc123 --keys Ctrl+C
 
 入力を送信した後は、直ちに `session read` を呼び出すことで、プログラムが反応した後の最新画面を確認できます。
 
-### 4. 画面サイズの変更: `resize`
+### 5. 画面サイズの変更: `resize`
 
 稼働中の仮想端末ウィンドウのサイズを動的に変更します。
 
@@ -79,7 +95,7 @@ console2svg session resize s_abc123 --width 140 --height 45
 
 子プロセスに対して SIGWINCH（ウィンドウサイズ変更シグナル）が送られ、対応する TUI アプリケーションが画面を再描画します。
 
-### 5. 現在画面のキャプチャ: `capture`
+### 6. 現在画面のキャプチャ: `capture`
 
 セッションの現在の画面バッファを、高品質な静止画 SVG 画像として保存します。
 
@@ -90,7 +106,7 @@ console2svg session capture s_abc123 -o current-screen.svg -d macos -t dracula
 * `-o <path>`: 出力先 SVG ファイルパス
 * 外観オプション: ウィンドウ装飾（`-d`）、テーマ（`-t`）、文字色・背景色、フォント、余白など、`capture` と共通の外観オプションをすべて利用できます。
 
-### 6. セッション一覧の確認: `list`
+### 7. セッション一覧の確認: `list`
 
 現在起動しているセッションの一覧を取得します。
 
@@ -98,7 +114,7 @@ console2svg session capture s_abc123 -o current-screen.svg -d macos -t dracula
 console2svg session list
 ```
 
-### 7. セッションの終了: `stop`
+### 8. セッションの終了: `stop`
 
 セッションを停止し、関連するプロセスツリーを終了させてリソースをクリーンアップします。
 

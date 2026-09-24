@@ -58,14 +58,18 @@ console2svg session resize s_a1b2c3d4e5f6 --width 120 --height 30
 To evaluate how the application responded to previous inputs, retrieve the terminal text buffer or capture an SVG image:
 
 ```bash title="Terminal"
-# Wait up to 1 second for output stream updates and read text buffer
-console2svg session read s_a1b2c3d4e5f6 --wait 1s
+# Read the current screen text immediately
+console2svg session read s_a1b2c3d4e5f6
+
+# Wait for text to appear, or for previously seen text to disappear
+console2svg session wait s_a1b2c3d4e5f6 --text "Ready"
+console2svg session wait s_a1b2c3d4e5f6 --text "Working" --until absent --stable-for 2s
 
 # Capture the current visual screen as an SVG image
 console2svg session capture s_a1b2c3d4e5f6 -o /tmp/current-screen.svg
 ```
 
-`session read` returns the screen text and cursor coordinates, while `session capture` exports actual colors, styling, and geometry.
+`session read` immediately returns the current screen text and cursor coordinates. Use `session wait --text <literal>` for condition-based waiting; absence waits require the text to have appeared before it disappears. `--stable-for` requires the condition to remain true, and optional `--timeout` has no maximum. `session capture` exports actual colors, styling, and geometry.
 Multimodal LLMs can directly inspect the resulting SVG image to detect layout misalignment or color contrast anomalies.
 `session list` shows only starting or running sessions. Exited processes are omitted from the list but remain readable and capturable by ID during the retention period. Sessions explicitly stopped with `session stop` are deleted and can no longer be accessed by ID.
 

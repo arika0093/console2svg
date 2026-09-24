@@ -152,8 +152,18 @@ public sealed partial class ConsoleToSvgCommandLine
             Flag("--yes", "Skip the confirmation prompt.", "-y");
         public Option<int?> SessionWidth { get; } = PositiveInt("--width", "Terminal width.");
         public Option<int?> SessionHeight { get; } = PositiveInt("--height", "Terminal height.");
-        public Option<string> SessionWait { get; } =
-            RequiredString("--wait", "Wait for a screen change (for example, 1s).");
+        public Option<string> SessionWaitText { get; } =
+            RequiredString("--text", "Literal screen text to wait for.", "text");
+        public Option<string> SessionWaitUntil { get; } =
+            StringChoice(
+                "--until",
+                "Wait until the text is present or absent.",
+                ["present", "absent"]
+            );
+        public Option<string> SessionWaitStableFor { get; } =
+            RequiredString("--stable-for", "Require the condition to hold for this duration.");
+        public Option<string> SessionWaitTimeout { get; } =
+            RequiredString("--timeout", "Stop waiting after this duration.");
         public Option<string[]> SessionText { get; } =
             new("--text")
             {

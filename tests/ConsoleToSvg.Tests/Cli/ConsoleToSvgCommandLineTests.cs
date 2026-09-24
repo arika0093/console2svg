@@ -342,7 +342,20 @@ public sealed class ConsoleToSvgCommandLineTests
             "-c",
             "read value"
         );
-        var read = await InvokeAsync("session", "read", "s_abc", "--wait", "1s");
+        var read = await InvokeAsync("session", "read", "s_abc");
+        var wait = await InvokeAsync(
+            "session",
+            "wait",
+            "s_abc",
+            "--text",
+            "Working",
+            "--until",
+            "absent",
+            "--stable-for",
+            "2s",
+            "--timeout",
+            "3m"
+        );
         var send = await InvokeAsync(
             "session",
             "send",
@@ -383,7 +396,13 @@ public sealed class ConsoleToSvgCommandLineTests
         read.ExitCode.ShouldBe(0);
         read.Options!.RequestedSessionAction.ShouldBe(SessionAction.Read);
         read.Options.SessionId.ShouldBe("s_abc");
-        read.Options.SessionWait.ShouldBe("1s");
+        wait.ExitCode.ShouldBe(0);
+        wait.Options!.RequestedSessionAction.ShouldBe(SessionAction.Wait);
+        wait.Options.SessionId.ShouldBe("s_abc");
+        wait.Options.SessionWaitText.ShouldBe("Working");
+        wait.Options.SessionWaitUntil.ShouldBe("absent");
+        wait.Options.SessionWaitStableFor.ShouldBe("2s");
+        wait.Options.SessionWaitTimeout.ShouldBe("3m");
         send.ExitCode.ShouldBe(0);
         send.Options!.SessionInputs.ShouldBe(
             [
@@ -412,6 +431,15 @@ public sealed class ConsoleToSvgCommandLineTests
 
         invocation.ExitCode.ShouldBe(1);
         invocation.Error.ShouldContain("--json");
+    }
+
+    [Test]
+    public async Task SessionReadDoesNotAcceptRemovedWaitOption()
+    {
+        var invocation = await InvokeAsync("session", "read", "s_abc", "--wait", "1s");
+
+        invocation.ExitCode.ShouldBe(1);
+        invocation.Error.ShouldContain("--wait");
     }
 
     [Test]

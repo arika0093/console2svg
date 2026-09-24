@@ -58,14 +58,18 @@ console2svg session resize s_a1b2c3d4e5f6 --width 120 --height 30
 为确认应用程序对上一步输入的响应情况，可读取屏幕文本内容或捕获 SVG 图像：
 
 ```bash title="Terminal"
-# 等待输出流更新最多 1 秒并读取文本缓冲区
-console2svg session read s_a1b2c3d4e5f6 --wait 1s
+# 立即读取当前屏幕文本
+console2svg session read s_a1b2c3d4e5f6
+
+# 等待文本出现，或等待曾经出现的文本消失
+console2svg session wait s_a1b2c3d4e5f6 --text "Ready"
+console2svg session wait s_a1b2c3d4e5f6 --text "Working" --until absent --stable-for 2s
 
 # 将当前屏幕渲染结果保存为 SVG 图像
 console2svg session capture s_a1b2c3d4e5f6 -o /tmp/current-screen.svg
 ```
 
-`session read` 返回屏幕纯文本及光标坐标，而 `session capture` 则导出包含颜色、字体样式的真实几何排版。
+`session read` 会立即返回当前屏幕纯文本及光标坐标。条件等待请使用 `session wait --text <literal>`；等待文本消失时，必须先观察到它出现。`--stable-for` 要求条件持续成立，`--timeout` 可选且没有最大限制。`session capture` 则导出包含颜色、字体样式的真实几何排版。
 多模态 LLM 可直接读取生成的 SVG 图片，分析是否存在布局变形或色彩对比度异常。
 `session list` 仅显示正在启动或运行中的会话。进程已退出的会话不会显示在列表中，但在保留期内仍可通过 ID 读取或捕获。使用 `session stop` 显式停止的会话会被删除，之后无法再通过 ID 访问。
 

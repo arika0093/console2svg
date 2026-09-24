@@ -13,16 +13,16 @@ Convert terminal output into images for READMEs, blog posts, assignments, and do
 
 There are lots of features. You are sure to find something you like:
 
-- **Generate beautiful SVG images** — Render ANSI and Truecolor output as SVG. It delivers high resolution that is perfect for your documentation.
-- **Generate videos too** — Share `cmatrix` output in one shot.
-- **Automation support** — Regenerate documentation images in CI, with replay support included.
-- **Convert to other formats** — Convert to PNG, GIF, WebM, MP4, and more with built-in support.
-- **Interactive capture** — Press `F9`/`F10` to capture at any time without launching a screenshot tool.
-- **Live Server** — Convert terminal sessions to SVG in real time and show them live in a browser. Even YouTube streaming is possible.
-- **Rich custom-theme support** — Choose from a wide variety of themes and customize the terminal appearance to match your preferences.
-- **Windows support** — It works on Linux, macOS, and Windows.
-- **Built-in crop feature** — Automatically trim overly long output and extract only the parts you need.
-- **Share safely** — Common passwords and usernames are masked automatically, even when `APP_SECRET_TOKEN` accidentally appears in the output.
+- **[Generate beautiful SVG images](https://console2svg.eclairs.cc/en/basic-usage/capturing-images/overview/)** — Render ANSI and Truecolor output as SVG. It delivers high resolution that is perfect for your documentation.
+- **[Generate videos too](https://console2svg.eclairs.cc/en/basic-usage/capturing-videos/overview/)** — Share `cmatrix` output in one shot.
+- **[Automation support](https://console2svg.eclairs.cc/en/automation/document-image-sync/)** — Regenerate documentation images in CI, with replay support included.
+- **[Playwright for TUIs](https://console2svg.eclairs.cc/en/for-llm/session)** — Let AI agents operate, inspect, and improve TUIs with structured terminal control commands.
+- **[Convert to other formats](https://console2svg.eclairs.cc/en/basic-usage/capturing-images/convert-to-png/)** — Convert to PNG, GIF, WebM, MP4, and more with built-in support.
+- **[Interactive capture](https://console2svg.eclairs.cc/en/basic-usage/interactive-capture/)** — Press `F9`/`F10` to capture at any time without launching a screenshot tool.
+- **[Live Server](https://console2svg.eclairs.cc/en/utilities/live-server/)** — Convert terminal sessions to SVG in real time and show them live in a browser. Even YouTube streaming is possible.
+- **[Rich custom-theme support](https://console2svg.eclairs.cc/en/appearance/themes/built-in-themes/)** — Choose from a wide variety of themes and customize the terminal appearance to match your preferences.
+- **[Windows support](https://console2svg.eclairs.cc/en/getting-started/installation/)** — It works on Linux, macOS, and Windows.
+- **[Share safely](https://console2svg.eclairs.cc/en/basic-usage/masking-secrets/auto-masking/)** — Common passwords and usernames are masked automatically, even when `APP_SECRET_TOKEN` accidentally appears in the output.
 
 For more information, see the [documentation site](https://console2svg.eclairs.cc).
 

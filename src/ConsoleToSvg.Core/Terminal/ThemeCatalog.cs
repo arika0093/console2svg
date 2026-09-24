@@ -164,7 +164,7 @@ public sealed class ThemeCatalog
                 .GetManifestResourceNames()
                 .Where(x =>
                     NormalizeResourceName(x)
-                        .StartsWith("theme/", StringComparison.OrdinalIgnoreCase)
+                        .StartsWith("theme/built-in/", StringComparison.OrdinalIgnoreCase)
                     && NormalizeResourceName(x)
                         .EndsWith("/theme.json", StringComparison.OrdinalIgnoreCase)
                 )

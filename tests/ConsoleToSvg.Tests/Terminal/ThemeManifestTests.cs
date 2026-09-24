@@ -29,6 +29,15 @@ public sealed class ThemeManifestTests
     }
 
     [Test]
+    public void BuiltInThemesAreLoadedFromBuiltInResourceSubtree()
+    {
+        var entry = new ThemeCatalog().Resolve("cyberpunk");
+
+        entry.IsBuiltIn.ShouldBeTrue();
+        entry.Root.ShouldBe("theme/built-in/full/cyberpunk");
+    }
+
+    [Test]
     public void ValidatorRequiresIdsForAppearanceVariants()
     {
         var manifest = new ThemeManifest

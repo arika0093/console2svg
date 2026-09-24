@@ -8,8 +8,8 @@
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource
-      Include="..\..\theme\**\*"
-      LogicalName="theme\%(RecursiveDir)%(Filename)%(Extension)"
+      Include="..\..\theme\built-in\**\*"
+      LogicalName="theme\built-in\%(RecursiveDir)%(Filename)%(Extension)"
     />
   </ItemGroup>
   <ItemGroup>

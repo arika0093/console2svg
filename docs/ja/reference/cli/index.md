@@ -16,6 +16,7 @@ description: console2svgのコマンドリファレンス。
 | [`theme`](./theme.md) | テーマの一覧表示、追加、削除、更新 |
 | [`status`](./status.md) | 実行環境と依存ツールの状態を確認 |
 | [`update`](./update.md) | console2svgの更新を確認・実行 |
+| [`llm`](./llm.md) | 組み込みAgent Skillを出力 |
 | [`live-server`](./live-server.md) | ライブSVGサーバーを起動 |
 | [`tmux`](./tmux.md) | tmuxペインを記録または配信 |
 | [`batch`](./batch.md) | Markdownキャプチャアセットの生成、公開、復元 |

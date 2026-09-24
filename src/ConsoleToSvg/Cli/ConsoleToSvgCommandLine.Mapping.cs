@@ -741,6 +741,7 @@ public sealed partial class ConsoleToSvgCommandLine
                 or "theme"
                 or "status"
                 or "update"
+                or "llm"
                 or "live-server"
                 or "tmux"
                 or "batch"

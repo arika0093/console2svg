@@ -16,6 +16,7 @@ description: Command reference for console2svg.
 | [`theme`](./theme.md) | List, add, remove, and update themes |
 | [`status`](./status.md) | Check the execution environment and dependency tool status |
 | [`update`](./update.md) | Check for and run console2svg updates |
+| [`llm`](./llm.md) | Print the bundled Agent Skill |
 | [`live-server`](./live-server.md) | Start a live SVG server |
 | [`tmux`](./tmux.md) | Record or stream tmux panes |
 | [`batch`](./batch.md) | Generate, publish, and restore Markdown capture assets |

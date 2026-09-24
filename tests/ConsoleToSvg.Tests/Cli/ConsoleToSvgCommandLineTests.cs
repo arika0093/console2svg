@@ -154,6 +154,31 @@ public sealed class ConsoleToSvgCommandLineTests
     }
 
     [Test]
+    public async Task LlmSkillsWritesOnlyTheBundledAgentSkill()
+    {
+        var invocation = await InvokeAsync("llm", "skills");
+
+        invocation.ExitCode.ShouldBe(0);
+        invocation.Error.ShouldBeEmpty();
+        invocation.Output.ShouldStartWith("---\nname: console2svg\n");
+        invocation.Output.ShouldContain("description:");
+        invocation.Output.ShouldContain("## Capture a command");
+        invocation.Output.ShouldEndWith("\n");
+        invocation.Output.ShouldNotContain("\x1b[");
+    }
+
+    [Test]
+    public async Task LlmHelpDescribesSkillsCommand()
+    {
+        var invocation = await InvokeAsync("llm", "--help");
+
+        invocation.ExitCode.ShouldBe(0);
+        invocation.Output.ShouldContain("LLM integration helpers.");
+        invocation.Output.ShouldContain("skills");
+        invocation.Output.ShouldContain("Agent Skill");
+    }
+
+    [Test]
     public async Task StatusAndThemeListMapTheSharedOutputFormats()
     {
         var status = await InvokeAsync("status", "--format", "markdown");

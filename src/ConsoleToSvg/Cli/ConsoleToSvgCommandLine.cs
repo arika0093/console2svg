@@ -158,6 +158,7 @@ public sealed partial class ConsoleToSvgCommandLine
         AddThemeCommand(root);
         AddStatusCommand(root);
         AddUpdateCommand(root);
+        AddLlmCommand(root);
         AddLiveServerCommand(root);
         AddTmuxCommand(root);
         AddBatchCommand(root);
@@ -295,6 +296,24 @@ public sealed partial class ConsoleToSvgCommandLine
 
     private static OutputFormat ParseOutputFormat(string? value) =>
         Enum.TryParse<OutputFormat>(value, true, out var format) ? format : OutputFormat.Table;
+
+    private static void AddLlmCommand(RootCommand root)
+    {
+        var llm = new Command("llm", "LLM integration helpers.");
+        llm.SetAction(ColoredHelpAction.Write);
+
+        var skills = new Command("skills", "Write the console2svg Agent Skill to standard output.");
+        skills.SetAction(
+            (parseResult, cancellationToken) =>
+                LlmSkill.WriteAsync(
+                    parseResult.InvocationConfiguration.Output,
+                    parseResult.InvocationConfiguration.Error,
+                    cancellationToken
+                )
+        );
+        llm.Subcommands.Add(skills);
+        root.Subcommands.Add(llm);
+    }
 
     private void AddUpdateCommand(RootCommand root)
     {

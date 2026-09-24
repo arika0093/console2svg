@@ -626,6 +626,38 @@ public sealed partial class ConsoleToSvgCommandLine
         );
         session.Subcommands.Add(capture);
 
+        var inspect = new Command(
+            "inspect",
+            "Render a managed session's current screen to an ephemeral SVG for visual inspection."
+        );
+        var inspectId = new Argument<string>("id")
+        {
+            Description = "Managed session ID.",
+            Hidden = true,
+        };
+        inspect.Arguments.Add(inspectId);
+        AddOptions(inspect, _symbols.SessionInspectOptions);
+        inspect.SetAction(
+            async (parseResult, cancellationToken) =>
+            {
+                if (
+                    !TryCreateSessionInspectOptions(
+                        parseResult,
+                        parseResult.GetRequiredValue(inspectId),
+                        out var options,
+                        out var error
+                    )
+                )
+                {
+                    parseResult.InvocationConfiguration.Error.WriteLine(error);
+                    return 1;
+                }
+                return await _handler(options!, parseResult, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+        );
+        session.Subcommands.Add(inspect);
+
         var stop = new Command("stop", "Stop a managed session or all managed sessions.");
         var stopId = new Argument<string?>("id")
         {
@@ -722,21 +754,6 @@ public sealed partial class ConsoleToSvgCommandLine
             RequestedSessionAction = SessionAction.Capture,
             SessionId = sessionId,
             OutputPath = result.GetValue(_symbols.OutputPath)?.ToString() ?? "output.svg",
-            Font = result.GetValue(_symbols.Font),
-            ForeColor = result.GetValue(_symbols.ForeColor),
-            BackColor = result.GetValue(_symbols.BackColor),
-            CropTop = result.GetValue(_symbols.CropTop) ?? "0",
-            CropRight = result.GetValue(_symbols.CropRight) ?? "0",
-            CropBottom = result.GetValue(_symbols.CropBottom) ?? "0",
-            CropLeft = result.GetValue(_symbols.CropLeft) ?? "0",
-            Opacity = result.GetValue(_symbols.Opacity) ?? 1d,
-            Margin = result.GetValue(_symbols.Margin),
-            Padding = result.GetValue(_symbols.Padding),
-            FontSize = result.GetValue(_symbols.FontSize),
-            PcPadding = result.GetValue(_symbols.PcPadding),
-            LengthAdjust = result.GetValue(_symbols.Adjust) ?? "spacing",
-            MaskAuto = result.GetValue(_symbols.MaskAuto),
-            IsMaskAutoExplicit = IsSpecified(result, _symbols.MaskAuto),
             Format = IsSpecified(result, _symbols.Format)
                 ? OutputFormats.Normalize(result.GetValue(_symbols.Format)!)
                 : null,
@@ -746,6 +763,47 @@ public sealed partial class ConsoleToSvgCommandLine
         {
             options.OutputPath = OutputFormats.ApplyFormat(options.OutputPath, options.Format);
         }
+        return ApplySessionAppearanceOptions(result, options, out error);
+    }
+
+    private bool TryCreateSessionInspectOptions(
+        ParseResult result,
+        string sessionId,
+        out AppOptions? options,
+        out string? error
+    )
+    {
+        options = new AppOptions
+        {
+            Workflow = Workflow.Session,
+            RequestedSessionAction = SessionAction.Inspect,
+            SessionId = sessionId,
+            OutputPath = string.Empty,
+        };
+        return ApplySessionAppearanceOptions(result, options, out error);
+    }
+
+    private bool ApplySessionAppearanceOptions(
+        ParseResult result,
+        AppOptions options,
+        out string? error
+    )
+    {
+        options.Font = result.GetValue(_symbols.Font);
+        options.ForeColor = result.GetValue(_symbols.ForeColor);
+        options.BackColor = result.GetValue(_symbols.BackColor);
+        options.CropTop = result.GetValue(_symbols.CropTop) ?? "0";
+        options.CropRight = result.GetValue(_symbols.CropRight) ?? "0";
+        options.CropBottom = result.GetValue(_symbols.CropBottom) ?? "0";
+        options.CropLeft = result.GetValue(_symbols.CropLeft) ?? "0";
+        options.Opacity = result.GetValue(_symbols.Opacity) ?? 1d;
+        options.Margin = result.GetValue(_symbols.Margin);
+        options.Padding = result.GetValue(_symbols.Padding);
+        options.FontSize = result.GetValue(_symbols.FontSize);
+        options.PcPadding = result.GetValue(_symbols.PcPadding);
+        options.LengthAdjust = result.GetValue(_symbols.Adjust) ?? "spacing";
+        options.MaskAuto = result.GetValue(_symbols.MaskAuto);
+        options.IsMaskAutoExplicit = IsSpecified(result, _symbols.MaskAuto);
         if (IsSpecified(result, _symbols.Window))
         {
             options.Window = result.GetValue(_symbols.Window) ?? "macos";
@@ -769,7 +827,6 @@ public sealed partial class ConsoleToSvgCommandLine
             )
         )
         {
-            options = null;
             return false;
         }
         error = null;

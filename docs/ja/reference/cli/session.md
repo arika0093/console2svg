@@ -12,6 +12,7 @@ console2svg session wait <id> --text <literal> [--until present|absent] [--stabl
 console2svg session send <id> (--keys <key> | --text <text> | --paste <text> | --raw-hex <bytes>)
 console2svg session resize <id> --width <columns> --height <rows>
 console2svg session capture <id> [-o <path>] [appearance options]
+console2svg session inspect <id> [appearance options]
 console2svg session stop <id>
 console2svg session stop --all [--yes]
 ```
@@ -121,7 +122,21 @@ console2svg session capture s_abc123 -o current-screen.svg -d macos -t dracula
 * `-o <path>`: 出力先 SVG ファイルパス
 * 外観オプション: ウィンドウ装飾（`-d`）、テーマ（`-t`）、文字色・背景色、フォント、余白など、`capture` と共通の外観オプションをすべて利用できます。
 
-### 7. セッション一覧の確認: `list`
+### 7. 現在画面の目視確認: `inspect`
+
+セッションの現在の画面バッファを、出力先の指定なしで一時 SVG に描画します。
+
+```bash title="Terminal"
+console2svg session inspect s_abc123 -d macos -t dracula
+```
+
+JSON 応答には生成されたパスがセッション ID とともに含まれます。`inspect` は `capture` と同じ描画経路を使うため見た目は同一で、実行中のセッションと、`capture` が利用できる保持中の終了済みセッションで動作します。外観オプションは `capture` と共通ですが、`-o`/`--out`、`--format`、`--stdout` は使えません。
+
+一時ファイルはユーザーごとのシステム一時ディレクトリ配下のランダムなディレクトリ（予測不能な `inspect-<guid>` ディレクトリ内の `inspect.svg`）に置かれます。ユーザーごとのルートと各検査ディレクトリはプライベートに作成され（Linux/macOS では 0700、Windows ではユーザーごとの一時領域）、SVG 自体もプライベートに書き込まれます（Linux/macOS では 0600）。24 時間より古い検査ファイルは、新しい検査の実行時にベストエフォートで削除されます。呼び出し元のエージェントやクライアントが画像を読めるよう、即時削除はしません。
+
+`inspect` は Observation（観察）であり、`capture` は成果物を作る Action です。`inspect` の結果は探索や診断用であり Scenario エクスポートからは除外されますが、`capture` の結果は durable な成果物としてエクスポート対象になります。
+
+### 8. セッション一覧の確認: `list`
 
 既定では起動処理中・実行中のセッションを一覧表示します。`--all` を指定すると、保持中の終了済み・利用不能セッションも含めます。保持セッションには、分かる場合 `expiresAt` も表示されます。
 
@@ -129,7 +144,7 @@ console2svg session capture s_abc123 -o current-screen.svg -d macos -t dracula
 console2svg session list --all
 ```
 
-### 8. セッションの終了: `stop`
+### 9. セッションの終了: `stop`
 
 セッションを停止し、関連するプロセスツリーを終了させてリソースをクリーンアップします。
 
@@ -145,4 +160,4 @@ console2svg session stop --all --yes
 * `--all`: console2svg が管理するすべてのセッションを一括停止します。
 * `-y, --yes`: 一括停止時の確認プロンプトを省略します（パイプ実行時や自動化スクリプトでは必須です）。
 
-セッションを停止すると一時データが削除され、以後は `read` や `capture` を行うことができなくなります。
+セッションを停止すると一時データが削除され、以後は `read`、`capture`、`inspect` を行うことができなくなります。

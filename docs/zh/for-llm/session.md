@@ -68,9 +68,12 @@ console2svg session wait s_a1b2c3d4e5f6 --text "Working" --until absent --stable
 
 # 将当前屏幕渲染结果保存为 SVG 图像
 console2svg session capture s_a1b2c3d4e5f6 -o /tmp/current-screen.svg
+
+# 无需指定输出路径的临时目视检查（Observation，不进入 Scenario 导出）
+console2svg session inspect s_a1b2c3d4e5f6
 ```
 
-`session read` 会立即返回当前屏幕纯文本、从 0 开始的光标坐标及可见状态、备用屏幕状态、滚动缓冲区行数和视口范围。添加 `--structured` 可获取包含单元格样式、超链接和宽字符信息的带版本数据。条件等待请使用 `session wait --text <literal>`；等待文本消失时，必须先观察到它出现。`--stable-for` 要求条件持续成立，`--timeout` 可选且没有最大限制。`session capture` 则导出包含颜色、字体样式的真实几何排版。
+`session read` 会立即返回当前屏幕纯文本、从 0 开始的光标坐标及可见状态、备用屏幕状态、滚动缓冲区行数和视口范围。添加 `--structured` 可获取包含单元格样式、超链接和宽字符信息的带版本数据。条件等待请使用 `session wait --text <literal>`；等待文本消失时，必须先观察到它出现。`--stable-for` 要求条件持续成立，`--timeout` 可选且没有最大限制。`session capture` 则导出包含颜色、字体样式的真实几何排版。`session inspect` 以相同渲染链路输出到按用户隔离的随机临时 SVG 并返回路径；仅需目视时用 `inspect`，需要持久化成果物时用 `capture -o`。
 多模态 LLM 可直接读取生成的 SVG 图片，分析是否存在布局变形或色彩对比度异常。
 `session list` 默认显示正在启动或运行中的会话。使用 `session list --all` 可查找仍在保留期内的已退出或不可用会话；可确定时会显示 `expiresAt`。保留期内仍可通过 ID 读取或捕获。使用 `session stop` 显式停止的会话会被删除，之后无法再通过 ID 访问。
 

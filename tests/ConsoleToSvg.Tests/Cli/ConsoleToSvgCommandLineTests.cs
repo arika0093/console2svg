@@ -661,6 +661,32 @@ public sealed class ConsoleToSvgCommandLineTests
         );
     }
 
+    [Test]
+    public async Task SessionInspectMapsAppearanceOptionsWithoutOutputPath()
+    {
+        var inspect = await InvokeAsync(
+            "session",
+            "inspect",
+            "s_abc",
+            "--theme",
+            "dracula",
+            "-d",
+            "macos"
+        );
+
+        inspect.ExitCode.ShouldBe(0);
+        inspect.Options!.Workflow.ShouldBe(Workflow.Session);
+        inspect.Options.RequestedSessionAction.ShouldBe(SessionAction.Inspect);
+        inspect.Options.SessionId.ShouldBe("s_abc");
+        inspect.Options.Themes.ShouldBe(["dracula"]);
+        inspect.Options.Window.ShouldBe("macos");
+
+        var withOut = await InvokeAsync("session", "inspect", "s_abc", "--out", "x.svg");
+
+        withOut.ExitCode.ShouldBe(1);
+        withOut.Options.ShouldBeNull();
+    }
+
     private static async Task<Invocation> InvokeAsync(params string[] args)
     {
         AppOptions? options = null;

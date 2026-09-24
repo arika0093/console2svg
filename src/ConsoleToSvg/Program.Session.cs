@@ -138,6 +138,20 @@ internal sealed class SessionCaptureOutput
     public CaptureJsonArtifact Artifact { get; init; } = new();
 }
 
+/// <summary>
+/// Ephemeral visual inspection result. This is an Observation for future
+/// SessionJournal/Scenario purposes: it must be recorded as diagnostics at most
+/// and omitted from session export / ScenarioDocument.
+/// </summary>
+internal sealed class SessionInspectOutput
+{
+    public int SchemaVersion { get; init; } = 1;
+    public string SessionId { get; init; } = string.Empty;
+    public string State { get; init; } = string.Empty;
+    public string Path { get; init; } = string.Empty;
+    public string Format { get; init; } = "svg";
+}
+
 internal sealed class SessionStopAllOutput
 {
     public int SchemaVersion { get; init; } = 1;
@@ -159,6 +173,7 @@ internal sealed class SessionOperationFailure
 [JsonSerializable(typeof(SessionListOutput))]
 [JsonSerializable(typeof(SessionOperationOutput))]
 [JsonSerializable(typeof(SessionCaptureOutput))]
+[JsonSerializable(typeof(SessionInspectOutput))]
 [JsonSerializable(typeof(SessionStopAllOutput))]
 [JsonSerializable(typeof(SessionErrorOutput))]
 internal sealed partial class SessionOutputJsonContext : JsonSerializerContext { }
@@ -220,6 +235,11 @@ internal static partial class Program
                 SessionAction.Resize => await ResizeManagedSessionAsync(options, cancellationToken)
                     .ConfigureAwait(false),
                 SessionAction.Capture => await CaptureManagedSessionAsync(
+                        options,
+                        cancellationToken
+                    )
+                    .ConfigureAwait(false),
+                SessionAction.Inspect => await InspectManagedSessionAsync(
                         options,
                         cancellationToken
                     )
@@ -639,6 +659,54 @@ internal static partial class Program
         return 0;
     }
 
+    // Observation (not an artifact Action): reuses the capture rendering path for
+    // identical fidelity, but writes to a randomized system temp location instead of
+    // a caller-chosen durable path. Future SessionJournal entries for inspect must be
+    // classified as Observation and omitted from Scenario export.
+    private static async Task<int> InspectManagedSessionAsync(
+        AppOptions options,
+        CancellationToken cancellationToken
+    )
+    {
+        if (
+            !string.IsNullOrEmpty(options.Format)
+            && !options.Format.Equals("svg", StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            throw new InvalidOperationException(
+                "session inspect currently supports SVG output only."
+            );
+        }
+
+        var inspectPath = SessionInspectFiles.CreateInspectPath();
+        var response = await ManagedTerminalSessionManager
+            .RequestAsync(
+                RequireSessionId(options),
+                new ManagedSessionRequest
+                {
+                    Operation = "capture",
+                    OutputPath = inspectPath,
+                    RenderOptions = SvgRenderOptionsFactory.Create(options),
+                },
+                cancellationToken
+            )
+            .ConfigureAwait(false);
+        SessionInspectFiles.HardenPrivateFile(inspectPath);
+        await WriteSessionJsonAsync(
+                new SessionInspectOutput
+                {
+                    SessionId = response.Session.Id,
+                    State = response.Session.State,
+                    Path = Path.GetFullPath(inspectPath),
+                    Format = "svg",
+                },
+                SessionOutputJsonContext.Default.SessionInspectOutput,
+                cancellationToken
+            )
+            .ConfigureAwait(false);
+        return 0;
+    }
+
     private static async Task<int> StopManagedSessionAsync(
         AppOptions options,
         CancellationToken cancellationToken
@@ -773,7 +841,9 @@ internal static partial class Program
             FormatException or ArgumentException when action == SessionAction.Wait =>
                 "invalid_condition",
             InvalidDataException => "invalid_request",
-            IOException or TimeoutException when action == SessionAction.Capture => "io_error",
+            IOException
+            or TimeoutException when action is SessionAction.Capture or SessionAction.Inspect =>
+                "io_error",
             IOException or TimeoutException => "host_unavailable",
             OperationCanceledException => "cancelled",
             UnauthorizedAccessException => "permission_denied",

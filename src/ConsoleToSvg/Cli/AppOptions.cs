@@ -42,6 +42,7 @@ public enum SessionAction
     Send,
     Resize,
     Capture,
+    Inspect,
     Stop,
     Host,
 }

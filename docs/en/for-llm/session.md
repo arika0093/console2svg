@@ -68,9 +68,12 @@ console2svg session wait s_a1b2c3d4e5f6 --text "Working" --until absent --stable
 
 # Capture the current visual screen as an SVG image
 console2svg session capture s_a1b2c3d4e5f6 -o /tmp/current-screen.svg
+
+# Ephemeral visual check without choosing an output path (Observation, omitted from Scenario export)
+console2svg session inspect s_a1b2c3d4e5f6
 ```
 
-`session read` immediately returns the current screen text, zero-based cursor coordinates and visibility, alternate-screen state, scrollback row count, and viewport scope. Add `--structured` to include versioned per-cell style, hyperlink, and wide-character data. Use `session wait --text <literal>` for condition-based waiting; absence waits require the text to have appeared before it disappears. `--stable-for` requires the condition to remain true, and optional `--timeout` has no maximum. `session capture` exports actual colors, styling, and geometry.
+`session read` immediately returns the current screen text, zero-based cursor coordinates and visibility, alternate-screen state, scrollback row count, and viewport scope. Add `--structured` to include versioned per-cell style, hyperlink, and wide-character data. Use `session wait --text <literal>` for condition-based waiting; absence waits require the text to have appeared before it disappears. `--stable-for` requires the condition to remain true, and optional `--timeout` has no maximum. `session capture` exports actual colors, styling, and geometry. `session inspect` renders the same pixels to a randomized per-user temp SVG and returns its path; use it for eyes-only checks and `session capture -o` when you need a durable artifact.
 Multimodal LLMs can directly inspect the resulting SVG image to detect layout misalignment or color contrast anomalies.
 `session list` shows starting or running sessions by default. Use `session list --all` to discover retained exited or unavailable sessions; their entries include `expiresAt` when known. Retained sessions remain readable and capturable by ID. Sessions explicitly stopped with `session stop` are deleted and can no longer be accessed by ID.
 

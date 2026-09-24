@@ -12,6 +12,7 @@ console2svg session wait <id> --text <literal> [--until present|absent] [--stabl
 console2svg session send <id> (--keys <key> | --text <text> | --paste <text> | --raw-hex <bytes>)
 console2svg session resize <id> --width <columns> --height <rows>
 console2svg session capture <id> [-o <path>] [appearance options]
+console2svg session inspect <id> [appearance options]
 console2svg session stop <id>
 console2svg session stop --all [--yes]
 ```
@@ -121,7 +122,21 @@ console2svg session capture s_abc123 -o current-screen.svg -d macos -t dracula
 * `-o <path>`：输出目标 SVG 文件路径
 * 外观选项：支持与 `capture` 相同的所有外观选项，包括窗口装饰（`-d`）、主题（`-t`）、文字与背景色、字体、边距等。
 
-### 7. 查看会话列表：`list`
+### 7. 目视检查当前屏幕：`inspect`
+
+将该会话当前的屏幕缓冲区渲染为临时 SVG，便于目视检查，无需调用方指定输出路径。
+
+```bash title="Terminal"
+console2svg session inspect s_abc123 -d macos -t dracula
+```
+
+JSON 响应中会同时返回会话 ID 与生成的文件路径。`inspect` 与 `capture` 共用同一渲染链路，视觉保真度完全一致；适用于运行中的会话，也适用于 `capture` 可用的保留期已退出会话。外观选项与 `capture` 相同，但不支持 `-o`/`--out`、`--format` 与 `--stdout`。
+
+临时文件行为：文件位于按用户隔离的系统临时目录下的随机目录（不可预测的 `inspect-<guid>` 子目录中的 `inspect.svg`）。按用户隔离的根目录与各检查目录均以私有权限创建（Linux/macOS 为 0700，Windows 为按用户隔离的临时目录），SVG 本身也以私有权限写入（Linux/macOS 为 0600）。每次执行新的检查时，会以尽力而为的方式清理超过 24 小时的旧检查文件；不会立即删除，以便调用方的智能体或客户端有足够时间读取图像。
+
+`inspect` 是 Observation（观察），而 `capture` 是产生成果物的 Action：`inspect` 结果仅用于探索与诊断，会从 Scenario 导出中省略；`capture` 结果则是可导出的持久化成果物。
+
+### 8. 查看会话列表：`list`
 
 默认列出正在启动或运行中的会话。指定 `--all` 可包含仍在保留期内的已退出或不可用会话；可确定时，条目还会提供 `expiresAt`。
 
@@ -129,7 +144,7 @@ console2svg session capture s_abc123 -o current-screen.svg -d macos -t dracula
 console2svg session list --all
 ```
 
-### 8. 终止会话：`stop`
+### 9. 终止会话：`stop`
 
 停止会话，结束关联的进程树并清理资源。
 
@@ -145,4 +160,4 @@ console2svg session stop --all --yes
 * `--all`：一次性停止 console2svg 管理的所有会话。
 * `-y, --yes`：跳过批量停止时的确认提示（在管道执行或自动化脚本中必须指定）。
 
-停止会话后临时数据将被删除，之后无法再对其执行 `read` 或 `capture`。
+停止会话后临时数据将被删除，之后无法再对其执行 `read`、`capture` 或 `inspect`。

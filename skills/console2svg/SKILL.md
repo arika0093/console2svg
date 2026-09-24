@@ -48,6 +48,7 @@ console2svg session send <sessionId> --text "search query"
 console2svg session send <sessionId> --text "i" --keys Enter --text "hello" --keys Esc
 console2svg session resize <sessionId> --width 120 --height 40
 console2svg session capture <sessionId> -o /tmp/tui-screen.svg
+console2svg session inspect <sessionId>
 console2svg session capture <sessionId> -o /tmp/tui-screen-converted.png
 console2svg session stop <sessionId>
 ```

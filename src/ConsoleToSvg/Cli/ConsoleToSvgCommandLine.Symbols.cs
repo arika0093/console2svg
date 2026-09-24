@@ -356,6 +356,9 @@ public sealed partial class ConsoleToSvgCommandLine
                 Height,
             ]);
 
+        public IEnumerable<Option> SessionInspectOptions =>
+            SessionCaptureOptions.Except([OutputPath, Format, StdOut]);
+
         public IEnumerable<Option> InteractiveOptions =>
             CaptureOptions.Except([
                 InputCastPath,

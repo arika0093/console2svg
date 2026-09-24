@@ -12,6 +12,7 @@ console2svg session wait <id> --text <literal> [--until present|absent] [--stabl
 console2svg session send <id> (--keys <key> | --text <text> | --paste <text> | --raw-hex <bytes>)
 console2svg session resize <id> --width <columns> --height <rows>
 console2svg session capture <id> [-o <path>] [appearance options]
+console2svg session inspect <id> [appearance options]
 console2svg session stop <id>
 console2svg session stop --all [--yes]
 ```
@@ -121,7 +122,21 @@ console2svg session capture s_abc123 -o current-screen.svg -d macos -t dracula
 * `-o <path>`: Destination SVG file path
 * Appearance options: All appearance options from `capture` are supported, including window decorations (`-d`), themes (`-t`), foreground/background colors, fonts, and padding.
 
-### 7. Listing Sessions: `list`
+### 7. Inspecting the Current Screen: `inspect`
+
+Renders the session current screen buffer to an ephemeral SVG for visual inspection, without requiring a caller-chosen output path.
+
+```bash title="Terminal"
+console2svg session inspect s_abc123 -d macos -t dracula
+```
+
+The JSON response contains the generated path alongside the session ID. `inspect` reuses the same rendering path as `capture`, so visual fidelity is identical, and it works for running sessions as well as retained exited sessions where `capture` is available. It accepts the same appearance options as `capture`, but not `-o`/`--out`, `--format`, or `--stdout`.
+
+Temporary-file behavior: files live under a randomized per-user system temp directory (an unpredictable `inspect-<guid>` subdirectory containing `inspect.svg`). The per-user root and each inspection directory are created private (0700 on Linux/macOS; per-user temp on Windows), and the SVG itself is written private (0600 on Linux/macOS). Stale inspection files older than 24 hours are removed on a best-effort basis whenever a new inspection runs; files are not deleted immediately so the invoking agent or client can read the image.
+
+`inspect` is an Observation, while `capture` is an artifact-producing Action: `inspect` results are for exploration and diagnostics and are omitted from Scenario export, whereas `capture` results are eligible for export as durable artifacts.
+
+### 8. Listing Sessions: `list`
 
 By default, lists sessions that are starting or running. Pass `--all` to include retained exited or unavailable sessions; retained entries include `expiresAt` when known.
 
@@ -129,7 +144,7 @@ By default, lists sessions that are starting or running. Pass `--all` to include
 console2svg session list --all
 ```
 
-### 8. Terminating a Session: `stop`
+### 9. Terminating a Session: `stop`
 
 Stops the session, terminates the associated process tree, and cleans up resources.
 
@@ -145,4 +160,4 @@ console2svg session stop --all --yes
 * `--all`: Stops all sessions managed by console2svg.
 * `-y, --yes`: Skips confirmation prompts when stopping all sessions (required in piped execution or automation scripts).
 
-Stopping a session deletes its temporary data, after which `read` and `capture` operations can no longer be performed.
+Stopping a session deletes its temporary data, after which `read`, `capture`, and `inspect` operations can no longer be performed.

@@ -60,7 +60,7 @@ public sealed class HyperlinkSvgTests
     {
         var svg = SvgRenderer.Render(LinkedSession(Esc("]8;;https://example.com") + St + "Link" + Esc("]8;;") + St + " after"), new SvgRenderOptions());
 
-        svg.ShouldContain("<a href=\"https://example.com\">");
+        svg.ShouldContain("<a href=\"https://example.com\" target=\"_blank\" rel=\"noopener noreferrer\">");
         svg.ShouldContain("Link");
     }
 
@@ -70,8 +70,8 @@ public sealed class HyperlinkSvgTests
         var data = Esc("]8;;https://a.example") + St + "AA" + Esc("]8;;https://b.example") + St + "BB" + Esc("]8;;") + St;
         var svg = SvgRenderer.Render(LinkedSession(data), new SvgRenderOptions());
 
-        svg.ShouldContain("<a href=\"https://a.example\">");
-        svg.ShouldContain("<a href=\"https://b.example\">");
+        svg.ShouldContain("<a href=\"https://a.example\" target=\"_blank\" rel=\"noopener noreferrer\">");
+        svg.ShouldContain("<a href=\"https://b.example\" target=\"_blank\" rel=\"noopener noreferrer\">");
     }
 
     [Test]
@@ -117,6 +117,6 @@ public sealed class HyperlinkSvgTests
 
         var svg = AnimatedSvgRenderer.Render(session, new SvgRenderOptions());
 
-        svg.ShouldContain("https://example.com");
+        svg.ShouldContain("<a href=\"https://example.com\" target=\"_blank\" rel=\"noopener noreferrer\">");
     }
 }

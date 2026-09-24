@@ -388,7 +388,7 @@ internal static partial class SvgDocumentBuilder
                 {
                     sb.Append("<a href=\"");
                     sb.Append(EscapeAttribute(fgRunHyperlink));
-                    sb.Append("\">");
+                    sb.Append("\" target=\"_blank\" rel=\"noopener noreferrer\">");
                 }
                 sb.Append("<text class=\"");
                 sb.Append(textClass);

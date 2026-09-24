@@ -7,8 +7,10 @@ description: 显示和保存详细日志，并将调试信息嵌入 SVG 文件�
 
 ## 日志选项
 
-* **`--verbose`**：将详细执行日志输出到标准错误（stderr）。
-* **`--verbose <path>`** / **`--verbose-log <path>`**：将详细日志写入指定文件。
+* **`--verbose`**：在当前目录以 `console2svg_yyyyMMddHHmmss.log` 为文件名保存详细执行日志。
+* **`--verbose <path>`** / **`--verbose-log <path>`**：将详细日志写入指定文件，并覆盖已有内容。
+
+详细日志不会输出继承的环境变量值。
 
 ```bash title="Terminal" "--verbose-log debug.log"
 console2svg capture --verbose-log debug.log -o output.svg -- fastfetch

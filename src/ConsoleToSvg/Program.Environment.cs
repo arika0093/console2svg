@@ -32,9 +32,12 @@ internal static partial class Program
             builder.ClearProviders();
             if (verbose)
             {
-                var path = string.IsNullOrWhiteSpace(logPath) ? "console2svg.log" : logPath;
+                var path = ResolveVerboseLogPath(logPath);
+                var fullPath = Path.GetFullPath(path);
+                Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
+                File.WriteAllText(fullPath, string.Empty);
                 builder.AddZLoggerFile(
-                    path,
+                    fullPath,
                     options =>
                     {
                         options.FileShared = false;
@@ -64,6 +67,11 @@ internal static partial class Program
         });
         return new MaskingLoggerFactory(factory, maskAuto, maskPatterns);
     }
+
+    internal static string ResolveVerboseLogPath(string? logPath) =>
+        string.IsNullOrWhiteSpace(logPath)
+            ? $"console2svg_{DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture)}.log"
+            : logPath;
 
     private static int? TryGetConsoleWidth()
     {

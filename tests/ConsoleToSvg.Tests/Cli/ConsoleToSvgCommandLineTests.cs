@@ -1,6 +1,7 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using ConsoleToSvg.Cli;
@@ -9,6 +10,24 @@ namespace ConsoleToSvg.Tests.Cli;
 
 public sealed class ConsoleToSvgCommandLineTests
 {
+    [Test]
+    public void VerboseLogPathDefaultsToTimestampedNameAndPreservesExplicitPath()
+    {
+        var defaultPath = Program.ResolveVerboseLogPath(null);
+
+        Path.GetFileName(defaultPath).ShouldStartWith("console2svg_");
+        Path.GetExtension(defaultPath).ShouldBe(".log");
+        DateTime.TryParseExact(
+                Path.GetFileNameWithoutExtension(defaultPath)["console2svg_".Length..],
+                "yyyyMMddHHmmss",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out _
+            )
+            .ShouldBeTrue();
+        Program.ResolveVerboseLogPath("custom.log").ShouldBe("custom.log");
+    }
+
     [Test]
     public async Task LegacyRootInvocationMapsDelimitedCommandWithoutLosingArguments()
     {
@@ -583,7 +602,7 @@ public sealed class ConsoleToSvgCommandLineTests
             "*--background=[Desktop background color or image. Can be specified twice for a gradient.]: :_files"
         );
         zsh.Output.ShouldContain(
-            "--verbose=[Enable verbose logging; optionally write to a file.]: :_files"
+            "--verbose=[Enable verbose logging; optionally write to a file (overwritten; defaults to a timestamped file).]: :_files"
         );
     }
 

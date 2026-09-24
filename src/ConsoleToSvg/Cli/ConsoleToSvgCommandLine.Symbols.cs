@@ -658,7 +658,8 @@ public sealed partial class ConsoleToSvgCommandLine
             new("--verbose")
             {
                 Arity = ArgumentArity.ZeroOrOne,
-                Description = "Enable verbose logging; optionally write to a file.",
+                Description =
+                    "Enable verbose logging; optionally write to a file (overwritten; defaults to a timestamped file).",
             };
 
         private static Option<int?> HistoryOption()

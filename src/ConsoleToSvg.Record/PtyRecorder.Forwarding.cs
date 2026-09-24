@@ -176,7 +176,6 @@ public static partial class PtyRecorder
             if (entry.Key is string key && entry.Value is string value)
             {
                 env[key] = value;
-                logger.ZLogDebug($"Inherited environment variable: {key}={value}");
             }
         }
 

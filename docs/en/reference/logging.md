@@ -7,8 +7,10 @@ This page explains logging for investigation and troubleshooting, and embedding 
 
 ## Logging options
 
-* **`--verbose`**: Write detailed execution logs to standard error (stderr).
-* **`--verbose <path>`** / **`--verbose-log <path>`**: Write detailed logs to the specified file.
+* **`--verbose`**: Write detailed execution logs to `console2svg_yyyyMMddHHmmss.log` in the current directory.
+* **`--verbose <path>`** / **`--verbose-log <path>`**: Write detailed logs to the specified file, replacing its existing contents.
+
+Verbose logs do not dump inherited environment variable values.
 
 ```bash title="Terminal" "--verbose-log debug.log"
 console2svg capture --verbose-log debug.log -o output.svg -- fastfetch

@@ -7,8 +7,10 @@ description: 詳細ログの表示・保存およびSVGファイルへのデバ�
 
 ## ログ出力オプション
 
-* **`--verbose`**: 詳細な実行ログを標準エラー（stderr）に出力します。
-* **`--verbose <path>`** / **`--verbose-log <path>`**: 詳細ログを指定したファイルへ書き出します。
+* **`--verbose`**: カレントディレクトリに `console2svg_yyyyMMddHHmmss.log` という名前で詳細な実行ログを保存します。
+* **`--verbose <path>`** / **`--verbose-log <path>`**: 詳細ログを指定したファイルへ書き出し、既存の内容を上書きします。
+
+verbose ログには、継承した環境変数の値は出力されません。
 
 ```bash title="Terminal" "--verbose-log debug.log"
 console2svg capture --verbose-log debug.log -o output.svg -- fastfetch

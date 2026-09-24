@@ -9,7 +9,7 @@ console2svg session list
 console2svg session list --all
 console2svg session read <id> [--structured]
 console2svg session wait <id> --text <literal> [--until present|absent] [--stable-for <duration>] [--timeout <duration>]
-console2svg session send <id> (--keys <key> | --text <text>)
+console2svg session send <id> (--keys <key> | --text <text> | --paste <text> | --raw-hex <bytes>)
 console2svg session resize <id> --width <columns> --height <rows>
 console2svg session capture <id> [-o <path>] [appearance options]
 console2svg session stop <id>
@@ -94,9 +94,9 @@ console2svg session send s_abc123 --keys Ctrl+C
 * `--text <text>`: Sends the specified string as-is without appending newlines.
 * `--keys <key>`: Sends a special key. Supported keys: `Enter`, `Tab`, `Escape` (`Esc`), `Backspace`, `Delete`, `Up`, `Down`, `Left`, `Right`, `Home`, `End`, `PageUp`, `PageDown`, `Ctrl+A`–`Ctrl+Z`, or any single printable character.
 
-Repeated `--text` and `--keys` options are sent in their command-line order as one host request, so another client cannot insert input between the steps.
+Repeated `--text`, `--paste`, `--keys`, and `--raw-hex` options are sent in their command-line order as one host request, so another client cannot insert input between the steps. `--paste <text>` is distinct from typing with `--text`: when the application has enabled bracketed paste mode, it wraps the text in the terminal's bracketed-paste markers.
 
-`--raw-hex <bytes>` sends an explicit non-empty byte sequence written as pairs of hexadecimal digits (for example, `1B5B41` sends `ESC [ A`). Semantic names include `Insert`, `F1`–`F12`, `Shift+Tab`, `Shift+Up`, `Ctrl+Alt+Left`, and `Meta+Home`. `Alt` and `Meta` prefix a printable character with Escape; modified navigation and function keys use xterm modifier sequences. Raw bytes use `--raw-hex` and remain distinct from semantic keys.
+`--raw-hex <bytes>` sends an explicit non-empty byte sequence written as pairs of hexadecimal digits (for example, `1B5B41` sends `ESC [ A`). Semantic names include `Insert`, `F1`–`F12`, `Shift+Tab`, `Shift+Up`, `Ctrl+Alt+Left`, and `Meta+Home`. Keypad names include `KP0`–`KP9`, `KPDecimal`, `KPEnter`, `KPAdd`, `KPSubtract`, `KPMultiply`, `KPDivide`, and `KPSeparator`; keypad keys and unmodified cursor keys use the encoding selected by the application's terminal modes. `Alt` and `Meta` prefix a printable character with Escape; modified navigation and function keys use xterm modifier sequences. Raw bytes remain distinct from semantic keys.
 
 Calling `session read` immediately after sending input lets you inspect the updated screen after the program responds.
 

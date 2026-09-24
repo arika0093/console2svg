@@ -9,7 +9,7 @@ console2svg session list
 console2svg session list --all
 console2svg session read <id> [--structured]
 console2svg session wait <id> --text <literal> [--until present|absent] [--stable-for <duration>] [--timeout <duration>]
-console2svg session send <id> (--keys <key> | --text <text>)
+console2svg session send <id> (--keys <key> | --text <text> | --paste <text> | --raw-hex <bytes>)
 console2svg session resize <id> --width <columns> --height <rows>
 console2svg session capture <id> [-o <path>] [appearance options]
 console2svg session stop <id>
@@ -94,9 +94,9 @@ console2svg session send s_abc123 --keys Ctrl+C
 * `--text <text>`: 改行を付加せず、指定した文字列をそのまま送信します。
 * `--keys <key>`: 特殊キーを送信します。対応キー: `Enter`、`Tab`、`Escape`（`Esc`）、`Backspace`、`Delete`、`Up`、`Down`、`Left`、`Right`、`Home`、`End`、`PageUp`、`PageDown`、`Ctrl+A`〜`Ctrl+Z`、または任意の印字可能文字 1 文字。
 
-`--text` と `--keys` を繰り返し指定した場合、コマンドライン上の順序で一つのホスト要求として送信されるため、別クライアントの入力が途中に割り込むことはありません。
+`--text`、`--paste`、`--keys`、`--raw-hex` を繰り返し指定した場合、コマンドライン上の順序で一つのホスト要求として送信されるため、別クライアントの入力が途中に割り込むことはありません。`--paste <text>` は `--text` による通常入力とは異なり、アプリケーションがブラケット付き貼り付けモードを有効にしている場合、端末の開始・終了マーカーでテキストを囲みます。
 
-`--raw-hex <bytes>` は、16 進数 2 桁ずつで表した空でないバイト列をそのまま送信します（例: `1B5B41` は `ESC [ A`）。意味キーには `Insert`、`F1`〜`F12`、`Shift+Tab`、`Shift+Up`、`Ctrl+Alt+Left`、`Meta+Home` もあります。`Alt` と `Meta` は印字可能文字の前に Escape を付け、修飾された移動キーとファンクションキーは xterm の修飾シーケンスを使います。Raw バイト列は `--raw-hex` で指定します。
+`--raw-hex <bytes>` は、16 進数 2 桁ずつで表した空でないバイト列をそのまま送信します（例: `1B5B41` は `ESC [ A`）。意味キーには `Insert`、`F1`〜`F12`、`Shift+Tab`、`Shift+Up`、`Ctrl+Alt+Left`、`Meta+Home` もあります。キーパッドの意味キーには `KP0`〜`KP9`、`KPDecimal`、`KPEnter`、`KPAdd`、`KPSubtract`、`KPMultiply`、`KPDivide`、`KPSeparator` があり、キーパッドと修飾なしのカーソルキーはアプリケーションが選択した端末モードに応じて符号化されます。`Alt` と `Meta` は印字可能文字の前に Escape を付け、修飾された移動キーとファンクションキーは xterm の修飾シーケンスを使います。Raw バイト列は意味キーとは別に `--raw-hex` で指定します。
 
 入力を送信した後は、直ちに `session read` を呼び出すことで、プログラムが反応した後の最新画面を確認できます。
 

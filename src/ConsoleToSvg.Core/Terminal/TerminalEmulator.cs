@@ -11,12 +11,15 @@ public sealed class TerminalEmulator
     {
         Theme = theme;
         Buffer = new ScreenBuffer(width, height, theme);
-        _parser = new AnsiParser(Buffer, theme);
+        InputModes = new TerminalInputModes();
+        _parser = new AnsiParser(Buffer, theme, InputModes);
     }
 
     public Theme Theme { get; }
 
     public ScreenBuffer Buffer { get; }
+
+    public TerminalInputModes InputModes { get; }
 
     public void Process(string text)
     {

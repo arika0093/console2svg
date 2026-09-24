@@ -85,11 +85,11 @@ console2svg session send s_a1b2c3d4e5f6 --text "git status"
 # Enter や矢印キーなどの特殊キーを送信
 console2svg session send s_a1b2c3d4e5f6 --keys Enter
 
-# テキスト入力とキー入力を指定順に連続送信
-console2svg session send s_a1b2c3d4e5f6 --text "i" --keys Enter --text "hello" --keys Esc
+# テキスト、貼り付け、キー入力を指定順に連続送信
+console2svg session send s_a1b2c3d4e5f6 --text "i" --keys Enter --paste "hello" --keys Esc
 ```
 
-`--text` と `--keys` は複数回指定でき、指定した順序で送信されます。
+`--text`、`--paste`、`--keys`、`--raw-hex` は複数回指定でき、指定した順序で送信されます。アプリケーションが有効にしている場合にブラケット付き貼り付けマーカーを付けるには `--paste` を使います。意味キーのカーソル・キーパッド入力はアプリケーションが選択した端末モードに従います。
 送信後は再び `session read` を呼び出し、期待する画面状態に遷移したかを検証します。
 
 ### 5. セッションの破棄

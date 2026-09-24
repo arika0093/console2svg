@@ -10,6 +10,7 @@ public sealed partial class AnsiParser
 
     private readonly ScreenBuffer _buffer;
     private readonly Theme _theme;
+    public TerminalInputModes InputModes { get; }
     private TextStyle _style;
     private CellStyle _cellStyle;
     private string _pendingEscapeSequence = string.Empty;
@@ -27,10 +28,11 @@ public sealed partial class AnsiParser
     // Holds a partial caret-notation sequence that spans event chunks (e.g. echoed ESC as "^[")
     private string _pendingCaretSequence = string.Empty;
 
-    public AnsiParser(ScreenBuffer buffer, Theme theme)
+    public AnsiParser(ScreenBuffer buffer, Theme theme, TerminalInputModes? inputModes = null)
     {
         _buffer = buffer;
         _theme = theme;
+        InputModes = inputModes ?? new TerminalInputModes();
         _style = _buffer.DefaultStyle;
         _cellStyle = _buffer.ResolveCellStyle(_style);
     }
@@ -259,8 +261,17 @@ public sealed partial class AnsiParser
             case 'c':
                 _buffer.ClearDisplay(2);
                 _buffer.MoveCursorTo(0, 0);
+                InputModes.Reset();
                 _style = _buffer.DefaultStyle;
                 _activeHyperlink = null;
+                endIndex = index + 1;
+                return true;
+            case '=':
+                InputModes.SetApplicationKeypad(true);
+                endIndex = index + 1;
+                return true;
+            case '>':
+                InputModes.SetApplicationKeypad(false);
                 endIndex = index + 1;
                 return true;
             default:

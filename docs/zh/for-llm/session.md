@@ -85,11 +85,11 @@ console2svg session send s_a1b2c3d4e5f6 --text "git status"
 # 发送 Enter 或方向键等特殊功能键
 console2svg session send s_a1b2c3d4e5f6 --keys Enter
 
-# 按指定顺序连续发送文本和按键
-console2svg session send s_a1b2c3d4e5f6 --text "i" --keys Enter --text "hello" --keys Esc
+# 按指定顺序连续发送文本、粘贴内容和按键
+console2svg session send s_a1b2c3d4e5f6 --text "i" --keys Enter --paste "hello" --keys Esc
 ```
 
-`--text` 和 `--keys` 可以重复指定，输入会按指定顺序发送。
+`--text`、`--paste`、`--keys` 和 `--raw-hex` 可以重复指定，输入会按指定顺序发送。若要在应用启用时附加 bracketed paste 标记，请使用 `--paste`。语义方向键和小键盘按键会遵循应用选择的终端模式。
 发送完毕后，可再次调用 `session read` 检查界面是否如预期发生状态迁移。
 
 ### 5. 终止会话

@@ -521,7 +521,7 @@ public sealed partial class ConsoleToSvgCommandLine
 
         var send = new Command(
             "send",
-            "Send ordered text, semantic keys, or raw bytes to a session."
+            "Send ordered text, paste content, semantic keys, or raw bytes to a session."
         );
         var sendId = new Argument<string>("id")
         {
@@ -529,7 +529,10 @@ public sealed partial class ConsoleToSvgCommandLine
             Hidden = true,
         };
         send.Arguments.Add(sendId);
-        AddOptions(send, [_symbols.SessionKeys, _symbols.SessionText, _symbols.SessionRawHex]);
+        AddOptions(
+            send,
+            [_symbols.SessionKeys, _symbols.SessionText, _symbols.SessionPaste, _symbols.SessionRawHex]
+        );
         send.SetAction(
             (parseResult, cancellationToken) =>
             {
@@ -537,7 +540,7 @@ public sealed partial class ConsoleToSvgCommandLine
                 if (inputs.Count == 0)
                 {
                     parseResult.InvocationConfiguration.Error.WriteLine(
-                        "Specify at least one --keys, --text, or --raw-hex input."
+                        "Specify at least one --keys, --text, --paste, or --raw-hex input."
                     );
                     return Task.FromResult(1);
                 }
@@ -685,17 +688,19 @@ public sealed partial class ConsoleToSvgCommandLine
             var token = tokens[index].Value;
             var isText = token == "--text" || token.StartsWith("--text=", StringComparison.Ordinal);
             var isKey = token == "--keys" || token.StartsWith("--keys=", StringComparison.Ordinal);
+            var isPaste =
+                token == "--paste" || token.StartsWith("--paste=", StringComparison.Ordinal);
             var isRaw =
                 token == "--raw-hex"
                 || token.StartsWith("--raw-hex=", StringComparison.Ordinal);
-            if (!isText && !isKey && !isRaw)
+            if (!isText && !isKey && !isPaste && !isRaw)
             {
                 continue;
             }
 
             var equalsIndex = token.IndexOf('=');
             var value = equalsIndex >= 0 ? token[(equalsIndex + 1)..] : tokens[++index].Value;
-            inputs.Add(new SessionInputStep(isText, value, isRaw));
+            inputs.Add(new SessionInputStep(isText, value, isRaw, isPaste));
         }
         return inputs;
     }

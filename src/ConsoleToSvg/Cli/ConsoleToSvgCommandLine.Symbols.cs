@@ -174,6 +174,12 @@ public sealed partial class ConsoleToSvgCommandLine
                 Arity = ArgumentArity.OneOrMore,
                 Description = "Literal text to send to the session; may be repeated.",
             };
+        public Option<string[]> SessionPaste { get; } =
+            new("--paste")
+            {
+                Arity = ArgumentArity.OneOrMore,
+                Description = "Paste text, using bracketed-paste markers when enabled.",
+            };
         public Option<string[]> SessionKeys { get; } =
             new("--keys")
             {

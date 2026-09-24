@@ -85,11 +85,11 @@ console2svg session send s_a1b2c3d4e5f6 --text "git status"
 # Send special keys like Enter or arrow keys
 console2svg session send s_a1b2c3d4e5f6 --keys Enter
 
-# Send text and keys sequentially in the specified order
-console2svg session send s_a1b2c3d4e5f6 --text "i" --keys Enter --text "hello" --keys Esc
+# Send text, paste content, and keys sequentially in the specified order
+console2svg session send s_a1b2c3d4e5f6 --text "i" --keys Enter --paste "hello" --keys Esc
 ```
 
-`--text` and `--keys` may be repeated; inputs are sent in the order specified.
+`--text`, `--paste`, `--keys`, and `--raw-hex` may be repeated; inputs are sent in the order specified. Use `--paste` for pasted content so bracketed-paste markers are included when enabled by the application. Semantic cursor and keypad keys follow the terminal modes selected by the application.
 After sending input, call `session read` again to verify that the terminal reached the expected state.
 
 ### 5. Terminating the Session

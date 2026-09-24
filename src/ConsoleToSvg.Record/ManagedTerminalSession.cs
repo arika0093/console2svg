@@ -463,10 +463,11 @@ public static class ManagedTerminalSessionHost
             CancellationToken cancellationToken
         )
         {
-            var input = EncodeInputs(request);
+            byte[] input;
             lock (_gate)
             {
                 EnsureRunning();
+                input = EncodeInputs(request);
             }
 
             await _connection
@@ -475,13 +476,13 @@ public static class ManagedTerminalSessionHost
             await _connection.WriterStream.FlushAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        private static byte[] EncodeInputs(ManagedSessionRequest request)
+        private byte[] EncodeInputs(ManagedSessionRequest request)
         {
             if (request.Inputs is not { Length: > 0 } inputs)
             {
                 return request.Text is not null
                     ? Encoding.UTF8.GetBytes(request.Text)
-                    : EncodeKey(request.Key);
+                    : EncodeKey(request.Key, _emulator.InputModes);
             }
 
             using var stream = new MemoryStream();
@@ -495,7 +496,8 @@ public static class ManagedTerminalSessionHost
                 var bytes = input.Type switch
                 {
                     "text" => Encoding.UTF8.GetBytes(input.Value),
-                    "key" => EncodeKey(input.Value),
+                    "paste" => EncodePaste(input.Value, _emulator.InputModes),
+                    "key" => EncodeKey(input.Value, _emulator.InputModes),
                     "raw" => EncodeRawHex(input.Value),
                     _ => throw new InvalidDataException(
                         $"Unsupported session input type '{input.Type}'."
@@ -858,7 +860,7 @@ public static class ManagedTerminalSessionHost
             }
         }
 
-        private static byte[] EncodeKey(string? key)
+        private static byte[] EncodeKey(string? key, TerminalInputModes inputModes)
         {
             if (string.IsNullOrWhiteSpace(key))
             {
@@ -871,7 +873,7 @@ public static class ManagedTerminalSessionHost
                 return Encoding.UTF8.GetBytes(normalized);
             }
 
-            var namedSequence = GetNamedKeySequence(normalized);
+            var namedSequence = GetNamedKeySequence(normalized, inputModes);
             if (namedSequence is not null)
             {
                 return Encoding.UTF8.GetBytes(namedSequence);
@@ -880,9 +882,15 @@ public static class ManagedTerminalSessionHost
             return EncodeModifiedKey(normalized);
         }
 
-        private static string? GetNamedKeySequence(string key)
+        private static string? GetNamedKeySequence(string key, TerminalInputModes inputModes)
         {
             var normalized = key.ToLowerInvariant();
+            var keypadSequence = GetKeypadKeySequence(normalized, inputModes.ApplicationKeypad);
+            if (keypadSequence is not null)
+            {
+                return keypadSequence;
+            }
+
             return normalized switch
             {
                 "enter" or "return" => "\r",
@@ -892,12 +900,12 @@ public static class ManagedTerminalSessionHost
                 "backspace" => "\u007f",
                 "insert" => "\u001b[2~",
                 "delete" => "\u001b[3~",
-                "up" => "\u001b[A",
-                "down" => "\u001b[B",
-                "right" => "\u001b[C",
-                "left" => "\u001b[D",
-                "home" => "\u001b[H",
-                "end" => "\u001b[F",
+                "up" => inputModes.ApplicationCursorKeys ? "\u001bOA" : "\u001b[A",
+                "down" => inputModes.ApplicationCursorKeys ? "\u001bOB" : "\u001b[B",
+                "right" => inputModes.ApplicationCursorKeys ? "\u001bOC" : "\u001b[C",
+                "left" => inputModes.ApplicationCursorKeys ? "\u001bOD" : "\u001b[D",
+                "home" => inputModes.ApplicationCursorKeys ? "\u001bOH" : "\u001b[H",
+                "end" => inputModes.ApplicationCursorKeys ? "\u001bOF" : "\u001b[F",
                 "pageup" => "\u001b[5~",
                 "pagedown" => "\u001b[6~",
                 "f1" => "\u001bOP",
@@ -914,6 +922,46 @@ public static class ManagedTerminalSessionHost
                 "f12" => "\u001b[24~",
                 _ => null,
             };
+        }
+
+        private static string? GetKeypadKeySequence(string key, bool applicationKeypad)
+        {
+            var digitIndex = key.Length == 3 && key.StartsWith("kp", StringComparison.Ordinal)
+                ? "0123456789".IndexOf(key[2])
+                : -1;
+            if (digitIndex >= 0)
+            {
+                return applicationKeypad
+                    ? $"\u001bO{(char)('p' + digitIndex)}"
+                    : digitIndex.ToString(CultureInfo.InvariantCulture);
+            }
+
+            return key switch
+            {
+                "kpdecimal" => applicationKeypad ? "\u001bOn" : ".",
+                "kpenter" => applicationKeypad ? "\u001bOM" : "\r",
+                "kpadd" => applicationKeypad ? "\u001bOk" : "+",
+                "kpsubtract" => applicationKeypad ? "\u001bOm" : "-",
+                "kpmultiply" => applicationKeypad ? "\u001bOj" : "*",
+                "kpdivide" => applicationKeypad ? "\u001bOo" : "/",
+                "kpseparator" => applicationKeypad ? "\u001bOl" : ",",
+                _ => null,
+            };
+        }
+
+        private static byte[] EncodePaste(string text, TerminalInputModes inputModes)
+        {
+            var content = Encoding.UTF8.GetBytes(text);
+            if (!inputModes.BracketedPaste)
+            {
+                return content;
+            }
+
+            return [
+                .. Encoding.UTF8.GetBytes("\u001b[200~"),
+                .. content,
+                .. Encoding.UTF8.GetBytes("\u001b[201~"),
+            ];
         }
 
         private static byte[] EncodeModifiedKey(string key)

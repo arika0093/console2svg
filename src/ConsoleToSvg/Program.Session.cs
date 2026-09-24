@@ -556,7 +556,13 @@ internal static partial class Program
                         .SessionInputs.Select(input =>
                             new ManagedSessionInput
                             {
-                                Type = input.IsText ? "text" : input.IsRaw ? "raw" : "key",
+                                Type = input.IsText
+                                    ? "text"
+                                    : input.IsRaw
+                                        ? "raw"
+                                        : input.IsPaste
+                                            ? "paste"
+                                            : "key",
                                 Value = input.Value,
                             }
                         )

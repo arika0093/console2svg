@@ -9,7 +9,7 @@ console2svg session list
 console2svg session list --all
 console2svg session read <id> [--structured]
 console2svg session wait <id> --text <literal> [--until present|absent] [--stable-for <duration>] [--timeout <duration>]
-console2svg session send <id> (--keys <key> | --text <text>)
+console2svg session send <id> (--keys <key> | --text <text> | --paste <text> | --raw-hex <bytes>)
 console2svg session resize <id> --width <columns> --height <rows>
 console2svg session capture <id> [-o <path>] [appearance options]
 console2svg session stop <id>
@@ -94,9 +94,9 @@ console2svg session send s_abc123 --keys Ctrl+C
 * `--text <text>`：原样发送指定字符串，不附加换行符。
 * `--keys <key>`：发送特殊按键。支持的按键包括：`Enter`、`Tab`、`Escape`（`Esc`）、`Backspace`、`Delete`、`Up`、`Down`、`Left`、`Right`、`Home`、`End`、`PageUp`、`PageDown`、`Ctrl+A`～`Ctrl+Z`，或任意单个可打印字符。
 
-重复指定 `--text` 和 `--keys` 时，会按命令行顺序通过一个主机请求发送，因此其他客户端无法在这些输入步骤之间插入内容。
+重复指定 `--text`、`--paste`、`--keys` 和 `--raw-hex` 时，会按命令行顺序通过一个主机请求发送，因此其他客户端无法在这些输入步骤之间插入内容。`--paste <text>` 与 `--text` 普通输入不同：如果应用启用了 bracketed paste 模式，文本会被终端的开始和结束标记包围。
 
-`--raw-hex <bytes>` 会直接发送以十六进制数字对表示的非空字节序列（例如 `1B5B41` 表示发送 `ESC [ A`）。语义按键还包括 `Insert`、`F1`～`F12`、`Shift+Tab`、`Shift+Up`、`Ctrl+Alt+Left` 和 `Meta+Home`。`Alt` 与 `Meta` 会在可打印字符前添加 Escape；带修饰键的导航键和功能键使用 xterm 修饰序列。Raw 字节通过 `--raw-hex` 指定。
+`--raw-hex <bytes>` 会直接发送以十六进制数字对表示的非空字节序列（例如 `1B5B41` 表示发送 `ESC [ A`）。语义按键还包括 `Insert`、`F1`～`F12`、`Shift+Tab`、`Shift+Up`、`Ctrl+Alt+Left` 和 `Meta+Home`。小键盘语义按键包括 `KP0`～`KP9`、`KPDecimal`、`KPEnter`、`KPAdd`、`KPSubtract`、`KPMultiply`、`KPDivide` 和 `KPSeparator`；小键盘按键和未修饰的方向键会根据应用所选终端模式编码。`Alt` 与 `Meta` 会在可打印字符前添加 Escape；带修饰键的导航键和功能键使用 xterm 修饰序列。Raw 字节与语义按键不同，通过 `--raw-hex` 指定。
 
 发送输入后，立即调用 `session read` 即可查看程序响应后的最新屏幕。
 

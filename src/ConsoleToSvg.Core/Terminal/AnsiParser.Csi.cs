@@ -62,48 +62,25 @@ public sealed partial class AnsiParser
         {
             foreach (var parameter in parameters)
             {
-                if (parameter is 47 or 1047 or 1049)
+                if (command is 'h' or 'l')
                 {
-                    if (command == 'h')
+                    var enabled = command == 'h';
+                    if (parameter is 47 or 1047 or 1049)
                     {
-                        _buffer.SetAlternateScreen(true);
+                        _buffer.SetAlternateScreen(enabled);
                     }
-                    else if (command == 'l')
+                    else if (parameter == 6)
                     {
-                        _buffer.SetAlternateScreen(false);
+                        _buffer.SetOriginMode(enabled);
                     }
-
-                    return;
-                }
-
-                if (parameter == 6)
-                {
-                    if (command == 'h')
+                    else if (parameter == 25)
                     {
-                        _buffer.SetOriginMode(true);
+                        _buffer.SetCursorVisible(enabled);
                     }
-                    else if (command == 'l')
-                    {
-                        _buffer.SetOriginMode(false);
-                    }
-
-                    return;
-                }
-
-                if (parameter == 25)
-                {
-                    if (command == 'h')
-                    {
-                        _buffer.SetCursorVisible(true);
-                    }
-                    else if (command == 'l')
-                    {
-                        _buffer.SetCursorVisible(false);
-                    }
-
-                    return;
+                    InputModes.SetDecPrivateMode(parameter, enabled);
                 }
             }
+            return;
         }
 
         // Private CSI sequences (e.g. CSI ? 4 m, CSI > 4 ; 2 m) are not SGR.

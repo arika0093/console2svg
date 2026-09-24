@@ -272,6 +272,7 @@ public static partial class PtyRecorder
 
             var eofReached = false;
             var processExited = false;
+            int? processExitCode = null;
             var disposed = false;
             double? replayTimeoutExceeded = null;
             try
@@ -293,6 +294,7 @@ public static partial class PtyRecorder
                     if (connection.WaitForExit(50))
                     {
                         processExited = true;
+                        processExitCode = connection.ExitCode;
                         break;
                     }
 
@@ -370,6 +372,11 @@ public static partial class PtyRecorder
 
             await inputCancellation.CancelAsync().ConfigureAwait(false);
 
+            if (!processExitCode.HasValue && connection.WaitForExit(0))
+            {
+                processExitCode = connection.ExitCode;
+            }
+
             if (canceled || eofReached || processExited)
             {
                 string msg;
@@ -423,7 +430,7 @@ public static partial class PtyRecorder
             logger.ZLogDebug(
                 $"PTY recording completed. Events={session.GetEventCount()} ElapsedMs={stopwatch.ElapsedMilliseconds}"
             );
-            session.ExitCode = connection.ExitCode;
+            session.ExitCode = processExitCode;
             session.DurationSeconds = stopwatch.Elapsed.TotalSeconds;
 
             if (replayTimeoutExceeded is double exceededDurationFinal)

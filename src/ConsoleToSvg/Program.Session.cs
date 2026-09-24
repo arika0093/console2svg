@@ -38,6 +38,7 @@ internal sealed class SessionWaitOutput
 {
     public int SchemaVersion { get; init; } = 1;
     public string Status { get; init; } = "completed";
+
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public SessionErrorDetail? Error { get; init; }
     public string SessionId { get; init; } = string.Empty;
@@ -110,6 +111,7 @@ internal sealed class SessionSummaryOutput
     public int Width { get; init; }
     public int Height { get; init; }
     public DateTimeOffset UpdatedAt { get; init; }
+
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public DateTimeOffset? ExpiresAt { get; init; }
 }
@@ -303,9 +305,7 @@ internal static partial class Program
         var output = new SessionListOutput
         {
             Sessions = sessions
-                .Where(session =>
-                    includeRetained || session.State is "starting" or "running"
-                )
+                .Where(session => includeRetained || session.State is "starting" or "running")
                 .Select(session => new SessionSummaryOutput
                 {
                     SessionId = session.Id,
@@ -483,23 +483,22 @@ internal static partial class Program
         bool timedOut
     )
     {
+        var errorCode = (timedOut, session.State) switch
+        {
+            (true, _) => "wait_timeout",
+            (_, "unavailable") => "host_unavailable",
+            _ => "session_exited",
+        };
+        var errorMessage = timedOut
+            ? $"Timed out waiting for text '{text}'."
+            : $"Session '{session.Id}' ended before the condition matched.";
         WriteSessionJson(
             new SessionWaitOutput
             {
                 Status = matched ? "completed" : "error",
                 Error = matched
                     ? null
-                    : new SessionErrorDetail
-                    {
-                        Code = timedOut
-                            ? "wait_timeout"
-                            : session.State == "unavailable"
-                                ? "host_unavailable"
-                                : "session_exited",
-                        Message = timedOut
-                            ? $"Timed out waiting for text '{text}'."
-                            : $"Session '{session.Id}' ended before the condition matched.",
-                    },
+                    : new SessionErrorDetail { Code = errorCode, Message = errorMessage },
                 SessionId = session.Id,
                 State = session.State,
                 ProcessId = session.ProcessId,
@@ -553,19 +552,17 @@ internal static partial class Program
                 {
                     Operation = "send",
                     Inputs = options
-                        .SessionInputs.Select(input =>
-                            new ManagedSessionInput
+                        .SessionInputs.Select(input => new ManagedSessionInput
+                        {
+                            Type = (input.IsText, input.IsRaw, input.IsPaste) switch
                             {
-                                Type = input.IsText
-                                    ? "text"
-                                    : input.IsRaw
-                                        ? "raw"
-                                        : input.IsPaste
-                                            ? "paste"
-                                            : "key",
-                                Value = input.Value,
-                            }
-                        )
+                                (true, _, _) => "text",
+                                (_, true, _) => "raw",
+                                (_, _, true) => "paste",
+                                _ => "key",
+                            },
+                            Value = input.Value,
+                        })
                         .ToArray(),
                 },
                 cancellationToken
@@ -727,7 +724,9 @@ internal static partial class Program
                             or UnauthorizedAccessException
                 )
             {
-                Console.Error.WriteLine($"{sessionId}: {exception.Message}");
+                await Console
+                    .Error.WriteLineAsync($"{sessionId}: {exception.Message}", cancellationToken)
+                    .ConfigureAwait(false);
                 failed.Add(
                     new SessionOperationFailure
                     {
@@ -798,7 +797,8 @@ internal static partial class Program
                 cancellationToken
             )
             .ConfigureAwait(false);
-        await Console.Error.WriteLineAsync(message.AsMemory(), CancellationToken.None)
+        await Console
+            .Error.WriteLineAsync(message.AsMemory(), CancellationToken.None)
             .ConfigureAwait(false);
     }
 

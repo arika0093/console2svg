@@ -15,7 +15,7 @@ public enum TerminalMouseTrackingModes
 [Flags]
 public enum TerminalMouseEncodingModes
 {
-    Default = 0,
+    None = 0,
     Utf8 = 1 << 0,
     Sgr = 1 << 1,
     Urxvt = 1 << 2,
@@ -42,11 +42,7 @@ public sealed class TerminalInputModes
                 ApplicationCursorKeys = enabled;
                 break;
             case 9:
-                MouseTracking = SetFlag(
-                    MouseTracking,
-                    TerminalMouseTrackingModes.X10,
-                    enabled
-                );
+                MouseTracking = SetFlag(MouseTracking, TerminalMouseTrackingModes.X10, enabled);
                 break;
             case 1000:
                 MouseTracking = SetFlag(MouseTracking, TerminalMouseTrackingModes.Click, enabled);
@@ -92,7 +88,7 @@ public sealed class TerminalInputModes
         BracketedPaste = false;
         FocusReporting = false;
         MouseTracking = TerminalMouseTrackingModes.None;
-        MouseEncoding = TerminalMouseEncodingModes.Default;
+        MouseEncoding = TerminalMouseEncodingModes.None;
     }
 
     private static T SetFlag<T>(T value, T flag, bool enabled)

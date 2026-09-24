@@ -43,6 +43,7 @@ public sealed class ManagedSessionSnapshot
     public long Version { get; set; }
     public string Text { get; set; } = string.Empty;
     public bool TextTruncated { get; set; }
+
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ScreenBufferSnapshot? Screen { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
@@ -218,7 +219,12 @@ public static class ManagedTerminalSessionHost
     }
 
     private static ManagedSessionResponse Failure(string code, string error) =>
-        new() { Success = false, ErrorCode = code, Error = error };
+        new()
+        {
+            Success = false,
+            ErrorCode = code,
+            Error = error,
+        };
 
     private sealed class SessionRuntime : IAsyncDisposable
     {
@@ -598,7 +604,9 @@ public static class ManagedTerminalSessionHost
             {
                 while (true)
                 {
-                    var count = await reader.ReadAsync(chars.AsMemory()).ConfigureAwait(false);
+                    var count = await reader
+                        .ReadAsync(chars.AsMemory(), CancellationToken.None)
+                        .ConfigureAwait(false);
                     if (count <= 0)
                     {
                         break;
@@ -635,7 +643,7 @@ public static class ManagedTerminalSessionHost
         {
             while (!_connection.WaitForExit(100))
             {
-                await Task.Delay(100).ConfigureAwait(false);
+                await Task.Delay(100, CancellationToken.None).ConfigureAwait(false);
             }
 
             var stateChanged = false;
@@ -727,17 +735,25 @@ public static class ManagedTerminalSessionHost
                         await PersistSnapshotAsync(snapshot).ConfigureAwait(false);
                     }
                     catch (Exception exception)
-                        when (exception is IOException or UnauthorizedAccessException or JsonException)
+                        when (exception
+                                is IOException
+                                    or UnauthorizedAccessException
+                                    or JsonException
+                        )
                     {
-                        await Console.Error
-                            .WriteLineAsync(
-                                $"Could not persist managed session snapshot: {exception.Message}"
+                        await Console
+                            .Error.WriteLineAsync(
+                                $"Could not persist managed session snapshot: {exception.Message}",
+                                CancellationToken.None
                             )
                             .ConfigureAwait(false);
                     }
                 }
             }
-            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
         }
 
         private async Task PersistLatestSnapshotAsync()
@@ -755,7 +771,7 @@ public static class ManagedTerminalSessionHost
 
         private async Task PersistSnapshotAsync(ManagedSessionSnapshot snapshot)
         {
-            await _snapshotPersistenceGate.WaitAsync().ConfigureAwait(false);
+            await _snapshotPersistenceGate.WaitAsync(CancellationToken.None).ConfigureAwait(false);
             try
             {
                 if (snapshot.Version <= _persistedVersion)
@@ -811,12 +827,16 @@ public static class ManagedTerminalSessionHost
                     Task.Delay(TimeSpan.FromSeconds(3), CancellationToken.None)
                 )
                 .ConfigureAwait(false);
-            _snapshotWriterCancellation.Cancel();
+            await _snapshotWriterCancellation.CancelAsync().ConfigureAwait(false);
             try
             {
                 await _snapshotWriterTask.ConfigureAwait(false);
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException exception)
+                when (_snapshotWriterCancellation.IsCancellationRequested)
+            {
+                Debug.WriteLine(exception);
+            }
             await PersistLatestSnapshotAsync().ConfigureAwait(false);
             _connection.Dispose();
             _snapshotWriterCancellation.Dispose();
@@ -926,9 +946,10 @@ public static class ManagedTerminalSessionHost
 
         private static string? GetKeypadKeySequence(string key, bool applicationKeypad)
         {
-            var digitIndex = key.Length == 3 && key.StartsWith("kp", StringComparison.Ordinal)
-                ? "0123456789".IndexOf(key[2])
-                : -1;
+            var digitIndex =
+                key.Length == 3 && key.StartsWith("kp", StringComparison.Ordinal)
+                    ? "0123456789".IndexOf(key[2])
+                    : -1;
             if (digitIndex >= 0)
             {
                 return applicationKeypad
@@ -957,7 +978,8 @@ public static class ManagedTerminalSessionHost
                 return content;
             }
 
-            return [
+            return
+            [
                 .. Encoding.UTF8.GetBytes("\u001b[200~"),
                 .. content,
                 .. Encoding.UTF8.GetBytes("\u001b[201~"),
@@ -996,11 +1018,7 @@ public static class ManagedTerminalSessionHost
             }
 
             var value = parts[^1];
-            if (
-                value.Length == 1
-                && char.IsAsciiLetter(value[0])
-                && (modifiers & 4) != 0
-            )
+            if (value.Length == 1 && char.IsAsciiLetter(value[0]) && (modifiers & 4) != 0)
             {
                 var control = (char)(char.ToUpperInvariant(value[0]) & 0x1f);
                 var bytes = Encoding.UTF8.GetBytes(control.ToString());
@@ -1017,9 +1035,7 @@ public static class ManagedTerminalSessionHost
                 "left" => $"\u001b[1;{modifierNumber}D",
                 "home" => $"\u001b[1;{modifierNumber}H",
                 "end" => $"\u001b[1;{modifierNumber}F",
-                "tab" => modifiers == 1
-                    ? "\u001b[Z"
-                    : $"\u001b[1;{modifierNumber}Z",
+                "tab" => modifiers == 1 ? "\u001b[Z" : $"\u001b[1;{modifierNumber}Z",
                 "insert" => $"\u001b[2;{modifierNumber}~",
                 "delete" => $"\u001b[3;{modifierNumber}~",
                 "pageup" => $"\u001b[5;{modifierNumber}~",
@@ -1351,7 +1367,8 @@ public static class ManagedTerminalSessionManager
             }
             return response;
         }
-        catch (OperationCanceledException exception) when (!cancellationToken.IsCancellationRequested)
+        catch (OperationCanceledException exception)
+            when (!cancellationToken.IsCancellationRequested)
         {
             throw new ManagedSessionException(
                 "host_unavailable",
@@ -1444,10 +1461,7 @@ public static class ManagedTerminalSessionManager
         }
         await File.WriteAllTextAsync(
                 outputPath,
-                SvgRenderer.Render(
-                    screen,
-                    request.RenderOptions ?? new SvgRenderOptions()
-                ),
+                SvgRenderer.Render(screen, request.RenderOptions ?? new SvgRenderOptions()),
                 new UTF8Encoding(false),
                 cancellationToken
             )

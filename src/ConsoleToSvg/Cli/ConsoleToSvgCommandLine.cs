@@ -531,7 +531,12 @@ public sealed partial class ConsoleToSvgCommandLine
         send.Arguments.Add(sendId);
         AddOptions(
             send,
-            [_symbols.SessionKeys, _symbols.SessionText, _symbols.SessionPaste, _symbols.SessionRawHex]
+            [
+                _symbols.SessionKeys,
+                _symbols.SessionText,
+                _symbols.SessionPaste,
+                _symbols.SessionRawHex,
+            ]
         );
         send.SetAction(
             (parseResult, cancellationToken) =>
@@ -691,8 +696,7 @@ public sealed partial class ConsoleToSvgCommandLine
             var isPaste =
                 token == "--paste" || token.StartsWith("--paste=", StringComparison.Ordinal);
             var isRaw =
-                token == "--raw-hex"
-                || token.StartsWith("--raw-hex=", StringComparison.Ordinal);
+                token == "--raw-hex" || token.StartsWith("--raw-hex=", StringComparison.Ordinal);
             if (!isText && !isKey && !isPaste && !isRaw)
             {
                 continue;
@@ -703,29 +707,6 @@ public sealed partial class ConsoleToSvgCommandLine
             inputs.Add(new SessionInputStep(isText, value, isRaw, isPaste));
         }
         return inputs;
-    }
-
-    private void SetSessionAction(
-        Command command,
-        SessionAction action,
-        Argument<string>? idArgument = null
-    )
-    {
-        command.SetAction(
-            (parseResult, cancellationToken) =>
-                _handler(
-                    new AppOptions
-                    {
-                        Workflow = Workflow.Session,
-                        RequestedSessionAction = action,
-                        SessionId = idArgument is null
-                            ? null
-                            : parseResult.GetRequiredValue(idArgument),
-                    },
-                    parseResult,
-                    cancellationToken
-                )
-        );
     }
 
     private bool TryCreateSessionCaptureOptions(

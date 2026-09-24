@@ -459,7 +459,7 @@ public sealed class ConsoleToSvgCommandLineTests
         );
 
         missing.ExitCode.ShouldBe(1);
-        missing.Error.ShouldContain("at least one --keys or --text");
+        missing.Error.ShouldContain("at least one --keys, --text, --paste, or --raw-hex");
         repeated.ExitCode.ShouldBe(0);
         repeated.Options!.SessionInputs.ShouldBe(
             [

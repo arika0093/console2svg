@@ -630,7 +630,10 @@ public sealed partial class ScreenBuffer
             || snapshot.Cells.Length != checked(snapshot.Width * snapshot.Height)
         )
         {
-            throw new ArgumentException("The terminal screen snapshot is invalid.", nameof(snapshot));
+            throw new ArgumentException(
+                "The terminal screen snapshot is invalid.",
+                nameof(snapshot)
+            );
         }
 
         var buffer = new ScreenBuffer(snapshot.Width, snapshot.Height, theme)

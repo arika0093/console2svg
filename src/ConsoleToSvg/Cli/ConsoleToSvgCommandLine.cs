@@ -145,7 +145,11 @@ public sealed partial class ConsoleToSvgCommandLine
         root.Subcommands.Add(replay);
 
         var cast = new Command("cast", "Render an asciicast file.");
-        var castPath = new Argument<string>("cast") { Description = "Asciicast v2 file." };
+        var castPath = new Argument<string>("cast")
+        {
+            Description = "Asciicast v2 file.",
+            Hidden = true,
+        };
         cast.Arguments.Add(castPath);
         AddOptions(cast, _symbols.CastOptions);
         SetMappedAction(cast, Workflow.Cast, inputPath: castPath);
@@ -207,7 +211,11 @@ public sealed partial class ConsoleToSvgCommandLine
         theme.Subcommands.Add(list);
 
         var install = new Command("install", "Install a theme from a directory, archive, or URL.");
-        var source = new Argument<string>("source") { Description = "Theme source." };
+        var source = new Argument<string>("source")
+        {
+            Description = "Theme source.",
+            Hidden = true,
+        };
         install.Arguments.Add(source);
         SetMappedAction(
             install,
@@ -218,13 +226,17 @@ public sealed partial class ConsoleToSvgCommandLine
         theme.Subcommands.Add(install);
 
         var remove = new Command("remove", "Remove an installed theme.");
-        var id = new Argument<string>("id") { Description = "Installed theme ID." };
+        var id = new Argument<string>("id") { Description = "Installed theme ID.", Hidden = true };
         remove.Arguments.Add(id);
         SetMappedAction(remove, Workflow.Theme, themeAction: ThemeAction.Remove, themeArgument: id);
         theme.Subcommands.Add(remove);
 
         var update = new Command("update", "Update one theme, or all installed themes.");
-        var updateId = new Argument<string?>("id") { Description = "Installed theme ID." };
+        var updateId = new Argument<string?>("id")
+        {
+            Description = "Installed theme ID.",
+            Hidden = true,
+        };
         update.Arguments.Add(updateId);
         SetMappedAction(
             update,
@@ -246,6 +258,7 @@ public sealed partial class ConsoleToSvgCommandLine
             Arity = ArgumentArity.ZeroOrOne,
             Description = "Optional host and port to listen on (for example, 127.0.0.1:8080).",
             HelpName = "host:port",
+            Hidden = true,
         };
         liveServer.Arguments.Add(endpoint);
         SetMappedAction(
@@ -334,6 +347,7 @@ public sealed partial class ConsoleToSvgCommandLine
             Arity = ArgumentArity.ZeroOrOne,
             Description = "Optional host and port to listen on (for example, 127.0.0.1:8080).",
             HelpName = "host:port",
+            Hidden = true,
         };
         liveServer.Arguments.Add(endpoint);
         SetMappedAction(
@@ -405,6 +419,7 @@ public sealed partial class ConsoleToSvgCommandLine
         var source = new Argument<string>("source")
         {
             Description = "Manifest URL, local manifest/directory, or Git repository source.",
+            Hidden = true,
         };
         restore.Arguments.Add(source);
         restore.SetAction(

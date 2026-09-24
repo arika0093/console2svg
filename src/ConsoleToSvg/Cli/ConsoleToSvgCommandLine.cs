@@ -132,6 +132,7 @@ public sealed partial class ConsoleToSvgCommandLine
         var replayPath = new Argument<string>("replay.json")
         {
             Description = "Recorded keyboard input.",
+            Hidden = true,
         };
         replay.Arguments.Add(replayPath);
         AddOptions(replay, _symbols.ReplayOptions);
@@ -184,6 +185,7 @@ public sealed partial class ConsoleToSvgCommandLine
             Arity = ArgumentArity.ZeroOrMore,
             CaptureRemainingTokens = captureRemainingTokens,
             Description = "Command to capture. Use -- to preserve argument boundaries.",
+            Hidden = true,
         };
         command.Arguments.Add(argument);
         return argument;

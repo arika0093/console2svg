@@ -420,6 +420,16 @@ public sealed class ConsoleToSvgCommandLineTests
         invocation.Output.ShouldContain("--svg-converter");
         invocation.Output.ShouldContain("<converter>");
         invocation.Output.ShouldNotContain("--svg-converter <auto|ffmpeg|resvg|rsvg|rsvg-convert>");
+        invocation.Output.ShouldNotContain("<command>");
+    }
+
+    [Test]
+    public async Task GeneratedHelpHidesReplayInputPlaceholder()
+    {
+        var invocation = await InvokeAsync("replay", "--help");
+
+        invocation.ExitCode.ShouldBe(0);
+        invocation.Output.ShouldNotContain("<replay.json>");
     }
 
     [Test]

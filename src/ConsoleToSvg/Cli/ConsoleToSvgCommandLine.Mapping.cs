@@ -124,6 +124,7 @@ public sealed partial class ConsoleToSvgCommandLine
                 formatOption is null ? null : result.GetValue(formatOption)
             ),
             MaskAuto = result.GetValue(_symbols.MaskAuto),
+            IsMaskAutoExplicit = IsSpecified(result, _symbols.MaskAuto),
         };
 
         if (options.EmbedDebug)

@@ -386,6 +386,9 @@ public static class BatchMarkdown
             return null;
         }
 
+        if (!captureOptions!.IsMaskAutoExplicit)
+            captureOptions.MaskAuto = true;
+
         var outputRelative = hasOutput ? captureOptions!.OutputPath : null;
 
         var body = ParseYamlBody(yaml, line, errors);

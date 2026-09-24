@@ -123,7 +123,10 @@ public sealed class AppOptions
     public List<string> MaskPatterns { get; } = [];
 
     /// <summary>Overlay secrets found by the generated Betterleaks quick filter.</summary>
-    public bool MaskAuto { get; set; } = true;
+    public bool MaskAuto { get; set; }
+
+    /// <summary>True when --mask-auto was explicitly supplied on the command line.</summary>
+    public bool IsMaskAutoExplicit { get; set; }
 
     /// <summary>True when --mode (or -v) was explicitly supplied on the command line.</summary>
     public bool IsModeExplicit { get; set; }

@@ -347,6 +347,16 @@ public sealed class BatchMarkdownTests
     }
 
     [Test]
+    public void MarkdownBatchAutomaticallyEnablesMaskingUnlessOverridden()
+    {
+        var defaultResult = Parse("<!-- c2s:: -- echo hi -->");
+        var overriddenResult = Parse("<!-- c2s:: --mask-auto false -- echo hi -->");
+
+        defaultResult.Jobs[0].CaptureOptions.MaskAuto.ShouldBeTrue();
+        overriddenResult.Jobs[0].CaptureOptions.MaskAuto.ShouldBeFalse();
+    }
+
+    [Test]
     public void UnsupportedMarkerOptionIsRejected()
     {
         var result = Parse("<!-- c2s:: --bogus 1 -- echo hi -->");

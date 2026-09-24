@@ -415,7 +415,7 @@ internal static partial class Program
         Console.WriteLine("| --- | --- | --- | --- | --- |");
         foreach (var (name, tool) in tools)
             Console.WriteLine(
-                $"| {name} | {(tool.Available ? "available" : "unavailable")} | {EscapeMarkdown(FormatStatusToolVersion(tool.Version) ?? "")} | {EscapeMarkdown(FormatStatusToolPath(tool.Path))} | {EscapeMarkdown(tool.Error ?? "")} |"
+                $"| {name} | {(tool.Available ? "available" : "unavailable")} | {EscapeMarkdown(FormatStatusToolVersion(tool.Version) ?? "")} | {EscapeMarkdown(tool.Available ? FormatStatusToolPath(tool.Path) : "")} | {EscapeMarkdown(tool.Error ?? "")} |"
             );
     }
 

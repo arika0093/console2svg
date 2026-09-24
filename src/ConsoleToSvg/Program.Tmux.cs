@@ -106,11 +106,11 @@ internal static partial class Program
         return $"tmux capture-pane -p -e -t {ShellQuote(target)}{historyArgument}";
     }
 
-    private static string BuildTmuxPollingCommand(string captureCommand, double fps)
+    internal static string BuildTmuxPollingCommand(string captureCommand, double fps)
     {
         var seconds = 1d / Math.Max(0.1d, fps);
         var interval = seconds.ToString("0.###", CultureInfo.InvariantCulture);
-        return $"while :; do printf '\\033[2J\\033[H'; captured=$({captureCommand}); printf '%s' \"$captured\" | sed 's/$/\\r/'; sleep {interval}; done";
+        return $"while :; do captured=$({captureCommand}); printf '\\033[H'; printf '%s' \"$captured\" | awk '{{ printf \"\\033[%d;1H%s\\033[K\", NR, $0 }}'; printf '\\033[J'; sleep {interval}; done";
     }
 
     private static string ShellQuote(string value) =>

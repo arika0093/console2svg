@@ -22,6 +22,18 @@ public sealed class LiveServerTests
     }
 
     [Test]
+    public void TmuxPollingRefreshesScreenWithoutClearingItFirst()
+    {
+        var command = Program.BuildTmuxPollingCommand("tmux capture-pane -p", 30d);
+
+        command.ShouldContain("awk '{ printf \"\\033[%d;1H%s\\033[K\", NR, $0 }'");
+        command.ShouldContain("printf '\\033[J'");
+        command.ShouldNotContain("\\033[2J");
+        command.IndexOf("captured=$(", StringComparison.Ordinal)
+            .ShouldBeLessThan(command.IndexOf("printf '\\033[H'", StringComparison.Ordinal));
+    }
+
+    [Test]
     public void SnapshotIncludesStaticPresentationLayers()
     {
         var theme = Theme.Resolve("dark");

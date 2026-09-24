@@ -3,6 +3,7 @@ generated/
 !assets/
 !assets/**
 docs-site/public/assets/
+docs-site/public/install.sh
 src/ConsoleToSvg.Converter/native/resvg-wrapper/target/
 native-assets/
 exported/

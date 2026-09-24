@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Install console2svg from GitHub releases.
 # Usage:
-#   curl -sSL https://raw.githubusercontent.com/arika0093/console2svg/main/install.sh | bash
+#   curl -sSL https://console2svg.eclairs.cc/install.sh | bash
 #   CONSOLE2SVG_VERSION=0.8.0 bash install.sh
 #   CONSOLE2SVG_INSTALL_DIR=/opt/console2svg bash install.sh
 

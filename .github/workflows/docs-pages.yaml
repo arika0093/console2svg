@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'version.json'
+      - 'install.sh'
       - 'docs/**'
       - 'docs-site/**'
       - 'src/ConsoleToSvg/**'

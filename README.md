@@ -146,7 +146,7 @@ Common secrets are masked automatically when capturing terminal output.
 The easiest way is the install script.
 
 ```sh
-curl -sSL https://raw.githubusercontent.com/arika0093/console2svg/main/install.sh | bash
+curl -sSL https://console2svg.eclairs.cc/install.sh | bash
 ```
 
 ### Windows

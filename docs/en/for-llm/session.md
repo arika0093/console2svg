@@ -10,7 +10,8 @@ Structured terminal operations are available for use by LLMs.
 
 This provides a terminal-oriented tool like [`playwright-cli`](https://github.com/microsoft/playwright-cli), giving AI a way to "see" terminal output.
 
-This lets an LLM handle terminal operations autonomously and verify the results in a feedback loop for visual requests, such as improving an interface's appearance.
+> [!TIP]
+> This lets an LLM handle terminal operations autonomously and verify the results in a feedback loop for visual requests, such as improving an interface's appearance.
 
 ## Usage
 
@@ -19,6 +20,9 @@ Load [SKILL.md](./use-skill.md) into your LLM.
 ## Overview
 
 Use [console2svg session](../reference/cli/session.md) to let an LLM operate a terminal.
+
+> [!NOTE]
+> Each command returns output in JSON format to make it easier for LLMs to parse.
 
 ### Start a session
 

@@ -10,7 +10,8 @@ LLM 可以使用结构化的终端操作功能。
 
 提供类似终端版 [`playwright-cli`](https://github.com/microsoft/playwright-cli) 的工具，为 AI 提供一双“眼睛”。
 
-这样，面对改善界面外观等视觉需求时，LLM 可以自主操作终端，并通过反馈循环检查执行结果。
+> [!TIP]
+> 这样，面对改善界面外观等视觉需求时，LLM 可以自主操作终端，并通过反馈循环检查执行结果。
 
 ## 使用方法
 
@@ -19,6 +20,9 @@ LLM 可以使用结构化的终端操作功能。
 ## 概览
 
 使用 [console2svg session](../reference/cli/session.md) 让 LLM 操作终端。
+
+> [!NOTE]
+> 每条命令的输出都以 JSON 格式返回，便于 LLM 解析。
 
 ### 启动会话
 

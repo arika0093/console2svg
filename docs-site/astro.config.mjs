@@ -87,7 +87,7 @@ export default defineConfig({
             ja: 'はじめに',
           },
           items: [
-            'gallery',
+            'getting-started/gallery',
             'getting-started/why-svg',
             'getting-started/installation',
             'getting-started/quick-start',
@@ -247,8 +247,8 @@ export default defineConfig({
             'utilities/live-server',
             'utilities/tmux',
             'utilities/shell-completion',
-            'reference/status',
-            'reference/logging',
+            'utilities/status',
+            'utilities/logging',
           ],
         },
         {

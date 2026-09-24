@@ -243,6 +243,8 @@ public static class BatchMarkdown
             unsupported = "--save-frames";
         else if (options.StdOut)
             unsupported = "--stdout";
+        else if (options.Json)
+            unsupported = "--json";
         else if (options.EmbedDebug)
             unsupported = "--embed-debug";
         else if (options.EmbedCast)

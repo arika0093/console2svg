@@ -10,6 +10,14 @@ console2svg tmux live-server --target <pane> [options] [host:port]
 
 `capture`は指定ペインをSVGに記録し、`live-server`はそのペインをライブ配信します。`--history`で遡って取得する履歴行数を指定できます。
 
+`capture`に`--json`を追加すると、ペインのプレーンテキスト、寸法、生成アーティファクトのパスを取得できます。
+
+```bash title="Terminal"
+console2svg tmux capture --target %1 --json
+```
+
+JSONの各フィールドは[`capture`リファレンス](./capture.md)を参照してください。
+
 ## `capture`のオプション
 
 `capture`では[`capture`](./capture.md)のオプションを利用できます。

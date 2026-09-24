@@ -10,6 +10,14 @@ console2svg tmux live-server --target <pane> [options] [host:port]
 
 `capture` 将指定窗格记录为 SVG，`live-server` 对该窗格进行实时配信。可以用 `--history` 指定回溯获取的历史行数。
 
+在 `capture` 中添加 `--json`，即可返回窗格的纯文本画面、尺寸和生成资源路径：
+
+```bash title="Terminal"
+console2svg tmux capture --target %1 --json
+```
+
+JSON 字段请参阅 [`capture` 参考](./capture.md)。
+
 ## `capture` 的选项
 
 `capture` 中可以使用 [`capture`](./capture.md) 的选项。

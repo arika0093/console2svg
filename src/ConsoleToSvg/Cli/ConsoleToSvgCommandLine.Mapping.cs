@@ -85,6 +85,7 @@ public sealed partial class ConsoleToSvgCommandLine
             VerboseLogPath = result.GetValue(_symbols.VerboseLogPath)?.ToString(),
             WithCommand = result.GetValue(_symbols.WithCommand),
             StdOut = result.GetValue(_symbols.StdOut),
+            Json = result.GetValue(_symbols.CaptureJson),
             Interactive = workflow == Workflow.Interactive || result.GetValue(_symbols.Interactive),
             NoColorEnv = result.GetValue(_symbols.NoColorEnv),
             NoDeleteEnvs = result.GetValue(_symbols.NoDeleteEnvs),
@@ -501,6 +502,18 @@ public sealed partial class ConsoleToSvgCommandLine
             return false;
         }
 
+        if (options.Json && options.StdOut)
+        {
+            error = "--json cannot be used with --stdout.";
+            return false;
+        }
+
+        if (options.Json && options.Workflow is not (Workflow.Capture or Workflow.Tmux))
+        {
+            error = "--json is only available with capture and tmux capture.";
+            return false;
+        }
+
         if (
             options.Workflow != Workflow.Tmux
             && (!string.IsNullOrWhiteSpace(options.TmuxTarget) || options.TmuxHistory)
@@ -742,6 +755,7 @@ public sealed partial class ConsoleToSvgCommandLine
                 or "status"
                 or "update"
                 or "llm"
+                or "session"
                 or "live-server"
                 or "tmux"
                 or "batch"

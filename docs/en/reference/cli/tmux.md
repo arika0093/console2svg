@@ -10,6 +10,15 @@ console2svg tmux live-server --target <pane> [options] [host:port]
 
 `capture` records the specified pane to SVG, and `live-server` live-streams that pane. Use `--history` to specify how many history lines to retrieve.
 
+Add `--json` to `capture` to return the pane's plain screen text, dimensions,
+and the generated artifact path:
+
+```bash title="Terminal"
+console2svg tmux capture --target %1 --json
+```
+
+See the [`capture` reference](./capture.md) for the JSON result fields.
+
 ## `capture` options
 
 In `capture`, you can use the options for [`capture`](./capture.md).

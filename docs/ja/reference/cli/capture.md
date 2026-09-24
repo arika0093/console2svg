@@ -9,6 +9,15 @@ console2svg capture [options] -- command [args...]
 
 指定したコマンドをPTYで実行し、終了時の画面をSVGとして保存します。`-v`を付けるとアニメーションSVGや動画形式にもできます。
 
+エージェントが最終画面のテキストと視覚アーティファクトの参照先を必要とする場合は、`--json`を指定します。
+
+```bash title="Terminal"
+console2svg capture --json -- npm test
+console2svg tmux capture --target %1 --json
+```
+
+バージョン付きの結果には`schemaVersion`、`status`、`exitCode`、`durationMs`、`screen`（`width`、`height`、`text`、`truncated`）、生成アーティファクトのパスと形式が含まれます。動画出力では、視覚確認用に最大12個のサンプリング済みSVGフレームへのパスを`frames`に含めます。これらのプレビューは自動生成され、`--save-frames`は不要です。JSONは標準出力だけに出力し、診断情報は標準エラーに出力します。`--json`と`--stdout`は併用できません。
+
 ## オプション
 
 ### `-o, --out <path>`

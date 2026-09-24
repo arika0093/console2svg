@@ -48,6 +48,10 @@ public sealed class RecordingSession
 
     public List<AsciicastEvent> Events { get; }
 
+    public int? ExitCode { get; set; }
+
+    public double? DurationSeconds { get; set; }
+
     public object EventsLock => _eventsLock;
 
     public int GetEventCount()

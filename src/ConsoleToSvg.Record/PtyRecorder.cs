@@ -418,6 +418,8 @@ public static partial class PtyRecorder
             logger.ZLogDebug(
                 $"PTY recording completed. Events={session.GetEventCount()} ElapsedMs={stopwatch.ElapsedMilliseconds}"
             );
+            session.ExitCode = connection.ExitCode;
+            session.DurationSeconds = stopwatch.Elapsed.TotalSeconds;
 
             if (replayTimeoutExceeded is double exceededDurationFinal)
             {
@@ -531,6 +533,8 @@ public static partial class PtyRecorder
         var snapshot = new RecordingSession(source.Header.width, source.Header.height)
         {
             Header = { timestamp = source.Header.timestamp },
+            ExitCode = source.ExitCode,
+            DurationSeconds = source.DurationSeconds,
         };
         lock (source.EventsLock)
         {
@@ -724,6 +728,8 @@ public static partial class PtyRecorder
             logger.ZLogDebug(
                 $"Fallback recording completed. ExitCode={process.ExitCode} Events={session.GetEventCount()} ElapsedMs={stopwatch.ElapsedMilliseconds} Canceled={canceled}"
             );
+            session.ExitCode = process.ExitCode;
+            session.DurationSeconds = stopwatch.Elapsed.TotalSeconds;
 
             if (replayTimedOut && replayData?.TotalDuration is double exceededDuration)
             {

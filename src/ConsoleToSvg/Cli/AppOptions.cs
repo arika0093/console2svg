@@ -30,6 +30,19 @@ public enum Workflow
     LiveServer,
     Tmux,
     Batch,
+    Session,
+}
+
+public enum SessionAction
+{
+    Start,
+    List,
+    Read,
+    Send,
+    Resize,
+    Capture,
+    Stop,
+    Host,
 }
 
 public enum BatchAction
@@ -63,6 +76,20 @@ public sealed class AppOptions
     public bool UpdateCheck { get; set; }
     public bool UpdateForce { get; set; }
     public bool UpdateYes { get; set; }
+    public SessionAction? RequestedSessionAction { get; set; }
+    public string? SessionId { get; set; }
+    public string? SessionText { get; set; }
+    public string? SessionKey { get; set; }
+    public string? SessionWait { get; set; }
+    public bool SessionJson { get; set; }
+    public bool SessionAll { get; set; }
+    public bool SessionYes { get; set; }
+    public int SessionWidth { get; set; } = 100;
+    public int SessionHeight { get; set; } = 24;
+    public string[]? SessionCommand { get; set; }
+    public string? SessionWorkingDirectory { get; set; }
+    public string? SessionPipeName { get; set; }
+    public string? SessionDirectory { get; set; }
 
     public bool Verbose { get; set; }
 
@@ -241,6 +268,9 @@ public sealed class AppOptions
 
     /// <summary>Write SVG output to stdout instead of a file. PTY forwarding is suppressed.</summary>
     public bool StdOut { get; set; }
+
+    /// <summary>Write a machine-readable capture result to stdout.</summary>
+    public bool Json { get; set; }
 
     /// <summary>Run the user's shell in a PTY and capture the terminal on demand.</summary>
     public bool Interactive { get; set; }

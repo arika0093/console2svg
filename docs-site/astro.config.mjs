@@ -259,6 +259,8 @@ export default defineConfig({
                 'reference/cli/theme',
                 'reference/cli/status',
                 'reference/cli/update',
+                'reference/cli/llm',
+                'reference/cli/session',
                 'reference/cli/live-server',
                 'reference/cli/tmux',
                 'reference/cli/batch',

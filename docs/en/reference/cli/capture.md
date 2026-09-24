@@ -9,6 +9,22 @@ console2svg capture [options] -- command [args...]
 
 Runs the specified command in a PTY and saves the final screen as an SVG. Add `-v` to create an animated SVG or video format.
 
+Use `--json` when an agent needs the final screen as text as well as a visual
+artifact reference:
+
+```bash title="Terminal"
+console2svg capture --json -- npm test
+console2svg tmux capture --target %1 --json
+```
+
+The versioned result includes `schemaVersion`, `status`, `exitCode`,
+`durationMs`, `screen` (`width`, `height`, `text`, `truncated`), and the
+generated `artifact` path and format. With video output, `frames` contains at
+most 12 sampled SVG frame paths for visual inspection. These previews are
+created automatically; they do not require `--save-frames`. JSON is written
+only to stdout, while diagnostics remain on stderr. `--json` cannot be combined
+with `--stdout`.
+
 ## Options
 
 ### `-o, --out <path>`

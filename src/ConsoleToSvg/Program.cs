@@ -49,6 +49,10 @@ internal static partial class Program
         CancellationToken invocationCancellationToken
     )
     {
+        if (options.Workflow == Workflow.Session)
+            return await RunSessionAsync(options, invocationCancellationToken)
+                .ConfigureAwait(false);
+
         if (options.Workflow == Workflow.Status)
             return await RunStatusAsync(options.OutputFormat, invocationCancellationToken)
                 .ConfigureAwait(false);
@@ -155,12 +159,12 @@ internal static partial class Program
             logger.ZLogDebug($"Timeout set: {options.Timeout.Value} seconds.");
         }
 
-        if (options.StdOut)
+        if (options.StdOut || options.Json)
         {
             // Redirect Console.Out → stderr before recording so that any third-party library
             // debug messages written via Console.Write/WriteLine (e.g. Porta.Pty's
             // "Waiting on {pid}" / "Wait succeeded" from its ChildWatcherThreadProc)
-            // are sent to stderr instead of polluting the SVG output pipe.
+            // are sent to stderr instead of polluting machine-readable stdout.
             var stderrWriter = new StreamWriter(
                 Console.OpenStandardError(),
                 new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
@@ -171,7 +175,7 @@ internal static partial class Program
                 AutoFlush = true,
             };
             Console.SetOut(stderrWriter);
-            logger.ZLogDebug($"Console.Out redirected to stderr for --stdout mode.");
+            logger.ZLogDebug($"Console.Out redirected to stderr for machine-readable output mode.");
         }
 
         string? embeddedReplayTempPath = null;
@@ -250,6 +254,14 @@ internal static partial class Program
             }
 
             var renderOptions = SvgRenderOptionsFactory.Create(options);
+            var artifactFormat = Path.GetExtension(options.OutputPath)
+                .TrimStart('.')
+                .ToLowerInvariant();
+            if (string.IsNullOrEmpty(artifactFormat))
+                artifactFormat = "svg";
+            var isVideoCapture =
+                options.Mode is OutputMode.Video
+                || (!options.IsModeExplicit && IsVideoFormat(artifactFormat));
             if (options.EmbedCast)
             {
                 logger.ZLogDebug($"Embedding asciicast data in SVG metadata.");
@@ -289,6 +301,8 @@ internal static partial class Program
             // Windows AV makes recursive Directory.Delete slow.
             Task? tempCleanup = null;
             var savedFramesDuringVideoConversion = false;
+            string? jsonFrameDirectory = options.SaveFramesDir;
+            var jsonFrameFps = options.VideoFps;
 
             if (options.StdOut)
             {
@@ -536,6 +550,42 @@ internal static partial class Program
                     .ConfigureAwait(false);
             }
 
+            if (options.Json && isVideoCapture && jsonFrameDirectory is null)
+            {
+                var duration =
+                    session.DurationSeconds
+                    ?? (session.Events.Count > 0 ? session.Events[^1].Time : 0d);
+                var previewFps =
+                    duration > 0
+                        ? Math.Min(options.VideoFps, (JsonPreviewFrameLimit - 1d) / duration)
+                        : options.VideoFps;
+                jsonFrameFps = previewFps;
+                jsonFrameDirectory = Path.Combine(
+                    Path.GetDirectoryName(Path.GetFullPath(options.OutputPath))!,
+                    $".{Path.GetFileName(options.OutputPath)}.frames-{Guid.NewGuid():N}"
+                );
+                var frameCount = await SaveFramesAsync(
+                        session,
+                        renderOptions,
+                        jsonFrameDirectory,
+                        previewFps,
+                        logger,
+                        outputToken
+                    )
+                    .ConfigureAwait(false);
+                if (frameCount == 0)
+                {
+                    Directory.CreateDirectory(jsonFrameDirectory);
+                    await File.WriteAllTextAsync(
+                            Path.Combine(jsonFrameDirectory, "frame-0000.svg"),
+                            SvgRenderer.Render(session, renderOptions),
+                            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+                            outputToken
+                        )
+                        .ConfigureAwait(false);
+                }
+            }
+
             if (wasCanceled)
             {
                 var cause = GetCancellationCause(options, canceledByCtrlC);
@@ -544,6 +594,22 @@ internal static partial class Program
                     ? "Generated (partial): (stdout)"
                     : $"Generated (partial): {options.OutputPath}";
                 await Console.Error.WriteLineAsync(message.AsMemory(), CancellationToken.None);
+                if (options.Json)
+                {
+                    await WriteCaptureJsonAsync(
+                            CreateCaptureJsonResult(
+                                options,
+                                session,
+                                renderOptions,
+                                wasCanceled: true,
+                                jsonFrameDirectory,
+                                jsonFrameFps,
+                                artifactFormat
+                            ),
+                            CancellationToken.None
+                        )
+                        .ConfigureAwait(false);
+                }
                 if (tempCleanup is not null)
                 {
                     await tempCleanup.ConfigureAwait(false);
@@ -557,6 +623,22 @@ internal static partial class Program
                 ).AsMemory(),
                 invocationCancellationToken
             );
+            if (options.Json)
+            {
+                await WriteCaptureJsonAsync(
+                        CreateCaptureJsonResult(
+                            options,
+                            session,
+                            renderOptions,
+                            wasCanceled: false,
+                            jsonFrameDirectory,
+                            jsonFrameFps,
+                            artifactFormat
+                        ),
+                        invocationCancellationToken
+                    )
+                    .ConfigureAwait(false);
+            }
             if (tempCleanup is not null)
             {
                 await tempCleanup.ConfigureAwait(false);

@@ -162,7 +162,8 @@ public sealed class ConsoleToSvgCommandLineTests
         invocation.Error.ShouldBeEmpty();
         invocation.Output.ShouldStartWith("---\nname: console2svg\n");
         invocation.Output.ShouldContain("description:");
-        invocation.Output.ShouldContain("## Capture a command");
+        invocation.Output.ShouldContain("## One-shot command capture");
+        invocation.Output.ShouldContain("## Managed TUI sessions");
         invocation.Output.ShouldEndWith("\n");
         invocation.Output.ShouldNotContain("\x1b[");
     }
@@ -286,6 +287,91 @@ public sealed class ConsoleToSvgCommandLineTests
         invocation.Options.TmuxHistory.ShouldBeTrue();
         invocation.Options.TmuxHistoryLines.ShouldBe(1000);
         invocation.Options.Mode.ShouldBe(OutputMode.Video);
+    }
+
+    [Test]
+    public async Task CaptureJsonIsAvailableForCaptureAndTmux()
+    {
+        var capture = await InvokeAsync("capture", "--json", "--", "echo", "hello");
+        var tmux = await InvokeAsync("tmux", "capture", "--target", "%1", "--json");
+
+        capture.ExitCode.ShouldBe(0);
+        capture.Options!.Json.ShouldBeTrue();
+        tmux.ExitCode.ShouldBe(0);
+        tmux.Options!.Workflow.ShouldBe(Workflow.Tmux);
+        tmux.Options.Json.ShouldBeTrue();
+    }
+
+    [Test]
+    public async Task SessionCommandsMapIdsAndInputs()
+    {
+        var start = await InvokeAsync(
+            "session",
+            "start",
+            "--json",
+            "--width",
+            "90",
+            "--height",
+            "30",
+            "--",
+            "sh",
+            "-c",
+            "read value"
+        );
+        var read = await InvokeAsync("session", "read", "s_abc", "--wait", "1s", "--json");
+        var send = await InvokeAsync("session", "send", "s_abc", "--keys", "Ctrl+C", "--json");
+        var resize = await InvokeAsync(
+            "session",
+            "resize",
+            "s_abc",
+            "--width",
+            "100",
+            "--height",
+            "40"
+        );
+        var list = await InvokeAsync("session", "list", "--json");
+        var stop = await InvokeAsync("session", "stop", "--all", "--yes", "--json");
+
+        start.ExitCode.ShouldBe(0);
+        start.Options!.RequestedSessionAction.ShouldBe(SessionAction.Start);
+        start.Options.SessionWidth.ShouldBe(90);
+        start.Options.SessionHeight.ShouldBe(30);
+        start.Options.SessionCommand.ShouldBe(["sh", "-c", "read value"]);
+        read.ExitCode.ShouldBe(0);
+        read.Options!.RequestedSessionAction.ShouldBe(SessionAction.Read);
+        read.Options.SessionId.ShouldBe("s_abc");
+        read.Options.SessionWait.ShouldBe("1s");
+        send.ExitCode.ShouldBe(0);
+        send.Options!.SessionKey.ShouldBe("Ctrl+C");
+        resize.ExitCode.ShouldBe(0);
+        resize.Options!.SessionWidth.ShouldBe(100);
+        resize.Options.SessionHeight.ShouldBe(40);
+        list.ExitCode.ShouldBe(0);
+        list.Options!.RequestedSessionAction.ShouldBe(SessionAction.List);
+        list.Options.SessionJson.ShouldBeTrue();
+        stop.ExitCode.ShouldBe(0);
+        stop.Options!.SessionAll.ShouldBeTrue();
+        stop.Options.SessionYes.ShouldBeTrue();
+    }
+
+    [Test]
+    public async Task SessionSendRequiresExactlyOneInputMode()
+    {
+        var missing = await InvokeAsync("session", "send", "s_abc");
+        var both = await InvokeAsync(
+            "session",
+            "send",
+            "s_abc",
+            "--keys",
+            "Enter",
+            "--text",
+            "hello"
+        );
+
+        missing.ExitCode.ShouldBe(1);
+        missing.Error.ShouldContain("exactly one of --keys or --text");
+        both.ExitCode.ShouldBe(1);
+        both.Error.ShouldContain("exactly one of --keys or --text");
     }
 
     [Test]

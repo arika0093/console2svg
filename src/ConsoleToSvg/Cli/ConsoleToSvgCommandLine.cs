@@ -159,6 +159,7 @@ public sealed partial class ConsoleToSvgCommandLine
         AddStatusCommand(root);
         AddUpdateCommand(root);
         AddLlmCommand(root);
+        AddSessionCommand(root);
         AddLiveServerCommand(root);
         AddTmuxCommand(root);
         AddBatchCommand(root);
@@ -378,6 +379,331 @@ public sealed partial class ConsoleToSvgCommandLine
         tmux.Subcommands.Add(liveServer);
 
         root.Subcommands.Add(tmux);
+    }
+
+    private void AddSessionCommand(RootCommand root)
+    {
+        var session = new Command("session", "Manage LLM-controlled terminal sessions.");
+        session.SetAction(ColoredHelpAction.Write);
+
+        var start = new Command("start", "Start a command in a managed PTY session.");
+        AddOptions(
+            start,
+            [
+                _symbols.SessionJson,
+                _symbols.SessionWidth,
+                _symbols.SessionHeight,
+                _symbols.SessionWorkingDirectory,
+                _symbols.NoDeleteEnvs,
+            ]
+        );
+        var commandArgument = AddCommandArgument(start);
+        start.SetAction(
+            (parseResult, cancellationToken) =>
+            {
+                var command = parseResult.GetValue(commandArgument) ?? [];
+                if (
+                    command.Length == 0
+                    || !parseResult.Tokens.Any(token => token.Type == TokenType.DoubleDash)
+                )
+                {
+                    parseResult.InvocationConfiguration.Error.WriteLine(
+                        "A command must be specified after --."
+                    );
+                    return Task.FromResult(1);
+                }
+
+                return _handler(
+                    new AppOptions
+                    {
+                        Workflow = Workflow.Session,
+                        RequestedSessionAction = SessionAction.Start,
+                        SessionJson = parseResult.GetValue(_symbols.SessionJson),
+                        SessionWidth = parseResult.GetValue(_symbols.SessionWidth) ?? 100,
+                        SessionHeight = parseResult.GetValue(_symbols.SessionHeight) ?? 24,
+                        SessionCommand = command,
+                        SessionWorkingDirectory =
+                            parseResult.GetValue(_symbols.SessionWorkingDirectory)
+                            ?? Environment.CurrentDirectory,
+                        NoDeleteEnvs = parseResult.GetValue(_symbols.NoDeleteEnvs),
+                    },
+                    parseResult,
+                    cancellationToken
+                );
+            }
+        );
+        session.Subcommands.Add(start);
+
+        var list = new Command("list", "List managed sessions.");
+        list.Options.Add(_symbols.SessionJson);
+        SetSessionAction(list, SessionAction.List);
+        session.Subcommands.Add(list);
+
+        var read = new Command("read", "Read a managed session's current screen.");
+        var readId = new Argument<string>("id")
+        {
+            Description = "Managed session ID.",
+            Hidden = true,
+        };
+        read.Arguments.Add(readId);
+        AddOptions(read, [_symbols.SessionJson, _symbols.SessionWait]);
+        SetSessionAction(read, SessionAction.Read, readId);
+        session.Subcommands.Add(read);
+
+        var send = new Command("send", "Send a key or literal text to a managed session.");
+        var sendId = new Argument<string>("id")
+        {
+            Description = "Managed session ID.",
+            Hidden = true,
+        };
+        send.Arguments.Add(sendId);
+        AddOptions(send, [_symbols.SessionJson, _symbols.SessionKeys, _symbols.SessionText]);
+        send.SetAction(
+            (parseResult, cancellationToken) =>
+            {
+                var keys = parseResult.GetValue(_symbols.SessionKeys);
+                var text = parseResult.GetValue(_symbols.SessionText);
+                if ((keys is null) == (text is null))
+                {
+                    parseResult.InvocationConfiguration.Error.WriteLine(
+                        "Specify exactly one of --keys or --text."
+                    );
+                    return Task.FromResult(1);
+                }
+                return _handler(
+                    new AppOptions
+                    {
+                        Workflow = Workflow.Session,
+                        RequestedSessionAction = SessionAction.Send,
+                        SessionId = parseResult.GetRequiredValue(sendId),
+                        SessionJson = parseResult.GetValue(_symbols.SessionJson),
+                        SessionKey = keys,
+                        SessionText = text,
+                    },
+                    parseResult,
+                    cancellationToken
+                );
+            }
+        );
+        session.Subcommands.Add(send);
+
+        var resize = new Command("resize", "Resize a managed session's terminal.");
+        var resizeId = new Argument<string>("id")
+        {
+            Description = "Managed session ID.",
+            Hidden = true,
+        };
+        resize.Arguments.Add(resizeId);
+        AddOptions(resize, [_symbols.SessionJson, _symbols.SessionWidth, _symbols.SessionHeight]);
+        resize.SetAction(
+            (parseResult, cancellationToken) =>
+            {
+                var width = parseResult.GetValue(_symbols.SessionWidth);
+                var height = parseResult.GetValue(_symbols.SessionHeight);
+                if (!width.HasValue || !height.HasValue)
+                {
+                    parseResult.InvocationConfiguration.Error.WriteLine(
+                        "Both --width and --height are required."
+                    );
+                    return Task.FromResult(1);
+                }
+                return _handler(
+                    new AppOptions
+                    {
+                        Workflow = Workflow.Session,
+                        RequestedSessionAction = SessionAction.Resize,
+                        SessionId = parseResult.GetRequiredValue(resizeId),
+                        SessionJson = parseResult.GetValue(_symbols.SessionJson),
+                        SessionWidth = width.Value,
+                        SessionHeight = height.Value,
+                    },
+                    parseResult,
+                    cancellationToken
+                );
+            }
+        );
+        session.Subcommands.Add(resize);
+
+        var capture = new Command("capture", "Render a managed session's current screen as SVG.");
+        var captureId = new Argument<string>("id")
+        {
+            Description = "Managed session ID.",
+            Hidden = true,
+        };
+        capture.Arguments.Add(captureId);
+        AddOptions(capture, _symbols.SessionCaptureOptions);
+        capture.Options.Add(_symbols.SessionJson);
+        capture.SetAction(
+            async (parseResult, cancellationToken) =>
+            {
+                if (
+                    !TryCreateSessionCaptureOptions(
+                        parseResult,
+                        parseResult.GetRequiredValue(captureId),
+                        out var options,
+                        out var error
+                    )
+                )
+                {
+                    parseResult.InvocationConfiguration.Error.WriteLine(error);
+                    return 1;
+                }
+                return await _handler(options!, parseResult, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+        );
+        session.Subcommands.Add(capture);
+
+        var stop = new Command("stop", "Stop a managed session or all managed sessions.");
+        var stopId = new Argument<string?>("id")
+        {
+            Arity = ArgumentArity.ZeroOrOne,
+            Description = "Managed session ID.",
+            Hidden = true,
+        };
+        stop.Arguments.Add(stopId);
+        AddOptions(stop, [_symbols.SessionAll, _symbols.SessionYes, _symbols.SessionJson]);
+        stop.SetAction(
+            (parseResult, cancellationToken) =>
+            {
+                var id = parseResult.GetValue(stopId);
+                var all = parseResult.GetValue(_symbols.SessionAll);
+                if (all == (id is not null))
+                {
+                    parseResult.InvocationConfiguration.Error.WriteLine(
+                        "Specify either a session ID or --all."
+                    );
+                    return Task.FromResult(1);
+                }
+                return _handler(
+                    new AppOptions
+                    {
+                        Workflow = Workflow.Session,
+                        RequestedSessionAction = SessionAction.Stop,
+                        SessionId = id,
+                        SessionAll = all,
+                        SessionYes = parseResult.GetValue(_symbols.SessionYes),
+                        SessionJson = parseResult.GetValue(_symbols.SessionJson),
+                    },
+                    parseResult,
+                    cancellationToken
+                );
+            }
+        );
+        session.Subcommands.Add(stop);
+
+        var host = new Command("host", "Internal managed-session worker.") { Hidden = true };
+        host.Options.Add(_symbols.SessionPipeName);
+        host.Options.Add(_symbols.SessionDirectory);
+        host.SetAction(
+            (parseResult, cancellationToken) =>
+                _handler(
+                    new AppOptions
+                    {
+                        Workflow = Workflow.Session,
+                        RequestedSessionAction = SessionAction.Host,
+                        SessionPipeName = parseResult.GetValue(_symbols.SessionPipeName),
+                        SessionDirectory = parseResult.GetValue(_symbols.SessionDirectory),
+                    },
+                    parseResult,
+                    cancellationToken
+                )
+        );
+        session.Subcommands.Add(host);
+        root.Subcommands.Add(session);
+    }
+
+    private void SetSessionAction(
+        Command command,
+        SessionAction action,
+        Argument<string>? idArgument = null
+    )
+    {
+        command.SetAction(
+            (parseResult, cancellationToken) =>
+                _handler(
+                    new AppOptions
+                    {
+                        Workflow = Workflow.Session,
+                        RequestedSessionAction = action,
+                        SessionId = idArgument is null
+                            ? null
+                            : parseResult.GetRequiredValue(idArgument),
+                        SessionJson = parseResult.GetValue(_symbols.SessionJson),
+                        SessionWait = parseResult.GetValue(_symbols.SessionWait),
+                    },
+                    parseResult,
+                    cancellationToken
+                )
+        );
+    }
+
+    private bool TryCreateSessionCaptureOptions(
+        ParseResult result,
+        string sessionId,
+        out AppOptions? options,
+        out string? error
+    )
+    {
+        options = new AppOptions
+        {
+            Workflow = Workflow.Session,
+            RequestedSessionAction = SessionAction.Capture,
+            SessionId = sessionId,
+            SessionJson = result.GetValue(_symbols.SessionJson),
+            OutputPath = result.GetValue(_symbols.OutputPath)?.ToString() ?? "output.svg",
+            Font = result.GetValue(_symbols.Font),
+            ForeColor = result.GetValue(_symbols.ForeColor),
+            BackColor = result.GetValue(_symbols.BackColor),
+            CropTop = result.GetValue(_symbols.CropTop) ?? "0",
+            CropRight = result.GetValue(_symbols.CropRight) ?? "0",
+            CropBottom = result.GetValue(_symbols.CropBottom) ?? "0",
+            CropLeft = result.GetValue(_symbols.CropLeft) ?? "0",
+            Opacity = result.GetValue(_symbols.Opacity) ?? 1d,
+            Margin = result.GetValue(_symbols.Margin),
+            Padding = result.GetValue(_symbols.Padding),
+            FontSize = result.GetValue(_symbols.FontSize),
+            PcPadding = result.GetValue(_symbols.PcPadding),
+            LengthAdjust = result.GetValue(_symbols.Adjust) ?? "spacing",
+            MaskAuto = result.GetValue(_symbols.MaskAuto),
+            IsMaskAutoExplicit = IsSpecified(result, _symbols.MaskAuto),
+            Format = IsSpecified(result, _symbols.Format)
+                ? OutputFormats.Normalize(result.GetValue(_symbols.Format)!)
+                : null,
+            IsFormatExplicit = IsSpecified(result, _symbols.Format),
+        };
+        if (options.Format is not null)
+        {
+            options.OutputPath = OutputFormats.ApplyFormat(options.OutputPath, options.Format);
+        }
+        if (IsSpecified(result, _symbols.Window))
+        {
+            options.Window = result.GetValue(_symbols.Window) ?? "macos";
+            options.IsWindowExplicit = true;
+        }
+        options.IsForeColorExplicit = IsSpecified(result, _symbols.ForeColor);
+        options.IsBackColorExplicit = IsSpecified(result, _symbols.BackColor);
+        options.IsFontExplicit = IsSpecified(result, _symbols.Font);
+        options.IsFontSizeExplicit = IsSpecified(result, _symbols.FontSize);
+        options.IsMarginExplicit = IsSpecified(result, _symbols.Margin);
+        options.IsPaddingExplicit = IsSpecified(result, _symbols.Padding);
+        options.IsOpacityExplicit = IsSpecified(result, _symbols.Opacity);
+        options.Themes.AddRange(result.GetValue(_symbols.Theme) ?? []);
+        options.MaskPatterns.AddRange(result.GetValue(_symbols.Mask) ?? []);
+        ApplySize(result.GetValue(_symbols.Size), options);
+        if (
+            !ApplyBackground(
+                result.GetValue(_symbols.Background)?.Select(value => value.ToString()).ToArray(),
+                options,
+                out error
+            )
+        )
+        {
+            options = null;
+            return false;
+        }
+        error = null;
+        return true;
     }
 
     private void AddBatchCommand(RootCommand root)

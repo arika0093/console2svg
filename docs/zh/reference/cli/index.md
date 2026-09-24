@@ -17,6 +17,7 @@ description: console2svg 的命令参考。
 | [`status`](./status.md) | 检查执行环境和依赖工具状态 |
 | [`update`](./update.md) | 检查并执行 console2svg 更新 |
 | [`llm`](./llm.md) | 输出内置 Agent Skill |
+| [`session`](./session.md) | 管理由 LLM 控制的终端会话 |
 | [`live-server`](./live-server.md) | 启动实时 SVG 服务器 |
 | [`tmux`](./tmux.md) | 记录或流式传输 tmux 窗格 |
 | [`batch`](./batch.md) | 生成、发布和恢复 Markdown 捕获资源 |

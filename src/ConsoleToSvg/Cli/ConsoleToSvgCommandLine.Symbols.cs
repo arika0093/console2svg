@@ -26,6 +26,8 @@ public sealed partial class ConsoleToSvgCommandLine
         public Option<string> InputCastPath { get; } =
             RequiredString("--in", "Read an asciicast v2 file instead of recording.");
         public Option<bool> StdOut { get; } = Flag("--stdout", "Write SVG to standard output.");
+        public Option<bool> CaptureJson { get; } =
+            Flag("--json", "Write the capture result as JSON.");
         public Option<OutputMode?> Mode { get; } =
             ChoiceEnum<OutputMode>("--mode", "Output mode.", ["image", "video"], "-m");
         public Option<bool> Video { get; } = Flag("--video", "Output animated SVG.", "-v");
@@ -143,6 +145,25 @@ public sealed partial class ConsoleToSvgCommandLine
         public Option<string> TmuxTarget { get; } = RequiredString("--target", "tmux pane target.");
         public Option<int?> History { get; } = HistoryOption();
         public Option<bool> StatusJson { get; } = Flag("--json", "Write status as JSON.");
+        public Option<bool> SessionJson { get; } = Flag("--json", "Write the result as JSON.");
+        public Option<bool> SessionAll { get; } =
+            Flag("--all", "Stop all console2svg-managed sessions.");
+        public Option<bool> SessionYes { get; } =
+            Flag("--yes", "Skip the confirmation prompt.", "-y");
+        public Option<int?> SessionWidth { get; } = PositiveInt("--width", "Terminal width.");
+        public Option<int?> SessionHeight { get; } = PositiveInt("--height", "Terminal height.");
+        public Option<string> SessionWait { get; } =
+            RequiredString("--wait", "Wait for a screen change (for example, 1s).");
+        public Option<string> SessionText { get; } =
+            RequiredString("--text", "Literal text to send to the session.");
+        public Option<string> SessionKeys { get; } =
+            RequiredString("--keys", "Terminal key to send (for example, Enter or Ctrl+C).");
+        public Option<string> SessionWorkingDirectory { get; } =
+            RequiredString("--cwd", "Working directory for the command.");
+        public Option<string> SessionPipeName { get; } =
+            new("--pipe") { Hidden = true, Required = true };
+        public Option<string> SessionDirectory { get; } =
+            new("--directory") { Hidden = true, Required = true };
         public Option<string> StatusFormat { get; } =
             StringChoice("--format", "Output format.", ["json", "markdown", "table"]);
         public Option<string> ThemeFormat { get; } =
@@ -262,7 +283,42 @@ public sealed partial class ConsoleToSvgCommandLine
             ];
 
         public IEnumerable<Option> CaptureOptions =>
-            Options.Except([Interactive, TmuxTarget, History]);
+            Options.Except([Interactive, TmuxTarget, History]).Append(CaptureJson);
+
+        public IEnumerable<Option> SessionCaptureOptions =>
+            CaptureOptions.Except([
+                CaptureJson,
+                InputCastPath,
+                SaveCastPath,
+                EmbedCast,
+                EmbedLogs,
+                EmbedReplay,
+                EmbedDebug,
+                ReplaySavePath,
+                ReplayPath,
+                Timeout,
+                Interactive,
+                NoColorEnv,
+                NoDeleteEnvs,
+                WithCommand,
+                Header,
+                Prompt,
+                NoResize,
+                Mouse,
+                Mode,
+                Video,
+                Frame,
+                Time,
+                NoLoop,
+                Fps,
+                Timing,
+                Sleep,
+                FadeOut,
+                Coalesce,
+                SaveFramesPath,
+                Width,
+                Height,
+            ]);
 
         public IEnumerable<Option> InteractiveOptions =>
             CaptureOptions.Except([
@@ -274,11 +330,12 @@ public sealed partial class ConsoleToSvgCommandLine
                 ReplayPath,
                 Frame,
                 Time,
+                CaptureJson,
                 LegacyRoot,
             ]);
 
         public IEnumerable<Option> ReplayOptions =>
-            CaptureOptions.Except([Interactive, LegacyRoot]);
+            CaptureOptions.Except([Interactive, LegacyRoot, CaptureJson]);
 
         public IEnumerable<Option> CastOptions =>
             ReplayOptions.Except([
@@ -454,6 +511,17 @@ public sealed partial class ConsoleToSvgCommandLine
             {
                 if (result.GetValueOrDefault<int?>() is < 0)
                     result.AddError($"{name} must be non-negative.");
+            });
+            return option;
+        }
+
+        private static Option<int?> PositiveInt(string name, string description)
+        {
+            var option = new Option<int?>(name) { Description = description };
+            option.Validators.Add(result =>
+            {
+                if (result.GetValueOrDefault<int?>() is <= 0)
+                    result.AddError($"{name} must be greater than 0.");
             });
             return option;
         }

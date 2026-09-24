@@ -378,6 +378,7 @@ public sealed class BatchMarkdownTests
                 "--embed-replay",
                 "--embed-debug",
                 "--stdout",
+                "--json",
             }
         )
         {

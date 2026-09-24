@@ -9,6 +9,15 @@ console2svg capture [options] -- command [args...]
 
 在 PTY 中运行指定命令，并将结束时的画面保存为 SVG。添加 `-v` 可生成动画 SVG 或视频格式。
 
+当 Agent 需要最终画面的文本和视觉资源路径时，请使用 `--json`：
+
+```bash title="Terminal"
+console2svg capture --json -- npm test
+console2svg tmux capture --target %1 --json
+```
+
+带版本的结果包含 `schemaVersion`、`status`、`exitCode`、`durationMs`、`screen`（`width`、`height`、`text`、`truncated`），以及生成资源的路径和格式。视频输出时，`frames` 会提供最多 12 个采样 SVG 帧的路径供视觉检查。这些预览会自动生成，无需 `--save-frames`。JSON 仅写入标准输出，诊断信息写入标准错误。`--json` 不能与 `--stdout` 同时使用。
+
 ## 选项
 
 ### `-o, --out <path>`

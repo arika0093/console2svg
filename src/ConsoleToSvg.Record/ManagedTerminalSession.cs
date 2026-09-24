@@ -222,7 +222,14 @@ public static class ManagedTerminalSessionHost
         private readonly Task _exitTask;
         private readonly IPtyConnection _connection;
         private readonly ManagedSessionSnapshot _snapshot;
+        private readonly SemaphoreSlim _snapshotWriteSignal = new(0, 1);
+        private readonly SemaphoreSlim _snapshotPersistenceGate = new(1, 1);
+        private readonly CancellationTokenSource _snapshotWriterCancellation = new();
+        private readonly Task _snapshotWriterTask;
         private TaskCompletionSource _changeSignal = NewScreenChanged();
+        private ScreenBuffer? _pendingSnapshotBuffer;
+        private bool _snapshotWriteQueued;
+        private long _persistedVersion = -1;
         private bool _stopRequested;
 
         private SessionRuntime(
@@ -239,6 +246,7 @@ public static class ManagedTerminalSessionHost
             _snapshot.Screen = _emulator.Buffer.CreateSnapshot();
             UpdateScreenMetadata(_snapshot, _emulator.Buffer);
             PersistSnapshotLocked();
+            _snapshotWriterTask = SnapshotWriterAsync();
             _readerTask = ReadOutputAsync();
             _exitTask = MonitorExitAsync();
         }
@@ -382,6 +390,10 @@ public static class ManagedTerminalSessionHost
                 if (!includeText)
                 {
                     snapshot.Text = string.Empty;
+                }
+                if (includeStructuredScreen)
+                {
+                    snapshot.Screen = _emulator.Buffer.CreateSnapshot();
                 }
                 // Durable terminal state stays in snapshot.json. It is needed only
                 // after the host exits, and would make every IPC response large.
@@ -548,6 +560,7 @@ public static class ManagedTerminalSessionHost
                 _snapshot.ExpiresAt = DateTimeOffset.UtcNow + ExitedSessionRetention;
                 ChangedLocked();
             }
+            await PersistLatestSnapshotAsync().ConfigureAwait(false);
         }
 
         private async Task ReadOutputAsync()
@@ -579,6 +592,7 @@ public static class ManagedTerminalSessionHost
             }
             catch (IOException)
             {
+                var stateChanged = false;
                 lock (_gate)
                 {
                     if (_snapshot.State == "running")
@@ -586,7 +600,12 @@ public static class ManagedTerminalSessionHost
                         _snapshot.State = "unavailable";
                         _snapshot.ExpiresAt = DateTimeOffset.UtcNow + ExitedSessionRetention;
                         ChangedLocked();
+                        stateChanged = true;
                     }
+                }
+                if (stateChanged)
+                {
+                    await PersistLatestSnapshotAsync().ConfigureAwait(false);
                 }
             }
         }
@@ -598,6 +617,7 @@ public static class ManagedTerminalSessionHost
                 await Task.Delay(100).ConfigureAwait(false);
             }
 
+            var stateChanged = false;
             lock (_gate)
             {
                 if (_snapshot.State == "running")
@@ -606,7 +626,12 @@ public static class ManagedTerminalSessionHost
                     _snapshot.ExitCode = _connection.ExitCode;
                     _snapshot.ExpiresAt = DateTimeOffset.UtcNow + ExitedSessionRetention;
                     ChangedLocked();
+                    stateChanged = true;
                 }
+            }
+            if (stateChanged)
+            {
+                await PersistLatestSnapshotAsync().ConfigureAwait(false);
             }
         }
 
@@ -624,13 +649,17 @@ public static class ManagedTerminalSessionHost
         {
             _snapshot.Version++;
             (_snapshot.Text, _snapshot.TextTruncated) = ReadScreenText(_emulator.Buffer);
-            _snapshot.Screen = _emulator.Buffer.CreateSnapshot();
             UpdateScreenMetadata(_snapshot, _emulator.Buffer);
             _snapshot.UpdatedAt = DateTimeOffset.UtcNow;
             var previous = _changeSignal;
             _changeSignal = NewScreenChanged();
             previous.TrySetResult();
-            PersistSnapshotLocked();
+            _pendingSnapshotBuffer = _emulator.Buffer.Clone();
+            if (!_snapshotWriteQueued)
+            {
+                _snapshotWriteQueued = true;
+                _snapshotWriteSignal.Release();
+            }
         }
 
         private void PersistSnapshotLocked()
@@ -642,6 +671,105 @@ public static class ManagedTerminalSessionHost
             );
             File.WriteAllText(temporaryPath, json, new UTF8Encoding(false));
             File.Move(temporaryPath, _snapshotPath, overwrite: true);
+            _persistedVersion = _snapshot.Version;
+        }
+
+        private async Task SnapshotWriterAsync()
+        {
+            var cancellationToken = _snapshotWriterCancellation.Token;
+            try
+            {
+                while (true)
+                {
+                    await _snapshotWriteSignal.WaitAsync(cancellationToken).ConfigureAwait(false);
+                    await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken)
+                        .ConfigureAwait(false);
+
+                    ScreenBuffer? screenBuffer;
+                    ManagedSessionSnapshot snapshot;
+                    lock (_gate)
+                    {
+                        screenBuffer = _pendingSnapshotBuffer;
+                        _pendingSnapshotBuffer = null;
+                        _snapshotWriteQueued = false;
+                        snapshot = CopySnapshot(_snapshot);
+                    }
+
+                    if (screenBuffer is not null)
+                    {
+                        snapshot.Screen = screenBuffer.CreateSnapshot();
+                    }
+
+                    try
+                    {
+                        await PersistSnapshotAsync(snapshot).ConfigureAwait(false);
+                    }
+                    catch (Exception exception)
+                        when (exception is IOException or UnauthorizedAccessException or JsonException)
+                    {
+                        await Console.Error
+                            .WriteLineAsync(
+                                $"Could not persist managed session snapshot: {exception.Message}"
+                            )
+                            .ConfigureAwait(false);
+                    }
+                }
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
+        }
+
+        private async Task PersistLatestSnapshotAsync()
+        {
+            ScreenBuffer screenBuffer;
+            ManagedSessionSnapshot snapshot;
+            lock (_gate)
+            {
+                screenBuffer = _emulator.Buffer.Clone();
+                snapshot = CopySnapshot(_snapshot);
+            }
+            snapshot.Screen = screenBuffer.CreateSnapshot();
+            await PersistSnapshotAsync(snapshot).ConfigureAwait(false);
+        }
+
+        private async Task PersistSnapshotAsync(ManagedSessionSnapshot snapshot)
+        {
+            await _snapshotPersistenceGate.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                if (snapshot.Version <= _persistedVersion)
+                {
+                    return;
+                }
+
+                var temporaryPath = _snapshotPath + "." + Guid.NewGuid().ToString("N") + ".tmp";
+                try
+                {
+                    var json = JsonSerializer.Serialize(
+                        snapshot,
+                        ManagedSessionJsonContext.Default.ManagedSessionSnapshot
+                    );
+                    await File.WriteAllTextAsync(
+                            temporaryPath,
+                            json,
+                            new UTF8Encoding(false),
+                            CancellationToken.None
+                        )
+                        .ConfigureAwait(false);
+                    File.Move(temporaryPath, _snapshotPath, overwrite: true);
+                    _persistedVersion = snapshot.Version;
+                }
+                finally
+                {
+                    if (File.Exists(temporaryPath))
+                    {
+                        File.Delete(temporaryPath);
+                    }
+                }
+            }
+            finally
+            {
+                _snapshotPersistenceGate.Release();
+            }
         }
 
         public async ValueTask DisposeAsync()
@@ -661,7 +789,17 @@ public static class ManagedTerminalSessionHost
                     Task.Delay(TimeSpan.FromSeconds(3), CancellationToken.None)
                 )
                 .ConfigureAwait(false);
+            _snapshotWriterCancellation.Cancel();
+            try
+            {
+                await _snapshotWriterTask.ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) { }
+            await PersistLatestSnapshotAsync().ConfigureAwait(false);
             _connection.Dispose();
+            _snapshotWriterCancellation.Dispose();
+            _snapshotWriteSignal.Dispose();
+            _snapshotPersistenceGate.Dispose();
         }
 
         private bool TryKillConnection()

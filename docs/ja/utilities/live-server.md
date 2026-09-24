@@ -22,6 +22,7 @@ Live server listening on http://127.0.0.1:38473/
 
 ブラウザでこのURLを開くと、ターミナルの状態が低遅延・ベクター品質で表示されます。
 
+![console2svg live-server](/assets/cmd-liveserver.png)
 
 ## オプション
 

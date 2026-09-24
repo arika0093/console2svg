@@ -17,6 +17,7 @@ on:
       - 'assets/image2.png'
       - 'assets/cmd-bash-vim.svg'
       - 'assets/cmd-interactive.svg'
+      - 'assets/cmd-liveserver.png'
       - '.github/workflows/docs-pages.yaml'
   workflow_dispatch:
 

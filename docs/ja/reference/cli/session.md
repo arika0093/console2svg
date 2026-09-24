@@ -6,6 +6,7 @@ description: CLI 呼び出しをまたいでバックグラウンドの端末セ
 ```bash title="Terminal"
 console2svg session start [options] -- command [args...]
 console2svg session list
+console2svg session list --all
 console2svg session read <id> [--structured]
 console2svg session wait <id> --text <literal> [--until present|absent] [--stable-for <duration>] [--timeout <duration>]
 console2svg session send <id> (--keys <key> | --text <text>)
@@ -116,10 +117,10 @@ console2svg session capture s_abc123 -o current-screen.svg -d macos -t dracula
 
 ### 7. セッション一覧の確認: `list`
 
-現在起動しているセッションの一覧を取得します。
+既定では起動処理中・実行中のセッションを一覧表示します。`--all` を指定すると、保持中の終了済み・利用不能セッションも含めます。保持セッションには、分かる場合 `expiresAt` も表示されます。
 
 ```bash title="Terminal"
-console2svg session list
+console2svg session list --all
 ```
 
 ### 8. セッションの終了: `stop`

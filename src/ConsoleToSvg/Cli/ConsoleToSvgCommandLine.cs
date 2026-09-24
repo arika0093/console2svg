@@ -433,7 +433,20 @@ public sealed partial class ConsoleToSvgCommandLine
         session.Subcommands.Add(start);
 
         var list = new Command("list", "List managed sessions.");
-        SetSessionAction(list, SessionAction.List);
+        list.Options.Add(_symbols.SessionListAll);
+        list.SetAction(
+            (parseResult, cancellationToken) =>
+                _handler(
+                    new AppOptions
+                    {
+                        Workflow = Workflow.Session,
+                        RequestedSessionAction = SessionAction.List,
+                        SessionListAll = parseResult.GetValue(_symbols.SessionListAll),
+                    },
+                    parseResult,
+                    cancellationToken
+                )
+        );
         session.Subcommands.Add(list);
 
         var read = new Command("read", "Read a managed session's current screen.");

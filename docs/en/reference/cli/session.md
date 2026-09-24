@@ -6,6 +6,7 @@ description: Subcommands to launch, interact with, and capture background termin
 ```bash title="Terminal"
 console2svg session start [options] -- command [args...]
 console2svg session list
+console2svg session list --all
 console2svg session read <id> [--structured]
 console2svg session wait <id> --text <literal> [--until present|absent] [--stable-for <duration>] [--timeout <duration>]
 console2svg session send <id> (--keys <key> | --text <text>)
@@ -114,12 +115,12 @@ console2svg session capture s_abc123 -o current-screen.svg -d macos -t dracula
 * `-o <path>`: Destination SVG file path
 * Appearance options: All appearance options from `capture` are supported, including window decorations (`-d`), themes (`-t`), foreground/background colors, fonts, and padding.
 
-### 7. Listing Active Sessions: `list`
+### 7. Listing Sessions: `list`
 
-Retrieves a list of all currently running sessions.
+By default, lists sessions that are starting or running. Pass `--all` to include retained exited or unavailable sessions; retained entries include `expiresAt` when known.
 
 ```bash title="Terminal"
-console2svg session list
+console2svg session list --all
 ```
 
 ### 8. Terminating a Session: `stop`

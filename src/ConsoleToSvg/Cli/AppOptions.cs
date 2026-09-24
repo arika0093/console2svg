@@ -88,6 +88,7 @@ public sealed class AppOptions
     public string? SessionWaitTimeout { get; set; }
     public bool SessionStructured { get; set; }
     public bool SessionAll { get; set; }
+    public bool SessionListAll { get; set; }
     public bool SessionYes { get; set; }
     public int SessionWidth { get; set; } = 100;
     public int SessionHeight { get; set; } = 24;

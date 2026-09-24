@@ -94,6 +94,8 @@ internal sealed class SessionSummaryOutput
     public int Width { get; init; }
     public int Height { get; init; }
     public DateTimeOffset UpdatedAt { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public DateTimeOffset? ExpiresAt { get; init; }
 }
 
 internal sealed class SessionListOutput
@@ -182,7 +184,7 @@ internal static partial class Program
             {
                 SessionAction.Start => await StartManagedSessionAsync(options, cancellationToken)
                     .ConfigureAwait(false),
-                SessionAction.List => WriteManagedSessionList(),
+                SessionAction.List => WriteManagedSessionList(options.SessionListAll),
                 SessionAction.Read => await ReadManagedSessionAsync(options, cancellationToken)
                     .ConfigureAwait(false),
                 SessionAction.Wait => await WaitManagedSessionAsync(options, cancellationToken)
@@ -270,13 +272,15 @@ internal static partial class Program
         return 0;
     }
 
-    private static int WriteManagedSessionList()
+    private static int WriteManagedSessionList(bool includeRetained)
     {
         var sessions = ManagedTerminalSessionManager.List();
         var output = new SessionListOutput
         {
             Sessions = sessions
-                .Where(session => session.State is "starting" or "running")
+                .Where(session =>
+                    includeRetained || session.State is "starting" or "running"
+                )
                 .Select(session => new SessionSummaryOutput
                 {
                     SessionId = session.Id,
@@ -286,6 +290,7 @@ internal static partial class Program
                     Width = session.Width,
                     Height = session.Height,
                     UpdatedAt = session.UpdatedAt,
+                    ExpiresAt = session.ExpiresAt,
                 })
                 .ToArray(),
         };

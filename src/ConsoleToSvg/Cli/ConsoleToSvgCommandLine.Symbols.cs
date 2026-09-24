@@ -148,6 +148,8 @@ public sealed partial class ConsoleToSvgCommandLine
         public Option<bool> StatusJson { get; } = Flag("--json", "Write status as JSON.");
         public Option<bool> SessionAll { get; } =
             Flag("--all", "Stop all console2svg-managed sessions.");
+        public Option<bool> SessionListAll { get; } =
+            Flag("--all", "Include retained sessions in the list.");
         public Option<bool> SessionYes { get; } =
             Flag("--yes", "Skip the confirmation prompt.", "-y");
         public Option<bool> SessionStructured { get; } =

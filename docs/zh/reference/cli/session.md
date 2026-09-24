@@ -6,6 +6,7 @@ description: 跨 CLI 调用启动、操作和捕获后台终端会话的命令�
 ```bash title="Terminal"
 console2svg session start [options] -- command [args...]
 console2svg session list
+console2svg session list --all
 console2svg session read <id> [--structured]
 console2svg session wait <id> --text <literal> [--until present|absent] [--stable-for <duration>] [--timeout <duration>]
 console2svg session send <id> (--keys <key> | --text <text>)
@@ -116,10 +117,10 @@ console2svg session capture s_abc123 -o current-screen.svg -d macos -t dracula
 
 ### 7. 查看会话列表：`list`
 
-获取当前所有启动中的会话列表。
+默认列出正在启动或运行中的会话。指定 `--all` 可包含仍在保留期内的已退出或不可用会话；可确定时，条目还会提供 `expiresAt`。
 
 ```bash title="Terminal"
-console2svg session list
+console2svg session list --all
 ```
 
 ### 8. 终止会话：`stop`

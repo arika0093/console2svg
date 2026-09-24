@@ -6,7 +6,7 @@ description: 跨 CLI 调用启动、操作和捕获后台终端会话的命令�
 ```bash title="Terminal"
 console2svg session start [options] -- command [args...]
 console2svg session list
-console2svg session read <id>
+console2svg session read <id> [--structured]
 console2svg session wait <id> --text <literal> [--until present|absent] [--stable-for <duration>] [--timeout <duration>]
 console2svg session send <id> (--keys <key> | --text <text>)
 console2svg session resize <id> --width <columns> --height <rows>
@@ -47,7 +47,11 @@ console2svg session read s_abc123
 
 * `<id>`：目标会话 ID
 
-响应中的 `screen` 对象包含终端宽高、屏幕纯文本（`text`，最多 200,000 字符）以及是否被截断（`truncated`）。
+响应中的 `screen` 对象包含终端宽高、屏幕纯文本（`text`，最多 200,000 字符）、截断状态、从 0 开始的光标行列及可见状态、备用屏幕状态、滚动缓冲区行数，以及 `scope: "viewport"`。指定 `--structured` 后，还会返回带版本号的逐单元格行优先快照，其中包含样式、超链接和宽字符信息。
+
+```bash title="Terminal"
+console2svg session read s_abc123 --structured
+```
 
 ### 3. 等待屏幕文本：`wait`
 

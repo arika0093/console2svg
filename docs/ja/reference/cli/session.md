@@ -6,7 +6,7 @@ description: CLI 呼び出しをまたいでバックグラウンドの端末セ
 ```bash title="Terminal"
 console2svg session start [options] -- command [args...]
 console2svg session list
-console2svg session read <id>
+console2svg session read <id> [--structured]
 console2svg session wait <id> --text <literal> [--until present|absent] [--stable-for <duration>] [--timeout <duration>]
 console2svg session send <id> (--keys <key> | --text <text>)
 console2svg session resize <id> --width <columns> --height <rows>
@@ -47,7 +47,11 @@ console2svg session read s_abc123
 
 * `<id>`: 対象のセッション ID
 
-レスポンスの `screen` オブジェクトには、端末の幅・高さ、画面のプレーンテキスト（`text`、最大 200,000 文字）、および切り捨て有無（`truncated`）が含まれます。
+レスポンスの `screen` オブジェクトには、端末の幅・高さ、画面のプレーンテキスト（`text`、最大 200,000 文字）、切り捨て有無、0 始まりのカーソル行・列と表示状態、代替画面の状態、スクロールバック行数、`scope: "viewport"` が含まれます。`--structured` を指定すると、セルごとのスタイル、ハイパーリンク、全角文字情報を含むバージョン付きの行優先スナップショットも返します。
+
+```bash title="Terminal"
+console2svg session read s_abc123 --structured
+```
 
 ### 3. 画面テキストの待機: `wait`
 

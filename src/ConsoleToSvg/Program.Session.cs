@@ -301,7 +301,11 @@ internal static partial class Program
         var response = await ManagedTerminalSessionManager
             .RequestAsync(
                 RequireSessionId(options),
-                new ManagedSessionRequest { Operation = "read" },
+                new ManagedSessionRequest
+                {
+                    Operation = "read",
+                    IncludeStructuredScreen = options.SessionStructured,
+                },
                 cancellationToken
             )
             .ConfigureAwait(false);
@@ -320,6 +324,13 @@ internal static partial class Program
                         Height = session.Height,
                         Text = session.Text,
                         Truncated = session.TextTruncated,
+                        CursorRow = session.CursorRow,
+                        CursorColumn = session.CursorColumn,
+                        CursorVisible = session.CursorVisible,
+                        IsAlternateScreen = session.IsAlternateScreen,
+                        ScrollbackRows = session.ScrollbackRows,
+                        Scope = "viewport",
+                        Structured = options.SessionStructured ? session.Screen : null,
                     },
                 },
                 SessionOutputJsonContext.Default.SessionReadOutput,
@@ -461,6 +472,12 @@ internal static partial class Program
                     Height = session.Height,
                     Text = session.Text,
                     Truncated = session.TextTruncated,
+                    CursorRow = session.CursorRow,
+                    CursorColumn = session.CursorColumn,
+                    CursorVisible = session.CursorVisible,
+                    IsAlternateScreen = session.IsAlternateScreen,
+                    ScrollbackRows = session.ScrollbackRows,
+                    Scope = "viewport",
                 },
             },
             SessionOutputJsonContext.Default.SessionWaitOutput

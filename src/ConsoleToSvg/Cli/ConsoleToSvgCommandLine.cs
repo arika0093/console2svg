@@ -443,7 +443,21 @@ public sealed partial class ConsoleToSvgCommandLine
             Hidden = true,
         };
         read.Arguments.Add(readId);
-        SetSessionAction(read, SessionAction.Read, readId);
+        read.Options.Add(_symbols.SessionStructured);
+        read.SetAction(
+            (parseResult, cancellationToken) =>
+                _handler(
+                    new AppOptions
+                    {
+                        Workflow = Workflow.Session,
+                        RequestedSessionAction = SessionAction.Read,
+                        SessionId = parseResult.GetRequiredValue(readId),
+                        SessionStructured = parseResult.GetValue(_symbols.SessionStructured),
+                    },
+                    parseResult,
+                    cancellationToken
+                )
+        );
         session.Subcommands.Add(read);
 
         var wait = new Command("wait", "Wait for literal text in a managed session screen.");

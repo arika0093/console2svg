@@ -315,6 +315,8 @@ public sealed partial class ScreenBuffer
 
     public bool CursorVisible => _cursorVisible;
 
+    public bool IsAlternateScreen => _isAltScreen;
+
     public TextStyle DefaultStyle { get; }
 
     public bool OriginMode => _originMode;

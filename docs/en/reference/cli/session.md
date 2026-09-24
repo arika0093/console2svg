@@ -6,7 +6,7 @@ description: Subcommands to launch, interact with, and capture background termin
 ```bash title="Terminal"
 console2svg session start [options] -- command [args...]
 console2svg session list
-console2svg session read <id>
+console2svg session read <id> [--structured]
 console2svg session wait <id> --text <literal> [--until present|absent] [--stable-for <duration>] [--timeout <duration>]
 console2svg session send <id> (--keys <key> | --text <text>)
 console2svg session resize <id> --width <columns> --height <rows>
@@ -47,7 +47,11 @@ console2svg session read s_abc123
 
 * `<id>`: Target session ID
 
-The `screen` object in the response contains terminal width and height, plain text screen content (`text`, up to 200,000 characters), and whether the output was truncated (`truncated`).
+The `screen` object contains terminal width and height, plain text content (`text`, up to 200,000 characters), truncation status, zero-based cursor row and column, cursor visibility, whether the alternate screen is active, the number of scrollback rows, and `scope: "viewport"`. Use `--structured` to include the versioned row-major cell snapshot with per-cell styles, hyperlinks, and wide-character metadata.
+
+```bash title="Terminal"
+console2svg session read s_abc123 --structured
+```
 
 ### 3. Waiting for screen text: `wait`
 

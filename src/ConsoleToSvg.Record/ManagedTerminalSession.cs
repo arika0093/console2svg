@@ -35,6 +35,11 @@ public sealed class ManagedSessionSnapshot
     public int? ExitCode { get; set; }
     public int Width { get; set; }
     public int Height { get; set; }
+    public int CursorRow { get; set; }
+    public int CursorColumn { get; set; }
+    public bool CursorVisible { get; set; } = true;
+    public bool IsAlternateScreen { get; set; }
+    public int ScrollbackRows { get; set; }
     public long Version { get; set; }
     public string Text { get; set; } = string.Empty;
     public bool TextTruncated { get; set; }
@@ -50,6 +55,7 @@ public sealed class ManagedSessionRequest
     public string[]? Command { get; set; }
     public string? WorkingDirectory { get; set; }
     public bool NoDeleteEnvs { get; set; }
+    public bool IncludeStructuredScreen { get; set; }
     public string? Text { get; set; }
     public string? Key { get; set; }
     public int Width { get; set; }
@@ -224,6 +230,7 @@ public static class ManagedTerminalSessionHost
             _emulator = emulator;
             _snapshot = snapshot;
             _snapshot.Screen = _emulator.Buffer.CreateSnapshot();
+            UpdateScreenMetadata(_snapshot, _emulator.Buffer);
             PersistSnapshotLocked();
             _readerTask = ReadOutputAsync();
             _exitTask = MonitorExitAsync();
@@ -357,7 +364,10 @@ public static class ManagedTerminalSessionHost
             }
         }
 
-        public ManagedSessionResponse CreateResponse(bool includeText)
+        public ManagedSessionResponse CreateResponse(
+            bool includeText,
+            bool includeStructuredScreen = false
+        )
         {
             lock (_gate)
             {
@@ -368,7 +378,10 @@ public static class ManagedTerminalSessionHost
                 }
                 // Durable terminal state stays in snapshot.json. It is needed only
                 // after the host exits, and would make every IPC response large.
-                snapshot.Screen = null;
+                if (!includeStructuredScreen)
+                {
+                    snapshot.Screen = null;
+                }
                 return new ManagedSessionResponse { Session = snapshot };
             }
         }
@@ -389,7 +402,10 @@ public static class ManagedTerminalSessionHost
                     || (request.SinceVersion >= 0 && request.SinceVersion != version)
                 )
                 {
-                    return CreateResponse(includeText: true);
+                    return CreateResponse(
+                        includeText: true,
+                        includeStructuredScreen: request.IncludeStructuredScreen
+                    );
                 }
 
                 changeTask = _changeSignal.Task;
@@ -398,7 +414,10 @@ public static class ManagedTerminalSessionHost
             var delay = Task.Delay(Math.Min(request.WaitMs, 60_000), cancellationToken);
             await Task.WhenAny(changeTask, delay).ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested();
-            return CreateResponse(includeText: true);
+            return CreateResponse(
+                includeText: true,
+                includeStructuredScreen: request.IncludeStructuredScreen
+            );
         }
 
         private async Task SendAsync(
@@ -569,6 +588,7 @@ public static class ManagedTerminalSessionHost
             _snapshot.Version++;
             (_snapshot.Text, _snapshot.TextTruncated) = ReadScreenText(_emulator.Buffer);
             _snapshot.Screen = _emulator.Buffer.CreateSnapshot();
+            UpdateScreenMetadata(_snapshot, _emulator.Buffer);
             _snapshot.UpdatedAt = DateTimeOffset.UtcNow;
             var previous = _changeSignal;
             _changeSignal = NewScreenChanged();
@@ -739,6 +759,11 @@ public static class ManagedTerminalSessionHost
                 ExitCode = source.ExitCode,
                 Width = source.Width,
                 Height = source.Height,
+                CursorRow = source.CursorRow,
+                CursorColumn = source.CursorColumn,
+                CursorVisible = source.CursorVisible,
+                IsAlternateScreen = source.IsAlternateScreen,
+                ScrollbackRows = source.ScrollbackRows,
                 Version = source.Version,
                 Text = source.Text,
                 TextTruncated = source.TextTruncated,
@@ -749,6 +774,18 @@ public static class ManagedTerminalSessionHost
 
         private static TaskCompletionSource NewScreenChanged() =>
             new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        private static void UpdateScreenMetadata(
+            ManagedSessionSnapshot snapshot,
+            ScreenBuffer buffer
+        )
+        {
+            snapshot.CursorRow = buffer.CursorRow;
+            snapshot.CursorColumn = buffer.CursorCol;
+            snapshot.CursorVisible = buffer.CursorVisible;
+            snapshot.IsAlternateScreen = buffer.IsAlternateScreen;
+            snapshot.ScrollbackRows = buffer.ScrollbackCount;
+        }
     }
 }
 

@@ -150,6 +150,8 @@ public sealed partial class ConsoleToSvgCommandLine
             Flag("--all", "Stop all console2svg-managed sessions.");
         public Option<bool> SessionYes { get; } =
             Flag("--yes", "Skip the confirmation prompt.", "-y");
+        public Option<bool> SessionStructured { get; } =
+            Flag("--structured", "Include per-cell terminal styles and hyperlinks.");
         public Option<int?> SessionWidth { get; } = PositiveInt("--width", "Terminal width.");
         public Option<int?> SessionHeight { get; } = PositiveInt("--height", "Terminal height.");
         public Option<string> SessionWaitText { get; } =

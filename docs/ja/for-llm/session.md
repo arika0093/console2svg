@@ -69,7 +69,7 @@ console2svg session wait s_a1b2c3d4e5f6 --text "Working" --until absent --stable
 console2svg session capture s_a1b2c3d4e5f6 -o /tmp/current-screen.svg
 ```
 
-`session read` は現在の画面上の文字列とカーソル座標をすぐ返します。条件待ちは `session wait --text <literal>` を使い、消失を待つ場合は対象文字列が一度画面に出た後に消えることを確認します。`--stable-for` で条件の安定時間、`--timeout` で上限のない任意の待機時間を指定できます。`session capture` は色やフォント属性を含む実際の描画結果を保存します。
+`session read` は現在の画面上の文字列、0 始まりのカーソル座標と表示状態、代替画面の状態、スクロールバック行数、表示範囲をすぐ返します。`--structured` を加えると、セル単位のスタイル、ハイパーリンク、全角文字情報を含むバージョン付きデータも取得できます。条件待ちは `session wait --text <literal>` を使い、消失を待つ場合は対象文字列が一度画面に出た後に消えることを確認します。`--stable-for` で条件の安定時間、`--timeout` で上限のない任意の待機時間を指定できます。`session capture` は色やフォント属性を含む実際の描画結果を保存します。
 マルチモーダル対応の LLM であれば、生成された SVG 画像を直接読み込んでレイアウト崩れや配色の違和感を検知できます。
 `session list` には起動中・起動処理中のセッションのみが表示されます。プロセス終了済みのセッションは一覧に表示されませんが、保持期間中は ID で読み取りやキャプチャができます。`session stop` で明示的に停止したセッションは削除され、ID からアクセスできなくなります。
 

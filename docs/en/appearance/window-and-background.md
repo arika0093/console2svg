@@ -57,7 +57,7 @@ console2svg capture -h 10 -c -d macos-pc --opacity 0.85 \
   --background image.png -- dotnet --version
 ```
 
-<!-- c2s::  -w 64 -h 6 -c -d macos-pc --background ../../../assets/image1.png --opacity 0.85 -- dotnet --version -->
+<!-- c2s::  -w 64 -h 6 -c -d macos-pc --background ../../../assets/image2.png --opacity 0.85 -- dotnet --version -->
 
 
 ## Margins and opacity

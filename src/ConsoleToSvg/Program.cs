@@ -89,7 +89,9 @@ internal static partial class Program
         {
             using var liveLoggerFactory = CreateLoggerFactory(
                 options.Verbose,
-                options.VerboseLogPath
+                options.VerboseLogPath,
+                maskAuto: options.MaskAuto,
+                maskPatterns: options.MaskPatterns
             );
             var liveLogger = liveLoggerFactory.CreateLogger("ConsoleToSvg.Program");
             liveLogger.ZLogDebug(
@@ -119,7 +121,9 @@ internal static partial class Program
         using var loggerFactory = CreateLoggerFactory(
             options.Verbose,
             options.VerboseLogPath,
-            embeddedLogCollector
+            embeddedLogCollector,
+            options.MaskAuto,
+            options.MaskPatterns
         );
         var logger = loggerFactory.CreateLogger("ConsoleToSvg.Program");
         logger.ZLogDebug(

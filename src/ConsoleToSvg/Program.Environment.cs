@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ConsoleToSvg.Cli;
+using ConsoleToSvg.QuickLeaks;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;
 using ConsoleToSvg.Terminal;
@@ -21,10 +22,12 @@ internal static partial class Program
     private static ILoggerFactory CreateLoggerFactory(
         bool verbose,
         string? logPath,
-        EmbeddedLogCollector? embeddedLogCollector = null
+        EmbeddedLogCollector? embeddedLogCollector = null,
+        bool maskAuto = false,
+        IReadOnlyList<string>? maskPatterns = null
     )
     {
-        return LoggerFactory.Create(builder =>
+        var factory = LoggerFactory.Create(builder =>
         {
             builder.ClearProviders();
             if (verbose)
@@ -59,6 +62,7 @@ internal static partial class Program
                 builder.SetMinimumLevel(LogLevel.None);
             }
         });
+        return new MaskingLoggerFactory(factory, maskAuto, maskPatterns);
     }
 
     private static int? TryGetConsoleWidth()

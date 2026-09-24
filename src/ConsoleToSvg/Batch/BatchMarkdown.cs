@@ -386,10 +386,13 @@ public static class BatchMarkdown
             return null;
         }
 
-        if (!captureOptions!.IsMaskAutoExplicit)
+        if (captureOptions is null)
+            return null;
+
+        if (!captureOptions.IsMaskAutoExplicit)
             captureOptions.MaskAuto = true;
 
-        var outputRelative = hasOutput ? captureOptions!.OutputPath : null;
+        var outputRelative = hasOutput ? captureOptions.OutputPath : null;
 
         var body = ParseYamlBody(yaml, line, errors);
         if (body is null)
@@ -458,7 +461,7 @@ public static class BatchMarkdown
             setup,
             capture,
             teardown,
-            captureOptions!.Width,
+            captureOptions.Width,
             captureOptions.Height,
             captureOptions.WithCommand,
             captureOptions.Window,

@@ -142,7 +142,12 @@ internal static partial class Program
             return 0;
         }
 
-        using var loggerFactory = CreateLoggerFactory(options.Verbose, options.VerboseLogPath);
+        using var loggerFactory = CreateLoggerFactory(
+            options.Verbose,
+            options.VerboseLogPath,
+            maskAuto: options.MaskAuto,
+            maskPatterns: options.MaskPatterns
+        );
         var logger = loggerFactory.CreateLogger("ConsoleToSvg.BatchMarkdown");
         var generated = 0;
         var generatedOutputs = new HashSet<string>(GetBatchPathComparer());

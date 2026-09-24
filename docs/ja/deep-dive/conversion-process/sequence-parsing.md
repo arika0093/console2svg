@@ -1,80 +1,61 @@
 ---
 title: 端末制御シーケンスの解釈
-description: 分割された VT 出力を状態付きで読み、cursor、セル、属性、scroll、alternate screen へ反映する仕組み。
+description: 分割された VT 入力を状態付きで解析し、文字セル、属性、カーソル、画面バッファへ正確に反映する仕組み。
 ---
 
-端末出力は装飾付き文字列ではなく、画面状態を変更する命令列です。
-carriage return は既存行を上書きでき、CSI は文字を出さずに cursor を移動でき、full-screen application は alternate screen へ切り替えて一部分だけを再描画できます。
-escape sequence を削除して文字だけ残すと、最終画面を復元するための操作情報を失います。
+端末の出力データは、単に装飾された文字列の集まりではありません。
+画面上の状態を逐一書き換える命令のストリーム（命令列）です。
+キャリッジリターン（`\r`）は行頭へ戻って既存の文字を上書きし、エスケープシーケンスは文字を表示することなくカーソルを移動させ、TUI ツールは裏画面へ切り替えて画面全体を再構成します。
+エスケープシーケンスを単に正規表現などで消去してしまうと、最終的な画面表示を復元するための操作情報が失われてしまいます。
+console2svg では、これらの命令を **状態付きパーサー**（`AnsiParser`）によって解釈し、端末の仮想画面バッファである `ScreenBuffer` へ忠実に反映します。
 
-console2svg は SVG を作る前に、これらの命令を **状態付きパース** して `ScreenBuffer` へ反映します。
+## ストリームの読み取り境界をまたぐシーケンスの保持
 
-## read 境界をシーケンス境界として扱わない
+OS のパイプ読み取り境界は、エスケープシーケンスの区切りとは一致しません。
+ESC や **CSI**（Control Sequence Introducer：`ESC [` で始まる端末制御コマンド）の途中でデータが途切れて届くケースが日常的に発生します。
 
-OS の read は ESC、CSI、OSC などの途中で終わることがあります。
-`AnsiParser` は未完了の sequence を保持し、次の `Process` 呼び出しで続きを解釈します。
+`AnsiParser` は内部にステートマシンを持ち、未完了のシーケンスが存在する場合はその途中の状態をバッファに保持し、次回呼び出された `Process` メソッドの中で後続のバイト列と結合して解析を再開します。
+また、OSC（Operating System Command）や DCS（Device Control String）のように、画面描画を伴わないメタデータストリームに対しても、終了デリミタまでを確実に読み飛ばす制御を行います。
+DEC 固有の特殊グラフィックス文字セットに対しても状態を管理し、適切な罫線文字へとマッピングします。
 
-Unix の echo 設定によって、ESC が `^[` のような caret notation として見える場合もあります。
-この表現で届く OSC には別の pending state を持ちます。
-通常の `^[` 文字列まで広く control sequence として消費しないよう、対象を限定しています。
+## メモリ割り当てを避けるスパンベースの CSI 解析
 
-OSC と DCS の payload は printable cell ではないため、terminator まで読み飛ばします。
-G0 と G1 の character set 指定、SO と SI による選択も parser state として保持します。
-DEC special graphics は、その state に基づいて対応する罫線文字へ変換します。
+CSI で渡されるパラメータ（行番号、列番号、カラーコードなど）の解析において、`string.Split` による文字列の分割や配列の確保は一切行いません。
+すべての数値解析は入力データのメモリ領域を直接指すスパン（`ReadOnlySpan<char>`）上で行われます。
 
-## CSI の parameter を文字列分割しない
+パラメータの個数をあらかじめカウントし、16 個以下であればスタック領域上のメモリ（`stackalloc int[16]`）を利用して解析結果を格納します。
+パラメータが 17 個以上におよぶ極端なケースでのみ `ArrayPool<int>` から配列を借用し、処理終了後に直ちに返却します。
+一般的なカーソル制御や文字装飾は数個のパラメータで構成されるため、シーケンス解析に伴うヒープ割り当てをゼロに抑えています。
 
-CSI の parameter は span 上で読みます。
-`string.Split` で parameter ごとの文字列や配列を作りません。
+## 画面操作とオルタネートスクリーンの再現
 
-parameter 数を先に数え、16個以下なら `stackalloc` した integer span を使います。
-17個以上の場合だけ `ArrayPool<int>` から配列を借り、処理後に返します。
+実装されている CSI コマンドは、カーソルの相対・絶対移動、画面消去、行消去、文字や行の挿入・削除、スクロール領域の制限（マージン）、タブ移動、カーソル位置の退避と復元（Save/Restore Cursor）など多岐にわたります。
 
-一般的な SGR と cursor control は parameter 数が少ないため、sequence ごとの heap allocation を避けられます。
+さらに、vim や htop などのツールが使用する **オルタネートスクリーン**（作業専用の裏画面バッファ）の切り替えにも対応しています。
+オルタネートスクリーンは、シェルの履歴が残るプライマリ画面とは完全に独立したバッファとして保持されます。
+これにより、TUI ツールが終了して元のシェルプロンプトへ復帰した際にも、裏画面のゴミがシェルの履歴と混ざり合うことなく、本来の画面遷移を再現できます。
 
-private marker は parameter と分けて扱います。
-未対応の private sequence は別の標準命令として誤解釈せず、無視します。
+## SGR による文字スタイルの解決
 
-## 画面操作をセル状態へ適用する
+文字の装飾や色指定は、**SGR**（Select Graphic Rendition：文字属性を変更するコマンド群）によって解決されます。
+太字（bold）、薄暗い表示（faint）、斜体（italic）、下線（underline）、点滅（blink）、反転（reverse）、取り消し線（strikethrough）、二重下線などの多彩な属性を `TextStyle` レコードへ蓄積します。
 
-実装する CSI には、cursor の相対移動と絶対移動、画面消去、行消去、文字挿入と削除、行挿入と削除、scroll、scroll region、tab 制御、insert mode、repeat、save、restore が含まれます。
+カラー指定に関しては、標準の 16 色、xterm 256 色パレット、そして 24 ビット Truecolor（1677 万色）に完全対応しています。
+セミコロン区切り（`38;2;R;G;B`）とコロン区切り（`38:2::R:G:B`）の双方が混在する拡張カラー記法も、単一の正規化されたカラー表現へと統一します。
+また、前後のセルで同一のスタイルが継続する場合は既存の `CellStyle` インスタンスをそのまま再利用し、余計なオブジェクト生成を抑制します。
 
-DEC private mode では alternate screen、origin mode、cursor visibility を扱います。
-alternate screen は main screen と別の cell buffer です。
-TUI が終了したときは、TUI のセルを shell 履歴へ混ぜずに元の main screen へ戻せます。
+## Unicode 全角文字と結合文字のセル配置
 
-cursor の save と restore では、その後の文字配置に影響する terminal state も保持します。
-制御 sequence を受け取った瞬間の見た目だけでなく、その sequence が後続出力へ与える効果まで再現するためです。
+テキストエディタやプログラミング言語が扱う UTF-16 のコードユニット数と、端末画面における文字セル（桁数）は一致しません。
+絵文字などのサロゲートペアは、セルへの配置前に 1 つの書記素クラスタとして扱います。
+また、ゼロ幅文字（Zero-width joiner など）はカーソル列を進めず、結合文字や異体字セレクタは直前のセルへ統合します。
 
-## SGR をセルの表示スタイルへ解決する
+全角文字（東アジアのいわゆる Wide 文字）は画面上で 2 列分のセルを占有します。
+console2svg では、先頭のセルに文字実体を配置し、続く右隣のセルを継続セル（Continuation cell）としてマークします。
+この 2 セル構造をエミュレーター内で維持することで、後段の SVG レンダラーへ渡した際に全角文字の後続テキストが 1 列分ずれてしまう表示崩れを完全に防いでいます。
 
-SGR は `TextStyle` を更新します。
-保持する属性には bold、faint、italic、underline、blink、reverse、hidden、strikethrough、overline、foreground、background、underline color があります。
+## ScreenBuffer による中間表現の共通化
 
-色は通常の16色、xterm 256色、true RGB を扱います。
-256色は active theme の先頭16色、6×6×6 color cube、grayscale へ解決します。
-extended color は semicolon 区切りと colon 区切りの両方を同じ style state へ正規化します。
-
-`ScreenBuffer` は同じ style を共有するため、隣接セルごとに別の style object を作りません。
-同じ SGR 状態で文字が続く通常ケースでは、直前の `CellStyle` を再利用します。
-
-## Unicode を terminal cell に合わせる
-
-UTF-16 の一 code unit と terminal の一 cell は同じ単位ではありません。
-surrogate pair は配置前に一つの文字 cluster として扱います。
-combining mark と variation selector は直前セルへ追加し、zero-width character は cursor 列を進めません。
-
-全角文字は二列を占有します。
-先頭セルへ文字列を置き、次のセルは continuation として記録します。
-上書きや行差分でも continuation を考慮し、後段の SVG text run が一列ずれないようにします。
-
-variation selector 16 によって、直前の記号を wide emoji 表示へ変える場合もあります。
-必要な幅調整は SVG 化より前の cell model で行います。
-
-## ScreenBuffer を後段の共通入力にする
-
-パース後の renderer は、生の CSI syntax を再解釈しません。
-解決済みの文字列、style、幅情報、cursor、active screen、scroll state を持つ **`ScreenBuffer`** を入力にします。
-
-同じ buffer は、animation と video sampling で使う visual signature と copy-on-write の行共有も持ちます。
-VT の意味解釈を一度この層で終え、SVG、PNG、動画は同じ端末状態を利用します。
+パースを完了した後のレンダリング工程（静止画 SVG、アニメーション SVG、PNG、動画）は、生の ANSI エスケープシーケンスを二度と解釈しません。
+解釈済みの文字、色スタイル、セル幅、カーソル状態、画面バッファを統合した **`ScreenBuffer`** を唯一の中間表現として共有します。
+パーサーの責務とレンダラーの責務をこのバッファ境界で完全に切り離すことで、どのような出力形式であっても同一の表示結果が得られる設計を担保しています。

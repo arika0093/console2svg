@@ -1,47 +1,60 @@
 ---
-title: Why SVG?
-description: Why console2svg chooses SVG as the storage format for terminal output.
+title: Why Choose SVG?
+description: Technical reasons why console2svg adopts SVG as the primary format for terminal recordings.
 ---
 
 import { FileTree } from '@astrojs/starlight/components';
 
-console2svg saves terminal output as SVG.
-SVG is not only for displaying images; it is also a format well suited for sharing text-centered screens such as terminals cleanly and conveniently.
+console2svg adopts **SVG** (Scalable Vector Graphics: an XML-based standard for two-dimensional vector graphics) as its primary format for capturing terminal states.
+Compared to raster graphics formats such as PNG or GIF animations commonly used by screenshot utilities, vector graphics are optimal for terminal screens predominantly composed of text and box-drawing lines.
 
-## Sharp at any size
+## Resolution-Independent Sharpness
 
-First, compare the following two images.
+SVG records images as geometric instructions—character coordinates and vector line paths—rather than fixed pixel grids.
 
 ```bash title="Terminal"
-$ fastfetch
+fastfetch
 ```
 
-### SVG
-{/* c2s::  -w 120 -h 24 -- fastfetch */}
+### Vector Rendering with SVG
+{/* c2s:: -w 120 -h 24 -- fastfetch */}
 
-### PNG
+### Raster Rendering with PNG
 {/* c2s:: --format png -w 120 -h 24 -- fastfetch */}
 
+In raster formats such as PNG, character edges and thin border lines blur when scaled up or viewed on high-DPI displays (such as Retina screens).
+In contrast, SVG allows browsers and image viewers to compute character outlines on the fly for any given display scale, maintaining crisp, artifact-free text across zoomed windows, high-resolution screens, and print publications.
 
-You can see that the former has crisper text.
-Because SVG is a vector format, text and lines do not blur when enlarged or reduced. It maintains the same quality even when the display location or size changes, such as in READMEs, blog posts, slides, or printed materials.
+## Minimal File Size via Data Consolidation
 
-## Small file size
+Terminal output consists largely of expansive solid-color backgrounds and discrete character sequences.
 
-If you compare the sizes of the two files above, you can see that the SVG version is overwhelmingly smaller (about one fifth).
+Instead of rasterizing hundreds of thousands of individual pixels, SVG consolidates contiguous background cells into single rectangles (`<rect>`) and consecutive characters into structured strings (`<text>`), minimizing redundant data.
 
 <FileTree>
 
 * output.png (60,717 bytes)
-* output.svg (8,455 bytes)
+* **output.svg (8,455 bytes)**
 
 </FileTree>
 
-## Display directly in the browser
+As shown above, for identical terminal contents, the SVG file size is approximately one-seventh that of the corresponding PNG.
+Even when embedding dozens of terminal illustrations into documentation sites or Git repositories, storage consumption and asset download latency remain minimal.
 
-SVG is an open web standard supported by major browsers by default.
-Without preparing a special viewer or conversion tool, you can open generated files in a browser or embed them in Markdown or HTML.
+## High Portability Across Web Standards
+
+SVG is an open standard maintained by the W3C and supported natively by all modern web browsers.
+
+Unlike terminal recorders like asciinema, SVG requires no heavyweight JavaScript player runtimes or dedicated CSS stylesheets.
+Embedding images using standard Markdown image syntax (`![...](...)`) renders seamlessly on GitHub READMEs, technical blogs, and static site generators out of the box:
 
 ```markdown title="README.md"
-![your terminal output](./output.svg)
+![Terminal execution output](./output.svg)
 ```
+
+## Text Transparency and Accessibility
+
+Inside an SVG file, terminal output strings are preserved as actual plain text within `<text>` elements.
+
+Unlike raster images where text is permanently baked into pixels, SVG files allow you to inspect contents in any code editor or search text via standard command-line tools such as `grep`.
+Furthermore, preserving text structures provides intrinsic support for screen readers and assistive accessibility tools, retaining the inherent utility of plain text while functioning as visual graphics.

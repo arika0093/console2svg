@@ -1,59 +1,60 @@
 ---
 title: resvg による PNG ラスタライズ
-description: 同梱した resvg を process 内で呼び、font state と managed、native memory の所有権を管理する仕組み。
+description: 同梱されたネイティブ resvg のプロセス内呼び出し、フォント走査結果の共有、マネージドとネイティブ間のメモリ管理。
 ---
 
-PNG を出力するには SVG renderer が必要です。
-console2svg は Rust 製 resvg の小さな C ABI wrapper を同梱し、通常の PNG 経路で browser process や ffmpeg の SVG decoder 有無へ依存しないようにします。
+生成された SVG 画像を PNG 形式へ変換するには、SVG をピクセル画像へ描画するラスタライズ処理が必要です。
+console2svg では、ヘッドレスブラウザ（Chromium 等）の重厚な依存関係や外部の画像変換ツールを必要としないよう、Rust 製の高速な SVG レンダラーである **resvg**（SVG 仕様の再現性に優れた Rust 製ベクターグラフィック描画ライブラリ）の C ABI ラッパーをバイナリに同梱しています。
+これにより、外部プロセス起動を排したプロセス内呼び出しと、ミリ秒単位での PNG ラスタライズを実現しています。
 
-## ラスタライズを process 内で完結させる
+## なぜ外部コマンドではなくプロセス内埋め込みなのか
 
-native wrapper は usvg で SVG を parse し、resvg と tiny-skia で pixmap へ描画し、その pixmap を PNG に encode します。
+SVG から PNG への変換ツールとして、システムには `rsvg-convert` やヘッドレスブラウザなどの外部コマンドが存在します。
+しかし console2svg では、これらを外部プロセスとして呼び出す設計をあえて採用せず、C ABI 経由でプロセス内に直接埋め込んでいます。
 
-system font の探索結果は process 全体で共有できる状態です。
-Rust 側は **`OnceLock<Arc<Database>>`** を使い、最初の一回だけ font database を作って system font を load します。
-後続 render は同じ database の共有参照を使います。
+最大の理由は、**OS のフォント走査に伴う巨大なディスク I/O コストを初回のみに抑え込むため** です。
+SVG のテキストを描画するには、OS のフォント配置ディレクトリ（`/usr/share/fonts` や `~/.fonts`、Windows/macOS のフォントフォルダ）を網羅的に走査し、システムに存在するフォントファミリーの対応関係を構築しなければなりません。
+外部コマンドを `Process.Start` 等で呼び出す場合、フレームを出力するたびに独立したプロセスが起動し、毎回ディスクから数千個のフォントファイルを走査し直すため、数百ミリ秒単位のオーバーヘッドがフレーム数分だけ累積します。
 
-.NET 側から明示的に warm up できるため、converter detection の時点で初期化を済ませることもできます。
-動画の任意の一フレームだけが、偶然 system font 探索の初回コストを負うことを避けられます。
+プロセス内埋め込みであれば、Rust 側の初期化機構である `OnceLock<Arc<Database>>` を利用して、初回の描画時に構築したフォントデータベースをプロセス内のメモリ上にキャッシュとして保持できます。
+2 フレーム目以降のラスタライズはすべてメモリ上のフォントキャッシュを参照するため、ディスク走査のオーバーヘッドが完全にゼロになり、動画生成などの大量描画でも高速な処理性能を維持できます。
 
-## raster size の決め方を固定する
+また、コンバーターの自動検出ルーチンから明示的な事前ウォームアップを呼ぶことも可能にしており、初回フレームの遅延すら事前に解消できるように配慮しています。
 
-native wrapper は SVG の intrinsic size と、任意指定の raster width、height から出力寸法を決めます。
+## プロセス内ラスタライズの実行フロー
 
-幅と高さを両方指定した場合は、その値を使います。
-片方だけ指定した場合は、SVG の aspect ratio からもう一方を計算します。
-どちらも指定しない場合は SVG 自体の寸法を使います。
+同梱のネイティブライブラリは、SVG の構文解析を行う `usvg`、描画エンジンである `tiny-skia`、そして `resvg` で構成されています。
+渡された SVG を構文解析してピクセルマップ（pixmap）へ展開し、そのピクセルデータを PNG バイト列へエンコードして返却します。
 
-最終寸法は1から16384 pixel の範囲へ clamp してから tiny-skia の pixmap を確保します。
-0 pixel の surface や、誤指定による極端な native allocation をそのまま通しません。
+## アスペクト比に基づく出力寸法のクランプ
 
-## managed 側の入力 buffer を再利用する
+ラスタライズ時の画像寸法は、SVG 自体が持つ元サイズ（`viewBox` 等の固有寸法）と、CLI で指定された出力幅・高さから算出します。
 
-`ResvgNative.RenderToPng` は SVG `string` の UTF-8 byte 数を先に計算します。
-必要な byte array を `ArrayPool<byte>` から借り、その span へ SVG を encode して native function へ渡します。
-呼び出し後は借りた array を pool へ返します。
+幅と高さの両方が指定された場合はその値をそのまま採用し、片方だけが指定された場合は SVG のアスペクト比を維持してもう一方を自動計算します。
+どちらも指定されなかった場合は、SVG 自体の寸法をそのままピクセルサイズとして扱います。
+決定された寸法は、メモリ確保前に 1 ピクセルから 16,384 ピクセルの範囲へクランプ（制限）します。
+0 ピクセルによるクラッシュや、誤指定による極端な巨大メモリ確保を防ぐためです。
 
-native renderer が返す PNG buffer の所有者は native 側です。
-.NET wrapper は PNG を managed `byte[]` へ copy し、`finally` で対応する native free function を必ず呼びます。
+## プール借用とネイティブメモリの安全な解放
 
-呼び出し側へ渡すのは managed PNG だけです。
-Rust 側の allocation 方法を呼び出し側が推測して解放する構造にはしません。
+.NET 側からネイティブ関数を呼び出す際、SVG 文字列から変換した UTF-8 バイト列を `ArrayPool<byte>` から借用したメモリ領域へ書き込みます。
+ヒープ割り当てを抑えつつ、そのメモリスパンをネイティブ関数へ直接渡します。
 
-native status は SVG parse、PNG encode、render、allocation の失敗を分けて返します。
-.NET 側はそれぞれを例外へ変換し、空 buffer を成功扱いにはしません。
+一方、ネイティブ側で生成された PNG バイト列の所有権は Rust 側にあります。
+.NET 側のラッパーは受け取ったメモリポインタからマネージドの `byte[]` へデータをコピーしたうえで、`finally` 節の中で必ずネイティブ側の解放関数（free）を呼び出します。
+呼び出し側のコードがネイティブメモリの管理や解放方法を意識する必要のない、安全な境界設計を保っています。
 
-## 同梱 asset の場所を先に探索する
+## 同梱アセットの優先探索
 
-native library resolver は、通常の loader resolution より先に console2svg の bundled asset directory を調べます。
+ネイティブライブラリ（`.so`、`.dylib`、`.dll`）をロードする際、OS 標準のライブラリ検索パスを見る前に、console2svg 自身の実行ファイルに隣接するアセットディレクトリを優先探索します。
 
-release archive のように executable の隣へ native library を置く配置と、package のように sibling library directory へ置く配置の両方を扱うためです。
-portable install や symbolic link 経由でも、current working directory だけに依存せず library を探せます。
+リリースアーカイブのように実行ファイルの隣へネイティブライブラリを配置する配布形態と、パッケージマネージャーのように専用の依存ディレクトリへ配置する形態の双方に柔軟に対応するためです。
+シンボリックリンク経由で実行された場合でも、カレントディレクトリに惑わされずに正しいライブラリを確実に解決します。
 
-## converter mode に応じて fallback を制御する
+## 明示指定と自動フォールバックの区別
 
-auto mode では、利用可能なら同梱 resvg を優先します。
-他の画像変換経路では、`rsvg-convert` や実際に SVG decode を確認できた ffmpeg へ fallback できます。
+画像変換エンジンの選択モード（`--svg-converter`）が `auto` の場合は、同梱の resvg が利用可能であれば最優先で使用します。
+もしプラットフォームの制限等で resvg のロードに失敗した場合は、システムにインストールされている `rsvg-convert` や ffmpeg への自動フォールバックを試みます。
 
-利用者が resvg を明示指定した場合は、native library を load できなくても別 renderer へ黙って切り替えません。
-renderer を指定した場合の再現性と、auto mode の可用性を別の方針として扱います。
+しかし、利用者が `--svg-converter resvg` と明示的に指定した場合は、ロードに失敗しても他のエンジンへ勝手に切り替えることはせず、エラーとして即座に中断します。
+自動選択時の利便性と、明示指定時における描画結果の厳密な再現性を明確に区別しています。

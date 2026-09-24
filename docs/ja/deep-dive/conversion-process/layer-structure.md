@@ -1,68 +1,124 @@
 ---
 title: SVG のレイヤー構造
-description: 静的な chrome、端末背景、前景、cursor、mask を分離し、一つの座標系で描画する仕組み。
+description: ウィンドウ装飾、端末背景、文字前景、カーソル、マスクを分離し、共通の格子座標系で統合描画する仕組み。
 ---
 
-端末画面を構成する要素は、同じ頻度では変化しません。
-canvas 背景と window chrome は通常固定され、cell 背景と文字は別々に変わり、cursor は行本文を変えずに移動できます。
-SVG はこの違いを **レイヤー分離** として表し、animation で再利用できる内容を複製しません。
+端末の画面を構成する要素は、すべてが同じ頻度で変化するわけではありません。
+ウィンドウ枠やデスクトップ背景は常に静止しており、端末の文字セルは行ごとに更新され、カーソルは文字内容を変えずに位置だけを移動します。
+console2svg ではこの変化頻度の違いに着目して **レイヤー分離** を行い、静止画とアニメーションの双方において無駄な描画命令の重複を排除しています。
 
-## 座標を一つの Context で決める
+## レイヤー構造の全体像
 
-`SvgDocumentBuilder.Context` は crop 後の可視行と可視列を決め、cell metric、margin、padding、chrome offset、command header の高さ、canvas size、output size、`viewBox` をまとめて計算します。
+console2svg が組み立てる SVG は、以下のような階層的なグループ（`<g>`）構造を持っています。
 
-cell 幅は font size の0.6倍です。
-cell 高は font size の `18 / 14` 倍で、baseline offset は font size を基準にします。
+```xml title="静止画 SVG の要素構造例"
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 898 320" width="898" height="320">
+  <!-- 共通定義: スタイルシート、再利用するジオメトリ -->
+  <defs>
+    <style>
+      .c2s-bold { font-weight: bold; }
+      .c2s-fg-red { fill: #ff5555; }
+      .c2s-fg-cyan { fill: #8be9fd; }
+    </style>
+  </defs>
 
-文字、背景矩形、罫線、block element、cursor、mask overlay は同じ `Context` の値を参照します。
-要素ごとに別の座標計算を持たせず、同じ terminal grid へ合わせます。
+  <!-- レイヤー 1: デスクトップ背景 -->
+  <rect class="c2s-canvas-bg" width="100%" height="100%" fill="#1e1e2e"/>
 
-出力寸法を片方だけ指定した場合は、もう一方を比例計算します。
-幅と高さを両方指定した場合は、自然な canvas を指定矩形へ収め、余った領域を view box 側で表現します。
-各 layer が独自に terminal grid を引き伸ばすことはありません。
+  <!-- レイヤー 2: ウィンドウ装飾（タイトルバー、閉じる・最小化ボタン、シャドウ） -->
+  <g class="c2s-window-chrome" transform="translate(20, 20)">
+    <rect class="c2s-window-frame" width="858" height="280" rx="8" fill="#181825"/>
+    <circle cx="16" cy="16" r="6" fill="#ff5f56"/>
+    <circle cx="36" cy="16" r="6" fill="#ffbd2e"/>
+    <circle cx="56" cy="16" r="6" fill="#27c93f"/>
 
-## 外側の静的レイヤーを一度だけ描く
+    <!-- レイヤー 3: 端末クライアント領域のベース背景 -->
+    <rect class="c2s-terminal-bg" x="0" y="32" width="858" height="248" fill="#11111b"/>
 
-SVG root には output size、view box、共通 CSS、再利用する定義、canvas 背景を置きます。
+    <!-- レイヤー 4: コマンドヘッダー（with-command 指定時） -->
+    <g class="c2s-command-header" transform="translate(14, 52)">
+      <text class="c2s-prompt" fill="#a6adc8">$</text>
+      <text class="c2s-command" x="16" fill="#cdd6f4">fastfetch</text>
+    </g>
 
-その上へ window chrome を配置します。
-desktop 形式の chrome は専用の背景領域、shadow、frame、title area を持てます。
-続いて terminal client area を解決済みの背景色で塗り、chrome 内の padding が意図しない透過にならないようにします。
+    <!-- レイヤー 5: 端末画面本文（格子座標系） -->
+    <g class="c2s-terminal-body" transform="translate(14, 76)">
+      <!-- 5a. 背景パス: 非標準背景色を持つセルの結合矩形 -->
+      <g class="c2s-bg-pass">
+        <rect x="0" y="0" width="120" height="18" fill="#313244"/>
+      </g>
 
-`--with-command` の header も静的領域へ置きます。
-animation SVG では、これらを terminal state ごとに複製せず一度だけ出力します。
+      <!-- 5b. 前景パス: 結合された文字列、罫線パス、ブロック要素 -->
+      <g class="c2s-fg-pass" font-family="JetBrains Mono, monospace" font-size="14">
+        <text y="14" class="c2s-fg-cyan c2s-bold">OS:</text>
+        <text x="32" y="14" fill="#cdd6f4">Ubuntu 24.04 LTS</text>
+        <!-- 罫線結合パス -->
+        <path d="M 0 36 L 240 36" stroke="#45475a" stroke-width="1"/>
+      </g>
 
-## 端末背景と前景を別 pass にする
+      <!-- 5c. カーソルレイヤー（本文とは独立） -->
+      <rect class="c2s-cursor" x="168" y="0" width="8.4" height="18" fill="#f5e0dc" opacity="0.8"/>
 
-静止画では terminal background と foreground を別 group として描けます。
+      <!-- 5d. マスクオーバーレイ（置換文字の前面にストライプを描画） -->
+      <rect class="c2s-mask" x="84" y="18" width="84" height="18" fill="url(#mask-stripe)"/>
+    </g>
+  </g>
+</svg>
+```
 
-background pass は、同じ有効背景色が横に続く cell を一つの矩形へまとめます。
-base terminal background と同じ cell は個別の矩形を出しません。
+このように、変化の起きない静的なウィンドウ枠や背景を外側に固定し、端末のセル情報が集まる本文領域だけを内側の格子グループに集約しています。
 
-foreground pass は text run、block geometry、box-drawing geometry、cursor、mask overlay を出します。
-background だけを描く pass では、foreground text が存在しないため自動 mask と手動 mask の scan を実行しません。
+## 統合コンテキストによる格子座標の決定
 
-mask overlay は置換した文字より上へ配置します。
-別の opaque layer の下へ秘密文字列を残して隠す方式にはしません。
+画面全体のレイアウトは、描画の起点となる `SvgDocumentBuilder.Context` が一元的に計算します。
+トリミング（crop）処理後の可視行数・可視列数を基準とし、セル寸法、外側マージン、内側パディング、ウィンドウ装飾のオフセット、コマンドヘッダーの高さ、そして SVG の描画領域を定める **`viewBox`**（解像度に依存しない仮想座標空間）をまとめて確定します。
 
-## style と geometry を定義として共有する
+セルの横幅はフォントサイズの 0.6 倍、セルの高さはフォントサイズの `18 / 14` 倍（約 1.286 倍）として算出し、文字のベースライン位置もフォントサイズに基づいて厳密に決定します。
+背景の塗りつぶし矩形、文字テキスト、罫線やブロックグラフィックス、カーソル、秘密情報のマスク帯は、すべてこの共通コンテキストが算出した格子座標を参照します。
+各レイヤーが個別に独自の余白計算や座標変換を持たないため、文字と装飾の間に隙間やズレが生じません。
 
-`SvgStyleRegistry` は、一意な実効文字 style ごとに短い CSS class を一つ割り当てます。
-foreground color と decoration を各 `<text>` へ繰り返し書きません。
+出力画像の幅や高さを片方だけ指定した場合は、アスペクト比を維持してもう一方の寸法を比例計算します。
+両方の寸法を明示的に指定した場合は、端末画面をその指定矩形へ収め、余剰領域を `viewBox` 側のマッピングで吸収します。
 
-`SvgElementRegistry` は、再利用可能な定義内の同じ矩形と path を共有します。
-最初の geometry に ID を付け、同一要素が再登場した場合は `<use>` を出します。
+## 外側の静的レイヤーの単一出力
 
-位置が0で SVG の既定値と同じ場合は、不要な position attribute を省略します。
-一つの削減量は小さくても、行定義が多数ある animation では同じ attribute の繰り返しを減らせます。
+SVG ドキュメントの最外殻には、画像全体の寸法、`viewBox`、共通の CSS 定義、およびデスクトップ風の背景領域を配置します。
 
-## アニメーションで切り替える範囲を限定する
+その内側に、macOS 風などのウィンドウ枠（ウィンドウ装飾、シャドウ、タイトルバー）を展開します。
+続いて端末の表示領域全体をあらかじめ背景色で塗りつぶし、ウィンドウ内のパディング部分が意図せず背景へ透過するのを防ぎます。
 
-animation SVG では、一意な行本文を `<defs>` に置きます。
-可視 terminal body は `<use>` で行定義を参照し、discrete な SMIL の表示区間で切り替えます。
+実行コマンドを表示する `--with-command` のヘッダーも、この静的レイヤーに配置します。
+アニメーション SVG を生成する場合であっても、これらの静的要素はフレームごとに複製されることなく、ドキュメントのルート直下に 1 回だけ出力されます。
 
-cursor run は行本文と別に出力します。
-cursor だけが変わったときに、行定義を作り直す必要はありません。
+## 背景と前景の分離描画
 
-canvas 背景、chrome、command header、content transform、crop は行切替の外側に置きます。
-静止 SVG と animation SVG で terminal の座標と配色解釈は共通のまま、繰り返す本文の参照方法だけを変えます。
+静止画のレンダリング工程では、端末の背景色と文字・図形の前景を別々のグループ（pass）として描画します。
+
+背景パスでは、同一の背景色が横方向に連続するセルを 1 つの大きな矩形（`<rect>`）へ結合します。
+端末の既定背景色と同じ色のセルに対しては矩形を出力せず、親レイヤーの塗りつぶしをそのまま利用します。
+
+前景パスでは、文字列（`<text>`）、罫線、ブロック要素、カーソル、マスクオーバーレイを出力します。
+秘密情報を隠すマスクオーバーレイは、後述するように置換済み文字の上へ配置します。
+不透明な矩形を上から被せるだけで下層に元の秘密文字列を残す方式は採りません。
+元の文字列を SVG ソースコードから抜き取られるリスクを根本から防ぐためです。
+
+## スタイルとジオメトリの共通化
+
+ドキュメント内で繰り返し現れるスタイルや図形は、SVG の定義領域へ集約します。
+
+文字の表示スタイルに対しては、`SvgStyleRegistry` が一意な色や装飾（太字・下線など）の組み合わせごとに短い CSS クラス名を割り当てます。
+個々の `<text>` 要素へ色や装飾の属性をインラインで繰り返し記述しないことで、マークアップの重複を削ぎ落とします。
+
+また、再利用可能なアイコンや定形グラフィックスに対しては、`SvgElementRegistry` が最初のジオメトリに ID を付与し、2 回目以降の出現箇所では `<use>` 要素による参照へ置き換えます。
+座標値が 0 で SVG の既定値と一致する場合は属性の記述そのものを省略し、DOM のバイト数を最小化します。
+
+## アニメーションにおける更新箇所の局所化
+
+アニメーション SVG においては、一意な行本文の定義を `<defs>` タグ内へ配置し、画面上の可視領域からは `<use>` 要素で参照します。
+表示の切り替えは、SMIL による離散的な表示時間制御だけで行います。
+
+カーソルのレイヤーは、この行本文の参照構造から完全に切り離して出力します。
+文字入力などでカーソルだけが移動した際に、背景や行本文の定義を再生成する必要がありません。
+
+外側のウィンドウ装飾やコマンドヘッダー、背景画像は行の切り替えループの外側に維持されます。
+静止画とアニメーションで端末の座標系や色の解釈ルールを完全に統一したまま、動的な更新が必要な行とカーソルだけを効率的に切り替えます。

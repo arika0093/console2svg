@@ -1,322 +1,220 @@
 ---
-title: 同步文档和图片
-description: 从 Markdown 或 MDX 的代码块生成执行示例图片，并反映到文档中
+title: 文档与输出图像自动同步
+description: 通过 Markdown 与 MDX 中的注释标记自动生成终端命令执行结果图像，保持文档描述与终端截图严格一致。
 since: v0.10
 ---
 
 import { FileTree, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
-## 动机
+在软件技术文档中，正文中说明的命令示例与实际粘贴的终端执行结果截图经常出现脱节。
+随着工具版本迭代，如果人工手动重新打开终端截屏、保存并逐一替换文档中的图片引用，极易发生遗漏与陈旧失效。
+此外，像 Astro 这样的静态网站生成器（SSG），如果文档内引用的图片在本地缺失便会直接中断构建，这在处理仅能在特定操作系统或 CI 环境中执行的命令截图时会极大阻碍本地开发。
 
-正是在构建这个文档站点时，我觉得以下几点很麻烦。
+`console2svg batch markdown` 可以自动检测 Markdown 或 MDX 文件中的注释标记，通过伪终端（PTY）执行对应命令，并将生成的图像无缝回写至文档中。
+它彻底省去了人工截图与整理的繁琐工作，使技术文档的正文说明与实际执行结果始终保持同步。
 
-* 保持命令示例和输出图片同步很麻烦。
-  * 直接实现时，需要准备生成图片用的脚本。
-  * 同时更新不同文件很困难，也容易漏掉同步。
-* 在实际生成图片之前，无法把图片链接写进资料中。
-  * 例如使用 [Astro](https://docs.astro.build) 时，如果图片不存在，构建会失败。
-  * 对于无法在本地执行的命令（例如只能在其他 OS 上运行的命令），这尤其成问题。
+## 基本同步工作流
 
-因此，我决定提供 `batch` 子命令。
-这样就可以从 Markdown 或 MDX 的代码块生成执行示例图片，并立即反映到文档中。
-
-> [!TIP]
-> 通过在 [GitHub Actions](./github-actions.md) 中执行，也可以集成到 CI/CD 流水线中。
-
-
-## 基本用法
-### 概要
+在文档中嵌入终端图像包含两个步骤：插入标记以及执行批量同步命令。
 
 <Steps>
 
-1. 最简单的用法是在 markdown 文件中放置如下 `<!-- c2s:: (command) -->` 标记。
+1. 在文档中希望呈现终端截图的位置插入 `<!-- c2s:: [command] -->` 格式的注释标记：
 
    ```markdown title="example.md"
-   运行 `dotnet --info` 会得到如下输出。
- 
+   执行 `dotnet --info` 命令将得到如下输出：
+
    <!-- c2s:: dotnet --info | head -n10 -->
    ```
-2. 然后执行以下命令。
-   
-   ```bash title="Terminal" "batch markdown"
+
+2. 指定文档所在输入目录与静态资源输出目录，执行 `batch markdown` 命令：
+
+   ```bash title="Terminal"
    console2svg batch markdown -i ./docs -o ./assets
    ```
 
-3. 这样会检测到上述 markdown 中的标记，
-   * 执行其中写入的命令（本例中为 `dotnet --info | head -n10`）。
-   * 然后，捕获的图片会保存到 `./assets` 目录中。
-   * 并且 markdown 文件也会更新，在标记正后方追加图片。
-   
+3. 该命令会自动解析标记，捕获命令的终端输出并生成 SVG 图像保存至输出目录。
+   同时，原 Markdown 文件也会被自动修改，在标记的正下方插入对应的图片引用：
+
    ```diff lang="markdown" title="example.md"
-   运行 `dotnet --info` 会得到如下输出。
-   
+   执行 `dotnet --info` 命令将得到如下输出：
+
    <!-- c2s:: dotnet --info | head -n10 -->
-   + ![dotnet --info / head -n10](../assets/generated/file-hash.svg)
+   + ![dotnet --info | head -n10](assets/generated/a1b2c3d4.svg)
    ```
-   > [!NOTE]
-   > 如果标记正后方已存在图片引用，则只更新该图片。
-   
+
 </Steps>
 
-### 指定参数
+如果标记正下方已存在图片引用，命令不会重复插入链接，而只会直接覆盖更新目标图片文件。
+
+## 路径解析与引用前缀解耦
+
+在不同网站构建体系中，图像文件在磁盘上的实际存放路径往往与 Markdown 中应书写的 Web URL 路径不同。
+`--link-base` 选项正是用于弥合这一差异：
 
 ```bash title="Terminal"
 console2svg batch markdown \
   -i ./docs \
-  -o ./my-docs-site/public/assets \
+  -o ./my-site/public/assets \
   --link-base /assets
 ```
 
-分别是：
-* `-i`：存放用于检测 `c2s` 标记的 markdown 的目录。
-* `-o`：图片的生成目标目录。
-* `--link-base`：markdown 上链接的起始路径。
+例如在 Astro 中，存放在 `/public/assets/` 下的静态资源，在 Markdown 中需要写成 `/assets/filename.svg` 这样的根相对绝对路径。
+通过使用 `-o` 指定实际落盘路径，配合 `--link-base` 指定 Web 访问路径，即可灵活适配任意静态资源流水线。
 
-当你希望实际生成的路径与 markdown 上的路径不同时，`--link-base` 很有用。
-例如，Astro 等把图片放在 `/public/` 下（例如 `/public/assets/`）在性能上更有利（这样就不会被复制到 `.astro/` 下）。
-但是，为了引用它，需要在 markdown 上以 `/assets` 这样的绝对路径指定。
-此时，按上述方式指定即可实现预期的引用。
+## 资源版本管理策略
 
-## 用 git 管理图片的情况
+生成出的图像是否纳入 Git 版本控制，取决于项目整体规模与仓库容量维护策略。
 
-如果想把生成的图片纳入 git 管理，只需直接提交变更即可。
+### 将图像纳入 Git 版本控制
 
-```bash
-console2svg batch markdown -i README.md -o ./assets
-git add -A
-git commit -m "[skip-ci] update README figure"
-git push
+当文档图像数量适中且期望仓库保持自包含时，可将生成的图像文件与更新后的 Markdown 直接一并提交至 Git：
+
+```bash title="Terminal"
+console2svg batch markdown -i docs -o assets
+git add docs assets
+git commit -m "docs: 更新命令执行截图"
 ```
 
-这样，`README.md` 上的链接会以追记状态被管理。
+这种模式下，新克隆代码仓库的协作者本地即拥有全部图像资产，无需执行额外构建步骤即可直接在本地预览完整的文档站点。
 
-```diff lang="markdown" title="README.md"
-<!-- c2s:: echo "My-Hero-Img" -->
-+ ![echo "My-Hero-Img"](assets/generated/random-hash.svg)
+### 将图像排除在 Git 管理之外
+
+当文档图像体量庞大、为避免 Git 仓库急剧膨胀时，可将图片输出目录写入 `.gitignore`，并在 Markdown 中仅保留标记而不写入图片链接：
+
+```markdown title="example.md"
+<!-- c2s:: echo "Hero Image" -->
+
+不手动书写图片链接，将资源管理全权委托给自动化流水线。
 ```
 
-## 不用 git 管理图片的情况
+在文档部署阶段，由 CI 流水线运行 `batch markdown` 实时生成图像并一并发布为静态资源：
 
-另一方面，像文档站点这样图片数量很多、用 git 管理会产生容量问题的情况也是存在的。
-这种情况下，不附加图片标签，只写 `c2s` 标记，并且不要把图片标签纳入 git 管理。
-
-```markdown title="docs-site-file.md"
-<!-- c2s:: echo "My-Hero-Img" -->
-
-> NOTE: 通过不包含图片标签，可以把处理自动委托给 console2svg。
-```
-
-之后，在生成文档站点时一并执行 `batch markdown`。
-
-```bash
-# ... setup console2svg
-console2svg batch markdown -i ./docs -o ./assets
+```bash title="deploy.sh"
+console2svg batch markdown -i ./docs -o ./public/assets
 npm run build
-# ... and upload pages assets
 ```
-不过，这种情况下本地构建时（当然）图片不存在。
-作为回避方案，有以下两种解决方法。
 
-### `batch restore`
+然而在此模式下，全新克隆的代码库缺少图像，会导致 SSG 本地构建报出缺图错误。
+该问题可通过后文介绍的 `batch restore` 或 `--placeholder` 得到有效解决。
 
-执行 `batch markdown` 命令后，会__自动生成 `assets.json` 文件__。
+## 远端静态资源同步与本地构建支持
+
+在仅由 CI 生成图像的架构中，可利用以下辅助功能保障顺畅的本地开发体验。
+
+### 利用 `batch restore` 还原远端资源
+
+`batch markdown` 在生成图像时，会在输出目录下自动生成名为 `assets.json` 的静态资源清单文件：
 
 <FileTree>
 
 - assets/
   - generated/
-  - ...
+    - a1b2c3d4.svg
   - **assets.json**
 
 </FileTree>
 
-使用这个 `assets.json`，可以把远程上（主要是 GitHub Actions 等）生成的图片复制到本地。
+将此清单文件连同构建产物一并部署到 Web 服务器后，本地开发者即可通过 `batch restore` 快速下载已生成的图像：
 
-<Steps>
+```bash title="Terminal"
+console2svg batch restore -o ./assets \
+  https://example.com/assets/assets.json
+```
 
-1. 首先，把图片生成目标追加到 `.gitignore`。
+若需要清理本地存在但远端清单中已被废弃的无用图像，可附加 `--prune` 参数进行清理。
 
-   ```diff title=".gitignore"
-   + ./assets
-   ```
+### 利用 `--placeholder` 确保本地立即构建
 
-2. 发布页面，例如 GitHub Pages。
+若无需通过网络下载全部图像，仅希望让本地文档站点顺利完成构建并预览排版，可使用 `--placeholder` 选项：
 
-   ```bash title="sample-deploy.sh"
-   # generate images
-   console2svg batch markdown -i ./docs -o ./assets
-   # and push gh-pages
-   git add -A
-   git commit -m "[skip-ci] update images"
-   git push origin gh-pages
-   ```
-
-   此时请连同 `assets.json` 一起部署。
-
-3. 用 `batch restore` 命令，把 CI 上生成的图片取回本地。
-
-   ```bash
-   console2svg batch restore -o ./assets MANIFEST_URL
-   ```
-   请把 `MANIFEST_URL` 替换为已部署清单的公开 URL，例如 `https://raw.githubusercontent.com/user/repo/gh-pages/assets/assets.json`。
-
-   > [!TIP]
-   > 默认不会删除远程不存在的文件。
-   > 需要时可以用 `--prune` 自动删除。
-
-</Steps>
-
-虽然可以利用实际生成的图片，但缺点是在远程上执行一次之前都无法使用图片。
-
-
-### `--placeholder`
-可以自动生成占位（文件大小为 0）的文件。
-
-```bash title="Terminal" "--placeholder"
+```bash title="Terminal"
 console2svg batch markdown -i ./docs -o ./assets --placeholder
 ```
 
-> [!TIP]
-> 已存在的文件会被直接忽略。
+该选项会跳过所有真实的命令执行，直接为每个标记引用的图片路径创建大小为 0 字节的占位空文件。
+这样既满足了 SSG 对引用文件必须存在的要求，又便于快速投入文字编写与布局调整。
 
-## 生成的文件
+## 命令哈希带来的资源去重
 
-各命令的输出结果，会按命令单位生成在 `generated/` 之下。
-这里重要的是，**只要执行的命令相同，就会得到相同输出**。
-
-例如，考虑以以下 markdown 文件为对象生成的情况。
+标记中所声明的命令、参数及尺寸完全一致时，即便它们分散在不同文档中，也会基于内容哈希共享同一个生成的图像文件。
 
 <Tabs>
-  <TabItem label="example1.md">
+  <TabItem label="doc-a.md">
     ```markdown
-    例如并列 3 次相同结果时
-
-    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
-    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
     <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
     ```
   </TabItem>
-  <TabItem label="example2.md">
+  <TabItem label="doc-b.md">
     ```markdown
-    在其他文件中引用相同输出时
     <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
-    ```
-  </TabItem>
-  <TabItem label="example3.md">
-    ```markdown
-    在其他文件中引用略有不同的输出时
-    <!-- c2s:: -w 80 -h 6 --- dotnet --info | head -n10 -->
     ```
   </TabItem>
 </Tabs>
 
-这种情况下，会生成如下文件。
+这一特性在构建多语言文档时尤为高效。
+当英文、中文及日文文档展示完全相同的命令执行过程时，各语言页面仅需保留相同标记，实际输出的图像文件只有一份，极大节省了存储与构建耗时。
 
-<FileTree>
+## 标记的高级配置语法
 
-- assets/
-  - generated/
-    - **(recipe-hash).svg**
-    - **(recipe-hash-for-w80-h6).svg**
-  - assets.json
+除基础的内联命令执行外，标记还支持丰富的窗口外观设置、输出格式选择及生命周期钩子自动化。
 
-</FileTree>
+### 窗口外观与格式选项
 
-总之，预期结果相同的情况会被缓存。
-这在多语言支持时尤其方便。
+在分隔符（`--`）前，可以直接指定与 `console2svg capture` 通用的全部配置选项：
 
-<Tabs>
-  <TabItem label="英文版">
-    ```markdown
-    Hello!
-    <!-- c2s:: -w 100 -h 12 --- my_command -->
-    ```
-  </TabItem>
-  <TabItem label="中文版">
-    ```markdown
-    你好！
-    <!-- c2s:: -w 100 -h 12 --- my_command -->
-    ```
-  </TabItem>
-</Tabs>
-
-如上所示，即使按语言分别创建文档，
-也不需要在其他语言版中删除 `c2s` 标记，生成文件也只需单个。
-
-## markdown
-### 简易指定
-
-`c2s::` 标记后面可以指定各种选项。
-
-```markdown title="example.md" "-w 100 -h 10 -d macos"
-<!-- c2s:: -w 100 -h 10 -d macos -t nord -- dotnet --version -->
+```markdown title="example.md"
+<!-- c2s:: -w 100 -h 10 -d macos -t nord --format png -- dotnet --version -->
 ```
 
-> [!NOTE]
-> 目前无法使用 `--save-cast`、`--save-frames`、`--embed-*`、`--stdout` 等带有捕获之外副作用的选项。
+指定 `--format png` 时将生成 PNG 格式位图，并在 Markdown 中自动插入 `.png` 扩展名的链接。
 
-### 输出格式
+### 基于 YAML 控制执行生命周期
 
-默认输出 SVG。使用 `--format` 可以指定其他格式，输出文件名会自动生成。
+若需要在执行命令前准备环境，或在执行后清理临时文件，可在标记内部以 YAML 格式定义完整的生命周期流程：
 
-```markdown title="example.md" "--format png"
-<!-- c2s:: -w 100 -h 12 --format png -- console2svg -->
-```
-
-### 前置与后处理
-
-在标记后面用 YAML 格式书写设置，可以指定执行前的前置处理、要执行内容的替换，以及执行后的后处理。
-
-```markdown {4-9}
-如下所示，可以不捕获构建时的输出，只捕获执行结果。
-
+```markdown title="example.md"
 <!-- c2s:: -w 100 -h 10 -d macos
 setup:
   dotnet build
-capture: 
+capture:
   dotnet run --no-build
 teardown:
   rm -f temporary-file
 -->
 ```
 
-### 引用代码块内容
+`setup` 中的脚本仅用于环境初始化，其输出不会进入截图画面。
+最终图像仅捕获 `capture` 所声明命令的执行结果。
+无论命令执行成功与否，`teardown` 中声明的清理脚本都会在最后无条件执行。
 
-给命名代码块加上 `c2s-id`，就可以从标记中引用该代码块。
+### 引用命名代码块内容
 
-````markdown title="example.md" "{code:program}" "{code:result}" "c2s-id=program" "c2s-id=result"
+若希望直接执行文档中展示的示例代码块并截图，可在代码块上添加 `c2s-id`，并在标记中通过 `{code:id}` 进行引用：
+
+````markdown title="example.md"
 ```csharp c2s-id=program
-Console.WriteLine("hello");
+Console.WriteLine("Hello from C#!");
 ```
 
-```bash c2s-id=result
-cat result.txt
+```bash c2s-id=run
+dotnet run app.cs
 ```
 
 <!-- c2s::
 setup: |
-  cat > test.cs <<'EOF'
+  cat > app.cs <<'EOF'
   {code:program}
   EOF
-  dotnet run test.cs > result.txt
-capture: "{code:result}"
-teardown: rm -f test.cs result.txt
+capture: "{code:run}"
+teardown: rm -f app.cs
 -->
 ````
 
-`{code:<id>}` 会被替换为指定代码块的内容。
+该语法避免了技术说明代码与可执行脚本的双重维护问题，当代码块内容被修改时，终端图像也会自动保持同步。
 
-## CLI
-### 过滤器
+## 安全注意事项
 
-开发过程中，可以对相对于输入目录的路径指定 glob 过滤器。过滤器可以多次指定。
-
-```bash title="Terminal" "--filter"
-console2svg batch markdown -i ./docs -o ./assets --filter "reference/**"
-```
-
-## 注意事项
-
-> [!WARNING]
-> 标记中书写的 `setup`、`capture`、`teardown` 和命令会在 shell 中执行。
-> 请勿对不可信的 Markdown，或从不可信 PR checkout 的文件执行。
+标记中定义的 `setup`、`capture` 与 `teardown` 脚本将在宿主机的 Shell 环境中直接运行。
+严禁对不可信的 Markdown 文件或来自未经审查的外部 Pull Request 文件盲目执行 `batch markdown`。
+在 CI 环境中配置自动化时，请务必严格限制分支权限与执行凭证。

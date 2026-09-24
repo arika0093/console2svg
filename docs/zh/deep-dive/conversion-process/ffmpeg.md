@@ -1,91 +1,74 @@
 ---
-title: 使用 ffmpeg 编码视频
-description: 如何按时间采样终端状态，并行栅格化 PNG，再按顺序写入一个 ffmpeg image2pipe process。
+title: 使用 ffmpeg 进行视频编码
+description: 控制从终端状态采样、PNG 栅格化到管道传输至单一 ffmpeg 进程的完整工作机制。
 ---
 
-视频输出使用与静态图片相同的 SVG renderer。
-每个 sample 时刻先生成静态 SVG，再栅格化为 PNG，最后把 PNG 按时间顺序发送给 ffmpeg。
+在输出为 MP4 或 WebM 等视频格式时，console2svg 使用与静态图片完全相同的终端仿真器与 SVG 渲染器。
+系统按照指定的采样间隔将终端状态生成为静态 SVG，将其栅格化为 PNG，然后依次通过管道推送到 **ffmpeg**（开源音视频处理工具）的标准输入中。
+全流程在内存中完成而不产生任何中间文件，从而彻底消除了磁盘 I/O 开销。
 
-普通内存路径不会要求 ffmpeg 从连续 SVG 文档中识别 frame 边界。
-`image2pipe` 接收 PNG，因为每一张 PNG 都具有可从 byte stream 解析的独立边界。
+## 终端仿真器的单向推进回放
 
-## 让一个 emulator 按时间前进
+在以固定帧率（FPS）采样视频帧时，系统绝不会针对每一帧都从录制开头（时间 0）重新执行仿真。
+而是仅保留一个仿真器实例，随着采样时间的推移，仅向前应用尚未处理的新到达事件。
 
-固定 FPS sampling 不会为每个 video frame 从 event 0 重新 replay。
+事件的检索索引同样保持单向向前递增。
+这避免了在生成后续帧时反复遍历过去全部事件的无谓开销，使总处理时间随录制时长呈线性增长。
 
-frame generator 只维护一个 `TerminalEmulator` 和一个单调递增的 event index。
-sample time 向前推进时，只处理新到达的事件。
-用于找到目标 event 的 index 也只向前移动。
+## 利用签名抑制 SVG 重复生成
 
-终端 replay 工作量因此更接近录制 event stream 本身，而不是让每个后续 frame 重复处理此前所有事件。
+仿真器推进到当前采样时间后，系统会立即获取整屏的视觉签名（由单元格内容和光标状态计算得出的哈希值）。
+以该签名作为键，系统最多缓存 128 条最近生成的 SVG 字符串。
 
-## 复用相同画面的 SVG
+由于命令行应用程序在等待按键或命令执行期间通常会有较长时间的静止，许多采样点指向完全相同的画面。
+当签名匹配时，系统将跳过 XML 的构建过程，直接返回缓存中的同一 `string` 实例。
 
-emulator 到达目标时刻后，会取得 screen visual signature。
+## 保持时序的并行栅格化
 
-静态 SVG 以该 signature 为 key，最多缓存128项。
-多个 sample 显示同一画面时，会直接返回 cache 中同一个 SVG `string` object，而不是重新构造等价 XML。
+将 SVG 栅格化为 PNG 是计算密集型的 CPU-bound 操作。
+因此，系统会根据可用的 CPU 核心数，最多使用 8 个线程并行执行栅格化。
 
-没有指定 FPS 的 frame 保存路径也会跳过连续相同 visual signature 的状态。
+与此同时，传递给视频编码器的图像帧必须严格保证时序先后顺序。
+为此，系统通过一个具有容量限制的 FIFO 队列来管理异步栅格化任务，并由单一写入器按照队首任务完成的顺序依次写入 ffmpeg 的标准输入。
+这种控制机制在充分发挥多核并行性能的同时，避免了将整部视频的所有未压缩帧一次性堆积在内存中的风险。
 
-## 并行栅格化，按原顺序写入
+## 基于对象同一性的两级缓存
 
-SVG 到 PNG 的转换可能是 CPU-bound，也可能依赖外部 process，取决于 rasterizer。
+由于生成的 PNG 图像比 SVG 字符串占用大得多的内存，因此 PNG 缓存的容量被严格限制在 16 项。
 
-video converter 可以同时启动多个 PNG render。
-并发度跟随 processor count，并限制为最多8。
+该缓存的键使用的是对象引用（同一性）而非字符串内容比较。
+这是因为前一级的 SVG 缓存对于相同画面会返回完全相同的 `string` 实例。
+由此构成的 **两级缓存** 能够在无需对庞大的 XML 字符串进行哈希计算或全文比对的前提下，同时避免 SVG 的重复生成与 PNG 的重复栅格化。
 
-ffmpeg input 顺序不能改变。
-pending render task 放入 bounded FIFO queue，只有队首 task 的结果会写入标准输入。
+## 基于 image2pipe 的单进程传输
 
-这样既能重叠独立 rasterization 工作，也不会提前把整个视频的 PNG byte array 都堆积在内存中。
+在生成整个视频的过程中，系统仅启动一个 ffmpeg 进程。
+所有图像帧均通过 **image2pipe**（通过标准输入或管道批量接收连续图像流的 ffmpeg 输入格式）传入。
+指定的启动参数为 `-f image2pipe -vcodec png -i pipe:0`。
 
-## 通过 SVG object identity 复用 PNG render
+子进程的标准输出和标准错误输出在进程启动后便立即通过异步循环读取并丢弃（drain）。
+这既防止了管道缓冲区溢出导致 ffmpeg 阻塞挂起，又能在编码失败时从标准错误中提取错误信息作为诊断日志。
+当发生操作取消时，系统会向整个进程树发送终止信号以释放资源。
 
-PNG 往往比源 SVG 占用更多 memory，因此 raster cache 比 SVG cache 更小，最多保存16项。
+## 事先探测确认 SVG 解码器能力
 
-cache key 使用 SVG `string` 的 object reference，而不是内容。
-前一阶段的 SVG cache 对同一 visual signature 返回相同 object，因此这里可以直接复用同一个 PNG-render task。
+不同构建版本的 ffmpeg 所包含的内置库存在很大差异。
+即使格式列表中列出了 SVG，某些运行环境中也可能缺少内部的 SVG 解码器（如 libxml2 或 librsvg）。
 
-这形成 **两级缓存**。
-第一层避免重新生成 SVG，第二层避免重新栅格化 PNG。
-也不需要为很长的 XML string 再做内容 hash 或全文比较。
+因此，console2svg 在启动时会实际执行一次最小 SVG 到 PNG 的转换探测，判断其是否具备 SVG 解码能力并缓存结果。
+在内存视频管道中，由于无法通过管道安全地切分多个连续的 SVG 文档，管道会优先调度内置的 resvg 或 `rsvg-convert` 进行栅格化，从而让 ffmpeg 专职负责视频编码流程。
 
-## 用一个 ffmpeg process 接收所有 frame
+## MP4 编解码器选择与偶数尺寸补齐
 
-console2svg 为完整视频只启动一个 ffmpeg process。
-所有 PNG frame 都写入它的 standard input。
+当输出到 MP4 容器时，如果系统中存在 `libx264` 则优先选用，否则回退到 `mpeg4`。
+若输出为 WebM 或 GIF，则交由容器的默认编解码器处理。
 
-输入参数使用 `-f image2pipe -vcodec png -i pipe:0` 和目标 frame rate。
-普通内存路径不需要创建编号 SVG 或 PNG 文件。
-
-process 启动后会立即异步 drain standard output 和 standard error。
-这样可以避免子 process pipe 填满后阻塞，同时保留失败时需要的 ffmpeg diagnostic。
-
-取消操作会尝试结束整个 ffmpeg process tree。
-最后一张 PNG 写完后关闭 stdin，再等待 encoder 退出。
-
-## 用实际转换探测能力
-
-ffmpeg 即使显示 SVG pipe format，也不代表当前 build 一定包含可以栅格化 SVG 的 decoder。
-在图像转换路径中，console2svg 会执行一次最小 SVG 到 PNG 的实际转换并缓存结果。
-
-in-memory video 有不同约束。
-如果选择的 converter mode 指向 ffmpeg，video pipeline 仍会先解析出能够生成 PNG 的 renderer，例如 bundled resvg 或 `rsvg-convert`。
-最终 ffmpeg process 已经承担视频编码，`image2pipe` 也不能把连续 SVG 文档可靠拆成独立 frame。
-
-codec discovery 结果也会缓存，避免每次转换都重新运行 `ffmpeg -encoders`。
-
-## 选择 MP4 codec 并补齐偶数尺寸
-
-MP4 会优先使用可用的 `libx264`，否则 fallback 到 `mpeg4`。
-WebM、GIF 等其他 container 在没有 MP4 codec 要求时交给 ffmpeg 的 container 默认 encoder。
-
-输出使用 `yuv420p`，并应用：
+MP4 的像素格式指定为在各类播放环境中兼容性极佳的 **yuv420p**（基于亮度信号 Y 和两路色度信号 U/V，且在水平和垂直方向上每 2×2 像素进行一次色度抽样压缩的格式）。
+由于 yuv420p 规范要求图像的宽度和高度必须为偶数，系统会应用以下 ffmpeg 滤镜：
 
 ```text
 pad=ceil(iw/2)*2:ceil(ih/2)*2:0:0
 ```
 
-该 filter 把奇数 width 或 height 向上补到偶数。
-最多只在右侧或底部增加1 pixel，因此 terminal content 的左上位置保持不变。
+该滤镜将奇数像素的宽或高向上取整，在右侧或底部补齐最多 1 像素的填充。
+这样可以在不偏移左上角基准坐标系的前提下，生成完全符合编码器规范的合法视频。

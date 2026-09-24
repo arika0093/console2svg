@@ -1,320 +1,220 @@
 ---
-title: ドキュメントと画像を同期する
-description: MarkdownやMDXのコードブロックから実行例の画像を生成し、ドキュメントへ反映する
+title: ドキュメントと出力画像の同期
+description: Markdown や MDX 内のコメントマーカーから端末実行画像を自動生成し、ドキュメント記述と画面キャプチャを一致させる仕組み。
 since: v0.10
 ---
 
 import { FileTree, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
-## 動機
-まさにこのドキュメントサイトを構築している際に、以下の点が面倒だと感じました。
+ソフトウェアの技術文書では、本文に記載されたコマンド例と貼り付けられた実行結果画像が乖離しがちです。
+ツールのバージョンアップに伴ってコマンド出力を撮り直す作業を手動で行っていると、画像と本文の更新漏れが発生しやすくなります。
+また、Astro などの静的サイトジェネレーター（SSG）では、ドキュメント内に記述された画像ファイルがローカルに存在しないだけでビルドが停止するため、特定の OS や CI 環境でしか再現できないコマンド画像の取り扱いが開発の妨げになります。
 
-* コマンド例と出力画像の同期を取るのが面倒。
-  * 素直に実装すると、画像生成用のスクリプトを用意する必要がある。
-  * 別々のファイルを同時に更新するのは難しく、同期漏れが発生しやすい。
-* 実際に画像を生成するまで、画像のリンクを資料内に書くことができない。
-  * 例えば[Astro](https://docs.astro.build)を使用する場合、画像がないとビルドに失敗する。
-  * これはローカルで実行できないコマンド(例えば別OSでしか動かないもの)で特に問題になる。
+`console2svg batch markdown` は、Markdown や MDX 内のコメントマーカーを検出して端末コマンドを実行し、生成された画像をドキュメントへ自動反映するバッチ同期機能です。
+手動のスクリーンショット撮影を排除し、ドキュメントの記述と実行結果を常に一致させます。
 
-そこで、`batch` サブコマンドを用意することにしました。  
-これにより、MarkdownやMDXのコードブロックから実行例の画像を生成し、ドキュメントへ即時反映することができます。
+## 基本的な同期ワークフロー
 
-> [!TIP]
-> [GitHub Actions](./github-actions.md)で実行することで、CI/CDパイプラインに組み込むこともできます。
-
-
-## 基本的な使い方
-### 概要
+ドキュメントへの画像埋め込みは、マーカーの配置とバッチコマンド実行の 2 つの工程で行います。
 
 <Steps>
 
-1. 以下のように `<!-- c2s:: (command) -->` マーカーをmarkdownファイル内に配置するだけです。
+1. ドキュメント内の画像を配置したい位置に `<!-- c2s:: [command] -->` 形式のコメントマーカーを記述します。
 
    ```markdown title="example.md"
-   `dotnet --info`を実行すると以下のような出力が得られます。
- 
+   `dotnet --info` を実行すると以下の出力が得られます。
+
    <!-- c2s:: dotnet --info | head -n10 -->
    ```
-2. その後、以下のコマンドを実行します。
-   
-   ```bash title="Terminal" "batch markdown"
+
+2. 入力ディレクトリと画像の出力先を指定して `batch markdown` を実行します。
+
+   ```bash title="Terminal"
    console2svg batch markdown -i ./docs -o ./assets
    ```
 
-3. すると、上記markdown内のマーカーが検出され、
-   * 記載したコマンド(上記の場合は `dotnet --info | head -n10`) が実行されます。
-   * その後、キャプチャされた画像が `./assets` ディレクトリに保存されます。
-   * また、markdownファイルも更新され、マーカーの直後に画像が追加されます。
-   
+3. コマンドがマーカーを解析して端末出力をキャプチャし、指定ディレクトリへ SVG 画像を保存します。
+   同時に元の Markdown ファイルが自動で書き換わり、マーカーの直後に画像リンクが挿入されます。
+
    ```diff lang="markdown" title="example.md"
-   `dotnet --info`を実行すると以下のような出力が得られます。
-   
-   <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
-   + ![dotnet --info](../assets/generated/file-hash.svg)
+   `dotnet --info` を実行すると以下の出力が得られます。
+
+   <!-- c2s:: dotnet --info | head -n10 -->
+   + ![dotnet --info | head -n10](assets/generated/a1b2c3d4.svg)
    ```
-   > [!NOTE]
-   > すでに直後に画像参照が存在する場合、その画像を更新するだけです。
-   
+
 </Steps>
 
-### 引数指定
+すでにマーカーの直後に画像リンクが存在している場合は、リンクを重複して挿入することなく、参照先の画像ファイルだけを上書き更新します。
+
+## パス解決とリンク起点の分離
+
+Web サイトのビルドシステムによっては、ファイルの物理的な出力先と Markdown 上で記述すべき URL パスが異なる場合があります。
+この差異を吸収するのが `--link-base` オプションです。
 
 ```bash title="Terminal"
 console2svg batch markdown \
   -i ./docs \
-  -o ./my-docs-site/public/assets \
+  -o ./my-site/public/assets \
   --link-base /assets
 ```
 
-それぞれ：
-* `-i`: `c2s`マーカーを検知する対象のmarkdownが格納されているディレクトリ。
-* `-o`: 画像の生成先ディレクトリ。
-* `--link-base`: markdown上のリンク起点パス。
+例えば Astro では、`/public/assets/` に配置された静的アセットは、Markdown から `/assets/filename.svg` という絶対パスで参照します。
+`-o` で実際の配置場所を指定しつつ、`--link-base` に Web 上の公開パスを指定することで、Markdown に挿入される画像リンクのプレフィックスを任意に調整できます。
 
-`--link-base`は、実際に生成されるパスとmarkdown上のパスを別々にしたいケースにおいて有用です。
-例として、astro等の画像は`/public/`配下(例えば`/public/assets/`)に設置するとパフォーマンス上有利です(こうすることで`.astro/`配下にコピーされない)
-しかし、それを参照するためにはmarkdown上で`/assets`と絶対パス指定で指定する必要があります。
-その際、上記のように指定することで意図した参照を実現できます。
+## 画像アセットの管理戦略
 
-## 画像をgit管理する場合
+生成された画像を Git リポジトリの管理下に含めるかどうかは、プロジェクトの規模やリポジトリ容量の方針に応じて選択します。
 
-生成された画像をgit管理に含めたい場合は、単純に変更点をそのままコミットするだけです。
+### 画像を Git 管理に含める場合
 
-```bash
-console2svg batch markdown -i README.md -o ./assets
-git add -A
-git commit -m "[skip-ci] update README figure"
-git push
+画像点数が少なく、リポジトリ単体で完結させたい場合は、生成された画像ファイルと更新された Markdown の双方をそのままコミットします。
+
+```bash title="Terminal"
+console2svg batch markdown -i docs -o assets
+git add docs assets
+git commit -m "docs: 実行例の画像を更新"
 ```
 
-これで、`README.md`上のリンクが追記された状態で管理できます。
+この運用では、クローンした直後の開発環境であってもすべての画像が揃っているため、追加の生成手順を踏むことなくローカルでドキュメントサイトをビルドできます。
 
-```diff lang="markdown" title="README.md"
-<!-- c2s:: echo "My-Hero-Img" -->
-+ ![echo "My-Hero-Img"](assets/generated/random-hash.svg)
+### 画像を Git 管理から除外する場合
+
+画像アセットが多数に及び、Git リポジトリの容量肥大化を避けたい場合は、画像ファイルを `.gitignore` で管理対象外とし、Markdown には画像リンクを付与せずマーカーのみを保持します。
+
+```markdown title="example.md"
+<!-- c2s:: echo "Hero Image" -->
+
+画像リンクを手動で書かないことで、アセット管理をビルドパイプラインへ委ねます。
 ```
 
-## 画像をgit管理しない場合
+ドキュメントサイトの公開時に、CI パイプライン内で `batch markdown` を実行して画像を生成し、そのまま静的アセットとしてデプロイします。
 
-一方、ドキュメントサイトなど、数が多くgit管理すると容量上の問題がある場合もあります。
-その場合は、画像タグを付与せずに`c2s`マーカーのみを記述し、画像タグはgit管理に含めないようにします。
-
-```markdown title="docs-site-file.md"
-<!-- c2s:: echo "My-Hero-Img" -->
-
-> NOTE: 画像タグを含めないことでconsole2svgに処理を自動で委託できます。
-```
-
-その後、ドキュメントサイトの生成時に`batch markdown`も合わせて実行するようにします。
-
-```bash
-# ... setup console2svg
-console2svg batch markdown -i ./docs -o ./assets
+```bash title="deploy.sh"
+console2svg batch markdown -i ./docs -o ./public/assets
 npm run build
-# ... and upload pages assets
 ```
-ただし、この場合はローカルビルド時に（当然ながら）画像が存在しないことになります。
-この回避策として、以下の2つの解決手段があります。
 
-### `batch restore`
+ただし、この方式ではローカル環境に画像が存在しないため、SSG のビルドが失敗する原因になります。
+この問題は、次に述べる `batch restore` または `--placeholder` で解決します。
 
-`batch markdown`コマンドを実行すると、__自動で`assets.json`ファイルが生成__ されます。
+## 外部生成アセットの同期とローカルビルド
+
+CI 上でのみ画像を生成する構成では、ローカル開発環境のビルドを通すための補助機能を利用します。
+
+### `batch restore` によるリモートアセットの復元
+
+`batch markdown` は画像を生成する際、出力ディレクトリの直下にアセットのマニフェスト情報である `assets.json` を自動出力します。
 
 <FileTree>
 
 - assets/
   - generated/
-  - ...
+    - a1b2c3d4.svg
   - **assets.json**
 
 </FileTree>
 
-この`assets.json`を使用して、リモート上(主にGitHub Actions等)で生成された画像をローカルにコピーできます。
+このマニフェストファイルを CI 上で公開アセットと一緒にデプロイしておけば、ローカル環境から `batch restore` を実行してリモートの生成済み画像をダウンロードできます。
 
-<Steps>
+```bash title="Terminal"
+console2svg batch restore -o ./assets \
+  https://example.com/assets/assets.json
+```
 
-1. まず、画像の生成先を`.gitignore`に追記します。
+リモートに存在しなくなった古い画像ファイルをローカルから一掃したい場合は、`--prune` オプションを付加して同期します。
 
-   ```diff title=".gitignore"
-   + ./assets
-   ```
+### `--placeholder` による即時ビルドの確保
 
-2. GitHub Pagesなどにページを公開します。
+ネットワーク経由での画像ダウンロードを待たずに、とにかくローカルでのサイト構築を通したい場合は、`--placeholder` を指定します。
 
-   ```bash title="sample-deploy.sh"
-   # generate images
-   console2svg batch markdown -i ./docs -o 
-   # and push gh-pages
-   git add -A
-   git commit -m "[skip-ci] update images"
-   git push origin gh-pages 
-   ```
-
-   この際、`assets.json`も同時にデプロイします。
-
-3. `batch restore`コマンドで、CI上で生成した画像をローカルに戻します。
-
-   ```bash
-   console2svg batch restore -o ./assets \ 
-       https://github.com/user/repo/blob/main/assets/assets.json
-   ```
-   > [!TIP]
-   > 標準ではリモートに存在しなかったファイルは削除しません。
-   > 必要な場合は`--prune`で自動削除を利用できます。
-
-</Steps>
-
-実際に生成された画像を利用できる一方で、一度リモート上で実行するまでは画像が利用できない欠点があります。
-
-
-### `--placeholder`
-ダミーの（ファイルサイズ0の）ファイルを自動で生成することができます。
-
-```bash title="Terminal" "--placeholder"
+```bash title="Terminal"
 console2svg batch markdown -i ./docs -o ./assets --placeholder
 ```
 
-> [!TIP]
-> すでにファイルが存在する場合は単に無視されます。
+このオプションを指定すると、実際のコマンド実行を一切行わず、マーカーが要求するファイル名で 0 バイトのダミーファイルを即座に作成します。
+SSG の「画像ファイルが存在しない」というリンク切れエラーを回避し、マークアップの執筆やレイアウト調整に専念できます。
 
-## 生成されたファイル
+## コマンドハッシュによる画像アセットの共有
 
-各コマンドの出力結果は、`generated/`配下に、コマンド単位で生成されます。
-ここで重要なのは **実行するコマンドが同一なら同一出力となる** ことです。
-
-例えば、以下のmarkdownファイルを対象に生成するケースを考えてみます。
+同一のコマンドとオプションで指定されたマーカーは、たとえ異なるファイルに分散して配置されていても、ハッシュ値が一致するため単一の画像アセットとして共有されます。
 
 <Tabs>
-  <TabItem label="example1.md">
+  <TabItem label="doc-a.md">
     ```markdown
-    例えば3回同じ結果を並べるとき
-
-    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
-    <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
     <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
     ```
   </TabItem>
-  <TabItem label="example2.md">
+  <TabItem label="doc-b.md">
     ```markdown
-    そして別ファイルで同じ出力を参照するとき
     <!-- c2s:: -w 100 -h 12 --- dotnet --info | head -n10 -->
-    ```
-  </TabItem>
-  <TabItem label="example3.md">
-    ```markdown
-    そして別ファイルで微妙に違う出力を参照するとき
-    <!-- c2s:: -w 80 -h 6 --- dotnet --info | head -n10 -->
     ```
   </TabItem>
 </Tabs>
 
-この場合、以下のように生成されます。
+この仕様は、多言語化ドキュメントを構築する際に特に有効です。
+英語ドキュメントと日本語ドキュメントで同じコマンド実行結果を掲載する場合、それぞれに同じマーカーを記述しておけば、出力される画像ファイルは 1 つにまとめられ、ストレージとビルド時間を節約できます。
 
-<FileTree>
+## マーカーの高度な設定記法
 
-- assets/
-  - generated/
-    - **(w100_h12_dotnet_info_head_n10).svg**
-    - **(w80_h6_dotnet_info_head_n10).svg**
-  - assets.json
+単なるインラインコマンドの実行にとどまらず、画面の装飾設定や出力形式の変更、前処理・後処理の自動化が可能です。
 
-</FileTree>
+### 画面設定と出力形式の指定
 
-要するに、同一の結果が期待される場合はそれをキャッシュしています。
-これは主に多言語対応の際に便利です。
+マーカー行の区切り記号（`--`）の前に、`console2svg capture` と共通のオプションを指定できます。
 
-<Tabs>
-  <TabItem label="英語版">
-    ```markdown
-    Hello!
-    <!-- c2s:: -w 100 -h 12 --- my_command -->
-    ```
-  </TabItem>
-  <TabItem label="日本語版">
-    ```markdown
-    こんにちは！
-    <!-- c2s:: -w 100 -h 12 --- my_command -->
-    ```
-  </TabItem>
-</Tabs>
-
-上記のように、各言語ごとに別のドキュメントを作成する場合でも
-`c2s`マーカーを他言語版で削除する必要はなく、生成ファイルも単一で済みます。
-
-## markdown
-### 簡易的な指定
-
-`c2s::` マーカーの後ろに各種オプションを指定できます。
-
-```markdown title="example.md" "-w 100 -h 10 -d macos"
-<!-- c2s:: -w 100 -h 10 -d macos -t nord -- dotnet --version -->
+```markdown title="example.md"
+<!-- c2s:: -w 100 -h 10 -d macos -t nord --format png -- dotnet --version -->
 ```
 
-> [!NOTE]
-> 現在, `--save-cast`、`--save-frames`、`--embed-*`、`--stdout` など、キャプチャ以外の副作用を持つオプションは使用できません。
+`--format png` を指定すると、SVG の代わりに PNG 形式の画像が生成され、Markdown にも `.png` へのリンクが挿入されます。
 
-### 出力形式
+### YAML による実行ライフサイクルの制御
 
-既定ではSVGが出力されます。`--format` を使うと別の形式を指定でき、出力ファイル名は自動生成されます。
+実行前の環境構築や、実行後に作成された不要ファイルの削除を制御する場合は、マーカーの内部に YAML 形式でライフサイクルを定義します。
 
-```markdown title="example.md" "--format png"
-<!-- c2s:: -w 100 -h 12 --format png -- console2svg -->
-```
-
-### セットアップと後処理
-
-マーカーの後ろにYAML形式の設定を記述すると、実行前のセットアップ、実行内容の置き換え、実行後の後処理を指定できます。
-
-```markdown {4-9}
-以下のように記述することで、ビルド時の出力をキャプチャせず、実行結果のみをキャプチャすることができます。
-
+```markdown title="example.md"
 <!-- c2s:: -w 100 -h 10 -d macos
 setup:
   dotnet build
-capture: 
+capture:
   dotnet run --no-build
 teardown:
   rm -f temporary-file
 -->
 ```
 
-### コードブロックの中身を参照する
+`setup` に記述されたコマンドは環境を準備するためだけに実行され、その出力は画像に含まれません。
+画面としてキャプチャされるのは `capture` に指定されたコマンドの実行結果のみです。
+すべての処理が終了した後は、成否に関わらず `teardown` に指定された後処理が実行されます。
 
-名前付きのコードブロックに `c2s-id` を付けると、マーカーからそのコードブロックを参照できます。
+### 名前付きコードブロックの参照
 
-````markdown title="example.md" "{code:program}" "{code:result}" "c2s-id=program" "c2s-id=result"
+ドキュメント内に記載されたサンプルコードをそのまま実行してキャプチャに収めたい場合は、コードブロックに `c2s-id` を付与し、マーカー内から `{code:id}` で参照します。
+
+````markdown title="example.md"
 ```csharp c2s-id=program
-Console.WriteLine("hello");
+Console.WriteLine("Hello from C#!");
 ```
 
-```bash c2s-id=result
-cat result.txt
+```bash c2s-id=run
+dotnet run app.cs
 ```
 
 <!-- c2s::
 setup: |
-  cat > test.cs <<'EOF'
+  cat > app.cs <<'EOF'
   {code:program}
   EOF
-  dotnet run test.cs > result.txt
-capture: "{code:result}"
-teardown: rm -f test.cs result.txt
+capture: "{code:run}"
+teardown: rm -f app.cs
 -->
 ````
 
-`{code:<id>}` は、指定したコードブロックの内容に置き換えられます。
+この記法を用いることで、解説用のサンプルコードと実行コマンドを二重管理する手間を排し、コードブロックを修正した際に画像の中身も自動的に追従させることができます。
 
-## CLI
-### フィルター
+## セキュリティに関する注意事項
 
-開発中は、入力ディレクトリからの相対パスに対してグロブフィルターを指定できます。フィルターは複数回指定できます。
-
-```bash title="Terminal" "--filter"
-console2svg batch markdown -i ./docs -o ./assets --filter "reference/**"
-```
-
-## 注意事項
-
-> [!WARNING]
-> マーカーに記述された `setup`、`capture`、`teardown` およびコマンドはシェルで実行されます。
-> 信頼できないMarkdownや、信頼できないPull Requestからチェックアウトしたファイルに対して実行しないでください。
+マーカー内に記述された `setup`、`capture`、`teardown` の各スクリプトは、実行環境のシェル上でそのまま評価されます。
+第三者から送られた Pull Request や、信頼できない外部の Markdown ファイルに対して `batch markdown` を無差別に実行してはいけません。
+悪意あるコマンドの混入を防ぐため、CI 環境で自動実行する場合は対象ブランチや権限を厳密に制限してください。

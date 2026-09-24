@@ -1,93 +1,67 @@
 ---
-title: Starting a PTY and recording its output
-description: How console2svg creates a terminal-like child process, forwards input, batches output, and handles shutdown.
+title: PTY Launch, Control, and Output Capture
+description: How child processes are executed via pseudoterminals, managing I/O forwarding, control sequence preservation, and shutdown.
 ---
 
-Redirected standard output does not behave like a terminal.
-Programs can change color support, buffering, progress rendering, and full-screen UI behavior after detecting whether they are connected to a TTY.
-console2svg therefore records commands through a pseudoterminal when possible.
+Merely redirecting standard output to a conventional pipe does not reproduce the behavior of interactive terminal commands.
+Many command-line utilities detect whether standard output is connected to a terminal (TTY) and automatically disable color output, progress bars, and interactive UI elements when a pipe is detected.
+console2svg circumvents this limitation by executing child processes through a **PTY** (pseudoterminal: an operating system mechanism providing terminal emulation), recreating an environment connected to an authentic terminal.
 
-## Platform PTY boundary
+## Platform PTY Backend Abstraction
 
-The current recording layer uses `Porta.Pty` to create and manage the platform PTY.
-console2svg configures the process, streams, dimensions, environment, forwarding, timing, and shutdown around that backend rather than implementing each operating-system PTY API inside the repository.
+PTY creation and lifecycle management are handled using the `Porta.Pty` library.
+Rather than invoking platform-specific system calls directly, console2svg encapsulates the differences between Windows ConPTY (Pseudoconsole API) and Unix PTYs (controller/terminal pairs) at the library boundary, exposing them as a unified stream to upper layers.
 
-On Windows, the terminal-facing stream follows pseudoconsole semantics: terminal text and virtual-terminal control sequences travel through byte streams.
-On Unix-like systems, the corresponding model is the conventional PTY controller and terminal pair.
+When spawning a child process, the configured terminal width (columns) and height (rows) are applied, and identical values are injected into the `COLUMNS` and `LINES` environment variables.
+Shell commands are invoked through `cmd.exe /c` on Windows and `/bin/sh -c` on Unix-like systems.
+Because Windows `cmd.exe` command-line parsing differs from standard C-runtime quoting rules, console2svg applies specialized escaping to assemble safe command strings on Windows.
 
-The child receives the requested column and row counts, and console2svg also sets `COLUMNS` and `LINES`.
-Commands run through `cmd.exe` on Windows and `/bin/sh` on Unix-like systems so shell syntax accepted by the CLI remains available.
-Windows command-line arguments are pre-quoted because process creation ultimately consumes a single command-line representation; the `cmd.exe /c` payload has separate quoting rules from ordinary C-runtime arguments.
+By default, CI-related environment variables such as `CI` and `TF_BUILD` inherited from the parent process are automatically scrubbed from the child environment.
+Modern development tools and testing frameworks often force non-interactive, monochrome output whenever these variables exist, even when running within a valid PTY.
+Users can preserve these variables by specifying the `--no-delete-envs` option.
 
-By default, console2svg removes selected CI environment markers such as `CI` and `TF_BUILD` before invoking the shell.
-Some terminal libraries disable color or interactive formatting when those variables are present.
-The removal can be disabled when preserving the parent environment is more important.
+## Reading Streams Without Splitting Character Boundaries
 
-## Reading output without losing encoding state
+The PTY output reading loop maintains a single byte buffer, a single character buffer, and a stateful UTF-8 decoder across its entire lifecycle.
+Even when multi-byte UTF-8 sequences (such as full-width characters) are fragmented across operating-system read boundaries, incomplete byte states are carried forward into the next read operation without corruption.
 
-The PTY output reader keeps one byte buffer, one character buffer, and one stateful decoder for the complete read loop.
-A multi-byte UTF-8 character can therefore be split across two operating-system reads without being decoded as two invalid fragments.
+When streaming output in real time to the host terminal, raw bytes are forwarded directly to standard output.
+Bypassing intermediate decoding and re-encoding avoids processing overhead and prevents the structural corruption of **VT sequences** (escape sequences governing cursor movement and text styling).
 
-When output is mirrored to a byte stream, the original bytes are forwarded directly.
-They are not decoded and re-encoded first, so VT sequences are not modified by the forwarding path.
-On Windows, the text-output forwarding path temporarily selects UTF-8 where appropriate.
+Captured text strings are appended to `RecordingSession` alongside their elapsed timestamps.
+Output is deliberately not split by line breaks at this stage, because carriage returns (`\r`), cursor repositioning, line erasures, and screen buffer toggles represent essential state transitions required by the downstream terminal emulator.
 
-Each captured text batch is paired with the elapsed recording time and appended to `RecordingSession`.
-The output is not split by line because carriage returns, cursor movement, erases, and alternate-screen operations are meaningful to the later terminal emulator.
+## Coalescing Proximate Output Events
 
-## Coalescing small writes
+Even during a single screen redraw, child process output frequently arrives fragmented across numerous small PTY reads.
+Generating a separate recording event for every read would force the downstream ANSI parser to interpret meaningless intermediate states, incurring substantial processing overhead.
 
-One visual update can arrive through many small PTY reads.
-Storing every read as a separate recording event would make the ANSI parser and animation reducer process boundaries that do not necessarily correspond to visible states.
+To prevent this, console2svg applies **output coalescing** to group temporally proximate writes into a single event.
+The aggregation window is set to one quarter of the video frame interval, clamped between 2 and 20 milliseconds.
+The coalesced event is timestamped using the arrival time of the final chunk in the batch.
 
-The default recorder groups nearby output chunks.
-Its coalescing window is one quarter of the target video-frame interval, clamped to 2 through 20 milliseconds.
-A batch is also limited to one frame interval so a continuous output stream cannot postpone event emission indefinitely.
+## Transparent Forwarding of Interactive Input
 
-An explicit coalescing option can override that behavior or disable it.
-The timestamp assigned to a coalesced event is the time of the last chunk in the batch.
+During interactive capture (`interactive`), the host terminal is switched into Raw mode to receive keystrokes without local line buffering.
+This prevents the host shell from intercepting arrow keys or Ctrl shortcuts, allowing them to be forwarded directly to the child process as escape sequences.
+On Unix platforms where standard input is redirected, console2svg attempts to open `/dev/tty` directly to maintain interactive input.
 
-## Forwarding interactive input
+When saving keystrokes for replay, the input byte stream is first written directly to the PTY and simultaneously parsed using a stateful UTF-8 decoder for recording.
+If an escape sequence is truncated at the end of an input read, the remaining bytes are preserved across iterations, preventing incomplete fragments from being misrecorded as solitary keys (such as an isolated ESC).
 
-Interactive capture places the host input in a raw form so key sequences can be forwarded to the child rather than interpreted locally.
-On Unix-like systems, console2svg prefers `/dev/tty` when standard input is redirected but an interactive terminal is still available.
+## Draining Residual Output After Process Exit
 
-VT input is decoded as UTF-8 when it is recorded for replay.
-This is independent of the legacy console code page.
-Escape sequences are ASCII, and treating ESC through a stateful non-UTF-8 code page can consume or reinterpret bytes that belong to arrow keys and other CSI sequences.
+A child process exit signal and the complete drainage of all bytes in the PTY buffer do not necessarily occur simultaneously.
+Even after process termination, unread output frequently remains buffered within the operating system kernel.
 
-Incomplete input escape sequences are carried into the next read when replay recording is enabled.
-The recorder does not turn a truncated CSI prefix into an unrelated key event merely because a stream read ended there.
+Accordingly, console2svg keeps the output reader active for up to 500 milliseconds following process exit to thoroughly drain trailing data.
+In addition, a 1-second timeout is enforced during process cleanup, ensuring that the CLI never hangs indefinitely if backend teardown encounters a deadlock.
 
-## Suppressing echoed control input
+## Fallback on PTY Initialization Failure
 
-Live host input is written into the PTY.
-If the PTY slave echoes that input, control bytes can reappear in captured output.
-On Unix-like systems, `ECHOCTL` may render a control character such as ESC using caret notation.
+In restricted environments or specialized container configurations, native PTY backends may fail to initialize.
+Alternatively, a PTY process may spawn but hang indefinitely without producing output.
 
-For live forwarding, console2svg therefore attempts to disable the PTY slave echo flags through the controller stream.
-The operation is best effort because support depends on the platform and backend.
-Replay input does not need the same host-input echo handling.
-
-The host terminal is also restored after capture.
-Mouse-tracking modes used by full-screen applications are disabled on exit so they do not remain active in the user's terminal session.
-
-## Process exit and remaining output
-
-A child process can exit before all bytes already written to the PTY have been read by the parent.
-console2svg therefore gives the output reader up to 500 milliseconds to drain after process exit.
-
-A closed PTY may not look identical on every platform.
-An I/O error produced by PTY teardown is treated as end-of-stream when it matches the expected PTY-close case, so buffered recording data can still be finalized.
-
-Cleanup is bounded as well.
-Connection disposal and output-reader shutdown each have a one-second upper bound.
-A stuck backend should not leave the CLI waiting indefinitely during teardown.
-
-## Startup retry and fallback
-
-PTY creation can fail because a native backend is unavailable, incompatible with the host, or starts without producing usable output.
-The recorder retries a startup hang up to three times, with a short delay between attempts.
-
-If those attempts fail, or the PTY backend cannot be loaded, console2svg falls back to a process with redirected streams.
-The fallback cannot reproduce every TTY-dependent behavior, but it allows non-interactive commands to remain usable instead of turning a missing PTY implementation into a permanent hang.
+console2svg detects unresponsiveness during startup and retries PTY initialization up to three times.
+If a PTY still cannot be established, execution falls back to a standard process using redirected standard streams.
+While this fallback cannot replicate TTY-dependent interactive features such as progress bars or full-screen TUIs, it guarantees that non-interactive command outputs remain recordable rather than failing completely.

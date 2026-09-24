@@ -1,108 +1,64 @@
 ---
-title: Automatic masking with QuickLeaks
-description: How console2svg narrows Betterleaks-derived matches, maps them back to terminal cells, and avoids scanning work on the common no-match path.
+title: Automatic Masking with QuickLeaks
+description: Precompiling secret detection rules into source code, anchor search, two-stage coordinate mapping, and physical value excision from SVG.
 ---
 
-Automatic masking operates on terminal text before that text is serialized into SVG.
-The detector reports UTF-16 ranges, while the renderer decides which terminal cells those ranges cover.
-Keeping those responsibilities separate lets detection work on ordinary strings without losing the cell geometry required for rendering.
+When sharing terminal session recordings, unintended exposure of API keys, passwords, and personally identifiable information is an ever-present risk.
+To prevent credential leaks, console2svg incorporates an embedded secret detection engine named **QuickLeaks**.
+Detection runs against terminal text immediately prior to SVG serialization, maps detected regions back to two-dimensional terminal cell coordinates, and physically excises secret strings from the SVG source code itself.
 
-## QuickLeaks is a local detector, not Betterleaks itself
+## Precompiled Rule Set and Architecture
 
-`ConsoleToSvg.QuickLeaks` is generated from a pinned Betterleaks rule set plus console2svg-specific rules.
-The current generated source contains 465 rules.
+QuickLeaks is pre-generated C# source code combining rule definitions from the **Betterleaks** secret scanner with console2svg-specific patterns.
+With more than 400 detection rules embedded directly as native .NET code, QuickLeaks eliminates runtime external process spawns and external rule file loading.
 
-QuickLeaks retains Betterleaks rule IDs, keywords, and regular expressions, but it does not embed the complete Betterleaks execution model.
-Expression filters, validators, provider or network checks, and repository-context logic are intentionally omitted.
-A QuickLeaks finding therefore means that text matched a secret-like pattern; it does not confirm that the value is a valid or live credential.
+However, QuickLeaks is intentionally scoped to identifying potential secret matches.
+Online verification (communicating with external cloud services to test token validity) and heavyweight repository history traversal are deliberately omitted.
+This keeps masking execution within a few milliseconds, avoiding capture latency.
 
-Keeping the detector as generated C# also removes a runtime dependency on a separate scanner executable or rule-configuration file.
+## Acceleration via Anchor Search and Dedicated Verifiers
 
-## Search compiler-proven anchors once before fallback
+Evaluating hundreds of regular expressions from scratch across every frame incurs severe performance bottlenecks, particularly during animated SVG and video generation.
+To eliminate this cost, QuickLeaks statically analyzes each regular expression and extracts invariant substrings (**anchors**) that must appear in any valid match.
 
-Running hundreds of regular expressions over every rendered screen would make automatic masking expensive, especially for animation.
+At runtime, .NET's high-performance `SearchValues<string>` scans the entire screen text for all anchors in a single unified operation.
+Only when an anchor is matched are the corresponding candidate rule bits activated.
+Furthermore, for tokens with predictable structures—such as GitHub personal access tokens (`ghp_...`) or environment variable assignments—QuickLeaks runs **dedicated verifiers** that check character codes and string lengths directly without engaging the regular expression engine.
 
-The generator conservatively analyzes each regex and extracts fixed anchors that
-it can prove occur in a match. Unsupported constructs remain on the regex
-fallback; no rule is dropped.
+For rules that still require regular expressions, AOT-compatible `GeneratedRegex` and `RegexOptions.NonBacktracking` are applied with strict evaluation timeouts, preventing pathological inputs from stalling the conversion pipeline.
 
-At runtime, .NET's `SearchValues<string>` searches all anchors together. A
-generated discriminator maps an occurrence to exact anchors and rule indices,
-then a compact bitset enumerates only set candidates.
+## Scoped Masking Preserving Syntactic Context
 
-Simple prefix-token shapes, such as `ghp_[0-9A-Za-z]{36}`, are compiled into
-dedicated verifiers. They validate only the characters after the discovered
-anchor, including case, length, and word-boundary semantics. In the pinned rule
-set, 39 rules use this path without running regex. Another 74 common
-provider-assignment rules use a bounded context verifier, and the local home
-directory rule uses a fixed-layout verifier.
+When the detection engine matches a pattern, it does not blindly redact the entire matched range.
+Instead, it intentionally preserves contextual identifier structures so readers can still comprehend the command output.
 
-Compiler-proven anchors are distinct from Betterleaks keywords. While rules are
-migrated to dedicated verifiers, keywords remain as a recall-preserving safety
-net. Fallback uses `GeneratedRegex` with span-based `Regex.EnumerateMatches` and
-a fixed timeout. A timeout produces conservative redaction instead of a silent
-false negative.
+For example, given `API_KEY=abcdef123456`, the key label `API_KEY=` remains intact, masking only the value `abcdef123456`.
+In URIs containing credentials, the scheme (`https://`) and hostname are preserved while only the username and password fields are obscured.
+Similarly, home directory paths retain their base structure, redacting only the user-specific directory name.
 
-Rules lowered to a prefix-token or specialized verifier, such as credential
-URIs, do not run regex. The generation report records the selected engine and
-why every remaining rule fell back.
+## Reconstructing Coordinates via Two-Stage Mapping
 
-Fallback rules that fit a conservatively bounded regular subset use
-`RegexOptions.NonBacktracking`; large automata and unsupported constructs retain
-the finite-timeout backtracking engine. Terminal normalization writes into a
-reusable character buffer, so the renderer passes a span without `ToString()`.
+While QuickLeaks operates on flat plain text, the SVG rendering engine requires two-dimensional `(row, column)` grid coordinates.
+To resolve this mapping efficiently, console2svg uses **two-stage mapping**.
 
-## Detect partially entered values in Early mode
+In the first stage, a single normalized string is constructed by stripping trailing line padding and concatenating soft-wrapped rows, which is then passed to QuickLeaks.
+If no secrets are found, the overhead of building a per-character coordinate lookup table is skipped entirely.
 
-`QuickLeaksScanMode.Early` exists for content that may be rendered while a value is still being typed.
+Only when secrets are detected does stage two re-scan the normalized string to construct a coordinate map recording the screen `(row, column)` for each character.
+Because the vast majority of terminal screens contain no sensitive credentials, this avoids allocating per-character coordinate objects across benign captures.
 
-The generator relaxes fixed-length quantifiers only inside the rule's secret-value capture.
-For example, a captured token that normally requires 32 characters can match a shorter prefix while it is being entered.
-Contextual quantifiers outside the secret capture are left unchanged.
+## Physical Removal of Secret Strings from SVG Markup
 
-Early mode increases the chance of false positives and is therefore a separate mode rather than the default final-output behavior.
+Masked cells are never handled by simply placing an opaque rectangle over original text characters.
+Because SVG is an inspectable, text-based vector format, merely overlaying a visual shape allows users to copy secret values via text selection or view them directly within the document source.
 
-## Preserve readable context around a match
+console2svg physically rewrites the underlying cell character data to replacement characters such as `*`, and then renders a visual striped pattern (mask overlay) in front.
+Because replacement characters preserve exact cell width and column positions, downstream text alignment is never disrupted.
 
-The raw regular-expression match is not always the range that should disappear from the SVG.
+## Preventing Mask Interference in Animated Rendering
 
-For generic `key=value` forms, QuickLeaks narrows the finding to the value and leaves the key visible.
-For credential URIs, console2svg can mask the username and password independently while preserving the scheme, separators, and host.
-The home-directory rule leaves the directory prefix and narrows the sensitive range to the user-specific component.
-The Git identity rule masks the display name and the local part of the email separately while preserving the email domain.
+In animated SVGs, the "row delta" optimization overlays small in-line modifications on top of prior row definitions.
+However, when manual mask patterns (`--mask`) are specified, row deltas are automatically disabled.
 
-These transformations preserve enough structure to understand what was printed without retaining the detected value itself.
-
-## Map detected characters back to cells
-
-The renderer first normalizes the visible terminal region into a string.
-Wide-character continuation cells are represented so column mapping remains consistent, trailing blank cells are removed, and a newline is omitted when one physical row is the continuation of a wrapped terminal line.
-A token can therefore remain contiguous in the detector input even when the terminal wrapped it across rows.
-
-Automatic masking uses two passes on the common rendering path.
-The first pass builds only normalized text and runs QuickLeaks.
-If there are no findings, no per-character coordinate list is allocated.
-
-Only after a finding exists does the renderer rebuild the normalized text while recording the originating `(row, column)` for each character.
-The finding ranges can then be converted into a set of terminal cells.
-
-## Remove the secret from SVG text
-
-Matched cells are not left intact underneath an opaque rectangle.
-Their rendered text is replaced with `*`, and consecutive masked cells also receive the striped mask overlay.
-
-Replacing the text matters because SVG remains inspectable source.
-An overlay alone would hide the value visually while leaving the original string available to copy, search, or inspect in the document.
-
-The replacement keeps the terminal cell count unchanged, so later text does not shift horizontally.
-
-## Keep masking compatible with animation reuse
-
-Automatic and explicit masking run only when foreground content is being rendered.
-A background-only layer does not allocate detection state.
-
-The reusable frame-render workspace supplies the normalized-text `StringBuilder` so repeated row rendering can reuse its backing storage.
-
-Manual mask patterns also constrain row-delta compression.
-A literal pattern can span an unchanged base portion and a changed delta portion.
-When explicit patterns are present, console2svg keeps the complete row context instead of splitting it into a delta that could hide that cross-boundary match.
+If a sensitive string happens to straddle the boundary between the unchanged prefix and the modified delta suffix, splitting the row across definitions would prevent pattern matchers from recognizing the complete secret.
+Guaranteeing reliable credential concealment takes strict precedence over file size compression.

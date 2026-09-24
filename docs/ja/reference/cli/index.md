@@ -1,26 +1,48 @@
 ---
-title: CLIリファレンス
-description: console2svgのコマンドリファレンス。
+title: CLI リファレンス
+description: console2svg の全サブコマンドとオプション仕様を網羅したリファレンス。
 ---
 
-`console2svg` は、ターミナルの記録、変換、テーマ管理、診断をサブコマンドで実行します。
+`console2svg` は、ターミナルの実行記録、ベクター画像や動画への変換、テーマ管理、および動作環境の診断をサブコマンド形式で提供します。
+キャプチャ対象のコマンドを実行する場合は、オプションの誤認を防ぐため `--` デリミタの後に実行したいコマンドラインを指定します。
 
-## コマンド一覧
+```bash title="Terminal"
+console2svg capture [options] -- command [args...]
+```
 
-| コマンド | 用途 |
+## サブコマンド一覧
+
+用途に応じて次のサブコマンドが用意されています。
+
+### 画面の記録と描画
+
+| コマンド | 役割 |
 | --- | --- |
-| [`capture`](./capture.md) | ターミナル出力をSVGとして記録 |
-| [`interactive`](./interactive.md) | 対話的なシェルやプログラムを記録 |
-| [`replay`](./replay.md) | キーボード入力のリプレイを使って記録 |
-| [`cast`](./cast.md) | asciicast v2ファイルを描画 |
-| [`theme`](./theme.md) | テーマの一覧表示、追加、削除、更新 |
-| [`status`](./status.md) | 実行環境と依存ツールの状態を確認 |
-| [`update`](./update.md) | console2svgの更新を確認・実行 |
-| [`llm`](./llm.md) | 組み込みAgent Skillを出力 |
-| [`session`](./session.md) | LLMが操作するターミナルセッションを管理 |
-| [`live-server`](./live-server.md) | ライブSVGサーバーを起動 |
-| [`tmux`](./tmux.md) | tmuxペインを記録または配信 |
-| [`batch`](./batch.md) | Markdownキャプチャアセットの生成、公開、復元 |
-| [`completions`](./completions.md) | シェル補完スクリプトを生成 |
+| [`capture`](./capture.md) | 指定したコマンドを擬似端末で実行し、終了画面またはアニメーションを SVG/動画として記録します。 |
+| [`interactive`](./interactive.md) | 対話型シェルを起動し、任意のタイミングでキー操作を行って画面を対話的に記録します。 |
+| [`replay`](./replay.md) | あらかじめ記録されたキーボード入力を再生し、同一の操作結果を再現して記録します。 |
+| [`cast`](./cast.md) | 既存の asciicast v2 録画ファイルを読み込み、SVG 画像やアニメーションとしてレンダリングします。 |
 
-各コマンドで利用できるオプションと引数は、それぞれのページを参照してください。
+### セッション管理と外部連携
+
+| コマンド | 役割 |
+| --- | --- |
+| [`session`](./session.md) | バックグラウンドで永続化された擬似端末セッションを起動・操作し、現在の画面状態を読み取ります。 |
+| [`live-server`](./live-server.md) | 実行中の端末画面をリアルタイムで SVG 化し、ブラウザ向けに HTTP 配信します。 |
+| [`tmux`](./tmux.md) | 動作中の tmux ペインを指定して、その画面内容を直接キャプチャまたはライブ配信します。 |
+
+### ドキュメント自動化とエージェント支援
+
+| コマンド | 役割 |
+| --- | --- |
+| [`batch`](./batch.md) | Markdown/MDX 内の埋め込みタグを一括走査し、ドキュメント用画像を自動生成・同期します。 |
+| [`llm`](./llm.md) | AI エージェント（GitHub Copilot や Claude 等）に console2svg を操作させるための組み込み Skill 定義を出力します。 |
+
+### 環境管理とユーティリティ
+
+| コマンド | 役割 |
+| --- | --- |
+| [`theme`](./theme.md) | 端末の外観テーマやカラーパレットを一覧表示・追加・更新・削除します。 |
+| [`status`](./status.md) | 実行環境、各種レンダラー（resvg、ffmpeg 等）、および利用可能な機能を診断します。 |
+| [`update`](./update.md) | console2svg の最新リリースを確認し、セルフアップデートを実行します。 |
+| [`completions`](./completions.md) | bash、zsh、fish、PowerShell 等のシェル補完スクリプトを生成します。 |

@@ -1,51 +1,45 @@
 ---
-title: Rendering box drawing and block elements
-description: How terminal glyphs that represent geometry are converted into cell-aligned SVG shapes and merged into compact paths.
+title: Vectorizing Box-Drawing and Block Elements
+description: Converting box-drawing characters and block elements into cell-aligned vector geometry to eliminate font-dependent gaps and misalignments.
 ---
 
-Some Unicode characters represent terminal geometry more directly than ordinary text.
-Box-drawing characters form connected borders, while block elements represent fixed fractions of a cell.
+Terminal TUI applications utilize diverse Unicode symbols to construct window frames, dividers, and progress bars.
+However, when these symbols are rendered as standard font glyphs within `<text>` elements, unnatural seams, hairline gaps, and uneven stroke weights frequently emerge along adjacent cell boundaries.
+Even among monospaced fonts, different rendering environments (browsers, operating systems, antialiasing filters) interpret glyph bounding boxes and baseline offsets with subtle variations.
+To eliminate these rendering defects, console2svg transforms **box-drawing characters** and **block elements** away from text glyphs into pure vector geometry (`<path>` and `<rect>`) computed directly from the terminal cell grid.
 
-Rendering those characters only through a font can introduce visible gaps.
-Glyph bearings, stroke thickness, hinting, and antialiasing vary across fonts and SVG rasterizers even when the font is monospaced.
-console2svg therefore converts the supported geometric characters into SVG shapes based on the terminal cell dimensions.
+## Decomposing and Merging Box-Drawing Characters into Line Geometry
 
-## Convert box characters into segments
+Box-drawing characters (`─`, `│`, `┌`, `┐`, etc.) are decomposed into directional connectivity vectors extending from the cell center toward the top, bottom, left, and right edges.
+Line thickness variations (light, heavy), double lines, and dashed segments are mapped to corresponding stroke widths and coordinate offsets.
 
-A box-drawing character is interpreted as connections from the cell center toward the left, right, top, or bottom edge.
-Light and heavy variants select different stroke widths.
-Short line variants produce only the corresponding partial segment.
+Rather than emitting an isolated SVG path for each cell as it is visited, the renderer first collects all horizontal and vertical line segments across the entire screen.
+It sorts segments sharing identical coordinate axes, colors, and stroke widths, and merges continuous segments whose endpoints touch or overlap into unified, extended lines.
 
-The renderer collects horizontal and vertical half-segments instead of writing one SVG path immediately for each character.
-Segments with the same axis position, color, and stroke width are sorted and merged when they touch or overlap.
+The proximity tolerance for segment merging is evaluated relative to cell dimensions rather than as an absolute pixel value.
+This prevents genuinely disconnected segments from being erroneously merged when unusually small font sizes place absolute coordinates very close together.
+Merged segments are treated as rectangular path geometries, and all paths sharing the same color are consolidated into a single `<path d="...">` attribute, simultaneously minimizing DOM element counts and accelerating rendering performance.
 
-The merge tolerance is relative to the cell dimensions.
-Using a cell-relative tolerance avoids joining genuinely separate segments when an unusually small font size makes absolute coordinates very close together.
+## Rendering Rounded Corners with Quadratic Bézier Curves
 
-Merged line rectangles are then grouped by color and emitted as compact path data.
-This reduces the number of SVG elements and also removes small joins that could become visible between adjacent per-cell strokes after scaling.
+Rounded corner characters (`╭`, `╮`, `╯`, `╰`) are handled distinctly from orthogonal line intersections.
+Rather than forcing them into the orthogonal line-segment model, console2svg constructs independent arc paths using **quadratic Bézier curves** (smooth curves defined by three mathematical control points) anchored to cell grid coordinates.
+This reproduces smooth, aesthetically pleasing rounded corners characteristic of modern TUI designs with complete geometric fidelity.
 
-Rounded corners such as `╭`, `╮`, `╯`, and `╰` are handled separately with quadratic Bézier curves.
-They use the same cell coordinate system but are not reduced to the orthogonal segment model.
+## Converting Block Elements into Grid Rectangles
 
-## Convert block elements into rectangles
+**Block elements** that fill portions of a cell—such as full blocks `█`, half blocks `▀` `▄` `▌` `▐`, and quadrant blocks—are calculated as precise geometric rectangles derived from cell width and height.
 
-Block elements that express filled portions of a cell are mapped to rectangles computed from cell width and height.
+By completely bypassing font glyph side bearings and metrics, the renderer produces `<rect>` elements that snap strictly to terminal grid boundaries, guaranteeing zero visible gaps between adjacent blocks.
+Contiguous block rectangles sharing identical fill colors are coalesced into a single larger rectangle prior to serialization.
 
-Upper and lower fractions, left and right fractions, and quadrant combinations therefore align to exact cell boundaries instead of depending on the selected font's glyph box.
+In contrast, shaded block characters (`░`, `▒`, `▓`) are intentionally preserved as normal text glyphs.
+These represent textured stipple density patterns characteristic of specific fonts rather than solid geometric fills.
 
-Compatible adjacent block rectangles are merged before serialization when they form one continuous filled area with the same color.
-This reduces repeated geometry without changing the occupied terminal cells.
+## Isolating Geometric Elements from Text Runs
 
-Shade characters remain text.
-Their visual meaning depends on a pattern of glyph dots rather than on a continuous filled region, so replacing them with a solid rectangle would change the character.
+When serializing character strings, encountering a box-drawing or block element immediately terminates the currently active `<text>` element.
 
-## Keep geometry outside text runs
-
-A geometry-rendered character terminates the current foreground text run.
-
-This boundary prevents `textLength` from being asked to account for a cell whose visible content is actually drawn as an independent shape.
-The following text run starts from its terminal column, so text, block geometry, and box paths stay aligned to the same grid.
-
-The same geometric conversion is used by still SVG, animated row definitions, and the SVG frames rasterized for video.
-Differences between those output modes therefore do not change how terminal borders are constructed.
+In SVG, the `textLength` attribute is used to enforce precise monospaced glyph spacing across varied font environments.
+If geometric shapes were embedded directly within text runs, `textLength` letter-spacing adjustments would distort the cell coordinates of the vector geometry.
+Terminating the text run before each geometric shape and opening a fresh `<text>` element immediately afterward guarantees subpixel coordinate alignment between text and vector shapes across complex TUI interfaces.

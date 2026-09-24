@@ -1,35 +1,57 @@
 ---
 title: theme
-description: Command that manages installed themes.
+description: Subcommands to inspect built-in themes, and install, update, or remove custom themes.
 ---
 
 ```bash title="Terminal"
-console2svg theme list
+console2svg theme list [--format table|markdown|json]
 console2svg theme install <source>
 console2svg theme remove <id>
 console2svg theme update [id]
 ```
 
-`list` lists themes, `install` adds themes from directories, archives, or URLs, `remove` deletes themes, and `update` updates one theme or all themes.
+`theme` is a suite of subcommands for managing themes that define terminal text colors, background colors, and palette color schemes.
+While console2svg bundles numerous built-in themes, these commands allow you to add and manage custom themes from external sources (directories, ZIP archives, or Git repositories).
 
-## Subcommands and arguments
+## Subcommands
 
 ### `list`
 
-List installed themes.
+Displays a list of installed themes.
+Built-in themes and user-installed custom themes are displayed separately.
 
-### `--format <table|markdown|json>`
+```bash title="Terminal"
+console2svg theme list
+```
 
-Choose the output format for `list`.
+#### `--format <table|markdown|json>`
+
+Specifies list output format. Default is `table` (formatted for terminal display).
+Choose `json` when processing themes in scripts, or `markdown` for copying into documentation.
 
 ### `install <source>`
 
-Add a theme from a directory, archive, or URL.
+Installs a new custom theme.
+The `<source>` argument accepts a local directory path containing theme files, a ZIP archive path, or a public theme URL (such as a GitHub repository).
+
+```bash title="Terminal"
+console2svg theme install https://github.com/example/my-custom-theme
+```
 
 ### `remove <id>`
 
-Remove the theme with the specified theme ID.
+Removes the custom theme with the specified ID from the system.
+Note that built-in themes bundled with the binary cannot be removed.
+
+```bash title="Terminal"
+console2svg theme remove my-custom-theme
+```
 
 ### `update [id]`
 
-Update the specified theme, or update all themes if the theme ID is omitted.
+Updates installed custom themes to their latest versions.
+Passing a specific theme ID to `[id]` updates only that theme; omitting the argument updates all installed custom themes in bulk.
+
+```bash title="Terminal"
+console2svg theme update
+```

@@ -1,111 +1,64 @@
 ---
-title: 使用 QuickLeaks 自动遮盖敏感信息
-description: 如何缩小 Betterleaks 派生的匹配范围，将其映射回终端单元格，并在常见的无匹配路径上避免额外分配。
+title: 基于 QuickLeaks 的自动敏感信息遮盖
+description: 从规则集源码预生成、锚点检索、终端网格二阶段映射到 SVG 源码级敏感数据清除。
 ---
 
-自动遮盖在终端文字写入 SVG 之前执行检测。
-detector 返回 UTF-16 范围，renderer 再判断这些范围覆盖哪些 terminal cell。
-把字符串检测和 cell geometry 分开，可以让检测逻辑保持普通字符串处理，同时在绘制阶段保留终端列位置。
+在分享终端操作记录时，API 密钥、密码或个人敏感信息意外暴露在屏幕上的风险始终存在。
+为了杜绝信息泄露，console2svg 内置了名为 **QuickLeaks** 的专用机密检测引擎。
+它在即将输出 SVG 前对文本执行机密检测，将命中区域逆向映射到终端单元格坐标，并从 SVG 源码本身中彻底抹除敏感文本。
 
-## 区分 QuickLeaks 和 Betterleaks 的职责
+## 规则集的预编译与定位
 
-**QuickLeaks** 是由固定版本的 Betterleaks rule set 和 console2svg 自有规则生成的内置 .NET detector。
-当前生成代码包含465条规则。
+QuickLeaks 是整合了机密扫描工具 **Betterleaks** 的规则定义与 console2svg 特有规则后预生成的 C# 源代码。
+超过 400 种检测规则已被预先编译为 .NET 原生代码，运行时无需启动任何外部进程或读取外部规则文件。
 
-它保留 Betterleaks 的 rule ID、keyword 和 regular expression，但不会嵌入 Betterleaks 的完整执行模型。
-expression filter、validator、provider 或 network check，以及 repository-context 逻辑都会被有意省略。
+不过，QuickLeaks 的定位明确聚焦于“快速识别疑似敏感信息的模式匹配”。
+它刻意排除了向外部云服务发包验证令牌有效性的在线校验，以及遍历整个 Git 仓库历史等重型分析功能。
+这样能确保遮盖处理在数毫秒内完成，绝不阻塞终端录制与渲染流程。
 
-因此，QuickLeaks finding 表示“文字匹配了类似秘密信息的 pattern”。
-它不证明该值是有效 credential，也不证明 provider 会接受该值。
+## 基于锚点检索与专用验证器的高速化
 
-规则被生成为 C# source，因此运行时不需要启动外部 scanner process，也不需要读取额外的 rule 配置文件。
+若针对每一帧屏幕都从头遍历评估数百条正则表达式，在生成动画 SVG 或视频时会引发严重的性能瓶颈。
+为此，QuickLeaks 对正则表达式进行了保守的静态分析，提取出匹配时必然包含的固定字符串（**锚点**）。
 
-## 一次搜索 compiler 证明的 anchor
+运行时，系统利用 .NET 高性能的字符串检索特性 `SearchValues<string>`，对整屏文本一次性并行搜索全部锚点。
+仅在命中锚点的位置，才激活对应规则的候选标志位进行范围收敛。
+更进一步，针对具有固定前缀特征的令牌（如 GitHub 个人访问令牌 `ghp_...`）或环境变量赋值的标准结构，系统会调用 **专用验证器** 直接校验字符编码与长度，完全跳过正则表达式引擎。
 
-如果每个画面都运行数百个 regular expression，自动遮盖在动画场景中会产生明显成本。
+对于仍需使用正则表达式的规则，系统通过支持 AOT（预编译）的 `GeneratedRegex` 以及不进行回溯的 `RegexOptions.NonBacktracking` 执行，并设置严格的超时限制，彻底避免因畸形输入导致处理停滞。
 
-生成器会保守地分析 regex，并提取能够证明必然出现在 match 中的固定 anchor。
-无法理解的结构会保留在 regex fallback 中，不会丢弃任何规则。
+## 保留结构仅遮盖敏感值的范围控制
 
-运行时使用 .NET 的 `SearchValues<string>` 一次搜索全部 anchor。
-生成的 discriminator 会把命中位置映射到 exact anchor 和 rule index，紧凑 bitset 只枚举已设置的候选位。
+检测引擎命中规则后，并不会盲目地将整个匹配范围全盘抹黑。
+为了让读者仍能理解输出上下文，系统采用了有意识保留部分标识符结构的设计。
 
-对于 `ghp_[0-9A-Za-z]{36}` 这样的简单 prefix-token 结构，生成器会编译出
-专用 verifier。它只检查 anchor 后面的字符，同时保持大小写、长度、ASCII
-字符类和 word boundary 语义。当前固定规则集中有 39 条规则走这条路径，
-无需执行 regex。另外 74 条常见 provider assignment 规则使用有界上下文
-verifier，本地 home-directory 规则使用 fixed-layout verifier。
+例如，对于 `API_KEY=abcdef123456` 的输出，键名 `API_KEY=` 会被完整保留，仅将值 `abcdef123456` 列为遮盖对象。
+在包含凭据的 URI 中，协议头（`https://`）和主机名予以保留，仅单独遮盖用户名与密码部分。
+即便在主目录路径中，基础目录结构依然可见，仅收敛遮盖属于个人用户名的路径片段。
 
-compiler 证明的 anchor 与 Betterleaks keyword 是不同概念。
-在规则逐步迁移到专用 verifier 的过程中，keyword 仍作为保持 recall 的 safety net。
+## 基于二阶段映射恢复终端网格坐标
 
-fallback 使用 `GeneratedRegex`、span-based `Regex.EnumerateMatches` 和固定 match timeout。
-单个 pathological input 因此不会让某条规则无限运行。
-timeout 会产生保守遮盖，而不是静默漏报。
+虽然机密检测器处理的是扁平的纯文本，但 SVG 渲染引擎需要的是“第几行第几列到第几列”的终端单元格二维坐标。
+为了高效完成这一转换，系统采用了 **二阶段映射** 机制。
 
-已经 lowering 到 prefix-token 或 credential URI 专用 verifier 的规则不再运行
-regex。generation report 会记录所选 engine，以及其余每条规则 fallback 的原因。
+第一阶段，系统从可见区域剥离行末无意义的空白，将自动换行的软换行连接为单一规范化字符串，提交给 QuickLeaks 处理。
+若该阶段未发现任何机密，则彻底跳过为全文字符生成坐标对照表的高开销操作。
 
-能够保守限制规模的 fallback 使用 `RegexOptions.NonBacktracking`；大型 automata
-和不支持的结构继续使用带有限 timeout 的 backtracking。terminal 规范化写入可复用
-字符缓冲区，因此 renderer 可以直接传递 span，而不调用 `ToString()`。
+仅在检测到机密信息时，第二阶段才会重新扫描该规范化字符串，构建记录每个字符对应屏幕实际 `(行, 列)` 的坐标映射表。
+绝大多数屏幕都不包含机密信息，这种设计避免了为无机密的普通画面盲目在内存中分配坐标对象。
 
-## Early 模式只放宽秘密值部分
+## 从 SVG 源码中物理清除敏感字符串
 
-输入尚未完成时，可以使用 **Early 模式** 提前遮盖。
+被列入遮盖范围的单元格，绝不会仅仅采用在原字符上方叠加一层不透明图形的做法。
+因为 SVG 属于可检查的文本矢量图形，单纯在视觉上遮挡，用户依然可以通过浏览器“选中文本”或直接查看文档源代码轻易提取出原始密码。
 
-生成器不会无差别放宽所有固定长度量词。
-它只修改 rule 中 secret-value capture 内部的固定长度。
-例如，最终要求32字符的 token，可以在输入到较短 prefix 时先匹配。
-capture 外部用于上下文判断的量词保持不变。
+console2svg 会将对应单元格的字符数据本身物理重写为 `*` 等替换字符，随后在其前方绘制具有视觉警示效果的条纹带（掩码覆层）。
+该替换操作会严格保持单元格字符宽度和列位置不变，后续文本排版绝不会发生任何位移。
 
-Early 模式更容易产生 false positive，因此不会作为最终输出的默认模式。
+## 防止遮盖与动画优化的冲突
 
-## 保留有助于理解输出的上下文
+在动画 SVG 中，存在引用前一帧行定义并仅绘制局部修改的“行差分”优化。
+然而，在指定了手动掩码模式（`--mask`）时，该行差分机制会被主动禁用。
 
-regex 返回的整个范围不一定都需要消失。
-
-普通 `key=value` 形式只遮盖 value，保留 key。
-credential URI 可以分别遮盖 username 和 password，同时保留 scheme、separator 和 host。
-home-directory 规则保留目录前缀，只遮盖用户相关部分。
-Git identity 规则分别遮盖 display name 和 email local part，同时保留 email domain。
-
-这些范围调整让读者仍能判断输出结构，同时避免把检测到的敏感值保留在 SVG 中。
-
-## 把字符串范围映射回 terminal cell
-
-renderer 会先把可见区域正规化为一个字符串。
-宽字符 continuation cell 会按列映射需要处理，行尾空 cell 被去除。
-如果下一物理行只是 terminal wrap 的继续，则中间不插入 newline。
-这样，一个因为自动换行跨两行显示的 token 在 detector 输入中仍保持连续。
-
-自动遮盖使用 **两阶段映射**。
-第一阶段只构造正规化字符串并运行 QuickLeaks。
-如果没有 finding，就不会分配逐字符坐标表。
-
-只有发现 finding 后，第二阶段才重新构造正规化字符串，同时记录每个字符来自哪个 `(row, column)`。
-随后把 UTF-16 finding 范围转换成 terminal cell 集合。
-
-多数画面不包含秘密信息时，这种做法可以避免每次都为全文字符创建坐标条目。
-
-## 从 SVG text 中移除原始值
-
-被遮盖 cell 不会只依赖不透明矩形覆盖原文字。
-
-对应文字会替换为 `*`，连续的 mask cell 还会绘制 stripe overlay。
-SVG 是可检查的文本格式。
-如果只覆盖视觉层，原始值仍可能通过 source inspection、copy 或 search 被取得。
-
-替换不会改变 cell 数量。
-后续文字的列位置保持与原终端一致。
-
-## 让遮盖与动画复用保持兼容
-
-自动和手动 mask scan 只在渲染 foreground 时执行。
-只输出 background 的 pass 不会建立检测状态。
-
-`FrameRenderWorkspace` 提供正规化文本使用的 `StringBuilder`，重复渲染行定义时可以复用 backing buffer。
-
-存在手动 mask pattern 时会禁用行差分。
-literal pattern 可能跨越不变 base 内容和变化 delta 内容。
-拆分行后 matcher 将无法获得完整字符串，因此必须保留整行上下文。
+这是为了防止待遮盖的机密字符串恰好横跨“差分未覆盖的前半段”与“作为差分重绘的后半段”分界线时，因行拆分而导致模式匹配失效。
+确保机密信息万无一失的安全性，绝对优先于渲染体积的压缩。

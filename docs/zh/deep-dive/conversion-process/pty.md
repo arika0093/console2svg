@@ -1,99 +1,68 @@
 ---
-title: 启动 PTY、控制进程并获取输出
-description: 创建具有终端行为的子进程，转发输入，合并输出，并在进程结束后完成录制。
+title: PTY 的启动、控制与输出获取
+description: 基于伪终端执行子进程、管理输入输出转发、保留控制序列及处理退出的工作机制。
 ---
 
-仅重定向 standard output 不能复现真实终端行为。
-program 可能根据是否连接到 TTY 改变颜色、buffering、进度显示和 full-screen UI。
-console2svg 会在可用时使用 **PTY**，让子进程看到接近终端的输入输出环境。
+仅将标准输出重定向到常规管道（pipe），无法还原人类在终端中交互式执行命令的真实行为。
+许多命令行工具会检测标准输出是否连接到了终端（TTY），一旦检测到管道连接，便会自动禁用彩色输出、进度条以及交互式 UI。
+console2svg 为了规避这一限制，通过 **PTY**（Pseudo-Terminal：操作系统提供的伪终端机制）运行子进程，还原连接至真实终端的运行环境。
 
-## 把 OS PTY 实现放在库边界
+## 针对不同平台的 PTY 后端抽象
 
-当前录制层使用 `Porta.Pty` 创建和管理各 platform 的 PTY。
-console2svg 在 backend 外围负责 process 配置、stream、终端尺寸、环境变量、输入转发、时间记录和关闭流程，而不在仓库中维护每个 OS 的 PTY API 实现。
+PTY 的创建与管理基于 `Porta.Pty` 库实现。
+系统并不直接调用特定平台的系统调用，而是在库边界处抹平 Windows ConPTY（Pseudoconsole API）与 Unix 体系 PTY（controller/terminal 对）的底层差异，向调用上层暴露为统一的数据流。
 
-Windows 侧使用 pseudoconsole 类似的字节流语义，文字和 VT control sequence 通过 stream 传递。
-Unix 类系统使用常规 controller 和 terminal 两端的 PTY model。
+创建子进程时，系统在设置指定宽度（列数）与高度（行数）的同时，将相同的值注入到环境变量 `COLUMNS` 和 `LINES` 中。
+Shell 调用的执行在 Windows 下通过 `cmd.exe /c`，在 Unix 体系下则通过 `/bin/sh -c`。
+由于 Windows 下 `cmd.exe` 的命令行参数解析不同于 C 运行时的标准转义规则，系统会通过 Windows 特有的安全转义逻辑组装命令行字符串。
 
-子 process 会得到请求的列数和行数，同时环境变量 `COLUMNS` 和 `LINES` 也设置为相同值。
-Windows command 通过 `cmd.exe` 执行，Unix 类系统通过 `/bin/sh` 执行。
+默认情况下，从父进程继承的环境变量中，诸如 `CI` 或 `TF_BUILD` 等变量会自动从子进程环境中剔除。
+这是因为现代开发工具和测试框架即便运行在 PTY 中，只要检测到这些变量存在，也会无条件降级到非交互与单色模式。
+若需要完整透传父环境，可通过 `--no-delete-envs` 选项禁用该自动清理行为。
 
-Windows 最终需要一个 command-line 表示，因此参数会预先 quote。
-`cmd.exe /c` payload 与普通 C runtime 参数的 quote 规则不同，会使用单独处理。
+## 保持字符边界的流式读取
 
-默认情况下，`CI` 和 `TF_BUILD` 等部分 CI 环境标记会从子 shell 环境中移除。
-一些 library 即使运行在 TTY 上，也会因为这些变量禁用颜色或交互显示。
-需要完整继承父环境时可以关闭该处理。
+PTY 输出读取循环在整个生命周期内复用一个字节缓冲区、一个字符缓冲区以及一个具有状态记忆的有状态 UTF-8 解码器。
+即便由于操作系统的 read 边界导致多字节字符（如全角字符）的字节序列被截断，未完成的字节状态也能可靠地传递到下一次 read 循环中继续解码。
 
-## 保留编码状态读取输出
+在向终端屏幕实时转发（forwarding）输出时，系统直接将接收到的原始字节流写入标准输出。
+省去中途解码为字符串再重新编码的开销，避免破坏 **VT 序列**（用于指定光标移动和文字颜色的转义序列）的内部结构。
 
-PTY output reader 在整个 read loop 中复用一个 byte buffer、一个 char buffer 和一个 stateful decoder。
-多字节 UTF-8 字符即使被 OS read 边界切开，也可以在下一次 read 继续解码。
+作为录制数据保存的字符串会伴随流逝时间一同追加至 `RecordingSession` 中。
+在这一阶段绝对不会按换行符进行拆分。
+因为回车符（`\r`）、光标移动、行清除和屏幕切换等控制字符，都是后续终端仿真器精确还原屏幕状态所不可或缺的输入数据。
 
-需要把输出镜像到 byte stream 时，会直接转发原始 byte。
-不会先 decode 再 encode，因此 forwarding 路径不会改变 VT sequence。
-Windows 的 text forwarding 会在需要时临时使用 UTF-8 console output encoding。
+## 邻近输出事件的合并处理
 
-用于录制的文字会和 elapsed time 一起加入 `RecordingSession`。
-这里不会按行拆分。
-carriage return、cursor move、erase 和 alternate screen 操作都需要由后续 terminal emulator 解释。
+即便是单次屏幕重绘，子进程的输出也常常会被切分成多个极小的 PTY read 到达。
+如果每次 read 都生成独立的录制事件，会导致后续的 ANSI 解析器去解析毫无意义的绘制中间状态，造成不必要的计算负荷。
 
-## 合并短时间内的小块输出
+因此，console2svg 通过 **输出合并**（Coalescing）将时间上高度邻近的多次输出整合为单一事件。
+合并的时间窗口以视频单帧时长的四分之一为基准，自动调节在 2 毫秒至 20 毫秒之间。
+整合后的事件以该批次最后一个数据块到达的时间戳作为记录时间。
 
-一次视觉更新可能经过多次很小的 PTY read 到达。
-如果每次 read 都成为事件，ANSI parser 和 animation reducer 将处理许多没有视觉意义的边界。
+## 交互输入的透明转发
 
-console2svg 使用 **输出合并** 聚合相邻 chunk。
-默认窗口是视频帧间隔的四分之一，并限制在 2 到 20 毫秒。
-一个 batch 也不会超过一个帧间隔持续增长。
+在执行交互式捕获（`interactive`）期间，宿主侧终端被设置为直接接收原始按键的 Raw 模式。
+这防止了方向键或 Ctrl 快捷键等操作被宿主 Shell 拦截，使其能够作为转义序列原样透传给子进程。
+在 Unix 环境下，即便标准输入被重定向，系统也会在可能的情况下直接打开 `/dev/tty` 以维持按键输入的捕获。
 
-显式选项可以改变窗口或关闭合并。
-合并后的事件时间使用该 batch 最后一个 chunk 的时间。
+当需要同时将按键操作保存为回放数据时，待转发的字节流首先被写入 PTY，随后使用 UTF-8 解码器对同一份字节流进行解析并记录。
+若输入读取末尾出现被切断的不完整转义序列，剩余字节将顺延至下一次读取，防止残缺的片段被错误记录为独立的按键事件（如误判为孤立的 ESC 键）。
 
-## 以 raw byte 转发交互输入
+## 进程退出后的残留输出回收
 
-交互捕获会把 host input 切换到接近 **raw 输入** 的状态。
-这样箭头键和 Ctrl 组合产生的 VT sequence 可以送给子 process，而不是先被 host 本地处理。
+子进程的退出信号与 PTY 缓冲区中全部字节的读取完毕并不一定会同时发生。
+即便进程刚刚终止，操作系统的内核缓冲区中仍可能残留未被处理的输出数据。
 
-Unix 类系统在 standard input 被重定向时，会在可用情况下使用 `/dev/tty` 继续获得交互输入。
+因此，在子进程退出后，输出读取器仍会持续运行最多 500 毫秒，以彻底回收尾部的残留数据。
+此外，进程资源清理阶段设置了最多 1 秒的超时时间，即便底层后端的关闭逻辑因异常卡死，也能作为安全机制防止整个 CLI 进程无限期挂起。
 
-同时保存 replay 时，原始输入 byte 仍然先写入 PTY。
-用于 replay model 的解释使用 UTF-8 decoder。
-VT sequence 本身是 ASCII，避免 legacy console code page 把 ESC 解释成其他 encoding sequence 的一部分。
+## PTY 启动失败时的回退机制
 
-read 末尾如果只收到 CSI 等 escape sequence 的前半段，会把 remainder 带到下一次 read。
-不会仅因为 stream read 结束，就把未完成 sequence 转成不相关的 key event。
+在受限的安全策略或特殊的容器环境中，原生的 PTY 后端可能会初始化失败。
+另外，也存在 PTY 进程虽已创建但因卡死而在限定时间内完全不产生输出的情况。
 
-## 避免 echo control byte 进入录制
-
-host input 写入 PTY 后，slave echo 可能让相同 byte 再次出现在 output 中。
-Unix 类系统的 `ECHOCTL` 还可能把 ESC 等 control character 显示成 caret notation。
-
-live forwarding 时，console2svg 会尝试通过 PTY controller stream 关闭 slave 的 echo 相关 flag。
-该操作依赖 backend 和 platform，因此按 best-effort 处理。
-replay input 不需要相同的 host-keyboard echo 控制。
-
-捕获结束时还会关闭 full-screen application 可能留下的 mouse tracking mode。
-这一步用于恢复用户的 terminal session，不会修改已经记录的输出内容。
-
-## 在 process 结束后 drain 剩余输出
-
-子 process 退出时，已经写入 PTY 的 byte 不一定都被 parent 读取完成。
-console2svg 会在 process exit 后给 output reader 最多500毫秒的 drain 时间。
-
-PTY teardown 在各 platform 的表现并不完全相同。
-与关闭 PTY 相符的已知 I/O error 会按 EOF 处理，使之前捕获的事件仍能正常结束录制。
-
-cleanup 本身也有时间上限。
-connection dispose 和 output reader shutdown 各自最多等待一秒。
-backend 卡在关闭流程时，不会让 CLI 无限等待。
-
-## PTY 无法使用时回退
-
-PTY backend 启动后如果在限制时间内没有产生输出，会作为 startup hang 重试。
-最多尝试三次，并在尝试之间短暂等待。
-
-native backend 无法加载，或者重试后仍不能启动时，会回退到使用 redirected stream 的普通 process。
-
-fallback 不能复现全部 TTY-dependent 行为。
-它的作用是让 PTY 不可用的环境仍能执行非交互 command，而不是在启动阶段永久停止。
+console2svg 在检测到启动无响应时，最多会重试 3 次 PTY 启动。
+如果仍无法建立 PTY，系统将自动回退到重定向标准输入输出的普通进程执行模式。
+回退模式虽然无法完整还原依赖 TTY 的富交互界面（如进度条或全屏 TUI），但能够确保非交互式命令的执行结果仍然可以被成功记录，避免任务彻底中断。

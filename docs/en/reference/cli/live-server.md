@@ -1,90 +1,58 @@
 ---
 title: live-server
-description: Command that serves live terminal SVG.
+description: Command to stream current terminal screens as SVG images in real time over HTTP.
 ---
 
 ```bash title="Terminal"
 console2svg live-server [options] [host:port]
 ```
 
-Serves the current PTY screen over HTTP as SVG. If the listen destination is omitted, the default value is used.
+`live-server` is a subcommand that launches a shell or command in a pseudo-terminal, converts its screen output to SVG in real time, and streams it live over HTTP for web browsers.
+Simply opening the streaming endpoint (`http://localhost:38473/`) in a browser lets you preview terminal activity with negligible latency.
+It is ideal for importing as a browser source in streaming software like OBS Studio, enabling crisp, high-definition terminal sharing during YouTube live streams and conference presentations.
+
+## Connection and Address Binding
+
+When you omit the `[host:port]` argument, the server listens on `127.0.0.1:38473` by default.
+To allow connections from other machines on the local network, specify an explicit host and port such as `0.0.0.0:38473` or `localhost:3000`.
+
+```bash title="Terminal"
+# Stream locally on the default port (38473)
+console2svg live-server
+
+# Stream locally on port 3000
+console2svg live-server 127.0.0.1:3000
+
+# Stream allowing external connections
+console2svg live-server 0.0.0.0:38473
+```
 
 ## Options
 
-### `--save-cast <path>`
+### Server and Streaming Control
 
-Save captured output as an asciicast v2 file.
+* `--fps <number>`: Specifies maximum sampling rate for screen updates (useful for tuning CPU load and network bandwidth).
+* `--no-resize`: Keeps initial startup TTY size fixed without adapting to browser-side resizing.
+* `--mouse [bool]`: Forwards mouse events from browser or interactive interface to PTY (default: `true`).
+* `--save-cast <path>`: Simultaneously saves all streamed output as an asciicast v2 recording file.
 
-### `--verbose [path]`
+### Appearance and Themes
 
-Enable detailed logs and optionally save them to a file.
+* `-d, --window [style]`: Specifies window decoration style (`macos`, `macos-pc`, `windows`, etc.).
+* `-t, --theme <id>`: Specifies appearance theme ID.
+* `--forecolor <color>`, `--backcolor <color>`: Overrides foreground or background color.
+* `--background <value>`: Specifies window background color or image.
+* `--opacity <number>`: Specifies terminal background opacity (`0.0`–`1.0`).
+* `--font <family>`, `--fontsize <px>`: Specifies font family and font size.
+* `-c, --with-command`: Displays the executed command line at the top of the screen.
+* `--header <text>`, `--prompt <text>`: Overrides command line header text or prompt symbol.
+* `--margin <number>`, `--padding <number>`, `--pc-padding <number>`: Fine-tunes margins outside the window, padding inside the shell, and desktop frame spacing.
 
-### `-c, --with-command`
+### Masking and Environment Controls
 
-Display the executed command at the beginning of the output.
-
-### `--header <text>`
-
-### `--prompt <text>`
-
-Override the command-line header or prompt.
-
-### `-d, --window [style]`
-
-Specify the window frame style. If the value is omitted, `macos` is used.
-
-### `--pc-padding <number>`
-
-### `--margin <number>`
-
-### `--padding <number>`
-
-Specify spacing for desktop-style windows, window frames, and inside the shell.
-
-### `--opacity <number>`
-
-Specify background opacity from `0` to `1`.
-
-### `-t, --theme <id>`
-
-### `--forecolor <color>`
-
-### `--backcolor <color>`
-
-Specify or override the theme, text color, and terminal background color.
-
-### `--background <value>`
-
-Specify a background color or image. Specify it twice for a gradient.
-
-### `--font <family>`
-
-### `--fontsize <px>`
-
-### `--adjust <mode>`
-
-Specify the font, size, and SVG text length-adjustment method.
-
-### `--mask <pattern>`
-
-### `--mask-auto [bool]`
-
-Configure string masking and automatic secret masking.
-
-### `--fps <number>`
-
-Specify the maximum sampling frame rate for screen updates.
-
-### `--no-resize`
-
-Keep the initial TTY size.
-
-### `--mouse`
-
-Forward mouse tracking to the PTY.
-
-### `--no-colorenv`
-
-### `--no-delete-envs`
-
-Configure whether color-setting environment variables are overridden and CI environment variables are deleted.
+* `--mask <pattern>`: Masks the specified string pattern.
+* `--mask-auto [bool]`: Enables or disables automatic secret detection and masking via QuickLeaks (default: `true`).
+* `--no-colorenv`: Disables overriding color-related environment variables.
+* `--no-delete-envs`: Preserves CI-related environment variables without automatically stripping them.
+* `--adjust <mode>`: Specifies SVG text length adjustment method (`spacing` or `spacingAndGlyphs`).
+* `--verbose [path]`: Specifies destination for verbose log output.

@@ -1,158 +1,64 @@
 ---
 title: interactive
-description: 记录交互式 shell 或程序的命令。
+description: 启动交互式 Shell 并通过随时按键操作捕获屏幕的命令。
 ---
 
 ```bash title="Terminal"
 console2svg interactive [options]
 ```
 
-启动交互式 shell，并使用录制键开始或结束画面录制。
+`interactive` 是一个子命令，用于在伪终端中启动交互式 Shell，支持在操作过程中随时按下快捷键就地捕获屏幕快照或录制视频。
+这避免了编写文档时频繁启动外部截图工具的繁琐操作，无需中断终端工作流即可截取高质量的 SVG。
+
+## 操作方式与快捷键
+
+执行该命令后，将启动适合当前环境的交互式 Shell。
+在操作过程中的任意时刻按下以下快捷键即可记录画面：
+
+* **F9**：将当前画面捕获为静态 SVG 图片。
+* **F10**：切换视频录制的开始与停止。
+* `exit` 命令或 **Ctrl+D**：结束交互式会话。
 
 ## 选项
 
-`interactive` 支持 `capture` 中与输出、终端显示、录制、遮盖和诊断相关的选项。不支持 `--in`、`--frame`、`--time`、`--replay` 系列和嵌入系列选项。
-
-### `-o, --out <path>`
-
-指定输出文件。
-
-### `--stdout`
-
-将 SVG 写入标准输出。
-
-### `-m, --mode <image|video>`
-
-指定输出模式。
-
-### `-v, --video`
-
-输出动画 SVG。
-
-### `-w, --width <int|adjust>`
-
-### `-h, --height <int|adjust>`
-
-以字符数和行数指定终端宽度和高度。`adjust` 会根据输入自动调整。
-
-### `--timeout <sec>`
-
-在指定秒数后结束录制。
-
-### `--save-cast <path>`
-
-将录制的输出保存为 asciicast v2 文件。
-
-### `-c, --with-command`
-
-在输出开头显示执行的命令。
-
-### `--header <text>`
-
-### `--prompt <text>`
-
-覆盖命令行标题或提示符。
-
-### `-d, --window [style]`
-
-指定窗口边框样式。省略时使用 `macos`。
-
-### `--pc-padding <number>`
-
-### `--opacity <number>`
-
-指定桌面风格窗口的内边距和不透明度（`0` 到 `1`）。
-
-### `-t, --theme <id>`
-
-### `--forecolor <color>`
-
-### `--backcolor <color>`
-
-覆盖文字颜色或终端背景颜色。
-
-### `--margin <number>`
-
-### `--padding <number>`
-
-指定窗口边框或 shell 内部的内边距。
-
-### `--background <value>`
-
-指定背景颜色或图像。指定两次可创建渐变。
-
-### `--font <family>`
-
-### `--fontsize <px>`
-
-指定字体系列或字号。
-
-### `--mask <pattern>`
-
-### `--mask-auto [bool]`
-
-设置指定字符串遮盖和自动密钥遮盖。自动遮盖默认启用。
-
-### `--save-frames <dir>`
-
-将动画的每一帧保存到指定目录。
-
-### `--size <WxH>`
-
-将输出尺寸指定为 `WIDTH`、`WIDTHx*`、`*xHEIGHT` 或 `WIDTHxHEIGHT`。
-
-### `--crop-top <value>`
-
-### `--crop-right <value>`
-
-### `--crop-bottom <value>`
-
-### `--crop-left <value>`
-
-顶部和底部可按 `px`、`ch` 或文本位置裁剪，左右可按 `px` 或 `ch` 裁剪。
-
-### `--no-loop`
-
-不循环播放动画 SVG。
-
-### `--fps <number>`
-
-### `--timing <deterministic|realtime>`
-
-指定最大采样率和视频计时控制方式。
-
-### `--sleep <sec>`
-
-### `--fadeout <sec>`
-
-指定录制后的等待时长或视频淡出时长。
-
-### `--coalesce-ms <ms|auto>`
-
-指定合并相邻输出事件的间隔。
-
-### `--no-resize`
-
-保持初始 TTY 尺寸。
-
-### `--mouse`
-
-将鼠标追踪转发到 PTY。
-
-### `--no-colorenv`
-
-### `--no-delete-envs`
-
-不覆盖 PTY 颜色环境变量，也不删除 CI 环境变量。
-
-### `--adjust <mode>`
-
-选择 SVG 文本长度调整方式：`spacing` 或 `spacingAndGlyphs`。
-
-### `--svg-converter <converter>`
-
-选择 SVG 栅格化方式：`auto`、`ffmpeg`、`rsvg-convert` 或 `resvg`。
-
-### `--verbose [path]`
-
-启用详细日志。指定值时，还会将日志保存到文件。
+除静态帧提取（`--frame`、`--time`）与现有录制回放（`--in`、`--replay`）外，`interactive` 支持与 `capture` 相同的主要外观与输出选项。
+
+### 输出与格式
+
+* `-o, --out <path>`：指定输出文件或保存目录的路径。
+* `--format <format>`：明确指定输出格式（`svg`、`png`、`gif`、`mp4` 等）。
+* `-v, --video`：将默认捕获模式设置为视频录制。
+* `--stdout`：将生成结果输出到标准输出。
+
+### 终端尺寸与布局
+
+* `-w, --width <int|adjust>`：以字符数指定终端宽度（默认值：`100`）。
+* `-h, --height <int|adjust>`：以文本行数指定终端高度（默认值：`24`）。
+* `--size <WxH>`：指定栅格化时的图片尺寸。
+* `--crop-top`, `--crop-bottom`, `--crop-left`, `--crop-right`：以像素或字符单位裁剪画面的上下左右边缘。
+
+### 外观与主题
+
+* `-d, --window [style]`：指定窗口装饰样式（`macos`、`macos-pc`、`windows` 等）。
+* `-t, --theme <id>`：指定外观主题的 ID（可多次指定）。
+* `--forecolor <color>`, `--backcolor <color>`：覆盖前景色或背景色。
+* `--background <value>`：指定窗口背面的背景色或图片（指定两次则形成渐变）。
+* `--opacity <number>`：指定终端背景的不透明度（`0.0`～`1.0`）。
+* `--font <family>`, `--fontsize <px>`：指定字体系列与字体大小。
+* `-c, --with-command`：在画面顶部显示刚刚执行的命令行。
+
+### 录制与掩码
+
+* `--mask <pattern>`：掩码指定的字符串模式。
+* `--mask-auto [bool]`：设置是否启用基于 QuickLeaks 的机密自动检测与掩码（默认值：`true`）。
+* `--save-cast <path>`：将整个会话的输出保存为 asciicast v2 文件。
+* `--fps <number>`：指定视频录制时的最大采样率。
+* `--timeout <sec>`：以秒为单位限制会话的最大运行时间。
+
+### 运行环境控制
+
+* `--mouse [bool]`：将鼠标跟踪事件转发给子进程（默认值：`true`）。
+* `--no-colorenv`：停用颜色相关环境变量的覆盖。
+* `--no-delete-envs`：保留 CI 相关的环境变量而不自动剔除。
+* `--svg-converter <converter>`：指定栅格化使用的引擎（`auto`、`resvg`、`ffmpeg`、`rsvg-convert`）。
+* `--verbose [path]`：指定详细日志的输出目标。

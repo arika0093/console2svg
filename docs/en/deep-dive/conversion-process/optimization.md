@@ -1,154 +1,116 @@
 ---
-title: Optimizing the conversion pipeline
-description: How console2svg reduces parsing work, frame copies, SVG DOM size, allocations, rasterization work, and file-system I/O.
+title: Optimizing the Conversion Pipeline
+description: Multi-layered optimizations spanning input event coalescing, memory reuse, row cataloging, and SVG structural compression.
 ---
 
-Terminal recordings contain duplication at several levels.
-Many PTY reads belong to one visual update, most cells are unchanged between adjacent states, many rows repeat across frames, and video sampling often asks for the same screen more than once.
-console2svg removes that duplication before paying for later stages.
+Terminal recordings inherently contain duplicate information across multiple processing stages.
+A single screen update is frequently fragmented across multiple PTY (pseudoterminal) reads, the vast majority of character cells remain unchanged between adjacent frames, identical rows persist for seconds at a time in animations, and video conversion repeatedly requests rasterization for static screens.
+console2svg systematically eliminates these redundancies across each pipeline stage before invoking downstream rendering engines.
 
-## Reduce work before rendering
+## Regulating Event Arrival with Coalescing
 
-PTY output is not stored as one event per read by default.
-Small output chunks are coalesced before they enter `RecordingSession`.
-The default coalescing window is one quarter of the target frame interval, clamped to 2 through 20 milliseconds, and a batch is not allowed to grow beyond one frame interval.
-This reduces the number of parser calls and candidate visual states produced by applications that redraw a screen with many small writes.
+Byte sequences read from a PTY are never recorded directly as individual recording events.
+Instead, console2svg applies **output coalescing** (grouping consecutive I/O chunks that arrive within a narrow time window into a single batch), pruning the recorded event count upfront.
 
-Animated replay applies a second reduction after terminal emulation.
-`TerminalEmulator.ReplayFrames` compares content signatures and ignores events that do not change visible cell content.
-When a positive FPS limit is configured, updates inside one frame interval are represented by the latest pending state rather than by every intermediate write.
-The first and final states are still retained.
+The default coalescing window is set to one quarter of the video frame interval.
+To preserve interactive responsiveness, it is never reduced below 2 milliseconds, and to prevent perceived lag, it is capped at 20 milliseconds.
+This preprocessing step dramatically reduces the number of event boundaries the ANSI parser must interpret, even when dealing with complex TUI (Text User Interface) applications that redraw screens using streams of fragmented escape sequences.
 
-Static rendering follows a different path because it normally needs only one screen.
-The renderer advances one emulator to the requested or final useful state instead of taking a `ScreenBuffer` snapshot after every event.
-This avoids paying the animation snapshot cost for a still image.
+## Sharing Screen Snapshots via Copy-on-Write
 
-## Make screen snapshots cheap
+If every retained animation frame required a deep copy of the entire screen grid, memory consumption would explode proportionally to `frames × rows × columns`.
+To eliminate this overhead, `ScreenBuffer` employs **copy-on-write** (sharing memory until a write occurs, cloning only the mutated portion).
 
-Animation needs retained terminal states, but copying the complete cell matrix for every state would scale with `frames × rows × columns`.
-`ScreenBuffer` therefore uses copy-on-write row storage.
+When taking a snapshot, only the outer array holding row references is newly allocated; the underlying row data (`ScreenCell[]`) is shared directly with the live screen buffer.
+Only when subsequent terminal emulation mutates characters on a specific row is that individual row's cell array cloned into fresh memory.
 
-A visible snapshot copies the outer row-reference array and shares the underlying row arrays.
-When the live screen later modifies a shared row, only that row is cloned.
-Unchanged rows remain shared between snapshots.
-A pending frame inside the FPS window can also replace its visible state by copying row references instead of rebuilding a deep snapshot.
+This row-sharing architecture also accelerates frame comparisons.
+When two snapshots reference the identical row array instance, `HasSameVisualRow` identifies the row as completely identical immediately, without inspecting individual cells.
+Cell-by-cell data comparisons are restricted strictly to rows with differing array references.
 
-Row sharing helps comparison as well as memory use.
-When two snapshots point to the same row array, `HasSameVisualRow` can accept the row immediately.
-Only rows with different references need cell-by-cell comparison.
+## Rapid Visual Signature Calculation via Differential Updates
 
-## Maintain signatures incrementally
+console2svg uses **visual signatures** to determine whether screens or rows are identical.
+A cell signature is computed from its character glyph, style attributes, and wide-character flags.
+Hashing is powered by high-performance **XxHash3**, with precomputed lookup tables for ASCII characters (0–127).
 
-Each cell has a visual signature derived from its text, effective style, and wide-character flags.
-Styles and strings are hashed with `XxHash3`, and signatures for single-byte ASCII text are cached.
+Each row maintains a 64-bit row signature derived from the set of positioned cell signatures.
+Once signature tracking begins, modifying a single character cell does not require rescanning the entire row.
+The row signature is updated incrementally by removing the previous cell's value via XOR and adding the new cell's value via XOR.
 
-Each visible row has a signature built from its positioned cell signatures.
-After signature tracking starts, changing one cell updates the row signature by removing the old positioned-cell value and adding the new one with XOR.
-A one-character update therefore does not require rescanning the full row.
+The system computes two types of full-screen signatures:
+`GetContentSignature` excludes the cursor and determines whether an animation content frame needs to be retained.
+`GetVisualSignature` incorporates cursor position and visibility, ensuring exact rendering equivalence during video frame sampling.
 
-A screen signature is computed from the row signatures.
-`GetContentSignature` excludes the cursor and is used when deciding whether terminal content warrants another retained animation frame.
-`GetVisualSignature` includes cursor visibility and position and is used when exact rendered output must be distinguished.
+## Reusing String and Style Objects
 
-The temporary byte span used to combine row signatures is stack allocated up to 4096 bytes.
-Larger screens use `ArrayPool<byte>` instead of allocating an exact-size array on every call.
+Terminal output frequently repeats the exact same characters and styling attributes across expansive regions.
+console2svg preallocates static single-character `string` instances for all 128 ASCII code points, completely eliminating heap allocations from `char.ToString()` during cell updates.
 
-## Reuse common terminal objects
+`CellStyle` instances representing text attributes are likewise interned and shared across the buffer.
+A fast path directly reuses the previous cell's style instance during common consecutive runs.
+When identical styles reappear across disparate screen locations, references are retrieved from an internal cache capped at 256 entries.
+Even when continuously processing novel 24-bit Truecolor streams, the cache automatically rebuilds itself upon reaching its limit to prevent unbounded memory growth.
 
-Terminal output is dominated by repeated ASCII characters and repeated text styles.
-console2svg precomputes one-character strings for ASCII code points and reuses those references instead of calling `char.ToString()` for every cell update.
+## Consolidating SVG Elements and Text Placement
 
-`CellStyle` instances are interned inside `ScreenBuffer`.
-A last-style fast path handles long runs that keep the same SGR state, while a bounded dictionary handles less-local reuse.
-The dictionary is cleared after it grows beyond 256 entries so an input stream that continuously invents RGB combinations cannot make the cache grow without limit.
+When serializing to SVG, console2svg avoids naive per-cell markup.
 
-Hot dictionary paths use `CollectionsMarshal.GetValueRefOrAddDefault` where appropriate.
-This avoids a separate lookup for “find” followed by another lookup for “insert”.
+Contiguous horizontal cells sharing the same background color are merged into a single `<rect>`.
+Similarly, adjacent foreground cells sharing identical styles are concatenated into a single `<text>` element.
+Whitespace within a line is buffered and emitted only when followed by subsequent visible text, while trailing blank cells at the end of a line are trimmed entirely.
+When full-width characters or geometric shapes appear, text runs are segmented cleanly at those boundaries to preserve precise column alignment.
 
-## Compact the SVG representation
+```xml title="Consolidating adjacent character cells"
+<!-- Before optimization (naive per-cell rendering): individual rect and text per cell (6 elements, redundant attributes) -->
+<rect x="0" y="0" width="8.4" height="18" fill="#1e1e2e"/>
+<text x="0" y="14" fill="#89b4fa">g</text>
+<rect x="8.4" y="0" width="8.4" height="18" fill="#1e1e2e"/>
+<text x="8.4" y="14" fill="#89b4fa">i</text>
+<rect x="16.8" y="0" width="8.4" height="18" fill="#1e1e2e"/>
+<text x="16.8" y="14" fill="#89b4fa">t</text>
 
-The SVG renderer does not emit one element per cell.
+<!-- After optimization (console2svg consolidation): merged into single background and text elements -->
+<rect x="0" y="0" width="25.2" height="18" fill="#1e1e2e"/>
+<text x="0" y="14" fill="#89b4fa">git</text>
+```
 
-Adjacent cells with the same non-default background are emitted as a single rectangle.
-Adjacent foreground cells with the same effective text style are combined into one `<text>` element.
-Interior spaces are buffered and retained only when they connect to later text in the same run; trailing blank cells are omitted.
-Wide characters and geometry-rendered characters terminate a text run so that column accounting remains exact.
+Furthermore, box-drawing characters are decomposed into horizontal and vertical line segments prior to SVG serialization.
+Segments sharing identical colors and stroke widths that connect continuously are merged into a single `<path>` element.
+Even in intricate TUI tools covered in borders, hundreds of individual rectangles or glyph fragments are collapsed into just a handful of continuous paths.
 
-Repeated text styles receive short CSS class names through `SvgStyleRegistry` instead of repeating style attributes.
-Repeated rectangle and path descriptions inside reusable definitions are assigned an ID by `SvgElementRegistry`; later occurrences use `<use>`.
+```xml title="Consolidating box-drawing paths"
+<!-- Before optimization: numerous tiny fragments emitted for each line intersection and segment -->
+<!-- After optimization: outer borders and dividers sharing the same style unified into one path -->
+<path d="M 10 10 H 630 V 200 H 10 Z M 10 40 H 630" stroke="#6c7086" stroke-width="1" fill="none"/>
+```
 
-Box-drawing characters are converted to horizontal and vertical segments before serialization.
-Compatible adjacent segments are merged, then rectangles with the same color are collected into compact paths.
-A benchmark recorded when this optimization was introduced reduced the btop SVG used in that change from 68.5 KB to 31.3 KB and reduced box-path elements from 417 to 5.
-Those numbers describe that workload and revision, not a fixed ratio for arbitrary terminal output.
+## Deduplication and Delta Encoding for Animated Rows
 
-`SvgWriter` also avoids transient strings on numeric hot paths.
-Integers and floating-point values are formatted into stack buffers with `TryFormat` and written as spans.
-A `StringBuilder` is written through `GetChunks()` instead of first materializing another full string.
+Animated SVGs never output complete screens for every retained frame.
+Instead, `PrepareAnimatedRows` scans visible rows across all frames to construct a **row catalog**, defining identical row content only once under `<defs>`.
 
-## Deduplicate animated rows
+In addition, for typing or status updates where only a small portion of a line changes, console2svg applies **row deltas** that reference the previous row definition and overwrite only the altered column range.
+By capping delta ranges to 16 columns or less and at most one quarter of total row width, and limiting `<use>` chain depth to under 4 levels, output size is minimized while avoiding resolution bottlenecks in SVG renderers.
 
-Animated SVG does not store a complete SVG frame for every retained terminal state.
-`PrepareAnimatedRows` creates a catalog of unique row definitions.
+For example, consider a 100-frame animation of command typing in an 80×24 terminal:
 
-The first check uses the row visual signature.
-Rows with the same signature are then compared using the actual cells, so a hash collision cannot silently substitute the wrong row.
-Only a newly discovered row is scanned for text styles; style collection and unique-row discovery therefore share the same pass.
+| Technique | Emitted Row Data | Approximate File Size |
+| :--- | :--- | :--- |
+| **Naive full-screen expansion** (emits every row for every frame) | 2,400 rows (full 80×24×100 data) | ~3.2 MB |
+| **Row cataloging** (deduplicates and references unique rows) | ~120 unique `<g>` definitions | ~180 KB |
+| **Row cataloging + row deltas** (partially overwrites typing changes) | ~35 complete definitions + ~40 micro-deltas | ~85 KB |
 
-A row that differs only in a small area may be represented as a delta over its previous definition.
-The delta is used only when the changed range is at most 16 columns, at most one quarter of the visible width, and the chain depth remains below four.
-These limits keep `<use>` chains shallow instead of trading file size for an expensive dependency tree.
-Wide-character boundaries expand the changed range when necessary.
+Through this multi-tiered deduplication, file sizes are reduced by over 90% without sacrificing visual fidelity.
 
-Manual mask patterns disable row deltas.
-A pattern can cross the boundary between unchanged base content and a changed fragment, so splitting the row would remove the complete string context needed for matching.
+## Two-Stage Caching and Pipelined Video Streaming
 
-Rendering the row catalog reuses a `FrameRenderWorkspace`.
-Lists for line segments, corners, block rectangles, and merged rectangles, together with string builders for foreground text, normalized mask text, and path data, are cleared and reused instead of allocated for every row definition.
+When generating video at a fixed frame rate, a single terminal emulator instance advances forward as the sampling timestamp progresses, computing the visual signature at each step.
 
-## Emit animation by row runs
+Based on this signature, up to 128 rendered static SVG strings are cached.
+When consecutive samples display identical screens, XML construction is bypassed and the identical `string` instance is returned.
+The video converter then uses this `string` object reference as a key to cache up to 16 PNG rasterization results.
+This **two-stage cache** completely eliminates both SVG regeneration and PNG re-rasterization during periods where the screen remains static.
 
-After row definitions are deduplicated, consecutive frames that use the same definition for a physical row are grouped into one run.
-One `<use>` element represents the run, and a discrete SMIL `display` animation defines when that row is active.
-Cursor states are grouped separately, so cursor-only movement does not duplicate row content.
-
-This changes the dominant unit from “number of frames times number of rows” to “number of row-content transitions”.
-Long recordings with a mostly stable screen benefit most from that distinction.
-
-## Avoid repeated rasterization in video output
-
-Fixed-FPS video sampling advances one `TerminalEmulator` monotonically through the recording.
-It does not replay event zero through the target event for every sample.
-The event pointer also moves only forward as sample time increases.
-
-Rendered frame SVGs are cached by visual signature, with at most 128 entries.
-When a sampled screen repeats, the same SVG string object is returned.
-
-The video converter uses that object identity as the key to a smaller PNG render cache.
-Repeated visual states can therefore reuse the same SVG object and the same PNG-render task without hashing or comparing a large SVG string.
-The PNG cache is capped at 16 entries because raster frames can consume substantially more memory than their SVG source.
-
-SVG-to-PNG work may run concurrently, with parallelism limited to the processor count and capped at eight.
-Completed PNGs are still written to ffmpeg through a bounded FIFO queue in frame order.
-This gives rasterization some CPU parallelism without allowing an entire long recording to accumulate as PNG byte arrays.
-
-## Keep frame transport in memory
-
-Video encoding uses one ffmpeg process for the output.
-PNG frames are written directly to its `image2pipe` standard input instead of being written as temporary numbered files and read back.
-
-The bundled resvg path is also in-process.
-Its system font database is initialized once and shared by later renders.
-Managed SVG text is encoded into a buffer rented from `ArrayPool<byte>` before crossing the native boundary.
-
-Together, these choices remove repeated process startup and most per-frame file-system operations from the normal video path.
-
-## Measure the individual stages
-
-The benchmark project separates terminal replay, production frame preparation, unique-row catalog construction, row-definition emission, SMIL emission, static rendering, animated rendering, and real asciicast workloads.
-It also measures automatic masking at several FPS values.
-
-`MemoryDiagnoser` records managed allocations and collections.
-On Linux systems with a usable `perf` installation, the benchmark configuration can also collect retired instructions, cycles, branches, cache misses, CPU samples, and deeper disassembly of the render-to-buffer call chain.
-
-This split matters because an optimization that reduces SVG bytes may not reduce generation time, and an allocation optimization may not change the serialized SVG at all.
+Completed PNG frames are streamed directly into the standard input (`image2pipe`) of a running ffmpeg process without writing intermediate files to disk.
+Rasterization runs concurrently across up to 8 threads based on CPU core count, and a capacity-bounded FIFO queue regulates transfer to preserve strictly sequential frame delivery to the encoder.

@@ -1,158 +1,61 @@
 ---
 title: replay
-description: 重放已保存键盘输入的命令。
+description: 自动重放已保存的键盘输入并捕获相同操作结果的命令。
 ---
 
 ```bash title="Terminal"
 console2svg replay <replay.json> [options] -- command [args...]
 ```
 
-重放使用 `--replay-save` 保存的输入文件，以重复相同操作。
+`replay` 是一个子命令，用于读取预先通过 `capture --replay-save <path>` 等方式记录的键盘输入文件（`<replay.json>`），在向指定命令按相同时间节奏自动发送按键输入的同时记录屏幕。
+它能够完整复现人工执行的交互式命令行操作（如编辑器操作、CLI 菜单选择等），非常适合自动生成最新的输出画面或动画 SVG。
+
+## 命令行为
+
+执行 `replay` 时，指定命令将通过 PTY（伪终端）启动，并在预定时刻发送重放文件中记录的各项按键操作（Enter、方向键、Ctrl 组合键、文本输入等）。
+在所有按键发送完毕，并达到指定的等待时长或命令结束时，执行最终画面或视频的生成处理。
 
 ## 选项
 
-`replay` 支持 `capture` 中可用的输出、终端显示、录制、遮盖和诊断选项，并额外指定输入文件。
-
-### `-o, --out <path>`
-
-### `--stdout`
-
-指定输出文件，或将 SVG 写入标准输出。
-
-### `-m, --mode <image|video>`
-
-### `-v, --video`
-
-选择输出模式，或输出动画 SVG。
-
-### `-w, --width <int|adjust>`
-
-### `-h, --height <int|adjust>`
-
-指定终端宽度和高度。`adjust` 会根据输入自动调整。
-
-### `--timeout <sec>`
-
-### `--sleep <sec>`
-
-指定录制时限和录制结束后的等待时长。
-
-### `--save-cast <path>`
-
-将重放结果保存为 asciicast v2 文件。
-
-### `--embed-cast`
-
-### `--embed-logs`
-
-### `--embed-replay`
-
-### `--embed-debug`
-
-将 asciicast 数据、诊断日志、键盘输入或所有诊断信息嵌入 SVG。
-
-### `--replay <path>`
-
-### `--replay-save <path>`
-
-指定包含额外键盘输入的重放文件，或保存输入的文件。
-
-### `--verbose [path]`
-
-启用详细日志，并可选择将其保存到文件。
-
-### `-c, --with-command`
-
-### `--header <text>`
-
-### `--prompt <text>`
-
-指定是否显示命令、标题和提示符。
-
-### `-d, --window [style]`
-
-### `--pc-padding <number>`
-
-### `--opacity <number>`
-
-指定窗口边框、桌面风格窗口内边距和不透明度（`0` 到 `1`）。
-
-### `-t, --theme <id>`
-
-### `--forecolor <color>`
-
-### `--backcolor <color>`
-
-指定或覆盖主题、文字颜色和终端背景颜色。
-
-### `--margin <number>`
-
-### `--padding <number>`
-
-### `--background <value>`
-
-指定窗口边框和 shell 内部的内边距，以及背景颜色或图像。
-
-### `--font <family>`
-
-### `--fontsize <px>`
-
-### `--adjust <mode>`
-
-指定字体、字号和 SVG 文本长度调整方式。
-
-### `--mask <pattern>`
-
-### `--mask-auto [bool]`
-
-设置字符串遮盖和自动密钥遮盖。
-
-### `--frame <index>`
-
-### `--time <sec>`
-
-指定作为静态图像输出的帧编号或时间（也可使用 `START-END` 范围）。
-
-### `--size <WxH>`
-
-将输出尺寸指定为 `WIDTH`、`WIDTHx*`、`*xHEIGHT` 或 `WIDTHxHEIGHT`。
-
-### `--save-frames <dir>`
-
-将动画的每一帧保存到指定目录。
-
-### `--crop-top <value>`
-
-### `--crop-right <value>`
-
-### `--crop-bottom <value>`
-
-### `--crop-left <value>`
-
-使用单位或文本位置裁剪画面的上下左右。
-
-### `--no-loop`
-
-### `--fps <number>`
-
-### `--timing <deterministic|realtime>`
-
-设置循环、最大采样率和视频计时控制。
-
-### `--fadeout <sec>`
-
-### `--coalesce-ms <ms|auto>`
-
-指定淡出时长和合并输出事件的间隔。
-
-### `--mouse`
-
-### `--no-colorenv`
-
-### `--no-delete-envs`
-
-设置鼠标追踪转发、PTY 颜色环境变量覆盖和 CI 环境变量删除。
-
-### `--svg-converter <converter>`
-
-指定 SVG 栅格化方式。
+除按键输入文件外，`replay` 支持与 `capture` 相同的输出设置、外观主题及视频选项。
+
+### 输出与格式
+
+* `-o, --out <path>`：指定输出文件路径（根据扩展名自动判断格式）。
+* `--format <format>`：明确指定输出格式（`svg`、`png`、`gif`、`mp4` 等）。
+* `-v, --video`：以动画 SVG 或视频格式输出。
+* `--stdout`：将生成结果写入标准输出。
+
+### 回放与时序控制
+
+* `--timeout <sec>`：指定整个重放执行的超时时间（以秒为单位）。
+* `--sleep <sec>`：指定全部按键输入完成后，结束录制前的额外等待秒数。
+* `--fadeout <sec>`：指定视频末尾淡出效果的持续时间（以秒为单位）。
+* `--fps <number>`：指定视频采样的最大帧率。
+* `--timing <deterministic|realtime>`：选择视频回放的时序控制方式。
+
+### 终端尺寸与画面裁剪
+
+* `-w, --width <int|adjust>`, `-h, --height <int|adjust>`：指定终端宽度（字符数）与高度（行数）。
+* `--size <WxH>`：指定输出图片的像素尺寸。
+* `--crop-top`, `--crop-bottom`, `--crop-left`, `--crop-right`：以像素或字符单位裁剪画面的上下左右边缘。
+
+### 外观与主题
+
+* `-d, --window [style]`：指定窗口装饰样式（`macos`、`macos-pc`、`windows` 等）。
+* `-t, --theme <id>`：指定外观主题的 ID。
+* `--forecolor <color>`, `--backcolor <color>`：覆盖前景色或背景色。
+* `--background <value>`：指定窗口背面的背景色或图片。
+* `--opacity <number>`：指定终端背景的不透明度（`0.0`～`1.0`）。
+* `--font <family>`, `--fontsize <px>`：指定字体系列与字体大小。
+* `-c, --with-command`：在画面顶部显示执行的命令行。
+
+### 录制与诊断信息嵌入
+
+* `--save-cast <path>`：将重放时的终端输出保存为 asciicast v2 文件。
+* `--embed-cast`：将原始 asciicast 数据作为元数据嵌入生成的 SVG 内部。
+* `--embed-replay`：将使用的键盘重放数据嵌入 SVG 内部。
+* `--embed-logs`, `--embed-debug`：将诊断日志或调试信息嵌入 SVG 内部。
+* `--mask <pattern>`, `--mask-auto [bool]`：设置字符串掩码与自动机密保护。
+* `--svg-converter <converter>`：指定栅格化引擎（`auto`、`resvg`、`ffmpeg`、`rsvg-convert`）。
+* `--verbose [path]`：指定详细日志的输出目标。

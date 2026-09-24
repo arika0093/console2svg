@@ -1,78 +1,62 @@
 ---
 title: batch
-description: Generate images in bulk from c2s markers in Markdown.
+description: Subcommands for automatically generating images from markers in Markdown and synchronizing documentation assets.
 ---
+
+`batch` provides subcommands for scanning Markdown and MDX files in documentation sites (such as Astro Starlight, Docusaurus, VitePress) or READMEs, and automatically generating and synchronizing images from capture instruction markers in the text.
+This prevents outdated screenshots in documentation and lets you automatically keep execution result images up to date within CI/CD pipelines.
 
 ## `batch markdown`
 
+Detects `c2s::` markers written in Markdown or MDX files, executes the specified commands, and generates or updates the image link immediately following each marker.
+
 ```bash title="Terminal"
-console2svg batch markdown [--input <path>] [--output <dir>] [--link-base <path>] [--filter <glob>] [--dry-run] [--placeholder]
+console2svg batch markdown [options]
 ```
 
-Executes `c2s::` markers in Markdown or MDX, and generates or updates the image link immediately after each marker.
+### Marker Syntax
 
-On successful generation, the manifest file `<output>/assets.json` is updated automatically. Filtered runs preserve entries owned by unselected Markdown files. Dry runs and placeholder runs do not modify the manifest.
+Write the execution options and command line inside a Markdown or MDX comment.
 
-### `-i, --input <path>`
+```markdown
+<!-- c2s:: -w 100 -h 10 -c -d macos -- fastfetch -->
+<img src="/assets/fastfetch.svg" alt="fastfetch output" />
+```
 
-Specify a Markdown file or directory (default: `docs`).
+For MDX, you can also use JSX comment syntax:
 
-### `-o, --output <dir>`
+```mdx
+{/* c2s:: -w 100 -c -- git status */}
+```
 
-Specify the destination for generated images (default: `assets`).
+When you run `batch markdown`, the target URL of the image element (`<img>` tag or `![]()` syntax) immediately following the marker is automatically updated to the generated image file.
+Additionally, an asset manifest file (`assets.json`) is automatically generated in the output directory, recording hash values for commands and output files.
 
-### `--link-base <path>`
+### Options
 
-Insert asset links below this root-relative public URL path instead of paths relative to each Markdown file. For example, `--link-base /assets` produces links beginning with `/assets/`.
-
-### `--filter <glob>`
-
-Filter by glob against file paths relative to the input directory.
-`*` matches across directory separators. Can be specified multiple times.
-
-### `--dry-run`
-
-Show only the jobs that would run, without changing files.
-
-### `--placeholder`
-
-Create missing empty assets and Markdown links without executing commands. Existing assets are left unchanged.
-
-### `--verbose [path]`
-
-Enable detailed logs, and save them to a file if needed.
+* `-i, --input <path>`: Specifies the target Markdown file or the root path of the documentation directory (default: `docs`).
+* `-o, --output <dir>`: Specifies the destination directory where generated image files are saved (default: `assets`).
+* `--link-base <path>`: Specifies the public URL prefix for image links inserted into Markdown files (e.g., specifying `--link-base /assets` formats links in Markdown as `/assets/filename.svg`).
+* `--filter <glob>`: Filters target files by glob pattern relative to the input directory (can be specified multiple times).
+* `--dry-run`: Displays the list of tasks scheduled to run without generating or modifying any files.
+* `--placeholder`: Creates missing empty asset files and inserts links without executing commands (leaves existing assets unchanged).
+* `--verbose [path]`: Enables detailed logging and optionally saves it to a file.
 
 ## `batch restore`
 
+Downloads and restores corresponding image assets to the local environment in bulk by referencing a manifest file (`assets.json`) generated in a remote environment or another branch.
+
 ```bash title="Terminal"
-console2svg batch restore <source> --output <dir> [--filter <glob>] [--force] [--prune] [--dry-run]
+console2svg batch restore <source> --output <dir> [options]
 ```
 
-Specify a generated manifest file to download the related resources and place them locally.
-When `batch markdown` runs at documentation publish time, specifying that manifest lets you copy the generated results into your local environment.
+This is ideal for quickly synchronizing images generated and published by `batch markdown` in CI into local development or deployment build environments.
 
-### `<source>`
+### Arguments and Options
 
-Where to fetch `assets.json` from: a local manifest file or the directory containing it, an HTTP(S) URL serving the raw manifest, or a Git source such as `owner/repository@main/path/to/assets`.
-
-### `-o, --output <dir>`
-
-Specify the directory where restored images are placed. Required.
-
-### `--filter <glob>`
-
-Restore only matching logical asset paths and the objects they require. Can be specified multiple times.
-
-### `--force`
-
-Re-download entries even when the local size and SHA-256 already match, instead of skipping them.
-
-### `--prune`
-
-Delete stale paths that were managed by the previous local `assets.json` but no longer exist in the restored set. Unrelated files and entries excluded by `--filter` are left untouched.
-
-### `--dry-run`
-
-Show what would be done without changing files.
-
-For detailed marker syntax, see [Sync documentation and images](../../automation/document-image-sync.mdx).
+* `<source>` (required): Source of the manifest file (`assets.json`). Accepts a local file path, an HTTP/HTTPS URL, or a Git repository URL.
+* `-o, --output <dir>` (required): Specifies the directory where image files are restored and placed.
+* `--filter <glob>`: Filters files to restore by glob pattern against paths in the manifest.
+* `--force`: Forcibly re-fetches entries instead of skipping them even when the local content hash (SHA) matches the remote one.
+* `--prune`: Deletes extraneous image files present only in the local output directory that are not listed in the manifest.
+* `--dry-run`: Displays the scheduled changes without performing actual downloads or deletions.

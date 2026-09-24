@@ -1,62 +1,59 @@
 ---
-title: 使用 resvg 栅格化 PNG
-description: 如何调用捆绑的 native resvg，在进程内复用字体状态，并明确管理 managed 与 native memory 的所有权。
+title: 使用 resvg 进行 PNG 栅格化
+description: 内置原生 resvg 的进程内调用、字体扫描结果共享，以及托管与原生内存边界管理。
 ---
 
-PNG 输出需要 SVG renderer。
-console2svg 捆绑了一个小型 Rust C ABI wrapper，用来调用 resvg。
-普通 PNG 路径因此不需要依赖 browser process，也不需要假设系统 ffmpeg 一定包含 SVG decoder。
+将生成的 SVG 矢量图转换为 PNG 格式，需要进行将其绘制为像素图像的栅格化处理。
+为了避免对无头浏览器（如 Chromium）等重型组件或外部图像转换工具的依赖，console2svg 在发布的二进制文件中直接内置了基于 Rust 高性能 SVG 渲染器 **resvg**（在 SVG 规范还原度上表现卓越的 Rust 矢量图形库）的 C ABI 封装。
+由此实现了无需启动外部进程的进程内调用，达成毫秒级的 PNG 栅格化性能。
 
-## 在当前 process 内完成栅格化
+## 为什么选择进程内嵌入而非外部命令
 
-native wrapper 使用 usvg 解析 SVG，通过 resvg 和 tiny-skia 绘制 pixmap，再把 pixmap 编码成 PNG。
+在操作系统中，通常存在诸如 `rsvg-convert` 或无头浏览器等现成的 SVG 转 PNG 命令行工具。
+然而，console2svg 明确舍弃了将它们作为外部进程调用的方案，而是选择通过 C ABI 直接将其嵌入到当前进程内部。
 
-system font discovery 是可以跨 frame 共享的 process-wide 状态。
-Rust 侧使用 **`OnceLock<Arc<Database>>`**。
-第一次调用时创建 font database 并加载 system font，后续 render 只复用共享引用。
+最核心的原因在于：**将操作系统字体目录扫描带来的巨大磁盘 I/O 开销严格限制在仅初次调用时发生**。
+要准确渲染 SVG 中的文本，渲染引擎必须完整遍历操作系统的字体存放目录（如 `/usr/share/fonts`、`~/.fonts` 以及 Windows/macOS 的系统字体文件夹），建立起系统中存在的所有字体家族的映射索引。
+若通过 `Process.Start` 针对每一帧启动外部命令，每个帧都会派生一个独立的全新进程，每次都需要从磁盘重新扫描数千个字体文件，从而导致每帧累积数百毫秒的 I/O 延迟，且该开销会随总帧数成倍放大。
 
-.NET 侧也可以显式 warm up 该 database。
-converter detection 阶段即可完成初始化，避免视频中的某个随机 frame 单独承担首次 font discovery 成本。
+而采用进程内嵌入方案时，Rust 运行时可以通过其初始化机制 **`OnceLock<Arc<Database>>`**，将初次渲染时构建的系统字体数据库常驻缓存在进程内存中。
+从第二帧开始的所有后续栅格化调用，都可以直接在内存中访问该字体缓存，使得磁盘扫描的 I/O 开销彻底降为零，即使在视频生成等涉及海量帧连续渲染的场景下，也能保持极高的吞吐性能。
 
-## 明确计算 raster 尺寸
+此外，系统还允许在转换器自动探测流程中显式调用预热例程，从而在正式渲染开始前提前消除首帧的字体发现延迟。
 
-native wrapper 读取 SVG intrinsic size，并结合可选的 raster width 和 height 计算输出尺寸。
+## 进程内栅格化的执行流程
 
-宽高都指定时直接使用给定值。
-只指定一边时，根据 SVG aspect ratio 推导另一边。
-两边都未指定时使用 SVG 自身尺寸。
+内置的原生库由负责解析 SVG 语法的 `usvg`、底层 2D 绘图引擎 `tiny-skia` 以及 `resvg` 本身构成。
+其执行流程为：解析传入的 SVG 标记，将其绘制并展开为像素图（pixmap），随后将像素数据编码为 PNG 字节流并返回给调用方。
 
-最终尺寸会 clamp 到1至16384 pixel。
-这样可以避免0尺寸 surface，也能限制误配置造成的极端 native allocation。
+## 基于宽高比的输出尺寸约束
 
-## 复用 managed 输入 buffer
+栅格化时的图像尺寸综合考量 SVG 自带的原始尺寸（如 `viewBox` 等固有属性）以及 CLI 指定的输出宽高参数进行计算。
 
-`ResvgNative.RenderToPng` 先计算 SVG `string` 的 UTF-8 byte 数量。
-随后从 `ArrayPool<byte>` 租用 array，把 SVG encode 到该 span，再调用 native function。
-调用结束后 array 会归还 pool。
+当宽高均显式指定时，直接采用给定的具体数值；当仅指定了宽度或高度其中之一时，保持 SVG 原始纵横比自动计算另一维度；若两者均未指定，则直接采用 SVG 本身的尺寸作为像素大小。
+计算出的最终尺寸在分配内存前会被严格限制（clamp）在 1 到 16,384 像素的区间内。
+这有效避免了因 0 像素引发崩溃，或因误传参数导致在原生内存中分配极端庞大缓冲区的事故。
 
-native renderer 返回的 PNG buffer 由 native 侧拥有。
-.NET wrapper 将其复制到 managed `byte[]`，并在 `finally` 中调用对应 free function。
+## 内存池租借与原生内存的安全释放
 
-调用方只接触 managed PNG。
-Rust 侧使用何种 allocator 不需要暴露给上层。
+在 .NET 侧调用原生函数时，由 SVG 字符串转换而来的 UTF-8 字节数组会写入从 `ArrayPool<byte>` 租借的内存区域。
+在将内存分配开销降至最低的同时，直接将该内存切片（span）传递给原生函数。
 
-native status code 会区分 SVG parse、PNG encode、render 和 allocation failure。
-.NET wrapper 会把这些状态转换成不同异常，而不会把空或部分 buffer 当作成功结果。
+另一方面，原生侧生成的 PNG 字节数组其所有权属于 Rust 运行时。
+.NET 侧的封装层从接收到的内存指针中将数据拷贝为托管的 `byte[]`，并在 `finally` 代码块中确保调用原生侧的释放函数（free）。
+这种严密的边界设计使上层调用代码完全无需介入原生内存的生命周期管理。
 
-## 优先搜索捆绑的 native asset
+## 优先检索内置的动态库资产
 
-native library resolver 会先检查 console2svg 的 bundled asset directory，再交给普通 loader resolution。
+在加载原生动态库（`.so`、`.dylib`、`.dll`）时，console2svg 会在查找操作系统标准动态库检索路径之前，优先检索与自身可执行文件相邻的资源目录。
 
-release archive 可能把 library 放在 executable 旁边，package layout 也可能把 native asset 放到 sibling library directory。
-显式搜索可以覆盖这些布局。
+这一设计既能完美支持将动态库与主程序同目录打包的发布压缩包，又能兼容包管理器将原生资产安置在独立依赖目录中的布局规范。
+即便是通过符号链接调用的场景，也能准确解析真实路径，避免受到当前工作目录的干扰。
 
-portable install 和 symbolic link 场景也能因此减少对 current working directory 的依赖。
+## 显式指定与自动回退的严格区分
 
-## 根据 converter mode 决定是否 fallback
+当图像转换引擎的判定模式（`--svg-converter`）为 `auto` 时，系统优先选用内置的 resvg。
+若因平台环境受限导致 resvg 加载失败，系统会尝试自动回退到已安装的 `rsvg-convert` 或具备 SVG 解码能力的 ffmpeg。
 
-auto mode 会优先选择可用的 bundled resvg。
-其他图像转换路径还可以 fallback 到 `rsvg-convert`，或者已经通过实际转换验证 SVG decode 能力的 ffmpeg。
-
-用户明确指定 resvg 时，如果 native library 无法加载，不会静默切换到其他 renderer。
-显式 renderer 选择强调可复现性，auto mode 则优先保证可用性。
+然而，若用户显式指定了 `--svg-converter resvg`，一旦加载失败，系统绝不会擅自切换到其他引擎，而是立即作为错误终止执行。
+这清晰地区分了自动探测时的容错便利性与显式指定时对渲染结果严格一致的可复现性要求。

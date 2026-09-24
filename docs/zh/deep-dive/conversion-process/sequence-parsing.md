@@ -1,81 +1,61 @@
 ---
-title: 解释终端控制序列
-description: 以有状态方式处理被拆分的 VT 输出，并更新 cursor、cell、样式、scroll 和 alternate screen。
+title: 终端控制序列的解析
+description: 有状态地解析切分的 VT 输入，并准确反映到字符单元格、属性、光标及屏幕缓冲区中。
 ---
 
-终端输出是一系列修改画面状态的操作，不是带装饰的普通字符串。
-carriage return 可以覆盖当前行，CSI 可以不打印字符而移动 cursor，full-screen application 也可以切换 alternate screen 并只重绘局部区域。
-如果先删除 escape sequence，就会丢失重建最终画面需要的操作。
+终端的输出数据绝非单纯附带样式的文本字符串，而是逐一修改屏幕状态的指令流。
+回车符（`\r`）会回到行首覆盖已有文字，转义序列无需输出字符即可移动光标，而 TUI 应用程序则会切换到备用屏幕重构整个画面。
+若单纯使用正则表达式等方式粗暴删除转义序列，将丢失重建最终屏幕显示所必需的操作信息。
+console2svg 通过 **有状态解析器**（`AnsiParser`）解构这些指令，并忠实反映到终端的虚拟屏幕缓冲区 `ScreenBuffer` 中。
 
-console2svg 在 SVG 生成之前通过 **有状态解析** 把这些操作写入 `ScreenBuffer`。
+## 跨数据流读取边界的序列状态保持
 
-## 不把 read 边界当成控制序列边界
+操作系统的管道读取分块边界并不契合转义序列的边界。
+数据在 ESC 或 **CSI**（Control Sequence Introducer：以 `ESC [` 开头的终端控制命令）中间被切断到达的情况屡见不鲜。
 
-OS read 可能结束在 ESC、CSI、OSC 或其他控制序列的中间。
-`AnsiParser` 会保存未完成的 sequence，并在下一次 `Process` 调用继续解析。
+`AnsiParser` 内部维护着一个状态机。
+遇到未完成的控制序列时，会将其暂存到内部缓冲区中，并在下一次调用 `Process` 方法时与后续字节拼接继续解析。
+此外，对于 OSC（操作系统命令）或 DCS（设备控制字符串）等不参与屏幕绘制的元数据流，解析器会准确跳过直至结束定界符。
+解析器还持续跟踪 DEC 专用图形字符集的状态，并在渲染前将其映射为相应的制表边框字符。
 
-Unix echo 还可能把 ESC 显示成 `^[` 这样的 caret notation。
-以这种形式到达的 OSC 有单独 pending state。
-处理范围会受到限制，普通可见的 `^[` 文本不会被广泛当成控制序列吞掉。
+## 避免内存分配的基于 Span 的 CSI 参数解析
 
-OSC 和 DCS payload 不是 printable cell，因此会跳过直到 terminator。
-G0 和 G1 character set designation，以及 SO 和 SI 选择，也会作为 parser state 保存。
-DEC special graphics 可以在渲染前映射成对应的框线字符。
+在解析 CSI 传入的参数（行号、列号、颜色代码等）时，系统完全不使用 `string.Split` 进行字符串拆分或数组分配。
+所有数值解析均直接在指向输入数据内存区域的切片（`ReadOnlySpan<char>`）上完成。
 
-## 不用字符串 split 解析 CSI 参数
+解析器预先统计参数数量，若在 16 个以内，则直接使用栈内存（`stackalloc int[16]`）暂存解析结果；
+仅在参数多达 17 个以上的极端情况下，才从 `ArrayPool<int>` 租借数组并在处理完成后立即归还。
+由于普通的光标控制和文字样式修改通常仅由数个参数构成，因此控制序列的解析过程达成了堆内存的零分配。
 
-CSI 参数直接从 span 读取。
-parser 不需要使用 `string.Split` 为每个参数创建字符串或数组。
+## 屏幕操作与备用屏幕的精确复原
 
-首先计算参数数量。
-16个以内使用 `stackalloc` 的 integer span。
-参数更多时才从 `ArrayPool<int>` 租用数组，并在处理结束后归还。
+系统实现的 CSI 命令极其丰富，涵盖光标相对/绝对移动、屏幕清除、行清除、字符与行的插入/删除、滚动区域边界限制（margin）、制表位移动，以及光标位置的保存与恢复（Save/Restore Cursor）等。
 
-常见 SGR 和 cursor-control sequence 参数很少，因此不会为每条 sequence 产生一个 heap array。
+更重要的是，console2svg 完整支持 vim、htop 等工具所使用的 **备用屏幕**（Alternate Screen：专用于全屏任务的离屏缓冲区）。
+备用屏幕作为与保留 Shell 历史的主屏幕完全解耦的独立缓冲区进行维护。
+这保证了在 TUI 工具退出并返回主 Shell 提示符时，全屏界面的残留数据绝不会污染 Shell 的滚动历史，完美还原原生终端的界面流转。
 
-private marker 与参数区分开处理。
-不支持的 private sequence 会被忽略，不会误当成其他标准命令。
+## 基于 SGR 解析文字样式与色彩
 
-## 把控制操作应用到 cell 状态
+文字的修饰与颜色指定由 **SGR**（Select Graphic Rendition：文字属性控制命令集）负责解析。
+粗体（bold）、暗淡（faint）、斜体（italic）、下划线（underline）、闪烁（blink）、反色（reverse）、删除线（strikethrough）、双下划线等丰富属性均被收录于 `TextStyle` 记录中。
 
-实现的 CSI 包括 cursor 相对移动和绝对定位、display erase、line erase、字符插入和删除、行插入和删除、scroll、scroll region、tab control、insert mode、repeat、save 和 restore。
+色彩方面，全面支持标准 16 色、xterm 256 色调色板以及 24 位 Truecolor（1677 万真彩色）。
+不论是分号分隔（`38;2;R;G;B`）还是冒号分隔（`38:2::R:G:B`）的扩展色彩语法，均被统一规范化为统一的内部色彩表达。
+在前后单元格保持相同样式时，系统直接复用已有的 `CellStyle` 实例，杜绝无谓的对象创建。
 
-DEC private mode 处理 alternate screen、origin mode 和 cursor visibility。
-alternate screen 使用独立 cell buffer。
-TUI 结束后可以恢复 main screen，而不是把 full-screen 内容混进 shell history。
+## Unicode 全角字符与组合字符的单元格对齐
 
-cursor save 和 restore 还保留会影响后续字符布局的 terminal state。
-目标不是只恢复收到 sequence 那一刻的画面，而是保持该操作对后续输出的语义。
+文本编辑器或编程语言所处理的 UTF-16 代码单元数，与终端屏幕上的字符单元格（列宽）并不对等。
+表情符号等代理对在放入网格前被视为单一字形簇（grapheme cluster）处理；
+零宽字符（如 ZWJ）不推进光标列，组合字符与变体选择器则被归并至前一个单元格。
 
-## 把 SGR 解析为 cell 样式
+东亚全角字符（Wide 字符）在屏幕上占据 2 列宽度。
+console2svg 在首个单元格中存放字符实体，并将紧随其后的右侧单元格标记为延续单元格（Continuation cell）。
+在仿真器内部始终维护这种双单元格结构，彻底防止了提交给 SVG 渲染器时全角字符后续文本向右偏移 1 列的排版崩坏。
 
-SGR 更新 `TextStyle`。
-其中保存 bold、faint、italic、underline、blink、reverse、hidden、strikethrough、overline、foreground、background 和 underline color。
+## 基于 ScreenBuffer 的中间表示统一化
 
-颜色支持常规16色、xterm 256色和 true RGB。
-256色由 active theme 的前16色、6×6×6 color cube 和 grayscale 组成。
-使用 semicolon 或 colon 分隔的 extended color 形式会归一到相同 style state。
-
-`ScreenBuffer` 会 intern 相同 style，避免每个相邻 cell 都创建独立 style object。
-连续字符保持同一 SGR 状态时会直接复用上一个 `CellStyle`。
-
-## 按终端 cell 对齐 Unicode
-
-一个 UTF-16 code unit 不一定等于一个 terminal cell。
-surrogate pair 会在放置前组合。
-combining mark 和 variation selector 会附加到前一个 cell，zero-width character 不推进 cursor 列。
-
-宽字符占两列。
-首个 cell 保存文字，后一个 cell 标记为 continuation。
-覆盖操作和动画行差分都会考虑 continuation，避免后续 SVG text run 偏移一列。
-
-variation selector 16 还可能把前一个符号切换为宽 emoji presentation。
-所需宽度调整在 cell model 中完成，而不是留到 SVG geometry 阶段。
-
-## 用 ScreenBuffer 作为后续格式的共同输入
-
-解析完成后，renderer 不再需要理解原始 CSI syntax。
-后续阶段读取已经解析好的文字、style、width flag、cursor、active screen 和 scroll state。
-
-同一个 **`ScreenBuffer`** 还包含 animation 和 video sampling 使用的视觉签名，以及 copy-on-write 行共享。
-VT 语义只在这一层解释一次，SVG、PNG 和视频路径消费同一份终端状态。
+解析完成后的后续渲染管线（静态 SVG、动画 SVG、PNG、视频）无需再次理解原始 ANSI 转义序列。
+统一解析完毕的文字、色彩样式、单元格宽度、光标状态以及屏幕缓冲区被整合为 **`ScreenBuffer`**，作为唯一的中间表示共享给全部渲染器。
+在缓冲区边界将解析职责与渲染职责完全切开，确保了任何输出格式下都能获得严格一致的渲染效果。

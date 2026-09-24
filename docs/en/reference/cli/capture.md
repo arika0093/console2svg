@@ -1,244 +1,229 @@
 ---
 title: capture
-description: Capture terminal output as SVG.
+description: Command to execute terminal commands and record output as vector images (SVG) or videos.
 ---
 
 ```bash title="Terminal"
 console2svg capture [options] -- command [args...]
 ```
 
-Runs the specified command in a PTY and saves the final screen as an SVG. Add `-v` to create an animated SVG or video format.
+`capture` is the core subcommand that executes a specified command via a PTY (pseudo-terminal) and saves the exit screen state as an SVG image.
+Specifying the `-v` (or `--video`) option records screen transitions during execution as an animated SVG or various video formats (MP4, WebM, GIF).
 
-Use `--json` when an agent needs the final screen as text as well as a visual
-artifact reference:
-
-```bash title="Terminal"
-console2svg capture --json -- npm test
-console2svg tmux capture --target %1 --json
-```
-
-The versioned result includes `schemaVersion`, `status`, `exitCode`,
-`durationMs`, `screen` (`width`, `height`, `text`, `truncated`), and the
-generated `artifact` path and format. With video output, `frames` contains at
-most 12 sampled SVG frame paths for visual inspection. These previews are
-created automatically; they do not require `--save-frames`. JSON is written
-only to stdout, while diagnostics remain on stderr. `--json` cannot be combined
-with `--stdout`.
-
-## Options
+## Destination and Formats
 
 ### `-o, --out <path>`
 
-Specify the output file. SVG, PNG, GIF, and other formats are selected based on the extension.
+Specifies the output file path.
+Output format is inferred automatically from file extension (`.svg`, `.png`, `.gif`, `.mp4`, `.webm`, etc.). Defaults to `output.svg` if omitted.
 
-### `--format <format>`
+### `--format <svg|png|jpg|webp|gif|mp4|webm>`
 
-Select the output format explicitly: `svg`, `png`, `jpg`, `webp`, `gif`, `mp4`, or `webm`. Overrides the extension of `-o`.
+Explicitly specifies the output format.
+This option takes precedence over the file extension specified with `-o`.
 
 ### `--stdout`
 
-Write the SVG to standard output.
+Writes the generated SVG content directly to standard output instead of saving to a file. Useful when piping to other tools.
 
 ### `-m, --mode <image|video>`
 
-Choose the output mode: `image` or `video`.
+Selects the output mode: still image (`image`) or video (`video`).
 
 ### `-v, --video`
 
-Output an animated SVG. This is shorthand for `--mode video`.
+Outputs as an animated SVG or video. Shorthand for `-m video`.
+
+## Terminal Size and Screen Cropping
 
 ### `-w, --width <int|adjust>`
 
-Set the terminal width in characters. `adjust` adjusts it to the input.
+Specifies terminal width in columns (characters). Default is `100`.
+Specifying `adjust` automatically fits width to the longest line of output.
 
 ### `-h, --height <int|adjust>`
 
-Set the terminal height in lines. `adjust` adjusts it to the input.
-
-### `--timeout <sec>`
-
-Stop the recording after the specified number of seconds.
-
-### `--in <path>`
-
-Render an input asciicast v2 file without running a command.
-
-### `--save-cast <path>`
-
-Save the recorded output as an asciicast v2 file.
-
-### `--embed-cast`
-
-Embed the input or recorded asciicast data in the SVG.
-
-### `--embed-logs`
-
-Embed diagnostic logs in the SVG.
-
-### `--embed-replay`
-
-Embed recorded keyboard input in the SVG.
-
-### `--embed-debug`
-
-Embed all diagnostic information in the SVG.
-
-### `--replay-save <path>`
-
-Save keyboard input during command execution to a file for later replay.
-
-### `--replay <path>`
-
-Replay saved keyboard input.
-
-### `--verbose [path]`
-
-Enable verbose logs. If a value is supplied, also save the logs to a file.
-
-### `-c, --with-command`
-
-Display the executed command at the beginning of the output.
-
-### `--header <text>`
-
-Override the command-line heading.
-
-### `--prompt <text>`
-
-Specify the prompt prefix.
-
-### `-d, --window [style]`
-
-Specify the window frame style. If omitted, `macos` is used.
-
-### `--pc-padding <number>`
-
-Override the padding around the desktop-style window.
-
-### `--opacity <number>`
-
-Set the background opacity from `0` to `1`.
-
-### `-t, --theme <id>`
-
-Specify the appearance theme ID. Can be specified multiple times.
-
-### `--forecolor <color>`
-
-Override the terminal text color.
-
-### `--backcolor <color>`
-
-Override the terminal background color.
-
-### `--margin <number>`
-
-Set the window frame margin.
-
-### `--padding <number>`
-
-Set the padding inside the shell.
-
-### `--background <value>`
-
-Specify a desktop background color or image. Specify it twice to create a gradient.
-
-### `--font <family>`
-
-Specify the CSS font family.
-
-### `--fontsize <px>`
-
-Specify the font size in pixels.
-
-### `--mask <pattern>`
-
-Mask the specified strings in the output. Can be specified multiple times.
-
-### `--mask-auto [bool]`
-
-Enable or disable automatic secret masking by Betterleaks. Enabled by default.
-
-### `--frame <index>`
-
-Output the specified frame from a video or multi-frame input as a still image.
-
-### `--time <sec>`
-
-Output a specified time, or a time range in `START-END` format, as a still image.
+Specifies terminal height in rows (lines of text). Default is `24`.
+Specifying `adjust` automatically fits height to the total line count of output.
 
 ### `--size <WxH>`
 
-Specify the output size. Accepted forms are `WIDTH`, `WIDTHx*`, `*xHEIGHT`, and `WIDTHxHEIGHT`.
+Specifies output pixel dimensions when rasterizing.
+Supports width and height such as `1200x800`, as well as aspect-ratio-preserving single-dimension syntax such as `1200x*` or `*x800`.
 
-### `--save-frames <dir>`
+### `--crop-top <value>`, `--crop-bottom <value>`
 
-Save each frame of an animation to the specified directory.
+Crops the top or bottom edges of the screen by a specified extent.
+Crop boundaries can be specified in pixels (`10px`), character cells (`2ch`), or the appearance of a specific string (`"build finished"`).
 
-### `--crop-top <value>`
+### `--crop-left <value>`, `--crop-right <value>`
 
-Crop the top by `px`, `ch`, or text position.
+Crops the left or right edges of the screen by a specified extent. Specified in pixels (`10px`) or character cells (`4ch`).
 
-### `--crop-right <value>`
+## Appearance and Theme Settings
 
-Crop the right by `px` or `ch`.
+### `-d, --window [style]`
 
-### `--crop-bottom <value>`
+Adds window decorations (a window frame) around the terminal.
+If the style name is omitted, `macos` is applied. Key styles include `macos`, `macos-pc` (with extra margin), `windows`, and `none` (no decoration).
 
-Crop the bottom by `px`, `ch`, or text position.
+### `-t, --theme <id>`
 
-### `--crop-left <value>`
+Specifies the appearance theme ID to apply. Specifying this multiple times layers color palettes and window themes together.
 
-Crop the left by `px` or `ch`.
+### `--forecolor <color>`, `--backcolor <color>`
 
-### `--no-loop`
+Individually overrides default foreground or background color using hex color codes like `#ffffff`.
 
-Do not loop animated SVGs.
+### `--opacity <number>`
+
+Specifies terminal background opacity between `0.0` (fully transparent) and `1.0` (fully opaque).
+
+### `--background <value>`
+
+Specifies a desktop background color or background image file path placed behind the window.
+Specifying two color codes consecutively automatically generates a smooth gradient background.
+
+### `--font <family>`
+
+Specifies the CSS font family used in the SVG (e.g. `JetBrains Mono, monospace`).
+
+### `--fontsize <px>`
+
+Specifies font size in pixels (default: `14`).
+
+### `-c, --with-command`
+
+Displays the executed command line (e.g. `$ npm test`) as a header at the very top of the terminal screen.
+
+### `--header <text>`, `--prompt <text>`
+
+Overrides the entire command header text or prompt symbol (default: `$`) displayed with `-c`.
+
+### `--margin <number>`, `--padding <number>`, `--pc-padding <number>`
+
+Fine-tunes outer window margins, inner terminal shell padding, and desktop frame spacing numerically.
+
+## Animation and Video Controls
 
 ### `--fps <number>`
 
-Specify the maximum frame sampling rate.
+Specifies maximum frame rate (sampling frequency per second) for videos and animated SVGs.
 
-### `--timing <deterministic|realtime>`
+### `--no-loop`
 
-Specify the video timing control mode.
+Disables automatic looping in animated SVGs, freezing playback on the final frame upon completion.
 
 ### `--sleep <sec>`
 
-Specify how many seconds to wait after recording ends.
+Specifies the duration in seconds to hold the final frame after video playback ends, preventing immediate looping back to the start.
 
 ### `--fadeout <sec>`
 
-Specify the video fade-out duration.
+Specifies the duration in seconds for a fadeout effect at the end of the video.
 
-### `--coalesce-ms <ms|auto>`
+### `--timing <deterministic|realtime>`
 
-Specify the interval, in milliseconds, for combining nearby output events. `auto` selects it automatically.
+Selects the timing control strategy for video playback.
+`deterministic` guarantees fixed sampling intervals, while `realtime` faithfully reproduces real-world elapsed time.
+
+### `--frame <index>`
+
+Extracts and outputs only the specified frame index as a still image from multi-frame recording data.
+
+### `--time <sec>`
+
+Extracts and outputs a specific elapsed timestamp (e.g. `2.5`) or start/end interval (e.g. `1.0-4.0`).
+
+### `--save-frames <dir>`
+
+Saves all still SVG frames produced during video generation as sequentially numbered files in the specified directory.
+
+## Recording and Replay
+
+### `--save-cast <path>`
+
+Saves output during execution as an asciicast v2 file, the standard terminal recording format.
+
+### `--in <path>`
+
+Renders an existing asciicast v2 recording file instead of executing a new command.
+
+### `--replay-save <path>`
+
+Records interactive human keyboard input during command execution into a reusable replay file.
+
+### `--replay <path>`
+
+Loads a saved replay file and automatically replays identical keystrokes to capture the screen.
+
+### `--timeout <sec>`
+
+Specifies the maximum execution wait time in seconds. Automatically terminates the process if it does not finish within this duration.
+
+## Secret Protection
+
+### `--mask <pattern>`
+
+Masks matching strings displayed on screen with asterisks. Can be specified multiple times.
+
+### `--mask-auto [bool]`
+
+Enables or disables automatic secret detection and masking via QuickLeaks (API tokens, private keys, PII, etc.; default: `true`).
+
+## Execution Environment and Advanced Controls
 
 ### `--no-resize`
 
-Do not resize the terminal; keep the initial TTY size.
+Maintains the initial startup TTY size without resizing by console2svg.
 
-### `--mouse`
+### `--mouse [bool]`
 
-Forward mouse tracking to the PTY in interactive mode.
+Forwards mouse tracking events from interactive screens to child processes (default: `true`), enabling mouse wheel scrolling in TUI tools.
 
 ### `--no-colorenv`
 
-Do not override the PTY color environment variables.
+Disables overriding color-related environment variables set on PTY startup (e.g. `COLORTERM=truecolor`).
 
 ### `--no-delete-envs`
 
-Do not delete CI environment variables.
+Preserves CI-related environment variables (such as `CI` or `TF_BUILD`) passed into the child process without automatically stripping them on PTY startup.
 
-### `--adjust <mode>`
+### `--coalesce-ms <ms|auto>`
 
-Choose how SVG text length is adjusted: `spacing` or `spacingAndGlyphs`.
+Specifies the coalescing time window (in milliseconds) that batches fragmented output events into single frames.
 
-### `--svg-converter <converter>`
+### `--adjust <spacing|spacingAndGlyphs>`
 
-Choose how to rasterize SVG: `auto`, `ffmpeg`, `rsvg-convert`, or `resvg`.
+Selects the SVG `lengthAdjust` attribute method used to align text length with cell widths.
 
-```bash title="Terminal" "-w 100 -h 24 -c"
-console2svg capture -w 100 -h 24 -c -- fastfetch
+### `--svg-converter <auto|ffmpeg|rsvg-convert|resvg>`
+
+Explicitly specifies the converter engine used to rasterize SVG into PNG or video formats.
+
+### `--verbose [path]`
+
+Displays verbose diagnostic logs to standard error. If a path is specified, logs are written to that file.
+
+## Programmatic and AI Agent Integration
+
+### `--json`
+
+Outputs capture execution results in JSON format to standard output.
+Contains plain text screen content, exit code, and file paths to generated images and preview frames, designed for AI agents and automation scripts to parse results easily.
+
+```bash title="Terminal"
+console2svg capture --json -- npm test
 ```
+
+The output JSON includes the following fields:
+
+* `schemaVersion`: Version of the JSON schema
+* `status`: Execution outcome (e.g. `completed`)
+* `exitCode`: Exit code of the executed child process
+* `durationMs`: Total command execution duration in milliseconds
+* `screen`: Terminal dimensions, plain text screen content (`text`), and truncation flag (`truncated`)
+* `artifacts`: Path and format of the primary generated output file
+* `frames`: List of file paths to representative preview frames (still SVGs) generated during video capture (up to 12 frames)
+
+When `--json` is specified, all diagnostic messages are separated to standard error, ensuring standard output contains pure JSON. Note that `--stdout` and `--json` cannot be used simultaneously.

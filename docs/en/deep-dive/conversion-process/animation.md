@@ -1,103 +1,135 @@
 ---
-title: Building animated SVG
-description: How retained terminal states become shared row definitions and discrete SMIL visibility intervals.
+title: Generating Animated SVG
+description: How terminal state timelines are aggregated into row definitions and emitted as lightweight animated SVGs via discrete SMIL visibility.
 ---
 
-Animated SVG starts from terminal states, not from screenshots.
-`AnimatedSvgRenderer` replays the recording through the same terminal emulator used for still output, retains the states that matter at the configured timing, and then converts those states into reusable row definitions.
+console2svg's animated SVG avoids storing full-screen image sequences for each frame.
+Instead, it feeds recording data sequentially into the terminal emulator, aggregates only modified rows into reusable definitions, and controls row display timing using **SMIL** (Synchronized Multimedia Integration Language: a W3C standard specification for describing animation timing and attribute transitions in XML).
+This architecture keeps file sizes and DOM element counts minimal even for lengthy recordings.
 
-## Retaining terminal states
+## Determining Frame Retention
 
-A PTY or asciicast event is not automatically an animation frame.
-One application redraw can arrive as several writes, and some events change parser state without changing visible cells.
+Event boundaries in terminal recordings do not correspond directly to animation frame boundaries.
+A single screen update may arrive split across multiple PTY reads or writes, and certain control sequences alter internal parser state without changing any visible cells.
 
-The production replay path compares `ScreenBuffer.GetContentSignature()` after each event.
-This signature excludes the cursor, so cursor-only changes do not force a new content snapshot.
-When `--fps` is positive, a minimum frame interval is applied.
-If several visible changes occur inside that interval, the latest changed state is kept as a pending frame.
+To resolve this, immediately after processing each event, `ScreenBuffer.GetContentSignature()` computes a hash of the visible screen content and compares it with the preceding frame.
+Because this signature excludes cursor position and blink state, cursor movement alone does not trigger new content frames.
 
-Snapshots use copy-on-write rows.
-Creating a visible snapshot shares unchanged row arrays with the live screen, and a row is copied only before a later mutation.
-Updating a pending frame copies row references and signature metadata instead of deep-copying the complete cell grid.
+In addition, the maximum frame rate configured by `--fps` is enforced.
+When multiple display updates occur within a single time window, intermediate states are discarded, and only the latest settled state within that interval is retained as a pending frame.
 
-The first and final states are retained.
-If time normalization collapses several frames onto the same timestamp, their times are spread slightly so that the SMIL key-time sequence remains ordered.
+Snapshots use row-level copy-on-write (CoW).
+When a snapshot is created, unmodified row array references are shared with the active buffer, and a row's cell array is cloned into new memory only when subsequent mutations occur on that row.
+Consequently, evaluating frames at high frequencies avoids the memory consumption and allocation overhead of deep-copying the complete cell grid.
 
-## Cataloging rows instead of frames
+## Cataloging Unique Rows
 
-Once the retained states are known, console2svg does not serialize every complete screen.
+Even after all retained frames are determined, console2svg never emits complete screens as SVG elements for every frame.
+Terminal displays often maintain identical content across long durations on many rows, such as shell prompts and status bars.
 
-`PrepareAnimatedRows` visits each visible row and reads its row visual signature.
-The signature selects candidate definitions, but equality is confirmed against the actual row cells before reuse.
-This keeps the signature as an acceleration structure rather than a correctness assumption.
+The renderer's `PrepareAnimatedRows` method scans all visible rows across all frames to construct a **row catalog**.
+It searches existing rows using each row's visual signature (a hash computed from characters, colors, and attributes).
+When a signature matches, it compares all cell data to verify identity, ensuring that hash collisions never cause incorrect row definitions to be reused.
+Only unique rows are written to the SVG `<defs>` element.
 
-When a new unique row is discovered, its text styles are collected at the same time.
-Repeated rows therefore do not need a separate style scan in a later pass.
+Simultaneously, necessary character styles (CSS classes) are collected as unique rows are discovered.
+Consolidating parsing and definition collection into a single pass eliminates the need for a separate scan over all frames just to collect styles.
 
-Each frame receives an array of row-definition indices.
-The SVG can then define each unique row once under `<defs>` and place it with `<use>` wherever that row state is needed.
+## Expressing Fine-Grained Changes with Row Deltas
 
-## Encoding small row changes as deltas
+When only a few characters change within a single row—such as during interactive command typing or a clock's seconds display—**row deltas** are applied.
+A row delta references the preceding frame's row definition via a `<use>` element and overlays only the modified column range.
 
-Typing and status displays often change only a few columns of a row.
-For those cases, a new row definition can reference the previous definition and draw only the changed column range.
+```xml title="Row delta definition example"
+<defs>
+  <!-- Base row definition -->
+  <g id="r1">
+    <text y="14" fill="#cdd6f4">Building project... [    ]</text>
+  </g>
 
-Delta rows are deliberately restricted.
-The changed range must be no more than 16 columns and no more than one quarter of the visible row, and a delta chain may be at most four levels deep.
-The range is expanded when it touches a wide-character continuation or the leading half of a wide character.
-
-Manual mask patterns disable this optimization.
-A secret pattern may span an unchanged prefix and a changed suffix, so rendering the two portions independently could prevent the complete pattern from being detected.
-
-## Reusing rendering workspace
-
-Row definitions still have to be lowered to text, rectangles, box-drawing paths, block elements, and mask overlays.
-The renderer reuses a `FrameRenderWorkspace` for temporary segment lists and string builders while emitting definitions.
-This avoids allocating the same kinds of working collections for every unique row.
-
-Visible rows are exposed as spans and reused inside the inner column loop.
-The renderer does not repeatedly call a general cell accessor for every cell when scrollback is not involved.
-
-## Switching rows with SMIL
-
-For each physical row, consecutive frames that reference the same row definition are combined into one interval.
-The SVG contains one `<use>` for that interval with an animation such as:
-
-```xml title="output.svg"
-<animate
-  attributeName="display"
-  values="none;inline;none"
-  keyTimes="0;0.25;0.5"
-  calcMode="discrete"
-  dur="4s"
-/>
+  <!-- Row definition inheriting r1 and overriding only 4 characters of the progress bar -->
+  <g id="r2">
+    <use href="#r1"/>
+    <!-- Override background and text for modified columns (columns 21-24) -->
+    <rect x="176.4" y="0" width="33.6" height="18" fill="#11111b"/>
+    <text x="176.4" y="14" fill="#a6e3a1">====</text>
+  </g>
+</defs>
 ```
 
-`calcMode="discrete"` changes values without interpolation.
-That matches a terminal state transition: a row is one state before the boundary and another state after it.
+Row deltas are applied selectively.
+The delta range is restricted to no more than 16 columns and at most one quarter of the row width, and the nesting depth of `<use>` references is capped below 4 levels.
+Dividing deltas too finely increases SVG renderer reference resolution overhead, degrading render performance.
 
-Looping output adds `repeatCount="indefinite"`.
-Non-looping output freezes the final animation state instead.
-Fade-out is applied to the containing group after the final hold period rather than by altering every row animation.
+Furthermore, when a delta boundary intersects the right half of a full-width character (continuation cell), the target range expands outward to prevent splitting the character.
+When manual mask patterns are specified for a row, row deltas are automatically disabled to prevent secret strings spanning the delta boundary from escaping detection.
 
-Text blink is separate from screen-state animation and remains a CSS animation.
+## Switching Display Intervals with SMIL
 
-## Keeping cursor state separate
+When displaying cataloged row definitions on screen, SMIL `<animate>` elements control their visibility.
+Consecutive frames referencing the same row definition on the same physical line are grouped into a single interval (run), represented by a `<use>` element.
 
-Cursor visibility and position are grouped into their own consecutive runs.
-A cursor move can therefore change only the cursor definition while the text rows continue to reference the same row content.
+Visibility transitions use `calcMode="discrete"`, which eliminates intermediate interpolation.
+Terminal displays do not transition smoothly; they switch discretely between character states at distinct moments.
 
-This separation also explains why content-frame reduction ignores the cursor.
-Cursor timing is preserved at the animation layer without forcing otherwise identical terminal rows to be duplicated.
+```xml title="Animated SVG row reference structure example"
+<svg xmlns="http://www.w3.org/2000/svg" ...>
+  <defs>
+    <!-- Cataloged unique row definitions -->
+    <g id="r1">
+      <text y="14" fill="#cdd6f4">$ git commit -m "update"</text>
+    </g>
+    <g id="r2">
+      <text y="14" fill="#a6e3a1">[main 4f1a2b3] update</text>
+    </g>
+  </defs>
 
-## Selecting a time range
+  <!-- Physical line 1: transitions from r1 to r2 over time -->
+  <g class="c2s-line" transform="translate(0, 0)">
+    <!-- r1 displayed from 0.0s to 2.0s (first 50% of 4s duration) -->
+    <use href="#r1">
+      <animate
+        attributeName="display"
+        values="inline;none"
+        keyTimes="0;0.5"
+        calcMode="discrete"
+        dur="4s"
+        repeatCount="indefinite"
+      />
+    </use>
 
-When a start time is requested, the last state before the range is retained as the initial state if one exists.
-The selected timeline is then rebased so that the range begins at zero.
+    <!-- r2 displayed from 2.0s to 4.0s (second 50%) -->
+    <use href="#r2">
+      <animate
+        attributeName="display"
+        values="none;inline"
+        keyTimes="0;0.5"
+        calcMode="discrete"
+        dur="4s"
+        repeatCount="indefinite"
+      />
+    </use>
+  </g>
+</svg>
+```
 
-`--sleep` extends the final visible state.
-Without an explicit value, the renderer still provides a minimum final hold so that the last state is not removed at the instant it appears.
-`--fade-out` begins after that hold.
+Looping animations include `repeatCount="indefinite"`, while non-looping animations freeze their final state with `fill="freeze"`.
+End-of-video fade-out effects animate the `opacity` of the top-level parent group rather than altering individual row animations.
+Terminal character blinking (SGR 5) is implemented as an independent CSS keyframe animation rather than screen-state switching.
 
-Full-screen applications commonly leave the alternate screen near process exit.
-When the tail consists only of restoring an empty screen, the renderer can trim that restoration so the useful terminal state remains visible at the end.
+## Cursor Rendering Separated from Content
+
+Cursor position and visibility are rendered in a distinct layer completely decoupled from the row catalog.
+If row definitions had to be regenerated whenever the cursor blinks or moves, catalog deduplication would break down.
+
+Emitting cursor timing changes as dedicated animation runs reproduces smooth cursor movement without impairing row caching efficiency.
+
+## Time Axis and Trailing Display Adjustments
+
+When trimming the start time with `--time`, the latest screen state preceding that timestamp is automatically inserted as the initial frame, preventing a blank screen at the start of the trimmed window.
+
+At recording end, the hold time specified by `--sleep` is appended.
+Even without an explicit flag, a minimum hold duration is maintained so that the final command output does not immediately vanish into a loop restart.
+
+Full-screen applications such as vim or htop often switch from the alternate screen back to the primary screen upon exit, clearing the display before returning to the shell prompt.
+When the final recording event represents this screen restoration and results in an empty display, console2svg discards that restoration event and retains the last useful interactive screen as the final frame.

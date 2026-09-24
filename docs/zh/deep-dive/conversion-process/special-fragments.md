@@ -1,52 +1,45 @@
 ---
-title: 渲染框线和块元素
-description: 如何把依赖 font glyph 时容易出现缝隙的 terminal geometry 转换为 cell 对齐的 SVG shape，并合并成紧凑路径。
+title: 制表符与块元素的矢量化
+description: 为避免字体渲染差异导致的缝隙与错位，将制表符号和块元素转换为精确几何图形并合并的工作机制。
 ---
 
-部分 Unicode 字符比普通文字更直接地表示 terminal geometry。
-框线字符组成连续 border，block element 表示 cell 的固定填充比例。
+终端 TUI 应用程序广泛使用各类 Unicode 符号来呈现窗口边框、分割线及进度条。
+然而，若将这些符号作为常规字体字形直接放入 `<text>` 元素中输出，相邻单元格边界处常常会出现不自然的微小缝隙或线条粗细不一的现象。
+即便是在等宽字体中，不同渲染环境（浏览器、操作系统、抗锯齿配置）对字体字形包围盒（bounding box）和基线位置的解析也存在微妙差异。
+console2svg 为了根除这种排版瑕疵，将 **制表符**（Box-drawing 字符）与 **块元素**（Block elements）脱离文本字形，直接转换为基于终端单元格网格尺寸精确计算的纯矢量图形（`<path>` 与 `<rect>`）。
 
-只依赖 font glyph 渲染这些字符可能产生可见缝隙。
-即使使用 monospace font，glyph bearing、stroke width、hinting 和 antialiasing 仍会随 font、OS 和 SVG renderer 改变。
-console2svg 会把支持的几何字符转换为由 terminal cell 尺寸计算出的 SVG shape。
+## 制表符向线段几何体的分解与合并
 
-## 把框线字符转换为连接线段
+用于绘制框线的 **制表符**（如 `─`、`│`、`┌`、`┐` 等）被分解为从单元格中心点向上下左右各方向延伸的连通性信息。
+线段粗细（细线、粗线）、双线及局部线段等不同变体，也会分别转换为对应的线宽与偏移量信息。
 
-框线字符会被解释为从 cell 中心连接到左、右、上、下边缘的方向。
-light 和 heavy variant 使用不同线宽。
-short-line variant 只生成对应的局部 segment。
+渲染器在遍历单元格时，绝不会为每个字符立即生成独立的 SVG 路径。
+而是首先收集全屏所有的水平线段与垂直线段，将具有相同坐标轴、相同颜色与相同线宽的线段进行排序，随后将端点相接或重叠的连续线段合并为一条长线段。
 
-renderer 不会为每个字符立即写一个 SVG path。
-它先收集水平和垂直 half-segment，再按 axis position、color 和 stroke width 排序。
+合并判断的容差并不是固定的绝对像素值，而是相对于单元格尺寸动态计算的比例值。
+这避免了在字号极小的设置下，因绝对坐标过于接近而误将原本分离的不相关线段错误粘连的问题。
+合并后的线段被视作矩形路径处理，相同颜色的路径被归并入同一个 `<path d="...">` 属性中，在大幅削减 DOM 元素数量的同时显著提升渲染性能。
 
-能够接触或重叠的兼容线段会合并。
-merge tolerance 相对于 cell 尺寸计算，因此在极小 font size 下也不会仅因为绝对坐标接近就连接实际分离的线段。
+## 基于贝塞尔曲线绘制圆角边框
 
-合并后的 line rectangle 会按 color 分组并输出成紧凑 path data。
-这样既减少 SVG element 数，也能减少缩放后相邻 per-cell stroke endpoint 出现细缝的情况。
+使边框拐角圆润化的圆角制表符（`╭`、`╮`、`╯`、`╰`）与正交直线进行区分处理。
+系统并不强行将其套入正交线段模型，而是贴合单元格的网格坐标，作为独立的 **二次贝塞尔曲线**（Quadratic Bézier curve：由 3 个控制点确定平滑圆弧的数学表达）生成平滑圆弧路径。
+这使得现代 TUI 工具中流畅圆润的窗口边角得以精确几何还原。
 
-`╭`、`╮`、`╯`、`╰` 等圆角通过 quadratic Bézier curve 单独绘制。
-它们使用相同 cell coordinate system，但不会强行转换成普通正交连接模型。
+## 块元素的网格矩形化
 
-## 把 block element 转换为矩形
+填充单元格区域的 **块元素**（全填充 `█`、上下半块 `▀` `▄`、左右半块 `▌` `▐`、四分之一块等）根据单元格的宽度和高度计算出精确的几何矩形。
 
-表示 cell 填充比例的 block element 会根据 cell width 和 height 计算 rectangle。
+完全忽略字体字形的边距（bearing），直接生成严格贴合终端单元格网格边界的 `<rect>`，因此即便连续排列多个块元素也不会产生任何缝隙。
+连续出现且颜色相同的块元素矩形在输出前会尽可能合并为一个大矩形。
 
-上下分数、左右分数和 quadrant 组合因此对齐到 cell boundary，而不是依赖选定 font 的 glyph box。
+需要说明的是，用于表现网格阴影的着色字符（`░`、`▒`、`▓`）并不执行几何图形转换，而是作为常规文字文本输出。
+因为这些字符不是纯色色块，而是依赖特定字体的点阵密度纹理来表现视觉深浅的符号。
 
-颜色相同且可以组成连续区域的相邻 block rectangle 会在序列化前合并。
-减少重复 geometry 的同时，不改变占用的 terminal cell。
+## 文本序列与几何元素的边界分离
 
-shade character 保持为 text。
-它们依赖 font 的点阵或纹理表现，而不是连续 solid area。
-替换成实心矩形会改变字符本身的视觉语义。
+在输出文本字符串时，一旦遇到制表符或块元素等几何图形字符，当前正在构建的文本元素（`<text>`）会立即被截断并关闭。
 
-## 把 geometry 和 text run 分开
-
-遇到需要作为 shape 绘制的字符时，当前 foreground text run 会结束。
-
-这样可以避免 `textLength` 把实际上由独立 shape 占据的 cell 也算入文字伸缩范围。
-shape 后面的普通文字从其 terminal column 开始新的 text run。
-
-静态 SVG、动画 row definition 和视频栅格化使用的 SVG frame 共用同一套 geometry conversion。
-输出模式不会改变 terminal border 的构造方式。
+在 SVG 中，通常使用 `textLength` 属性强制对齐等宽字体的排版跨度。
+若将几何图形字符混杂在文本元素内部，`textLength` 触发的字间距自动拉伸调整将导致几何图形本应严格对齐的单元格网格坐标发生扭曲。
+在绘制完几何图形后，紧随其后的下一个字符单元格重新开启全新的文本元素，从而保证了在文本与图形混排的复杂界面中，各个元素均能维持亚像素级的零偏差精确对齐。

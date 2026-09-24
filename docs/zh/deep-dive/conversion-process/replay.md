@@ -1,69 +1,49 @@
 ---
-title: 记录和播放输入 replay
-description: 如何把交互输入正规化为带时间的 key event，并在播放时转换回 VT byte sequence 送入 PTY。
+title: 输入回放的记录与播放
+description: 键盘输入的语义抽象、时间信息的归一化、播放时 VT 字节序列的还原及 PTY 注入机制。
 ---
 
-replay 保存的是输入操作，不是 terminal output。
-播放时会重新在 PTY 中启动 command，并在记录的时刻发送这些操作，再重新捕获因此产生的 terminal output。
+回放（replay）功能记录并保存的是人类在键盘上执行的输入操作，而非终端的屏幕输出本身。
+在播放已记录的操作时，系统通过 PTY（伪终端）重新启动指定命令，并严格按照预定的时间轴注入按键输入，进而重新捕获由此产生的屏幕画面。
+与直接回放预录输出数据的 asciicast 不同，输入回放能够完整复现命令本身的真实执行过程。
 
-文件保存跨 platform 的 key 含义，而不是 Windows console event 或 Unix input structure。
+## 平台无关的按键语义存储
 
-## 正规化 replay 时间
+按键录制数据（回放文件）中绝不会直接记录特定操作系统的内部数据结构，例如 Windows 控制台事件结构体或 Unix 终端控制标志。
+为了实现跨操作系统与不同键盘布局的可靠复现，系统使用抽象的通用模型保存按键语义。
 
-第一个 input event 可以带有从录制开始计算的绝对 `time`。
-后续 event 可以通过 `tick` 保存相对前一个 event 的时间差。
+常见按键统一记录为规范化名称，例如 `ArrowUp`、`Home`、`Delete`、`F1`～`F12` 等；Shift、Alt、Ctrl、Meta（Windows 键或 Command 键）则作为独立的修饰键标志位保存。
+输入的可见字符直接保存为 Unicode 文本而非硬件扫描码（scancode），包括表情符号在内的 **代理对**（Surrogate Pair：用两个 16 位值表示一个字符的 UTF-16 表达形式）也被视作单一逻辑按键。
+对于无法纳入常规按键模型的特殊字节序列，系统提供了 `raw` 事件直接存储原始字节数据。
 
-读取时，有 `time` 的 event 优先使用绝对值。
-只有 `tick` 的 event 会累加到前一个时间，最终转换为统一的 absolute timeline。
+## 时间维度的绝对时间线归一化
 
-metadata 还保存 format、application 信息和 total duration。
-录制结束边界不能只由最后一次 key 输入推导，因为输入结束后子 process 可能继续停留在 prompt。
+回放文件中的每个事件均持有表示从录制开始算起绝对秒数的 `time`，或表示相对于前一事件增量秒数的 `tick`。
 
-播放会把 total duration 加1秒作为上限。
-超过该时间仍未完成时会报告 timeout。
+在读取文件时，带有 `time` 的事件直接采用该绝对值，仅包含 `tick` 的事件则依次累加到此前累积的时间戳上，从而将全部事件归一化为单一的单调绝对时间轴。
+此外，元数据中还记录了总耗时（`duration`）。
+考虑到所有按键发送完毕后子进程往往会停留在 Shell 提示符等待用户退出的情况，系统将总耗时额外增加 1 秒的时间点作为安全超时上限，以平稳结束进程。
 
-## 不让 live input 的 read 边界破坏 VT sequence
+## 输入流的数据分块容错与转义解析
 
-同时保存 replay 时，forwarding path 仍会先把原始 byte 写入 PTY。
+在实时录制交互输入时，从宿主终端接收到的字节流会立即透传写入子进程的 PTY。
+与此同时，负责将其转换为录制模型的解析通路采用了有状态的 UTF-8 解码器。
 
-用于 replay model 的解释使用 UTF-8 decoder。
-VT key sequence 是 ASCII。
-如果让 legacy console code page 解释 ESC，在某些 Windows encoding 中可能会消费或重新解释后续 byte。
+键盘发送的转义序列常常由于操作系统的读取分块边界而被切断（例如首个 chunk 仅包含起始的 ESC，而后续的 CSI 参数落入下一个 read）。
+在此类情况下，系统会将未完成的转义序列暂存在内部缓冲区中，与下一次到达的字节流拼接后再继续解析。
+这防止了因读取边界被切断而将不完整的转义序列误判为孤立按键（如误判为单按了 ESC 键）。
 
-stream read 可能在 CSI、SS3、OSC、DCS、APC、PM 或 SOS 中间结束。
-parser 会检测末尾未完成的 escape sequence，并把 remainder 带到下一块输入。
+## 从按键事件还原为 VT 字节序列
 
-terminal protocol control string 不一定是用户主动输入的 key。
-这类 terminal traffic 不会被当作普通用户 replay event 保存。
+在执行播放时，已保存的按键名称与修饰键组合会被逆向还原为终端应用程序可理解的 **VT 字节序列**（转义序列）。
 
-## 保存 key 的语义而不是 host key code
+Enter、Tab、方向键及功能键生成标准的 VT 控制序列；Ctrl 键与英文字母的组合转换为对应的 ASCII 控制字符（0x01～0x1A）；Alt 键组合则在序列前方附加 ESC 前缀；普通打印文字则编码为 UTF-8 字节数组。
+生成的字节流被推入与交互式捕获完全相同的 PTY 写入流中，因此对于被执行的程序而言，完全无法区分这是自动化回放还是人类的手工敲击。
 
-常见 key 被正规化为 `ArrowUp`、`Home`、`Delete`、`F1` 到 `F12` 等名称。
-Shift、Alt、Ctrl、Meta 作为独立 modifier 保存。
+## 时间调度与延迟的自动追赶
 
-printable Unicode 保存为文字，而不是 platform key code。
-surrogate pair 保持为一个 logical key value。
+回放流在异步等待直至达到每个事件的预定发送时间后，才将对应字节流写入 PTY。
 
-普通 key model 无法表达的输入可以使用 `raw` event。
-
-## 把 replay event 还原为 VT byte
-
-播放时，key name 和 modifier 会转换成 terminal application 期待的 VT sequence。
-
-Enter、Tab、arrow、navigation key 和 function key 使用相应 escape sequence。
-Ctrl 加 alphabet 转换为 control byte。
-Alt 可通过 ESC prefix 表示，printable text 编码为 UTF-8。
-
-这些 byte 会写入与 live input 相同的 PTY writer。
-keyboard 和 replay 因此共享相同的 output-capture terminal path。
-
-## 按时间发送而不改变顺序
-
-replay stream 会先准备 event 的 byte 表示，并在 consumer read 时等待目标 event 的计划时间。
-
-如果处理已经落后于计划时间，不会再增加额外 delay。
-stream 会保持原始顺序并继续追赶。
-
-单个 event 可能大于 consumer 的 read buffer。
-stream 会保存当前 event 内的 offset，通过多次 read 返回完整数据。
-stream boundary 的分割不会丢失剩余输入。
+然而，若由于宿主机系统负载过高或命令本身的处理阻塞导致当前执行时间已落后于预定时间轴，调度器不会插入额外的等待时间，而是立即发送下一个事件。
+这使得回放过程在严格保持事件执行顺序的前提下，以最短时间追赶上原本的目标时间线。
+此外，即便是单次按键生成的字节序列超出了读取端的缓冲区容量，回放流也会通过内部偏移量分块输出，确保输入数据绝不发生丢失。

@@ -1,78 +1,62 @@
 ---
 title: batch
-description: 从 Markdown 的 c2s 标记批量生成图片的命令。
+description: 从 Markdown 中的标记自动生成图片并同步文档与资产的命令。
 ---
+
+`batch` 是一组子命令，用于扫描文档站点（如 Astro Starlight、Docusaurus、VitePress 等）或 README 的 Markdown/MDX 文件，根据正文中的捕获指令标记批量生成并同步图片。
+它可以防止文档中的屏幕截图过时，并在 CI/CD 流水线中始终自动更新最新的执行结果图片。
 
 ## `batch markdown`
 
+检测 Markdown 或 MDX 文件中编写的 `c2s::` 标记，执行指定命令，并生成或更新紧随其后的图片链接。
+
 ```bash title="Terminal"
-console2svg batch markdown [--input <path>] [--output <dir>] [--link-base <path>] [--filter <glob>] [--dry-run] [--placeholder]
+console2svg batch markdown [options]
 ```
 
-执行 Markdown 或 MDX 中的 `c2s::` 标记，并生成或更新其后的图片链接。
+### 标记语法
 
-实际生成成功后，会自动更新清单文件 `<output>/assets.json`。筛选生成会保留未选中 Markdown 所拥有的清单条目。dry run 和 placeholder 模式不会修改清单。
+以 Markdown 或 MDX 注释的形式编写运行选项和命令行。
 
-### `-i, --input <path>`
+```markdown
+<!-- c2s:: -w 100 -h 10 -c -d macos -- fastfetch -->
+<img src="/assets/fastfetch.svg" alt="fastfetch output" />
+```
 
-指定 Markdown 文件或目录（默认值：`docs`）。
+在 MDX 中也可以使用 JSX 注释语法：
 
-### `-o, --output <dir>`
+```mdx
+{/* c2s:: -w 100 -c -- git status */}
+```
 
-指定生成图片的输出目标（默认值：`assets`）。
+运行 `batch markdown` 后，紧随标记后的图片元素（`<img>` 标签或 `![]()` 语法）的链接 URL 会自动更新为生成的图片文件。
+此外，输出目录中会自动生成资产清单文件（`assets.json`），记录命令及输出文件的哈希值。
 
-### `--link-base <path>`
+### 选项
 
-不使用相对于各 Markdown 文件的路径，而是在指定的根相对公开 URL 下插入图片链接。例如，`--link-base /assets` 会生成以 `/assets/` 开头的链接。
-
-### `--filter <glob>`
-
-用 glob 按相对于输入目录的 filepath 进行筛选。
-`*` 会跨目录分隔符匹配。可以多次指定。
-
-### `--dry-run`
-
-不修改文件，只显示计划执行的作业。
-
-### `--placeholder`
-
-不执行命令，只创建缺失的空资源和 Markdown 链接。不会更改现有资源。
-
-### `--verbose [path]`
-
-启用详细日志，并在需要时保存到文件。
+* `-i, --input <path>`：指定目标 Markdown 文件或文档目录的根路径（默认值：`docs`）。
+* `-o, --output <dir>`：指定保存生成图片文件的输出目录（默认值：`assets`）。
+* `--link-base <path>`：指定插入 Markdown 文件的图片链接的公开 URL 前缀（例如：指定 `--link-base /assets` 时，Markdown 中的链接将变为 `/assets/filename.svg`）。
+* `--filter <glob>`：按相对于输入目录的路径使用 glob 模式筛选要处理的文件（可多次指定）。
+* `--dry-run`：不生成或重写文件，仅显示计划执行的任务列表。
+* `--placeholder`：不实际执行命令，仅创建缺失的空资产文件并插入链接（不修改现有资产）。
+* `--verbose [path]`：启用详细日志，并可在需要时保存到指定文件。
 
 ## `batch restore`
 
+参考在远程环境或其他分支中已生成的清单文件（`assets.json`），批量下载并恢复对应的图片资产至本地环境。
+
 ```bash title="Terminal"
-console2svg batch restore <source> --output <dir> [--filter <glob>] [--force] [--prune] [--dry-run]
+console2svg batch restore <source> --output <dir> [options]
 ```
 
-指定已生成的清单文件，从中下载相关资源并放置到本地。
-在文档站点发布时执行 `batch markdown` 后，指定该清单即可把生成结果复制到本地环境中。
+适用于将 CI 环境中通过 `batch markdown` 生成并发布的图片快速同步到本地开发环境或部署构建环境。
 
-### `<source>`
+### 参数与选项
 
-获取 `assets.json` 的来源：本地清单文件或其所在目录、提供原始清单的 HTTP(S) URL，或 `owner/repository@main/path/to/assets` 形式的 Git 来源。
-
-### `-o, --output <dir>`
-
-指定恢复图片的放置目录。必须指定。
-
-### `--filter <glob>`
-
-仅恢复匹配的逻辑资源路径及其所需的对象。可以多次指定。
-
-### `--force`
-
-即使本地大小和 SHA-256 已一致，也重新下载这些条目，而不是跳过。
-
-### `--prune`
-
-删除先前本地 `assets.json` 管理、但在恢复结果中已不存在的过期路径。无关文件和被 `--filter` 排除的条目不会被删除。
-
-### `--dry-run`
-
-不修改文件，只显示计划执行的内容。
-
-标记的详细格式请参阅[同步文档和图片](../../automation/document-image-sync.mdx)。
+* `<source>`（必选）：清单文件（`assets.json`）的获取来源。除本地文件路径外，还可以指定 HTTP/HTTPS URL 或 Git 仓库 URL。
+* `-o, --output <dir>`（必选）：指定恢复和放置图片文件的目录。
+* `--filter <glob>`：按清单中的路径使用 glob 模式筛选要恢复的文件。
+* `--force`：即使本地与远程的内容哈希（SHA）一致，也不跳过，强制重新获取。
+* `--prune`：批量删除未在清单中记录、仅存在于本地输出目录中的多余图片文件。
+* `--dry-run`：不实际下载或删除，仅显示计划执行的变更内容。

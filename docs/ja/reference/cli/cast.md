@@ -1,134 +1,60 @@
 ---
 title: cast
-description: asciicast v2ファイルを描画するコマンド。
+description: asciicast v2 録画ファイルを読み込み、SVG 画像や動画としてレンダリングするコマンド。
 ---
 
 ```bash title="Terminal"
 console2svg cast <cast> [options]
 ```
 
-asciicast v2のイベントを端末画面として再生し、SVGまたはアニメーションSVGを生成します。
+`cast` は、端末録画ツール（asciinema など）や console2svg 自身によって作成された **asciicast v2** 形式のファイル（`<cast>`）を読み込み、端末画面として再生してベクター画像（SVG）や動画へ変換するサブコマンドです。
+子プロセスを新たに起動することなく、既存の録画データから静止画やアニメーション SVG、PNG、MP4 などを高精度にレンダリングできます。
+
+## コマンドの動作
+
+指定された asciicast ファイルに含まれる端末出力イベントと時間情報を端末エミュレーターへ流し込み、画面状態を再現します。
+`-v` を指定した場合は全イベントの時系列変化を含むアニメーション SVG や動画を生成し、指定しない場合は最終的な到達画面を 1 枚の静止画として出力します。
 
 ## オプション
 
-### `-o, --out <path>`
+`cast` では、新規コマンド実行に関するオプション（コマンドライン指定や環境変数の削除など）を除く、`capture` と共通のレンダリング設定を利用できます。
 
-### `--stdout`
+### 出力とフォーマット
 
-出力ファイルを指定するか、SVGを標準出力へ書き出します。
+* `-o, --out <path>`: 出力ファイルパスを指定します（拡張子に応じてフォーマットを自動判定）。
+* `--format <format>`: 出力形式を明示的に指定します（`svg`、`png`、`gif`、`mp4` など）。
+* `-v, --video`: アニメーション SVG または動画形式で出力します。
+* `--stdout`: 生成された SVG を標準出力へ直接出力します。
 
-### `-m, --mode <image|video>`
+### 端末サイズと画面トリミング
 
-### `-v, --video`
+* `-w, --width <int|adjust>`, `-h, --height <int|adjust>`: 端末の横幅（文字数）と高さ（行数）を指定します。`adjust` を指定すると内容に合わせて調整されます。
+* `--size <WxH>`: 出力画像のピクセル寸法を指定します。
+* `--crop-top`, `--crop-bottom`, `--crop-left`, `--crop-right`: 画面の上下左右をピクセル単位（`px`）または文字単位（`ch`）で切り取ります。
 
-出力モードを指定するか、アニメーションSVGを出力します。
+### 外観とテーマ
 
-### `-w, --width <int|adjust>`
+* `-d, --window [style]`: ウィンドウ装飾スタイル（`macos`、`macos-pc`、`windows` など）を指定します。
+* `-t, --theme <id>`: 外観テーマの ID を指定します。
+* `--forecolor <color>`, `--backcolor <color>`: 前景色または背景色を上書きします。
+* `--background <value>`: ウィンドウ背面の背景色または画像ファイルを指定します。
+* `--opacity <number>`: 端末背景の不透明度（`0.0`〜`1.0`）を指定します。
+* `--font <family>`, `--fontsize <px>`: フォントファミリーとフォントサイズを指定します。
+* `-c, --with-command`: 画面上部にコマンドヘッダーを表示します。
 
-### `-h, --height <int|adjust>`
+### 再生・アニメーション制御
 
-端末の幅と高さを指定します。`adjust`では入力に合わせて調整します。
+* `--frame <index>`: 指定したフレーム番号を静止画として切り出します。
+* `--time <sec>`: 指定した時刻、または `START-END` 形式の区間を静止画やアニメーションとして切り出します。
+* `--fps <number>`: 最大サンプリングレートを指定します。
+* `--no-loop`: アニメーション SVG のループ再生を無効化します。
+* `--sleep <sec>`: 再生完了後の最終フレーム維持時間を秒数で指定します。
+* `--fadeout <sec>`: 動画末尾のフェードアウト効果の時間を指定します。
+* `--save-frames <dir>`: 各フレームの静止画 SVG を指定ディレクトリに連番保存します。
 
-### `--timeout <sec>`
+### マスキングと診断
 
-### `--sleep <sec>`
-
-### `--fadeout <sec>`
-
-処理時間、終了後の待機時間、動画のフェードアウト時間を指定します。
-
-### `--verbose [path]`
-
-詳細ログを有効にし、必要ならファイルへ保存します。
-
-### `-c, --with-command`
-
-### `--header <text>`
-
-### `--prompt <text>`
-
-コマンド表示の有無、見出し、プロンプトを指定します。
-
-### `-d, --window [style]`
-
-### `--pc-padding <number>`
-
-### `--opacity <number>`
-
-ウィンドウ枠、デスクトップ風ウィンドウの余白、不透明度を指定します。
-
-### `-t, --theme <id>`
-
-### `--forecolor <color>`
-
-### `--backcolor <color>`
-
-テーマ、文字色、端末の背景色を指定または上書きします。
-
-### `--margin <number>`
-
-### `--padding <number>`
-
-### `--background <value>`
-
-余白と背景の色または画像を指定します。
-
-### `--font <family>`
-
-### `--fontsize <px>`
-
-### `--adjust <mode>`
-
-フォント、サイズ、SVGテキストの長さ調整方法を指定します。
-
-### `--mask <pattern>`
-
-### `--mask-auto [bool]`
-
-文字列のマスクと自動シークレットマスキングを設定します。
-
-### `--frame <index>`
-
-### `--time <sec>`
-
-### `--size <WxH>`
-
-フレーム番号、時刻、出力サイズを指定します。
-
-### `--save-frames <dir>`
-
-アニメーションの各フレームを指定ディレクトリに保存します。
-
-### `--crop-top <value>`
-
-### `--crop-right <value>`
-
-### `--crop-bottom <value>`
-
-### `--crop-left <value>`
-
-画面の上下左右を単位またはテキスト位置で切り取ります。
-
-### `--no-loop`
-
-### `--fps <number>`
-
-### `--timing <deterministic|realtime>`
-
-ループの無効化、最大サンプリングレート、動画のタイミング制御方式を指定します。
-
-### `--coalesce-ms <ms|auto>`
-
-近接する出力イベントをまとめる間隔を指定します。
-
-### `--mouse`
-
-### `--no-colorenv`
-
-### `--no-delete-envs`
-
-マウス追跡の転送、色設定用環境変数の上書き、CI用環境変数の削除を設定します。
-
-### `--svg-converter <converter>`
-
-SVGのラスタライズ方法を指定します。
+* `--mask <pattern>`: 指定した文字列パターンをマスクします。
+* `--mask-auto [bool]`: QuickLeaks によるシークレット自動マスクの有効・無効を設定します。
+* `--svg-converter <converter>`: ラスタライズエンジン（`auto`、`resvg`、`ffmpeg`、`rsvg-convert`）を指定します。
+* `--verbose [path]`: 詳細ログの出力先を指定します。

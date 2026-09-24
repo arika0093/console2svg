@@ -1,75 +1,62 @@
 ---
-title: Interpreting terminal control sequences
-description: How incremental VT parsing updates cursor state, cell contents, attributes, scrolling, and alternate screens.
+title: Interpreting Terminal Control Sequences
+description: How stateful VT parsing processes fragmented input and accurately updates character cells, attributes, cursors, and screen buffers.
 ---
 
-Terminal output is a stream of drawing operations.
-A carriage return can overwrite an existing line, CSI can move the cursor without printing text, and a full-screen application can switch to an alternate screen and redraw only selected regions.
-Removing escape sequences would discard the operations needed to reconstruct that display.
+Terminal output is not merely a collection of styled text strings.
+It is an instruction stream that continuously mutates screen state.
+A carriage return (`\r`) returns the cursor to the beginning of a line to overwrite existing characters, escape sequences reposition the cursor without emitting printable text, and TUI applications switch to an alternate screen buffer to reconstruct the entire layout.
+Simply stripping escape sequences with regular expressions discards the operational information required to reconstruct the final display.
+console2svg interprets these instructions using a **stateful parser** (`AnsiParser`) and faithfully reflects them onto the virtual terminal buffer `ScreenBuffer`.
 
-console2svg therefore parses output into a stateful `ScreenBuffer` before SVG generation.
+## Preserving Sequence State Across Stream Read Boundaries
 
-## Preserve parser state across reads
+Operating-system pipe read boundaries rarely align with escape sequence boundaries.
+Data frequently arrives fragmented in the middle of an ESC or a **CSI** (Control Sequence Introducer: terminal control command starting with `ESC [`).
 
-An operating-system read can end in the middle of ESC, CSI, OSC, or another control sequence.
-`AnsiParser` retains incomplete sequence text and resumes it on the next `Process` call.
+`AnsiParser` maintains an internal state machine.
+When an incomplete sequence is encountered, it retains the partial state in an internal buffer and resumes parsing when subsequent bytes arrive in the next `Process` call.
+Additionally, metadata streams that do not participate in visual layout—such as OSC (Operating System Command) and DCS (Device Control String)—are cleanly skipped until their terminating delimiters.
+The parser also tracks state for DEC special graphics character sets, mapping them to appropriate Unicode box-drawing characters prior to rendering.
 
-Unix echo handling can also expose a control sequence in caret notation, such as `^[` for ESC.
-The parser keeps a separate pending path for the OSC form that can arrive through that representation.
-Ordinary `^[` text is not treated broadly as an escape sequence; the special handling is constrained so visible text is not consumed accidentally.
+## Zero-Allocation Span-Based CSI Parsing
 
-OSC and DCS payloads are skipped until their terminator because they are control strings rather than printable terminal cells.
-G0 and G1 character-set designation and SO/SI selection are retained as parser state.
-DEC special graphics can therefore be mapped to the corresponding box-drawing characters before rendering.
+When extracting parameters (row indices, column indices, color codes) from CSI commands, console2svg avoids `string.Split` operations and intermediate string allocations entirely.
+All numeric parsing operates directly over `ReadOnlySpan<char>` slices of the input buffer.
 
-## Parse CSI without string splitting
+The parser counts the parameter count upfront; if there are 16 or fewer parameters, it stores values in a stack-allocated buffer (`stackalloc int[16]`).
+Only in extreme cases with 17 or more parameters does it rent a buffer from `ArrayPool<int>`, returning it immediately after execution.
+Because standard cursor movements and style modifications consist of only a few parameters, sequence parsing incurs zero heap allocation overhead.
 
-CSI parameters are read from spans instead of being tokenized with `string.Split`.
-The parser counts the parameters first.
-Up to 16 integer parameters use a stack-allocated span; larger sequences rent an integer array from `ArrayPool<int>` and return it afterward.
+## Screen Operations and Alternate Screen Reproduction
 
-This keeps the common SGR and cursor-control path free from one array allocation per sequence.
-Private markers are parsed separately from the parameter list, and unsupported private sequences are ignored instead of being interpreted as unrelated standard commands.
+The implemented CSI command set includes relative and absolute cursor movement, screen and line erasures, character and line insertions and deletions, scroll margins, tab stops, and cursor state save/restore operations.
 
-## Apply screen operations
+Furthermore, console2svg fully supports toggling to the **alternate screen** (the dedicated off-screen buffer utilized by tools such as vim or htop).
+The alternate screen is maintained as an isolated buffer distinct from the primary screen that preserves shell history.
+When a TUI tool exits and returns to the shell prompt, off-screen artifacts never contaminate the shell's scrollback history, accurately reproducing natural terminal behavior.
 
-Implemented CSI operations include relative and absolute cursor movement, erase display and erase line, insert and delete characters, insert and delete lines, scrolling, scroll regions, tab control, insert mode, repeat, and save or restore operations.
+## Resolving Text Styles via SGR
 
-DEC private modes cover the alternate screen, origin mode, and cursor visibility.
-The alternate screen is a separate cell buffer.
-Leaving a TUI can therefore restore the main screen rather than leaving the full-screen application's cells mixed into shell history.
+Visual attributes and color designations are resolved via **SGR** (Select Graphic Rendition) commands.
+A rich spectrum of attributes—including bold, faint, italic, underline, blink, reverse video, strikethrough, and double underline—is captured in `TextStyle` records.
 
-Cursor save and restore includes the terminal state that affects subsequent placement.
-The emulator must reproduce the future effect of a control sequence, not only the cells visible at the instant that sequence is parsed.
+Color support encompasses standard 16-color ANSI, the xterm 256-color palette, and 24-bit Truecolor (16.77 million colors).
+Extended color syntaxes using both semicolon delimiters (`38;2;R;G;B`) and colon delimiters (`38:2::R:G:B`) are normalized into a unified internal color representation.
+When consecutive cells share identical styles, existing `CellStyle` instances are reused directly, suppressing unnecessary object instantiation.
 
-## Resolve text attributes into cell style
+## Aligning Unicode Full-Width and Combining Characters to Cells
 
-SGR updates a `TextStyle` that includes bold, faint, italic, underline, blink, inverse, hidden, strikethrough, overline, foreground, background, and underline color.
+The number of UTF-16 code units manipulated by editors and programming languages does not correspond directly to terminal character cells (columns).
+Surrogate pairs representing emoji are grouped into a single grapheme cluster prior to grid placement.
+Zero-width characters (such as zero-width joiners) do not advance the cursor column, while combining characters and variation selectors are merged into the preceding cell.
 
-The parser accepts the conventional 16-color ranges, the xterm 256-color palette, and true RGB color.
-The 256-color palette resolves the first 16 entries through the active theme, followed by the 6 by 6 by 6 color cube and grayscale range.
-Extended color forms separated with either semicolons or colons are normalized into the same style state.
+East Asian full-width characters occupy two consecutive columns on screen.
+console2svg places the character glyph in the leading cell and marks the adjacent right cell as a continuation cell.
+Preserving this two-cell structure inside the emulator ensures that when the buffer is handed to the SVG renderer, subsequent text never drifts horizontally by one column.
 
-`ScreenBuffer` interns equivalent styles so adjacent cells do not each need their own style object.
-A last-style fast path handles the common case where many characters are printed under the same SGR state.
+## ScreenBuffer as a Unified Intermediate Representation
 
-## Keep Unicode aligned to terminal cells
-
-A UTF-16 code unit is not necessarily one terminal cell.
-Surrogate pairs are combined before placement.
-Combining marks and variation selectors are appended to the preceding cell, and zero-width characters do not advance the cursor.
-
-Wide characters occupy two columns.
-The leading cell stores the text and the following cell is marked as a continuation.
-Operations that overwrite or take row deltas account for those continuation cells so later SVG text runs cannot drift by one column.
-
-Variation selector 16 can turn a previously narrow symbol into a wide emoji presentation when the grid has space for it.
-That adjustment happens in the cell model, before any SVG geometry is chosen.
-
-## Use the screen buffer as the conversion boundary
-
-After parsing, later renderers do not need to reason about raw CSI syntax.
-They receive rows of cells with resolved text, style, width flags, cursor position, active screen, and scroll state.
-
-The same buffer also carries visual signatures and copy-on-write row sharing used by animation and video sampling.
-That makes terminal interpretation a single semantic boundary: parsing happens once, while SVG, PNG, and video paths consume the resulting screen state.
+Once parsing is complete, downstream rendering pipelines (static SVG, animated SVG, PNG, video) never re-parse raw ANSI escape sequences.
+Instead, they share **`ScreenBuffer`**—which integrates resolved text, color styles, cell widths, cursor states, and screen grids—as their sole intermediate representation.
+Decoupling parsing responsibilities from rendering guarantees strictly consistent visual fidelity across all export formats.

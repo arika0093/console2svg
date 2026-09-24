@@ -1,90 +1,74 @@
 ---
-title: Encoding video with ffmpeg
-description: How terminal states are sampled, rasterized to PNG in parallel, and streamed in order through one ffmpeg image2pipe process.
+title: Video Encoding with ffmpeg
+description: How terminal state sampling, PNG rasterization, and pipelining into a single ffmpeg process are coordinated.
 ---
 
-Video output uses the same SVG renderer as still images.
-Each sampled terminal state is first represented as a static SVG, rasterized to PNG, and then sent to ffmpeg as an ordered image sequence.
+When exporting to video formats such as MP4 or WebM, console2svg uses the same terminal emulator and SVG renderer as it does for still images.
+At each specified sampling interval, terminal states are generated as static SVGs, rasterized to PNG, and streamed sequentially into the standard input of **ffmpeg** (an open-source video and audio processing tool).
+Completing the entire pipeline in memory without intermediate files eliminates disk I/O overhead.
 
-The normal in-memory path does not ask ffmpeg to split concatenated SVG documents.
-`image2pipe` receives PNG frames because individual PNG images have boundaries the demuxer can consume from a byte stream.
+## Unidirectional Replay in the Terminal Emulator
 
-## Advance one emulator through sampled time
+When sampling video frames at a fixed frame rate (FPS), the emulator is never restarted from time zero for each successive frame.
+Instead, a single emulator instance is maintained, and only newly reached, unprocessed events are applied forward as the sampling timestamp advances.
 
-Fixed-FPS sampling does not replay the recording from event zero for every video frame.
+The event lookup index also moves strictly forward.
+Eliminating repetitive scans over past events keeps the total processing time strictly linear relative to recording duration.
 
-The frame generator owns one `TerminalEmulator` and a monotonically increasing event index.
-As sample time moves forward, only newly reached events are processed.
-The event lookup index also moves forward rather than searching the recording again for every frame.
+## Suppressing SVG Regeneration with Signatures
 
-This keeps terminal replay work proportional to the recording event stream instead of multiplying earlier events by the number of later samples.
+Immediately after advancing the emulator to the sample timestamp, console2svg retrieves the visual signature of the entire screen (a hash of cell contents and cursor state).
+Using this signature as a key, up to 128 recently generated SVG strings are cached.
 
-## Cache repeated SVG states
+Because CLI applications spend substantial time idling while awaiting user keystrokes or command completion, many consecutive samples point to identical screens.
+When signatures match, XML construction is bypassed completely, and the identical `string` instance is returned from the cache.
 
-After advancing the emulator, the generator reads the screen visual signature.
+## In-Order Parallel Rasterization
 
-Rendered static SVG is cached by that signature with a maximum of 128 entries.
-If several samples show the same terminal state, the generator returns the same cached SVG string object rather than rebuilding equivalent XML.
+Rasterizing SVG to PNG is a CPU-bound, computationally heavy operation.
+To maximize throughput, rasterization executes in parallel across up to 8 threads depending on available CPU cores.
 
-Without an explicit FPS, saved frame sequences also skip consecutive states with the same visual signature.
+At the same time, the chronological sequence of image frames passed to the video encoder must be strictly preserved.
+To achieve this, asynchronous rasterization tasks are queued in a capacity-bounded FIFO buffer, and a single writer pipes completed frames to ffmpeg's standard input in order of task completion at the head of the queue.
+This mechanism harnesses multi-core parallelism while preventing the pipeline from accumulating an entire video's uncompressed frames in memory.
 
-## Rasterize concurrently but write in order
+## Two-Stage Caching via Object Identity
 
-SVG-to-PNG conversion is CPU or process bound, depending on the selected rasterizer.
-The video converter starts several PNG renders concurrently.
-Parallelism follows the available processor count and is capped at eight.
+Because rendered PNG images have a much larger memory footprint than SVG strings, the PNG cache is capped at 16 entries.
 
-The frames still have a strict order.
-Pending render tasks are held in a bounded FIFO queue, and only the task at the front is written to ffmpeg standard input.
-This gives independent rasterization work overlap while keeping one ordered pipe writer.
+Rather than performing string comparisons on the SVG, this cache uses object reference identity as its key.
+This works seamlessly because the preceding SVG cache returns the exact same `string` instance for identical screens.
+As a result, console2svg realizes a **two-stage cache** that skips both SVG regeneration and PNG re-rasterization without needing to compute hashes or perform full-text comparisons on large XML strings.
 
-The queue bound also prevents a long recording from producing all PNG byte arrays before ffmpeg consumes them.
+## Single-Process Streaming via image2pipe
 
-## Reuse PNG renders by SVG object identity
+Generating a complete video requires launching only a single ffmpeg process.
+All image frames are passed using **image2pipe** (an ffmpeg input format that ingests a continuous image stream via standard input or a pipe).
+The process is invoked with `-f image2pipe -vcodec png -i pipe:0`.
 
-PNG output can be much larger than its source SVG, so the raster cache is deliberately smaller than the SVG cache.
-It holds at most 16 entries.
+Both standard output and standard error from the child process are drained asynchronously from the moment the process starts.
+This prevents pipe buffers from overflowing and causing ffmpeg to deadlock, while preserving error diagnostics emitted to stderr if encoding fails.
+If processing is cancelled, a termination signal is dispatched across the entire process tree to cleanly reclaim resources.
 
-The cache uses reference equality for the SVG string key.
-That works together with the previous stage: a repeated visual signature returns the exact same SVG string object.
-The converter can therefore reuse the same PNG-render task without hashing or comparing the contents of a large XML string.
+## Pre-Flight Probing for SVG Decoders
 
-This is a two-stage cache.
-Screen identity first prevents repeated SVG construction, then SVG object identity prevents repeated rasterization.
+Different ffmpeg builds vary widely in their bundled libraries.
+Even when SVG is listed among supported formats, some environments lack the internal SVG decoder (such as libxml2 or librsvg) required for rasterization.
 
-## Feed one ffmpeg process
+To prevent runtime failures, console2svg performs an upfront probe converting a minimal SVG to PNG, verifying whether SVG decoding functions properly and caching the outcome.
+In the in-memory video pipeline, because concatenated multi-frame SVGs cannot be reliably delimited over a raw pipe, the pipeline prioritizes the bundled resvg library or `rsvg-convert` for rasterization, allowing ffmpeg to focus exclusively on video encoding.
 
-console2svg starts one ffmpeg process for the complete video and writes every PNG frame to its standard input.
+## MP4 Codec Selection and Even-Dimension Padding
 
-The input arguments use `-f image2pipe -vcodec png -i pipe:0` with the requested frame rate.
-No numbered SVG or PNG files are required on the normal in-memory path.
+When outputting to an MP4 container, console2svg prefers `libx264` if available on the system, falling back to `mpeg4` otherwise.
+WebM and GIF outputs delegate codec selection to the container defaults.
 
-Standard output and standard error are drained asynchronously from process start.
-This prevents a full child-process pipe from blocking encoding and preserves ffmpeg diagnostics for a failure.
-Cancellation attempts to kill the complete ffmpeg process tree.
-
-After the last PNG is written, standard input is closed and console2svg waits for the encoder to exit.
-
-## Probe capabilities instead of trusting format listings
-
-An ffmpeg executable can advertise an SVG pipe format even when its build lacks the decoder needed to rasterize SVG.
-For image conversion, console2svg therefore probes SVG support with a real minimal SVG-to-PNG conversion and caches the result.
-
-The in-memory video path has a different constraint.
-When the selected converter mode points to ffmpeg, the video pipeline resolves a PNG-capable renderer such as bundled resvg or `rsvg-convert` first, because the final ffmpeg process is already being used as the video encoder and cannot separate concatenated SVG documents on `image2pipe`.
-
-Codec discovery is cached as well so repeated conversions do not invoke `ffmpeg -encoders` for every selection.
-
-## Choose compatible MP4 output
-
-For MP4, console2svg prefers `libx264` when the encoder is available and falls back to `mpeg4`.
-Other containers such as WebM and GIF are allowed to use ffmpeg's container-appropriate default encoder when no explicit MP4 codec is selected.
-
-The output uses `yuv420p` and applies:
+For MP4 pixel formatting, console2svg specifies **yuv420p** (a widely compatible format that separates luminance Y from chrominance U/V and subsamples chroma every 2x2 pixels).
+Because the yuv420p specification mandates even image widths and heights, the following ffmpeg filter is applied:
 
 ```text
 pad=ceil(iw/2)*2:ceil(ih/2)*2:0:0
 ```
 
-The padding rounds odd raster dimensions up to even values.
-At most one pixel is added on the right or bottom, so the terminal content keeps its original top-left position while satisfying formats that require even chroma dimensions.
+This filter rounds odd pixel widths or heights up to the nearest even integer, appending at most one pixel of padding along the right or bottom edge.
+This satisfies encoder constraints without shifting the top-left origin coordinates of the terminal content.

@@ -1,158 +1,64 @@
 ---
 title: interactive
-description: Record an interactive shell or program.
+description: Command to launch an interactive shell and capture the screen on demand via keybindings.
 ---
 
 ```bash title="Terminal"
 console2svg interactive [options]
 ```
 
-Starts an interactive shell and begins or ends screen recording with the recording key.
+`interactive` is a subcommand that launches an interactive shell in a pseudo-terminal, allowing you to capture screen snapshots or record videos on the spot by pressing shortcut keys during work.
+This eliminates the friction of switching to external screenshot tools when writing documentation, letting you capture high-quality SVGs without breaking your terminal workflow.
+
+## Controls and Keybindings
+
+Running the command launches an interactive shell based on your current environment.
+Press the following keys at any time during work to record the screen:
+
+* **F9**: Captures the current screen as a still SVG image.
+* **F10**: Toggles video recording on and off.
+* `exit` command or **Ctrl+D**: Terminates the interactive session.
 
 ## Options
 
-`interactive` supports the `capture` options for output, terminal display, recording, masking, and diagnostics. `--in`, `--frame`, `--time`, replay options, and embedding options are unavailable.
-
-### `-o, --out <path>`
-
-Specify the output file.
-
-### `--stdout`
-
-Write the SVG to standard output.
-
-### `-m, --mode <image|video>`
-
-Specify the output mode.
-
-### `-v, --video`
-
-Output an animated SVG.
-
-### `-w, --width <int|adjust>`
-
-### `-h, --height <int|adjust>`
-
-Specify the terminal width in characters and height in lines. `adjust` adjusts them to the input.
-
-### `--timeout <sec>`
-
-Stop recording after the specified number of seconds.
-
-### `--save-cast <path>`
-
-Save the recorded output as an asciicast v2 file.
-
-### `-c, --with-command`
-
-Display the executed command at the beginning of the output.
-
-### `--header <text>`
-
-### `--prompt <text>`
-
-Override the command-line heading or prompt.
-
-### `-d, --window [style]`
-
-Specify the window frame style. If omitted, `macos` is used.
-
-### `--pc-padding <number>`
-
-### `--opacity <number>`
-
-Specify desktop-style window padding and opacity (from `0` to `1`).
-
-### `-t, --theme <id>`
-
-### `--forecolor <color>`
-
-### `--backcolor <color>`
-
-Override the text or terminal background color.
-
-### `--margin <number>`
-
-### `--padding <number>`
-
-Specify the window frame or shell interior padding.
-
-### `--background <value>`
-
-Specify a background color or image. Specify it twice to create a gradient.
-
-### `--font <family>`
-
-### `--fontsize <px>`
-
-Specify the font family or size.
-
-### `--mask <pattern>`
-
-### `--mask-auto [bool]`
-
-Configure masking of specified strings and automatic secret masking. Automatic masking is enabled by default.
-
-### `--save-frames <dir>`
-
-Save each frame of an animation to the specified directory.
-
-### `--size <WxH>`
-
-Specify the output size as `WIDTH`, `WIDTHx*`, `*xHEIGHT`, or `WIDTHxHEIGHT`.
-
-### `--crop-top <value>`
-
-### `--crop-right <value>`
-
-### `--crop-bottom <value>`
-
-### `--crop-left <value>`
-
-Crop the top and bottom by `px`, `ch`, or text position, and the left and right by `px` or `ch`.
-
-### `--no-loop`
-
-Do not loop animated SVGs.
-
-### `--fps <number>`
-
-### `--timing <deterministic|realtime>`
-
-Specify the maximum sampling rate and video timing control mode.
-
-### `--sleep <sec>`
-
-### `--fadeout <sec>`
-
-Specify the wait time after recording or the video fade-out duration.
-
-### `--coalesce-ms <ms|auto>`
-
-Specify the interval for combining nearby output events.
-
-### `--no-resize`
-
-Keep the initial TTY size.
-
-### `--mouse`
-
-Forward mouse tracking to the PTY.
-
-### `--no-colorenv`
-
-### `--no-delete-envs`
-
-Do not override PTY color environment variables or delete CI environment variables.
-
-### `--adjust <mode>`
-
-Choose how SVG text length is adjusted: `spacing` or `spacingAndGlyphs`.
-
-### `--svg-converter <converter>`
-
-Choose how to rasterize SVG: `auto`, `ffmpeg`, `rsvg-convert`, or `resvg`.
-
-### `--verbose [path]`
-
-Enable verbose logs. If a value is supplied, also save the logs to a file.
+`interactive` supports the primary appearance and output options common to `capture`, except for still frame extraction (`--frame`, `--time`) and playback of existing recordings (`--in`, `--replay`).
+
+### Output and Formats
+
+* `-o, --out <path>`: Specifies output file path or destination directory.
+* `--format <format>`: Explicitly specifies output format (`svg`, `png`, `gif`, `mp4`, etc.).
+* `-v, --video`: Sets the default capture mode to video recording.
+* `--stdout`: Writes the generated result to standard output.
+
+### Terminal Size and Layout
+
+* `-w, --width <int|adjust>`: Specifies terminal width in columns (default: `100`).
+* `-h, --height <int|adjust>`: Specifies terminal height in rows (default: `24`).
+* `--size <WxH>`: Specifies image dimensions when rasterizing.
+* `--crop-top`, `--crop-bottom`, `--crop-left`, `--crop-right`: Crops the top, bottom, left, or right edges of the screen in pixels or characters.
+
+### Appearance and Themes
+
+* `-d, --window [style]`: Specifies window decoration style (`macos`, `macos-pc`, `windows`, etc.).
+* `-t, --theme <id>`: Specifies appearance theme ID (can be specified multiple times).
+* `--forecolor <color>`, `--backcolor <color>`: Overrides foreground or background color.
+* `--background <value>`: Specifies window background color or image (specifying twice creates a gradient).
+* `--opacity <number>`: Specifies terminal background opacity (`0.0`–`1.0`).
+* `--font <family>`, `--fontsize <px>`: Specifies font family and font size.
+* `-c, --with-command`: Displays the most recently executed command line at the top of the screen.
+
+### Recording and Masking
+
+* `--mask <pattern>`: Masks the specified string pattern.
+* `--mask-auto [bool]`: Enables or disables automatic secret detection and masking via QuickLeaks (default: `true`).
+* `--save-cast <path>`: Saves the entire session output as an asciicast v2 file.
+* `--fps <number>`: Specifies maximum sampling rate during video recording.
+* `--timeout <sec>`: Limits the maximum session duration in seconds.
+
+### Execution Environment Controls
+
+* `--mouse [bool]`: Forwards mouse tracking events to the child process (default: `true`).
+* `--no-colorenv`: Disables overriding color-related environment variables.
+* `--no-delete-envs`: Preserves CI-related environment variables without automatically stripping them.
+* `--svg-converter <converter>`: Specifies the rasterization engine (`auto`, `resvg`, `ffmpeg`, `rsvg-convert`).
+* `--verbose [path]`: Specifies the destination for verbose log output.

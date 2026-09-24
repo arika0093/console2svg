@@ -1,68 +1,122 @@
 ---
-title: 组织 SVG 图层
-description: 分离静态 chrome、终端背景、前景、cursor 和 mask，并让所有元素共享同一坐标系。
+title: SVG 的图层结构
+description: 将窗口装饰、终端背景、文字前景、光标与掩码解耦，并在统一的网格坐标系中整合绘制的工作机制。
 ---
 
-终端画面中的元素变化频率不同。
-canvas 背景和 window chrome 通常保持不变，cell 背景和文字可以独立变化，cursor 也可以在行正文不变时移动。
-SVG 通过 **图层分离** 保留这种差异，动画不必复制可复用的静态内容。
+构成终端屏幕的各个元素，其变化频率并不相同。
+窗口边框与桌面背景始终保持静止，终端字符单元格按行更新，而光标往往仅改变位置而不改动文字内容。
+console2svg 针对这种变化频率的差异进行了 **图层分离**，无论在静态图片还是动画中，都彻底消除了冗余绘图指令的重复。
 
-## 在一个 Context 中解析坐标
+## 图层结构的整体设计
 
-`SvgDocumentBuilder.Context` 先计算 crop 后的可见行和列，再解析 cell metric、margin、padding、chrome offset、command header 高度、canvas size、output size 和 `viewBox`。
+console2svg 构建的 SVG 具有清晰的分层分组（`<g>`）结构：
 
-cell width 为 font size 的0.6倍。
-cell height 为 font size 的 `18 / 14` 倍，baseline offset 以 font size 为基准。
+```xml title="静态 SVG 元素结构示例"
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 898 320" width="898" height="320">
+  <!-- 公共定义：样式表、可复用几何图形 -->
+  <defs>
+    <style>
+      .c2s-bold { font-weight: bold; }
+      .c2s-fg-red { fill: #ff5555; }
+      .c2s-fg-cyan { fill: #8be9fd; }
+    </style>
+  </defs>
 
-文字、背景、box drawing、block element、cursor 和 mask overlay 都使用同一个 `Context`。
-各图层不会维护互相独立的 terminal-grid 坐标计算。
+  <!-- 图层 1：桌面画布背景 -->
+  <rect class="c2s-canvas-bg" width="100%" height="100%" fill="#1e1e2e"/>
 
-只指定一个输出尺寸时，另一个尺寸按比例计算。
-宽高都指定时，会把自然 canvas 按比例放进目标矩形，多余区域通过 view box 表示。
-terminal grid 不会在不同图层中以不同方式拉伸。
+  <!-- 图层 2：窗口装饰（标题栏、关闭/最小化按钮、阴影） -->
+  <g class="c2s-window-chrome" transform="translate(20, 20)">
+    <rect class="c2s-window-frame" width="858" height="280" rx="8" fill="#181825"/>
+    <circle cx="16" cy="16" r="6" fill="#ff5f56"/>
+    <circle cx="36" cy="16" r="6" fill="#ffbd2e"/>
+    <circle cx="56" cy="16" r="6" fill="#27c93f"/>
 
-## 静态外层只输出一次
+    <!-- 图层 3：终端客户区的基础背景 -->
+    <rect class="c2s-terminal-bg" x="0" y="32" width="858" height="248" fill="#11111b"/>
 
-SVG root 放置 output dimensions、view box、公共 CSS、可复用定义和 canvas 背景。
+    <!-- 图层 4：命令标题栏（指定 --with-command 时） -->
+    <g class="c2s-command-header" transform="translate(14, 52)">
+      <text class="c2s-prompt" fill="#a6adc8">$</text>
+      <text class="c2s-command" x="16" fill="#cdd6f4">fastfetch</text>
+    </g>
 
-window chrome 位于其上。
-desktop 类型的 chrome 可以包含独立背景区域、shadow、frame 和 title area。
-terminal client area 随后使用解析后的 terminal background 填充，避免 chrome 内部 padding 意外透明。
+    <!-- 图层 5：终端画面正文（网格坐标系） -->
+    <g class="c2s-terminal-body" transform="translate(14, 76)">
+      <!-- 5a. 背景通路：具有非默认背景色单元格的合并矩形 -->
+      <g class="c2s-bg-pass">
+        <rect x="0" y="0" width="120" height="18" fill="#313244"/>
+      </g>
 
-`--with-command` header 也属于静态区域。
-动画 SVG 只输出一次这些外层内容，不会随 terminal state 重复。
+      <!-- 5b. 前景通路：合并后的文本字符串、边框线条路径、块元素 -->
+      <g class="c2s-fg-pass" font-family="JetBrains Mono, monospace" font-size="14">
+        <text y="14" class="c2s-fg-cyan c2s-bold">OS:</text>
+        <text x="32" y="14" fill="#cdd6f4">Ubuntu 24.04 LTS</text>
+        <!-- 边框合并路径 -->
+        <path d="M 0 36 L 240 36" stroke="#45475a" stroke-width="1"/>
+      </g>
 
-## 分开终端背景和前景
+      <!-- 5c. 光标图层（与正文完全解耦） -->
+      <rect class="c2s-cursor" x="168" y="0" width="8.4" height="18" fill="#f5e0dc" opacity="0.8"/>
 
-静态 SVG 可以把 terminal background 和 foreground 分成两个 group 渲染。
+      <!-- 5d. 掩码覆层（在替换字符上方绘制条纹） -->
+      <rect class="c2s-mask" x="84" y="18" width="84" height="18" fill="url(#mask-stripe)"/>
+    </g>
+  </g>
+</svg>
+```
 
-background pass 会把横向连续的相同有效背景色合并成一个 rectangle。
-与 base terminal background 相同的 cell 不生成独立矩形。
+这种结构将不会发生变动的静态窗口外框与桌面背景固定在外层，而将汇集终端单元格信息的正文区域集中在内层的网格分组中。
 
-foreground pass 输出 text run、block geometry、box-drawing geometry、cursor 和 mask overlay。
-只渲染 background 的 pass 不执行自动或手动 mask scan，因为该 pass 没有可暴露秘密的 foreground text。
+## 基于统一上下文确定网格坐标
 
-mask overlay 位于被替换文字之上。
-秘密值不会仅仅依赖另一个 opaque layer 来遮住。
+全画面的布局由渲染起点的 `SvgDocumentBuilder.Context` 进行集中计算。
+它以裁剪（crop）处理后的可见行数和列数为基准，统筹确定单元格尺寸、外边距、内边距、窗口装饰偏移、命令头高度，以及定义 SVG 绘制空间的 **`viewBox`**（与分辨率无关的虚拟坐标系）。
 
-## 共享 style 和 geometry
+单元格宽度计算为字号的 0.6 倍，单元格高度计算为字号的 `18 / 14` 倍（约 1.286 倍），文字基线位置也严格基于字号定位。
+背景填充矩形、文本字形、边框与块级图形、光标以及敏感信息掩码条，全部引用该共享上下文计算出的网格坐标。
+各个图层无需分别维护独立的边距计算或坐标变换，从而保证了文字与装饰元素之间绝不会出现缝隙或错位。
 
-`SvgStyleRegistry` 为每一种唯一有效文字样式分配短 CSS class。
-foreground color 和 decoration 不需要重复写入每个 `<text>`。
+当仅指定输出图片的宽或高其中之一时，系统会保持纵横比等比缩放另一维度；当同时显式指定了宽高尺寸时，终端画面会被容纳在指定矩形内，多余区域则通过 `viewBox` 的映射机制自动吸收。
 
-`SvgElementRegistry` 对可复用定义中的 rectangle 和 path 进行相同处理。
-首个 geometry 获得 ID，后续等价 geometry 使用 `<use>`。
+## 外部静态图层的单次输出
 
-位置为0并且 SVG 默认值已经等价时，会省略该 position attribute。
-单次节省很小，但动画行定义中相同结构会出现很多次。
+SVG 文档的最外层定义了整张图片的尺寸、`viewBox`、共享 CSS 样式以及桌面风格的背景区域。
 
-## 限定动画真正切换的图层
+其内层展开 macOS 风格的窗口边框（窗口装饰、阴影、标题栏）。
+随后用解析出的终端基础背景色填满整个客户区，防止窗口内部的 padding 区域意外透出底层背景。
 
-动画输出把唯一行内容放入 `<defs>`。
-可见 terminal body 使用 `<use>` 引用行定义，并通过 discrete SMIL display interval 切换。
+用于显示执行命令的 `--with-command` 标题栏同样放置在该静态图层中。
+即便是在生成动画 SVG 时，这些静态元素也绝不会逐帧复制，而是在文档根节点下仅仅输出一次。
 
-cursor run 与行正文分开。
-cursor-only 变化只更新 cursor layer，不需要重建行定义。
+## 背景与前景的分离渲染
 
-canvas 背景、chrome、command header、content transform 和 crop 保持在行切换机制之外。
-静态 SVG 和动画 SVG 因此使用相同 terminal geometry 和颜色解释，只改变重复正文的引用方式。
+在静态渲染流程中，终端的背景颜色与文字/图形前景被划分为不同分组（pass）分别绘制。
+
+背景通路将水平方向上连续且具有相同背景色的单元格合并为一个大矩形（`<rect>`）。
+对于与终端默认背景色相同的单元格，则不生成任何矩形，直接复用父图层的填充色。
+
+前景通路负责输出文本（`<text>`）、制表边框、块元素、光标和掩码覆层。
+用于遮蔽敏感信息的掩码覆层会被叠加放置在已经被替换字符的上方。
+系统绝不会仅仅在上方覆盖一层不透明矩形而将原始敏感文本留在底层代码中，以此彻底消除从 SVG 源代码中直接复制窃取密码的风险。
+
+## 样式与几何图形的公共化
+
+文档中重复出现的样式与图形会被集中收录到 SVG 的定义区域中。
+
+对于文字显示样式，`SvgStyleRegistry` 为每一种唯一的颜色与修饰属性组合（如粗体、下划线）分配简短的 CSS 类名。
+避免在每个 `<text>` 元素中反复编写内联样式属性，从而大幅压缩标记体积。
+
+对于可复用的图标与固定图形，`SvgElementRegistry` 会为首个几何图形分配 ID，并在后续出现的位置替换为 `<use>` 元素引用。
+当坐标值为 0 且与 SVG 默认值一致时，会直接省略该属性的输出，将 DOM 字节数压减至极致。
+
+## 动画中更新范围的局部化
+
+在动画 SVG 中，唯一行正文的定义被放置在 `<defs>` 标签中，并通过 `<use>` 元素从屏幕可见区域引用。
+画面切换完全通过 SMIL 离散时间控制实现。
+
+光标图层从该行正文引用结构中完全分离出来。
+当用户输入文字仅引起光标移动时，无需重新生成任何背景或行正文定义。
+
+外层的窗口装饰、命令头和背景图像始终保留在行切换循环之外。
+在静态与动画输出完全统一终端坐标系与色彩解析规则的前提下，仅高效切换真正需要动态更新的行与光标。

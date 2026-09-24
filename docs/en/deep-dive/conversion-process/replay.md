@@ -1,65 +1,50 @@
 ---
-title: Recording and playing input replays
-description: How interactive input is normalized into timed key events and later converted back into VT byte sequences for the PTY.
+title: Recording and Playing Input Replays
+description: Keyboard input abstraction, timeline normalization, VT byte sequence synthesis, and PTY injection during playback.
 ---
 
-A replay records input operations, not terminal output.
-Playback starts the command again in a PTY and sends the recorded operations at their scheduled times, allowing the resulting terminal output to be captured again.
+The replay feature records and stores human keyboard input operations rather than terminal screen output.
+During playback, console2svg executes the designated command anew within a PTY, dispatching recorded keystrokes at their scheduled timestamps to recapture the resulting screen display.
+Unlike asciicast, which simply replays pre-captured terminal output, input replay reproduces the genuine execution of the command itself.
 
-The file therefore stores cross-platform key meaning rather than native Windows console records or Unix input structures.
+## Platform-Independent Representation of Key Semantics
 
-## Normalize timing in the replay file
+Replay files avoid storing operating system-specific internal structures, such as Windows console event structs or Unix terminal control flags.
+To enable reliable reproduction across diverse operating systems and keyboard layouts, keystrokes are recorded using an abstracted, platform-agnostic model.
 
-The first input event can carry an absolute `time` from recording start.
-Later events can use `tick` values relative to the previous event.
+Standard keys are normalized to descriptive names such as `ArrowUp`, `Home`, `Delete`, and `F1` through `F12`, while Shift, Alt, Ctrl, and Meta (Windows or Command key) are maintained as independent modifier flags.
+Printable characters are preserved as Unicode strings rather than hardware scancodes, with **surrogate pairs** (16-bit code-unit pairs representing single Unicode characters such as emoji) treated as unified logical keys.
+For non-standard or raw byte sequences that fall outside the high-level key model, `raw` events provide direct byte storage.
 
-On load, absolute time takes precedence where present and relative ticks are accumulated into a normalized timeline.
-The replay metadata also records format and application information together with total duration.
+## Timeline Normalization of Temporal Data
 
-Total duration is not inferred only from the last key.
-A child can remain at a prompt after all input has been delivered.
-Playback uses the stored duration as a recording boundary and allows one additional second before reporting a timeout.
+Each event within a replay file specifies its timing using either an absolute `time` (seconds from recording onset) or a relative `tick` (elapsed seconds since the immediately preceding event).
 
-## Decode live input without breaking VT sequences
+Upon loading the file, events specifying absolute `time` retain those values directly, while relative `tick` values are accumulated sequentially onto the running timestamp, normalizing all operations onto a single absolute timeline.
+File metadata also records the total runtime (`duration`).
+Because child processes often remain idling at a shell prompt after all input has been dispatched, console2svg sets the total duration plus 1 second as a safe execution timeout ceiling to cleanly terminate the process.
 
-When interactive input is also being saved as a replay, the forwarding path still sends the original bytes to the PTY first.
+## Stream Chunk Resilience and Escape Sequence Detection
 
-A UTF-8 decoder is used to interpret those bytes for the replay model.
-VT key sequences are ASCII, and using a legacy console code page to interpret ESC can consume or reinterpret sequence bytes on some Windows configurations.
+During live recording of interactive sessions, raw byte streams received from the host are immediately forwarded to the child process's PTY.
+Simultaneously, the parsing pass that translates inputs into the replay model employs a stateful UTF-8 decoder.
 
-A stream read can stop in the middle of CSI, SS3, OSC, DCS, APC, PM, or SOS traffic.
-The replay parser detects an incomplete trailing escape sequence and carries it into the next input chunk instead of converting the partial prefix into an unrelated key.
+Terminal escape sequences transmitted by the keyboard can be split across operating system read boundaries (for example, when an initial ESC byte arrives in one chunk and its trailing CSI parameters arrive in the next).
+To handle this, incomplete escape sequences are buffered internally and combined with incoming chunks in subsequent reads.
+This prevents truncated control sequences from being mistakenly recorded as solitary key events (such as an isolated ESC keypress).
 
-Terminal protocol control strings are excluded from user-key replay events.
-They can be responses or terminal traffic rather than a key the user intended to reproduce.
+## Synthesizing VT Byte Sequences from Key Events
 
-## Store key meaning instead of raw host events
+During playback, recorded key names and modifier combinations are synthesized back into **VT byte sequences** (escape sequences) understood by terminal applications.
 
-Common keys are normalized to names such as `ArrowUp`, `Home`, `Delete`, and `F1` through `F12`.
-Modifiers are represented independently.
+Standard keys such as Enter, Tab, arrow keys, and function keys emit standard VT control codes.
+Ctrl-key combinations map to their corresponding ASCII control characters (0x01–0x1A), Alt-key chords are prefixed with an ESC byte, and printable text is encoded into UTF-8 byte arrays.
+Because the generated byte stream is injected directly into the identical PTY write stream used during interactive capture, the executing process cannot distinguish automated playback from human typing.
 
-Printable Unicode text is stored as text rather than as a platform key code.
-Surrogate pairs are preserved as one logical key value.
+## Timing Dispatch and Latency Catch-Up
 
-A `raw` replay event remains available for byte-oriented input that does not fit the normal key model.
+The replay stream waits asynchronously until each event reaches its scheduled timestamp before writing the corresponding bytes to the PTY.
 
-## Convert replay events back to VT bytes
-
-During playback, key names and modifiers are converted into the VT sequences expected by a terminal application.
-
-Enter, Tab, arrows, navigation keys, and function keys use their corresponding escape sequences.
-Ctrl plus a letter maps to its control byte.
-Alt can be represented with an ESC prefix, while printable text is encoded as UTF-8.
-
-The same PTY writer used for live input receives these replay bytes.
-Output capture therefore follows the same terminal path whether input came from the keyboard or from a replay file.
-
-## Schedule bytes without reordering them
-
-The replay stream prepares the byte representation of events and waits until each event's target time when the stream is read.
-
-If processing is already behind the scheduled time, the stream does not add another artificial delay.
-It continues in original order and catches up.
-
-An event can be larger than the consumer's read buffer.
-The stream keeps an offset into the current event and returns it over multiple reads, so splitting at the stream boundary does not drop the remainder of an input operation.
+However, if processing falls behind the target timeline due to system load or child process blocking, the scheduler dispatches subsequent events immediately without additional sleep.
+This enables the replay to catch up to its target timeline as quickly as possible while strictly maintaining event ordering.
+Furthermore, if the byte representation of an event exceeds the consumer's read buffer capacity, the stream tracks the byte offset to deliver the event over multiple reads without losing input data.

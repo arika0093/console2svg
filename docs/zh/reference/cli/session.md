@@ -1,6 +1,6 @@
 ---
 title: session
-description: 在多次 console2svg 调用之间管理 PTY 会话。
+description: 跨 CLI 调用启动、操作和捕获后台终端会话的命令。
 ---
 
 ```bash title="Terminal"
@@ -14,39 +14,104 @@ console2svg session stop <id>
 console2svg session stop --all [--yes]
 ```
 
-Managed session 允许 Agent 启动 TUI、读取当前画面、发送输入，并在不同的 CLI 调用中调整大小或停止。它与 `interactive`、`live-server` 和 tmux 会话相互独立。
-所有 session 命令都向标准输出写入 JSON。没有用于开启 JSON 的选项。
-`start` 默认使用 100x24 终端和当前工作目录。`--width` 和 `--height` 接受 1 到 500；`--cwd` 可指定其他工作目录。
+`session` 是一组子命令，用于管理在后台独立运行的伪终端会话。
+会话一旦启动，即可从后续不同的 CLI 调用中读取屏幕文本、发送按键输入或将当前显示状态捕获为 SVG 图片。
+在通过 AI 智能体或自动化脚本单步执行与控制交互式 TUI 应用程序（编辑器、配置菜单、交互式 CLI 等）时，该功能尤为高效。
 
-## 启动和检查
+需要注意的是，**所有 `session` 子命令都会向标准输出输出结构化 JSON**（无需额外选项启用 JSON 输出）。诊断日志将独立输出至标准错误。
+
+## 子命令列表与操作流程
+
+### 1. 启动会话：`start`
+
+作为后台工作进程启动命令并开启新的终端会话。
 
 ```bash title="Terminal"
-console2svg session start -- btop
-console2svg session read s_abc123 --wait 1s
+console2svg session start --width 120 --height 30 -- btop
 ```
 
-start 结果包含 `sessionId`、生命周期 `state`、进程 ID 和终端尺寸。read 结果使用与 capture JSON 相同的 `screen` 结构：`width`、`height`、纯文本 `text` 和 `truncated`。响应还包含 `state`、可用时的 `exitCode`、画面 `version` 和 `timedOut`；等待超时不是错误。文本最多 200,000 个字符。
-等待时间最长为 60 秒。
+* `--width <columns>`：终端宽度（1～500，默认值：`100`）
+* `--height <rows>`：终端高度（1～500，默认值：`24`）
+* `--cwd <path>`：执行命令的工作目录
 
-## 发送输入和调整尺寸
+响应中包含唯一的 `sessionId`（例如：`s_abc123`）、进程生命周期状态（`state`）、OS 进程 ID 以及终端尺寸。
+
+### 2. 读取屏幕状态：`read`
+
+以纯文本形式获取会话当前的屏幕内容。
 
 ```bash title="Terminal"
-console2svg session send s_abc123 --text "search query"
+console2svg session read s_abc123 --wait 2s
+```
+
+* `<id>`：目标会话 ID
+* `--wait <duration>`：等待屏幕发生变化的持续时间（例如：`500ms`、`2s`；最长 60 秒）
+
+响应中的 `screen` 对象包含终端宽高、屏幕纯文本（`text`，最多 200,000 字符）以及是否被截断（`truncated`）。
+指定等待时间后，一旦检测到屏幕变化或达到超时时间，便会返回最新画面（超时并非错误，而是作为正常响应返回 `timedOut: true`）。
+
+### 3. 发送按键与文本：`send`
+
+向正在运行的程序发送键盘输入或文本字符串。
+
+```bash title="Terminal"
+# 输入字符串
+console2svg session send s_abc123 --text "git status"
+# 发送特殊按键
 console2svg session send s_abc123 --keys Enter
+# 发送控制键（如 Ctrl+C）
 console2svg session send s_abc123 --keys Ctrl+C
-console2svg session resize s_abc123 --width 120 --height 40
 ```
 
-`--text` 按原样发送 UTF-8 文本，不会自动添加换行。`--keys` 支持 `Enter`、`Return`、`Tab`、`Escape`/`Esc`、`Backspace`、`Delete`、`Up`、`Down`、`Left`、`Right`、`Home`、`End`、`PageUp`、`PageDown`、`Ctrl+A` 至 `Ctrl+Z`，或一个可打印字符。使用单独的 `read` 检查操作后的画面。
+* `<id>`：目标会话 ID
+* `--text <text>`：原样发送指定字符串，不附加换行符。
+* `--keys <key>`：发送特殊按键。支持的按键包括：`Enter`、`Tab`、`Escape`（`Esc`）、`Backspace`、`Delete`、`Up`、`Down`、`Left`、`Right`、`Home`、`End`、`PageUp`、`PageDown`、`Ctrl+A`～`Ctrl+Z`，或任意单个可打印字符。
 
-## 捕获和停止
+发送输入后，立即调用 `session read` 即可查看程序响应后的最新屏幕。
+
+### 4. 调整窗口尺寸：`resize`
+
+动态修改运行中虚拟终端窗口的尺寸。
 
 ```bash title="Terminal"
-console2svg session capture s_abc123 -o current-screen.svg
+console2svg session resize s_abc123 --width 140 --height 45
+```
+
+向子进程发送 SIGWINCH（窗口大小改变信号），促使支持的 TUI 应用程序重绘画面。
+
+### 5. 捕获当前屏幕：`capture`
+
+将该会话当前的屏幕缓冲区保存为高质量静态 SVG 图片。
+
+```bash title="Terminal"
+console2svg session capture s_abc123 -o current-screen.svg -d macos -t dracula
+```
+
+* `-o <path>`：输出目标 SVG 文件路径
+* 外观选项：支持与 `capture` 相同的所有外观选项，包括窗口装饰（`-d`）、主题（`-t`）、文字与背景色、字体、边距等。
+
+### 6. 查看会话列表：`list`
+
+获取当前所有启动中的会话列表。
+
+```bash title="Terminal"
+console2svg session list
+```
+
+### 7. 终止会话：`stop`
+
+停止会话，结束关联的进程树并清理资源。
+
+```bash title="Terminal"
+# 停止单个会话
 console2svg session stop s_abc123
+
+# 一次性停止所有托管会话
 console2svg session stop --all --yes
 ```
 
-`session capture` 将当前画面渲染为 SVG，并支持现有外观选项。此命令仅支持 SVG 输出。`stop --all` 只影响 managed session；标准输入被重定向时必须指定 `--yes`。
+* `<id>`：要终止的会话 ID
+* `--all`：一次性停止 console2svg 管理的所有会话。
+* `-y, --yes`：跳过批量停止时的确认提示（在管道执行或自动化脚本中必须指定）。
 
-已退出的会话记录保留 24 小时，之后会被清理。停止会话时会删除其保存文件，因此它不会再出现在 `session list` 中，也无法再读取或捕获。如果 worker 无法连接，会返回最后保存的画面并将状态标记为 `unavailable`。`session list` 显示通过 `session start` 创建且尚未停止的会话。
+停止会话后临时数据将被删除，之后无法再对其执行 `read` 或 `capture`。

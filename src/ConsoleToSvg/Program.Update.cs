@@ -66,26 +66,6 @@ internal static partial class Program
             return 0;
         }
 
-        if (channel.IsPackageManaged && !options.UpdateForce)
-        {
-            await Console
-                .Error.WriteLineAsync(
-                    $"This installation is managed by {channel.Name}.".AsMemory(),
-                    cancellationToken
-                )
-                .ConfigureAwait(false);
-            await Console
-                .Error.WriteLineAsync($"Use: {channel.UpdateCommand}".AsMemory(), cancellationToken)
-                .ConfigureAwait(false);
-            await Console
-                .Error.WriteLineAsync(
-                    "Use --force to replace the package-managed files directly.".AsMemory(),
-                    cancellationToken
-                )
-                .ConfigureAwait(false);
-            return 1;
-        }
-
         if (options.UpdateForce && channel.IsPackageManaged)
         {
             await Console
@@ -125,6 +105,22 @@ internal static partial class Program
             }
         }
 
+        if (channel.IsPackageManaged && !options.UpdateForce)
+        {
+            try
+            {
+                return await RunPackageUpdateAsync(channel, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or Win32Exception)
+            {
+                await Console.Error.WriteLineAsync(
+                    $"Package update failed: {ex.Message}".AsMemory(),
+                    cancellationToken
+                ).ConfigureAwait(false);
+                return 1;
+            }
+        }
+
         var installDirectory = GetInstallDirectory();
         if (!CanWriteDirectory(installDirectory))
         {
@@ -135,6 +131,89 @@ internal static partial class Program
                 )
                 .ConfigureAwait(false);
             return 1;
+        }
+
+        private static async Task<int> RunPackageUpdateAsync(
+            InstallChannelInfo channel,
+            CancellationToken cancellationToken
+        )
+        {
+            var commands = channel.Name switch
+            {
+                "npm" => [new PackageCommand("npm", ["update", "-g", "console2svg"])],
+                "winget" => [
+                    new PackageCommand(
+                        "winget",
+                        [
+                            "upgrade",
+                            "--id",
+                            "arika0093.console2svg",
+                            "--exact",
+                            "--accept-source-agreements",
+                            "--accept-package-agreements",
+                        ]
+                    ),
+                ],
+                "deb" => [
+                    new PackageCommand("sudo", ["apt-get", "update"]),
+                    new PackageCommand("sudo", ["apt-get", "install", "--only-upgrade", "-y", "console2svg"]),
+                ],
+                "rpm" => [
+                    new PackageCommand("sudo", ["dnf", "upgrade", "-y", "console2svg"]),
+                ],
+                _ => throw new InvalidOperationException($"Unsupported package channel: {channel.Name}."),
+            };
+
+            foreach (var command in commands)
+            {
+                var exitCode = await RunPackageCommandAsync(command, cancellationToken)
+                    .ConfigureAwait(false);
+                if (exitCode != 0)
+                {
+                    await Console.Error.WriteLineAsync(
+                        $"Package update failed with exit code {exitCode}: {command.DisplayName}".AsMemory(),
+                        cancellationToken
+                    ).ConfigureAwait(false);
+                    return exitCode;
+                }
+            }
+
+            await Console.Out.WriteLineAsync(
+                $"Updated console2svg through {channel.Name}.".AsMemory(),
+                cancellationToken
+            ).ConfigureAwait(false);
+            return 0;
+        }
+
+        private static async Task<int> RunPackageCommandAsync(
+            PackageCommand command,
+            CancellationToken cancellationToken
+        )
+        {
+            var executable = FindExecutableInPath(command.Executable);
+            if (executable is null)
+            {
+                await Console.Error.WriteLineAsync(
+                    $"Required package manager executable was not found: {command.Executable}.".AsMemory(),
+                    cancellationToken
+                ).ConfigureAwait(false);
+                return 1;
+            }
+
+            using var process = new Process
+            {
+                StartInfo = new ProcessStartInfo(executable)
+                {
+                    UseShellExecute = false,
+                    RedirectStandardOutput = false,
+                    RedirectStandardError = false,
+                },
+            };
+            foreach (var argument in command.Arguments)
+                process.StartInfo.ArgumentList.Add(argument);
+            process.Start();
+            await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
+            return process.ExitCode;
         }
 
         var asset = release.Assets.FirstOrDefault(item =>
@@ -240,15 +319,11 @@ internal static partial class Program
                     cancellationToken
                 )
             )
-                return new(
-                    "deb",
-                    "sudo apt update && sudo apt install --only-upgrade console2svg",
-                    true
-                );
+                return new("deb", "sudo apt-get update && sudo apt-get install --only-upgrade -y console2svg", true);
             if (
                 await IsOwnedByPackageAsync("rpm", "-qf", resolvedExecutablePath, cancellationToken)
             )
-                return new("rpm", "sudo dnf upgrade console2svg", true);
+                return new("rpm", "sudo dnf upgrade -y console2svg", true);
         }
 
         if (
@@ -624,5 +699,10 @@ internal static partial class Program
     )
     {
         public static InstallChannelInfo Standalone { get; } = new("standalone", "", false);
+    }
+
+    private sealed record PackageCommand(string Executable, string[] Arguments)
+    {
+        public string DisplayName => $"{Executable} {string.Join(' ', Arguments)}";
     }
 }

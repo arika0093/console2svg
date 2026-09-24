@@ -290,6 +290,7 @@ export default defineConfig({
                 ja: '変換プロセス',
               },
               items: [
+                'deep-dive/conversion-process/summary',
                 'deep-dive/conversion-process/pty',
                 'deep-dive/conversion-process/replay',
                 'deep-dive/conversion-process/sequence-parsing',

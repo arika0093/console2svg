@@ -506,14 +506,17 @@ public sealed partial class ConsoleToSvgCommandLine
         );
         session.Subcommands.Add(wait);
 
-        var send = new Command("send", "Send a key or literal text to a managed session.");
+        var send = new Command(
+            "send",
+            "Send ordered text, semantic keys, or raw bytes to a session."
+        );
         var sendId = new Argument<string>("id")
         {
             Description = "Managed session ID.",
             Hidden = true,
         };
         send.Arguments.Add(sendId);
-        AddOptions(send, [_symbols.SessionKeys, _symbols.SessionText]);
+        AddOptions(send, [_symbols.SessionKeys, _symbols.SessionText, _symbols.SessionRawHex]);
         send.SetAction(
             (parseResult, cancellationToken) =>
             {
@@ -521,7 +524,7 @@ public sealed partial class ConsoleToSvgCommandLine
                 if (inputs.Count == 0)
                 {
                     parseResult.InvocationConfiguration.Error.WriteLine(
-                        "Specify at least one --keys or --text input."
+                        "Specify at least one --keys, --text, or --raw-hex input."
                     );
                     return Task.FromResult(1);
                 }
@@ -669,14 +672,17 @@ public sealed partial class ConsoleToSvgCommandLine
             var token = tokens[index].Value;
             var isText = token == "--text" || token.StartsWith("--text=", StringComparison.Ordinal);
             var isKey = token == "--keys" || token.StartsWith("--keys=", StringComparison.Ordinal);
-            if (!isText && !isKey)
+            var isRaw =
+                token == "--raw-hex"
+                || token.StartsWith("--raw-hex=", StringComparison.Ordinal);
+            if (!isText && !isKey && !isRaw)
             {
                 continue;
             }
 
             var equalsIndex = token.IndexOf('=');
             var value = equalsIndex >= 0 ? token[(equalsIndex + 1)..] : tokens[++index].Value;
-            inputs.Add(new SessionInputStep(isText, value));
+            inputs.Add(new SessionInputStep(isText, value, isRaw));
         }
         return inputs;
     }

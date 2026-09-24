@@ -89,6 +89,8 @@ console2svg session send s_abc123 --keys Ctrl+C
 
 `--text` と `--keys` を繰り返し指定した場合、コマンドライン上の順序で一つのホスト要求として送信されるため、別クライアントの入力が途中に割り込むことはありません。
 
+`--raw-hex <bytes>` は、16 進数 2 桁ずつで表した空でないバイト列をそのまま送信します（例: `1B5B41` は `ESC [ A`）。意味キーには `Insert`、`F1`〜`F12`、`Shift+Tab`、`Shift+Up`、`Ctrl+Alt+Left`、`Meta+Home` もあります。`Alt` と `Meta` は印字可能文字の前に Escape を付け、修飾された移動キーとファンクションキーは xterm の修飾シーケンスを使います。Raw バイト列は `--raw-hex` で指定します。
+
 入力を送信した後は、直ちに `session read` を呼び出すことで、プログラムが反応した後の最新画面を確認できます。
 
 ### 5. 画面サイズの変更: `resize`

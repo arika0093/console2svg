@@ -46,7 +46,7 @@ public enum SessionAction
     Host,
 }
 
-public sealed record SessionInputStep(bool IsText, string Value);
+public sealed record SessionInputStep(bool IsText, string Value, bool IsRaw = false);
 
 public enum BatchAction
 {

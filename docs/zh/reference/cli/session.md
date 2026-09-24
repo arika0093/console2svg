@@ -89,6 +89,8 @@ console2svg session send s_abc123 --keys Ctrl+C
 
 重复指定 `--text` 和 `--keys` 时，会按命令行顺序通过一个主机请求发送，因此其他客户端无法在这些输入步骤之间插入内容。
 
+`--raw-hex <bytes>` 会直接发送以十六进制数字对表示的非空字节序列（例如 `1B5B41` 表示发送 `ESC [ A`）。语义按键还包括 `Insert`、`F1`～`F12`、`Shift+Tab`、`Shift+Up`、`Ctrl+Alt+Left` 和 `Meta+Home`。`Alt` 与 `Meta` 会在可打印字符前添加 Escape；带修饰键的导航键和功能键使用 xterm 修饰序列。Raw 字节通过 `--raw-hex` 指定。
+
 发送输入后，立即调用 `session read` 即可查看程序响应后的最新屏幕。
 
 ### 5. 调整窗口尺寸：`resize`

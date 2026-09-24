@@ -89,6 +89,8 @@ console2svg session send s_abc123 --keys Ctrl+C
 
 Repeated `--text` and `--keys` options are sent in their command-line order as one host request, so another client cannot insert input between the steps.
 
+`--raw-hex <bytes>` sends an explicit non-empty byte sequence written as pairs of hexadecimal digits (for example, `1B5B41` sends `ESC [ A`). Semantic names include `Insert`, `F1`–`F12`, `Shift+Tab`, `Shift+Up`, `Ctrl+Alt+Left`, and `Meta+Home`. `Alt` and `Meta` prefix a printable character with Escape; modified navigation and function keys use xterm modifier sequences. Raw bytes use `--raw-hex` and remain distinct from semantic keys.
+
 Calling `session read` immediately after sending input lets you inspect the updated screen after the program responds.
 
 ### 5. Resizing Terminal Window: `resize`

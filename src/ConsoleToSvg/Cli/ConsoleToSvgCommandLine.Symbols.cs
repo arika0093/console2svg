@@ -177,7 +177,14 @@ public sealed partial class ConsoleToSvgCommandLine
             {
                 Arity = ArgumentArity.OneOrMore,
                 Description =
-                    "Terminal key to send (for example, Enter or Ctrl+C); may be repeated.",
+                    "Semantic terminal key (for example, Enter, F12, Shift+Tab, or Ctrl+Alt+Left); "
+                    + "may be repeated.",
+            };
+        public Option<string[]> SessionRawHex { get; } =
+            new("--raw-hex")
+            {
+                Arity = ArgumentArity.OneOrMore,
+                Description = "Send raw terminal bytes as hexadecimal; may be repeated.",
             };
         public Option<string> SessionWorkingDirectory { get; } =
             RequiredString("--cwd", "Working directory for the command.");

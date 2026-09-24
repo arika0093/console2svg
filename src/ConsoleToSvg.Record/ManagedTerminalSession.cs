@@ -465,6 +465,7 @@ public static class ManagedTerminalSessionHost
                 {
                     "text" => Encoding.UTF8.GetBytes(input.Value),
                     "key" => EncodeKey(input.Value),
+                    "raw" => EncodeRawHex(input.Value),
                     _ => throw new InvalidDataException(
                         $"Unsupported session input type '{input.Type}'."
                     ),
@@ -707,12 +708,31 @@ public static class ManagedTerminalSessionHost
             }
 
             var normalized = key.Trim();
-            var sequence = normalized.ToLowerInvariant() switch
+            if (normalized.Length == 1 && !char.IsControl(normalized[0]))
+            {
+                return Encoding.UTF8.GetBytes(normalized);
+            }
+
+            var namedSequence = GetNamedKeySequence(normalized);
+            if (namedSequence is not null)
+            {
+                return Encoding.UTF8.GetBytes(namedSequence);
+            }
+
+            return EncodeModifiedKey(normalized);
+        }
+
+        private static string? GetNamedKeySequence(string key)
+        {
+            var normalized = key.ToLowerInvariant();
+            return normalized switch
             {
                 "enter" or "return" => "\r",
                 "tab" => "\t",
+                "shift+tab" => "\u001b[Z",
                 "escape" or "esc" => "\u001b",
                 "backspace" => "\u007f",
+                "insert" => "\u001b[2~",
                 "delete" => "\u001b[3~",
                 "up" => "\u001b[A",
                 "down" => "\u001b[B",
@@ -722,28 +742,127 @@ public static class ManagedTerminalSessionHost
                 "end" => "\u001b[F",
                 "pageup" => "\u001b[5~",
                 "pagedown" => "\u001b[6~",
-                _ => EncodeControlKey(normalized),
+                "f1" => "\u001bOP",
+                "f2" => "\u001bOQ",
+                "f3" => "\u001bOR",
+                "f4" => "\u001bOS",
+                "f5" => "\u001b[15~",
+                "f6" => "\u001b[17~",
+                "f7" => "\u001b[18~",
+                "f8" => "\u001b[19~",
+                "f9" => "\u001b[20~",
+                "f10" => "\u001b[21~",
+                "f11" => "\u001b[23~",
+                "f12" => "\u001b[24~",
+                _ => null,
             };
-            return Encoding.UTF8.GetBytes(sequence);
         }
 
-        private static string EncodeControlKey(string key)
+        private static byte[] EncodeModifiedKey(string key)
         {
-            if (
-                key.StartsWith("Ctrl+", StringComparison.OrdinalIgnoreCase)
-                && key.Length == 6
-                && char.IsAsciiLetter(key[5])
-            )
+            var parts = key.Split('+');
+            if (parts.Length < 2 || parts.Any(string.IsNullOrWhiteSpace))
             {
-                return ((char)(char.ToUpperInvariant(key[5]) & 0x1f)).ToString();
+                throw new InvalidDataException($"Unsupported terminal key '{key}'.");
             }
 
-            if (key.Length == 1 && !char.IsControl(key[0]))
+            var modifiers = 0;
+            foreach (var part in parts[..^1])
             {
-                return key;
+                var flag = part.ToLowerInvariant() switch
+                {
+                    "shift" => 1,
+                    "alt" or "meta" => 2,
+                    "ctrl" or "control" => 4,
+                    _ => 0,
+                };
+                if (flag == 0 || (modifiers & flag) != 0)
+                {
+                    throw new InvalidDataException($"Unsupported terminal key '{key}'.");
+                }
+                modifiers |= flag;
+            }
+
+            var value = parts[^1];
+            if (
+                value.Length == 1
+                && char.IsAsciiLetter(value[0])
+                && (modifiers & 4) != 0
+            )
+            {
+                var control = (char)(char.ToUpperInvariant(value[0]) & 0x1f);
+                var bytes = Encoding.UTF8.GetBytes(control.ToString());
+                return (modifiers & 2) == 0 ? bytes : [0x1b, .. bytes];
+            }
+
+            var modifierNumber = 1 + modifiers;
+            var lowerValue = value.ToLowerInvariant();
+            var sequence = lowerValue switch
+            {
+                "up" => $"\u001b[1;{modifierNumber}A",
+                "down" => $"\u001b[1;{modifierNumber}B",
+                "right" => $"\u001b[1;{modifierNumber}C",
+                "left" => $"\u001b[1;{modifierNumber}D",
+                "home" => $"\u001b[1;{modifierNumber}H",
+                "end" => $"\u001b[1;{modifierNumber}F",
+                "tab" => modifiers == 1
+                    ? "\u001b[Z"
+                    : $"\u001b[1;{modifierNumber}Z",
+                "insert" => $"\u001b[2;{modifierNumber}~",
+                "delete" => $"\u001b[3;{modifierNumber}~",
+                "pageup" => $"\u001b[5;{modifierNumber}~",
+                "pagedown" => $"\u001b[6;{modifierNumber}~",
+                "f1" => $"\u001b[1;{modifierNumber}P",
+                "f2" => $"\u001b[1;{modifierNumber}Q",
+                "f3" => $"\u001b[1;{modifierNumber}R",
+                "f4" => $"\u001b[1;{modifierNumber}S",
+                "f5" => $"\u001b[15;{modifierNumber}~",
+                "f6" => $"\u001b[17;{modifierNumber}~",
+                "f7" => $"\u001b[18;{modifierNumber}~",
+                "f8" => $"\u001b[19;{modifierNumber}~",
+                "f9" => $"\u001b[20;{modifierNumber}~",
+                "f10" => $"\u001b[21;{modifierNumber}~",
+                "f11" => $"\u001b[23;{modifierNumber}~",
+                "f12" => $"\u001b[24;{modifierNumber}~",
+                _ => null,
+            };
+            if (sequence is not null)
+            {
+                return Encoding.UTF8.GetBytes(sequence);
+            }
+
+            if (value.Length == 1 && !char.IsControl(value[0]) && modifiers == 2)
+            {
+                return [0x1b, .. Encoding.UTF8.GetBytes(value)];
+            }
+            if (value.Length == 1 && !char.IsControl(value[0]) && modifiers == 1)
+            {
+                return Encoding.UTF8.GetBytes(char.ToUpperInvariant(value[0]).ToString());
             }
 
             throw new InvalidDataException($"Unsupported terminal key '{key}'.");
+        }
+
+        private static byte[] EncodeRawHex(string input)
+        {
+            if (input.Length == 0 || input.Length % 2 != 0)
+            {
+                throw new InvalidDataException(
+                    "Raw terminal input must be a non-empty, even-length hexadecimal byte string."
+                );
+            }
+
+            try
+            {
+                return Convert.FromHexString(input);
+            }
+            catch (FormatException exception)
+            {
+                throw new InvalidDataException(
+                    "Raw terminal input must be a non-empty, even-length hexadecimal byte string.",
+                    exception
+                );
+            }
         }
 
         private static (string Text, bool Truncated) ReadScreenText(ScreenBuffer buffer)

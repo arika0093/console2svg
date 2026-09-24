@@ -227,6 +227,17 @@ export default defineConfig({
           ],
         },
         {
+          label: 'For LLM',
+          translations: {
+            'zh-CN': 'LLM专用',
+            ja: 'LLM向け機能',
+          },
+          items: [
+            'for-llm/use-skill',
+            'for-llm/session',
+          ],
+        },
+        {
           label: 'Utilities',
           translations: {
             'zh-CN': '实用工具',

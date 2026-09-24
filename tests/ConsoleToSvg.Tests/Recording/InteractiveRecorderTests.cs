@@ -151,18 +151,15 @@ public sealed class InteractiveRecorderTests
     }
 
     [Test]
-    public void WindowsVtConsoleInputIsAlreadyUtf8()
+    public void ShiftJisConsoleInputIsConvertedToUtf8AndKeepsVtKeys()
     {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            return;
-        }
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        var transcoder = new ConsoleInputTranscoder(Encoding.GetEncoding(932));
 
-        // ENABLE_VIRTUAL_TERMINAL_INPUT supplies UTF-8 bytes to ReadFile. The
-        // forwarding path must preserve both Japanese text and VT sequences;
-        // decoding these bytes as CP932 causes the reported mojibake.
-        var input = Encoding.UTF8.GetBytes("あ\u001b[A");
-        input.ShouldBe(new byte[] { 0xE3, 0x81, 0x82, 0x1B, 0x5B, 0x41 });
+        transcoder.Transcode([0x82]).ShouldBeEmpty();
+        transcoder
+            .Transcode([0xA0, 0x1B, 0x5B, 0x41])
+            .ShouldBe(Encoding.UTF8.GetBytes("あ\u001b[A"));
     }
 
     [Test]

@@ -254,6 +254,10 @@ public static partial class PtyRecorder
                 outputCoalesceMs,
                 videoFps
             );
+            var hostInputEncoding =
+                replayData is null && OperatingSystem.IsWindows() && !Console.IsInputRedirected
+                    ? Console.InputEncoding
+                    : null;
             var inputTask = inputForward is not null
                 ? PumpInputAsync(
                     inputForward,
@@ -261,7 +265,8 @@ public static partial class PtyRecorder
                     inputCancellation.Token,
                     logger,
                     stopwatch,
-                    replaySaveWriter
+                    replaySaveWriter,
+                    hostInputEncoding
                 )
                 : null;
 

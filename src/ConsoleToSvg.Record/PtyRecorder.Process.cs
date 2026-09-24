@@ -355,16 +355,14 @@ public static partial class PtyRecorder
         CancellationToken cancellationToken,
         ILogger logger,
         Stopwatch? stopwatch = null,
-        InputReplayFile.InputReplayWriter? inputSave = null
+        InputReplayFile.InputReplayWriter? inputSave = null,
+        Encoding? sourceEncoding = null
     )
     {
         var buffer = new byte[256];
-        // Use UTF-8 for decoding VT input.  VT sequences are always ASCII, and
-        // Console.InputEncoding (e.g. CP932 / Shift_JIS on Japanese Windows)
-        // may treat ESC (0x1B) as an ISO-2022 lead byte and silently consume it,
-        // which breaks every CSI sequence (arrows, Shift+Tab, etc.).
-        // Modern Windows Terminal sends all characters (including CJK) as UTF-8
-        // regardless of the console code page, so UTF-8 is the correct choice.
+        var sourceTranscoder = sourceEncoding is null
+            ? null
+            : new ConsoleInputTranscoder(sourceEncoding);
         var inputDecoder = Encoding.UTF8.GetDecoder();
         var inputChars = new char[512];
         // Carry-over for incomplete ESC sequences split across reads.
@@ -381,21 +379,20 @@ public static partial class PtyRecorder
                     break;
                 }
 
-                await targetInput
-                    .WriteAsync(buffer, 0, count, cancellationToken)
-                    .ConfigureAwait(false);
-                await targetInput.FlushAsync(cancellationToken).ConfigureAwait(false);
+                var forwarded = sourceTranscoder is null
+                    ? buffer.AsMemory(0, count)
+                    : sourceTranscoder.Transcode(buffer.AsSpan(0, count)).AsMemory();
+                if (!forwarded.IsEmpty)
+                {
+                    await targetInput
+                        .WriteAsync(forwarded, cancellationToken)
+                        .ConfigureAwait(false);
+                    await targetInput.FlushAsync(cancellationToken).ConfigureAwait(false);
+                }
 
                 if (inputSave != null && stopwatch != null)
                 {
-                    var charCount = inputDecoder.GetChars(
-                        buffer,
-                        0,
-                        count,
-                        inputChars,
-                        0,
-                        flush: false
-                    );
+                    var charCount = inputDecoder.GetChars(forwarded.Span, inputChars, flush: false);
                     if (charCount > 0)
                     {
                         var text = pending + new string(inputChars, 0, charCount);

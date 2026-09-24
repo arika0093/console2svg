@@ -46,7 +46,7 @@ During interactive capture (`interactive`), the host terminal is switched into R
 This prevents the host shell from intercepting arrow keys or Ctrl shortcuts, allowing them to be forwarded directly to the child process as escape sequences.
 On Unix platforms where standard input is redirected, console2svg attempts to open `/dev/tty` directly to maintain interactive input.
 
-When saving keystrokes for replay, the input byte stream is first written directly to the PTY and simultaneously parsed using a stateful UTF-8 decoder for recording.
+Text read from a Windows console is decoded with the active console input code page and re-encoded as UTF-8 before being forwarded to the PTY. VT key sequences remain ASCII, and replay data is generated from the normalized UTF-8 input.
 If an escape sequence is truncated at the end of an input read, the remaining bytes are preserved across iterations, preventing incomplete fragments from being misrecorded as solitary keys (such as an isolated ESC).
 
 ## Draining Residual Output After Process Exit

@@ -837,12 +837,12 @@ public static partial class InteractiveRecorder
                     // write so multi-byte VT sequences (e.g. ESC [ A) arrive
                     // atomically instead of being split across writes.
                     var batch = new List<byte>(bytes.Length + 16);
-                    // ENABLE_VIRTUAL_TERMINAL_INPUT (set by ConsoleInputMode) makes
-                    // Windows encode console input as UTF-8/VT bytes.  Do not decode
-                    // those bytes with Console.InputEncoding: on Japanese Windows it
-                    // is commonly CP932, which turns UTF-8 input such as "あ" into
-                    // mojibake (for example, "□~A~B") before it reaches ConPTY.
-                    // Keeping the bytes unchanged also preserves VT key sequences.
+                    // VT input mode converts special keys to VT sequences, but text
+                    // bytes still use the console input code page.
+                    var inputTranscoder =
+                        input is not null && !Console.IsInputRedirected
+                            ? new ConsoleInputTranscoder(Console.InputEncoding)
+                            : null;
                     var inputGate = new SemaphoreSlim(1, 1);
                     long escapePendingVersion = 0;
                     logger.ZLogDebug($"Interactive input forwarding started.");
@@ -851,6 +851,21 @@ public static partial class InteractiveRecorder
                     {
                         if (batch.Count == 0)
                         {
+                            return;
+                        }
+
+                        if (inputTranscoder is not null)
+                        {
+                            var utf8 = inputTranscoder.Transcode(batch.ToArray());
+                            batch.Clear();
+                            if (utf8.Length == 0)
+                            {
+                                return;
+                            }
+
+                            await connection
+                                .WriterStream.WriteAsync(utf8.AsMemory(), lifetime.Token)
+                                .ConfigureAwait(false);
                             return;
                         }
 
@@ -1058,7 +1073,7 @@ public static partial class InteractiveRecorder
                                 }
 
                                 // Flush any remaining input from this host read as one
-                                // PTY write; Windows VT input is already UTF-8.
+                                // PTY write, converting Windows console text to UTF-8.
                                 await WriteBatchAsync().ConfigureAwait(false);
 
                                 // Function keys and other VT input can arrive across reads.

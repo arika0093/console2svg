@@ -174,4 +174,4 @@ You may obtain a copy of the License at
 http://www.apache.org/licenses/LICENSE-2.0
 ```
 
-See the [licenses of related projects](https://console2svg.eclairs.cc/en/deep-dive/overview/#minimize-package-dependencies).
+See the [license page](https://console2svg.eclairs.cc/en/deep-dive/license).

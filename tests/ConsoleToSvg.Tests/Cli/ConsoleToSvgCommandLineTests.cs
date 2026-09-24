@@ -308,7 +308,6 @@ public sealed class ConsoleToSvgCommandLineTests
         var start = await InvokeAsync(
             "session",
             "start",
-            "--json",
             "--width",
             "90",
             "--height",
@@ -318,8 +317,8 @@ public sealed class ConsoleToSvgCommandLineTests
             "-c",
             "read value"
         );
-        var read = await InvokeAsync("session", "read", "s_abc", "--wait", "1s", "--json");
-        var send = await InvokeAsync("session", "send", "s_abc", "--keys", "Ctrl+C", "--json");
+        var read = await InvokeAsync("session", "read", "s_abc", "--wait", "1s");
+        var send = await InvokeAsync("session", "send", "s_abc", "--keys", "Ctrl+C");
         var resize = await InvokeAsync(
             "session",
             "resize",
@@ -329,8 +328,15 @@ public sealed class ConsoleToSvgCommandLineTests
             "--height",
             "40"
         );
-        var list = await InvokeAsync("session", "list", "--json");
-        var stop = await InvokeAsync("session", "stop", "--all", "--yes", "--json");
+        var capture = await InvokeAsync(
+            "session",
+            "capture",
+            "s_abc",
+            "--out",
+            "screen.svg"
+        );
+        var list = await InvokeAsync("session", "list");
+        var stop = await InvokeAsync("session", "stop", "--all", "--yes");
 
         start.ExitCode.ShouldBe(0);
         start.Options!.RequestedSessionAction.ShouldBe(SessionAction.Start);
@@ -346,12 +352,22 @@ public sealed class ConsoleToSvgCommandLineTests
         resize.ExitCode.ShouldBe(0);
         resize.Options!.SessionWidth.ShouldBe(100);
         resize.Options.SessionHeight.ShouldBe(40);
+        capture.ExitCode.ShouldBe(0);
+        capture.Options!.RequestedSessionAction.ShouldBe(SessionAction.Capture);
         list.ExitCode.ShouldBe(0);
         list.Options!.RequestedSessionAction.ShouldBe(SessionAction.List);
-        list.Options.SessionJson.ShouldBeTrue();
         stop.ExitCode.ShouldBe(0);
         stop.Options!.SessionAll.ShouldBeTrue();
         stop.Options.SessionYes.ShouldBeTrue();
+    }
+
+    [Test]
+    public async Task SessionCommandsDoNotAcceptJsonFlag()
+    {
+        var invocation = await InvokeAsync("session", "list", "--json");
+
+        invocation.ExitCode.ShouldBe(1);
+        invocation.Error.ShouldContain("--json");
     }
 
     [Test]

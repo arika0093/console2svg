@@ -38,20 +38,22 @@ do not inline SVG or image data into a text response.
 Use a managed session when a TUI must stay open across commands and requires input based on its current screen:
 
 ```bash
-console2svg session start --json -- btop
-console2svg session list --json
-console2svg session read <sessionId> --wait 1s --json
+console2svg session start -- btop
+console2svg session list
+console2svg session read <sessionId> --wait 1s
 console2svg session send <sessionId> --keys Enter
 console2svg session send <sessionId> --text "search query"
 console2svg session resize <sessionId> --width 120 --height 40
-console2svg session capture <sessionId> -o /tmp/tui-screen.svg --json
+console2svg session capture <sessionId> -o /tmp/tui-screen.svg
 console2svg session stop <sessionId>
 ```
+
+Session commands always return JSON.
 
 ## Documentation
 
 - [Capture command reference](https://console2svg.eclairs.cc/en/reference/cli/capture/)
-- [Managed session reference](https://console2svg.eclairs.cc/en/reference/cli/session/)
-- [tmux command reference](https://console2svg.eclairs.cc/en/reference/cli/tmux/)
-- [Interactive capture reference](https://console2svg.eclairs.cc/en/reference/cli/interactive/)
 - [Video capture guide](https://console2svg.eclairs.cc/en/basic-usage/capturing-videos/overview/)
+- [Managed session reference](https://console2svg.eclairs.cc/en/reference/cli/session/)
+- [Interactive capture reference](https://console2svg.eclairs.cc/en/reference/cli/interactive/)
+- [tmux command reference](https://console2svg.eclairs.cc/en/reference/cli/tmux/)

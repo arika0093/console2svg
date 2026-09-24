@@ -5,23 +5,24 @@ description: 在多次 console2svg 调用之间管理 PTY 会话。
 
 ```bash title="Terminal"
 console2svg session start [options] -- command [args...]
-console2svg session list [--json]
-console2svg session read <id> [--wait <duration>] [--json]
-console2svg session send <id> (--keys <key> | --text <text>) [--json]
-console2svg session resize <id> --width <columns> --height <rows> [--json]
-console2svg session capture <id> [-o <path>] [appearance options] [--json]
-console2svg session stop <id> [--json]
-console2svg session stop --all [--yes] [--json]
+console2svg session list
+console2svg session read <id> [--wait <duration>]
+console2svg session send <id> (--keys <key> | --text <text>)
+console2svg session resize <id> --width <columns> --height <rows>
+console2svg session capture <id> [-o <path>] [appearance options]
+console2svg session stop <id>
+console2svg session stop --all [--yes]
 ```
 
 Managed session 允许 Agent 启动 TUI、读取当前画面、发送输入，并在不同的 CLI 调用中调整大小或停止。它与 `interactive`、`live-server` 和 tmux 会话相互独立。
+所有 session 命令都向标准输出写入 JSON。没有用于开启 JSON 的选项。
 `start` 默认使用 100x24 终端和当前工作目录。`--width` 和 `--height` 接受 1 到 500；`--cwd` 可指定其他工作目录。
 
 ## 启动和检查
 
 ```bash title="Terminal"
-console2svg session start --json -- btop
-console2svg session read s_abc123 --wait 1s --json
+console2svg session start -- btop
+console2svg session read s_abc123 --wait 1s
 ```
 
 start 结果包含 `sessionId`、生命周期 `state`、进程 ID 和终端尺寸。read 结果使用与 capture JSON 相同的 `screen` 结构：`width`、`height`、纯文本 `text` 和 `truncated`。响应还包含 `state`、可用时的 `exitCode`、画面 `version` 和 `timedOut`；等待超时不是错误。文本最多 200,000 个字符。
@@ -41,7 +42,7 @@ console2svg session resize s_abc123 --width 120 --height 40
 ## 捕获和停止
 
 ```bash title="Terminal"
-console2svg session capture s_abc123 -o current-screen.svg --json
+console2svg session capture s_abc123 -o current-screen.svg
 console2svg session stop s_abc123
 console2svg session stop --all --yes
 ```

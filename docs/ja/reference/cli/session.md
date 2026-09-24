@@ -5,23 +5,24 @@ description: console2svgの呼び出しをまたいでPTYセッションを管�
 
 ```bash title="Terminal"
 console2svg session start [options] -- command [args...]
-console2svg session list [--json]
-console2svg session read <id> [--wait <duration>] [--json]
-console2svg session send <id> (--keys <key> | --text <text>) [--json]
-console2svg session resize <id> --width <columns> --height <rows> [--json]
-console2svg session capture <id> [-o <path>] [appearance options] [--json]
-console2svg session stop <id> [--json]
-console2svg session stop --all [--yes] [--json]
+console2svg session list
+console2svg session read <id> [--wait <duration>]
+console2svg session send <id> (--keys <key> | --text <text>)
+console2svg session resize <id> --width <columns> --height <rows>
+console2svg session capture <id> [-o <path>] [appearance options]
+console2svg session stop <id>
+console2svg session stop --all [--yes]
 ```
 
 managed sessionを使うと、TUIを起動し、現在の画面を読み、入力を送り、別々のCLI呼び出しからサイズ変更や停止ができます。`interactive`、`live-server`、tmuxのセッションとは独立しています。
+すべてのsessionコマンドは標準出力にJSONを出力します。JSONを有効にするオプションはありません。
 `start`の端末サイズは既定で100x24、作業ディレクトリは現在のディレクトリです。`--width`と`--height`には1から500を指定でき、`--cwd`で作業ディレクトリを変更できます。
 
 ## 起動と画面確認
 
 ```bash title="Terminal"
-console2svg session start --json -- btop
-console2svg session read s_abc123 --wait 1s --json
+console2svg session start -- btop
+console2svg session read s_abc123 --wait 1s
 ```
 
 start結果には`sessionId`、ライフサイクルの`state`、プロセスID、端末サイズが含まれます。read結果はcapture JSONと同じ`screen`形式（`width`、`height`、プレーンテキストの`text`、`truncated`）を使います。さらに`state`、取得できる場合は`exitCode`、画面の`version`、`timedOut`を返します。waitのタイムアウトはエラーではありません。テキストは200,000文字までです。
@@ -41,7 +42,7 @@ console2svg session resize s_abc123 --width 120 --height 40
 ## キャプチャと停止
 
 ```bash title="Terminal"
-console2svg session capture s_abc123 -o current-screen.svg --json
+console2svg session capture s_abc123 -o current-screen.svg
 console2svg session stop s_abc123
 console2svg session stop --all --yes
 ```

@@ -390,7 +390,6 @@ public sealed partial class ConsoleToSvgCommandLine
         AddOptions(
             start,
             [
-                _symbols.SessionJson,
                 _symbols.SessionWidth,
                 _symbols.SessionHeight,
                 _symbols.SessionWorkingDirectory,
@@ -418,7 +417,6 @@ public sealed partial class ConsoleToSvgCommandLine
                     {
                         Workflow = Workflow.Session,
                         RequestedSessionAction = SessionAction.Start,
-                        SessionJson = parseResult.GetValue(_symbols.SessionJson),
                         SessionWidth = parseResult.GetValue(_symbols.SessionWidth) ?? 100,
                         SessionHeight = parseResult.GetValue(_symbols.SessionHeight) ?? 24,
                         SessionCommand = command,
@@ -435,7 +433,6 @@ public sealed partial class ConsoleToSvgCommandLine
         session.Subcommands.Add(start);
 
         var list = new Command("list", "List managed sessions.");
-        list.Options.Add(_symbols.SessionJson);
         SetSessionAction(list, SessionAction.List);
         session.Subcommands.Add(list);
 
@@ -446,7 +443,7 @@ public sealed partial class ConsoleToSvgCommandLine
             Hidden = true,
         };
         read.Arguments.Add(readId);
-        AddOptions(read, [_symbols.SessionJson, _symbols.SessionWait]);
+        AddOptions(read, [_symbols.SessionWait]);
         SetSessionAction(read, SessionAction.Read, readId);
         session.Subcommands.Add(read);
 
@@ -457,7 +454,7 @@ public sealed partial class ConsoleToSvgCommandLine
             Hidden = true,
         };
         send.Arguments.Add(sendId);
-        AddOptions(send, [_symbols.SessionJson, _symbols.SessionKeys, _symbols.SessionText]);
+        AddOptions(send, [_symbols.SessionKeys, _symbols.SessionText]);
         send.SetAction(
             (parseResult, cancellationToken) =>
             {
@@ -476,7 +473,6 @@ public sealed partial class ConsoleToSvgCommandLine
                         Workflow = Workflow.Session,
                         RequestedSessionAction = SessionAction.Send,
                         SessionId = parseResult.GetRequiredValue(sendId),
-                        SessionJson = parseResult.GetValue(_symbols.SessionJson),
                         SessionKey = keys,
                         SessionText = text,
                     },
@@ -494,7 +490,7 @@ public sealed partial class ConsoleToSvgCommandLine
             Hidden = true,
         };
         resize.Arguments.Add(resizeId);
-        AddOptions(resize, [_symbols.SessionJson, _symbols.SessionWidth, _symbols.SessionHeight]);
+        AddOptions(resize, [_symbols.SessionWidth, _symbols.SessionHeight]);
         resize.SetAction(
             (parseResult, cancellationToken) =>
             {
@@ -513,7 +509,6 @@ public sealed partial class ConsoleToSvgCommandLine
                         Workflow = Workflow.Session,
                         RequestedSessionAction = SessionAction.Resize,
                         SessionId = parseResult.GetRequiredValue(resizeId),
-                        SessionJson = parseResult.GetValue(_symbols.SessionJson),
                         SessionWidth = width.Value,
                         SessionHeight = height.Value,
                     },
@@ -532,7 +527,6 @@ public sealed partial class ConsoleToSvgCommandLine
         };
         capture.Arguments.Add(captureId);
         AddOptions(capture, _symbols.SessionCaptureOptions);
-        capture.Options.Add(_symbols.SessionJson);
         capture.SetAction(
             async (parseResult, cancellationToken) =>
             {
@@ -562,7 +556,7 @@ public sealed partial class ConsoleToSvgCommandLine
             Hidden = true,
         };
         stop.Arguments.Add(stopId);
-        AddOptions(stop, [_symbols.SessionAll, _symbols.SessionYes, _symbols.SessionJson]);
+        AddOptions(stop, [_symbols.SessionAll, _symbols.SessionYes]);
         stop.SetAction(
             (parseResult, cancellationToken) =>
             {
@@ -583,7 +577,6 @@ public sealed partial class ConsoleToSvgCommandLine
                         SessionId = id,
                         SessionAll = all,
                         SessionYes = parseResult.GetValue(_symbols.SessionYes),
-                        SessionJson = parseResult.GetValue(_symbols.SessionJson),
                     },
                     parseResult,
                     cancellationToken
@@ -629,7 +622,6 @@ public sealed partial class ConsoleToSvgCommandLine
                         SessionId = idArgument is null
                             ? null
                             : parseResult.GetRequiredValue(idArgument),
-                        SessionJson = parseResult.GetValue(_symbols.SessionJson),
                         SessionWait = parseResult.GetValue(_symbols.SessionWait),
                     },
                     parseResult,
@@ -650,7 +642,6 @@ public sealed partial class ConsoleToSvgCommandLine
             Workflow = Workflow.Session,
             RequestedSessionAction = SessionAction.Capture,
             SessionId = sessionId,
-            SessionJson = result.GetValue(_symbols.SessionJson),
             OutputPath = result.GetValue(_symbols.OutputPath)?.ToString() ?? "output.svg",
             Font = result.GetValue(_symbols.Font),
             ForeColor = result.GetValue(_symbols.ForeColor),

@@ -81,7 +81,6 @@ public sealed class AppOptions
     public string? SessionText { get; set; }
     public string? SessionKey { get; set; }
     public string? SessionWait { get; set; }
-    public bool SessionJson { get; set; }
     public bool SessionAll { get; set; }
     public bool SessionYes { get; set; }
     public int SessionWidth { get; set; } = 100;

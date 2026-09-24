@@ -145,7 +145,6 @@ public sealed partial class ConsoleToSvgCommandLine
         public Option<string> TmuxTarget { get; } = RequiredString("--target", "tmux pane target.");
         public Option<int?> History { get; } = HistoryOption();
         public Option<bool> StatusJson { get; } = Flag("--json", "Write status as JSON.");
-        public Option<bool> SessionJson { get; } = Flag("--json", "Write the result as JSON.");
         public Option<bool> SessionAll { get; } =
             Flag("--all", "Stop all console2svg-managed sessions.");
         public Option<bool> SessionYes { get; } =

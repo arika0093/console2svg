@@ -130,7 +130,7 @@ internal static partial class Program
             {
                 SessionAction.Start => await StartManagedSessionAsync(options, cancellationToken)
                     .ConfigureAwait(false),
-                SessionAction.List => WriteManagedSessionList(options.SessionJson),
+                SessionAction.List => WriteManagedSessionList(),
                 SessionAction.Read => await ReadManagedSessionAsync(options, cancellationToken)
                     .ConfigureAwait(false),
                 SessionAction.Send => await SendManagedSessionInputAsync(options, cancellationToken)
@@ -200,35 +200,23 @@ internal static partial class Program
             )
             .ConfigureAwait(false);
         var session = response.Session;
-        if (options.SessionJson)
-        {
-            await WriteSessionJsonAsync(
-                    new SessionStartOutput
-                    {
-                        SessionId = session.Id,
-                        State = session.State,
-                        ProcessId = session.ProcessId,
-                        Width = session.Width,
-                        Height = session.Height,
-                    },
-                    SessionOutputJsonContext.Default.SessionStartOutput,
-                    cancellationToken
-                )
-                .ConfigureAwait(false);
-        }
-        else
-        {
-            await Console
-                .Out.WriteLineAsync(
-                    $"Started session {session.Id} (pid {session.ProcessId}).".AsMemory(),
-                    cancellationToken
-                )
-                .ConfigureAwait(false);
-        }
+        await WriteSessionJsonAsync(
+                new SessionStartOutput
+                {
+                    SessionId = session.Id,
+                    State = session.State,
+                    ProcessId = session.ProcessId,
+                    Width = session.Width,
+                    Height = session.Height,
+                },
+                SessionOutputJsonContext.Default.SessionStartOutput,
+                cancellationToken
+            )
+            .ConfigureAwait(false);
         return 0;
     }
 
-    private static int WriteManagedSessionList(bool json)
+    private static int WriteManagedSessionList()
     {
         var sessions = ManagedTerminalSessionManager.List();
         var output = new SessionListOutput
@@ -246,23 +234,7 @@ internal static partial class Program
                 })
                 .ToArray(),
         };
-        if (json)
-        {
-            WriteSessionJson(output, SessionOutputJsonContext.Default.SessionListOutput);
-        }
-        else if (sessions.Count == 0)
-        {
-            Console.WriteLine("No managed sessions.");
-        }
-        else
-        {
-            foreach (var session in sessions)
-            {
-                Console.WriteLine(
-                    $"{session.Id}\t{session.State}\t{session.Width}x{session.Height}\tpid={session.ProcessId}\texit={session.ExitCode?.ToString() ?? "-"}"
-                );
-            }
-        }
+        WriteSessionJson(output, SessionOutputJsonContext.Default.SessionListOutput);
         return 0;
     }
 
@@ -280,36 +252,27 @@ internal static partial class Program
             )
             .ConfigureAwait(false);
         var session = response.Session;
-        if (options.SessionJson)
-        {
-            await WriteSessionJsonAsync(
-                    new SessionReadOutput
+        await WriteSessionJsonAsync(
+                new SessionReadOutput
+                {
+                    SessionId = session.Id,
+                    State = session.State,
+                    ProcessId = session.ProcessId,
+                    ExitCode = session.ExitCode,
+                    Version = session.Version,
+                    TimedOut = response.TimedOut,
+                    Screen = new CaptureJsonScreen
                     {
-                        SessionId = session.Id,
-                        State = session.State,
-                        ProcessId = session.ProcessId,
-                        ExitCode = session.ExitCode,
-                        Version = session.Version,
-                        TimedOut = response.TimedOut,
-                        Screen = new CaptureJsonScreen
-                        {
-                            Width = session.Width,
-                            Height = session.Height,
-                            Text = session.Text,
-                            Truncated = session.TextTruncated,
-                        },
+                        Width = session.Width,
+                        Height = session.Height,
+                        Text = session.Text,
+                        Truncated = session.TextTruncated,
                     },
-                    SessionOutputJsonContext.Default.SessionReadOutput,
-                    cancellationToken
-                )
-                .ConfigureAwait(false);
-        }
-        else
-        {
-            await Console
-                .Out.WriteLineAsync(session.Text.AsMemory(), cancellationToken)
-                .ConfigureAwait(false);
-        }
+                },
+                SessionOutputJsonContext.Default.SessionReadOutput,
+                cancellationToken
+            )
+            .ConfigureAwait(false);
         return 0;
     }
 
@@ -330,7 +293,7 @@ internal static partial class Program
                 cancellationToken
             )
             .ConfigureAwait(false);
-        return WriteSessionOperation(options, response.Session);
+        return WriteSessionOperation(response.Session);
     }
 
     private static async Task<int> ResizeManagedSessionAsync(
@@ -350,7 +313,7 @@ internal static partial class Program
                 cancellationToken
             )
             .ConfigureAwait(false);
-        return WriteSessionOperation(options, response.Session);
+        return WriteSessionOperation(response.Session);
     }
 
     private static async Task<int> CaptureManagedSessionAsync(
@@ -383,33 +346,21 @@ internal static partial class Program
                 cancellationToken
             )
             .ConfigureAwait(false);
-        if (options.SessionJson)
-        {
-            await WriteSessionJsonAsync(
-                    new SessionCaptureOutput
+        await WriteSessionJsonAsync(
+                new SessionCaptureOutput
+                {
+                    SessionId = response.Session.Id,
+                    State = response.Session.State,
+                    Artifact = new CaptureJsonArtifact
                     {
-                        SessionId = response.Session.Id,
-                        State = response.Session.State,
-                        Artifact = new CaptureJsonArtifact
-                        {
-                            Path = Path.GetFullPath(options.OutputPath),
-                            Format = "svg",
-                        },
+                        Path = Path.GetFullPath(options.OutputPath),
+                        Format = "svg",
                     },
-                    SessionOutputJsonContext.Default.SessionCaptureOutput,
-                    cancellationToken
-                )
-                .ConfigureAwait(false);
-        }
-        else
-        {
-            await Console
-                .Out.WriteLineAsync(
-                    $"Generated: {Path.GetFullPath(options.OutputPath)}".AsMemory(),
-                    cancellationToken
-                )
-                .ConfigureAwait(false);
-        }
+                },
+                SessionOutputJsonContext.Default.SessionCaptureOutput,
+                cancellationToken
+            )
+            .ConfigureAwait(false);
         return 0;
     }
 
@@ -427,7 +378,7 @@ internal static partial class Program
                     cancellationToken
                 )
                 .ConfigureAwait(false);
-            return WriteSessionOperation(options, response.Session);
+            return WriteSessionOperation(response.Session);
         }
 
         var active = ManagedTerminalSessionManager
@@ -436,19 +387,12 @@ internal static partial class Program
             .ToArray();
         if (active.Length == 0)
         {
-            if (options.SessionJson)
-            {
-                await WriteSessionJsonAsync(
-                        new SessionStopAllOutput(),
-                        SessionOutputJsonContext.Default.SessionStopAllOutput,
-                        cancellationToken
-                    )
-                    .ConfigureAwait(false);
-            }
-            else
-            {
-                Console.WriteLine("No active managed sessions.");
-            }
+            await WriteSessionJsonAsync(
+                    new SessionStopAllOutput(),
+                    SessionOutputJsonContext.Default.SessionStopAllOutput,
+                    cancellationToken
+                )
+                .ConfigureAwait(false);
             return 0;
         }
 
@@ -503,51 +447,27 @@ internal static partial class Program
             }
         }
 
-        if (options.SessionJson)
-        {
-            await WriteSessionJsonAsync(
-                    new SessionStopAllOutput
-                    {
-                        Stopped = stopped.ToArray(),
-                        Failed = failed.ToArray(),
-                    },
-                    SessionOutputJsonContext.Default.SessionStopAllOutput,
-                    cancellationToken
-                )
-                .ConfigureAwait(false);
-        }
-        else
-        {
-            Console.WriteLine($"Stopped {stopped.Count} managed session(s).");
-            foreach (var error in failed)
-            {
-                await Console
-                    .Error.WriteLineAsync(error.AsMemory(), cancellationToken)
-                    .ConfigureAwait(false);
-            }
-        }
+        await WriteSessionJsonAsync(
+                new SessionStopAllOutput { Stopped = stopped.ToArray(), Failed = failed.ToArray() },
+                SessionOutputJsonContext.Default.SessionStopAllOutput,
+                cancellationToken
+            )
+            .ConfigureAwait(false);
 
         return failed.Count == 0 ? 0 : 1;
     }
 
-    private static int WriteSessionOperation(AppOptions options, ManagedSessionSnapshot session)
+    private static int WriteSessionOperation(ManagedSessionSnapshot session)
     {
-        if (options.SessionJson)
-        {
-            WriteSessionJson(
-                new SessionOperationOutput
-                {
-                    SessionId = session.Id,
-                    State = session.State,
-                    ExitCode = session.ExitCode,
-                },
-                SessionOutputJsonContext.Default.SessionOperationOutput
-            );
-        }
-        else
-        {
-            Console.WriteLine($"Session {session.Id}: {session.State}.");
-        }
+        WriteSessionJson(
+            new SessionOperationOutput
+            {
+                SessionId = session.Id,
+                State = session.State,
+                ExitCode = session.ExitCode,
+            },
+            SessionOutputJsonContext.Default.SessionOperationOutput
+        );
         return 0;
     }
 

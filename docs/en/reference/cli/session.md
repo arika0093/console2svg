@@ -5,18 +5,19 @@ description: Manage PTY sessions across console2svg invocations.
 
 ```bash title="Terminal"
 console2svg session start [options] -- command [args...]
-console2svg session list [--json]
-console2svg session read <id> [--wait <duration>] [--json]
-console2svg session send <id> (--keys <key> | --text <text>) [--json]
-console2svg session resize <id> --width <columns> --height <rows> [--json]
-console2svg session capture <id> [-o <path>] [appearance options] [--json]
-console2svg session stop <id> [--json]
-console2svg session stop --all [--yes] [--json]
+console2svg session list
+console2svg session read <id> [--wait <duration>]
+console2svg session send <id> (--keys <key> | --text <text>)
+console2svg session resize <id> --width <columns> --height <rows>
+console2svg session capture <id> [-o <path>] [appearance options]
+console2svg session stop <id>
+console2svg session stop --all [--yes]
 ```
 
 Managed sessions let an agent start a TUI, read its current screen, send input,
 and resize or stop it across separate CLI invocations. They are independent of
 `interactive`, `live-server`, and tmux sessions.
+All session commands write JSON to standard output. There is no `--json` option.
 
 `start` defaults to a 100x24 terminal and the current working directory.
 `--width` and `--height` accept values from 1 to 500; `--cwd` selects another
@@ -25,8 +26,8 @@ working directory.
 ## Start and inspect
 
 ```bash title="Terminal"
-console2svg session start --json -- btop
-console2svg session read s_abc123 --wait 1s --json
+console2svg session start -- btop
+console2svg session read s_abc123 --wait 1s
 ```
 
 The start result returns a `sessionId`, lifecycle `state`, process ID, and
@@ -54,7 +55,7 @@ the resulting screen.
 ## Capture and stop
 
 ```bash title="Terminal"
-console2svg session capture s_abc123 -o current-screen.svg --json
+console2svg session capture s_abc123 -o current-screen.svg
 console2svg session stop s_abc123
 console2svg session stop --all --yes
 ```

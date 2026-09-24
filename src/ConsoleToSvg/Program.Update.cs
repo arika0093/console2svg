@@ -109,14 +109,18 @@ internal static partial class Program
         {
             try
             {
-                return await RunPackageUpdateAsync(channel, cancellationToken).ConfigureAwait(false);
+                return await RunPackageUpdateAsync(channel, cancellationToken)
+                    .ConfigureAwait(false);
             }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or Win32Exception)
+            catch (Exception ex)
+                when (ex is IOException or UnauthorizedAccessException or Win32Exception)
             {
-                await Console.Error.WriteLineAsync(
-                    $"Package update failed: {ex.Message}".AsMemory(),
-                    cancellationToken
-                ).ConfigureAwait(false);
+                await Console
+                    .Error.WriteLineAsync(
+                        $"Package update failed: {ex.Message}".AsMemory(),
+                        cancellationToken
+                    )
+                    .ConfigureAwait(false);
                 return 1;
             }
         }
@@ -131,93 +135,6 @@ internal static partial class Program
                 )
                 .ConfigureAwait(false);
             return 1;
-        }
-
-        private static async Task<int> RunPackageUpdateAsync(
-            InstallChannelInfo channel,
-            CancellationToken cancellationToken
-        )
-        {
-            var commands = channel.Name switch
-            {
-                "npm" => [new PackageCommand("npm", ["update", "-g", "console2svg"])],
-                "winget" => [
-                    new PackageCommand(
-                        "winget",
-                        [
-                            "upgrade",
-                            "--id",
-                            "arika0093.console2svg",
-                            "--exact",
-                            "--accept-source-agreements",
-                            "--accept-package-agreements",
-                        ]
-                    ),
-                ],
-                "deb" => [
-                    new PackageCommand("sudo", ["apt-get", "update"]),
-                    new PackageCommand("sudo", ["apt-get", "install", "--only-upgrade", "-y", "console2svg"]),
-                ],
-                "rpm" => [
-                    new PackageCommand("sudo", ["dnf", "upgrade", "-y", "console2svg"]),
-                ],
-                _ => throw new InvalidOperationException($"Unsupported package channel: {channel.Name}."),
-            };
-
-            foreach (var command in commands)
-            {
-                var exitCode = await RunPackageCommandAsync(command, cancellationToken)
-                    .ConfigureAwait(false);
-                if (exitCode != 0)
-                {
-                    await Console.Error.WriteLineAsync(
-                        $"Package update failed with exit code {exitCode}: {command.DisplayName}".AsMemory(),
-                        cancellationToken
-                    ).ConfigureAwait(false);
-                    return exitCode;
-                }
-            }
-
-            await Console.Out.WriteLineAsync(
-                $"Updated console2svg through {channel.Name}.".AsMemory(),
-                cancellationToken
-            ).ConfigureAwait(false);
-            return 0;
-        }
-
-        private static async Task<int> RunPackageCommandAsync(
-            PackageCommand command,
-            CancellationToken cancellationToken
-        )
-        {
-            await Console.Error.WriteLineAsync(
-                $"Running: {command.DisplayName}".AsMemory(),
-                cancellationToken
-            ).ConfigureAwait(false);
-            var executable = FindExecutableInPath(command.Executable);
-            if (executable is null)
-            {
-                await Console.Error.WriteLineAsync(
-                    $"Required package manager executable was not found: {command.Executable}.".AsMemory(),
-                    cancellationToken
-                ).ConfigureAwait(false);
-                return 1;
-            }
-
-            using var process = new Process
-            {
-                StartInfo = new ProcessStartInfo(executable)
-                {
-                    UseShellExecute = false,
-                    RedirectStandardOutput = false,
-                    RedirectStandardError = false,
-                },
-            };
-            foreach (var argument in command.Arguments)
-                process.StartInfo.ArgumentList.Add(argument);
-            process.Start();
-            await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
-            return process.ExitCode;
         }
 
         var asset = release.Assets.FirstOrDefault(item =>
@@ -292,6 +209,103 @@ internal static partial class Program
         }
     }
 
+    private static async Task<int> RunPackageUpdateAsync(
+        InstallChannelInfo channel,
+        CancellationToken cancellationToken
+    )
+    {
+        PackageCommand[] commands = channel.Name switch
+        {
+            "npm" => [new PackageCommand("npm", ["update", "-g", "console2svg"])],
+            "winget" =>
+            [
+                new PackageCommand(
+                    "winget",
+                    [
+                        "upgrade",
+                        "--id",
+                        "arika0093.console2svg",
+                        "--exact",
+                        "--accept-source-agreements",
+                        "--accept-package-agreements",
+                    ]
+                ),
+            ],
+            "deb" =>
+            [
+                new PackageCommand("sudo", ["apt-get", "update"]),
+                new PackageCommand(
+                    "sudo",
+                    ["apt-get", "install", "--only-upgrade", "-y", "console2svg"]
+                ),
+            ],
+            "rpm" => [new PackageCommand("sudo", ["dnf", "upgrade", "-y", "console2svg"])],
+            _ => throw new InvalidOperationException(
+                $"Unsupported package channel: {channel.Name}."
+            ),
+        };
+
+        foreach (var command in commands)
+        {
+            var exitCode = await RunPackageCommandAsync(command, cancellationToken)
+                .ConfigureAwait(false);
+            if (exitCode != 0)
+            {
+                await Console
+                    .Error.WriteLineAsync(
+                        $"Package update failed with exit code {exitCode}: {command.DisplayName}".AsMemory(),
+                        cancellationToken
+                    )
+                    .ConfigureAwait(false);
+                return exitCode;
+            }
+        }
+
+        await Console
+            .Out.WriteLineAsync(
+                $"Updated console2svg through {channel.Name}.".AsMemory(),
+                cancellationToken
+            )
+            .ConfigureAwait(false);
+        return 0;
+    }
+
+    private static async Task<int> RunPackageCommandAsync(
+        PackageCommand command,
+        CancellationToken cancellationToken
+    )
+    {
+        await Console
+            .Error.WriteLineAsync($"Running: {command.DisplayName}".AsMemory(), cancellationToken)
+            .ConfigureAwait(false);
+        var executable = FindExecutableInPath(command.Executable);
+        if (executable is null)
+        {
+            await Console
+                .Error.WriteLineAsync(
+                    $"Required package manager executable was not found: {command.Executable}.".AsMemory(),
+                    cancellationToken
+                )
+                .ConfigureAwait(false);
+            return 1;
+        }
+
+        using var process = new Process
+        {
+            StartInfo = new ProcessStartInfo(executable)
+            {
+                UseShellExecute = false,
+                RedirectStandardOutput = false,
+                RedirectStandardError = false,
+            },
+        };
+        foreach (var argument in command.Arguments)
+            process.StartInfo.ArgumentList.Add(argument);
+        process.Start();
+        await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
+        return process.ExitCode;
+    }
+
     private static async Task<InstallChannelInfo> DetectInstallChannelAsync(
         CancellationToken cancellationToken
     )
@@ -323,7 +337,11 @@ internal static partial class Program
                     cancellationToken
                 )
             )
-                return new("deb", "sudo apt-get update && sudo apt-get install --only-upgrade -y console2svg", true);
+                return new(
+                    "deb",
+                    "sudo apt-get update && sudo apt-get install --only-upgrade -y console2svg",
+                    true
+                );
             if (
                 await IsOwnedByPackageAsync("rpm", "-qf", resolvedExecutablePath, cancellationToken)
             )
@@ -482,28 +500,32 @@ internal static partial class Program
         int read;
         while ((read = await source.ReadAsync(buffer, cancellationToken).ConfigureAwait(false)) > 0)
         {
-            await target.WriteAsync(buffer.AsMemory(0, read), cancellationToken)
+            await target
+                .WriteAsync(buffer.AsMemory(0, read), cancellationToken)
                 .ConfigureAwait(false);
             copiedBytes += read;
             if (totalBytes is > 0)
             {
                 var percentage = copiedBytes * 100d / totalBytes.Value;
-                await Console.Error.WriteAsync(
-                    $"\rDownloading {Path.GetFileName(destination)}: {percentage,6:0.0}%".AsMemory(),
-                    cancellationToken
-                ).ConfigureAwait(false);
+                await Console
+                    .Error.WriteAsync(
+                        $"\rDownloading {Path.GetFileName(destination)}: {percentage, 6:0.0}%".AsMemory(),
+                        cancellationToken
+                    )
+                    .ConfigureAwait(false);
             }
             else
             {
-                await Console.Error.WriteAsync(
-                    $"\rDownloading {Path.GetFileName(destination)}: {copiedBytes:N0} bytes"
-                        .AsMemory(),
-                    cancellationToken
-                ).ConfigureAwait(false);
+                await Console
+                    .Error.WriteAsync(
+                        $"\rDownloading {Path.GetFileName(destination)}: {copiedBytes:N0} bytes".AsMemory(),
+                        cancellationToken
+                    )
+                    .ConfigureAwait(false);
             }
         }
 
-        await Console.Error.WriteLineAsync(string.Empty).ConfigureAwait(false);
+        await Console.Error.WriteLineAsync(string.Empty, cancellationToken).ConfigureAwait(false);
     }
 
     private static async Task VerifyDigestAsync(
@@ -554,10 +576,12 @@ internal static partial class Program
         process.StartInfo.ArgumentList.Add(archivePath);
         process.StartInfo.ArgumentList.Add("-C");
         process.StartInfo.ArgumentList.Add(destination);
-        await Console.Error.WriteLineAsync(
-            $"Running: {tar} -xzf {archivePath} -C {destination}".AsMemory(),
-            cancellationToken
-        ).ConfigureAwait(false);
+        await Console
+            .Error.WriteLineAsync(
+                $"Running: {tar} -xzf {archivePath} -C {destination}".AsMemory(),
+                cancellationToken
+            )
+            .ConfigureAwait(false);
         process.Start();
         var error = await process
             .StandardError.ReadToEndAsync(cancellationToken)

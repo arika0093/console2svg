@@ -524,6 +524,29 @@ public static class DocumentValidator
                 {
                     errors.Add($"{path}.inputs must contain at least one input.");
                 }
+                else
+                {
+                    for (var index = 0; index < step.Inputs.Length; index++)
+                    {
+                        var input = step.Inputs[index];
+                        if (input is null)
+                        {
+                            errors.Add($"{path}.inputs[{index}] must not be null.");
+                            continue;
+                        }
+                        var valueCount =
+                            (input.Text is null ? 0 : 1)
+                            + (input.Keys is null ? 0 : 1)
+                            + (input.Paste is null ? 0 : 1)
+                            + (input.RawHex is null ? 0 : 1);
+                        if (valueCount != 1)
+                        {
+                            errors.Add(
+                                $"{path}.inputs[{index}] must specify exactly one of text, keys, paste, or raw-hex."
+                            );
+                        }
+                    }
+                }
                 break;
             case "wait":
                 if (
@@ -539,7 +562,11 @@ public static class DocumentValidator
                 }
                 break;
             case "resize":
-                if (step.Args?.Width is <= 0 || step.Args?.Height is <= 0)
+                if (step.Args?.Width is null || step.Args.Height is null)
+                {
+                    errors.Add($"{path}.args.width and height are required.");
+                }
+                else if (step.Args.Width <= 0 || step.Args.Height <= 0)
                 {
                     errors.Add($"{path}.args.width and height must be greater than zero.");
                 }

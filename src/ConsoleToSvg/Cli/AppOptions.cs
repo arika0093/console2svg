@@ -31,6 +31,7 @@ public enum Workflow
     Tmux,
     Batch,
     Session,
+    Scenario,
 }
 
 public enum SessionAction
@@ -106,6 +107,7 @@ public sealed class AppOptions
     public string? SessionPipeName { get; set; }
     public string? SessionDirectory { get; set; }
 
+    public string? ScenarioPath { get; set; }
     public bool Verbose { get; set; }
 
     public string? VerboseLogPath { get; set; }

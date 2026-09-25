@@ -584,19 +584,29 @@
                       "type": [
                         "string",
                         "null"
-                      ]
+                      ],
+                      "description": "Text input sent to the terminal."
                     },
                     "keys": {
                       "type": [
                         "string",
                         "null"
-                      ]
+                      ],
+                      "description": "Semantic terminal keys sent to the application."
+                    },
+                    "paste": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Paste text using the terminal\u0027s bracketed-paste mode when enabled."
                     },
                     "raw-hex": {
                       "type": [
                         "string",
                         "null"
-                      ]
+                      ],
+                      "description": "Raw terminal bytes encoded as hexadecimal."
                     }
                   }
                 },

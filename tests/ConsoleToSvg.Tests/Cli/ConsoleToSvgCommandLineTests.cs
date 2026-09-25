@@ -350,6 +350,30 @@ public sealed class ConsoleToSvgCommandLineTests
     }
 
     [Test]
+    public async Task ScenarioRunMapsDocumentAndExplicitTerminalOverrides()
+    {
+        var invocation = await InvokeAsync(
+            "scenario",
+            "run",
+            "demo.yaml",
+            "--width",
+            "120",
+            "--height",
+            "40",
+            "--no-colorenv"
+        );
+
+        invocation.ExitCode.ShouldBe(0);
+        invocation.Options!.Workflow.ShouldBe(Workflow.Scenario);
+        invocation.Options.ScenarioPath.ShouldBe("demo.yaml");
+        invocation.Options.SessionWidth.ShouldBe(120);
+        invocation.Options.SessionHeight.ShouldBe(40);
+        invocation.Options.IsSessionWidthExplicit.ShouldBeTrue();
+        invocation.Options.IsSessionHeightExplicit.ShouldBeTrue();
+        invocation.Options.IsNoColorEnvExplicit.ShouldBeTrue();
+    }
+
+    [Test]
     public async Task SessionCommandsMapIdsAndInputs()
     {
         var start = await InvokeAsync(

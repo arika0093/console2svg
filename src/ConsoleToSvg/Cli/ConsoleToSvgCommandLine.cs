@@ -176,6 +176,7 @@ public sealed partial class ConsoleToSvgCommandLine
         AddLiveServerCommand(root);
         AddTmuxCommand(root);
         AddBatchCommand(root);
+        AddScenarioCommand(root);
         AddCompletionsCommand(root);
         return root;
     }
@@ -760,6 +761,48 @@ public sealed partial class ConsoleToSvgCommandLine
         }
         return inputs;
     }
+    private void AddScenarioCommand(RootCommand root)
+    {
+        var scenario = new Command("scenario", "Run Scenario documents.");
+        scenario.SetAction(ColoredHelpAction.Write);
+
+        var run = new Command("run", "Execute a Scenario document.");
+        var document = new Argument<string>("document") { Description = "Scenario document path." };
+        run.Arguments.Add(document);
+        AddOptions(
+            run,
+            [
+                _symbols.SessionWidth,
+                _symbols.SessionHeight,
+                _symbols.NoColorEnv,
+                _symbols.NoDeleteEnvs,
+            ]
+        );
+        run.SetAction(
+            (parseResult, cancellationToken) =>
+                _handler(
+                    new AppOptions
+                    {
+                        Workflow = Workflow.Scenario,
+                        ScenarioPath = parseResult.GetRequiredValue(document),
+                        ConfigPath = parseResult.GetValue(_symbols.ConfigPath)?.ToString(),
+                        SessionWidth = parseResult.GetValue(_symbols.SessionWidth) ?? 100,
+                        SessionHeight = parseResult.GetValue(_symbols.SessionHeight) ?? 24,
+                        IsSessionWidthExplicit = IsSpecified(parseResult, _symbols.SessionWidth),
+                        IsSessionHeightExplicit = IsSpecified(parseResult, _symbols.SessionHeight),
+                        NoColorEnv = parseResult.GetValue(_symbols.NoColorEnv),
+                        IsNoColorEnvExplicit = IsSpecified(parseResult, _symbols.NoColorEnv),
+                        NoDeleteEnvs = parseResult.GetValue(_symbols.NoDeleteEnvs),
+                        IsNoDeleteEnvsExplicit = IsSpecified(parseResult, _symbols.NoDeleteEnvs),
+                    },
+                    parseResult,
+                    cancellationToken
+                )
+        );
+        scenario.Subcommands.Add(run);
+        root.Subcommands.Add(scenario);
+    }
+
 
     private bool TryCreateSessionCaptureOptions(
         ParseResult result,

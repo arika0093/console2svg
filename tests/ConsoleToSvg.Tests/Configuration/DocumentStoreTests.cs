@@ -198,6 +198,32 @@ public sealed class DocumentStoreTests
     }
 
     [Test]
+    public void ScenarioSendInputMustSpecifyExactlyOneInputKind()
+    {
+        var errors = DocumentValidator.Validate(
+            new ScenarioDocument
+            {
+                Scenario = new ScenarioDefinition
+                {
+                    Launch = new ScenarioLaunch { Executable = "demo" },
+                    Execute =
+                    [
+                        new ScenarioStep
+                        {
+                            Type = "send",
+                            Inputs = [new ScenarioInput { Text = "hello", Keys = "Enter" }],
+                        },
+                    ],
+                },
+            }
+        );
+
+        errors.ShouldContain(
+            "scenario.execute[0].inputs[0] must specify exactly one of text, keys, paste, or raw-hex."
+        );
+    }
+
+    [Test]
     public async Task ScenarioDocumentsRoundTripThroughYamlAndJson()
     {
         using var directory = new TemporaryDirectory();
@@ -215,7 +241,18 @@ public sealed class DocumentStoreTests
             {
                 WorkingDir = new WorkingDirectoryOptions { Temporary = true },
                 Launch = new ScenarioLaunch { Executable = "vim", Args = ["notes.txt"] },
-                Execute = [new ScenarioStep { Type = "send", Inputs = [new ScenarioInput { Text = "hello" }] }],
+                Execute =
+                [
+                    new ScenarioStep
+                    {
+                        Type = "send",
+                        Inputs =
+                        [
+                            new ScenarioInput { Text = "hello" },
+                            new ScenarioInput { Paste = "pasted" },
+                        ],
+                    },
+                ],
             },
         };
 
@@ -233,6 +270,7 @@ public sealed class DocumentStoreTests
             loaded.Options.Capture!.Video!.Coalesce.ShouldBe("7.5");
             loaded.Scenario!.Launch!.Executable.ShouldBe("vim");
             loaded.Scenario.Execute![0].Inputs![0].Text.ShouldBe("hello");
+            loaded.Scenario.Execute![0].Inputs![1].Paste.ShouldBe("pasted");
         }
     }
 

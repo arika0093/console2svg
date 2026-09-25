@@ -94,6 +94,14 @@ internal static partial class Program
         if (options.Workflow == Workflow.Theme)
             return RunThemeCommand(options);
 
+        if (options.Workflow == Workflow.Scenario)
+            return await RunScenarioAsync(
+                    options,
+                    resolvedConfiguration ?? new ConsoleOptions(),
+                    invocationCancellationToken
+                )
+                .ConfigureAwait(false);
+
         if (options.Workflow == Workflow.Batch)
             return await RunBatchAsync(
                     options,
@@ -723,6 +731,7 @@ internal static partial class Program
                 or Workflow.LiveServer
                 or Workflow.Tmux
                 or Workflow.Batch
+                or Workflow.Scenario
         || options.Workflow == Workflow.Session
             && options.RequestedSessionAction
                 is SessionAction.Start

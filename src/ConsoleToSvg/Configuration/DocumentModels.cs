@@ -339,8 +339,16 @@ public partial class ScenarioStep
 [YamlObject]
 public partial class ScenarioInput
 {
+    [Description("Text input sent to the terminal.")]
     public string? Text { get; set; }
+
+    [Description("Semantic terminal keys sent to the application.")]
     public string? Keys { get; set; }
+
+    [Description("Paste text using the terminal's bracketed-paste mode when enabled.")]
+    public string? Paste { get; set; }
+
+    [Description("Raw terminal bytes encoded as hexadecimal.")]
     public string? RawHex { get; set; }
 }
 

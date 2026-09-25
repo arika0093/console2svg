@@ -35,6 +35,7 @@ console2svg capture [options] -- command [args...]
 
 | 命令 | 作用 |
 | --- | --- |
+| [`scenario`](./scenario.md) | 读取场景文档，在伪终端中执行基于状态同步的自动化操作。 |
 | [`batch`](./batch.md) | 批量扫描 Markdown/MDX 中的嵌入标记，自动生成并同步文档图片。 |
 | [`llm`](./llm.md) | 输出内置的 Agent Skill 定义，使 AI 智能体（如 GitHub Copilot、Claude 等）能够操作 console2svg。 |
 

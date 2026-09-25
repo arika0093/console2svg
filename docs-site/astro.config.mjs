@@ -220,6 +220,8 @@ export default defineConfig({
             ja: '自動化',
           },
           items: [
+            'automation/config',
+            'automation/scenario',
             'automation/replay',
             'automation/asciicast',
             'automation/document-image-sync',
@@ -261,6 +263,7 @@ export default defineConfig({
             'reference/cli',
             'reference/cli/capture',
             'reference/cli/interactive',
+            'reference/cli/scenario',
             'reference/cli/replay',
             'reference/cli/cast',
             'reference/cli/theme',

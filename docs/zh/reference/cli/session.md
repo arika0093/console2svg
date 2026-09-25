@@ -13,6 +13,7 @@ console2svg session send <id> (--keys <key> | --text <text> | --paste <text> | -
 console2svg session resize <id> --width <columns> --height <rows>
 console2svg session capture <id> [-o <path>] [appearance options]
 console2svg session inspect <id> [appearance options]
+console2svg session export <id> -o <path>
 console2svg session stop <id>
 console2svg session stop --all [--yes]
 ```
@@ -136,7 +137,21 @@ JSON 响应中会同时返回会话 ID 与生成的文件路径。`inspect` 与 
 
 `inspect` 是 Observation（观察），而 `capture` 是产生成果物的 Action：`inspect` 结果仅用于探索与诊断，会从 Scenario 导出中省略；`capture` 结果则是可导出的持久化成果物。
 
-### 8. 查看会话列表：`list`
+### 8. 导出会话：`export`
+
+从托管会话中提取记录的语义交互路径（操作与条件），导出为可直接运行的 Scenario（场景）文档（YAML 格式）。
+
+```bash title="Terminal"
+console2svg session export s_abc123 -o scenario.yaml
+```
+
+* `<id>`：目标会话 ID
+* `-o, --out <path>`：目标场景文件路径（若省略扩展名将自动补齐 `.yaml`）
+
+导出时会提取 `send`、`wait`、`resize` 与 `capture` 操作，同时剔除用于探索与诊断的 `read` 和 `inspect` 观测。
+导出的场景文件可通过 `console2svg scenario run <path>` 直接重新运行，用于 CI 自动化流水线与回归测试。
+
+### 9. 查看会话列表：`list`
 
 默认列出正在启动或运行中的会话。指定 `--all` 可包含仍在保留期内的已退出或不可用会话；可确定时，条目还会提供 `expiresAt`。
 
@@ -144,7 +159,7 @@ JSON 响应中会同时返回会话 ID 与生成的文件路径。`inspect` 与 
 console2svg session list --all
 ```
 
-### 9. 终止会话：`stop`
+### 10. 终止会话：`stop`
 
 停止会话，结束关联的进程树并清理资源。
 
@@ -160,4 +175,4 @@ console2svg session stop --all --yes
 * `--all`：一次性停止 console2svg 管理的所有会话。
 * `-y, --yes`：跳过批量停止时的确认提示（在管道执行或自动化脚本中必须指定）。
 
-停止会话后临时数据将被删除，之后无法再对其执行 `read`、`capture` 或 `inspect`。
+停止会话后临时数据将被删除，之后无法再对其执行 `read`、`capture`、`inspect` 或 `export`。

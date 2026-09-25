@@ -13,6 +13,7 @@ console2svg session send <id> (--keys <key> | --text <text> | --paste <text> | -
 console2svg session resize <id> --width <columns> --height <rows>
 console2svg session capture <id> [-o <path>] [appearance options]
 console2svg session inspect <id> [appearance options]
+console2svg session export <id> -o <path>
 console2svg session stop <id>
 console2svg session stop --all [--yes]
 ```
@@ -136,7 +137,21 @@ Temporary-file behavior: files live under a randomized per-user system temp dire
 
 `inspect` is an Observation, while `capture` is an artifact-producing Action: `inspect` results are for exploration and diagnostics and are omitted from Scenario export, whereas `capture` results are eligible for export as durable artifacts.
 
-### 8. Listing Sessions: `list`
+### 8. Exporting Sessions: `export`
+
+Exports the recorded semantic interaction path (actions and conditions) from a managed session into a runnable Scenario document (YAML).
+
+```bash title="Terminal"
+console2svg session export s_abc123 -o scenario.yaml
+```
+
+* `<id>`: Target session ID
+* `-o, --out <path>`: Destination scenario file path (automatically appends `.yaml` if omitted)
+
+Export extracts `send`, `wait`, `resize`, and `capture` operations while dropping exploratory `read` and `inspect` observations.
+The exported scenario can be re-run directly via `console2svg scenario run <path>` for automated CI workflows and regression testing.
+
+### 9. Listing Sessions: `list`
 
 By default, lists sessions that are starting or running. Pass `--all` to include retained exited or unavailable sessions; retained entries include `expiresAt` when known.
 
@@ -144,7 +159,7 @@ By default, lists sessions that are starting or running. Pass `--all` to include
 console2svg session list --all
 ```
 
-### 9. Terminating a Session: `stop`
+### 10. Terminating a Session: `stop`
 
 Stops the session, terminates the associated process tree, and cleans up resources.
 
@@ -160,4 +175,4 @@ console2svg session stop --all --yes
 * `--all`: Stops all sessions managed by console2svg.
 * `-y, --yes`: Skips confirmation prompts when stopping all sessions (required in piped execution or automation scripts).
 
-Stopping a session deletes its temporary data, after which `read`, `capture`, and `inspect` operations can no longer be performed.
+Stopping a session deletes its temporary data, after which `read`, `capture`, `inspect`, and `export` operations can no longer be performed.

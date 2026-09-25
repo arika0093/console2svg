@@ -21,7 +21,7 @@ On failure, branch on `error.code`; `error.message` and standard-error diagnosti
 
 ## Basic Interactive Workflow
 
-An interactive session workflow consists of five stages: start, resize, observe, send input, and stop.
+An interactive session workflow consists of seven stages: start, resize, inspect/read, wait and send, capture, export, and stop.
 
 ### 1. Starting a Session
 
@@ -54,50 +54,111 @@ Use `session resize` to set the desired dimensions:
 console2svg session resize s_a1b2c3d4e5f6 --width 120 --height 30
 ```
 
-### 3. Observing the Screen State
+### 3. Screen Inspection and Observation (read / inspect)
 
-To evaluate how the application responded to previous inputs, retrieve the terminal text buffer or capture an SVG image:
+To evaluate screen state, retrieve the text buffer or inspect the rendered terminal:
 
 ```bash title="Terminal"
-# Read the current screen text immediately
+# Read current screen text immediately
 console2svg session read s_a1b2c3d4e5f6
 
-# Wait for text to appear, or for previously seen text to disappear
-console2svg session wait s_a1b2c3d4e5f6 --text "Ready"
-console2svg session wait s_a1b2c3d4e5f6 --text "Working" --until absent --stable-for 2s
+# Read structured text with per-cell style, hyperlink, and wide-character metadata
+console2svg session read s_a1b2c3d4e5f6 --structured
 
-# Capture the current visual screen as an SVG image
-console2svg session capture s_a1b2c3d4e5f6 -o /tmp/current-screen.svg
-
-# Ephemeral visual check without choosing an output path (Observation, omitted from Scenario export)
+# Render an ephemeral SVG for visual inspection (path is auto-allocated)
 console2svg session inspect s_a1b2c3d4e5f6
 ```
 
-`session read` immediately returns the current screen text, zero-based cursor coordinates and visibility, alternate-screen state, scrollback row count, and viewport scope. Add `--structured` to include versioned per-cell style, hyperlink, and wide-character data. Use `session wait --text <literal>` for condition-based waiting; absence waits require the text to have appeared before it disappears. `--stable-for` requires the condition to remain true, and optional `--timeout` has no maximum. `session capture` exports actual colors, styling, and geometry. `session inspect` renders the same pixels to a randomized per-user temp SVG and returns its path; use it for eyes-only checks and `session capture -o` when you need a durable artifact.
-Multimodal LLMs can directly inspect the resulting SVG image to detect layout misalignment or color contrast anomalies.
-`session list` shows starting or running sessions by default. Use `session list --all` to discover retained exited or unavailable sessions; their entries include `expiresAt` when known. Retained sessions remain readable and capturable by ID. Sessions explicitly stopped with `session stop` are deleted and can no longer be accessed by ID.
+#### Role of inspect and read (Observations for Diagnostics Only)
 
-### 4. Sending Keystrokes and Input
+`session read` and `session inspect` are **Observations** designed for exploration and diagnostics.
+They are inspection-only operations and do not represent durable action steps.
 
-Once the current screen state is verified, send the next sequence of keys to the terminal:
+* `session read` immediately returns viewport plain text, cursor coordinates, and alternate-screen state.
+* `session inspect` renders the terminal to an ephemeral temporary SVG under a randomized directory, returning the path without requiring the caller to specify an output filename.
+* Both `read` and `inspect` are automatically omitted from Scenario export so that temporary diagnostic checks do not pollute the exported scenario.
+
+#### Agent Design Principle: Materializing Observations as Conditions
+
+When an agent observes terminal state via `read` or `inspect` and decides on a subsequent action, it must materialize that dependency as a **Condition** (such as `session wait`) before executing the action (`session send`).
+
+For example, when `read` reveals `Overwrite? [y/N]`, do not immediately issue `send --text "y"`.
+Instead, establish the condition first:
 
 ```bash title="Terminal"
-# Send arbitrary text string
+# 1. Inspect screen state (Observation)
+console2svg session read s_a1b2c3d4e5f6
+
+# 2. Materialize the dependency as a Condition
+console2svg session wait s_a1b2c3d4e5f6 --text "Overwrite? [y/N]"
+
+# 3. Perform the action (Action)
+console2svg session send s_a1b2c3d4e5f6 --text "y" --keys Enter
+```
+
+Anchoring actions to explicit conditions ensures that exported scenarios can reproduce the interaction deterministically.
+
+### 4. Waiting for Conditions and Sending Input (wait / send)
+
+#### Waiting for Conditions (wait)
+
+Wait for text to appear, or for previously seen text to disappear:
+
+```bash title="Terminal"
+# Wait for text to appear
+console2svg session wait s_a1b2c3d4e5f6 --text "Ready"
+
+# Wait for text to disappear and require 2 seconds of stability
+console2svg session wait s_a1b2c3d4e5f6 --text "Working" --until absent --stable-for 2s
+```
+
+#### Sending Input (send)
+
+Once the condition is satisfied, transmit inputs to the terminal:
+
+```bash title="Terminal"
+# Send plain text
 console2svg session send s_a1b2c3d4e5f6 --text "git status"
 
-# Send special keys like Enter or arrow keys
+# Send named special keys
 console2svg session send s_a1b2c3d4e5f6 --keys Enter
 
-# Send text, paste content, and keys sequentially in the specified order
+# Send ordered sequences of text, paste, and keys
 console2svg session send s_a1b2c3d4e5f6 --text "i" --keys Enter --paste "hello" --keys Esc
 ```
 
-`--text`, `--paste`, `--keys`, and `--raw-hex` may be repeated; inputs are sent in the order specified. Use `--paste` for pasted content so bracketed-paste markers are included when enabled by the application. Semantic cursor and keypad keys follow the terminal modes selected by the application.
-After sending input, call `session read` again to verify that the terminal reached the expected state.
+`--text`, `--paste`, `--keys`, and `--raw-hex` may be repeated; inputs are sent in argument order as a single atomic operation.
 
-### 5. Terminating the Session
+### 5. Capturing Durable Artifacts (capture)
 
-Once the interactive workflow is complete, explicitly terminate the background process:
+Unlike ephemeral `inspect`, use `session capture` when saving durable image artifacts:
+
+```bash title="Terminal"
+console2svg session capture s_a1b2c3d4e5f6 -o docs/assets/status.svg -d macos -t dracula
+```
+
+Because `capture` represents an intended output artifact, it is recorded as an Action and included in Scenario export.
+
+### 6. Exporting to a Scenario Document (export)
+
+A successful interactive path can be exported into a runnable **Scenario document** (YAML):
+
+```bash title="Terminal"
+console2svg session export s_a1b2c3d4e5f6 -o tests/scenarios/setup.yaml
+```
+
+Export extracts the reproducible sequence of `send`, `wait`, `resize`, and `capture` operations while dropping exploratory `read` and `inspect` observations.
+The resulting scenario file can be re-run directly with `console2svg scenario run`:
+
+```bash title="Terminal"
+console2svg scenario run tests/scenarios/setup.yaml
+```
+
+This enables agent-explored workflows to be converted into automated CI regression tests without human or LLM intervention on subsequent runs.
+
+### 7. Terminating the Session (stop)
+
+Once the interactive workflow is complete, explicitly terminate the background session:
 
 ```bash title="Terminal"
 # Terminate a specific session
@@ -107,4 +168,5 @@ console2svg session stop s_a1b2c3d4e5f6
 console2svg session stop --all --yes
 ```
 
-Terminating a session closes the PTY, stops associated child processes, and cleans up the Unix domain socket files.
+Terminating a session closes the PTY, stops associated child processes, and cleans up temporary IPC sockets.
+Use `session list` (or `session list --all`) to inspect active or retained sessions.

@@ -35,6 +35,7 @@ The following subcommands are available depending on your use case.
 
 | Command | Purpose |
 | --- | --- |
+| [`scenario`](./scenario.md) | Loads a Scenario document and executes state-synchronized automated operations in a PTY. |
 | [`batch`](./batch.md) | Scans embedded tags in Markdown/MDX to automatically generate and synchronize documentation images. |
 | [`llm`](./llm.md) | Outputs built-in Skill definitions to allow AI agents (such as GitHub Copilot or Claude) to operate console2svg. |
 

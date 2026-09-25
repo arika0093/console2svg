@@ -35,6 +35,7 @@ console2svg capture [options] -- command [args...]
 
 | コマンド | 役割 |
 | --- | --- |
+| [`scenario`](./scenario.md) | シナリオドキュメントを読み込み、擬似端末上で状態同期に基づく自動操作を実行します。 |
 | [`batch`](./batch.md) | Markdown/MDX 内の埋め込みタグを一括走査し、ドキュメント用画像を自動生成・同期します。 |
 | [`llm`](./llm.md) | AI エージェント（GitHub Copilot や Claude 等）に console2svg を操作させるための組み込み Skill 定義を出力します。 |
 

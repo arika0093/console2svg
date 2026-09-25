@@ -282,6 +282,7 @@ export default defineConfig({
           },
           items: [
             'deep-dive/overview',
+            'deep-dive/compare',
             'deep-dive/license',
             {
               label: 'Conversion process',

@@ -39,7 +39,7 @@ internal static partial class Program
 
     private static async Task<int> RunBatchAsync(
         AppOptions options,
-        ConsoleOptions resolvedConfiguration,
+        ResolvedSettings resolvedConfiguration,
         CancellationToken ct
     )
     {
@@ -200,7 +200,7 @@ internal static partial class Program
                 else
                 {
                     var jobOptions = BuildBatchJobOptions(options, resolved.Job, workingDirectory);
-                    OptionsApplicator.Apply(jobOptions, resolvedConfiguration);
+                    resolvedConfiguration.ApplyTo(jobOptions);
                     error = await ExecuteBatchJobAsync(
                             resolved.Job,
                             jobOptions,

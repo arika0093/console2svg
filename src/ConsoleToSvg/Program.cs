@@ -51,13 +51,13 @@ internal static partial class Program
         CancellationToken invocationCancellationToken
     )
     {
-        ConsoleOptions? resolvedConfiguration = null;
+        ResolvedSettings? resolvedConfiguration = null;
         if (ShouldLoadConfiguration(options))
         {
             try
             {
-                resolvedConfiguration = DocumentStore.LoadConfigOptions(options.ConfigPath);
-                OptionsApplicator.Apply(options, resolvedConfiguration);
+                resolvedConfiguration = DocumentStore.LoadResolvedSettings(options.ConfigPath);
+                resolvedConfiguration.ApplyTo(options);
             }
             catch (Exception exception)
                 when (exception
@@ -80,7 +80,7 @@ internal static partial class Program
             return await RunSessionAsync(
                     options,
                     invocationCancellationToken,
-                    resolvedConfiguration
+                    resolvedConfiguration?.Options
                 )
                 .ConfigureAwait(false);
 
@@ -97,7 +97,7 @@ internal static partial class Program
         if (options.Workflow == Workflow.Scenario)
             return await RunScenarioAsync(
                     options,
-                    resolvedConfiguration ?? new ConsoleOptions(),
+                    resolvedConfiguration ?? ResolvedSettings.Empty,
                     invocationCancellationToken
                 )
                 .ConfigureAwait(false);

@@ -100,7 +100,7 @@ public sealed class DocumentStoreTests
             """
         );
 
-        var options = DocumentStore.LoadConfigOptions(explicitPath, directory.Path);
+        var options = DocumentStore.LoadResolvedSettings(explicitPath, directory.Path).Options;
 
         options.Terminal!.Width.ShouldBe(100);
         options.Terminal.Height.ShouldBe(40);
@@ -410,8 +410,7 @@ public sealed class DocumentStoreTests
             IsVideoFpsExplicit = true,
         };
 
-        OptionsApplicator.Apply(
-            options,
+        ResolvedSettings.Resolve(
             new ConsoleOptions
             {
                 Terminal = new TerminalOptions { Width = 160, Height = 32 },
@@ -423,7 +422,7 @@ public sealed class DocumentStoreTests
                 },
                 Appearance = new AppearanceOptions { Theme = [], Opacity = 0.75 },
             }
-        );
+        ).ApplyTo(options);
 
         options.Width.ShouldBe(90);
         options.Height.ShouldBe(32);
@@ -441,14 +440,71 @@ public sealed class DocumentStoreTests
             Workflow = Workflow.Capture,
             IsThemesExplicit = true,
         };
-        OptionsApplicator.Apply(
-            explicitEmptyTheme,
+        ResolvedSettings.Resolve(
             new ConsoleOptions
             {
                 Appearance = new AppearanceOptions { Theme = ["nord"] },
             }
-        );
+        ).ApplyTo(explicitEmptyTheme);
         explicitEmptyTheme.Themes.ShouldBe([]);
+    }
+
+    [Test]
+    public void ResolvedSettingsApplyLayersInOrderAndReturnDefensiveSnapshots()
+    {
+        var resolved = ResolvedSettings.Resolve(
+            global: new ConsoleOptions
+            {
+                Terminal = new TerminalOptions { Width = 80, Height = 24 },
+                Capture = new CaptureOptions
+                {
+                    Mode = "image",
+                    Video = new VideoCaptureOptions { Fps = 12 },
+                },
+            },
+            local: new ConsoleOptions { Terminal = new TerminalOptions { Height = 30 } },
+            explicitConfiguration: new ConsoleOptions
+            {
+                Terminal = new TerminalOptions { Width = 100 },
+            },
+            scenario: new ConsoleOptions
+            {
+                Terminal = new TerminalOptions { Height = 40 },
+                Capture = new CaptureOptions { Mode = "video" },
+            },
+            launch: new ConsoleOptions { Terminal = new TerminalOptions { Width = 120 } },
+            capture: new ConsoleOptions
+            {
+                Capture = new CaptureOptions
+                {
+                    Video = new VideoCaptureOptions { Fps = 24 },
+                },
+            }
+        );
+
+        var snapshot = resolved.Options;
+        snapshot.Terminal!.Width.ShouldBe(120);
+        snapshot.Terminal.Height.ShouldBe(40);
+        snapshot.Capture!.Mode.ShouldBe("video");
+        snapshot.Capture.Video!.Fps.ShouldBe(24);
+
+        snapshot.Terminal.Width = 1;
+        resolved.Options.Terminal!.Width.ShouldBe(120);
+
+        var invocation = new AppOptions
+        {
+            Workflow = Workflow.Capture,
+            Width = 160,
+            IsWidthExplicit = true,
+            VideoFps = 30,
+            IsVideoFpsExplicit = true,
+        };
+        resolved.ApplyTo(invocation);
+
+        invocation.Width.ShouldBe(160);
+        invocation.Height.ShouldBe(40);
+        invocation.Mode.ShouldBe(OutputMode.Video);
+        invocation.VideoFps.ShouldBe(30);
     }
 
     [Test]
@@ -461,8 +517,7 @@ public sealed class DocumentStoreTests
             IsSizeWidthExplicit = true,
         };
 
-        OptionsApplicator.Apply(
-            captureOptions,
+        ResolvedSettings.Resolve(
             new ConsoleOptions
             {
                 Appearance = new AppearanceOptions
@@ -470,7 +525,7 @@ public sealed class DocumentStoreTests
                     Size = new ImageSizeOptions { Width = 800, Height = 400 },
                 },
             }
-        );
+        ).ApplyTo(captureOptions);
 
         captureOptions.SizeWidth.ShouldBe(720);
         captureOptions.SizeHeight.ShouldBe(400);
@@ -482,8 +537,7 @@ public sealed class DocumentStoreTests
             CropTop = "7ch",
             IsCropTopExplicit = true,
         };
-        OptionsApplicator.Apply(
-            sessionOptions,
+        ResolvedSettings.Resolve(
             new ConsoleOptions
             {
                 Capture = new CaptureOptions
@@ -491,7 +545,7 @@ public sealed class DocumentStoreTests
                     Crop = new CropOptions { Top = "2ch", Right = "3ch" },
                 },
             }
-        );
+        ).ApplyTo(sessionOptions);
 
         sessionOptions.CropTop.ShouldBe("7ch");
         sessionOptions.CropRight.ShouldBe("3ch");
@@ -506,14 +560,13 @@ public sealed class DocumentStoreTests
             RequestedTmuxAction = TmuxAction.LiveServer,
         };
 
-        OptionsApplicator.Apply(
-            options,
+        ResolvedSettings.Resolve(
             new ConsoleOptions
             {
                 Interactive = new InteractiveOptions { Mouse = false },
                 LiveServer = new LiveServerOptions { Host = ":9090" },
             }
-        );
+        ).ApplyTo(options);
 
         options.Mouse.ShouldBeFalse();
         options.ListenAddress.ShouldBeNull();

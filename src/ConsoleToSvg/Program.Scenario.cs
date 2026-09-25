@@ -36,7 +36,7 @@ internal static partial class Program
 {
     private static async Task<int> RunScenarioAsync(
         AppOptions options,
-        ConsoleOptions configOptions,
+        ResolvedSettings configOptions,
         CancellationToken cancellationToken
     )
     {
@@ -70,7 +70,7 @@ internal static partial class Program
 
     private static async Task<int> RunScenarioCoreAsync(
         AppOptions options,
-        ConsoleOptions configOptions,
+        ResolvedSettings configOptions,
         CancellationToken cancellationToken
     )
     {
@@ -80,14 +80,8 @@ internal static partial class Program
         var document = DocumentStore.LoadScenario(scenarioPath);
         var scenario = document.Scenario!;
         var launch = scenario.Launch!;
-        var scenarioOptions = OptionsMerger.Merge(
-            configOptions,
-            document.Options ?? new ConsoleOptions()
-        );
-        var effectiveLaunchOptions = OptionsMerger.Merge(
-            scenarioOptions,
-            launch.Options ?? new ConsoleOptions()
-        );
+        var scenarioOptions = configOptions.WithScenario(document.Options);
+        var effectiveLaunchOptions = scenarioOptions.WithLaunch(launch.Options);
         var terminalOptions = new AppOptions
         {
             Workflow = Workflow.Session,
@@ -101,7 +95,7 @@ internal static partial class Program
             NoDeleteEnvs = options.NoDeleteEnvs,
             IsNoDeleteEnvsExplicit = options.IsNoDeleteEnvsExplicit,
         };
-        OptionsApplicator.Apply(terminalOptions, effectiveLaunchOptions);
+        effectiveLaunchOptions.ApplyTo(terminalOptions);
         if (
             terminalOptions.SessionWidth is < 1 or > 500
             || terminalOptions.SessionHeight is < 1 or > 500
@@ -150,9 +144,9 @@ internal static partial class Program
                     {
                         Kind = "metadata",
                         Name = "options",
-                        OptionsJson = HasConfiguredOptions(scenarioOptions)
+                        OptionsJson = HasConfiguredOptions(scenarioOptions.Options)
                             ? JsonSerializer.Serialize(
-                                scenarioOptions,
+                                scenarioOptions.Options,
                                 DocumentJsonContext.Default.ConsoleOptions
                             )
                             : null,
@@ -321,17 +315,14 @@ internal static partial class Program
                             scenarioPath,
                             captureIndex
                         );
-                        var captureOptions = OptionsMerger.Merge(
-                            scenarioOptions,
-                            step.Options ?? new ConsoleOptions()
-                        );
+                        var captureOptions = scenarioOptions.WithCapture(step.Options);
                         var captureAppOptions = new AppOptions
                         {
                             Workflow = Workflow.Session,
                             RequestedSessionAction = SessionAction.Capture,
                             OutputPath = outputPath,
                         };
-                        OptionsApplicator.Apply(captureAppOptions, captureOptions);
+                        captureOptions.ApplyTo(captureAppOptions);
                         if (captureAppOptions.Mode == OutputMode.Video)
                         {
                             throw new InvalidOperationException(
@@ -362,9 +353,9 @@ internal static partial class Program
                                     Name = "capture",
                                     Phase = "execute",
                                     OutputPath = outputPath,
-                                    OptionsJson = HasConfiguredOptions(captureOptions)
+                                    OptionsJson = HasConfiguredOptions(captureOptions.Options)
                                         ? JsonSerializer.Serialize(
-                                            captureOptions,
+                                            captureOptions.Options,
                                             DocumentJsonContext.Default.ConsoleOptions
                                         )
                                         : null,

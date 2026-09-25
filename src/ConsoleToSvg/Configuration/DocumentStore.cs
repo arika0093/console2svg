@@ -37,6 +37,11 @@ public static class DocumentStore
     public static ConsoleOptions LoadConfigOptions(
         string? explicitPath = null,
         string? currentDirectory = null
+    ) => LoadResolvedSettings(explicitPath, currentDirectory).Options;
+
+    public static ResolvedSettings LoadResolvedSettings(
+        string? explicitPath = null,
+        string? currentDirectory = null
     )
     {
         var workingDirectory = Path.GetFullPath(currentDirectory ?? Environment.CurrentDirectory);
@@ -108,9 +113,13 @@ public static class DocumentStore
             ValidateConfig(new ConfigDocument { Options = explicitOptions }, explicitFilePath);
         }
 
-        var merged = OptionsMerger.Merge(global.Options, local.Options, explicitOptions);
-        ValidateConfig(new ConfigDocument { Options = merged }, "merged configuration");
-        return merged;
+        var resolved = ResolvedSettings.Resolve(
+            global: global.Options,
+            local: local.Options,
+            explicitConfiguration: explicitOptions
+        );
+        ValidateConfig(new ConfigDocument { Options = resolved.Options }, "merged configuration");
+        return resolved;
     }
 
     public static ScenarioDocument LoadScenario(string path)

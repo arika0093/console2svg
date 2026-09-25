@@ -79,6 +79,7 @@ public sealed partial class ConsoleToSvgCommandLine
         options = new AppOptions
         {
             Workflow = result.GetValue(_symbols.LegacyRoot) ? Workflow.Legacy : workflow,
+            ConfigPath = result.GetValue(_symbols.ConfigPath)?.ToString(),
             OutputPath = result.GetValue(_symbols.OutputPath)?.ToString() ?? "output.svg",
             InputCastPath = result.GetValue(_symbols.InputCastPath),
             Verbose = IsSpecified(result, _symbols.Verbose),
@@ -158,10 +159,28 @@ public sealed partial class ConsoleToSvgCommandLine
         ApplyDimension(result.GetValue(_symbols.Height), isWidth: false, options);
         ApplyTime(result.GetValue(_symbols.Time), options);
         ApplySize(result.GetValue(_symbols.Size), options);
+        options.IsTimeExplicit = IsSpecified(result, _symbols.Time);
+        options.IsWidthExplicit = IsSpecified(result, _symbols.Width);
+        options.IsHeightExplicit = IsSpecified(result, _symbols.Height);
+        var sizeValue = result.GetValue(_symbols.Size);
+        options.IsSizeWidthExplicit = IsSizeDimensionExplicit(sizeValue, isWidth: true);
+        options.IsSizeHeightExplicit = IsSizeDimensionExplicit(sizeValue, isWidth: false);
+        options.IsCropTopExplicit = IsSpecified(result, _symbols.CropTop);
+        options.IsCropRightExplicit = IsSpecified(result, _symbols.CropRight);
+        options.IsCropBottomExplicit = IsSpecified(result, _symbols.CropBottom);
+        options.IsCropLeftExplicit = IsSpecified(result, _symbols.CropLeft);
         options.OutputCoalesceMs = ParseCoalesce(result.GetValue(_symbols.Coalesce));
         options.VideoTiming = result.GetValue(_symbols.Timing) ?? VideoTimingMode.Deterministic;
         options.LengthAdjust = result.GetValue(_symbols.Adjust) ?? "spacing";
         options.SvgConverter = ParseSvgConverter(result.GetValue(_symbols.SvgConverter));
+        options.IsVideoFpsExplicit = IsSpecified(result, _symbols.Fps);
+        options.IsVideoSleepExplicit = IsSpecified(result, _symbols.Sleep);
+        options.IsVideoFadeOutExplicit = IsSpecified(result, _symbols.FadeOut);
+        options.IsVideoTimingExplicit = IsSpecified(result, _symbols.Timing);
+        options.IsOutputCoalesceExplicit = IsSpecified(result, _symbols.Coalesce);
+        options.IsLoopExplicit = IsSpecified(result, _symbols.NoLoop);
+        options.IsLengthAdjustExplicit = IsSpecified(result, _symbols.Adjust);
+        options.IsSvgConverterExplicit = IsSpecified(result, _symbols.SvgConverter);
 
         if (IsSpecified(result, _symbols.Window))
         {
@@ -176,6 +195,11 @@ public sealed partial class ConsoleToSvgCommandLine
         options.IsPaddingExplicit = IsSpecified(result, _symbols.Padding);
         options.IsOpacityExplicit = IsSpecified(result, _symbols.Opacity);
         options.IsMouseExplicit = IsSpecified(result, _symbols.Mouse);
+        options.IsNoColorEnvExplicit = IsSpecified(result, _symbols.NoColorEnv);
+        options.IsNoDeleteEnvsExplicit = IsSpecified(result, _symbols.NoDeleteEnvs);
+        options.IsWithCommandExplicit = IsSpecified(result, _symbols.WithCommand);
+        options.IsHeaderExplicit = IsSpecified(result, _symbols.Header);
+        options.IsPromptExplicit = IsSpecified(result, _symbols.Prompt);
         if (
             !options.IsMouseExplicit
             && options.Workflow != Workflow.Interactive
@@ -190,6 +214,8 @@ public sealed partial class ConsoleToSvgCommandLine
         if (themes is not null)
             options.Themes.AddRange(themes);
         options.MaskPatterns.AddRange(result.GetValue(_symbols.Mask) ?? []);
+        options.IsThemesExplicit = IsSpecified(result, _symbols.Theme);
+        options.IsMaskPatternsExplicit = IsSpecified(result, _symbols.Mask);
         if (
             !ApplyBackground(
                 result.GetValue(_symbols.Background)?.Select(value => value.ToString()).ToArray(),
@@ -206,6 +232,8 @@ public sealed partial class ConsoleToSvgCommandLine
         options.TmuxHistoryLines = result.GetValue(_symbols.History);
         options.Timeout = result.GetValue(_symbols.Timeout);
         options.LiveServerPort = 38473;
+        options.IsLiveServerEndpointExplicit =
+            portArgument is not null && result.GetResult(portArgument) is { Implicit: false };
         if (!ApplyPort(portArgument, result, options, out var leadingCommand, out error))
         {
             options = null;
@@ -327,6 +355,26 @@ public sealed partial class ConsoleToSvgCommandLine
                 NumberStyles.Float,
                 CultureInfo.InvariantCulture
             );
+    }
+
+    private static bool IsSizeDimensionExplicit(string? value, bool isWidth)
+    {
+        if (value is null)
+        {
+            return false;
+        }
+
+        var separator = value.IndexOf('x', StringComparison.OrdinalIgnoreCase);
+        string dimension;
+        if (separator < 0)
+        {
+            dimension = isWidth ? value : string.Empty;
+        }
+        else
+        {
+            dimension = isWidth ? value[..separator] : value[(separator + 1)..];
+        }
+        return dimension.Length > 0 && dimension != "*";
     }
 
     private static double? ParseCoalesce(string? value) =>
@@ -742,7 +790,11 @@ public sealed partial class ConsoleToSvgCommandLine
 
     private static bool UsesLegacyRootInvocation(IReadOnlyList<string> args)
     {
-        if (args.Count == 0 || args[0] is "--help" or "--version" or "-?" or "/?")
+        if (
+            args.Count == 0
+            || args.Contains("--cw-generate-json-schema", StringComparer.Ordinal)
+            || args[0] is "--help" or "--version" or "-?" or "/?"
+        )
             return false;
 
         return args[0]

@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ConsoleToSvg.Batch;
 using ConsoleToSvg.Cli;
+using ConsoleToSvg.Configuration;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;
 using ConsoleToSvg.Terminal;
@@ -36,7 +37,11 @@ internal static partial class Program
         List<BatchResolvedJob> Jobs
     );
 
-    private static async Task<int> RunBatchAsync(AppOptions options, CancellationToken ct)
+    private static async Task<int> RunBatchAsync(
+        AppOptions options,
+        ConsoleOptions resolvedConfiguration,
+        CancellationToken ct
+    )
     {
         if (options.RequestedBatchAction == BatchAction.Restore)
         {
@@ -195,6 +200,7 @@ internal static partial class Program
                 else
                 {
                     var jobOptions = BuildBatchJobOptions(options, resolved.Job, workingDirectory);
+                    OptionsApplicator.Apply(jobOptions, resolvedConfiguration);
                     error = await ExecuteBatchJobAsync(
                             resolved.Job,
                             jobOptions,

@@ -1,0 +1,434 @@
+{
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "options": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "terminal": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "width": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "PTY width in terminal cells."
+            },
+            "height": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "PTY height in terminal rows."
+            }
+          },
+          "description": "PTY dimensions in terminal cells."
+        },
+        "environment": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "color": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Whether console2svg overwrites color-related environment variables."
+            },
+            "ci": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Whether console2svg removes CI-related environment variables."
+            }
+          },
+          "description": "Policies for console2svg-managed environment variables."
+        },
+        "interactive": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "mouse": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "description": "Whether mouse input is enabled for interactive terminal workflows."
+            }
+          },
+          "description": "Options for interactive terminal workflows."
+        },
+        "live-server": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "host": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Listen endpoint; an empty host binds to loopback."
+            }
+          },
+          "description": "Options for the live HTTP server."
+        },
+        "capture": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "mode": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Capture mode."
+            },
+            "crop": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "properties": {
+                "top": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "right": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "bottom": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "left": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "description": "Crop applied to captured output."
+            },
+            "image": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "properties": {
+                "frame": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "Frame index used for image capture."
+                },
+                "time": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "description": "Timestamp in seconds used for image capture."
+                }
+              },
+              "description": "Image capture settings."
+            },
+            "video": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "properties": {
+                "fps": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "description": "Video frame rate in frames per second."
+                },
+                "loop": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ],
+                  "description": "Whether the generated video loops."
+                },
+                "time": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "start": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "end": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    }
+                  },
+                  "description": "Start and end timestamps in seconds."
+                },
+                "timing": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Video frame timing mode."
+                },
+                "coalesce": true,
+                "fadeout": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "description": "Video fade-out duration in seconds."
+                }
+              },
+              "description": "Video capture settings."
+            }
+          },
+          "description": "Capture behavior and image/video settings."
+        },
+        "render": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "masking": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "properties": {
+                "auto": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ]
+                },
+                "strings": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              "description": "Secret masking options."
+            },
+            "adjust": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Text adjustment behavior during terminal rendering."
+            }
+          },
+          "description": "Terminal rendering and masking behavior."
+        },
+        "converter": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "svg-converter": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "SVG-to-raster/video converter selection."
+            }
+          },
+          "description": "SVG conversion backend selection."
+        },
+        "appearance": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "font": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "properties": {
+                "family": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "size": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "size": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "properties": {
+                "width": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "height": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "theme": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "window": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "padding": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "margin": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "pc-padding": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "background": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "opacity": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "forecolor": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "backcolor": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "header": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "properties": {
+                "text": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "with-command": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ]
+                },
+                "prompt": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          },
+          "description": "Rendered SVG appearance."
+        }
+      },
+      "description": "Shared console2svg options for compatible workflows."
+    },
+    "$version": {
+      "type": "integer"
+    },
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ConsoleToSvg.ConfigDocument.v1.json"
+}

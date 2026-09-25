@@ -6,9 +6,11 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ConsoleToSvg.Cli;
+using ConsoleToSvg.Configuration;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;
 using ConsoleToSvg.Terminal;
@@ -49,6 +51,31 @@ internal static partial class Program
         CancellationToken invocationCancellationToken
     )
     {
+        ConsoleOptions? resolvedConfiguration = null;
+        if (ShouldLoadConfiguration(options))
+        {
+            try
+            {
+                resolvedConfiguration = DocumentStore.LoadConfigOptions(options.ConfigPath);
+                OptionsApplicator.Apply(options, resolvedConfiguration);
+            }
+            catch (Exception exception)
+                when (exception
+                        is IOException
+                            or FormatException
+                            or ArgumentException
+                            or InvalidOperationException
+                            or JsonException
+                )
+            {
+                await Console.Error.WriteLineAsync(
+                    $"console2svg: {exception.Message}".AsMemory(),
+                    invocationCancellationToken
+                );
+                return 1;
+            }
+        }
+
         if (options.Workflow == Workflow.Session)
             return await RunSessionAsync(options, invocationCancellationToken)
                 .ConfigureAwait(false);
@@ -64,7 +91,15 @@ internal static partial class Program
             return RunThemeCommand(options);
 
         if (options.Workflow == Workflow.Batch)
-            return await RunBatchAsync(options, invocationCancellationToken).ConfigureAwait(false);
+            return await RunBatchAsync(
+                    options,
+                    resolvedConfiguration
+                        ?? throw new InvalidOperationException(
+                            "Batch configuration was not loaded."
+                        ),
+                    invocationCancellationToken
+                )
+                .ConfigureAwait(false);
 
         if (options.Workflow == Workflow.Tmux)
         {
@@ -673,4 +708,20 @@ internal static partial class Program
             }
         }
     }
+
+    private static bool ShouldLoadConfiguration(AppOptions options) =>
+        options.Workflow
+            is Workflow.Capture
+                or Workflow.Legacy
+                or Workflow.Replay
+                or Workflow.Cast
+                or Workflow.Interactive
+                or Workflow.LiveServer
+                or Workflow.Tmux
+                or Workflow.Batch
+        || options.Workflow == Workflow.Session
+            && options.RequestedSessionAction
+                is SessionAction.Start
+                    or SessionAction.Capture
+                    or SessionAction.Inspect;
 }

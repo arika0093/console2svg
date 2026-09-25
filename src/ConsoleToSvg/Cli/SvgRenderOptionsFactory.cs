@@ -10,7 +10,10 @@ public static class SvgRenderOptionsFactory
     public static SvgRenderOptions Create(AppOptions appOptions)
     {
         var catalog = new ThemeCatalog();
-        var themeIds = appOptions.Themes.Count == 0 ? ["dark"] : appOptions.Themes;
+        var themeIds =
+            appOptions.Themes.Count == 0 && !appOptions.IsThemesExplicit
+                ? ["dark"]
+                : appOptions.Themes;
         var themeEntries = themeIds.Select(catalog.Resolve).ToArray();
         var appearances = themeEntries
             .Select(entry =>

@@ -41,6 +41,28 @@ public sealed class ConsoleToSvgCommandLineTests
     }
 
     [Test]
+    public async Task ConfigOptionUsesCapitalCAndPreservesLowercaseCForWithCommand()
+    {
+        var config = await InvokeAsync("capture", "-C", "settings.yaml", "--", "echo");
+        var withCommand = await InvokeAsync("capture", "-c", "--", "echo");
+
+        config.ExitCode.ShouldBe(0);
+        config.Options!.ConfigPath.ShouldBe("settings.yaml");
+        withCommand.ExitCode.ShouldBe(0);
+        withCommand.Options!.ConfigPath.ShouldBeNull();
+        withCommand.Options.WithCommand.ShouldBeTrue();
+    }
+
+    [Test]
+    public void ConfigurationWritableSchemaOptionIsRegisteredAtTheRoot()
+    {
+        var commandLine = ConsoleToSvgCommandLine.Create((_, _, _) => Task.FromResult(0));
+        var parseResult = commandLine.Parse(["-C", "settings.yaml", "--cw-generate-json-schema", Path.GetTempPath()]);
+
+        parseResult.Errors.ShouldBeEmpty();
+    }
+
+    [Test]
     public async Task LegacyRootInputOptionMapsToAsciicastSource()
     {
         var invocation = await InvokeAsync("--in", "demo.cast", "-o", "demo.svg");

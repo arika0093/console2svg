@@ -15,6 +15,15 @@ public sealed partial class ConsoleToSvgCommandLine
 {
     private sealed class Symbols
     {
+        public Option<DirectoryInfo?> CwGenerateJsonSchema { get; } =
+            new("--cw-generate-json-schema")
+            {
+                Description = "Generate Configuration.Writable JSON schemas into a directory.",
+                Arity = ArgumentArity.ExactlyOne,
+                HelpName = "directory",
+            };
+        public Option<FileInfo> ConfigPath { get; } =
+            PathOption("--config", "Load and overlay configuration from a file.", "path", "-C");
         public Option<FileInfo> OutputPath { get; } =
             PathOption("--out", "Output file path.", "path", "-o");
         public Option<string> Format { get; } =

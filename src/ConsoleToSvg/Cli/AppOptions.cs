@@ -80,6 +80,7 @@ public sealed class AppOptions
     public BatchAction RequestedBatchAction { get; set; }
     public ThemeAction? RequestedThemeAction { get; set; }
     public string? ThemeArgument { get; set; }
+    public string? ConfigPath { get; set; }
     public bool StatusJson { get; set; }
     public OutputFormat OutputFormat { get; set; } = OutputFormat.Table;
     public bool UpdateCheck { get; set; }
@@ -98,6 +99,8 @@ public sealed class AppOptions
     public bool SessionYes { get; set; }
     public int SessionWidth { get; set; } = 100;
     public int SessionHeight { get; set; } = 24;
+    public bool IsSessionWidthExplicit { get; set; }
+    public bool IsSessionHeightExplicit { get; set; }
     public string[]? SessionCommand { get; set; }
     public string? SessionWorkingDirectory { get; set; }
     public string? SessionPipeName { get; set; }
@@ -136,6 +139,9 @@ public sealed class AppOptions
 
     /// <summary>True when --mouse was explicitly supplied on the command line.</summary>
     public bool IsMouseExplicit { get; set; }
+    public bool IsNoColorEnvExplicit { get; set; }
+    public bool IsNoDeleteEnvsExplicit { get; set; }
+    public bool IsLiveServerEndpointExplicit { get; set; }
 
     /// <summary>
     /// Unmodified arguments following <c>--</c>. Interactive mode uses these to
@@ -169,6 +175,28 @@ public sealed class AppOptions
 
     /// <summary>True when --mode (or -v) was explicitly supplied on the command line.</summary>
     public bool IsModeExplicit { get; set; }
+    public bool IsTimeExplicit { get; set; }
+    public bool IsThemesExplicit { get; set; }
+    public bool IsMaskPatternsExplicit { get; set; }
+    public bool IsWidthExplicit { get; set; }
+    public bool IsHeightExplicit { get; set; }
+    public bool IsSizeWidthExplicit { get; set; }
+    public bool IsSizeHeightExplicit { get; set; }
+    public bool IsCropTopExplicit { get; set; }
+    public bool IsCropRightExplicit { get; set; }
+    public bool IsCropBottomExplicit { get; set; }
+    public bool IsCropLeftExplicit { get; set; }
+    public bool IsVideoFpsExplicit { get; set; }
+    public bool IsVideoSleepExplicit { get; set; }
+    public bool IsVideoFadeOutExplicit { get; set; }
+    public bool IsVideoTimingExplicit { get; set; }
+    public bool IsOutputCoalesceExplicit { get; set; }
+    public bool IsLoopExplicit { get; set; }
+    public bool IsLengthAdjustExplicit { get; set; }
+    public bool IsSvgConverterExplicit { get; set; }
+    public bool IsWithCommandExplicit { get; set; }
+    public bool IsHeaderExplicit { get; set; }
+    public bool IsPromptExplicit { get; set; }
 
     public int? Width { get; set; } = null;
 

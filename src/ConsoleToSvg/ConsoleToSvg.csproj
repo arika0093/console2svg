@@ -55,6 +55,8 @@
       Include="..\ConsoleToSvg.Converter\ConsoleToSvg.Converter.csproj"
       AdditionalProperties="PublishAot=false"
     />
+    <PackageReference Include="Configuration.Writable" Version="0.9.1" />
+    <PackageReference Include="Configuration.Writable.Yaml" Version="0.9.1" />
     <PackageReference Include="System.CommandLine" Version="3.0.0-rc.1.26425.128" />
     <PackageReference
       Include="System.CommandLine.StaticCompletions"

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ConsoleToSvg.Configuration;
 using ConsoleToSvg.Svg;
 
 namespace ConsoleToSvg.Cli;
@@ -114,8 +115,20 @@ public sealed partial class ConsoleToSvgCommandLine
     private RootCommand CreateRootCommand()
     {
         var root = new RootCommand("Convert terminal output to SVG.") { HelpName = "console2svg" };
+        root.Options.Add(_symbols.CwGenerateJsonSchema);
+        root.Options.Add(_symbols.ConfigPath);
+        _symbols.ConfigPath.Recursive = true;
         ConfigureBuiltInActions(root);
-        root.SetAction(ColoredHelpAction.Write);
+        root.SetAction(parseResult =>
+        {
+            if (parseResult.GetValue(_symbols.CwGenerateJsonSchema) is not null)
+            {
+                DocumentStore.GenerateSchemas();
+                return 0;
+            }
+
+            return ColoredHelpAction.Write(parseResult);
+        });
 
         var capture = new Command("capture", "Capture terminal output as SVG.");
         AddOptions(capture, _symbols.CaptureOptions);
@@ -417,13 +430,17 @@ public sealed partial class ConsoleToSvgCommandLine
                     {
                         Workflow = Workflow.Session,
                         RequestedSessionAction = SessionAction.Start,
+                        ConfigPath = parseResult.GetValue(_symbols.ConfigPath)?.ToString(),
                         SessionWidth = parseResult.GetValue(_symbols.SessionWidth) ?? 100,
                         SessionHeight = parseResult.GetValue(_symbols.SessionHeight) ?? 24,
+                        IsSessionWidthExplicit = IsSpecified(parseResult, _symbols.SessionWidth),
+                        IsSessionHeightExplicit = IsSpecified(parseResult, _symbols.SessionHeight),
                         SessionCommand = command,
                         SessionWorkingDirectory =
                             parseResult.GetValue(_symbols.SessionWorkingDirectory)
                             ?? Environment.CurrentDirectory,
                         NoDeleteEnvs = parseResult.GetValue(_symbols.NoDeleteEnvs),
+                        IsNoDeleteEnvsExplicit = IsSpecified(parseResult, _symbols.NoDeleteEnvs),
                     },
                     parseResult,
                     cancellationToken
@@ -752,6 +769,7 @@ public sealed partial class ConsoleToSvgCommandLine
         {
             Workflow = Workflow.Session,
             RequestedSessionAction = SessionAction.Capture,
+            ConfigPath = result.GetValue(_symbols.ConfigPath)?.ToString(),
             SessionId = sessionId,
             OutputPath = result.GetValue(_symbols.OutputPath)?.ToString() ?? "output.svg",
             Format = IsSpecified(result, _symbols.Format)
@@ -777,6 +795,7 @@ public sealed partial class ConsoleToSvgCommandLine
         {
             Workflow = Workflow.Session,
             RequestedSessionAction = SessionAction.Inspect,
+            ConfigPath = result.GetValue(_symbols.ConfigPath)?.ToString(),
             SessionId = sessionId,
             OutputPath = string.Empty,
         };
@@ -811,13 +830,23 @@ public sealed partial class ConsoleToSvgCommandLine
         }
         options.IsForeColorExplicit = IsSpecified(result, _symbols.ForeColor);
         options.IsBackColorExplicit = IsSpecified(result, _symbols.BackColor);
+        options.IsCropTopExplicit = IsSpecified(result, _symbols.CropTop);
+        options.IsCropRightExplicit = IsSpecified(result, _symbols.CropRight);
+        options.IsCropBottomExplicit = IsSpecified(result, _symbols.CropBottom);
+        options.IsCropLeftExplicit = IsSpecified(result, _symbols.CropLeft);
         options.IsFontExplicit = IsSpecified(result, _symbols.Font);
         options.IsFontSizeExplicit = IsSpecified(result, _symbols.FontSize);
         options.IsMarginExplicit = IsSpecified(result, _symbols.Margin);
         options.IsPaddingExplicit = IsSpecified(result, _symbols.Padding);
         options.IsOpacityExplicit = IsSpecified(result, _symbols.Opacity);
+        options.IsLengthAdjustExplicit = IsSpecified(result, _symbols.Adjust);
         options.Themes.AddRange(result.GetValue(_symbols.Theme) ?? []);
         options.MaskPatterns.AddRange(result.GetValue(_symbols.Mask) ?? []);
+        options.IsThemesExplicit = IsSpecified(result, _symbols.Theme);
+        options.IsMaskPatternsExplicit = IsSpecified(result, _symbols.Mask);
+        var sizeValue = result.GetValue(_symbols.Size);
+        options.IsSizeWidthExplicit = IsSizeDimensionExplicit(sizeValue, isWidth: true);
+        options.IsSizeHeightExplicit = IsSizeDimensionExplicit(sizeValue, isWidth: false);
         ApplySize(result.GetValue(_symbols.Size), options);
         if (
             !ApplyBackground(

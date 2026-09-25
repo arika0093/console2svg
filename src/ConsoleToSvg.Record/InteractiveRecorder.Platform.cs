@@ -338,14 +338,7 @@ public static partial class InteractiveRecorder
                 };
             }
 
-            var shell = Environment.GetEnvironmentVariable("COMSPEC");
-            if (string.IsNullOrWhiteSpace(shell))
-            {
-                shell = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.System),
-                    "cmd.exe"
-                );
-            }
+            var shell = GetDefaultShellCommand();
 
             return new PtyOptions
             {
@@ -353,23 +346,17 @@ public static partial class InteractiveRecorder
                 Cols = width,
                 Rows = height,
                 Cwd = Environment.CurrentDirectory,
-                App = shell,
+                App = shell[0],
                 // Do not use cmd.exe's /d switch here: it disables the user's
                 // AutoRun configuration, including prompt integrations such as
                 // Starship. An interactive capture should behave like their shell.
-                CommandLine = PtyCommandLine.QuoteArgs(shell, ["/k"]),
+                CommandLine = PtyCommandLine.QuoteArgs(shell[0], shell[1..]),
                 VerbatimCommandLine = true,
                 Environment = environment,
             };
         }
 
-        var unixShell = Environment.GetEnvironmentVariable("SHELL");
-        if (string.IsNullOrWhiteSpace(unixShell))
-        {
-            // WSL does not always propagate SHELL to a launched .NET process.
-            // Prefer Bash so Ctrl+L/Ctrl+D retain the familiar interactive bindings.
-            unixShell = File.Exists("/bin/bash") ? "/bin/bash" : "/bin/sh";
-        }
+        var unixShell = GetDefaultShellCommand();
 
         if (command is { Length: > 0 })
         {
@@ -391,9 +378,35 @@ public static partial class InteractiveRecorder
             Cols = width,
             Rows = height,
             Cwd = Environment.CurrentDirectory,
-            App = unixShell,
-            CommandLine = ["-i"],
+            App = unixShell[0],
+            CommandLine = unixShell[1..],
             Environment = environment,
         };
+    }
+
+    /// <summary>Returns the shell command used by interactive and live-server PTYs.</summary>
+    public static string[] GetDefaultShellCommand()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            var shell = Environment.GetEnvironmentVariable("COMSPEC");
+            if (string.IsNullOrWhiteSpace(shell))
+            {
+                shell = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.System),
+                    "cmd.exe"
+                );
+            }
+            return [shell, "/k"];
+        }
+
+        var unixShell = Environment.GetEnvironmentVariable("SHELL");
+        if (string.IsNullOrWhiteSpace(unixShell))
+        {
+            // WSL does not always propagate SHELL to a launched .NET process.
+            // Prefer Bash so Ctrl+L/Ctrl+D retain the familiar interactive bindings.
+            unixShell = File.Exists("/bin/bash") ? "/bin/bash" : "/bin/sh";
+        }
+        return [unixShell, "-i"];
     }
 }

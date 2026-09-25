@@ -56,6 +56,7 @@ public sealed class ManagedSessionRequest
     public string[]? Command { get; set; }
     public string? WorkingDirectory { get; set; }
     public bool NoDeleteEnvs { get; set; }
+    public bool NoColorEnv { get; set; }
     public bool IncludeStructuredScreen { get; set; }
     public ManagedSessionInput[]? Inputs { get; set; }
     public string? Text { get; set; }
@@ -312,6 +313,12 @@ public static class ManagedTerminalSessionHost
             {
                 environment.Remove("CI");
                 environment.Remove("TF_BUILD");
+            }
+            if (!request.NoColorEnv)
+            {
+                environment["TERM"] = "xterm-256color";
+                environment["COLORTERM"] = "truecolor";
+                environment["FORCE_COLOR"] = "3";
             }
 
             var windows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
@@ -1194,7 +1201,10 @@ public static class ManagedTerminalSessionManager
         int height,
         string workingDirectory,
         bool noDeleteEnvs,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken,
+        string journalRole = "launch",
+        bool noColorEnv = false,
+        bool temporaryWorkingDirectory = false
     )
     {
         if (command.Length == 0)
@@ -1241,10 +1251,11 @@ public static class ManagedTerminalSessionManager
             ManagedSessionJsonContext.Default.ManagedSessionManifest
         );
 
+        ManagedSessionResponse response;
         try
         {
             await WaitForPipeAsync(pipeName, host, cancellationToken).ConfigureAwait(false);
-            var response = await SendToPipeAsync(
+            response = await SendToPipeAsync(
                     pipeName,
                     new ManagedSessionRequest
                     {
@@ -1254,12 +1265,12 @@ public static class ManagedTerminalSessionManager
                         Height = height,
                         WorkingDirectory = workingDirectory,
                         NoDeleteEnvs = noDeleteEnvs,
+                        NoColorEnv = noColorEnv,
                     },
                     cancellationToken
                 )
                 .ConfigureAwait(false);
             EnsureSuccess(response);
-            return response;
         }
         catch (Exception exception)
         {
@@ -1283,7 +1294,10 @@ public static class ManagedTerminalSessionManager
             {
                 hostLog = hostLog[^4096..];
             }
-            Directory.Delete(directory, recursive: true);
+            if (Directory.Exists(directory))
+            {
+                Directory.Delete(directory, recursive: true);
+            }
             var diagnostics = string.Join(
                 Environment.NewLine,
                 new[] { hostOutput.Trim(), hostError.Trim(), hostLog.Trim() }.Where(text =>
@@ -1292,13 +1306,54 @@ public static class ManagedTerminalSessionManager
             );
             if (diagnostics.Length > 0)
             {
+                SessionJournalStore.Delete(id);
                 throw new InvalidOperationException(
                     $"{exception.Message} Session host: {diagnostics}",
                     exception
                 );
             }
+            SessionJournalStore.Delete(id);
             throw;
         }
+
+        try
+        {
+            await SessionJournalStore
+                .CreateAsync(
+                    id,
+                    command,
+                    workingDirectory,
+                    width,
+                    height,
+                    journalRole,
+                    temporaryWorkingDirectory,
+                    cancellationToken
+                )
+                .ConfigureAwait(false);
+        }
+        catch (Exception journalException)
+        {
+            try
+            {
+                await RequestAsync(
+                        id,
+                        new ManagedSessionRequest { Operation = "stop" },
+                        CancellationToken.None
+                    )
+                    .ConfigureAwait(false);
+            }
+            catch (Exception stopException)
+                when (stopException is IOException or InvalidOperationException or TimeoutException)
+            {
+                throw new AggregateException(
+                    "The session started but its journal could not be created, and cleanup failed.",
+                    journalException,
+                    stopException
+                );
+            }
+            throw;
+        }
+        return response;
     }
 
     public static async Task<ManagedSessionResponse> RequestAsync(
@@ -1480,6 +1535,7 @@ public static class ManagedTerminalSessionManager
 
     public static IReadOnlyList<ManagedSessionSnapshot> List()
     {
+        SessionJournalStore.CleanupExpired(DateTimeOffset.UtcNow);
         var root = GetSessionRoot();
         if (!Directory.Exists(root))
         {

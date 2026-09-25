@@ -407,6 +407,7 @@ public sealed partial class ConsoleToSvgCommandLine
                 _symbols.SessionHeight,
                 _symbols.SessionWorkingDirectory,
                 _symbols.NoDeleteEnvs,
+                _symbols.NoColorEnv,
             ]
         );
         var commandArgument = AddCommandArgument(start);
@@ -440,6 +441,8 @@ public sealed partial class ConsoleToSvgCommandLine
                             parseResult.GetValue(_symbols.SessionWorkingDirectory)
                             ?? Environment.CurrentDirectory,
                         NoDeleteEnvs = parseResult.GetValue(_symbols.NoDeleteEnvs),
+                        NoColorEnv = parseResult.GetValue(_symbols.NoColorEnv),
+                        IsNoColorEnvExplicit = IsSpecified(parseResult, _symbols.NoColorEnv),
                         IsNoDeleteEnvsExplicit = IsSpecified(parseResult, _symbols.NoDeleteEnvs),
                     },
                     parseResult,

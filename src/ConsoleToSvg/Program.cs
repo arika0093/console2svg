@@ -77,7 +77,11 @@ internal static partial class Program
         }
 
         if (options.Workflow == Workflow.Session)
-            return await RunSessionAsync(options, invocationCancellationToken)
+            return await RunSessionAsync(
+                    options,
+                    invocationCancellationToken,
+                    resolvedConfiguration
+                )
                 .ConfigureAwait(false);
 
         if (options.Workflow == Workflow.Status)

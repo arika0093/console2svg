@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,6 +7,7 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using ConsoleToSvg.Cli;
+using ConsoleToSvg.Configuration;
 using ConsoleToSvg.Recording;
 using ConsoleToSvg.Svg;
 
@@ -67,41 +67,6 @@ internal sealed class SessionErrorOutput
     public SessionErrorDetail Error { get; init; } = new();
 }
 
-internal sealed class SessionTextCondition
-{
-    private readonly string _text;
-    private readonly bool _untilAbsent;
-    private bool _hasBeenPresent;
-
-    public SessionTextCondition(string text, bool untilAbsent)
-    {
-        if (string.IsNullOrEmpty(text))
-        {
-            throw new ArgumentException("The screen text must not be empty.", nameof(text));
-        }
-
-        _text = text;
-        _untilAbsent = untilAbsent;
-    }
-
-    public bool IsSatisfied(string screenText)
-    {
-        var containsText = screenText.Contains(_text, StringComparison.Ordinal);
-        if (!_untilAbsent)
-        {
-            return containsText;
-        }
-
-        if (containsText)
-        {
-            _hasBeenPresent = true;
-            return false;
-        }
-
-        return _hasBeenPresent;
-    }
-}
-
 internal sealed class SessionSummaryOutput
 {
     public string SessionId { get; init; } = string.Empty;
@@ -139,9 +104,8 @@ internal sealed class SessionCaptureOutput
 }
 
 /// <summary>
-/// Ephemeral visual inspection result. This is an Observation for future
-/// SessionJournal/Scenario purposes: it must be recorded as diagnostics at most
-/// and omitted from session export / ScenarioDocument.
+/// Ephemeral visual inspection result. This is a SessionJournal observation and
+/// must be omitted from session export / ScenarioDocument.
 /// </summary>
 internal sealed class SessionInspectOutput
 {
@@ -182,7 +146,8 @@ internal static partial class Program
 {
     private static async Task<int> RunSessionAsync(
         AppOptions options,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken,
+        ConsoleOptions? configuration = null
     )
     {
         if (options.RequestedSessionAction is SessionAction.Host)
@@ -223,7 +188,11 @@ internal static partial class Program
         {
             return options.RequestedSessionAction switch
             {
-                SessionAction.Start => await StartManagedSessionAsync(options, cancellationToken)
+                SessionAction.Start => await StartManagedSessionAsync(
+                        options,
+                        cancellationToken,
+                        configuration
+                    )
                     .ConfigureAwait(false),
                 SessionAction.List => WriteManagedSessionList(options.SessionListAll),
                 SessionAction.Read => await ReadManagedSessionAsync(options, cancellationToken)
@@ -262,6 +231,7 @@ internal static partial class Program
             )
         {
             var code = GetSessionErrorCode(exception, options.RequestedSessionAction);
+                        or AggregateException
             await WriteSessionErrorAsync(code, exception.Message, cancellationToken)
                 .ConfigureAwait(false);
             return 1;
@@ -270,7 +240,8 @@ internal static partial class Program
 
     private static async Task<int> StartManagedSessionAsync(
         AppOptions options,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken,
+        ConsoleOptions? configuration
     )
     {
         var command = options.SessionCommand ?? [];
@@ -299,13 +270,69 @@ internal static partial class Program
                 options.SessionHeight,
                 workingDirectory,
                 options.NoDeleteEnvs,
-                cancellationToken
+                cancellationToken,
+                noColorEnv: options.NoColorEnv
             )
             .ConfigureAwait(false);
         var session = response.Session;
         await WriteSessionJsonAsync(
                 new SessionStartOutput
                 {
+        if (configuration is not null)
+        {
+            try
+            {
+                await SessionJournalStore
+                    .AppendAsync(
+                        session.Id,
+                        new SessionJournalEntry
+                        {
+                            Kind = "metadata",
+                            Name = "options",
+                            OptionsJson = JsonSerializer.Serialize(
+                                configuration,
+                                DocumentJsonContext.Default.ConsoleOptions
+                            ),
+                            At = DateTimeOffset.UtcNow,
+                        },
+                        cancellationToken
+                    )
+                    .ConfigureAwait(false);
+            }
+            catch (Exception journalException)
+                when (journalException
+                        is IOException
+                            or UnauthorizedAccessException
+                            or OperationCanceledException
+                            or JsonException
+                )
+            {
+                try
+                {
+                    await ManagedTerminalSessionManager
+                        .RequestAsync(
+                            session.Id,
+                            new ManagedSessionRequest { Operation = "stop" },
+                            CancellationToken.None
+                        )
+                        .ConfigureAwait(false);
+                }
+                catch (Exception stopException)
+                    when (stopException
+                            is IOException
+                                or InvalidOperationException
+                                or TimeoutException
+                    )
+                {
+                    throw new AggregateException(
+                        "The session started but its options could not be journaled, and cleanup failed.",
+                        journalException,
+                        stopException
+                    );
+                }
+                throw;
+            }
+        }
                     SessionId = session.Id,
                     State = session.State,
                     ProcessId = session.ProcessId,
@@ -348,18 +375,15 @@ internal static partial class Program
         CancellationToken cancellationToken
     )
     {
-        var response = await ManagedTerminalSessionManager
-            .RequestAsync(
+        var observation = await TerminalSessionRuntime
+            .ObserveAsync(
                 RequireSessionId(options),
-                new ManagedSessionRequest
-                {
-                    Operation = "read",
-                    IncludeStructuredScreen = options.SessionStructured,
-                },
+                options.SessionStructured,
+                "read",
                 cancellationToken
             )
             .ConfigureAwait(false);
-        var session = response.Session;
+        var session = observation.Session;
         await WriteSessionJsonAsync(
                 new SessionReadOutput
                 {
@@ -399,100 +423,31 @@ internal static partial class Program
             options.SessionWaitText
             ?? throw new InvalidOperationException("Screen text is required.");
         var until = options.SessionWaitUntil ?? "present";
-        var untilAbsent = until.Equals("absent", StringComparison.OrdinalIgnoreCase);
         var stableFor = ParseOptionalSessionDuration(options.SessionWaitStableFor, "--stable-for");
         var timeout = ParseOptionalSessionDuration(options.SessionWaitTimeout, "--timeout");
-        var condition = new SessionTextCondition(text, untilAbsent);
-        var stopwatch = Stopwatch.StartNew();
-        long? conditionStartedAt = null;
-        ManagedSessionSnapshot? snapshot = null;
-
-        while (true)
-        {
-            if (snapshot is null)
-            {
-                snapshot = (
-                    await ManagedTerminalSessionManager
-                        .RequestAsync(
-                            RequireSessionId(options),
-                            new ManagedSessionRequest { Operation = "read" },
-                            cancellationToken
-                        )
-                        .ConfigureAwait(false)
-                ).Session;
-            }
-
-            var matched = condition.IsSatisfied(snapshot.Text);
-            if (!matched)
-            {
-                conditionStartedAt = null;
-            }
-            else if (conditionStartedAt is null)
-            {
-                conditionStartedAt = Stopwatch.GetTimestamp();
-            }
-
-            var stableElapsed = conditionStartedAt is long startedAt
-                ? Stopwatch.GetElapsedTime(startedAt)
-                : TimeSpan.Zero;
-            if (matched && stableElapsed >= (stableFor ?? TimeSpan.Zero))
-            {
-                return WriteSessionWait(snapshot, text, until, "matched", matched, timedOut: false);
-            }
-
-            if (timeout is TimeSpan timeoutValue && stopwatch.Elapsed >= timeoutValue)
-            {
-                return WriteSessionWait(
-                    snapshot,
-                    text,
-                    until,
-                    "timeout",
-                    matched: false,
-                    timedOut: true
-                );
-            }
-
-            if (snapshot.State != "running")
-            {
-                return WriteSessionWait(
-                    snapshot,
-                    text,
-                    until,
-                    "session-ended",
-                    matched: false,
-                    timedOut: false
-                );
-            }
-
-            var waitFor = TimeSpan.FromSeconds(1);
-            if (matched && stableFor is TimeSpan stableDuration)
-            {
-                waitFor = Min(waitFor, stableDuration - stableElapsed);
-            }
-            if (timeout is TimeSpan timeoutDuration)
-            {
-                waitFor = Min(waitFor, timeoutDuration - stopwatch.Elapsed);
-            }
-
-            var waitMs = Math.Max(1, (int)Math.Ceiling(waitFor.TotalMilliseconds));
-            var response = await ManagedTerminalSessionManager
-                .RequestAsync(
-                    RequireSessionId(options),
-                    new ManagedSessionRequest
-                    {
-                        Operation = "read",
-                        WaitMs = waitMs,
-                        SinceVersion = snapshot.Version,
-                    },
-                    cancellationToken
-                )
-                .ConfigureAwait(false);
-            snapshot = response.Session;
-        }
+        var result = await TerminalSessionRuntime
+            .WaitAsync(
+                RequireSessionId(options),
+                new TerminalCondition(
+                    Text: text,
+                    Until: until.Equals("absent", StringComparison.OrdinalIgnoreCase)
+                        ? TerminalConditionUntil.Absent
+                        : TerminalConditionUntil.Present,
+                    StableFor: stableFor,
+                    Timeout: timeout
+                ),
+                cancellationToken
+            )
+            .ConfigureAwait(false);
+        return WriteSessionWait(
+            result.Observation.Session,
+            text,
+            until,
+            result.Result,
+            result.Matched,
+            result.TimedOut
+        );
     }
-
-    private static TimeSpan Min(TimeSpan first, TimeSpan second) =>
-        first <= second ? first : second;
 
     private static int WriteSessionWait(
         ManagedSessionSnapshot session,
@@ -565,26 +520,23 @@ internal static partial class Program
         {
             throw new InvalidOperationException("At least one session input is required.");
         }
-        var response = await ManagedTerminalSessionManager
-            .RequestAsync(
+        var response = await TerminalSessionRuntime
+            .ExecuteAsync(
                 RequireSessionId(options),
-                new ManagedSessionRequest
-                {
-                    Operation = "send",
-                    Inputs = options
-                        .SessionInputs.Select(input => new ManagedSessionInput
-                        {
-                            Type = (input.IsText, input.IsRaw, input.IsPaste) switch
+                new SendTerminalInputAction(
+                    options
+                        .SessionInputs.Select(input => new TerminalInput(
+                            (input.IsText, input.IsRaw, input.IsPaste) switch
                             {
-                                (true, _, _) => "text",
-                                (_, true, _) => "raw",
-                                (_, _, true) => "paste",
-                                _ => "key",
+                                (true, _, _) => TerminalInputKind.Text,
+                                (_, true, _) => TerminalInputKind.RawHex,
+                                (_, _, true) => TerminalInputKind.Paste,
+                                _ => TerminalInputKind.Key,
                             },
-                            Value = input.Value,
-                        })
-                        .ToArray(),
-                },
+                            input.Value
+                        ))
+                        .ToArray()
+                ),
                 cancellationToken
             )
             .ConfigureAwait(false);
@@ -596,15 +548,10 @@ internal static partial class Program
         CancellationToken cancellationToken
     )
     {
-        var response = await ManagedTerminalSessionManager
-            .RequestAsync(
+        var response = await TerminalSessionRuntime
+            .ExecuteAsync(
                 RequireSessionId(options),
-                new ManagedSessionRequest
-                {
-                    Operation = "resize",
-                    Width = options.SessionWidth,
-                    Height = options.SessionHeight,
-                },
+                new ResizeTerminalAction(options.SessionWidth, options.SessionHeight),
                 cancellationToken
             )
             .ConfigureAwait(false);
@@ -629,15 +576,13 @@ internal static partial class Program
             );
         }
 
-        var response = await ManagedTerminalSessionManager
-            .RequestAsync(
+        var response = await TerminalSessionRuntime
+            .ExecuteAsync(
                 RequireSessionId(options),
-                new ManagedSessionRequest
-                {
-                    Operation = "capture",
-                    OutputPath = options.OutputPath,
-                    RenderOptions = SvgRenderOptionsFactory.Create(options),
-                },
+                new CaptureTerminalAction(
+                    options.OutputPath,
+                    SvgRenderOptionsFactory.Create(options)
+                ),
                 cancellationToken
             )
             .ConfigureAwait(false);
@@ -661,8 +606,7 @@ internal static partial class Program
 
     // Observation (not an artifact Action): reuses the capture rendering path for
     // identical fidelity, but writes to a randomized system temp location instead of
-    // a caller-chosen durable path. Future SessionJournal entries for inspect must be
-    // classified as Observation and omitted from Scenario export.
+    // a caller-chosen durable path. Its journal entry is omitted from Scenario export.
     private static async Task<int> InspectManagedSessionAsync(
         AppOptions options,
         CancellationToken cancellationToken
@@ -679,16 +623,17 @@ internal static partial class Program
         }
 
         var inspectPath = SessionInspectFiles.CreateInspectPath();
-        var response = await ManagedTerminalSessionManager
-            .RequestAsync(
+        var response = await TerminalSessionRuntime
+            .ExecuteAsync(
                 RequireSessionId(options),
-                new ManagedSessionRequest
+                new CaptureTerminalAction(inspectPath, SvgRenderOptionsFactory.Create(options)),
+                cancellationToken,
+                new SessionJournalEntry
                 {
-                    Operation = "capture",
-                    OutputPath = inspectPath,
-                    RenderOptions = SvgRenderOptionsFactory.Create(options),
-                },
-                cancellationToken
+                    Kind = "observation",
+                    Name = "inspect",
+                    At = DateTimeOffset.UtcNow,
+                }
             )
             .ConfigureAwait(false);
         SessionInspectFiles.HardenPrivateFile(inspectPath);
@@ -714,10 +659,10 @@ internal static partial class Program
     {
         if (!options.SessionAll)
         {
-            var response = await ManagedTerminalSessionManager
-                .RequestAsync(
+            var response = await TerminalSessionRuntime
+                .ExecuteAsync(
                     RequireSessionId(options),
-                    new ManagedSessionRequest { Operation = "stop" },
+                    new StopTerminalAction(),
                     cancellationToken
                 )
                 .ConfigureAwait(false);
@@ -775,12 +720,8 @@ internal static partial class Program
         {
             try
             {
-                await ManagedTerminalSessionManager
-                    .RequestAsync(
-                        sessionId,
-                        new ManagedSessionRequest { Operation = "stop" },
-                        cancellationToken
-                    )
+                await TerminalSessionRuntime
+                    .ExecuteAsync(sessionId, new StopTerminalAction(), cancellationToken)
                     .ConfigureAwait(false);
                 stopped.Add(sessionId);
             }

@@ -138,6 +138,7 @@ internal sealed class SessionOperationFailure
 [JsonSerializable(typeof(SessionOperationOutput))]
 [JsonSerializable(typeof(SessionCaptureOutput))]
 [JsonSerializable(typeof(SessionInspectOutput))]
+[JsonSerializable(typeof(SessionExportOutput))]
 [JsonSerializable(typeof(SessionStopAllOutput))]
 [JsonSerializable(typeof(SessionErrorOutput))]
 internal sealed partial class SessionOutputJsonContext : JsonSerializerContext { }
@@ -213,6 +214,8 @@ internal static partial class Program
                         cancellationToken
                     )
                     .ConfigureAwait(false),
+                SessionAction.Export => await ExportManagedSessionAsync(options, cancellationToken)
+                    .ConfigureAwait(false),
                 SessionAction.Stop => await StopManagedSessionAsync(options, cancellationToken)
                     .ConfigureAwait(false),
                 _ => throw new InvalidOperationException("A session action is required."),
@@ -228,10 +231,10 @@ internal static partial class Program
                         or TimeoutException
                         or FormatException
                         or JsonException
+                        or AggregateException
             )
         {
             var code = GetSessionErrorCode(exception, options.RequestedSessionAction);
-                        or AggregateException
             await WriteSessionErrorAsync(code, exception.Message, cancellationToken)
                 .ConfigureAwait(false);
             return 1;
@@ -275,9 +278,6 @@ internal static partial class Program
             )
             .ConfigureAwait(false);
         var session = response.Session;
-        await WriteSessionJsonAsync(
-                new SessionStartOutput
-                {
         if (configuration is not null)
         {
             try
@@ -333,6 +333,9 @@ internal static partial class Program
                 throw;
             }
         }
+        await WriteSessionJsonAsync(
+                new SessionStartOutput
+                {
                     SessionId = session.Id,
                     State = session.State,
                     ProcessId = session.ProcessId,

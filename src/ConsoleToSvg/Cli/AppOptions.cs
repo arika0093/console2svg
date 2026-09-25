@@ -44,6 +44,7 @@ public enum SessionAction
     Resize,
     Capture,
     Inspect,
+    Export,
     Stop,
     Host,
 }
@@ -106,8 +107,9 @@ public sealed class AppOptions
     public string? SessionWorkingDirectory { get; set; }
     public string? SessionPipeName { get; set; }
     public string? SessionDirectory { get; set; }
-
+    public string? SessionOutputPath { get; set; }
     public string? ScenarioPath { get; set; }
+
     public bool Verbose { get; set; }
 
     public string? VerboseLogPath { get; set; }

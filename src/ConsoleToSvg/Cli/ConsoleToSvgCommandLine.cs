@@ -407,8 +407,8 @@ public sealed partial class ConsoleToSvgCommandLine
                 _symbols.SessionWidth,
                 _symbols.SessionHeight,
                 _symbols.SessionWorkingDirectory,
-                _symbols.NoDeleteEnvs,
                 _symbols.NoColorEnv,
+                _symbols.NoDeleteEnvs,
             ]
         );
         var commandArgument = AddCommandArgument(start);
@@ -441,9 +441,9 @@ public sealed partial class ConsoleToSvgCommandLine
                         SessionWorkingDirectory =
                             parseResult.GetValue(_symbols.SessionWorkingDirectory)
                             ?? Environment.CurrentDirectory,
-                        NoDeleteEnvs = parseResult.GetValue(_symbols.NoDeleteEnvs),
                         NoColorEnv = parseResult.GetValue(_symbols.NoColorEnv),
                         IsNoColorEnvExplicit = IsSpecified(parseResult, _symbols.NoColorEnv),
+                        NoDeleteEnvs = parseResult.GetValue(_symbols.NoDeleteEnvs),
                         IsNoDeleteEnvsExplicit = IsSpecified(parseResult, _symbols.NoDeleteEnvs),
                     },
                     parseResult,
@@ -679,6 +679,30 @@ public sealed partial class ConsoleToSvgCommandLine
         );
         session.Subcommands.Add(inspect);
 
+        var export = new Command("export", "Export a managed session as a Scenario document.");
+        var exportId = new Argument<string>("id")
+        {
+            Description = "Managed session ID.",
+            Hidden = true,
+        };
+        export.Arguments.Add(exportId);
+        export.Options.Add(_symbols.OutputPath);
+        export.SetAction(
+            (parseResult, cancellationToken) =>
+                _handler(
+                    new AppOptions
+                    {
+                        Workflow = Workflow.Session,
+                        RequestedSessionAction = SessionAction.Export,
+                        SessionId = parseResult.GetRequiredValue(exportId),
+                        SessionOutputPath = parseResult.GetValue(_symbols.OutputPath)?.ToString(),
+                    },
+                    parseResult,
+                    cancellationToken
+                )
+        );
+        session.Subcommands.Add(export);
+
         var stop = new Command("stop", "Stop a managed session or all managed sessions.");
         var stopId = new Argument<string?>("id")
         {
@@ -737,30 +761,6 @@ public sealed partial class ConsoleToSvgCommandLine
         root.Subcommands.Add(session);
     }
 
-    private static List<SessionInputStep> ParseSessionInputs(ParseResult parseResult)
-    {
-        var inputs = new List<SessionInputStep>();
-        var tokens = parseResult.Tokens;
-        for (var index = 0; index < tokens.Count; index++)
-        {
-            var token = tokens[index].Value;
-            var isText = token == "--text" || token.StartsWith("--text=", StringComparison.Ordinal);
-            var isKey = token == "--keys" || token.StartsWith("--keys=", StringComparison.Ordinal);
-            var isPaste =
-                token == "--paste" || token.StartsWith("--paste=", StringComparison.Ordinal);
-            var isRaw =
-                token == "--raw-hex" || token.StartsWith("--raw-hex=", StringComparison.Ordinal);
-            if (!isText && !isKey && !isPaste && !isRaw)
-            {
-                continue;
-            }
-
-            var equalsIndex = token.IndexOf('=');
-            var value = equalsIndex >= 0 ? token[(equalsIndex + 1)..] : tokens[++index].Value;
-            inputs.Add(new SessionInputStep(isText, value, isRaw, isPaste));
-        }
-        return inputs;
-    }
     private void AddScenarioCommand(RootCommand root)
     {
         var scenario = new Command("scenario", "Run Scenario documents.");
@@ -803,6 +803,30 @@ public sealed partial class ConsoleToSvgCommandLine
         root.Subcommands.Add(scenario);
     }
 
+    private static List<SessionInputStep> ParseSessionInputs(ParseResult parseResult)
+    {
+        var inputs = new List<SessionInputStep>();
+        var tokens = parseResult.Tokens;
+        for (var index = 0; index < tokens.Count; index++)
+        {
+            var token = tokens[index].Value;
+            var isText = token == "--text" || token.StartsWith("--text=", StringComparison.Ordinal);
+            var isKey = token == "--keys" || token.StartsWith("--keys=", StringComparison.Ordinal);
+            var isPaste =
+                token == "--paste" || token.StartsWith("--paste=", StringComparison.Ordinal);
+            var isRaw =
+                token == "--raw-hex" || token.StartsWith("--raw-hex=", StringComparison.Ordinal);
+            if (!isText && !isKey && !isPaste && !isRaw)
+            {
+                continue;
+            }
+
+            var equalsIndex = token.IndexOf('=');
+            var value = equalsIndex >= 0 ? token[(equalsIndex + 1)..] : tokens[++index].Value;
+            inputs.Add(new SessionInputStep(isText, value, isRaw, isPaste));
+        }
+        return inputs;
+    }
 
     private bool TryCreateSessionCaptureOptions(
         ParseResult result,

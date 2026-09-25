@@ -471,6 +471,17 @@ public sealed class ConsoleToSvgCommandLineTests
     }
 
     [Test]
+    public async Task SessionExportRequiresAndMapsAnOutputPath()
+    {
+        var invocation = await InvokeAsync("session", "export", "s_abc", "--out", "demo.yaml");
+
+        invocation.ExitCode.ShouldBe(0);
+        invocation.Options!.RequestedSessionAction.ShouldBe(SessionAction.Export);
+        invocation.Options.SessionId.ShouldBe("s_abc");
+        invocation.Options.SessionOutputPath.ShouldBe("demo.yaml");
+    }
+
+    [Test]
     public async Task SessionCommandsDoNotAcceptJsonFlag()
     {
         var invocation = await InvokeAsync("session", "list", "--json");

@@ -50,10 +50,10 @@ jobs:
               echo "run-cargo=true" >> "$GITHUB_OUTPUT"
               echo "run-dotnet=true" >> "$GITHUB_OUTPUT"
               ;;
-            npm:/docs-site)
+            npm_and_yarn:/docs-site)
               echo "run-docs=true" >> "$GITHUB_OUTPUT"
               ;;
-            npm:/wrapper/npm)
+            npm_and_yarn:/wrapper/npm)
               echo "run-npm-wrapper=true" >> "$GITHUB_OUTPUT"
               ;;
             github-actions:/)

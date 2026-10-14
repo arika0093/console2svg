@@ -14,7 +14,7 @@
     "@astrojs/mdx": "^8.0.2",
     "@astrojs/starlight": "^0.42.5",
     "@fontsource/jetbrains-mono": "^5.3.0",
-    "astro": "^7.3.5",
+    "astro": "^7.3.8",
     "chokidar": "^5.0.0",
     "starlight-github-alerts": "^0.5.0",
     "starlight-theme-nova": "^0.12.3",

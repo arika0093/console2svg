@@ -18,7 +18,7 @@
     "chokidar": "^6.0.0",
     "starlight-github-alerts": "^0.5.0",
     "starlight-theme-nova": "^0.12.3",
-    "starlight-versions": "^0.10.1"
+    "starlight-versions": "^0.10.2"
   },
   "devDependencies": {
     "typescript": "^6.0.3"

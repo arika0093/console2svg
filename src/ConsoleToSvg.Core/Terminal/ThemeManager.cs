@@ -336,11 +336,10 @@ public static class ThemeManager
 
     private static ThemeManifest ReadManifest(string root)
     {
-        var manifest =
-            JsonSerializer.Deserialize(
-                File.ReadAllText(Path.Combine(root, "theme.json")),
-                ThemeJsonContext.Default.ThemeManifest
-            ) ?? throw new InvalidDataException("Invalid theme manifest.");
+        var manifest = JsonSerializer.Deserialize(
+            File.ReadAllText(Path.Combine(root, "theme.json")),
+            ThemeJsonContext.Default.ThemeManifest
+        ) ?? throw new InvalidDataException("Invalid theme manifest.");
         ThemeManifestValidator.Validate(manifest, root);
         return manifest;
     }

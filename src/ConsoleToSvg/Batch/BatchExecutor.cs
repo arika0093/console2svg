@@ -178,8 +178,8 @@ public static class BatchExecutor
             return null;
         }
 
-        var markdownDir =
-            Path.GetDirectoryName(Path.GetFullPath(markdownPath)) ?? Environment.CurrentDirectory;
+        var markdownDir = Path.GetDirectoryName(Path.GetFullPath(markdownPath))
+            ?? Environment.CurrentDirectory;
         return Path.GetFullPath(
             Path.Combine(
                 markdownDir,

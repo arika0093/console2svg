@@ -1506,11 +1506,10 @@ public static class ManagedTerminalSessionManager
             {
                 continue;
             }
-            var manifest =
-                JsonSerializer.Deserialize(
-                    File.ReadAllText(manifestPath),
-                    ManagedSessionJsonContext.Default.ManagedSessionManifest
-                )
+            var manifest = JsonSerializer.Deserialize(
+                File.ReadAllText(manifestPath),
+                ManagedSessionJsonContext.Default.ManagedSessionManifest
+            )
                 ?? throw new InvalidDataException(
                     $"The managed session '{id}' has invalid metadata."
                 );
@@ -1582,8 +1581,7 @@ public static class ManagedTerminalSessionManager
 
     private static Process StartHostProcess(string pipeName, string directory)
     {
-        var processPath =
-            Environment.ProcessPath
+        var processPath = Environment.ProcessPath
             ?? throw new InvalidOperationException(
                 "Cannot determine the console2svg executable path."
             );
@@ -1614,8 +1612,7 @@ public static class ManagedTerminalSessionManager
             startInfo.ArgumentList.Add(argument);
         }
 
-        var process =
-            Process.Start(startInfo)
+        var process = Process.Start(startInfo)
             ?? throw new InvalidOperationException("Failed to start the managed session host.");
         return process;
     }
@@ -1687,12 +1684,9 @@ public static class ManagedTerminalSessionManager
             );
         }
         return JsonSerializer.Deserialize(
-                responseJson,
-                ManagedSessionJsonContext.Default.ManagedSessionResponse
-            )
-            ?? throw new InvalidDataException(
-                "The managed session host returned an empty response."
-            );
+            responseJson,
+            ManagedSessionJsonContext.Default.ManagedSessionResponse
+        ) ?? throw new InvalidDataException("The managed session host returned an empty response.");
     }
 
     private static async Task<ManagedSessionResponse> SendToPipeWithRetryAsync(
@@ -1807,12 +1801,10 @@ public static class ManagedTerminalSessionManager
             );
         }
 
-        var manifest =
-            JsonSerializer.Deserialize(
-                File.ReadAllText(manifestPath),
-                ManagedSessionJsonContext.Default.ManagedSessionManifest
-            )
-            ?? throw new InvalidDataException($"The managed session '{id}' has invalid metadata.");
+        var manifest = JsonSerializer.Deserialize(
+            File.ReadAllText(manifestPath),
+            ManagedSessionJsonContext.Default.ManagedSessionManifest
+        ) ?? throw new InvalidDataException($"The managed session '{id}' has invalid metadata.");
         var snapshot = RefreshUnavailable(directory, manifest, LoadSnapshot(directory));
         if (snapshot.ExpiresAt is DateTimeOffset expiry && expiry <= DateTimeOffset.UtcNow)
         {
@@ -1910,9 +1902,9 @@ public static class ManagedTerminalSessionManager
         }
 
         return JsonSerializer.Deserialize(
-                File.ReadAllText(snapshotPath),
-                ManagedSessionJsonContext.Default.ManagedSessionSnapshot
-            ) ?? throw new InvalidDataException("The managed session snapshot is invalid.");
+            File.ReadAllText(snapshotPath),
+            ManagedSessionJsonContext.Default.ManagedSessionSnapshot
+        ) ?? throw new InvalidDataException("The managed session snapshot is invalid.");
     }
 
     private static void EnsureSuccess(ManagedSessionResponse response)

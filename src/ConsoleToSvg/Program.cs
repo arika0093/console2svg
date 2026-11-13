@@ -552,8 +552,7 @@ internal static partial class Program
 
             if (options.Json && isVideoCapture && jsonFrameDirectory is null)
             {
-                var duration =
-                    session.DurationSeconds
+                var duration = session.DurationSeconds
                     ?? (session.Events.Count > 0 ? session.Events[^1].Time : 0d);
                 var previewFps =
                     duration > 0

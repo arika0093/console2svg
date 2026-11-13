@@ -29,8 +29,7 @@ public sealed class Theme
     {
         var id = string.IsNullOrWhiteSpace(name) ? "dark" : name;
         var entry = new ThemeCatalog().Resolve(id);
-        var terminal =
-            entry.Manifest.Terminal
+        var terminal = entry.Manifest.Terminal
             ?? throw new InvalidOperationException(
                 $"Theme '{id}' does not define terminal colors."
             );

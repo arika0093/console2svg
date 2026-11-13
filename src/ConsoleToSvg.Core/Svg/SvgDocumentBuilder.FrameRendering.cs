@@ -223,8 +223,7 @@ internal static partial class SvgDocumentBuilder
         var vSegments = renderForeground ? workspace?.VerticalSegments ?? [] : null;
         var roundedCorners = renderForeground ? workspace?.RoundedCorners ?? [] : null;
         var blockRects = renderForeground ? workspace?.BlockRects ?? [] : null;
-        var fgRunText =
-            workspace?.ForegroundText
+        var fgRunText = workspace?.ForegroundText
             ?? new StringBuilder(context.EndColExclusive - context.StartCol);
         var autoMaskedCells =
             autoMask && renderForeground

@@ -300,31 +300,28 @@ public static class BatchMarkdown
         foreach (var pattern in new[] { MarkdownImagePattern, HtmlImagePattern, HtmlSourcePattern })
         {
             var fences = FindCodeFences(result);
-            result = pattern.Replace(
-                result,
-                match =>
+            result = pattern.Replace(result, match =>
+            {
+                if (fences.Any(fence => match.Index >= fence.Start && match.Index < fence.End))
                 {
-                    if (fences.Any(fence => match.Index >= fence.Start && match.Index < fence.End))
-                    {
-                        return match.Value;
-                    }
-
-                    var target = match.Groups["target"];
-                    var unwrapped = target.Value.Trim('<', '>');
-                    if (!replacements.TryGetValue(unwrapped, out var replacement))
-                    {
-                        return match.Value;
-                    }
-
-                    var replacementTarget = target.Value.StartsWith('<')
-                        ? $"<{replacement}>"
-                        : replacement;
-                    var targetOffset = target.Index - match.Index;
-                    return match.Value[..targetOffset]
-                        + replacementTarget
-                        + match.Value[(targetOffset + target.Length)..];
+                    return match.Value;
                 }
-            );
+
+                var target = match.Groups["target"];
+                var unwrapped = target.Value.Trim('<', '>');
+                if (!replacements.TryGetValue(unwrapped, out var replacement))
+                {
+                    return match.Value;
+                }
+
+                var replacementTarget = target.Value.StartsWith('<')
+                    ? $"<{replacement}>"
+                    : replacement;
+                var targetOffset = target.Index - match.Index;
+                return match.Value[..targetOffset]
+                    + replacementTarget
+                    + match.Value[(targetOffset + target.Length)..];
+            });
         }
 
         return result;
@@ -598,28 +595,25 @@ public static class BatchMarkdown
             );
         }
 
-        return CodePlaceholderPattern.Replace(
-            script,
-            match =>
+        return CodePlaceholderPattern.Replace(script, match =>
+        {
+            var id = match.Groups[1].Value;
+            var fence = fences.LastOrDefault(item =>
+                item.End <= markerStart && string.Equals(item.Id, id, StringComparison.Ordinal)
+            );
+            if (fence is null)
             {
-                var id = match.Groups[1].Value;
-                var fence = fences.LastOrDefault(item =>
-                    item.End <= markerStart && string.Equals(item.Id, id, StringComparison.Ordinal)
+                errors.Add(
+                    new BatchParseError(
+                        line,
+                        $"placeholder '{match.Value}' has no preceding code block with c2s-id={id}."
+                    )
                 );
-                if (fence is null)
-                {
-                    errors.Add(
-                        new BatchParseError(
-                            line,
-                            $"placeholder '{match.Value}' has no preceding code block with c2s-id={id}."
-                        )
-                    );
-                    return match.Value;
-                }
-
-                return fence.Content.TrimEnd();
+                return match.Value;
             }
-        );
+
+            return fence.Content.TrimEnd();
+        });
     }
 
     private static void ValidateFenceIds(

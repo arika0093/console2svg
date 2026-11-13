@@ -458,12 +458,12 @@ public static class BatchAssets
         await using var stream = await OpenSourceAsync(source, cancellationToken)
             .ConfigureAwait(false);
         return await JsonSerializer
-                .DeserializeAsync(
-                    stream,
-                    BatchAssetJsonContext.Default.BatchAssetManifest,
-                    cancellationToken
-                )
-                .ConfigureAwait(false)
+            .DeserializeAsync(
+                stream,
+                BatchAssetJsonContext.Default.BatchAssetManifest,
+                cancellationToken
+            )
+            .ConfigureAwait(false)
             ?? throw new InvalidDataException("Manifest is empty.");
     }
 

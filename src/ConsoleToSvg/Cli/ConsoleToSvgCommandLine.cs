@@ -420,9 +420,9 @@ public sealed partial class ConsoleToSvgCommandLine
                         SessionWidth = parseResult.GetValue(_symbols.SessionWidth) ?? 100,
                         SessionHeight = parseResult.GetValue(_symbols.SessionHeight) ?? 24,
                         SessionCommand = command,
-                        SessionWorkingDirectory =
-                            parseResult.GetValue(_symbols.SessionWorkingDirectory)
-                            ?? Environment.CurrentDirectory,
+                        SessionWorkingDirectory = parseResult.GetValue(
+                            _symbols.SessionWorkingDirectory
+                        ) ?? Environment.CurrentDirectory,
                         NoDeleteEnvs = parseResult.GetValue(_symbols.NoDeleteEnvs),
                     },
                     parseResult,

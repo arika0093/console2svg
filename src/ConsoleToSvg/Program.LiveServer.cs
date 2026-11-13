@@ -364,14 +364,11 @@ internal static partial class Program
                 using var clientLifetime = CancellationTokenSource.CreateLinkedTokenSource(
                     cancellationToken
                 );
-                var sseClient = new LiveSseClient(
-                    stream,
-                    () =>
-                    {
-                        clients.TryRemove(id, out _);
-                        clientLifetime.Cancel();
-                    }
-                );
+                var sseClient = new LiveSseClient(stream, () =>
+                {
+                    clients.TryRemove(id, out _);
+                    clientLifetime.Cancel();
+                });
                 clients[id] = sseClient;
                 Task? heartbeatTask = null;
                 try
@@ -822,8 +819,7 @@ internal static partial class Program
 
     private static string LoadEmbeddedText(string resourceName)
     {
-        using var stream =
-            typeof(Program).Assembly.GetManifestResourceStream(resourceName)
+        using var stream = typeof(Program).Assembly.GetManifestResourceStream(resourceName)
             ?? throw new InvalidOperationException(
                 $"Embedded resource '{resourceName}' was not found."
             );

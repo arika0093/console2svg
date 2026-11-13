@@ -95,13 +95,10 @@ public static partial class SvgConverter
         if (string.IsNullOrEmpty(executable))
             return null;
         var codecs = _videoCodecAvailabilityByFfmpegPath
-            .GetOrAdd(
-                executable,
-                static path => new Lazy<VideoCodecAvailability>(
-                    () => DetectFfmpegVideoCodecs(path),
-                    LazyThreadSafetyMode.ExecutionAndPublication
-                )
-            )
+            .GetOrAdd(executable, static path => new Lazy<VideoCodecAvailability>(
+                () => DetectFfmpegVideoCodecs(path),
+                LazyThreadSafetyMode.ExecutionAndPublication
+            ))
             .Value;
         if (codecs.Libx264)
             return "h.264";
@@ -142,13 +139,10 @@ public static partial class SvgConverter
         }
 
         var availableCodecs = _videoCodecAvailabilityByFfmpegPath
-            .GetOrAdd(
-                executable,
-                static path => new Lazy<VideoCodecAvailability>(
-                    () => DetectFfmpegVideoCodecs(path),
-                    LazyThreadSafetyMode.ExecutionAndPublication
-                )
-            )
+            .GetOrAdd(executable, static path => new Lazy<VideoCodecAvailability>(
+                () => DetectFfmpegVideoCodecs(path),
+                LazyThreadSafetyMode.ExecutionAndPublication
+            ))
             .Value;
 
         if (availableCodecs.Libx264)
@@ -494,34 +488,30 @@ public static partial class SvgConverter
             };
 
             await Parallel
-                .ForEachAsync(
-                    svgFiles,
-                    parallelOpts,
-                    async (svgFile, ct) =>
-                    {
-                        var pngFile = Path.Combine(
-                            framesDir,
-                            Path.GetFileNameWithoutExtension(svgFile) + ".png"
-                        );
-                        await ConvertSvgToPngAsync(
-                                svgFile,
-                                pngFile,
-                                effectiveConverter,
-                                width,
-                                height,
-                                logger,
-                                ct
-                            )
-                            .ConfigureAwait(false);
+                .ForEachAsync(svgFiles, parallelOpts, async (svgFile, ct) =>
+                {
+                    var pngFile = Path.Combine(
+                        framesDir,
+                        Path.GetFileNameWithoutExtension(svgFile) + ".png"
+                    );
+                    await ConvertSvgToPngAsync(
+                            svgFile,
+                            pngFile,
+                            effectiveConverter,
+                            width,
+                            height,
+                            logger,
+                            ct
+                        )
+                        .ConfigureAwait(false);
 
-                        // Intermediate SVGs are left in place and removed
-                        // together with the temp directory after ffmpeg runs
-                        // (frame-%04d.png only matches PNGs, so ffmpeg is
-                        // unaffected). Deleting per-frame on Windows triggers
-                        // per-file antivirus scans that dramatically slow the
-                        // pipeline (see issue about slow mp4 on Windows).
-                    }
-                )
+                    // Intermediate SVGs are left in place and removed
+                    // together with the temp directory after ffmpeg runs
+                    // (frame-%04d.png only matches PNGs, so ffmpeg is
+                    // unaffected). Deleting per-frame on Windows triggers
+                    // per-file antivirus scans that dramatically slow the
+                    // pipeline (see issue about slow mp4 on Windows).
+                })
                 .ConfigureAwait(false);
 
             framePattern = Path.Combine(framesDir, "frame-%04d.png");

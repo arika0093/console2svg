@@ -225,8 +225,8 @@ public static class RepositorySourceAcquirer
         };
         foreach (var argument in arguments)
             startInfo.ArgumentList.Add(argument);
-        using var process =
-            Process.Start(startInfo) ?? throw new InvalidOperationException("Unable to start git.");
+        using var process = Process.Start(startInfo)
+            ?? throw new InvalidOperationException("Unable to start git.");
         process.WaitForExit();
         if (process.ExitCode != 0)
             throw new InvalidOperationException(process.StandardError.ReadToEnd().Trim());

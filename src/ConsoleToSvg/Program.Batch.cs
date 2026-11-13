@@ -169,8 +169,8 @@ internal static partial class Program
                     continue;
                 }
 
-                var workingDirectory =
-                    Path.GetDirectoryName(plan.Path) ?? Environment.CurrentDirectory;
+                var workingDirectory = Path.GetDirectoryName(plan.Path)
+                    ?? Environment.CurrentDirectory;
                 string? error = null;
                 if (options.BatchPlaceholder)
                 {

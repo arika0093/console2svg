@@ -187,8 +187,7 @@ internal static partial class Program
     {
         if (options.RequestedSessionAction is SessionAction.Host)
         {
-            var sessionDirectory =
-                options.SessionDirectory
+            var sessionDirectory = options.SessionDirectory
                 ?? throw new InvalidOperationException("The session host directory is missing.");
             await using var hostLogStream = new FileStream(
                 Path.Combine(sessionDirectory, "host.log"),
@@ -395,8 +394,7 @@ internal static partial class Program
         CancellationToken cancellationToken
     )
     {
-        var text =
-            options.SessionWaitText
+        var text = options.SessionWaitText
             ?? throw new InvalidOperationException("Screen text is required.");
         var until = options.SessionWaitUntil ?? "present";
         var untilAbsent = until.Equals("absent", StringComparison.OrdinalIgnoreCase);
@@ -616,8 +614,7 @@ internal static partial class Program
         CancellationToken cancellationToken
     )
     {
-        var outputFormat =
-            options.Format
+        var outputFormat = options.Format
             ?? Path.GetExtension(options.OutputPath).TrimStart('.').ToLowerInvariant();
         if (
             !string.IsNullOrEmpty(outputFormat)

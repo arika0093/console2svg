@@ -36,20 +36,16 @@ internal static partial class Program
                 var fullPath = Path.GetFullPath(path);
                 Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
                 File.WriteAllText(fullPath, string.Empty);
-                builder.AddZLoggerFile(
-                    fullPath,
-                    options =>
+                builder.AddZLoggerFile(fullPath, options =>
+                {
+                    options.FileShared = false;
+                    options.UsePlainTextFormatter(formatter =>
                     {
-                        options.FileShared = false;
-                        options.UsePlainTextFormatter(formatter =>
-                        {
-                            formatter.SetPrefixFormatter(
-                                $"[{0:local}] ",
-                                (in template, in info) => template.Format(info.Timestamp)
-                            );
-                        });
-                    }
-                );
+                        formatter.SetPrefixFormatter($"[{0:local}] ", (in template, in info) =>
+                            template.Format(info.Timestamp)
+                        );
+                    });
+                });
             }
             if (embeddedLogCollector is not null)
             {

@@ -171,9 +171,10 @@ public sealed class ThemeCatalog
         )
         {
             using var stream = assembly.GetManifestResourceStream(resource)!;
-            var manifest =
-                JsonSerializer.Deserialize(stream, ThemeJsonContext.Default.ThemeManifest)
-                ?? throw new InvalidDataException(resource);
+            var manifest = JsonSerializer.Deserialize(
+                stream,
+                ThemeJsonContext.Default.ThemeManifest
+            ) ?? throw new InvalidDataException(resource);
             var normalizedResource = NormalizeResourceName(resource);
             var root = normalizedResource[
                 ..normalizedResource.LastIndexOf("/theme.json", StringComparison.OrdinalIgnoreCase)
@@ -322,11 +323,10 @@ public sealed class ThemeCatalog
             var path = Path.Combine(directory, "theme.json");
             if (!File.Exists(path))
                 continue;
-            var manifest =
-                JsonSerializer.Deserialize(
-                    File.ReadAllText(path),
-                    ThemeJsonContext.Default.ThemeManifest
-                ) ?? throw new InvalidDataException(path);
+            var manifest = JsonSerializer.Deserialize(
+                File.ReadAllText(path),
+                ThemeJsonContext.Default.ThemeManifest
+            ) ?? throw new InvalidDataException(path);
             ThemeManifestValidator.Validate(manifest, directory);
             if (!_entries.ContainsKey(manifest.Id!))
                 _entries.Add(manifest.Id!, new ThemeEntry(manifest, directory, false));

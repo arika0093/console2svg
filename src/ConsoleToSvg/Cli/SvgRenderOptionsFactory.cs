@@ -41,8 +41,7 @@ public static class SvgRenderOptionsFactory
             && (themeEntries.Any(x => x.IsPcVariant) || chromeTheme?.IsPcVariant == true)
         )
             chrome.IsDesktop = true;
-        var pcPadding =
-            appOptions.PcPadding
+        var pcPadding = appOptions.PcPadding
             ?? appearances.LastOrDefault(x => x!.PcPadding.HasValue)?.PcPadding
             ?? chromeAppearance?.PcPadding;
         if (chrome is not null && pcPadding.HasValue)

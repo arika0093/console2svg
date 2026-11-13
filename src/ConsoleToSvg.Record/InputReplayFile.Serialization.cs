@@ -110,8 +110,7 @@ public static partial class InputReplayFile
         {
             return new InputReplayData();
         }
-        var data =
-            JsonSerializer.Deserialize(json, s_jsonContext.InputReplayData)
+        var data = JsonSerializer.Deserialize(json, s_jsonContext.InputReplayData)
             ?? new InputReplayData();
         ResolveAbsoluteTimes(data.Replay);
         return data;

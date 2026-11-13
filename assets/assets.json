@@ -19,20 +19,20 @@
     },
     "4e0ce507c521.svg": {
       "path": "generated/4e0ce507c521.svg",
-      "sha256": "0ac3e83c75c23ac035cb552b4327623d668ba0039305eaac2b15190b6e308a92",
-      "size": 426321,
+      "sha256": "ceb561ec688f0ea1cdcd4bedcad8b89e4e93eee82325c9bbc32979e71de538e3",
+      "size": 425457,
       "mediaType": "image/svg\u002Bxml"
     },
     "4fdacba2b25d.svg": {
       "path": "generated/4fdacba2b25d.svg",
-      "sha256": "1ab9f6bb6012113cadfbf0e70a5c355ea6034d2572e5ceaf64b923c80a9fed0d",
-      "size": 8955,
+      "sha256": "57a6f58d8adccbc019ef3b620e0435359beb90030fb2d2d3984ad9f52da0c638",
+      "size": 8983,
       "mediaType": "image/svg\u002Bxml"
     },
     "6606e28c18df.svg": {
       "path": "generated/6606e28c18df.svg",
-      "sha256": "8f344ac3262f7569755b1b2ae6c1cbd6fc949b0a2075ba37c3b6e7dc8f566f39",
-      "size": 29651,
+      "sha256": "003735a7969befdb43dec3b46c8f481de27480a948149ad6fa309fbfd1ff3eb6",
+      "size": 27624,
       "mediaType": "image/svg\u002Bxml"
     },
     "843cbb04bb12.svg": {
@@ -43,20 +43,20 @@
     },
     "ce27ec49eb39.svg": {
       "path": "generated/ce27ec49eb39.svg",
-      "sha256": "235c7c960febc7222613c71b4cfb42fb6a9140eb12416133092459ade63d70af",
-      "size": 1801509,
+      "sha256": "e5c77a5204ec54189883f6f0228ad9b2a25cbb30bb3c6ba9c17e6e31d6c6608d",
+      "size": 1500049,
       "mediaType": "image/svg\u002Bxml"
     },
     "ec7ec60fe7a0.svg": {
       "path": "generated/ec7ec60fe7a0.svg",
-      "sha256": "bf1d01b089aaac86bc0af92ebe6ae01bdfac3f6ec754a303f655566d17b307ca",
-      "size": 331089,
+      "sha256": "9a79b3c032ef55aa53b07fb355eb83175ac668d55ab8624a9851e27724515dc0",
+      "size": 331427,
       "mediaType": "image/svg\u002Bxml"
     },
     "f822e14508ec.svg": {
       "path": "generated/f822e14508ec.svg",
-      "sha256": "386da24990d01b86d0f3c20eda385f5de2f6e053aaa80f9ca7b66188033e343e",
-      "size": 21762,
+      "sha256": "6c08b9417aa664ffb3c1a41f69066b2598a41fd4ab429b41158f178d6924c71d",
+      "size": 30286,
       "mediaType": "image/svg\u002Bxml"
     }
   },

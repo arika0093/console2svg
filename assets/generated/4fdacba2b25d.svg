@@ -41,24 +41,24 @@
 <text class="ab" x="243.6" y="14" textLength="33.6">....</text>
 <text class="ab" x="394.8" y="14" textLength="50.4">runner</text>
 <text class="aa" x="445.2" y="14" textLength="8.4">@</text>
-<text class="ab" x="453.6" y="14" textLength="109.2">runnervmtr4k5</text>
+<text class="ab" x="453.6" y="14" textLength="109.2">runnervmwuk1x</text>
 <text class="ab" x="117.6" y="32" textLength="184.8">.&apos;,:clooo:  .:looooo:.</text>
 <text class="aa" x="394.8" y="32" textLength="168">--------------------</text>
 <text class="ab" x="92.4" y="50" textLength="218.4">.;looooooooc  .oooooooooo&apos;</text>
 <text class="ab" x="394.8" y="50" textLength="16.8">OS</text>
-<text class="aa" x="411.6" y="50" textLength="352.8">: Ubuntu 24.04.5 LTS (Noble Numbat) x86_64</text>
+<text class="aa" x="411.6" y="50" textLength="386.4">: Ubuntu 26.04.1 LTS (Resolute Raccoon) x86_64</text>
 <text class="ab" x="67.2" y="68" textLength="243.6">.;looooool:,&apos;&apos;.  :ooooooooooc</text>
 <text class="ab" x="394.8" y="68" textLength="33.6">Host</text>
 <text class="aa" x="428.4" y="68" textLength="378">: Virtual Machine (Hyper-V UEFI Release v4.1)</text>
 <text class="ab" x="58.8" y="86" textLength="252">;looool;.         &apos;oooooooooo,</text>
 <text class="ab" x="394.8" y="86" textLength="50.4">Kernel</text>
-<text class="aa" x="445.2" y="86" textLength="210">: Linux 6.17.0-1022-azure</text>
+<text class="aa" x="445.2" y="86" textLength="201.6">: Linux 7.0.0-1019-azure</text>
 <text class="ab" x="50.4" y="104" textLength="285.6">;clool&apos;             .cooooooc.  ,,</text>
 <text class="ab" x="394.8" y="104" textLength="50.4">Uptime</text>
-<text class="aa" x="445.2" y="104" textLength="67.2">: 8 mins</text>
+<text class="aa" x="445.2" y="104" textLength="67.2">: 6 mins</text>
 <text class="ab" x="75.6" y="122" textLength="268.8">...                ......  .:oo,</text>
 <text class="ab" x="394.8" y="122" textLength="67.2">Packages</text>
-<text class="aa" x="462" y="122" textLength="109.2">: 1316 (dpkg)</text>
+<text class="aa" x="462" y="122" textLength="109.2">: 1329 (dpkg)</text>
 <text class="ab" x="16.8" y="140" textLength="336">.;clol:,.                        .loooo&apos;</text>
 <text class="ab" x="394.8" y="140" textLength="42">Shell</text>
 <text class="aa" x="436.8" y="140" textLength="109.2">: console2svg</text>
@@ -79,11 +79,11 @@
 <text class="aa" x="462" y="230" textLength="126">: Runner.Worker</text>
 <text class="ab" x="58.8" y="248" textLength="294">...                         ,ooool.</text>
 <text class="ab" x="394.8" y="248" textLength="25.2">CPU</text>
-<text class="aa" x="420" y="248" textLength="403.2">: Intel(R) Xeon(R) Platinum 8370C (4) @ 2.80 GHz</text>
+<text class="aa" x="420" y="248" textLength="319.2">: AMD EPYC 7763 64-Core (4) @ 3.24 GHz</text>
 <text class="ab" x="33.6" y="266" textLength="310.8">.cooooc.              ..&apos;,,&apos;.  .cooo.</text>
 <text class="ab" x="394.8" y="266" textLength="50.4">Memory</text>
-<text class="aa" x="445.2" y="266" textLength="201.6">: 1.20 GiB / 15.61 GiB (</text>
-<text class="ac" x="646.8" y="266" textLength="16.8">8%</text>
+<text class="aa" x="445.2" y="266" textLength="201.6">: 1.14 GiB / 15.61 GiB (</text>
+<text class="ac" x="646.8" y="266" textLength="16.8">7%</text>
 <text class="aa" x="663.6" y="266" textLength="8.4">)</text>
 <text class="ab" x="50.4" y="284" textLength="285.6">;ooooo:.           ;oooooooc.  :l.</text>
 <text class="ab" x="394.8" y="284" textLength="33.6">Swap</text>
@@ -92,12 +92,12 @@
 <text class="aa" x="596.4" y="284" textLength="8.4">)</text>
 <text class="ab" x="58.8" y="302" textLength="243.6">.coooooc,..      coooooooooo.</text>
 <text class="ab" x="394.8" y="302" textLength="67.2">Disk (/)</text>
-<text class="aa" x="462" y="302" textLength="218.4">: 61.07 GiB / 144.26 GiB (</text>
-<text class="ac" x="680.4" y="302" textLength="25.2">42%</text>
+<text class="aa" x="462" y="302" textLength="218.4">: 59.29 GiB / 144.35 GiB (</text>
+<text class="ac" x="680.4" y="302" textLength="25.2">41%</text>
 <text class="aa" x="705.6" y="302" textLength="67.2">) - ext4</text>
 <text class="ab" x="75.6" y="320" textLength="226.8">.:ooooooolc:. .ooooooooooo&apos;</text>
 <text class="ab" x="394.8" y="320" textLength="126">Local IP (eth0)</text>
-<text class="aa" x="520.8" y="320" textLength="126">: 10.1.0.179/20</text>
+<text class="aa" x="520.8" y="320" textLength="126">: 10.1.0.123/20</text>
 <text class="ab" x="92.4" y="338" textLength="201.6">.&apos;:loooooo;  ,oooooooooc</text>
 <text class="ab" x="394.8" y="338" textLength="50.4">Locale</text>
 <text class="aa" x="445.2" y="338" textLength="75.6">: C.UTF-8</text>

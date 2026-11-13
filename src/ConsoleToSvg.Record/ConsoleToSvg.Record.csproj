@@ -9,7 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ConsoleToSvg.Core\ConsoleToSvg.Core.csproj" />
     <ProjectReference Include="..\ConsoleToSvg.Converter\ConsoleToSvg.Converter.csproj" />
-    <PackageReference Include="Porta.Pty" Version="2.2.2" />
-    <PackageReference Include="ZLogger" Version="2.5.10" />
+    <PackageReference Include="Porta.Pty" Version="2.2.4" />
+    <PackageReference Include="ZLogger" Version="2.6.2" />
   </ItemGroup>
 </Project>

@@ -55,13 +55,13 @@
       Include="..\ConsoleToSvg.Converter\ConsoleToSvg.Converter.csproj"
       AdditionalProperties="PublishAot=false"
     />
-    <PackageReference Include="System.CommandLine" Version="3.0.0-rc.1.26425.128" />
+    <PackageReference Include="System.CommandLine" Version="3.0.0" />
     <PackageReference
       Include="System.CommandLine.StaticCompletions"
-      Version="3.0.0-rc.1.26425.128"
+      Version="3.0.0"
     />
-    <PackageReference Include="ZLogger" Version="2.5.10" />
-    <PackageReference Include="VYaml" Version="1.4.0" />
+    <PackageReference Include="ZLogger" Version="2.6.2" />
+    <PackageReference Include="VYaml" Version="1.6.1" />
   </ItemGroup>
   <Import Project="..\ConsoleToSvg.Converter\ConsoleToSvg.Converter.Native.targets" />
 </Project>
